@@ -135,7 +135,7 @@ class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
                 "Loading initial page %s failed. Ensure that the "
                 "there are no other programs bound to this port and "
                 "that your firewall rules or network setup does not "
-                "prevent access.\e%s" % (url, traceback.format_exc(e)))
+                r"prevent access.\e%s" % (url, traceback.format_exc(e)))
             raise
         self.runner_handle = self.marionette.current_window_handle
         format_map = {"title": threading.current_thread().name.replace("'", '"')}
@@ -212,7 +212,7 @@ class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
             if test_window is None:
                 handles = self.marionette.window_handles
                 if len(handles) == 2:
-                    test_window = next(iter(set(handles) - set([parent])))
+                    test_window = next(iter(set(handles) - {parent}))
                 elif handles[0] == parent and len(handles) > 2:
                     # Hope the first one here is the test window
                     test_window = handles[1]
@@ -708,7 +708,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
 
         format_map = {"url": strip_server(url)}
 
-        protocol.base.execute_script("window.open('about:blank', '%s', 'noopener')" % self.window_id)
+        protocol.base.execute_script("window.open(undefined, '%s', 'noopener')" % self.window_id)
         test_window = protocol.testharness.get_test_window(self.window_id, parent_window,
                                                            timeout=10*self.timeout_multiplier)
         self.protocol.base.set_window(test_window)
@@ -897,7 +897,8 @@ class InternalRefTestImplementation(RefTestImplementation):
                 # with after closing a window we need to give a new window
                 # focus
                 handles = self.executor.protocol.marionette.window_handles
-                self.executor.protocol.marionette.switch_to_window(handles[0])
+                if handles:
+                    self.executor.protocol.marionette.switch_to_window(handles[0])
         except Exception as e:
             # Ignore errors during teardown
             self.logger.warning(traceback.format_exc(e))

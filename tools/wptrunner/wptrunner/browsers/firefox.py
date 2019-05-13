@@ -58,6 +58,9 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
             return 3
     elif run_info_data["os"] == "android":
         return 4
+    # https://bugzilla.mozilla.org/show_bug.cgi?id=1538725
+    elif run_info_data["os"] == "win" and run_info_data["processor"] == "aarch64":
+        return 4
     return 1
 
 
@@ -142,7 +145,6 @@ def env_options():
     #
     # https://github.com/web-platform-tests/wpt/pull/9480
     return {"server_host": "127.0.0.1",
-            "bind_address": False,
             "supports_debugger": True}
 
 

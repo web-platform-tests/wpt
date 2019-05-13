@@ -121,7 +121,7 @@ def check_environ(product):
 
         missing_hosts = set(expected_hosts)
         if is_windows:
-            hosts_path = "%s\System32\drivers\etc\hosts" % os.environ.get("SystemRoot", "C:\Windows")
+            hosts_path = r"%s\System32\drivers\etc\hosts" % os.environ.get("SystemRoot", r"C:\Windows")
         else:
             hosts_path = "/etc/hosts"
 
@@ -277,6 +277,8 @@ class Chrome(BrowserSetup):
         if kwargs["browser_channel"] == "dev":
             logger.info("Automatically turning on experimental features for Chrome Dev")
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
+            # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
+            kwargs["webdriver_args"].append("--disable-build-check")
 
 
 class ChromeAndroid(BrowserSetup):

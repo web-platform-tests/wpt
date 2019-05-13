@@ -185,7 +185,7 @@ def load_manifest(manifest_path=None, manifest_update=True):
     # Delay import after localpaths sets up sys.path, because otherwise the
     # import path will be "..manifest" and Python will treat it as a different
     # manifest module.
-    from manifest import manifest
+    from manifest import manifest  # type: ignore
     if manifest_path is None:
         manifest_path = os.path.join(wpt_root, "MANIFEST.json")
     return manifest.load_and_update(wpt_root, manifest_path, "/",
@@ -196,7 +196,7 @@ def affected_testfiles(files_changed, skip_dirs=None,
                        manifest_path=None, manifest_update=True):
     """Determine and return list of test files that reference changed files."""
     if skip_dirs is None:
-        skip_dirs = set(["conformance-checkers", "docs", "tools"])
+        skip_dirs = {"conformance-checkers", "docs", "tools"}
     affected_testfiles = set()
     # Exclude files that are in the repo root, because
     # they are not part of any test.
@@ -219,7 +219,7 @@ def affected_testfiles(files_changed, skip_dirs=None,
     interfaces_changed = interfaces_files.intersection(nontests_changed)
     nontests_changed = nontests_changed.intersection(support_files)
 
-    tests_changed = set(item for item in files_changed if item in test_files)
+    tests_changed = {item for item in files_changed if item in test_files}
 
     nontest_changed_paths = set()
     rewrites = {"/resources/webidl2/lib/webidl2.js": "/resources/WebIDLParser.js"}
@@ -375,7 +375,7 @@ def run_tests_affected(**kwargs):
     manifest_path = os.path.join(kwargs["metadata_root"], "MANIFEST.json")
     tests_changed, dependents = affected_testfiles(
         changed,
-        set(["conformance-checkers", "docs", "tools"]),
+        {"conformance-checkers", "docs", "tools"},
         manifest_path=manifest_path
     )
 

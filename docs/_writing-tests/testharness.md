@@ -1,13 +1,5 @@
 # testharness.js Tests
 
-```eval_rst
-.. toctree::
-   :maxdepth: 1
-
-   idlharness
-   testharness-api
-```
-
 testharness.js tests are the correct type of test to write in any
 situation where you are not specifically interested in the rendering
 of a page, and where human interaction isn't required; these tests are

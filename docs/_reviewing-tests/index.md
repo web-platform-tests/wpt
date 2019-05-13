@@ -3,13 +3,6 @@
 In order to encourage a high level of quality in the W3C test
 suites, test contributions must be reviewed by a peer.
 
-```eval_rst
-.. toctree::
-   :maxdepth: 1
-
-   checklist
-```
-
 ## Test Review Policy
 
 The reviewer can be anyone (other than the original test author) that

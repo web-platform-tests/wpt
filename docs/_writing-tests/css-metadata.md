@@ -1,5 +1,8 @@
-# CSS Metadata
-
+---
+layout: page
+title: CSS Metadata
+order: 14
+---
 CSS tests have some additional requirements for metadata.
 
 ### Specification Links

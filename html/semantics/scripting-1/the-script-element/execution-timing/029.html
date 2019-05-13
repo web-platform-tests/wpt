@@ -10,6 +10,7 @@
         <div id="log">FAILED (This TC requires JavaScript enabled)</div>
         <p><a href="javascript:log('JS URL')"></a></p>
         <script>log('inline script #1');
+          console.log("inline 1")
                 if(document.links[0].click){
                         document.links[0].click();
                 }else{
@@ -23,9 +24,12 @@
 
         <script type="text/javascript">
         log( 'inline script #2' );
+        console.log("inline 2")
         var t = async_test()
 
         function test() {
+          console.log("load")
+          console.log(eventOrder)
                 assert_any(assert_array_equals, eventOrder, [
                   ['inline script #1', 'end script #1', 'JS URL', 'inline script #2'],
                   ['inline script #1', 'end script #1', 'inline script #2', 'JS URL']]);

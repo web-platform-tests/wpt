@@ -1,13 +1,18 @@
-# Reviewing Tests
+---
+layout: page
+title: Reviewing Tests
+order: -1
+---
 
 In order to encourage a high level of quality in the W3C test
 suites, test contributions must be reviewed by a peer.
+
 
 ## Test Review Policy
 
 The reviewer can be anyone (other than the original test author) that
 has the required experience with both the spec under test and with
-the [general test guidelines](../_writing-tests/general-guidelines).
+the [general test guidelines][general guidelines].
 
 The review must happen in public, but there is no requirement for it
 to happen in any specific location. In particular if a vendor is
@@ -27,4 +32,7 @@ from vendors it is frequently the case that the author has moved on to
 working on other things as tests frequently only get pushed upstream
 once the code lands in their implementation.
 
-To assist with test reviews, a [review checklist](checklist) is available.
+To assist with test reviews, a [review checklist][] is available.
+
+[general guidelines]: {{ site.baseurl }}{% link _writing-tests/general-guidelines.md %}
+[review checklist]: {{ site.baseurl }}{% link _reviewing-tests/checklist.md %}

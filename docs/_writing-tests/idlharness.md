@@ -1,4 +1,8 @@
-# idlharness.js API
+---
+layout: page
+title: idlharness.js API
+order: 6
+---
 
 ## Introduction ##
 

@@ -1,4 +1,8 @@
-# Reftests
+---
+layout: page
+title: Reftests
+order: 3
+---
 
 Reftests are one of the primary tools for testing things relating to
 rendering; they are made up of the test and one or more other pages
@@ -221,5 +225,6 @@ except that the code behind it is different.
 <p>WAS</p>
 ```
 
-[general guidelines]: general-guidelines
-[rendering]: rendering
+
+[general guidelines]: {{ site.baseurl }}{% link _writing-tests/general-guidelines.md %}
+[rendering]: {{ site.baseurl }}{% link _writing-tests/rendering.md %}

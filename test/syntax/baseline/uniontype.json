@@ -1,0 +1,131 @@
+[
+    {
+        "type": "interface",
+        "name": "Union",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "test",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "union": true,
+                    "generic": "",
+                    "nullable": false,
+                    "idlType": [
+                        {
+                            "type": null,
+                            "extAttrs": null,
+                            "generic": "",
+                            "nullable": false,
+                            "union": false,
+                            "idlType": "float"
+                        },
+                        {
+                            "type": null,
+                            "extAttrs": null,
+                            "union": true,
+                            "generic": "",
+                            "nullable": false,
+                            "idlType": [
+                                {
+                                    "type": null,
+                                    "extAttrs": null,
+                                    "generic": "",
+                                    "nullable": false,
+                                    "union": false,
+                                    "idlType": "Date"
+                                },
+                                {
+                                    "type": null,
+                                    "extAttrs": null,
+                                    "generic": "",
+                                    "nullable": false,
+                                    "union": false,
+                                    "idlType": "Event"
+                                }
+                            ]
+                        },
+                        {
+                            "type": null,
+                            "extAttrs": null,
+                            "union": true,
+                            "generic": "",
+                            "nullable": true,
+                            "idlType": [
+                                {
+                                    "type": null,
+                                    "extAttrs": null,
+                                    "generic": "",
+                                    "nullable": false,
+                                    "union": false,
+                                    "idlType": "Node"
+                                },
+                                {
+                                    "type": null,
+                                    "extAttrs": null,
+                                    "generic": "",
+                                    "nullable": false,
+                                    "union": false,
+                                    "idlType": "DOMString"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            },
+            {
+                "type": "attribute",
+                "name": "test2",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "union": true,
+                    "generic": "",
+                    "nullable": false,
+                    "idlType": [
+                        {
+                            "type": null,
+                            "extAttrs": {
+                                "items": [
+                                    {
+                                        "type": "extended-attribute",
+                                        "name": "EnforceRange",
+                                        "rhs": null,
+                                        "arguments": []
+                                    }
+                                ]
+                            },
+                            "generic": "",
+                            "nullable": false,
+                            "union": false,
+                            "idlType": "long"
+                        },
+                        {
+                            "type": null,
+                            "extAttrs": null,
+                            "generic": "",
+                            "nullable": false,
+                            "union": false,
+                            "idlType": "Date"
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

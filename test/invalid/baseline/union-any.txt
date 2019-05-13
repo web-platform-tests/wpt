@@ -1,0 +1,3 @@
+Syntax error at line 1:
+typedef (any or DOMString or any)
+             ^ Type `any` cannot be included in a union type

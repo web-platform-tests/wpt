@@ -1,55 +1,67 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>WebIDL 2 Checker</title>
+  <meta charset="utf-8">
+  <title>WebIDL 2 Checker</title>
 
-<script src='../lib/webidl2.js'></script>
-<script>
-let parserResult = undefined;
+  <script type="module">
+    import { parse, validate } from "../index.js";
 
-function formatParserOutput() {
-  const outputEl = document.getElementById('webidl-checker-output');
-  if (parserResult) {
-    const prettyPrintEl = document.getElementById('pretty-print');
-    outputEl.innerText = JSON.stringify(parserResult, null, prettyPrintEl.checked ? 2 : null);
-  } else {
-    outputEl.innerText = '';
-  }
-}
+    function formatParserOutput(parserResult) {
+      const outputEl = document.getElementById("webidl-checker-output");
+      if (parserResult) {
+        const prettyPrintEl = document.getElementById("pretty-print");
+        outputEl.textContent = JSON.stringify(parserResult, null, prettyPrintEl.checked ? 2 : null);
+      } else {
+        outputEl.textContent = "";
+      }
+    }
 
-function checkWebIDL(textToCheck) {
-  const validation = document.getElementById('webidl-checker-validation');
-  parserResult = null;
-  try {
-    parserResult = WebIDL2.parse(textToCheck);
-    validation.innerText = 'WebIDL parsed successfully!';
-  } catch (e) {
-    validation.innerText = 'Exception while parsing WebIDL. See JavaScript console for more details.\n\n' + e.toString();
-    // Pass it along to the JavaScript console.
-    throw e;
-  } finally {
-    formatParserOutput();
-  }
-}
-</script>
-<style>
-textarea {
-  font-family: monospace;
-}
-</style>
+    function checkWebIDL(textToCheck) {
+      const validation = document.getElementById("webidl-checker-validation");
+      let parserResult = null;
+      try {
+        parserResult = parse(textToCheck);
+        const validationResult = validate(parserResult);
+        validation.textContent = validationResult.join("\n\n") || "WebIDL parsed successfully!";
+      } catch (e) {
+        validation.textContent = "Exception while parsing WebIDL. See JavaScript console for more details.\n\n" + e.toString();
+        // Pass it along to the JavaScript console.
+        throw e;
+      } finally {
+        formatParserOutput(parserResult);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("check-idl").addEventListener("click", () => {
+        checkWebIDL(document.getElementById("webidl-to-check").value);
+      });
+      document.getElementById("pretty-print").addEventListener("change", formatParserOutput);
+    });
+  </script>
+  <style>
+    textarea {
+      font-family: monospace;
+    }
+  </style>
 </head>
+
 <body>
-<h2>WebIDL Checker</h2>
-<p>This is an online checker for WebIDL built on the <a href="https://github.com/w3c/webidl2.js">webidl2.js</a> project.</p>
-<p>Enter your WebIDL to check below:</p>
-<textarea id='webidl-to-check' rows='20' cols='80'></textarea>
-<br>
-<input type='button' value='Check WebIDL' onclick='checkWebIDL(document.getElementById("webidl-to-check").value)'>
-<p>Validation results:</p>
-<textarea id='webidl-checker-validation' rows='20' cols='80'></textarea>
-<p>Parser output:</p>
-<textarea id='webidl-checker-output' rows='20' cols='80'></textarea>
-<br>
-<input type='checkbox' id='pretty-print' checked='true' onchange='formatParserOutput()'>Pretty Print
+  <h2>WebIDL Checker</h2>
+  <p>This is an online checker for WebIDL built on the <a href="https://github.com/w3c/webidl2.js">webidl2.js</a>
+    project.</p>
+  <p>Enter your WebIDL to check below:</p>
+  <textarea id="webidl-to-check" rows="20" cols="80" spellcheck="false"></textarea>
+  <br>
+  <input type="button" id="check-idl" value="Check WebIDL">
+  <p>Validation results:</p>
+  <textarea id="webidl-checker-validation" rows="20" cols="80" spellcheck="false"></textarea>
+  <p>Parser output:</p>
+  <textarea id="webidl-checker-output" rows="20" cols="80" spellcheck="false"></textarea>
+  <br>
+  <input type="checkbox" id="pretty-print" checked="true">Pretty Print
 </body>
+
 </html>

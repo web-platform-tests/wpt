@@ -1,0 +1,3 @@
+Syntax error at line 14, since `interface EventTarget`:
+  Node implements EventTarget;
+  ^ Unrecognised tokens

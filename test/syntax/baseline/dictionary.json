@@ -1,0 +1,146 @@
+[
+    {
+        "type": "dictionary",
+        "name": "PaintOptions",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "field",
+                "name": "fillPattern",
+                "extAttrs": null,
+                "idlType": {
+                    "type": "dictionary-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": true,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "default": {
+                    "type": "string",
+                    "value": "black"
+                },
+                "required": false
+            },
+            {
+                "type": "field",
+                "name": "strokePattern",
+                "extAttrs": null,
+                "idlType": {
+                    "type": "dictionary-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": true,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "default": {
+                    "type": "null"
+                },
+                "required": false
+            },
+            {
+                "type": "field",
+                "name": "position",
+                "extAttrs": null,
+                "idlType": {
+                    "type": "dictionary-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "Point"
+                },
+                "default": null,
+                "required": false
+            },
+            {
+                "type": "field",
+                "name": "seq",
+                "extAttrs": null,
+                "idlType": {
+                    "type": "dictionary-type",
+                    "extAttrs": null,
+                    "generic": "sequence",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": [
+                        {
+                            "type": "dictionary-type",
+                            "extAttrs": null,
+                            "generic": "",
+                            "nullable": false,
+                            "union": false,
+                            "idlType": "long"
+                        }
+                    ]
+                },
+                "default": {
+                    "type": "sequence",
+                    "value": []
+                },
+                "required": false
+            },
+            {
+                "type": "field",
+                "name": "reqSeq",
+                "extAttrs": null,
+                "idlType": {
+                    "type": "dictionary-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "long"
+                },
+                "default": null,
+                "required": true
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "dictionary",
+        "name": "A",
+        "members": [
+            {
+                "type": "field",
+                "name": "h",
+                "extAttrs": null,
+                "idlType": {
+                    "type": "dictionary-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "long"
+                },
+                "default": null,
+                "required": false
+            },
+            {
+                "type": "field",
+                "name": "d",
+                "extAttrs": null,
+                "idlType": {
+                    "type": "dictionary-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "long"
+                },
+                "default": null,
+                "required": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": true
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

@@ -1,0 +1,295 @@
+[
+    {
+        "type": "interface",
+        "name": "Dictionary",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "propertyCount",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned long"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            },
+            {
+                "type": "operation",
+                "name": "getProperty",
+                "body": {
+                    "name": "getProperty",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "float"
+                    },
+                    "arguments": [
+                        {
+                            "name": "propertyName",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": "getter"
+            },
+            {
+                "type": "operation",
+                "name": "setProperty",
+                "body": {
+                    "name": "setProperty",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": [
+                        {
+                            "name": "propertyName",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        },
+                        {
+                            "name": "propertyValue",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "float"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": "setter"
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "Dictionary2",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "propertyCount",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned long"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            },
+            {
+                "type": "operation",
+                "name": "getProperty",
+                "body": {
+                    "name": "getProperty",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "float"
+                    },
+                    "arguments": [
+                        {
+                            "name": "propertyName",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            },
+            {
+                "type": "operation",
+                "name": "setProperty",
+                "body": {
+                    "name": "setProperty",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": [
+                        {
+                            "name": "propertyName",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        },
+                        {
+                            "name": "propertyValue",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "float"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            },
+            {
+                "type": "operation",
+                "name": "",
+                "body": {
+                    "name": "",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "float"
+                    },
+                    "arguments": [
+                        {
+                            "name": "propertyName",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": "getter"
+            },
+            {
+                "type": "operation",
+                "name": "",
+                "body": {
+                    "name": "",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": [
+                        {
+                            "name": "propertyName",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        },
+                        {
+                            "name": "propertyValue",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "float"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": "setter"
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

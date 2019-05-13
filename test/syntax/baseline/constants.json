@@ -1,0 +1,151 @@
+[
+    {
+        "type": "interface",
+        "name": "Util",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "const",
+                "name": "DEBUG",
+                "idlType": {
+                    "type": "const-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "boolean"
+                },
+                "extAttrs": null,
+                "value": {
+                    "type": "boolean",
+                    "value": false
+                }
+            },
+            {
+                "type": "const",
+                "name": "negative",
+                "idlType": {
+                    "type": "const-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "short"
+                },
+                "extAttrs": null,
+                "value": {
+                    "type": "number",
+                    "value": "-1"
+                }
+            },
+            {
+                "type": "const",
+                "name": "LF",
+                "idlType": {
+                    "type": "const-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "octet"
+                },
+                "extAttrs": null,
+                "value": {
+                    "type": "number",
+                    "value": "10"
+                }
+            },
+            {
+                "type": "const",
+                "name": "BIT_MASK",
+                "idlType": {
+                    "type": "const-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned long"
+                },
+                "extAttrs": null,
+                "value": {
+                    "type": "number",
+                    "value": "0x0000fc00"
+                }
+            },
+            {
+                "type": "const",
+                "name": "AVOGADRO",
+                "idlType": {
+                    "type": "const-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "float"
+                },
+                "extAttrs": null,
+                "value": {
+                    "type": "number",
+                    "value": "6.022e23"
+                }
+            },
+            {
+                "type": "const",
+                "name": "sobig",
+                "idlType": {
+                    "type": "const-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unrestricted float"
+                },
+                "extAttrs": null,
+                "value": {
+                    "type": "Infinity",
+                    "negative": false
+                }
+            },
+            {
+                "type": "const",
+                "name": "minusonedividedbyzero",
+                "idlType": {
+                    "type": "const-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unrestricted double"
+                },
+                "extAttrs": null,
+                "value": {
+                    "type": "Infinity",
+                    "negative": true
+                }
+            },
+            {
+                "type": "const",
+                "name": "notanumber",
+                "idlType": {
+                    "type": "const-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "short"
+                },
+                "extAttrs": null,
+                "value": {
+                    "type": "NaN"
+                }
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

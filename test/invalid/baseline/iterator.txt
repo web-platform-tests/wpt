@@ -1,0 +1,3 @@
+Syntax error at line 5, since `interface SessionManager`:
+  Session iterator;
+                  ^ Invalid operation

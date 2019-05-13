@@ -1,0 +1,73 @@
+[
+    {
+        "type": "interface",
+        "name": "StringMap2",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "length",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned long"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            },
+            {
+                "type": "operation",
+                "name": "lookup",
+                "body": {
+                    "name": "lookup",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "DOMString"
+                    },
+                    "arguments": [
+                        {
+                            "name": "key",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": "getter"
+            }
+        ],
+        "extAttrs": {
+            "items": [
+                {
+                    "type": "extended-attribute",
+                    "name": "OverrideBuiltins",
+                    "rhs": null,
+                    "arguments": []
+                }
+            ]
+        },
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

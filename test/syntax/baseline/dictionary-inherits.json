@@ -1,0 +1,92 @@
+[
+    {
+        "type": "dictionary",
+        "name": "PaintOptions",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "field",
+                "name": "fillPattern",
+                "extAttrs": null,
+                "idlType": {
+                    "type": "dictionary-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": true,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "default": {
+                    "type": "string",
+                    "value": "black"
+                },
+                "required": false
+            },
+            {
+                "type": "field",
+                "name": "strokePattern",
+                "extAttrs": null,
+                "idlType": {
+                    "type": "dictionary-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": true,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "default": {
+                    "type": "null"
+                },
+                "required": false
+            },
+            {
+                "type": "field",
+                "name": "position",
+                "extAttrs": null,
+                "idlType": {
+                    "type": "dictionary-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "Point"
+                },
+                "default": null,
+                "required": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "dictionary",
+        "name": "WetPaintOptions",
+        "inheritance": {
+            "name": "PaintOptions"
+        },
+        "members": [
+            {
+                "type": "field",
+                "name": "hydrometry",
+                "extAttrs": null,
+                "idlType": {
+                    "type": "dictionary-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "float"
+                },
+                "default": null,
+                "required": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

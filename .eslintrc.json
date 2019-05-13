@@ -1,0 +1,22 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "amd": true,
+        "es6": true,
+        "node": true,
+        "mocha": true
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+        "no-constant-condition": ["error", { "checkLoops": false }],
+        "no-eval": "error",
+        "no-implied-eval": "error",
+        "no-trailing-spaces": "error",
+        "prefer-const": "error",
+        "semi": "error"
+    },
+    "parserOptions": {
+        "sourceType": "module"
+    }
+}

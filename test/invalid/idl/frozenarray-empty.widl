@@ -1,0 +1,1 @@
+typedef FrozenArray<> empty;

@@ -1,0 +1,91 @@
+[
+    {
+        "type": "interface",
+        "name": "Dog",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "name",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            },
+            {
+                "type": "attribute",
+                "name": "owner",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            },
+            {
+                "type": "operation",
+                "name": "isMemberOfBreed",
+                "body": {
+                    "name": "isMemberOfBreed",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "boolean"
+                    },
+                    "arguments": [
+                        {
+                            "name": "breedName",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": {
+                                    "items": [
+                                        {
+                                            "type": "extended-attribute",
+                                            "name": "TreatNullAs",
+                                            "rhs": {
+                                                "type": "identifier",
+                                                "value": "EmptyString"
+                                            },
+                                            "arguments": []
+                                        }
+                                    ]
+                                },
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

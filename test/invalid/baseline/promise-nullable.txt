@@ -1,0 +1,3 @@
+Syntax error at line 2, since `interface X`:
+    attribute Promise<void>?
+                           ^ Promise type cannot be nullable

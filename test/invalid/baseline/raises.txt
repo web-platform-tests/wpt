@@ -1,0 +1,3 @@
+Syntax error at line 5, since `interface Person`:
+  attribute DOMString name setraises (InvalidName);
+                           ^ Unterminated attribute

@@ -1,0 +1,3 @@
+Syntax error at line 1:
+typedef unrestricted 3.14 X;
+                     ^ Failed to parse float type

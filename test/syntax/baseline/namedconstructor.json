@@ -1,0 +1,53 @@
+[
+    {
+        "type": "interface",
+        "name": "HTMLAudioElement",
+        "inheritance": {
+            "name": "HTMLMediaElement"
+        },
+        "members": [],
+        "extAttrs": {
+            "items": [
+                {
+                    "type": "extended-attribute",
+                    "name": "NamedConstructor",
+                    "rhs": {
+                        "type": "identifier",
+                        "value": "Audio"
+                    },
+                    "arguments": []
+                },
+                {
+                    "type": "extended-attribute",
+                    "name": "NamedConstructor",
+                    "rhs": {
+                        "type": "identifier",
+                        "value": "Audio"
+                    },
+                    "arguments": [
+                        {
+                            "name": "src",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                }
+            ]
+        },
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

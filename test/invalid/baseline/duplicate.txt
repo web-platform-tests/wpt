@@ -1,0 +1,3 @@
+Validation error at line 3, inside `interface Test`:
+interface Test {
+          ^ The name "Test" of type "typedef" was already seen

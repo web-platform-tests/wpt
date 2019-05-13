@@ -1,0 +1,72 @@
+[
+    {
+        "type": "interface mixin",
+        "name": "GlobalCrypto",
+        "members": [
+            {
+                "type": "attribute",
+                "name": "crypto",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "Crypto"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "includes",
+        "extAttrs": null,
+        "target": "Window",
+        "includes": "GlobalCrypto"
+    },
+    {
+        "type": "includes",
+        "extAttrs": null,
+        "target": "WorkerGlobalScope",
+        "includes": "GlobalCrypto"
+    },
+    {
+        "type": "interface mixin",
+        "name": "WindowOrWorkerGlobalScope",
+        "members": [
+            {
+                "type": "attribute",
+                "name": "crypto",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "Crypto"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            }
+        ],
+        "extAttrs": null,
+        "partial": true
+    },
+    {
+        "type": "interface mixin",
+        "name": "LocalCrypto",
+        "members": [],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

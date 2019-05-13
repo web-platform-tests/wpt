@@ -1,0 +1,94 @@
+[
+    {
+        "type": "interface",
+        "name": "ColorCreator",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "operation",
+                "name": "createColor",
+                "body": {
+                    "name": "createColor",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "object"
+                    },
+                    "arguments": [
+                        {
+                            "name": "v1",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "float"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        },
+                        {
+                            "name": "v2",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "float"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        },
+                        {
+                            "name": "v3",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "float"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        },
+                        {
+                            "name": "alpha",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "float"
+                            },
+                            "default": {
+                                "type": "number",
+                                "value": "3.5"
+                            },
+                            "optional": true,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

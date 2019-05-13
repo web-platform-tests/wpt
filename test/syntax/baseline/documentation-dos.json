@@ -1,0 +1,15 @@
+[
+    {
+        "type": "interface",
+        "name": "Documentation",
+        "inheritance": null,
+        "members": [],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

@@ -1,0 +1,3 @@
+Syntax error at line 2, since `interface Foo`:
+  void foo(record<octet, any> param
+                  ^ Record key must be one of: ByteString, DOMString, USVString

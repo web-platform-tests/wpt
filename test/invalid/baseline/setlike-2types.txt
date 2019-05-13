@@ -1,0 +1,3 @@
+Syntax error at line 2, since `interface SetLikeTwoTypes`:
+  setlike<long, long>;
+              ^ Unterminated setlike declaration

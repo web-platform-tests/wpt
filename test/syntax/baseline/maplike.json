@@ -1,0 +1,121 @@
+[
+    {
+        "type": "interface",
+        "name": "MapLike",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "maplike",
+                "idlType": [
+                    {
+                        "type": null,
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "long"
+                    },
+                    {
+                        "type": null,
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "float"
+                    }
+                ],
+                "extAttrs": null,
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "ReadOnlyMapLike",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "maplike",
+                "idlType": [
+                    {
+                        "type": null,
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "long"
+                    },
+                    {
+                        "type": null,
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "float"
+                    }
+                ],
+                "extAttrs": null,
+                "readonly": true
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "I",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "maplike",
+                "idlType": [
+                    {
+                        "type": null,
+                        "extAttrs": {
+                            "items": [
+                                {
+                                    "type": "extended-attribute",
+                                    "name": "XAttr2",
+                                    "rhs": null,
+                                    "arguments": []
+                                }
+                            ]
+                        },
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "DOMString"
+                    },
+                    {
+                        "type": null,
+                        "extAttrs": {
+                            "items": [
+                                {
+                                    "type": "extended-attribute",
+                                    "name": "XAttr3",
+                                    "rhs": null,
+                                    "arguments": []
+                                }
+                            ]
+                        },
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "long"
+                    }
+                ],
+                "extAttrs": null,
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

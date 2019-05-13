@@ -1,0 +1,121 @@
+[
+    {
+        "type": "callback",
+        "name": "AsyncOperationCallback",
+        "idlType": {
+            "type": "return-type",
+            "extAttrs": null,
+            "generic": "",
+            "nullable": false,
+            "union": false,
+            "idlType": "void"
+        },
+        "arguments": [
+            {
+                "name": "status",
+                "idlType": {
+                    "type": "argument-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "default": null,
+                "optional": false,
+                "variadic": false
+            }
+        ],
+        "extAttrs": null
+    },
+    {
+        "type": "callback interface",
+        "name": "EventHandler",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "operation",
+                "name": "eventOccurred",
+                "body": {
+                    "name": "eventOccurred",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": [
+                        {
+                            "name": "details",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "callback",
+        "name": "SortCallback",
+        "idlType": {
+            "type": "return-type",
+            "extAttrs": null,
+            "generic": "",
+            "nullable": false,
+            "union": false,
+            "idlType": "boolean"
+        },
+        "arguments": [
+            {
+                "name": "a",
+                "idlType": {
+                    "type": "argument-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "any"
+                },
+                "default": null,
+                "optional": false,
+                "variadic": false
+            },
+            {
+                "name": "b",
+                "idlType": {
+                    "type": "argument-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "any"
+                },
+                "default": null,
+                "optional": false,
+                "variadic": false
+            }
+        ],
+        "extAttrs": null
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

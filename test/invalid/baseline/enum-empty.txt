@@ -1,0 +1,3 @@
+Syntax error at line 1, since `enum Empty`:
+enum Empty {};
+             ^ No value in enum

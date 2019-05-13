@@ -1,0 +1,23 @@
+[
+    {
+        "type": "interface",
+        "name": "Iroha",
+        "inheritance": {
+            "name": "Magic"
+        },
+        "members": [],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "includes",
+        "extAttrs": null,
+        "target": "Iroha",
+        "includes": "Color"
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

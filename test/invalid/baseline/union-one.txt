@@ -1,0 +1,3 @@
+Syntax error at line 1:
+typedef (OnlyOne) UnionOne;
+                ^ At least two types are expected in a union type but found less

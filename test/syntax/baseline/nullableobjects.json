@@ -1,0 +1,98 @@
+[
+    {
+        "type": "interface",
+        "name": "A",
+        "inheritance": null,
+        "members": [],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "B",
+        "inheritance": null,
+        "members": [],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "C",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "operation",
+                "name": "f",
+                "body": {
+                    "name": "f",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": [
+                        {
+                            "name": "x",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": true,
+                                "union": false,
+                                "idlType": "A"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            },
+            {
+                "type": "operation",
+                "name": "f",
+                "body": {
+                    "name": "f",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": [
+                        {
+                            "name": "x",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": true,
+                                "union": false,
+                                "idlType": "B"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

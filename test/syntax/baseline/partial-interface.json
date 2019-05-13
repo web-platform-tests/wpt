@@ -1,0 +1,54 @@
+[
+    {
+        "type": "interface",
+        "name": "Foo",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "bar",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "Foo",
+        "members": [
+            {
+                "type": "attribute",
+                "name": "quux",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": true
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

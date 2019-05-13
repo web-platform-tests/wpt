@@ -1,0 +1,219 @@
+[
+    {
+        "type": "interface",
+        "name": "Point",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "x",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "float"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            },
+            {
+                "type": "attribute",
+                "name": "y",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "float"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "typedef",
+        "name": "PointSequence",
+        "idlType": {
+            "type": "typedef-type",
+            "extAttrs": null,
+            "generic": "sequence",
+            "nullable": false,
+            "union": false,
+            "idlType": [
+                {
+                    "type": "typedef-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "Point"
+                }
+            ]
+        },
+        "extAttrs": null
+    },
+    {
+        "type": "interface",
+        "name": "Rect",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "topleft",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "Point"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            },
+            {
+                "type": "attribute",
+                "name": "bottomright",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "Point"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "Widget",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "bounds",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "Rect"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            },
+            {
+                "type": "operation",
+                "name": "pointWithinBounds",
+                "body": {
+                    "name": "pointWithinBounds",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "boolean"
+                    },
+                    "arguments": [
+                        {
+                            "name": "p",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "Point"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            },
+            {
+                "type": "operation",
+                "name": "allPointsWithinBounds",
+                "body": {
+                    "name": "allPointsWithinBounds",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "boolean"
+                    },
+                    "arguments": [
+                        {
+                            "name": "ps",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "PointSequence"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "typedef",
+        "name": "value",
+        "idlType": {
+            "type": "typedef-type",
+            "extAttrs": {
+                "items": [
+                    {
+                        "type": "extended-attribute",
+                        "name": "Clamp",
+                        "rhs": null,
+                        "arguments": []
+                    }
+                ]
+            },
+            "generic": "",
+            "nullable": false,
+            "union": false,
+            "idlType": "octet"
+        },
+        "extAttrs": null
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

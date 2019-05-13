@@ -1,0 +1,3 @@
+Syntax error at line 14, since `interface Widget`:
+    typedef sequence<Point>
+    ^ Missing return type

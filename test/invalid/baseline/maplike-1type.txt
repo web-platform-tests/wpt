@@ -1,0 +1,3 @@
+Syntax error at line 2, since `interface MapLikeOneType`:
+  maplike<long>;
+              ^ Missing second type argument in maplike declaration

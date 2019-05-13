@@ -1,0 +1,3 @@
+Syntax error at line 1, since `enum foo`:
+enum foo { 1, 2, 3
+           ^ Unexpected value in enum

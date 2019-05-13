@@ -1,0 +1,244 @@
+[
+    {
+        "type": "interface",
+        "name": "ServiceWorkerGlobalScope",
+        "inheritance": {
+            "name": "WorkerGlobalScope"
+        },
+        "members": [],
+        "extAttrs": {
+            "items": [
+                {
+                    "type": "extended-attribute",
+                    "name": "Global",
+                    "rhs": {
+                        "type": "identifier-list",
+                        "value": [
+                            {
+                                "value": "Worker"
+                            },
+                            {
+                                "value": "ServiceWorker"
+                            }
+                        ]
+                    },
+                    "arguments": []
+                },
+                {
+                    "type": "extended-attribute",
+                    "name": "Exposed",
+                    "rhs": {
+                        "type": "identifier",
+                        "value": "ServiceWorker"
+                    },
+                    "arguments": []
+                }
+            ]
+        },
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "IdInterface",
+        "inheritance": null,
+        "members": [],
+        "extAttrs": {
+            "items": [
+                {
+                    "type": "extended-attribute",
+                    "name": "IntAttr",
+                    "rhs": {
+                        "type": "integer",
+                        "value": "0"
+                    },
+                    "arguments": []
+                },
+                {
+                    "type": "extended-attribute",
+                    "name": "FloatAttr",
+                    "rhs": {
+                        "type": "decimal",
+                        "value": "3.14"
+                    },
+                    "arguments": []
+                },
+                {
+                    "type": "extended-attribute",
+                    "name": "StringAttr",
+                    "rhs": {
+                        "type": "string",
+                        "value": "\"abc\""
+                    },
+                    "arguments": []
+                }
+            ]
+        },
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "Circle",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "r",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "double"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            },
+            {
+                "type": "attribute",
+                "name": "cx",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "double"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            },
+            {
+                "type": "attribute",
+                "name": "cy",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "double"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            },
+            {
+                "type": "attribute",
+                "name": "circumference",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "double"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            }
+        ],
+        "extAttrs": {
+            "items": [
+                {
+                    "type": "extended-attribute",
+                    "name": "Constructor",
+                    "rhs": null,
+                    "arguments": []
+                },
+                {
+                    "type": "extended-attribute",
+                    "name": "Constructor",
+                    "rhs": null,
+                    "arguments": [
+                        {
+                            "name": "radius",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "double"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                }
+            ]
+        },
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "I",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "attrib",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": {
+                        "items": [
+                            {
+                                "type": "extended-attribute",
+                                "name": "XAttr",
+                                "rhs": null,
+                                "arguments": []
+                            }
+                        ]
+                    },
+                    "union": true,
+                    "generic": "",
+                    "nullable": false,
+                    "idlType": [
+                        {
+                            "type": null,
+                            "extAttrs": null,
+                            "generic": "",
+                            "nullable": false,
+                            "union": false,
+                            "idlType": "long"
+                        },
+                        {
+                            "type": null,
+                            "extAttrs": null,
+                            "generic": "",
+                            "nullable": false,
+                            "union": false,
+                            "idlType": "Node"
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            }
+        ],
+        "extAttrs": {
+            "items": [
+                {
+                    "type": "extended-attribute",
+                    "name": "Exposed",
+                    "rhs": {
+                        "type": "identifier",
+                        "value": "Window"
+                    },
+                    "arguments": []
+                }
+            ]
+        },
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

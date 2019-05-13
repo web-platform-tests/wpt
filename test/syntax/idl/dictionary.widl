@@ -9,7 +9,7 @@ dictionary PaintOptions {
   required long reqSeq;
 };
 
-partial dictionary A {
+partial dictionary _A {
   long h;
   long d;
 };

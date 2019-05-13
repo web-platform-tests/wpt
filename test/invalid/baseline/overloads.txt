@@ -1,0 +1,18 @@
+Validation error at line 7, inside `partial interface Base`:
+  void unique(short num)
+       ^ The operation "unique" has already been defined for the base interface "Base" either in itself or in a mixin
+Validation error at line 11, inside `interface mixin Extension`:
+  void unique(string str)
+       ^ The operation "unique" has already been defined for the base interface "Base" either in itself or in a mixin
+Validation error at line 21, inside `interface mixin WebGL2RenderingContextBase`:
+  void bufferData(GLenum target,
+       ^ The operation "bufferData" has already been defined for the base interface "WebGL2RenderingContext" either in itself or in a mixin
+Validation error at line 22, inside `interface mixin WebGL2RenderingContextBase`:
+  void bufferData(GLenum target,
+       ^ The operation "bufferData" has already been defined for the base interface "WebGL2RenderingContext" either in itself or in a mixin
+Validation error at line 23, inside `interface mixin WebGL2RenderingContextBase`:
+  void bufferData(GLenum target,
+       ^ The operation "bufferData" has already been defined for the base interface "WebGL2RenderingContext" either in itself or in a mixin
+Validation error at line 25, inside `interface mixin WebGL2RenderingContextBase`:
+  void bufferData(GLenum target,
+       ^ The operation "bufferData" has already been defined for the base interface "WebGL2RenderingContext" either in itself or in a mixin

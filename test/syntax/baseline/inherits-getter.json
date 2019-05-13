@@ -1,0 +1,98 @@
+[
+    {
+        "type": "interface",
+        "name": "Animal",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "name",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "Person",
+        "inheritance": {
+            "name": "Animal"
+        },
+        "members": [
+            {
+                "type": "attribute",
+                "name": "age",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned short"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            },
+            {
+                "type": "attribute",
+                "name": "name",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "extAttrs": null,
+                "special": "inherit",
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "Ghost",
+        "inheritance": {
+            "name": "Person"
+        },
+        "members": [
+            {
+                "type": "attribute",
+                "name": "name",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "DOMString"
+                },
+                "extAttrs": null,
+                "special": "inherit",
+                "readonly": true
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

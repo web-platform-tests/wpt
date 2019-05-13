@@ -10,3 +10,5 @@ WorkerGlobalScope includes GlobalCrypto;
 partial interface mixin WindowOrWorkerGlobalScope {
   readonly attribute Crypto crypto;
 };
+
+interface mixin _LocalCrypto {};

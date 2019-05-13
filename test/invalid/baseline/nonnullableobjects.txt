@@ -1,0 +1,3 @@
+Syntax error at line 4, since `interface NonNullable`:
+  attribute Foo??
+                ^ Can't nullable more than once

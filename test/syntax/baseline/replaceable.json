@@ -1,0 +1,58 @@
+[
+    {
+        "type": "interface",
+        "name": "Counter",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "value",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned long"
+                },
+                "extAttrs": {
+                    "items": [
+                        {
+                            "type": "extended-attribute",
+                            "name": "Replaceable",
+                            "rhs": null,
+                            "arguments": []
+                        }
+                    ]
+                },
+                "special": "",
+                "readonly": true
+            },
+            {
+                "type": "operation",
+                "name": "increment",
+                "body": {
+                    "name": "increment",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": []
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

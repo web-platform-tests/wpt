@@ -1,0 +1,3 @@
+Syntax error at line 4, since `dictionary Dict`:
+  required long member = 0;
+                          ^ Required member must not have a default

@@ -1,9 +1,9 @@
 # WPT documentation
 
 The documentation for the web-platform-tests project is built using [the Sphinx
-documentation generator](http://www.sphinx-doc.org). [The GitHub Actions
-service](https://github.com/features/actions) is configured to automatically
-update the public website each time changes are merged to the repository.
+documentation generator](http://www.sphinx-doc.org). [The readthedocs
+service](https://readthedocs.com/) automatically updates the public website
+each time changes are merged to the repository.
 
 ## Local Development
 

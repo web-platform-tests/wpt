@@ -105,10 +105,10 @@ free to add yourself to the META.yml file!
 [IRC]: irc://irc.w3.org:6667/testing
 [web irc]: http://irc.w3.org
 
-[reftests]: writing-tests/reftests
-[testharness.js]: writing-tests/testharness
-[visual]: writing-tests/visual
-[manual]: writing-tests/manual
-[github-intro]: appendix/github-intro
-[running-from-local-system]: running-tests/from-local-system
-[wdspec]: writing-tests/wdspec
+[reftests]: _writing-tests/reftests
+[testharness.js]: _writing-tests/testharness
+[visual]: _writing-tests/visual
+[manual]: _writing-tests/manual
+[github-intro]: _appendix/github-intro
+[running-from-local-system]: _running-tests/from-local-system
+[wdspec]: _writing-tests/wdspec

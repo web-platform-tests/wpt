@@ -656,10 +656,13 @@ class EdgeChromium(Browser):
             dest = os.pwd
 
         platform = "x64" if uname[4] == "x86_64" else "x86"
-
         url = "https://az813057.vo.msecnd.net/webdriver/msedgedriver_%s/msedgedriver.exe" % platform
+
         self.logger.info("Downloading MSEdgeDriver from %s" % url)
-        urllib.urlretrieve(url, os.path.join(dest, "msedgedriver.exe"))
+        resp = get(url)
+        installer_path = os.path.join(dest, "msedgedriver.exe")
+        with open(installer_path, "wb") as f:
+            f.write(resp.content)
 
         return find_executable("msedgedriver", dest)
 

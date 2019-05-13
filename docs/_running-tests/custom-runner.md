@@ -1,4 +1,7 @@
-# Writing Your Own Runner
+---
+layout: page
+title: Writing Your Own Runner
+---
 
 Most test runners have two stages: finding all tests, followed by
 executing them (or a subset thereof).

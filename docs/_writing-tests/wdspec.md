@@ -1,4 +1,8 @@
-# wdspec tests
+---
+layout: page
+title: wdspec tests
+order: -1
+---
 
 The term "wdspec" describes a type of test in WPT which verifies some aspect of
 [the WebDriver protocol](https://w3c.github.io/webdriver/). These tests are
@@ -11,9 +15,9 @@ command under test. For example, tests for [the Close Window
 command](https://w3c.github.io/webdriver/#close-window) are located in then
 `close_window` directory.
 
-Similar to [testharness.js](testharness) tests, wdspec tests contain within
-them any number of "sub-tests." Sub-tests are defined as Python functions whose
-name begins with `test_`, e.g. `test_stale_element`.
+Similar to [testharness.js][] tests, wdspec tests contain within them any
+number of "sub-tests." Sub-tests are defined as Python functions whose name
+begins with `test_`, e.g. `test_stale_element`.
 
 ## The `webdriver` client library
 
@@ -67,3 +71,5 @@ a WebDriver session) are defined in terms of Pytest "fixtures" and must be
 loaded accordingly. For more detail on how to define and use test fixtures,
 please refer to [the pytest project's documentation on the
 topic](https://docs.pytest.org/en/latest/fixture.html).
+
+[testharness.js]: {{ site.baseurl }}{% link _writing-tests/testharness.md %}

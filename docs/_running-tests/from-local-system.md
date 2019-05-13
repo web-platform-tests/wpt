@@ -1,4 +1,7 @@
-# Running Tests from the Local System
+---
+layout: page
+title: Running Tests from the Local System
+---
 
 The tests are designed to be run from your local computer.
 
@@ -72,7 +75,7 @@ http://web-platform.test:8000/<br>
 https://web-platform.test:8443/ *
 
 This server has all the capabilities of the publicly-deployed version--see
-[Running the Tests from the Web](from-web).
+[Running the Tests from the Web][from-web].
 
 \**See [Trusting Root CA](https://github.com/web-platform-tests/wpt/blob/master/README.md#trusting-root-ca)*
 
@@ -99,8 +102,13 @@ customising the test run:
 
 Additional browser-specific documentation:
 
-  * [Chrome](chrome)
+  * [Chrome][chrome]
 
-  * [Chrome for Android](chrome_android)
+  * [Chrome for Android][chrome android]
 
-  * [Safari](safari)
+  * [Safari][safari]
+
+[from-web]: {{ site.baseurl }}{% link _running-tests/from-web.md %}
+[chrome]: {{ site.baseurl }}{% link _running-tests/chrome.md %}
+[chrome android]: {{ site.baseurl }}{% link _running-tests/chrome_android.md %}
+[safari]: {{ site.baseurl }}{% link _running-tests/safari.md %}

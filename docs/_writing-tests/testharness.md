@@ -1,4 +1,8 @@
-# testharness.js Tests
+---
+layout: page
+title: testharness.js Tests
+order: 4
+---
 
 testharness.js tests are the correct type of test to write in any
 situation where you are not specifically interested in the rendering
@@ -6,14 +10,14 @@ of a page, and where human interaction isn't required; these tests are
 written in JavaScript using a framework called `testharness.js`. It is
 documented in two sections:
 
-  * [testharness.js Documentation](testharness-api) — An introduction
+  * [testharness.js Documentation][testharness-api] — An introduction
     to the library and a detailed API reference.
 
-  * [idlharness.js Documentation](idlharness) — A library for testing
+  * [idlharness.js Documentation][idlharness] — A library for testing
      IDL interfaces using `testharness.js`.
 
-See [server features](server-features) for advanced testing features that are commonly used
-with testharness.js. See also the [general guidelines](general-guidelines) for all test types.
+See [server features][] for advanced testing features that are commonly used
+with testharness.js. See also the [general guidelines][] for all test types.
 
 ## Variants
 
@@ -195,3 +199,9 @@ Use `// META: variant=url-suffix` at the beginning of the resource. For example,
 // META: variant=
 // META: variant=?wss
 ```
+
+
+[general guidelines]: {{ site.baseurl }}{% link _writing-tests/general-guidelines.md %}
+[testharness-api]: {{ site.baseurl }}{% link _writing-tests/testharness-api.md %}
+[idlharness]: {{ site.baseurl }}{% link _writing-tests/idlharness.md %}
+[server features]: {{ site.baseurl }}{% link _writing-tests/server-features.md %}

@@ -1,4 +1,8 @@
-# testharness.js API
+---
+layout: page
+title: testharness.js API
+order: 5
+---
 
 ## Introduction ##
 

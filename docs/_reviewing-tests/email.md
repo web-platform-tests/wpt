@@ -1,4 +1,8 @@
-# Email Filters
+---
+layout: page
+title: Email Filters
+order: 3
+---
 
 See the [GitHub support page](https://help.github.com/articles/about-email-notifications/)
 for how to filter certain types of email notifications. However, the most

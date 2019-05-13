@@ -1,5 +1,7 @@
-# Chrome for Android
-
+---
+layout: page
+title: Chrome for Android
+---
 To run WPT on Chrome on an Android device, some additional set up is required.
 
 First of all, as usual Android development, we need to have `adb` and be able to

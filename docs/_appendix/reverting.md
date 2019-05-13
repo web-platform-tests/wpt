@@ -1,5 +1,8 @@
-# Reverting Changes
-
+---
+layout: page
+title: Reverting Changes
+order: 3
+---
 Testing is imperfect and from time to time changes are merged into master which
 break things for users of web-platform-tests. Such breakage can include:
 

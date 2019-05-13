@@ -15,8 +15,11 @@ if MYPY:
     from typing import Optional
     from typing import Pattern
     from typing import Tuple
+    from typing import TypeVar
     from typing import Union
     from typing import cast
+
+    T = TypeVar('T')
 
 
 end_space = re.compile(r"([^\\]\s)*$")
@@ -216,17 +219,17 @@ class PathFilter(object):
                     self.patterns_file.append((rule, []))
 
     def filter(self,
-               iterator  # type: Iterable[Tuple[str, List[Tuple[str, Any]], List[Tuple[str, Any]]]]
+               iterator  # type: Iterable[Tuple[str, List[Tuple[str, T]], List[Tuple[str, T]]]]
                ):
-        # type: (...) -> Iterable[Tuple[str, List[Tuple[str, Any]], List[Tuple[str, Any]]]]
+        # type: (...) -> Iterable[Tuple[str, List[Tuple[str, T]], List[Tuple[str, T]]]]
         empty = {}  # type: Dict[Any, Any]
         for dirpath, dirnames, filenames in iterator:
             orig_dirpath = dirpath
             if os.path.sep != "/":
                 dirpath = dirpath.replace(os.path.sep, "/")
 
-            keep_dirs = []  # type: List[Tuple[str, Any]]
-            keep_files = []  # type: List[Tuple[str, Any]]
+            keep_dirs = []  # type: List[Tuple[str, T]]
+            keep_files = []  # type: List[Tuple[str, T]]
 
             for iter_items, literals, patterns, target, suffix in [
                     (dirnames, self.literals_dir, self.patterns_dir, keep_dirs, "/"),
@@ -270,9 +273,9 @@ class PathFilter(object):
             yield orig_dirpath, dirnames, keep_files
 
     def __call__(self,
-                 iterator  # type: Iterable[Tuple[str, List[Tuple[str, Any]], List[Tuple[str, Any]]]]
+                 iterator  # type: Iterable[Tuple[str, List[Tuple[str, T]], List[Tuple[str, T]]]]
                  ):
-        # type: (...) -> Iterable[Tuple[str, List[Tuple[str, Any]], List[Tuple[str, Any]]]]
+        # type: (...) -> Iterable[Tuple[str, List[Tuple[str, T]], List[Tuple[str, T]]]]
         if self.trivial:
             return iterator
 

@@ -6,8 +6,6 @@
 
    idlharness
    testharness-api
-   testdriver-tutorial
-   testdriver
 ```
 
 testharness.js tests are the correct type of test to write in any

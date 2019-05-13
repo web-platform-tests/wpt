@@ -687,7 +687,7 @@ IdlArray.prototype.is_json_type = function(type)
 };
 
 function exposure_set(object, default_set) {
-    var exposed = object.extAttrs && object.extAttrs.filter(a => a.name === "Exposed");
+    var exposed = object.extAttrs && object.extAttrs.items.filter(a => a.name === "Exposed");
     if (exposed && exposed.length > 1) {
         throw new IdlHarnessError(
             `Multiple 'Exposed' extended attributes on ${object.name}`);
@@ -892,7 +892,7 @@ IdlArray.prototype.collapse_partials = function()
             // Exposed on a partial is the equivalent of having the same Exposed on all nested members.
             // See https://github.com/heycam/webidl/issues/154 for discrepency between Exposed and
             // other extended attributes on partial interfaces.
-            const exposureAttr = parsed_idl.extAttrs.find(a => a.name === "Exposed");
+            const exposureAttr = parsed_idl.extAttrs.items.find(a => a.name === "Exposed");
             if (exposureAttr) {
                 if (!parsed_idl.untested) {
                     test(function () {
@@ -911,7 +911,7 @@ IdlArray.prototype.collapse_partials = function()
                 }.bind(this));
             }
 
-            parsed_idl.extAttrs.forEach(function(extAttr)
+            parsed_idl.extAttrs.items.forEach(function(extAttr)
             {
                 // "Exposed" already handled above.
                 if (extAttr.name === "Exposed") {
@@ -1164,7 +1164,7 @@ IdlObject.prototype.has_extended_attribute = function(name)
      * This is only meaningful for things that support extended attributes,
      * such as interfaces, exceptions, and members.
      */
-    return this.extAttrs.some(function(o)
+    return this.extAttrs.items.some(function(o)
     {
         return o.name == name;
     });
@@ -1223,7 +1223,7 @@ function IdlInterface(obj, is_callback, is_mixin)
     this.untested = obj.untested;
 
     /** An array of objects produced by the "ExtAttr" production. */
-    this.extAttrs = obj.extAttrs;
+    this.extAttrs = obj.extAttrs || {"items": []};
 
     /** An array of IdlInterfaceMembers. */
     this.members = obj.members.map(function(m){return new IdlInterfaceMember(m); });
@@ -1269,7 +1269,7 @@ IdlInterface.prototype.get_unscopables = function()
 
 IdlInterface.prototype.is_global = function()
 {
-    return this.extAttrs.some(function(attribute) {
+    return this.extAttrs.items.some(function(attribute) {
         return attribute.name === "Global";
     });
 };
@@ -1281,7 +1281,7 @@ IdlInterface.prototype.is_global = function()
  */
 IdlInterface.prototype.get_legacy_namespace = function()
 {
-    var legacyNamespace = this.extAttrs.find(function(attribute) {
+    var legacyNamespace = this.extAttrs.items.find(function(attribute) {
         return attribute.name === "LegacyNamespace";
     });
     return legacyNamespace ? legacyNamespace.rhs.value : undefined;
@@ -1596,7 +1596,7 @@ IdlInterface.prototype.test_self = function()
             assert_false(desc.enumerable, this.name + ".length should not be enumerable");
             assert_true(desc.configurable, this.name + ".length should be configurable");
 
-            var constructors = this.extAttrs
+            var constructors = this.extAttrs.items
                 .filter(function(attr) { return attr.name == "Constructor"; });
             var expected_length = minOverloadLength(constructors);
             assert_equals(this.get_interface_object().length, expected_length, "wrong value for " + this.name + ".length");
@@ -1630,7 +1630,7 @@ IdlInterface.prototype.test_self = function()
     if (this.has_extended_attribute("LegacyWindowAlias")) {
         subsetTestByKey(this.name, test, function()
         {
-            var aliasAttrs = this.extAttrs.filter(function(o) { return o.name === "LegacyWindowAlias"; });
+            var aliasAttrs = this.extAttrs.items.filter(function(o) { return o.name === "LegacyWindowAlias"; });
             if (aliasAttrs.length > 1) {
                 throw new IdlHarnessError("Invalid IDL: multiple LegacyWindowAlias extended attributes on " + this.name);
             }
@@ -1680,7 +1680,7 @@ IdlInterface.prototype.test_self = function()
     }
 
     if (this.has_extended_attribute("NamedConstructor")) {
-        var constructors = this.extAttrs
+        var constructors = this.extAttrs.items
             .filter(function(attr) { return attr.name == "NamedConstructor"; });
         if (constructors.length !== 1) {
             throw new IdlHarnessError("Internal error: missing support for multiple NamedConstructor extended attributes");
@@ -2999,9 +2999,9 @@ function IdlInterfaceMember(obj)
     {
         this[k] = obj[k];
     }
-    if (!("extAttrs" in this))
+    if (!("extAttrs" in this) || this.extAttrs === null)
     {
-        this.extAttrs = [];
+        this.extAttrs = {"items": []};
     }
 
     this.isUnforgeable = this.has_extended_attribute("Unforgeable");
@@ -3094,7 +3094,7 @@ IdlTypedef.prototype = Object.create(IdlObject.prototype);
 function IdlNamespace(obj)
 {
     this.name = obj.name;
-    this.extAttrs = obj.extAttrs;
+    this.extAttrs = obj.extAttrs || {"items": []};
     this.untested = obj.untested;
     /** A back-reference to our IdlArray. */
     this.array = obj.array;

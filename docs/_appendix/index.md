@@ -1,10 +1,5 @@
 # Appendices
 
-```eval_rst
-.. toctree ::
-   :maxdepth: 1
-
-   github-intro
-   reverting
-   test-templates
-```
+- [Introduction to GitHub](github-intro)
+- [Reverting Changes](reverting)
+- [Test Templates](test-templates)

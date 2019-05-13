@@ -1,7 +1,3 @@
-```eval_rst
-:orphan:
-```
-
 # testdriver.js Tutorial
 
 Adding new commands to testdriver.js
@@ -22,7 +18,7 @@ The first part of this will be browser agnostic, but later we will need to imple
 
 ## Code!
 
-### [resources/testdriver.js](https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver.js)
+### [resources/testdriver.js](resources/testdriver.js)
 
 This is the main entry point the tests get. Here we need to add a function to the `test_driver` object that will call the `test_driver_internal` object.
 
@@ -77,7 +73,7 @@ window.test_driver_internal = {
 ```
 We will leave this unimplemented and override it in another file. Lets do that now!
 
-### [wptrunner/wptrunner/testdriver-extra.js](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js)
+### [wptrunner/wptrunner/testdriver-extra.js](tools/wptrunner/wptrunner/testdriver-extra.js)
 
 This will be the default function called when invoking the test driver commands (sometimes it is overridden by testdriver-vendor.js, but this is outside the scope of this writeup).
 
@@ -127,7 +123,7 @@ One limitation this introduces is that only one testdriver call can be made at o
 
 Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!
 
-[tools/wptrunner/wptrunner/executors/protocol.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py)
+[tools/wptrunner/wptrunner/executors/protocol.py](tools/wptrunner/wptrunner/executors/protocol.py)
 
 ```python
 class SetWindowRectProtocolPart(ProtocolPart):
@@ -149,7 +145,7 @@ class SetWindowRectProtocolPart(ProtocolPart):
 
 Next we change the base executor.
 
-[tools/wptrunner/wptrunner/executors/base.py](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/base.py)
+[tools/wptrunner/wptrunner/executors/base.py](tools/wptrunner/wptrunner/executors/base.py)
 
 ```python
 class CallbackHandler(object):
@@ -194,7 +190,7 @@ Now we write the browser specific implementations.
 
 ### Chrome
 
-We will use [executorselenium](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executorselenium.py) and use the Selenium API (in the future there are plans to use the WebDriver API directly).
+We will use [executorselenium](tools/wptrunner/wptrunner/executors/executorselenium.py) and use the Selenium API (in the future there are plans to use the WebDriver API directly).
 
 There isn't too much work to do here, we just need to define a subclass of the protocol part we defined earlier.
 
@@ -241,7 +237,7 @@ class SeleniumProtocol(Protocol):
 ### Firefox
 We use the [set window rect](https://firefox-source-docs.mozilla.org/python/marionette_driver.html#marionette_driver.marionette.Marionette.set_window_rect) Marionette command.
 
-We will use [executormarionette](https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executormarionette.py) and use the Marionette Python API.
+We will use [executormarionette](tools/wptrunner/wptrunner/executors/executormarionette.py) and use the Marionette Python API.
 
 We have little actual work to do here! We just need to define a subclass of the protocol part we defined earlier.
 
@@ -314,7 +310,7 @@ promise_test(async t => {
 ```
 ### What about testdriver-vendor.js?
 
-The file [testdriver-vendor.js](https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver-vendor.js) is the equivalent to testdriver-extra.js above, except it is
+The file [testdriver-vendor.js](resources/testdriver-vendor.js) is the equivalent to testdriver-extra.js above, except it is
 run instead of testdriver-extra.js in browser specific test environments. For example, in [Chromium LayoutTests](https://cs.chromium.org/chromium/src/third_party/WebKit/LayoutTests/?q=LayoutTests&sq=package:chromium&dr).
 
 ### What if I need to return a value from my testdriver API?

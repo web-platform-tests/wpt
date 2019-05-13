@@ -1,3 +1,4 @@
+import sys
 from os.path import dirname, join
 
 from collections import OrderedDict
@@ -36,10 +37,11 @@ def _fixname(key):
     return name
 
 
-if hasattr(expat.errors, "codes"):
-    _undefined_entity_code = expat.errors.codes[expat.errors.XML_ERROR_UNDEFINED_ENTITY]  # type: ignore
+if sys.version_info[0:2] >= (3, 2):
+    _undefined_entity_code = expat.errors.codes[expat.errors.XML_ERROR_UNDEFINED_ENTITY]  # type: int
 else:
-    _undefined_entity_code = expat.errors.XML_ERROR_UNDEFINED_ENTITY
+    _codes = {expat.ErrorString(i): i for i in range(0x100)}  # type: Dict[str, int]
+    _undefined_entity_code = _codes[expat.errors.XML_ERROR_UNDEFINED_ENTITY]
 
 
 class XMLParser(object):

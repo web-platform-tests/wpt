@@ -104,9 +104,9 @@ repository.
 
 ## Configure your environment
 
-If all you intend to do is to load [manual tests](../writing-tests/manual) or [ref tests](../writing-tests/reftests) from your local file system,
+If all you intend to do is to load [manual tests](../_writing-tests/manual) or [ref tests](../_writing-tests/reftests) from your local file system,
 the above setup should be sufficient.
-But many tests (and in particular, all [testharness.js tests](../writing-tests/testharness)) require a local web server.
+But many tests (and in particular, all [testharness.js tests](../_writing-tests/testharness)) require a local web server.
 
 See [Local Setup][local-setup] for more information.
 
@@ -193,7 +193,7 @@ of the repository is located.
 
 3. Fix any mistake it reports and [commit](#commit) again.
 
-For more details, see the [documentation about the lint tool](../writing-tests/lint-tool).
+For more details, see the [documentation about the lint tool](../_writing-tests/lint-tool).
 
 ## Submit
 

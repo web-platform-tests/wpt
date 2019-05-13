@@ -15,7 +15,7 @@ suites, test contributions must be reviewed by a peer.
 
 The reviewer can be anyone (other than the original test author) that
 has the required experience with both the spec under test and with
-the [general test guidelines](../writing-tests/general-guidelines).
+the [general test guidelines](../_writing-tests/general-guidelines).
 
 The review must happen in public, but there is no requirement for it
 to happen in any specific location. In particular if a vendor is

@@ -11,6 +11,13 @@ from six import iteritems
 try:
     from ..manifest import manifest
 except ValueError:
+    # if we're not within the tools package, the above is an import from above
+    # the top-level which raises ValueError, so reimport it with an absolute
+    # reference
+    #
+    # note we need both because depending on caller we may/may not have the
+    # paths set up correctly to handle both and MYPY has no knowledge of our
+    # sys.path magic
     from manifest import manifest  # type: ignore
 
 MYPY = False

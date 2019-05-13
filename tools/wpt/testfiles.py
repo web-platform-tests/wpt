@@ -222,7 +222,7 @@ def affected_testfiles(files_changed, skip_dirs=None,
     tests_changed = {item for item in files_changed if item in test_files}
 
     nontest_changed_paths = set()
-    rewrites = {"/resources/webidl2/lib/webidl2.js": "/resources/WebIDLParser.js"}
+    rewrites = {"/resources/webidl2/dist/webidl2.js": "/resources/WebIDLParser.js"}
     for full_path in nontests_changed:
         rel_path = os.path.relpath(full_path, wpt_root)
         path_components = rel_path.split(os.sep)

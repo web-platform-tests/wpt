@@ -300,7 +300,7 @@ done();
         return None
 
 
-rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
+rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/dist/webidl2.js")]
 
 class RoutesBuilder(object):
     def __init__(self):

@@ -56,7 +56,7 @@ git config --global user.name "wpt-pr-bot"
 
 # Prepare the output directory so that the new build can be pushed to the
 # repository as an incremental change to the prior build.
-mkdir --parents docs/_build/html
+mkdir -p docs/_build/html
 cd docs/_build/html
 git init
 git fetch --depth 1 ${remote_url} gh-pages

@@ -1,0 +1,293 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>General Test Guidelines &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The Ahem Font" href="ahem.html" />
+    <link rel="prev" title="Writing Tests" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="general-test-guidelines">
+<h1>General Test Guidelines<a class="headerlink" href="#general-test-guidelines" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="file-paths-and-names">
+<h2>File Paths and Names<a class="headerlink" href="#file-paths-and-names" title="Permalink to this headline">¶</a></h2>
+<p>When choosing where in the directory structure to put any new tests,
+try to follow the structure of existing tests for that specification;
+if there are no existing tests, it is generally recommended to create
+subdirectories for each section.</p>
+<p>Due to path length limitations on Windows, test paths must be less
+that 150 characters relative to the test root directory (this gives
+vendors just over 100 characters for their own paths when running in
+automation).</p>
+<p>File names should generally be somewhat descriptive of what is being
+tested; very generic names like <code class="docutils literal notranslate"><span class="pre">001.html</span></code> are discouraged. A common
+format is <code class="docutils literal notranslate"><span class="pre">test-topic-001.html</span></code>, where <code class="docutils literal notranslate"><span class="pre">test-topic</span></code> is a short
+identifier that describes the test. It should avoid conjunctions,
+articles, and prepositions as it should be as concise as possible. The
+integer that follows is normally just increased incrementally, and
+padded to three digits. (If you’d end up with more than 999 tests,
+your <code class="docutils literal notranslate"><span class="pre">test-topic</span></code> is probably too broad!)</p>
+<p>The test filename is significant in enabling specific optional features, such as HTTPS
+or server-side substitution. See the documentation on <a class="reference internal" href="file-names.html"><span class="doc">file names flags</span></a>
+for more details.</p>
+<p>In the css directory, the file names should be unique within the whole
+css/ directory, regardless of where they are in the directory structure.</p>
+</div>
+<div class="section" id="https">
+<h2>HTTPS<a class="headerlink" href="#https" title="Permalink to this headline">¶</a></h2>
+<p>By default, tests are served over plain HTTP. If a test requires HTTPS
+it must be given a filename containing <code class="docutils literal notranslate"><span class="pre">.https</span></code> before the extension,
+e.g. <code class="docutils literal notranslate"><span class="pre">test-secure.https.html</span></code>. For more details see the documentation
+on <a class="reference internal" href="file-names.html"><span class="doc">file names</span></a>.</p>
+<div class="section" id="support-files">
+<h3>Support Files<a class="headerlink" href="#support-files" title="Permalink to this headline">¶</a></h3>
+<p>Various support files are available in in the <code class="docutils literal notranslate"><span class="pre">/common/</span></code> and <code class="docutils literal notranslate"><span class="pre">/media/</span></code>
+directories (web-platform-tests) and <code class="docutils literal notranslate"><span class="pre">/support/</span></code> (in css/). Reusing
+existing resources is encouraged where possible, as is adding
+generally useful files to these common areas rather than to specific
+testsuites.</p>
+</div>
+<div class="section" id="tools">
+<h3>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes you may want to add a script to the repository that’s meant
+to be used from the command line, not from a browser (e.g., a script
+for generating test files). If you want to ensure (e.g., for security
+reasons) that such scripts will only be usable from the command line
+but won’t be handled by the HTTP server then place them in a <code class="docutils literal notranslate"><span class="pre">tools</span></code>
+subdirectory at the appropriate level—the server will then return a
+404 if they are requested.</p>
+<p>For example, if you wanted to add a script for use with tests in the
+<code class="docutils literal notranslate"><span class="pre">notifications</span></code> directory, create the <code class="docutils literal notranslate"><span class="pre">notifications/tools</span></code>
+subdirectory and put your script there.</p>
+</div>
+</div>
+<div class="section" id="file-formats">
+<h2>File Formats<a class="headerlink" href="#file-formats" title="Permalink to this headline">¶</a></h2>
+<p>Tests must be HTML or XML (inc. XHTML and SVG) files; some
+testharness.js tests
+are <a class="reference internal" href="server-features.html"><span class="doc">auto-generated from JS files</span></a>.</p>
+</div>
+<div class="section" id="character-encoding">
+<h2>Character Encoding<a class="headerlink" href="#character-encoding" title="Permalink to this headline">¶</a></h2>
+<p>Except when specifically testing encoding, files must be encoded in
+UTF-8. In file formats where UTF-8 is not the default encoding, they
+must contain metadata to mark them as such (e.g., <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">charset=utf-8&gt;</span></code> in HTML files) or be pure ASCII.</p>
+</div>
+<div class="section" id="server-side-support">
+<h2>Server Side Support<a class="headerlink" href="#server-side-support" title="Permalink to this headline">¶</a></h2>
+<p>The custom web server
+supports <a class="reference internal" href="server-features.html"><span class="doc">a variety of features</span></a> useful for testing
+browsers, including (but not limited to!) support for writing out
+appropriate domains and custom (per-file and per-directory) HTTP
+headers.</p>
+</div>
+<div class="section" id="be-short">
+<h2>Be Short<a class="headerlink" href="#be-short" title="Permalink to this headline">¶</a></h2>
+<p>Tests should be as short as possible. For reftests in particular
+scrollbars at 800×600px window size must be avoided unless scrolling
+behavior is specifically being tested. For all tests extraneous
+elements on the page should be avoided so it is clear what is part of
+the test (for a typical testharness test, the only content on the page
+will be rendered by the harness itself).</p>
+</div>
+<div class="section" id="be-minimal">
+<h2>Be Minimal<a class="headerlink" href="#be-minimal" title="Permalink to this headline">¶</a></h2>
+<p>Tests should generally avoid depending on edge case behavior of
+features that they don’t explicitly intend on testing. For example,
+except where testing parsing, tests should contain
+no <a class="reference external" href="https://validator.nu">parse errors</a>.</p>
+<p>This is not, however, to discourage testing of edge cases or
+interactions between multiple features; such tests are an essential
+part of ensuring interoperability of the web platform.</p>
+</div>
+<div class="section" id="be-cross-platform">
+<h2>Be Cross-Platform<a class="headerlink" href="#be-cross-platform" title="Permalink to this headline">¶</a></h2>
+<p>Tests should be as cross-platform as reasonably possible, working
+across different devices, screen resolutions, paper sizes, etc. The
+assumptions that can be relied on are documented <a class="reference internal" href="assumptions.html"><span class="doc">here</span></a>;
+tests that rely on anything else should be manual tests that document
+their assumptions.</p>
+<p>Aside from the <a class="reference internal" href="ahem.html"><span class="doc">Ahem font</span></a>, fonts cannot be relied on to be
+either installed or to have specific metrics. As such, in most cases
+when a known font is needed Ahem should be used. In other cases,
+<code class="docutils literal notranslate"><span class="pre">&#64;font-face</span></code> should be used.</p>
+</div>
+<div class="section" id="be-self-contained">
+<h2>Be Self-Contained<a class="headerlink" href="#be-self-contained" title="Permalink to this headline">¶</a></h2>
+<p>Tests must not depend on external network resources, including
+w3c-test.org. When these tests are run on CI systems they are
+typically configured with access to external resources disabled, so
+tests that try to access them will fail. Where tests want to use
+multiple hosts this is possible through a known set of subdomains and
+the
+[text substitution features of wptserve]({{ site.baseurl }}{% link writing-tests/server-features.md %}#tests-involving-multiple-origins).</p>
+</div>
+<div class="section" id="be-self-describing">
+<h2>Be Self-Describing<a class="headerlink" href="#be-self-describing" title="Permalink to this headline">¶</a></h2>
+<p>Tests should make it obvious when they pass and when they fail. It
+shouldn’t be necessary to consult the specification to figure out
+whether a test has passed of failed.</p>
+</div>
+<div class="section" id="style-rules">
+<h2>Style Rules<a class="headerlink" href="#style-rules" title="Permalink to this headline">¶</a></h2>
+<p>A number of style rules should be applied to the test file. These are
+not uniformly enforced throughout the existing tests, but will be for
+new tests. Any of these rules may be broken if the test demands it:</p>
+<ul class="simple">
+<li>No trailing whitespace</li>
+<li>Use spaces rather than tabs for indentation</li>
+<li>Use UNIX-style line endings (i.e. no CR characters at EOL)</li>
+</ul>
+<p>We have a lint tool for catching these and other common mistakes. You
+can run it manually by starting the <code class="docutils literal notranslate"><span class="pre">wpt</span></code> executable from the root of
+your local web-platform-tests working directory, and invoking the
+<code class="docutils literal notranslate"><span class="pre">lint</span></code> subcommand, like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">lint</span>
+</pre></div>
+</div>
+<p>The lint tool is also run automatically for every submitted pull request,
+and reviewers will not merge branches with tests that have lint errors, so
+you must fix any errors the lint tool reports. For details on doing that,
+see the <a class="reference internal" href="lint-tool.html"><span class="doc">lint-tool documentation</span></a>.</p>
+<p>But in the unusual case of error reports for things essential to a certain
+test or that for other exceptional reasons shouldn’t prevent a merge of a
+test, update and commit the <code class="docutils literal notranslate"><span class="pre">lint.whitelist</span></code> file in the web-platform-tests
+root directory to suppress the error reports. For details on doing that,
+see the <a class="reference internal" href="lint-tool.html"><span class="doc">lint-tool documentation</span></a>.</p>
+</div>
+<div class="section" id="css-specific-requirements">
+<h2>CSS-Specific Requirements<a class="headerlink" href="#css-specific-requirements" title="Permalink to this headline">¶</a></h2>
+<p>In order to be included in an official specification testsuite, tests
+for CSS have some additional requirements for:</p>
+<ul class="simple">
+<li><a class="reference internal" href="css-metadata.html"><span class="doc">Metadata</span></a>, and</li>
+<li><a class="reference internal" href="css-user-styles.html"><span class="doc">User style sheets</span></a>.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Writing Tests</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Writing Tests</a></li>
+      <li>Next: <a href="ahem.html" title="next chapter">The Ahem Font</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/general-guidelines.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

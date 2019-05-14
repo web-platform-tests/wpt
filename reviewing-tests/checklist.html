@@ -1,0 +1,248 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Review Checklist &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Email Filters" href="email.html" />
+    <link rel="prev" title="Reviewing Tests" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="review-checklist">
+<h1>Review Checklist<a class="headerlink" href="#review-checklist" title="Permalink to this headline">¶</a></h1>
+<p>The following checklist is provided as a guideline to assist in reviewing
+tests; in case of any contradiction with requirements stated elsewhere in the
+documentation it should be ignored
+(please <a class="reference external" href="https://github.com/web-platform-tests/wpt/issues/new">file a bug</a>!).</p>
+<p>As noted on the <a class="reference internal" href="index.html"><span class="doc">reviewing tests</span></a> page, nits need not block PRs
+from landing.</p>
+<div class="section" id="all-tests">
+<h2>All tests<a class="headerlink" href="#all-tests" title="Permalink to this headline">¶</a></h2>
+<p><label><input type="checkbox">
+The CI jobs on the pull request have passed.
+</label></p>
+<p><label><input type="checkbox">
+It is obvious what the test is trying to test.
+</label></p>
+<p><label><input type="checkbox">
+The test passes when it’s supposed to pass.
+</label></p>
+<p><label><input type="checkbox">
+The test fails when it’s supposed to fail.
+</label></p>
+<p><label><input type="checkbox">
+The test is testing what it thinks it’s testing.
+</label></p>
+<p><label><input type="checkbox">
+The spec backs up the expected behavior in the test.
+</label></p>
+<p><label><input type="checkbox">
+The test is automated as either <a class="reference internal" href="../writing-tests/reftests.html"><span class="doc">reftest</span></a> or
+a <a class="reference internal" href="../writing-tests/testharness.html"><span class="doc">script test</span></a> unless there’s a very good reason for it not to be.
+</label></p>
+<p><label><input type="checkbox">
+The test does not use external resources.
+</label></p>
+<p><label><input type="checkbox">
+The test does not use proprietary features (vendor-prefixed or otherwise).
+</label></p>
+<p><label><input type="checkbox">
+The test does not contain commented-out code.
+</label></p>
+<p><label><input type="checkbox">
+The test is placed in the relevant directory.
+</label></p>
+<p><label><input type="checkbox">
+The test has a reasonable and concise filename.
+</label></p>
+<p><label><input type="checkbox">
+If the test needs code running on the server side, the server code must be
+written in Python, and the Python code must not do anything potentially unsafe.
+</label></p>
+<p><label><input type="checkbox">
+If the test needs to be run in some non-standard configuration or needs user
+interaction, it is a manual test.
+</label></p>
+<p><label><input type="checkbox">
+<strong>Nit</strong>: The title is descriptive but not too wordy.
+</label></p>
+</div>
+<div class="section" id="reftests-only">
+<h2>Reftests Only<a class="headerlink" href="#reftests-only" title="Permalink to this headline">¶</a></h2>
+<p><label><input type="checkbox">
+The reference file is accurate and will render pixel-perfect
+identically to the test on all platforms.
+</label></p>
+<p><label><input type="checkbox">
+The reference file uses a different technique that won’t fail in
+the same way as the test.
+</label></p>
+<p><label><input type="checkbox">
+The test and reference render within a 800x600 viewport, only displaying
+scrollbars if their presence is being tested.
+</label></p>
+<p><label><input type="checkbox">
+<strong>Nit</strong>: The test has a self-describing statement.
+</label></p>
+<p><label><input type="checkbox">
+<strong>Nit</strong>: The self-describing statement is accurate, precise, simple, and
+self-explanatory. Someone with no technical knowledge should be able to say
+whether the test passed or failed within a few seconds, and not need to spend
+several minutes thinking or asking questions.
+</label></p>
+</div>
+<div class="section" id="script-tests-only">
+<h2>Script Tests Only<a class="headerlink" href="#script-tests-only" title="Permalink to this headline">¶</a></h2>
+<p><label><input type="checkbox">
+The number of tests in each file and the test names are consistent
+across runs and browsers. It is best to avoid the pattern where there is
+a test that asserts that the feature is supported and bails out without
+running the rest of the tests in the file if it isn’t.
+</label></p>
+<p><label><input type="checkbox">
+The test avoids patterns that make it less likely to be stable.
+In particular, tests should avoid setting internal timeouts, since the
+time taken to run it may vary on different devices; events should be used
+instead (if at all possible).
+</label></p>
+<p><label><input type="checkbox">
+The test uses the most specific asserts possible (e.g. doesn’t use
+<code class="docutils literal notranslate"><span class="pre">assert_true</span></code> for everything).
+</label></p>
+<p><label><input type="checkbox">
+The test uses <code class="docutils literal notranslate"><span class="pre">idlharness.js</span></code> if it is testing basic IDL-defined behavior.
+</label></p>
+<p><label><input type="checkbox">
+<strong>Nit</strong>: Tests in a single file are separated by one empty line.
+</label></p>
+</div>
+<div class="section" id="visual-tests-only">
+<h2>Visual Tests Only<a class="headerlink" href="#visual-tests-only" title="Permalink to this headline">¶</a></h2>
+<p><label><input type="checkbox">
+The test has a self-describing statement.
+</label></p>
+<p><label><input type="checkbox">
+The self-describing statement is accurate, precise, simple, and
+self-explanatory. Someone with no technical knowledge should be able to say
+whether the test passed or failed within a few seconds, and not need to spend
+several minutes thinking or asking questions.
+</label></p>
+<p><label><input type="checkbox">
+The test renders within a 800x600 viewport, only displaying scrollbars if their
+presence is being tested.
+</label></p>
+<p><label><input type="checkbox">
+The test renders to a fixed, static page with no animation.
+</label></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reviewing Tests</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Review Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="email.html">Email Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-review-policy">Test Review Policy</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Reviewing Tests</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Reviewing Tests</a></li>
+      <li>Next: <a href="email.html" title="next chapter">Email Filters</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/reviewing-tests/checklist.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

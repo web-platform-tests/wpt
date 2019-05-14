@@ -1,0 +1,868 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>testharness.js API &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="testdriver.js Tutorial" href="testdriver-tutorial.html" />
+    <link rel="prev" title="idlharness.js API" href="idlharness.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="testharness-js-api">
+<h1>testharness.js API<a class="headerlink" href="#testharness-js-api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>testharness.js provides a framework for writing testcases. It is intended to
+provide a convenient API for making common assertions, and to work both
+for testing synchronous and asynchronous DOM features in a way that
+promotes clear, robust, tests.</p>
+</div>
+<div class="section" id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>The test harness script can be used from HTML or SVG documents and web worker
+scripts.</p>
+<p>From an HTML or SVG document, start by importing both <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> and
+<code class="docutils literal notranslate"><span class="pre">testharnessreport.js</span></code> scripts into the document:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Refer to the <a class="reference external" href="#web-workers">Web Workers</a> section for details and an example on
+testing within a web worker.</p>
+<p>Within each file one may define one or more tests. Each test is atomic in the
+sense that a single test has a single result (<code class="docutils literal notranslate"><span class="pre">PASS</span></code>/<code class="docutils literal notranslate"><span class="pre">FAIL</span></code>/<code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code>/<code class="docutils literal notranslate"><span class="pre">NOTRUN</span></code>).
+Within each test one may have a number of asserts. The test fails at the first
+failing assert, and the remainder of the test is (typically) not run.</p>
+<p>If the file containing the tests is a HTML file, a table containing the test
+results will be added to the document after all tests have run. By default this
+will be added to a <code class="docutils literal notranslate"><span class="pre">div</span></code> element with <code class="docutils literal notranslate"><span class="pre">id=log</span></code> if it exists, or a new <code class="docutils literal notranslate"><span class="pre">div</span></code>
+element appended to <code class="docutils literal notranslate"><span class="pre">document.body</span></code> if it does not.</p>
+<p>NOTE: By default tests must be created before the load event fires. For ways
+to create tests after the load event, see “Determining when all tests
+are complete”, below.</p>
+</div>
+<div class="section" id="synchronous-tests">
+<h2>Synchronous Tests<a class="headerlink" href="#synchronous-tests" title="Permalink to this headline">¶</a></h2>
+<p>To create a synchronous test use the <code class="docutils literal notranslate"><span class="pre">test()</span></code> function:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test</span><span class="p">(</span><span class="nx">test_function</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">properties</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">test_function</span></code> is a function that contains the code to test. For example a
+trivial test for the DOM
+<a class="reference external" href="https://dom.spec.whatwg.org/#dom-domimplementation-hasfeature"><code class="docutils literal notranslate"><span class="pre">hasFeature()</span></code></a>
+method (which is defined to always return true) would be:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">assert_true</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">implementation</span><span class="p">.</span><span class="nx">hasFeature</span><span class="p">());</span>
+<span class="p">},</span> <span class="s2">&quot;hasFeature() with no arguments&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function passed in is run in the <code class="docutils literal notranslate"><span class="pre">test()</span></code> call.</p>
+<p><code class="docutils literal notranslate"><span class="pre">properties</span></code> is a javascript object for passing extra options to the
+test. Currently it is only used to provide test-specific
+metadata, as described in the <a class="reference external" href="#metadata">metadata</a> section below.</p>
+</div>
+<div class="section" id="asynchronous-tests">
+<h2>Asynchronous Tests<a class="headerlink" href="#asynchronous-tests" title="Permalink to this headline">¶</a></h2>
+<p>Testing asynchronous features is somewhat more complex since the result of
+a test may depend on one or more events or other callbacks. The API provided
+for testing these features is intended to be rather low-level but hopefully
+applicable to many situations.</p>
+<p>To create a test, one starts by getting a <code class="docutils literal notranslate"><span class="pre">Test</span></code> object using <code class="docutils literal notranslate"><span class="pre">async_test</span></code>:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">properties</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>e.g.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">t</span> <span class="o">=</span> <span class="nx">async_test</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Assertions can be added to the test by calling the step method of the test
+object with a function containing the test assertions:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">t</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span> <span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>When all the steps are complete, the <code class="docutils literal notranslate"><span class="pre">done()</span></code> method must be called:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>As a convenience, <code class="docutils literal notranslate"><span class="pre">async_test</span></code> can also takes a function as first argument.
+This function is called with the test object as both its <code class="docutils literal notranslate"><span class="pre">this</span></code> object and
+first argument. The above example can be rewritten as:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span> <span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
+  <span class="p">});</span>
+<span class="p">},</span> <span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>which avoids cluttering the global scope with references to async
+tests instances.</p>
+<p>The properties argument is identical to that for <code class="docutils literal notranslate"><span class="pre">test()</span></code>.</p>
+<p>In many cases it is convenient to run a step in response to an event or a
+callback. A convenient method of doing this is through the <code class="docutils literal notranslate"><span class="pre">step_func</span></code> method
+which returns a function that, when called runs a test step. For example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span> <span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
+  <span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
+<span class="p">}));</span>
+</pre></div>
+</div>
+<p>As a further convenience, the <code class="docutils literal notranslate"><span class="pre">step_func</span></code> that calls <code class="docutils literal notranslate"><span class="pre">done()</span></code> can instead
+use <code class="docutils literal notranslate"><span class="pre">step_func_done</span></code>, as follows:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_func_done</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span> <span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
+<span class="p">}));</span>
+</pre></div>
+</div>
+<p>For asynchronous callbacks that should never execute, <code class="docutils literal notranslate"><span class="pre">unreached_func</span></code> can
+be used. For example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span>
+  <span class="nx">t</span><span class="p">.</span><span class="nx">unreached_func</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded should not be fired on the document element&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Keep in mind that other tests could start executing before an Asynchronous
+Test is finished.</p>
+</div>
+<div class="section" id="promise-tests">
+<h2>Promise Tests<a class="headerlink" href="#promise-tests" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">promise_test</span></code> can be used to test APIs that are based on Promises:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="nx">test_function</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">properties</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">test_function</span></code> is a function that receives a test as an argument. It must
+return a promise. The test completes when the returned promise resolves. The
+test fails if the returned promise rejects.</p>
+<p>E.g.:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">foo</span><span class="p">()</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">assert_equals</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;foo should return &#39;foo&#39;&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">},</span> <span class="s2">&quot;Simple example&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>In the example above, <code class="docutils literal notranslate"><span class="pre">foo()</span></code> returns a Promise that resolves with the string
+“foo”. The <code class="docutils literal notranslate"><span class="pre">test_function</span></code> passed into <code class="docutils literal notranslate"><span class="pre">promise_test</span></code> invokes <code class="docutils literal notranslate"><span class="pre">foo</span></code> and attaches
+a resolve reaction that verifies the returned value.</p>
+<p>Note that in the promise chain constructed in <code class="docutils literal notranslate"><span class="pre">test_function</span></code> assertions don’t
+need to be wrapped in <code class="docutils literal notranslate"><span class="pre">step</span></code> or <code class="docutils literal notranslate"><span class="pre">step_func</span></code> calls.</p>
+<p>Unlike Asynchronous Tests, Promise Tests don’t start running until after the
+previous Promise Test finishes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">promise_rejects</span></code> can be used to test Promises that need to reject:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_rejects</span><span class="p">(</span><span class="nx">test_object</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">code</span></code> argument is equivalent to the same argument to the <code class="docutils literal notranslate"><span class="pre">assert_throws</span></code>
+function.</p>
+<p>Here’s an example where the <code class="docutils literal notranslate"><span class="pre">bar()</span></code> function returns a Promise that rejects
+with a TypeError:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nx">TypeError</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">promise_rejects</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(),</span> <span class="nx">bar</span><span class="p">());</span>
+<span class="p">},</span> <span class="s2">&quot;Another example&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="eventwatcher">
+<h2><code class="docutils literal notranslate"><span class="pre">EventWatcher</span></code><a class="headerlink" href="#eventwatcher" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">EventWatcher</span></code> is a constructor function that allows DOM events to be handled
+using Promises, which can make it a lot easier to test a very specific series
+of events, including ensuring that unexpected events are not fired at any point.</p>
+<p>Here’s an example of how to use <code class="docutils literal notranslate"><span class="pre">EventWatcher</span></code>:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">t</span> <span class="o">=</span> <span class="nx">async_test</span><span class="p">(</span><span class="s2">&quot;Event order on animation start&quot;</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">watchedNode</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">()[</span><span class="mi">0</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">eventWatcher</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">EventWatcher</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">watchedNode</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;animationstart&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;animationend&#39;</span><span class="p">]);</span>
+
+<span class="nx">eventWatcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">(</span><span class="s1">&#39;animationstart&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">assertExpectedStateAtStartOfAnimation</span><span class="p">();</span>
+  <span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">=</span> <span class="nx">END_TIME</span><span class="p">;</span> <span class="c1">// skip to end</span>
+  <span class="c1">// We expect two animationiteration events then an animationend event on</span>
+  <span class="c1">// skipping to the end of the animation.</span>
+  <span class="k">return</span> <span class="nx">eventWatcher</span><span class="p">.</span><span class="nx">wait_for</span><span class="p">([</span><span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;animationend&#39;</span><span class="p">]);</span>
+<span class="p">})).</span><span class="nx">then</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">assertExpectedStateAtEndOfAnimation</span><span class="p">();</span>
+  <span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
+<span class="p">}));</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">wait_for</span></code> either takes the name of a single event and returns a Promise that
+will resolve after that event is fired at the watched node, or else it takes an
+array of the names of a series of events and returns a Promise that will
+resolve after that specific series of events has been fired at the watched node.</p>
+<p><code class="docutils literal notranslate"><span class="pre">EventWatcher</span></code> will assert if an event occurs while there is no <code class="docutils literal notranslate"><span class="pre">wait_for</span></code>()
+created Promise waiting to be fulfilled, or if the event is of a different type
+to the type currently expected. This ensures that only the events that are
+expected occur, in the correct order, and with the correct timing.</p>
+</div>
+<div class="section" id="single-page-tests">
+<h2>Single Page Tests<a class="headerlink" href="#single-page-tests" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes, particularly when dealing with asynchronous behaviour,
+having exactly one test per page is desirable, and the overhead of
+wrapping everything in functions for isolation becomes
+burdensome. For these cases <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> support “single page
+tests”.</p>
+<p>In order for a test to be interpreted as a single page test, then
+it must simply not call <code class="docutils literal notranslate"><span class="pre">test()</span></code> or <code class="docutils literal notranslate"><span class="pre">async_test()</span></code> anywhere on the page, and
+must call the <code class="docutils literal notranslate"><span class="pre">done()</span></code> function to indicate that the test is complete. All
+the <code class="docutils literal notranslate"><span class="pre">assert_*</span></code> functions are available as normal, but are called without
+the normal step function wrapper. For example:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Basic document.body test<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="nx">done</span><span class="p">()</span>
+ <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>The test title for single page tests is always taken from <code class="docutils literal notranslate"><span class="pre">document.title</span></code>.</p>
+</div>
+<div class="section" id="making-assertions">
+<h2>Making assertions<a class="headerlink" href="#making-assertions" title="Permalink to this headline">¶</a></h2>
+<p>Functions for making assertions start <code class="docutils literal notranslate"><span class="pre">assert_</span></code>. The full list of
+asserts available is documented in the <a class="reference external" href="#list-of-assertions">asserts</a> section
+below. The general signature is:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">assert_something</span><span class="p">(</span><span class="nx">actual</span><span class="p">,</span> <span class="nx">expected</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>although not all assertions precisely match this pattern e.g. <code class="docutils literal notranslate"><span class="pre">assert_true</span></code>
+only takes <code class="docutils literal notranslate"><span class="pre">actual</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code> as arguments.</p>
+<p>The description parameter is used to present more useful error messages when
+a test fails.</p>
+<p>NOTE: All asserts must be located in a <code class="docutils literal notranslate"><span class="pre">test()</span></code> or a step of an
+<code class="docutils literal notranslate"><span class="pre">async_test()</span></code>, unless the test is a single page test. Asserts outside
+these places won’t be detected correctly by the harness and may cause
+unexpected exceptions that will lead to an error in the harness.</p>
+</div>
+<div class="section" id="cleanup">
+<h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h2>
+<p>Occasionally tests may create state that will persist beyond the test itself.
+In order to ensure that tests are independent, such state should be cleaned
+up once the test has a result. This can be achieved by adding cleanup
+callbacks to the test. Such callbacks are registered using the <code class="docutils literal notranslate"><span class="pre">add_cleanup</span></code>
+function on the test object. All registered callbacks will be run as soon as
+the test result is known. For example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span>  <span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">element</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+    <span class="nx">element</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">);</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span> <span class="p">});</span>
+    <span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="kc">null</span><span class="p">),</span> <span class="nx">element</span><span class="p">);</span>
+  <span class="p">},</span> <span class="s2">&quot;Calling document.getElementById with a null argument.&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>If the test was created using the <code class="docutils literal notranslate"><span class="pre">promise_test</span></code> API, then cleanup functions
+may optionally return a “thenable” value (i.e. an object which defines a <code class="docutils literal notranslate"><span class="pre">then</span></code>
+method). <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> will assume that such values conform to <a class="reference external" href="https://tc39.github.io/ecma262/#sec-promise-objects">the
+ECMAScript standard for
+Promises</a> and delay the
+completion of the test until all “thenables” provided in this way have settled.
+All callbacks will be invoked synchronously; tests that require more complex
+cleanup behavior should manage execution order explicitly. If any of the
+eventual values are rejected, the test runner will report an error.</p>
+</div>
+<div class="section" id="timeouts-in-tests">
+<h2>Timeouts in Tests<a class="headerlink" href="#timeouts-in-tests" title="Permalink to this headline">¶</a></h2>
+<p>In general the use of timeouts in tests is discouraged because this is
+an observed source of instability in real tests when run on CI
+infrastructure. In particular if a test should fail when something
+doesn’t happen, it is good practice to simply let the test run to the
+full timeout rather than trying to guess an appropriate shorter
+timeout to use.</p>
+<p>In other cases it may be necessary to use a timeout (e.g., for a test
+that only passes if some event is <em>not</em> fired). In this case it is
+<em>not</em> permitted to use the standard <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> function. Instead one
+must use the <code class="docutils literal notranslate"><span class="pre">step_timeout</span></code> function:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">gotEvent</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">assert_false</span><span class="p">(</span><span class="nx">gotEvent</span><span class="p">,</span> <span class="s2">&quot;Unexpected DOMContentLoaded event&quot;</span><span class="p">);</span>
+    <span class="nx">gotEvent</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">step_timeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">},</span> <span class="s2">&quot;Only one DOMContentLoaded&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The difference between <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> and <code class="docutils literal notranslate"><span class="pre">step_timeout</span></code> is that the
+latter takes account of the timeout multiplier when computing the
+delay; e.g., in the above case a timeout multiplier of 2 would cause a
+pause of 4000ms before calling the callback. This makes it less likely
+to produce unstable results in slow configurations.</p>
+<p>Note that timeouts generally need to be a few seconds long in order to
+produce stable results in all test environments.</p>
+<p>For single-page tests, <code class="docutils literal notranslate"><span class="pre">step_timeout</span></code> is also available as a global
+function.</p>
+</div>
+<div class="section" id="harness-timeout">
+<h2>Harness Timeout<a class="headerlink" href="#harness-timeout" title="Permalink to this headline">¶</a></h2>
+<p>The overall harness admits two timeout values <code class="docutils literal notranslate"><span class="pre">&quot;normal&quot;</span></code> (the
+default) and <code class="docutils literal notranslate"><span class="pre">&quot;long&quot;</span></code>, used for tests which have an unusually long
+runtime. After the timeout is reached, the harness will stop
+waiting for further async tests to complete. By default the
+timeouts are set to 10s and 60s, respectively, but may be changed
+when the test is run on hardware with different performance
+characteristics to a common desktop computer.  In order to opt-in
+to the longer test timeout, the test must specify a meta element:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;timeout&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;long&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Occasionally tests may have a race between the harness timing out and
+a particular test failing; typically when the test waits for some event
+that never occurs. In this case it is possible to use <code class="docutils literal notranslate"><span class="pre">test.force_timeout()</span></code>
+in place of <code class="docutils literal notranslate"><span class="pre">assert_unreached()</span></code>, to immediately fail the test but with a
+status of <code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code>. This should only be used as a last resort when it is
+not possible to make the test reliable in some other way.</p>
+</div>
+<div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes tests require non-trivial setup that may fail. For this purpose
+there is a <code class="docutils literal notranslate"><span class="pre">setup()</span></code> function, that may be called with one or two arguments.
+The two argument version is:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">setup</span><span class="p">(</span><span class="nx">func</span><span class="p">,</span> <span class="nx">properties</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The one argument versions may omit either argument.
+func is a function to be run synchronously. <code class="docutils literal notranslate"><span class="pre">setup()</span></code> becomes a no-op once
+any tests have returned results. Properties are global properties of the test
+harness. Currently recognised properties are:</p>
+<p><code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> - Wait for an explicit call to done() before declaring all
+tests complete (see below; implicitly true for single page tests)</p>
+<p><code class="docutils literal notranslate"><span class="pre">output_document</span></code> - The document to which results should be logged. By default
+this is the current document but could be an ancestor document in some cases
+e.g. a SVG test loaded in an HTML wrapper</p>
+<p><code class="docutils literal notranslate"><span class="pre">explicit_timeout</span></code> - disable file timeout; only stop waiting for results
+when the <code class="docutils literal notranslate"><span class="pre">timeout()</span></code> function is called (typically for use when integrating
+with some existing test framework that has its own timeout mechanism).</p>
+<p><code class="docutils literal notranslate"><span class="pre">allow_uncaught_exception</span></code> - don’t treat an uncaught exception as an error;
+needed when e.g. testing the <code class="docutils literal notranslate"><span class="pre">window.onerror</span></code> handler.</p>
+<p><code class="docutils literal notranslate"><span class="pre">timeout_multiplier</span></code> - Multiplier to apply to per-test timeouts.</p>
+</div>
+<div class="section" id="determining-when-all-tests-are-complete">
+<h2>Determining when all tests are complete<a class="headerlink" href="#determining-when-all-tests-are-complete" title="Permalink to this headline">¶</a></h2>
+<p>By default the test harness will assume there are no more results to come
+when:</p>
+<ol class="simple">
+<li>There are no <code class="docutils literal notranslate"><span class="pre">Test</span></code> objects that have been created but not completed</li>
+<li>The load event on the document has fired</li>
+</ol>
+<p>This behaviour can be overridden by setting the <code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> property to
+true in a call to <code class="docutils literal notranslate"><span class="pre">setup()</span></code>. If <code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> is true, the test harness will
+not assume it is done until the global <code class="docutils literal notranslate"><span class="pre">done()</span></code> function is called. Once <code class="docutils literal notranslate"><span class="pre">done()</span></code>
+is called, the two conditions above apply like normal.</p>
+<p>Dedicated and shared workers don’t have an event that corresponds to the <code class="docutils literal notranslate"><span class="pre">load</span></code>
+event in a document. Therefore these worker tests always behave as if the
+<code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> property is set to true. Service workers depend on the
+<a class="reference external" href="https://w3c.github.io/ServiceWorker/#service-worker-global-scope-install-event">install</a>
+event which is fired following the completion of <a class="reference external" href="https://html.spec.whatwg.org/multipage/workers.html#run-a-worker">running the
+worker</a>.</p>
+</div>
+<div class="section" id="deprecated-generating-tests">
+<h2><strong>DEPRECATED</strong> Generating tests<a class="headerlink" href="#deprecated-generating-tests" title="Permalink to this headline">¶</a></h2>
+<p>There are scenarios in which is is desirable to create a large number of
+(synchronous) tests that are internally similar but vary in the parameters
+used. To make this easier, the <code class="docutils literal notranslate"><span class="pre">generate_tests</span></code> function allows a single
+function to be called with each set of parameters in a list:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">generate_tests</span><span class="p">(</span><span class="nx">test_function</span><span class="p">,</span> <span class="nx">parameter_lists</span><span class="p">,</span> <span class="nx">properties</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">generate_tests</span><span class="p">(</span><span class="nx">assert_equals</span><span class="p">,</span> <span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot;Sum one and one&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;Sum one and zero&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">])</span>
+</pre></div>
+</div>
+<p>Is equivalent to:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">a_got</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">a_exp</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">a_nam</span> <span class="o">=</span> <span class="s2">&quot;Sum one and one&quot;</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">b_got</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="mi">0</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">b_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">b_nam</span> <span class="o">=</span> <span class="s2">&quot;Sum one and zero&quot;</span><span class="p">;</span>
+<span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">a_got</span><span class="p">,</span> <span class="nx">a_exp</span><span class="p">)},</span> <span class="nx">a_nam</span><span class="p">);</span>
+<span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">b_got</span><span class="p">,</span> <span class="nx">b_exp</span><span class="p">)},</span> <span class="nx">b_nam</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Note that the first item in each parameter list corresponds to the name of
+the test.</p>
+<p>The properties argument is identical to that for <code class="docutils literal notranslate"><span class="pre">test()</span></code>. This may be a
+single object (used for all generated tests) or an array.</p>
+<p>This is deprecated because it runs all the tests outside of the test functions
+and as a result any test throwing an exception will result in no tests being
+run. In almost all cases, you should simply call test within the loop you would
+use to generate the parameter list array.</p>
+</div>
+<div class="section" id="callback-api">
+<h2>Callback API<a class="headerlink" href="#callback-api" title="Permalink to this headline">¶</a></h2>
+<p>The framework provides callbacks corresponding to 4 events:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">start</span></code> - triggered when the first Test is created</li>
+<li><code class="docutils literal notranslate"><span class="pre">test_state</span></code> - triggered when a test state changes</li>
+<li><code class="docutils literal notranslate"><span class="pre">result</span></code> - triggered when a test result is received</li>
+<li><code class="docutils literal notranslate"><span class="pre">complete</span></code> - triggered when all results are received</li>
+</ul>
+<p>The page defining the tests may add callbacks for these events by calling
+the following methods:</p>
+<p><code class="docutils literal notranslate"><span class="pre">add_start_callback(callback)</span></code> - callback called with no arguments</p>
+<p><code class="docutils literal notranslate"><span class="pre">add_test_state_callback(callback)</span></code> - callback called with a test argument</p>
+<p><code class="docutils literal notranslate"><span class="pre">add_result_callback(callback)</span></code> - callback called with a test argument</p>
+<p><code class="docutils literal notranslate"><span class="pre">add_completion_callback(callback)</span></code> - callback called with an array of tests
+and a status object</p>
+<p>Tests have the following properties:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">status</span></code> - A status code. This can be compared to the <code class="docutils literal notranslate"><span class="pre">PASS</span></code>, <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>,
+<code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code> and <code class="docutils literal notranslate"><span class="pre">NOTRUN</span></code> properties on the test object</li>
+<li><code class="docutils literal notranslate"><span class="pre">message</span></code> - A message indicating the reason for failure. In the future this
+will always be a string</li>
+</ul>
+<p>The status object gives the overall status of the harness. It has the
+following properties:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">status</span></code> - Can be compared to the <code class="docutils literal notranslate"><span class="pre">OK</span></code>, <code class="docutils literal notranslate"><span class="pre">ERROR</span></code> and <code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code> properties</li>
+<li><code class="docutils literal notranslate"><span class="pre">message</span></code> - An error message set when the status is <code class="docutils literal notranslate"><span class="pre">ERROR</span></code></li>
+</ul>
+</div>
+<div class="section" id="external-api">
+<h2>External API<a class="headerlink" href="#external-api" title="Permalink to this headline">¶</a></h2>
+<p>In order to collect the results of multiple pages containing tests, the test
+harness will, when loaded in a nested browsing context, attempt to call
+certain functions in each ancestor and opener browsing context:</p>
+<ul class="simple">
+<li>start - <code class="docutils literal notranslate"><span class="pre">start_callback</span></code></li>
+<li>test_state - <code class="docutils literal notranslate"><span class="pre">test_state_callback</span></code></li>
+<li>result - <code class="docutils literal notranslate"><span class="pre">result_callback</span></code></li>
+<li>complete - <code class="docutils literal notranslate"><span class="pre">completion_callback</span></code></li>
+</ul>
+<p>These are given the same arguments as the corresponding internal callbacks
+described above.</p>
+</div>
+<div class="section" id="external-api-through-cross-document-messaging">
+<h2>External API through cross-document messaging<a class="headerlink" href="#external-api-through-cross-document-messaging" title="Permalink to this headline">¶</a></h2>
+<p>Where supported, the test harness will also send messages using cross-document
+messaging to each ancestor and opener browsing context. Since it uses the
+wildcard keyword (*), cross-origin communication is enabled and script on
+different origins can collect the results.</p>
+<p>This API follows similar conventions as those described above only slightly
+modified to accommodate message event API. Each message is sent by the harness
+is passed a single vanilla object, available as the <code class="docutils literal notranslate"><span class="pre">data</span></code> property of the event
+object. These objects are structured as follows:</p>
+<ul class="simple">
+<li>start - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;start&quot;</span> <span class="pre">}</span></code></li>
+<li>test_state - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;test_state&quot;,</span> <span class="pre">test:</span> <span class="pre">Test</span> <span class="pre">}</span></code></li>
+<li>result - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;result&quot;,</span> <span class="pre">test:</span> <span class="pre">Test</span> <span class="pre">}</span></code></li>
+<li>complete - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;complete&quot;,</span> <span class="pre">tests:</span> <span class="pre">[Test,</span> <span class="pre">...],</span> <span class="pre">status:</span> <span class="pre">TestsStatus</span> <span class="pre">}</span></code></li>
+</ul>
+</div>
+<div class="section" id="consolidating-tests-from-other-documents">
+<h2>Consolidating tests from other documents<a class="headerlink" href="#consolidating-tests-from-other-documents" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fetch_tests_from_window</span></code> will aggregate tests from separate windows or iframes
+into the current document as if they were all part of the same test suite. The
+document of the second window (or iframe) should include <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code>, but
+not <code class="docutils literal notranslate"><span class="pre">testharnessreport.js</span></code>, and use <code class="docutils literal notranslate"><span class="pre">test</span></code>, <code class="docutils literal notranslate"><span class="pre">async_test</span></code>, and <code class="docutils literal notranslate"><span class="pre">promise_test</span></code> in
+the usual manner.</p>
+<p>The current test suite will not report completion until
+all fetched tests are complete, and errors in the child contexts will result in
+failures for the suite in the current context.</p>
+<p>Here’s an example that uses <code class="docutils literal notranslate"><span class="pre">window.open</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">child.html</span></code>:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Child context test(s)<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;log&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">assert_true</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="s2">&quot;true is true&quot;</span><span class="p">);</span>
+    <span class="p">},</span> <span class="s2">&quot;Simple test&quot;</span><span class="p">);</span>
+  <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">test.html</span></code>:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Primary test context<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;log&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="kd">var</span> <span class="nx">child_window</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;child.html&quot;</span><span class="p">);</span>
+    <span class="nx">fetch_tests_from_window</span><span class="p">(</span><span class="nx">child_window</span><span class="p">);</span>
+  <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>The argument to <code class="docutils literal notranslate"><span class="pre">fetch_tests_from_window</span></code> is any <a class="reference external" href="https://html.spec.whatwg.org/multipage/browsers.html#the-window-object"><code class="docutils literal notranslate"><span class="pre">Window</span></code></a>
+capable of accessing the browsing context as either an ancestor or opener.</p>
+</div>
+<div class="section" id="web-workers">
+<h2>Web Workers<a class="headerlink" href="#web-workers" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> script can be used from within <a class="reference external" href="https://html.spec.whatwg.org/multipage/workers.html">dedicated workers, shared
+workers</a> and <a class="reference external" href="https://w3c.github.io/ServiceWorker/">service
+workers</a>.</p>
+<p>Testing from a worker script is different from testing from an HTML document in
+several ways:</p>
+<ul class="simple">
+<li>Workers have no reporting capability since they are running in the background.
+Hence they rely on <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> running in a companion client HTML document
+for reporting.</li>
+<li>Shared and service workers do not have a unique client document since there
+could be more than one document that communicates with these workers. So a
+client document needs to explicitly connect to a worker and fetch test results
+from it using <code class="docutils literal notranslate"><span class="pre">fetch_tests_from_worker</span></code>. This is true even for a dedicated
+worker. Once connected, the individual tests running in the worker (or those
+that have already run to completion) will be automatically reflected in the
+client document.</li>
+<li>The client document controls the timeout of the tests. All worker scripts act
+as if they were started with the <code class="docutils literal notranslate"><span class="pre">explicit_timeout</span></code> option (see the <a class="reference external" href="#harness-timeout">Harness
+timeout</a> section).</li>
+<li>Dedicated and shared workers don’t have an equivalent of an <code class="docutils literal notranslate"><span class="pre">onload</span></code> event.
+Thus the test harness has no way to know when all tests have completed (see
+<a class="reference external" href="#determining-when-all-tests-are-complete">Determining when all tests are
+complete</a>). So these worker tests
+behave as if they were started with the <code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> option. Service
+workers depend on the
+<a class="reference external" href="https://w3c.github.io/ServiceWorker/#service-worker-global-scope-install-event">oninstall</a>
+event and don’t require an explicit <code class="docutils literal notranslate"><span class="pre">done</span></code> call.</li>
+</ul>
+<p>Here’s an example that uses a dedicated worker.</p>
+<p><code class="docutils literal notranslate"><span class="pre">worker.js</span></code>:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">importScripts</span><span class="p">(</span><span class="s2">&quot;/resources/testharness.js&quot;</span><span class="p">);</span>
+
+<span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">assert_true</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="s2">&quot;true is true&quot;</span><span class="p">);</span>
+<span class="p">},</span> <span class="s2">&quot;Simple test&quot;</span><span class="p">);</span>
+
+<span class="c1">// done() is needed because the testharness is running as if explicit_done</span>
+<span class="c1">// was specified.</span>
+<span class="nx">done</span><span class="p">();</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">test.html</span></code>:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Simple test<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;log&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker.js&quot;</span><span class="p">));</span>
+
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>The argument to the <code class="docutils literal notranslate"><span class="pre">fetch_tests_from_worker</span></code> function can be a
+<a class="reference external" href="https://html.spec.whatwg.org/multipage/workers.html#dedicated-workers-and-the-worker-interface"><code class="docutils literal notranslate"><span class="pre">Worker</span></code></a>,
+a <a class="reference external" href="https://html.spec.whatwg.org/multipage/workers.html#shared-workers-and-the-sharedworker-interface"><code class="docutils literal notranslate"><span class="pre">SharedWorker</span></code></a>
+or a <a class="reference external" href="https://w3c.github.io/ServiceWorker/#serviceworker-interface"><code class="docutils literal notranslate"><span class="pre">ServiceWorker</span></code></a>.
+Once called, the containing document fetches all the tests from the worker and
+behaves as if those tests were running in the containing document itself.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fetch_tests_from_worker</span></code> returns a promise that resolves once all the remote
+tests have completed. This is useful if you’re importing tests from multiple
+workers and want to ensure they run in series:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nx">async</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">await</span> <span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-1.js&quot;</span><span class="p">));</span>
+  <span class="nx">await</span> <span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-2.js&quot;</span><span class="p">));</span>
+<span class="p">})();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="list-of-assertions">
+<h2>List of Assertions<a class="headerlink" href="#list-of-assertions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="assert-true-actual-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_true(actual,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-true-actual-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is strictly true</p>
+</div>
+<div class="section" id="assert-false-actual-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_false(actual,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-false-actual-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is strictly false</p>
+</div>
+<div class="section" id="assert-equals-actual-expected-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_equals(actual,</span> <span class="pre">expected,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-equals-actual-expected-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is the same value as <code class="docutils literal notranslate"><span class="pre">expected</span></code>.
+Relies on <code class="docutils literal notranslate"><span class="pre">===</span></code>, distinguishes between <code class="docutils literal notranslate"><span class="pre">-0</span></code> and <code class="docutils literal notranslate"><span class="pre">+0</span></code>, and has a specific check for <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p>
+</div>
+<div class="section" id="assert-not-equals-actual-expected-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_not_equals(actual,</span> <span class="pre">expected,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-not-equals-actual-expected-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a different value to <code class="docutils literal notranslate"><span class="pre">expected</span></code>.
+This means that <code class="docutils literal notranslate"><span class="pre">expected</span></code> is a misnomer.
+Relies on <code class="docutils literal notranslate"><span class="pre">===</span></code>, distinguishes between <code class="docutils literal notranslate"><span class="pre">-0</span></code> and <code class="docutils literal notranslate"><span class="pre">+0</span></code>, and has a specific check for <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p>
+</div>
+<div class="section" id="assert-in-array-actual-expected-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_in_array(actual,</span> <span class="pre">expected,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-in-array-actual-expected-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">expected</span></code> is an Array, and <code class="docutils literal notranslate"><span class="pre">actual</span></code> is equal to one of the
+members i.e. <code class="docutils literal notranslate"><span class="pre">expected.indexOf(actual)</span> <span class="pre">!=</span> <span class="pre">-1</span></code></p>
+</div>
+<div class="section" id="assert-object-equals-actual-expected-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_object_equals(actual,</span> <span class="pre">expected,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-object-equals-actual-expected-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is an object and not null and that all enumerable
+properties on <code class="docutils literal notranslate"><span class="pre">actual</span></code> are own properties on <code class="docutils literal notranslate"><span class="pre">expected</span></code> with the same values,
+recursing if the value is an object and not null.</p>
+</div>
+<div class="section" id="assert-array-equals-actual-expected-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_array_equals(actual,</span> <span class="pre">expected,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-array-equals-actual-expected-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> and <code class="docutils literal notranslate"><span class="pre">expected</span></code> have the same
+length and the value of each indexed property in <code class="docutils literal notranslate"><span class="pre">actual</span></code> is the strictly equal
+to the corresponding property value in <code class="docutils literal notranslate"><span class="pre">expected</span></code></p>
+</div>
+<div class="section" id="assert-array-approx-equals-actual-expected-epsilon-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_array_approx_equals(actual,</span> <span class="pre">expected,</span> <span class="pre">epsilon,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-array-approx-equals-actual-expected-epsilon-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> and <code class="docutils literal notranslate"><span class="pre">expected</span></code> have the same
+length and each indexed property in <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number
+within ±<code class="docutils literal notranslate"><span class="pre">epsilon</span></code> of the corresponding property in <code class="docutils literal notranslate"><span class="pre">expected</span></code></p>
+</div>
+<div class="section" id="assert-approx-equals-actual-expected-epsilon-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_approx_equals(actual,</span> <span class="pre">expected,</span> <span class="pre">epsilon,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-approx-equals-actual-expected-epsilon-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number within ±<code class="docutils literal notranslate"><span class="pre">epsilon</span></code> of <code class="docutils literal notranslate"><span class="pre">expected</span></code></p>
+</div>
+<div class="section" id="assert-less-than-actual-expected-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_less_than(actual,</span> <span class="pre">expected,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-less-than-actual-expected-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number less than <code class="docutils literal notranslate"><span class="pre">expected</span></code></p>
+</div>
+<div class="section" id="assert-greater-than-actual-expected-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_greater_than(actual,</span> <span class="pre">expected,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-greater-than-actual-expected-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number greater than <code class="docutils literal notranslate"><span class="pre">expected</span></code></p>
+</div>
+<div class="section" id="assert-between-exclusive-actual-lower-upper-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_between_exclusive(actual,</span> <span class="pre">lower,</span> <span class="pre">upper,</span> <span class="pre">description</span></code><a class="headerlink" href="#assert-between-exclusive-actual-lower-upper-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number between <code class="docutils literal notranslate"><span class="pre">lower</span></code> and <code class="docutils literal notranslate"><span class="pre">upper</span></code> but not
+equal to either of them</p>
+</div>
+<div class="section" id="assert-less-than-equal-actual-expected-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_less_than_equal(actual,</span> <span class="pre">expected,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-less-than-equal-actual-expected-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number less than or equal to <code class="docutils literal notranslate"><span class="pre">expected</span></code></p>
+</div>
+<div class="section" id="assert-greater-than-equal-actual-expected-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_greater_than_equal(actual,</span> <span class="pre">expected,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-greater-than-equal-actual-expected-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number greater than or equal to <code class="docutils literal notranslate"><span class="pre">expected</span></code></p>
+</div>
+<div class="section" id="assert-between-inclusive-actual-lower-upper-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_between_inclusive(actual,</span> <span class="pre">lower,</span> <span class="pre">upper,</span> <span class="pre">description</span></code><a class="headerlink" href="#assert-between-inclusive-actual-lower-upper-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is a number between <code class="docutils literal notranslate"><span class="pre">lower</span></code> and <code class="docutils literal notranslate"><span class="pre">upper</span></code> or
+equal to either of them</p>
+</div>
+<div class="section" id="assert-regexp-match-actual-expected-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_regexp_match(actual,</span> <span class="pre">expected,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-regexp-match-actual-expected-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> matches the regexp <code class="docutils literal notranslate"><span class="pre">expected</span></code></p>
+</div>
+<div class="section" id="assert-class-string-object-class-name-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_class_string(object,</span> <span class="pre">class_name,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-class-string-object-class-name-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that the class string of <code class="docutils literal notranslate"><span class="pre">object</span></code> as returned in
+<code class="docutils literal notranslate"><span class="pre">Object.prototype.toString</span></code> is equal to <code class="docutils literal notranslate"><span class="pre">class_name</span></code>.</p>
+</div>
+<div class="section" id="assert-own-property-object-property-name-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_own_property(object,</span> <span class="pre">property_name,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-own-property-object-property-name-description" title="Permalink to this headline">¶</a></h3>
+<p>assert that object has own property <code class="docutils literal notranslate"><span class="pre">property_name</span></code></p>
+</div>
+<div class="section" id="assert-not-own-property-object-property-name-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_not_own_property(object,</span> <span class="pre">property_name,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-not-own-property-object-property-name-description" title="Permalink to this headline">¶</a></h3>
+<p>assert that object does not have an own property named <code class="docutils literal notranslate"><span class="pre">property_name</span></code></p>
+</div>
+<div class="section" id="assert-inherits-object-property-name-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_inherits(object,</span> <span class="pre">property_name,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-inherits-object-property-name-description" title="Permalink to this headline">¶</a></h3>
+<p>assert that object does not have an own property named
+<code class="docutils literal notranslate"><span class="pre">property_name</span></code> but that <code class="docutils literal notranslate"><span class="pre">property_name</span></code> is present in the prototype
+chain for object</p>
+</div>
+<div class="section" id="assert-idl-attribute-object-attribute-name-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_idl_attribute(object,</span> <span class="pre">attribute_name,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-idl-attribute-object-attribute-name-description" title="Permalink to this headline">¶</a></h3>
+<p>assert that an object that is an instance of some interface has the
+attribute attribute_name following the conditions specified by WebIDL</p>
+</div>
+<div class="section" id="assert-readonly-object-property-name-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_readonly(object,</span> <span class="pre">property_name,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-readonly-object-property-name-description" title="Permalink to this headline">¶</a></h3>
+<p>assert that property <code class="docutils literal notranslate"><span class="pre">property_name</span></code> on object is readonly</p>
+</div>
+<div class="section" id="assert-throws-code-func-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_throws(code,</span> <span class="pre">func,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-throws-code-func-description" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">code</span></code> - the expected exception. This can take several forms:</p>
+<ul class="simple">
+<li>string - asserts that the thrown exception must be a DOMException
+with the given name, e.g., “TimeoutError”. (For
+compatibility with existing tests, the name of a
+DOMException constant can also be given, e.g.,
+“TIMEOUT_ERR”)</li>
+<li>object - asserts that the thrown exception must be any other kind
+of exception, with a property called “name” that matches
+<code class="docutils literal notranslate"><span class="pre">code.name</span></code>.</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">func</span></code> - a function that should throw</p>
+</div>
+<div class="section" id="assert-unreached-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_unreached(description)</span></code><a class="headerlink" href="#assert-unreached-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts if called. Used to ensure that some codepath is <em>not</em> taken e.g.
+an event does not fire.</p>
+</div>
+<div class="section" id="assert-any-assert-func-actual-expected-array-extra-arg-1-extra-arg-n">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_any(assert_func,</span> <span class="pre">actual,</span> <span class="pre">expected_array,</span> <span class="pre">extra_arg_1,</span> <span class="pre">...</span> <span class="pre">extra_arg_N)</span></code><a class="headerlink" href="#assert-any-assert-func-actual-expected-array-extra-arg-1-extra-arg-n" title="Permalink to this headline">¶</a></h3>
+<p>asserts that one <code class="docutils literal notranslate"><span class="pre">assert_func(actual,</span> <span class="pre">expected_array_N,</span> <span class="pre">extra_arg1,</span> <span class="pre">...,</span> <span class="pre">extra_arg_N)</span></code>
+is true for some <code class="docutils literal notranslate"><span class="pre">expected_array_N</span></code> in <code class="docutils literal notranslate"><span class="pre">expected_array</span></code>. This only works for <code class="docutils literal notranslate"><span class="pre">assert_func</span></code>
+with signature <code class="docutils literal notranslate"><span class="pre">assert_func(actual,</span> <span class="pre">expected,</span> <span class="pre">args_1,</span> <span class="pre">...,</span> <span class="pre">args_N)</span></code>. Note that tests
+with multiple allowed pass conditions are bad practice unless the spec specifically
+allows multiple behaviours. Test authors should not use this method simply to hide
+UA bugs.</p>
+</div>
+</div>
+<div class="section" id="metadata">
+<h2>Metadata<a class="headerlink" href="#metadata" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to add optional metadata to tests; this can be done in
+one of two ways; either by adding <code class="docutils literal notranslate"><span class="pre">&lt;meta&gt;</span></code> elements to the head of the
+document containing the tests, or by adding the metadata to individual
+<code class="docutils literal notranslate"><span class="pre">[async_]test</span></code> calls, as properties.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Writing Tests</a><ul>
+  <li><a href="testharness.html">testharness.js Tests</a><ul>
+      <li>Previous: <a href="idlharness.html" title="previous chapter">idlharness.js API</a></li>
+      <li>Next: <a href="testdriver-tutorial.html" title="next chapter">testdriver.js Tutorial</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/testharness-api.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

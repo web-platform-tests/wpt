@@ -1,0 +1,303 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CSS Metadata &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CSS User Stylesheets" href="css-user-styles.html" />
+    <link rel="prev" title="Test Assumptions" href="assumptions.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="css-metadata">
+<h1>CSS Metadata<a class="headerlink" href="#css-metadata" title="Permalink to this headline">¶</a></h1>
+<p>CSS tests have some additional requirements for metadata.</p>
+<div class="section" id="specification-links">
+<h2>Specification Links<a class="headerlink" href="#specification-links" title="Permalink to this headline">¶</a></h2>
+<p>Specification Links</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;help&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;RELEVANT_SPEC_SECTION&quot;</span> <span class="p">/&gt;</span>
+</pre></div>
+</div>
+<p>The specification link elements provide a way to align the test with
+information in the specification being tested.</p>
+<ul class="simple">
+<li>Links should link to relevant sections within the specification</li>
+<li>Use the anchors from the specification’s Table of Contents</li>
+<li>A test can have multiple specification links<ul>
+<li>Always list the primary section that is being tested as the
+first item in the list of specification links</li>
+<li>Order the list from the most used/specific to least used/specific</li>
+<li>There is no need to list common incidental features like the
+color green if it is being used to validate the test unless the
+case is specifically testing the color green</li>
+</ul>
+</li>
+<li>If the test is part of multiple test suites, link to the relevant
+sections of each spec.</li>
+</ul>
+<p>Example 1:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;help&quot;</span>
+<span class="na">href</span><span class="o">=</span><span class="s">&quot;https://www.w3.org/TR/CSS21/text.html#alignment-prop&quot;</span> <span class="p">/&gt;</span>
+</pre></div>
+</div>
+<p>Example 2:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;help&quot;</span>
+<span class="na">href</span><span class="o">=</span><span class="s">&quot;https://www.w3.org/TR/CSS21/text.html#alignment-prop&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;help&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://www.w3.org/TR/CSS21/visudet.html#q7&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;help&quot;</span>
+<span class="na">href</span><span class="o">=</span><span class="s">&quot;https://www.w3.org/TR/CSS21/visudet.html#line-height&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;help&quot;</span>
+<span class="na">href</span><span class="o">=</span><span class="s">&quot;https://www.w3.org/TR/CSS21/colors.html#background-properties&quot;</span> <span class="p">/&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="requirement-flags">
+<h2>Requirement Flags<a class="headerlink" href="#requirement-flags" title="Permalink to this headline">¶</a></h2>
+<table>
+<tr>
+  <th>Token</th>
+  <th>Description</th>
+</tr>
+<tr>
+  <td>animated</td>
+  <td>Test is animated in final state. (Cannot be verified using
+    reftests/screenshots.)</td>
+</tr>
+<tr>
+  <td>asis</td>
+  <td>The test has particular markup formatting requirements and
+    cannot be re-serialized.</td>
+</tr>
+<tr>
+  <td>font</td>
+  <td>Requires a specific font to be installed at the OS level. (A link to the
+      font to be installed must be provided; this is not needed if only web
+      fonts are used.)</td>
+</tr>
+<tr>
+  <td>history</td>
+  <td>User agent session history is required. Testing :visited is a
+    good example where this may be used.</td>
+</tr>
+<tr>
+  <td>HTMLonly</td>
+  <td>Test case is only valid for HTML</td>
+</tr>
+<tr>
+  <td>interact</td>
+  <td>Requires human interaction (such as for testing scrolling
+    behavior)</td>
+</tr>
+<tr>
+  <td>invalid</td>
+  <td>Tests handling of invalid CSS. Note: This case contains CSS
+     properties and syntax that may not validate.</td>
+</tr>
+<tr>
+  <td>may</td>
+  <td>Behavior tested is preferred but OPTIONAL.
+  <a href="https://www.ietf.org/rfc/rfc2119.txt">[RFC2119]</a></td>
+</tr>
+<tr>
+  <td>nonHTML</td>
+  <td>Test case is only valid for formats besides HTML (e.g. XHTML
+    or arbitrary XML)</td>
+</tr>
+<tr>
+  <td>paged</td>
+  <td>Only valid for paged media</td>
+</tr>
+<tr>
+  <td>scroll</td>
+  <td>Only valid for continuous (scrolling) media</td>
+</tr>
+<tr>
+  <td>should</td>
+  <td>Behavior tested is RECOMMENDED, but not REQUIRED. <a
+    href="https://www.ietf.org/rfc/rfc2119.txt">[RFC2119]</a></td>
+</tr>
+<tr>
+  <td>speech</td>
+  <td>Device supports audio output. Text-to-speech (TTS) engine
+    installed</td>
+</tr>
+<tr>
+  <td>userstyle</td>
+  <td>Requires a user style sheet to be set</td>
+</tr>
+</table><p>Example 1 (one token applies):</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;flags&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;invalid&quot;</span> <span class="p">/&gt;</span>
+</pre></div>
+</div>
+<p>Example 2 (multiple tokens apply):</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;flags&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;ahem image scroll&quot;</span> <span class="p">/&gt;</span>
+</pre></div>
+</div>
+<p>Example 3 (no tokens apply):</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;flags&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;&quot;</span> <span class="p">/&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="test-assertions">
+<h2>Test Assertions<a class="headerlink" href="#test-assertions" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;assert&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;TEST ASSERTION&quot;</span> <span class="p">/&gt;</span>
+</pre></div>
+</div>
+<p>This element should contain a complete detailed statement expressing
+what specifically the test is attempting to prove. If the assertion
+is only valid in certain cases, those conditions should be described
+in the statement.</p>
+<p>The assertion should not be:</p>
+<ul class="simple">
+<li>A copy of the title text</li>
+<li>A copy of the test verification instructions</li>
+<li>A duplicate of another assertion in the test suite</li>
+<li>A line or reference from the CSS specification unless that line is
+a complete assertion when taken out of context.</li>
+</ul>
+<p>The test assertion is <strong>optional</strong>, but is is highly recommended to include one.
+It helps the reviewer understand
+the goal of the test so that he or she can make sure it is being
+tested correctly. Also, in case a problem is found with the test
+later, the testing method (e.g. using <code class="docutils literal notranslate"><span class="pre">color</span></code> to determine pass/fail)
+can be changed (e.g. to using <code class="docutils literal notranslate"><span class="pre">background-color</span></code>) while preserving
+the intent of the test (e.g. testing support for ID selectors).</p>
+<p>Examples of good test assertions:</p>
+<ul class="simple">
+<li>“This test checks that a background image with no intrinsic size
+covers the entire padding box.”</li>
+<li>“This test checks that ‘word-spacing’ affects each space (U+0020)
+and non-breaking space (U+00A0).”</li>
+<li>“This test checks that if ‘top’ and ‘bottom’ offsets are specified
+on an absolutely-positioned replaced element, then any remaining
+space is split amongst the ‘auto’ vertical margins.”</li>
+<li>“This test checks that ‘text-indent’ affects only the first line
+of a block container if that line is also the first formatted line
+of an element.”</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Writing Tests</a><ul>
+      <li>Previous: <a href="assumptions.html" title="previous chapter">Test Assumptions</a></li>
+      <li>Next: <a href="css-user-styles.html" title="next chapter">CSS User Stylesheets</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/css-metadata.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

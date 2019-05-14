@@ -1,0 +1,210 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Introduction &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Running Tests" href="running-tests/index.html" />
+    <link rel="prev" title="web-platform-tests documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>web-platform-tests is a W3C-coordinated effort to build a
+cross-browser testsuite for the majority of
+the <a class="reference external" href="https://platform.html5.org">web platform</a>; it excludes only ECMAScript (whose
+testsuite lives in <a class="reference external" href="https://github.com/tc39/test262">test262</a>) and WebGL (whose testsuite
+lives in <a class="reference external" href="https://github.com/KhronosGroup/WebGL">WebGL</a>).</p>
+<div class="section" id="watch-a-talk">
+<h2>Watch a Talk<a class="headerlink" href="#watch-a-talk" title="Permalink to this headline">¶</a></h2>
+<p>If you prefer watching a video, here is a talk introducing web-platform-tests:</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/XnfE3MfH5hQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
+<div class="section" id="help">
+<h2>Help!<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h2>
+<p>If you get stuck or want clarification about anything, feel free to
+ask on either the <a class="reference external" href="https://lists.w3.org/Archives/Public/public-test-infra/">mailing list</a> or <a class="reference external" href="irc://irc.w3.org:6667/testing">IRC</a>
+(<a class="reference external" href="http://irc.w3.org">webclient</a>, join channel <code class="docutils literal notranslate"><span class="pre">#testing</span></code>); IRC is generally
+busiest during the European working day but frequently has people on
+it at all times and should probably be the general first port of call
+for any help.</p>
+</div>
+<div class="section" id="testsuite-design">
+<h2>Testsuite Design<a class="headerlink" href="#testsuite-design" title="Permalink to this headline">¶</a></h2>
+<p>The vast majority of the testsuite is formed of HTML pages, which can
+be loaded in a browser and either programmatically provide a result or
+provide a set of steps to run the test and obtain the result.</p>
+<p>The tests are, in general, short, cross-platform, and self-contained,
+and should be easy to run in any browser.</p>
+</div>
+<div class="section" id="test-layout">
+<h2>Test Layout<a class="headerlink" href="#test-layout" title="Permalink to this headline">¶</a></h2>
+<p>Each top level directory in the repository corresponds to tests for a
+single specification, with the exception of <code class="docutils literal notranslate"><span class="pre">css/</span></code> which contains
+testsuites for CSS WG specifications. For W3C specs, these directories
+are typically named after the shortname of the spec (i.e. the name
+used for snapshot publications under <code class="docutils literal notranslate"><span class="pre">/TR/</span></code>); for WHATWG specs, they
+are typically named after the subdomain of the spec (i.e. trimming
+<code class="docutils literal notranslate"><span class="pre">.spec.whatwg.org</span></code> from the URL); for other specs, something deemed
+sensible is used. In any case, there are occasional exceptions for
+historic reasons.</p>
+<p>Within the specification-specific directory there are two common ways
+of laying out tests: the first is a flat structure which is sometimes
+adopted for very short specifications; the alternative is a nested
+structure with each subdirectory corresponding to the id of a heading
+in the specification. The latter provides some implicit metadata about
+the part of a specification being tested according to its location in
+the filesystem, and is preferred for larger specifications.</p>
+</div>
+<div class="section" id="test-types">
+<h2>Test Types<a class="headerlink" href="#test-types" title="Permalink to this headline">¶</a></h2>
+<p>Tests in this project use a few different approaches to verify expected
+behavior. The tests can be classified based on the way they express
+expectations:</p>
+<ul class="simple">
+<li>Rendering tests ensure that the browser graphically displays pages as
+expected. There are a few different ways this is done:<ul>
+<li><a class="reference internal" href="writing-tests/reftests.html"><span class="doc">Reftests</span></a> render two (or more) web pages and combine them with equality
+assertions about their rendering (e.g., <code class="docutils literal notranslate"><span class="pre">A.html</span></code> and <code class="docutils literal notranslate"><span class="pre">B.html</span></code> must render
+identically), run either by the user switching between tabs/windows and
+trying to observe differences or through <a class="reference internal" href="running-tests/from-local-system.html"><span class="doc">automated
+scripts</span></a>.</li>
+<li><a class="reference internal" href="writing-tests/visual.html"><span class="doc">Visual tests</span></a> display a page where the result is determined either
+by a human looking at it or by comparing it with a saved screenshot for
+that user agent on that platform.</li>
+</ul>
+</li>
+<li><a class="reference internal" href="writing-tests/testharness.html"><span class="doc">testharness.js</span></a> tests verify that JavaScript interfaces behave as
+expected. They get their name from the JavaScript harness that’s used to
+execute them.</li>
+<li><a class="reference external" href="#">wdspec</a> tests are written in Python and test <a class="reference external" href="https://w3c.github.io/webdriver/">the WebDriver browser
+automation protocol</a></li>
+<li><a class="reference internal" href="writing-tests/manual.html"><span class="doc">Manual tests</span></a> rely on a human to run them and determine their
+result.</li>
+</ul>
+</div>
+<div class="section" id="github">
+<h2>GitHub<a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/web-platform-tests/wpt/">GitHub</a> is used both for <a class="reference external" href="https://github.com/web-platform-tests/wpt/issues">issue tracking</a> and <a class="reference external" href="https://github.com/web-platform-tests/wpt/pulls">test submissions</a>; we
+provide <a class="reference internal" href="appendix/github-intro.html"><span class="doc">a limited introduction</span></a> to both git and
+GitHub.</p>
+<p>Pull Requests are automatically labeled based on the directory the
+files they change are in; there are also comments added automatically
+to notify a number of people: this list of people comes from META.yml
+files in those same directories and their parents (i.e., they work
+recursively: <code class="docutils literal notranslate"><span class="pre">a/META.yml</span></code> will get notified for <code class="docutils literal notranslate"><span class="pre">a/foo.html</span></code> and
+<code class="docutils literal notranslate"><span class="pre">a/b/bar.html</span></code>).</p>
+<p>If you want to be notified about changes to tests in a directory, feel
+free to add yourself to the META.yml file!</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#watch-a-talk">Watch a Talk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#help">Help!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testsuite-design">Testsuite Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test-layout">Test Layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test-types">Test Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#github">GitHub</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">web-platform-tests documentation</a></li>
+      <li>Next: <a href="running-tests/index.html" title="next chapter">Running Tests</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/introduction.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

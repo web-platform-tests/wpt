@@ -1,0 +1,142 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Chrome &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chrome for Android" href="chrome_android.html" />
+    <link rel="prev" title="Running Tests from the Local System" href="from-local-system.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="chrome">
+<h1>Chrome<a class="headerlink" href="#chrome" title="Permalink to this headline">¶</a></h1>
+<p>When running Chrome, there are some useful command line arguments.</p>
+<p>You can inform <code class="docutils literal notranslate"><span class="pre">wpt</span></code> of the release channel of Chrome using <code class="docutils literal notranslate"><span class="pre">--channel</span></code>.
+However, <code class="docutils literal notranslate"><span class="pre">wpt</span></code> currently does not support installing Chrome or finding the
+Chrome binary of a specific channel, so you would also need to specify the path
+to the Chrome binary with <code class="docutils literal notranslate"><span class="pre">--binary</span></code>. For example, to run Chrome Dev on Linux:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>./wpt run --channel dev --binary `which google-chrome-unstable` chrome
+</pre></div>
+</div>
+<p>Note: when the channel is “dev”, <code class="docutils literal notranslate"><span class="pre">wpt</span></code> will <em>automatically</em> enable all
+<a class="reference external" href="https://www.chromium.org/blink/runtime-enabled-features">experimental web platform features</a>
+(chrome://flags/#enable-experimental-web-platform-features) by passing
+<code class="docutils literal notranslate"><span class="pre">--enable-experimental-web-platform-features</span></code> to Chrome.</p>
+<p>If you want to enable a specific <a class="reference external" href="https://www.chromium.org/blink/runtime-enabled-features">runtime enabled feature</a>, use
+<code class="docutils literal notranslate"><span class="pre">--binary-arg</span></code> to specify the flag(s) that you want to pass to Chrome:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">binary</span><span class="o">-</span><span class="n">arg</span><span class="o">=--</span><span class="n">enable</span><span class="o">-</span><span class="n">blink</span><span class="o">-</span><span class="n">features</span><span class="o">=</span><span class="n">AsyncClipboard</span> <span class="n">chrome</span> <span class="n">clipboard</span><span class="o">-</span><span class="n">apis</span><span class="o">/</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Running Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="from-web.html">Running Tests from the Web</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="from-local-system.html">Running Tests from the Local System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-runner.html">Writing Your Own Runner</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Running Tests</a><ul>
+  <li><a href="from-local-system.html">Running Tests from the Local System</a><ul>
+      <li>Previous: <a href="from-local-system.html" title="previous chapter">Running Tests from the Local System</a></li>
+      <li>Next: <a href="chrome_android.html" title="next chapter">Chrome for Android</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/running-tests/chrome.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,242 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Project Administration &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Appendices" href="../appendix/index.html" />
+    <link rel="prev" title="Email Filters" href="../reviewing-tests/email.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="project-administration">
+<h1>Project Administration<a class="headerlink" href="#project-administration" title="Permalink to this headline">¶</a></h1>
+<p>This section documents all the information necessary to administer the
+infrastructure which makes the project possible.</p>
+<div class="section" id="secrets">
+<h2>Secrets<a class="headerlink" href="#secrets" title="Permalink to this headline">¶</a></h2>
+<p>Some aspects of the infrastructure are only accessible to administrators.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="49%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Project</th>
+<th class="head">Secret</th>
+<th class="head">Owners</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>[results-collection]</td>
+<td>root SSH keys</td>
+<td><a class="reference external" href="mailto:boaz&#37;&#52;&#48;bocoup&#46;com">boaz<span>&#64;</span>bocoup<span>&#46;</span>com</a>, <a class="reference external" href="mailto:mike&#37;&#52;&#48;bocoup&#46;com">mike<span>&#64;</span>bocoup<span>&#46;</span>com</a>, <a class="reference external" href="mailto:rick&#37;&#52;&#48;bocoup&#46;com">rick<span>&#64;</span>bocoup<span>&#46;</span>com</a></td>
+</tr>
+<tr class="row-odd"><td>[results-collection]</td>
+<td>Password for app secrets</td>
+<td><a class="reference external" href="mailto:boaz&#37;&#52;&#48;bocoup&#46;com">boaz<span>&#64;</span>bocoup<span>&#46;</span>com</a>, <a class="reference external" href="mailto:mike&#37;&#52;&#48;bocoup&#46;com">mike<span>&#64;</span>bocoup<span>&#46;</span>com</a>, <a class="reference external" href="mailto:rick&#37;&#52;&#48;bocoup&#46;com">rick<span>&#64;</span>bocoup<span>&#46;</span>com</a></td>
+</tr>
+</tbody>
+</table>
+<p>SSL certificates for all HTTPS-enabled domains are retrieved via <a class="reference external" href="https://letsencrypt.org/">Let’s
+Encrypt</a>, so that data does not represent an
+explicitly-managed secret.</p>
+</div>
+<div class="section" id="third-party-account-owners">
+<h2>Third-party account owners<a class="headerlink" href="#third-party-account-owners" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">(unknown registrar): https://web-platform-tests.org</p>
+<ul class="simple">
+<li>jgraham&#64;hoppipolla.co.uk</li>
+</ul>
+</li>
+<li><p class="first">(unknown registrar): https://w3c-test.org</p>
+<ul class="simple">
+<li>mike&#64;w3.org</li>
+</ul>
+</li>
+<li><p class="first">(unknown registrar): http://testthewebforward.org</p>
+<ul class="simple">
+<li>web-human&#64;w3.org</li>
+</ul>
+</li>
+<li><p class="first"><a class="reference external" href="https://domains.google/">Google Domains</a>: https://wpt.fyi</p>
+<ul class="simple">
+<li>foolip&#64;google.com</li>
+<li>jeffcarp&#64;google.com</li>
+<li>lukebjerring&#64;google.com</li>
+<li>mike&#64;bocoup.com</li>
+</ul>
+</li>
+<li><p class="first"><a class="reference external" href="https://github.com/">GitHub</a>: web-platform-tests</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/foolip">&#64;foolip</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/Hexcles">&#64;Hexcles</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/jgraham">&#64;jgraham</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/plehegar">&#64;plehegar</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/thejohnjansen">&#64;thejohnjansen</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/youennf">&#64;youennf</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/zcorpan">&#64;zcorpan</a></li>
+</ul>
+</div>
+</li>
+<li><p class="first"><a class="reference external" href="https://github.com/">GitHub</a>: w3c</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/plehegar">&#64;plehegar</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/sideshowbarker">&#64;sideshowbarker</a></li>
+</ul>
+</div>
+</li>
+<li><p class="first"><a class="reference external" href="https://cloud.google.com/">Google Cloud Platform</a>: wptdashboard</p>
+<ul class="simple">
+<li>boaz&#64;bocoup.com</li>
+<li>foolip&#64;google.com</li>
+<li>geoffers&#64;gmail.com</li>
+<li>jeffcarp&#64;google.com</li>
+<li>kereliuk&#64;google.com</li>
+<li>lukebjerring&#64;google.com</li>
+<li>markdittmer&#64;google.com</li>
+<li>mike&#64;bocoup.com</li>
+<li>rick&#64;bocoup.com</li>
+</ul>
+</li>
+<li><p class="first"><a class="reference external" href="https://aws.amazon.com/">Amazon AWS</a>: results-collection infrastructure</p>
+<ul class="simple">
+<li>boaz&#64;bocoup.com</li>
+<li>mike&#64;bocoup.com</li>
+<li>rick&#64;bocoup.com</li>
+</ul>
+</li>
+<li><p class="first">E-mail address: wpt.pr.bot&#64;gmail.com</p>
+<ul class="simple">
+<li>boaz&#64;bocoup.com</li>
+<li>mike&#64;bocoup.com</li>
+<li>simon&#64;bocoup.com</li>
+</ul>
+</li>
+<li><p class="first"><a class="reference external" href="https://heroku.com/">Heroku</a>: wpt.pr.bot&#64;gmail.com</p>
+<ul class="simple">
+<li>boaz&#64;bocoup.com</li>
+<li>mike&#64;bocoup.com</li>
+<li>simon&#64;bocoup.com</li>
+</ul>
+</li>
+<li><p class="first"><a class="reference external" href="https://github.com/">GitHub</a>: &#64;wpt-pr-bot account</p>
+<ul class="simple">
+<li>boaz&#64;bocoup.com</li>
+<li>mike&#64;bocoup.com</li>
+<li>simon&#64;bocoup.com</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Project Administration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#secrets">Secrets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#third-party-account-owners">Third-party account owners</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../reviewing-tests/email.html" title="previous chapter">Email Filters</a></li>
+      <li>Next: <a href="../appendix/index.html" title="next chapter">Appendices</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/admin/index.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

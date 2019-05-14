@@ -1,0 +1,205 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Manual Tests &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Reftests" href="reftests.html" />
+    <link rel="prev" title="Lint Tool" href="lint-tool.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="manual-tests">
+<h1>Manual Tests<a class="headerlink" href="#manual-tests" title="Permalink to this headline">¶</a></h1>
+<p>Some testing scenarios are intrinsically difficult to automate and
+require a human to run the test and check the pass condition.</p>
+<div class="section" id="when-to-write-manual-tests">
+<h2>When to Write Manual Tests<a class="headerlink" href="#when-to-write-manual-tests" title="Permalink to this headline">¶</a></h2>
+<p>Whenever possible it’s best to write a fully automated test. For a
+browser vendor it’s possible to run an automated test hundreds of
+times a day, but manual tests are likely to be run at most a handful
+of times a year (and quite possibly approximately never!). This makes
+them significantly less useful for catching regressions than automated
+tests.</p>
+<p>However, there are certain scenarios in which this is not yet
+possible. For example:</p>
+<ul class="simple">
+<li>Test which require observing animation (e.g., a test for CSS
+animation or for video playback),</li>
+<li>Tests that require interaction with browser security UI (e.g., a
+test in which a user refuses a geolocation permissions grant),</li>
+<li>Tests that require interaction with the underlying OS (e.g., tests
+for drag and drop from the desktop onto the browser),</li>
+<li>Tests that require non-default browser configuration (e.g., images
+disabled), and</li>
+<li>Tests that require interaction with the physical environment (e.g.,
+tests that the vibration API causes the device to vibrate or that
+various sensor APIs respond in the expected way).</li>
+</ul>
+</div>
+<div class="section" id="requirements-for-a-manual-test">
+<h2>Requirements for a Manual Test<a class="headerlink" href="#requirements-for-a-manual-test" title="Permalink to this headline">¶</a></h2>
+<p>Manual tests are distinguished by their filename; all manual tests
+have filenames of the form <code class="docutils literal notranslate"><span class="pre">name-manual.ext</span></code> (i.e., a <code class="docutils literal notranslate"><span class="pre">-manual</span></code> suffix
+after the main filename but before the extension).</p>
+<p>Manual tests must be
+fully
+<a class="reference internal" href="general-guidelines.html"><span class="doc">self-describing</span></a>.
+It is particularly important for these tests that it is easy to
+determine the result from the information provided in the page to the
+tester, because a tester may have hundreds of tests to get through and
+little understanding of the features that they are testing. As a
+result, minimalism is especially a virtue for manual tests.</p>
+<p>A test should have, at a minimum step-by-step instructions for
+performing the test, and a clear statement of either the test result
+if it can be automatically determined after some setup or how to
+otherwise determine the outcome.</p>
+<p>Any information other than this (e.g., quotes from the spec) should be
+avoided (though, as always, can be provided in
+HTML/CSS/JS/etc. comments).</p>
+</div>
+<div class="section" id="using-testharness-js-for-manual-tests">
+<h2>Using testharness.js for Manual Tests<a class="headerlink" href="#using-testharness-js-for-manual-tests" title="Permalink to this headline">¶</a></h2>
+<p>A convenient way to present the results of a test that can have the
+result determined by script after some manual setup steps is to use
+testharness.js to determine and present the result. In this case one
+must pass <code class="docutils literal notranslate"><span class="pre">{explicit_timeout:</span> <span class="pre">true}</span></code> in a call to <code class="docutils literal notranslate"><span class="pre">setup()</span></code> in order
+to disable the automatic timeout of the test. For example:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Manual click on button triggers onclick handler<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="nx">setup</span><span class="p">({</span><span class="nx">explicit_timeout</span><span class="o">:</span> <span class="kc">true</span><span class="p">})</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Click on the button below. If a &quot;PASS&quot; result appears the test
+passes, otherwise it fails<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">button</span> <span class="na">onclick</span><span class="o">=</span><span class="s">&quot;done()&quot;</span><span class="p">&gt;</span>Click Here<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Writing Tests</a><ul>
+      <li>Previous: <a href="lint-tool.html" title="previous chapter">Lint Tool</a></li>
+      <li>Next: <a href="reftests.html" title="next chapter">Reftests</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/manual.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

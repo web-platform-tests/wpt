@@ -1,0 +1,522 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Introduction to GitHub &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Reverting Changes" href="reverting.html" />
+    <link rel="prev" title="Appendices" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction-to-github">
+<h1>Introduction to GitHub<a class="headerlink" href="#introduction-to-github" title="Permalink to this headline">¶</a></h1>
+<p>All the basics that you need to know are documented on this page, but for the
+full GitHub documentation, visit <a class="reference external" href="https://help.github.com/">help.github.com</a>.</p>
+<p>If you are already an experienced Git/GitHub user, all you need to know is that
+we use the <a class="reference external" href="https://guides.github.com/introduction/flow/">normal GitHub Pull Request workflow</a> for test
+submissions.</p>
+<p>If you are a first-time GitHub user, read on for more details of the workflow.</p>
+<div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<ol>
+<li><p class="first">Create a GitHub account if you do not already have one on
+<a class="reference external" href="https://github.com/">github.com</a>.</p>
+</li>
+<li><p class="first">Download and install the latest version of Git:
+<a class="reference external" href="https://git-scm.com/downloads">https://git-scm.com/downloads</a>; please refer to the instructions there
+for different platforms.</p>
+</li>
+<li><p class="first">Configure your settings so your commits are properly labeled:</p>
+<p>On Mac or Linux or Solaris, open the Terminal.</p>
+<p>On Windows, open Git Bash (From the Start Menu &gt; Git &gt; Git Bash).</p>
+<p>At the prompt, type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git config --global user.name &quot;Your Name&quot;
+</pre></div>
+</div>
+<p><em>This will be the name that is displayed with your test submissions</em></p>
+<p>Next, type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git config --global user.email &quot;your_email@address.com&quot;
+</pre></div>
+</div>
+<p><em>This should be the email address you used to create the account in Step 1.</em></p>
+</li>
+<li><p class="first">(Optional) If you don’t want to enter your username and password every
+time you talk to the remote server, you’ll need to set up password caching.
+See <a class="reference external" href="https://help.github.com/articles/caching-your-github-password-in-git">Caching your GitHub password in Git</a>.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="fork-the-test-repository">
+<h2>Fork the test repository<a class="headerlink" href="#fork-the-test-repository" title="Permalink to this headline">¶</a></h2>
+<p>Now that you have Git set up, you will need to fork the test repository. This
+will enable you to <a class="reference external" href="#submit">submit</a> your tests using a pull request (more on this
+<a class="reference external" href="#submit">below</a>).</p>
+<ol class="simple">
+<li>In the browser, go to <a class="reference external" href="https://github.com/web-platform-tests/wpt">web-platform-tests on GitHub</a>.</li>
+<li>Click the <img alt="../_images/forkbtn.png" src="../_images/forkbtn.png" />fork button in the upper right.</li>
+<li>The fork will take several seconds, then you will be redirected to your
+GitHub page for this forked repository.
+You will now be at
+<strong>https://github.com/username/wpt</strong>.</li>
+<li>After the fork is complete, you’re ready to <a class="reference external" href="#clone">clone</a>.</li>
+</ol>
+</div>
+<div class="section" id="clone">
+<h2>Clone<a class="headerlink" href="#clone" title="Permalink to this headline">¶</a></h2>
+<p>If your <a class="reference external" href="#fork">fork</a> was successful, the next step is to clone (download a copy of the files).</p>
+<div class="section" id="clone-the-test-repo">
+<h3>Clone the test repo<a class="headerlink" href="#clone-the-test-repo" title="Permalink to this headline">¶</a></h3>
+<p>At the command prompt, cd into the directory where you want to keep the tests.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    $ git clone https://github.com/username/wpt.git
+</pre></div>
+</div>
+<p><em>This will download the tests into a directory named for the repo:</em> <code class="docutils literal notranslate"><span class="pre">wpt/</span></code>.</p>
+<ul class="simple">
+<li>You should now have a full copy of the test repository on your local
+machine. Feel free to browse the directories on your hard drive. You can also
+browse them on <a class="reference external" href="https://github.com/w3c">github.com</a> and see the full history of contributions
+there.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="configure-remote-upstream">
+<h2>Configure Remote / Upstream<a class="headerlink" href="#configure-remote-upstream" title="Permalink to this headline">¶</a></h2>
+<p>Synchronizing your forked repository with the W3C repository will enable you to
+keep your forked local copy up-to-date with the latest commits in the W3C
+repository.</p>
+<ol>
+<li><p class="first">On the command line, navigate to to the directory where your forked copy of
+the repository is located.</p>
+</li>
+<li><p class="first">Make sure that you are on the master branch.  This will  be the case if you
+just forked, otherwise switch to master.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git checkout master
+</pre></div>
+</div>
+</li>
+<li><p class="first">Next, add the remote of the repository your forked.  This assigns the
+original repository to a remote called “upstream”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git remote add upstream https://github.com/web-platform-tests/wpt.git
+</pre></div>
+</div>
+</li>
+<li><p class="first">To pull in changes in the original repository that are not present in your
+local repository first fetch them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git fetch upstream
+</pre></div>
+</div>
+<p>Then merge them into your local repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git merge upstream/master
+</pre></div>
+</div>
+<p>For additional information, please see the <a class="reference external" href="https://help.github.com/articles/fork-a-repo">GitHub docs</a>.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="configure-your-environment">
+<h2>Configure your environment<a class="headerlink" href="#configure-your-environment" title="Permalink to this headline">¶</a></h2>
+<p>If all you intend to do is to load <a class="reference internal" href="../writing-tests/manual.html"><span class="doc">manual tests</span></a> or <a class="reference internal" href="../writing-tests/reftests.html"><span class="doc">ref tests</span></a> from your local file system,
+the above setup should be sufficient.
+But many tests (and in particular, all <a class="reference internal" href="../writing-tests/testharness.html"><span class="doc">testharness.js tests</span></a>) require a local web server.</p>
+<p>See <a class="reference external" href="../introduction#local-setup">Local Setup</a> for more information.</p>
+</div>
+<div class="section" id="branch">
+<h2>Branch<a class="headerlink" href="#branch" title="Permalink to this headline">¶</a></h2>
+<p>Now that you have everything locally, create a branch for your tests.</p>
+<p><em>Note: If you have already been through these steps and created a branch
+and now want to create another branch, you should always do so from the
+master branch. To do this follow the steps from the beginning of the <a class="reference external" href="#configure-remote-upstream">previous
+section</a>. If you don’t start with a clean master
+branch you will end up with a big nested mess.</em></p>
+<p>At the command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git checkout -b topic
+</pre></div>
+</div>
+<p>This will create a branch named <code class="docutils literal notranslate"><span class="pre">topic</span></code> and immediately
+switch this to be your active working branch.</p>
+<p><em>The branch name should describe specifically what you are testing.
+For Example:</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git checkout -b flexbox-flex-direction-prop
+</pre></div>
+</div>
+<p>You’re ready to start writing tests! Come back to this page you’re ready to
+<a class="reference external" href="#commit">commit</a> them or <a class="reference external" href="#submit">submit</a> them for review.</p>
+</div>
+<div class="section" id="commit">
+<h2>Commit<a class="headerlink" href="#commit" title="Permalink to this headline">¶</a></h2>
+<p>Before you submit your tests for review and contribution to the main test
+repo, you’ll need to first commit them locally, where you now have your own
+personal version control system with git. In fact, as you are writing your
+tests, you may want to save versions of your work as you go before you submit
+them to be reviewed and merged.</p>
+<ol>
+<li><p class="first">When you’re ready to save a version of your work, go to the command
+prompt and cd to the directory where your files are.</p>
+</li>
+<li><p class="first">First, ask git what new or modified files you have:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git status
+</pre></div>
+</div>
+<p><em>This will show you files that have been added or modified</em>.</p>
+</li>
+<li><p class="first">For all new or modified files, you need to tell git to add them to the
+list of things you’d like to commit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git add [file1] [file2] ... [fileN]
+</pre></div>
+</div>
+<p>Or:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git add [directory_of_files]
+</pre></div>
+</div>
+</li>
+<li><p class="first">Run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code> again to see what you have on the ‘Changes to be
+committed’ list. These files are now ‘staged’.</p>
+</li>
+<li><p class="first">Alternatively, you can run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span> <span class="pre">--staged</span></code>, which will show you the
+diff of things to be committed.</p>
+</li>
+<li><p class="first">Once you’ve added everything, you can commit and add a message to this
+set of changes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git commit -m &quot;Tests for indexed getters in the HTMLExampleInterface&quot;
+</pre></div>
+</div>
+</li>
+<li><p class="first">Repeat these steps as many times as you’d like before you submit.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="verify">
+<h2>Verify<a class="headerlink" href="#verify" title="Permalink to this headline">¶</a></h2>
+<p>The Web Platform Test project has an automated tool
+to verify that coding conventions have been followed,
+and to catch a number of common mistakes.</p>
+<p>You can and should run this tool locally.
+It will be run on your submissions anyway,
+and any failure will be grounds for rejection,
+so you might as well fix them first.</p>
+<ol class="simple">
+<li>On the command line, navigate to to the directory where your clone
+of the repository is located.</li>
+<li>Run <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">lint</span></code></li>
+<li>Fix any mistake it reports and <a class="reference external" href="#commit">commit</a> again.</li>
+</ol>
+<p>For more details, see the <a class="reference internal" href="../writing-tests/lint-tool.html"><span class="doc">documentation about the lint tool</span></a>.</p>
+</div>
+<div class="section" id="submit">
+<h2>Submit<a class="headerlink" href="#submit" title="Permalink to this headline">¶</a></h2>
+<p>If you’re here now looking for more instructions, that means you’ve written
+some awesome tests and are ready to submit them. Congratulations and welcome
+back!</p>
+<ol>
+<li><p class="first">The first thing you do before submitting them to the W3C repo is to push
+them back up to the server:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git push origin topic
+</pre></div>
+</div>
+<p><em>Note: Here,</em> <code class="docutils literal notranslate"><span class="pre">origin</span></code> <em>refers to remote repo from which you cloned
+(downloaded) the files after you forked, referred to as
+web-platform-tests.git in the previous example;</em>
+<code class="docutils literal notranslate"><span class="pre">topic</span></code> <em>refers to the name of your local branch that
+you want to push</em>.</p>
+</li>
+<li><p class="first">Now you can send a message that you have changes or additions you’d like
+to be reviewed and merged into the main (original) test repository. You do
+this by using a pull request. In a browser, open the GitHub page for your
+forked repository: <strong>https://github.com/username/wpt</strong>.</p>
+</li>
+<li><p class="first">Now create the pull request.  There are several ways to create a PR in the
+GitHub UI.  Below is one method and others can be found on
+<a class="reference external" href="https://help.github.com/articles/creating-a-pull-request">GitHub.com</a></p>
+<ol>
+<li><p class="first">Click the <img alt="../_images/pullrequestbtn.png" src="../_images/pullrequestbtn.png" />new pull request button.</p>
+</li>
+<li><p class="first">On the left, you should see the base repo is the
+web-platform-tests/wpt. On the right, you should see your fork of that
+repo. In the branch menu of your forked repo, switch to <code class="docutils literal notranslate"><span class="pre">topic</span></code></p>
+<p><strong>Note:</strong> If you see <em>‘There isn’t anything to compare’</em>,
+make sure your fork and your <code class="docutils literal notranslate"><span class="pre">topic</span></code>
+branch is selected on the right side.</p>
+</li>
+<li><p class="first">Select the <img alt="../_images/createpr.png" src="../_images/createpr.png" />create pull request button at the top.</p>
+</li>
+<li><p class="first">Scroll down and review the diff</p>
+</li>
+<li><p class="first">Scroll back up and in the Title field, enter a brief description for
+your submission.</p>
+<p>Example: “Tests for CSS Transforms skew() function.”</p>
+</li>
+<li><p class="first">If you’d like to add more detailed comments, use the comment field
+below.</p>
+</li>
+<li><p class="first">Click <img alt="../_images/createpr.png" src="../_images/createpr.png" />the create pull request button</p>
+</li>
+</ol>
+</li>
+<li><p class="first">Wait for feedback on your pull request and once your pull request is
+accepted, delete your branch (see ‘<a class="reference external" href="#cleanup">When Pull Request is Accepted</a>’).</p>
+</li>
+</ol>
+<p>That’s it! Your pull request will go into a queue and will be reviewed soon.</p>
+</div>
+<div class="section" id="modify">
+<h2>Modify<a class="headerlink" href="#modify" title="Permalink to this headline">¶</a></h2>
+<p>Once you submit your pull request, a reviewer will check your proposed changes
+for correctness and style. It is likely that this process will lead to some
+comments asking for modifications to your code. When you are ready to make the
+changes, follow these steps:</p>
+<ol>
+<li><p class="first">Check out the branch corresponding to your changes e.g. if your branch was
+called <code class="docutils literal notranslate"><span class="pre">topic</span></code>
+run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git checkout topic
+</pre></div>
+</div>
+</li>
+<li><p class="first">Make the changes needed to address the comments, and commit them just like
+before.</p>
+</li>
+<li><p class="first">Push the changes to the remote branch containing the pull request:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git push origin topic
+</pre></div>
+</div>
+</li>
+<li><p class="first">The pull request will automatically be updated with the new commit.</p>
+</li>
+</ol>
+<p>Sometimes it takes multiple iterations through a review before the changes are
+finally accepted. Don’t worry about this; it’s totally normal. The goal of test
+review is to work together to create the best possible set of tests for the web
+platform.</p>
+</div>
+<div class="section" id="cleanup">
+<h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h2>
+<p>Once your pull request has been accepted, you will be notified in the GitHub
+UI and you may get an email. At this point, your changes have been merged
+into the main test repository. You do not need to take any further action
+on the test but you should delete your branch. This can easily be done in
+the GitHub UI by navigating to the pull requests and clicking the
+‘Delete Branch’ button.</p>
+<p><img alt="../_images/praccepteddelete.png" src="../_images/praccepteddelete.png" />pull request accepted delete branch</p>
+<p>Alternatively, you can delete the branch on the command line.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git push origin --delete &lt;branchName&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="tips-tricks">
+<h2>Tips &amp; Tricks<a class="headerlink" href="#tips-tricks" title="Permalink to this headline">¶</a></h2>
+<p>The following workflow is recommended:</p>
+<ol class="simple">
+<li>Start branch based on latest w3c/master</li>
+<li>Write tests</li>
+<li>Rebase onto latest w3c/master</li>
+<li>Submit tests</li>
+<li>Stop fiddling with the branch base until review is done</li>
+<li>After the PR has been accepted, delete the branch. (Every new PR should
+come from a new branch.)</li>
+<li>Synchronize your fork with the W3C repository by fetching your upstream and
+merging it. (See ‘<a class="reference external" href="#configure-remote-upstream">Configure Remote / Upstream</a>’)</li>
+</ol>
+<p>You need to be able to set up remote upstream, etc. Please refer to <a class="reference external" href="https://git-scm.com/book">Pro Git
+Book</a> and enjoy reading.</p>
+</div>
+<div class="section" id="working-with-pull-requests-as-a-reviewer">
+<h2>Working with Pull Requests as a reviewer<a class="headerlink" href="#working-with-pull-requests-as-a-reviewer" title="Permalink to this headline">¶</a></h2>
+<p>In order to do a thorough review,
+it is sometimes desirable to have a local copy of the tests one wishes to review.</p>
+<p>Reviewing tests also often results in wanting a few things to be changed.
+Generally, the reviewer should ask the author to make the desired changes.
+However, sometimes the original author does not respond to the requests,
+or the changes are so trivial (e.g. fixing a typo)
+that bothering the original author seems like a waste of time.</p>
+<p>Here is how to do all that.</p>
+<div class="section" id="trivial-cases">
+<h3>Trivial cases<a class="headerlink" href="#trivial-cases" title="Permalink to this headline">¶</a></h3>
+<p>If it is possible to review the tests without a local copy,
+but the reviewer still wants to make some simple tweaks to the tests before merging,
+it is possible to do so via the Github web UI.</p>
+<ol>
+<li><p class="first">Open the pull request. E.g. https://github.com/web-platform-tests/wpt/pull/1234</p>
+</li>
+<li><p class="first">Go to the <img alt="../_images/files-changed.png" src="../_images/files-changed.png" />Files changed view (e.g. https://github.com/web-platform-tests/wpt/pull/1234/files)</p>
+</li>
+<li><p class="first">Locate the files you wish to change, and click the <img alt="../_images/pencil-icon.png" src="../_images/pencil-icon.png" />pencil icon in the upper right corner</p>
+</li>
+<li><p class="first">Make the desired change</p>
+</li>
+<li><p class="first">Write a commit message (including a good title) at the bottom</p>
+</li>
+<li><p class="first">Make sure the <img alt="../_images/commit-directly.png" src="../_images/commit-directly.png" />Commit directly to the [name-of-the-PR-branch] branch. radio button is selected.</p>
+<p><em>Note: If the PR predates the introduction of this feature by Github,
+or if the author of the PR has disabled write-access by reviewers to the PR branch,
+this may not be available,
+and your only option would be to commit to a new branch, creating a new PR.</em></p>
+</li>
+<li><p class="first">Click the <img alt="../_images/commitbtn.png" src="../_images/commitbtn.png" />Commit Changes button.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="the-normal-way">
+<h3>The Normal Way<a class="headerlink" href="#the-normal-way" title="Permalink to this headline">¶</a></h3>
+<p>This is how to import the Pull Request’s branch
+into your existing local checkout of the repository.
+If you don’t have one, go <a class="reference external" href="#fork">fork</a>, <a class="reference external" href="#clone">clone</a>, and <a class="reference external" href="#configure-remote--upstream">configure</a> it.</p>
+<ol>
+<li><p class="first">Move into your local clone: <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">wherever-you-put-your-repo</span></code></p>
+</li>
+<li><p class="first">Add a remote for the PR author’s repo: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">remote</span> <span class="pre">add</span> <span class="pre">&lt;author-id&gt;</span> <span class="pre">git://github.com/&lt;author-id&gt;/&lt;repo-name&gt;.git</span></code></p>
+</li>
+<li><p class="first">Fetch the PR: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span> <span class="pre">&lt;author-id&gt;</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code></p>
+</li>
+<li><p class="first">Checkout that branch: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code></p>
+<p><em>The relevant <code class="docutils literal notranslate"><span class="pre">&lt;author-id&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;repo-name&gt;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&lt;name-of-the-PR-branch&gt;</span></code> can be found by looking for this sentence in on the Github page of the PR:
+<img alt="../_images/more-commits.png" src="../_images/more-commits.png" />Add more commits by pushing to the name-of-the-PR-branch branch on author-id/repo-name.</em></p>
+</li>
+</ol>
+<p>If all you meant to do was reviewing files locally, you’re all set.
+If you wish to make changes to the PR branch:</p>
+<ol>
+<li><p class="first">Make changes and <a class="reference external" href="#commit">commit</a> normally</p>
+</li>
+<li><p class="first">Push your changes upstream: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">&lt;author-id&gt;</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code></p>
+<p><em>Note: If the PR predates the introduction of this feature by Github,
+or if the author of the PR has disabled write-access by reviewers to the PR branch,
+this will not work, and you will need to use the alternative described below.</em></p>
+</li>
+</ol>
+<p>If, instead of modifying the existing PR, you wish to make a new one based on it:</p>
+<ol>
+<li><p class="first">Set up a new branch that contains the existing PR by doing one of the following:</p>
+<ol class="simple">
+<li>Create a new branch from the tip of the PR:
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span> <span class="pre">&lt;your-new-branch&gt;</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span> <span class="pre">&amp;&amp;</span> <span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">&lt;your-new-branch&gt;</span></code></li>
+<li>Create a new branch from <code class="docutils literal notranslate"><span class="pre">master</span></code> and merge the PR into it:
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span> <span class="pre">&lt;your-new-branch&gt;</span> <span class="pre">master</span> <span class="pre">&amp;&amp;</span> <span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">&lt;your-new-branch&gt;</span> <span class="pre">&amp;&amp;</span> <span class="pre">git</span> <span class="pre">merge</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code></li>
+</ol>
+</li>
+<li><p class="first">Make changes and <a class="reference external" href="#commit">commit</a> normally</p>
+</li>
+<li><p class="first">Push your changes to <strong>your</strong> repo: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">&lt;your-new-branch&gt;</span></code></p>
+</li>
+<li><p class="first">Go to the Github Web UI to <a class="reference external" href="#submit">submit a new Pull Request</a>.</p>
+<p><em>Note: You should also close the original pull request.</em></p>
+</li>
+</ol>
+<p>When you’re done reviewing or making changes,
+you can delete the branch: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span> <span class="pre">-d</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code>
+(use <code class="docutils literal notranslate"><span class="pre">-D</span></code> instead of <code class="docutils literal notranslate"><span class="pre">-d</span></code> to delete a branch that has not been merged into master yet).</p>
+<p>If you do not expect work with more PRs from the same author,
+you may also discard your connection to their repo:
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">remote</span> <span class="pre">remove</span> <span class="pre">&lt;author-id&gt;</span></code></p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Appendices</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Introduction to GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reverting.html">Reverting Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test-templates.html">Test Templates</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Appendices</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Appendices</a></li>
+      <li>Next: <a href="reverting.html" title="next chapter">Reverting Changes</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/appendix/github-intro.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

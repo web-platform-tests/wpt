@@ -1,0 +1,189 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Test Templates &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Reverting Changes" href="reverting.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="test-templates">
+<h1>Test Templates<a class="headerlink" href="#test-templates" title="Permalink to this headline">¶</a></h1>
+<p>This page contains templates for creating tests. The template syntax
+is compatible with several popular editors including TextMate, Sublime
+Text, and emacs’ YASnippet mode.</p>
+<p>Templates for filenames are also given. In this case <code class="docutils literal notranslate"><span class="pre">{}</span></code> is used to
+delimit text to be replaced and <code class="docutils literal notranslate"><span class="pre">#</span></code> represents a digit.</p>
+<div class="section" id="reftests">
+<h2>Reftests<a class="headerlink" href="#reftests" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="test">
+<h3>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>&lt;!DOCTYPE html&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;${1:Test title}&lt;/title&gt;
+&lt;link rel=&quot;match&quot; href=&quot;${2:URL of match}&quot;&gt;
+&lt;style&gt;
+    ${3:Test CSS}
+&lt;/style&gt;
+&lt;body&gt;
+    ${4:Test content}
+&lt;/body&gt;
+</pre></div>
+</div>
+<p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.html</span></code></p>
+</div>
+<div class="section" id="reference">
+<h3>Reference:<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>&lt;!DOCTYPE html&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;${1:Reference title}&lt;/title&gt;
+&lt;style&gt;
+    ${2:Reference CSS}
+&lt;/style&gt;
+&lt;body&gt;
+    ${3:Reference content}
+&lt;/body&gt;
+</pre></div>
+</div>
+<p>Filename: <code class="docutils literal notranslate"><span class="pre">{description}.html</span></code> or <code class="docutils literal notranslate"><span class="pre">{test-topic}-###-ref.html</span></code></p>
+</div>
+</div>
+<div class="section" id="testharness-js-tests">
+<h2>testharness.js tests<a class="headerlink" href="#testharness-js-tests" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>${1:Test title}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="nx">$</span><span class="p">{</span><span class="mi">2</span><span class="o">:</span><span class="nx">Test</span> <span class="nx">body</span><span class="p">}</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.html</span></code></p>
+<div class="section" id="manual-test">
+<h3>Manual Test<a class="headerlink" href="#manual-test" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>${1:Test title}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="nx">setup</span><span class="p">({</span><span class="nx">explicit_timeout</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+<span class="nx">$</span><span class="p">{</span><span class="mi">2</span><span class="o">:</span><span class="nx">Test</span> <span class="nx">body</span><span class="p">}</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###-manual.html</span></code></p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Appendices</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="github-intro.html">Introduction to GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reverting.html">Reverting Changes</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Test Templates</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Appendices</a><ul>
+      <li>Previous: <a href="reverting.html" title="previous chapter">Reverting Changes</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/appendix/test-templates.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,225 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Server Features &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Submitting Tests" href="submission-process.html" />
+    <link rel="prev" title="Rendering Test Guidelines" href="rendering.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="server-features">
+<h1>Server Features<a class="headerlink" href="#server-features" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="advanced-testing-features">
+<h2>Advanced Testing Features<a class="headerlink" href="#advanced-testing-features" title="Permalink to this headline">¶</a></h2>
+<p>Certain test scenarios require more than just static HTML
+generation. This is supported through the
+<a class="reference external" href="http://wptserve.readthedocs.io">wptserve</a> server, and controlled by
+<a class="reference internal" href="file-names.html"><span class="doc">file name flags</span></a>. Several scenarios in particular are common:</p>
+<div class="section" id="tests-involving-multiple-origins">
+<h3>Tests Involving Multiple Origins<a class="headerlink" href="#tests-involving-multiple-origins" title="Permalink to this headline">¶</a></h3>
+<p>Our test servers are guaranteed to be accessible through two domains
+and five subdomains under each. The ‘main’ domain is unnamed; the
+other is called ‘alt’. These subdomains are: <code class="docutils literal notranslate"><span class="pre">www</span></code>, <code class="docutils literal notranslate"><span class="pre">www1</span></code>, <code class="docutils literal notranslate"><span class="pre">www2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">天気の良い日</span></code>, and <code class="docutils literal notranslate"><span class="pre">élève</span></code>; there is also <code class="docutils literal notranslate"><span class="pre">nonexistent</span></code> which is
+guaranteed not to resolve. In addition, the HTTP server listens on two
+ports, and the WebSockets server on one. These subdomains and ports
+must be used for cross-origin tests.</p>
+<p>Tests must not hardcode the hostname of the server that they expect to
+be running on or the port numbers, as these are not guaranteed by the
+test environment. Instead they can get this information in one of two
+ways:</p>
+<ul class="simple">
+<li>From script, using the <code class="docutils literal notranslate"><span class="pre">location</span></code> API.</li>
+<li>By using a textual substitution feature of the server.</li>
+</ul>
+<p>In order for the latter to work, a file must either have a name of the
+form <code class="docutils literal notranslate"><span class="pre">{name}.sub.{ext}</span></code> e.g. <code class="docutils literal notranslate"><span class="pre">example-test.sub.html</span></code> or be referenced
+through a URL containing <code class="docutils literal notranslate"><span class="pre">pipe=sub</span></code> in the query string
+e.g. <code class="docutils literal notranslate"><span class="pre">example-test.html?pipe=sub</span></code>. The substitution syntax uses <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{</span> <span class="pre">}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code> to delimit items for substitution. For
+example to substitute in the main host name, one would write:
+<code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{host}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code>.</p>
+<p>To get full domains, including subdomains, there is the <code class="docutils literal notranslate"><span class="pre">hosts</span></code>
+dictionary, where the first dimension is the name of the domain, and
+the second the subdomain. For example, <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{hosts[][www]}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code> would give the <code class="docutils literal notranslate"><span class="pre">www</span></code> subdomain under the main (unnamed)
+domain, and <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{hosts[alt][élève]}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code> would give
+the <code class="docutils literal notranslate"><span class="pre">élève</span></code> subdomain under the alt domain.</p>
+<p>For mostly historic reasons, the subdomains of the main domain are
+also available under the <code class="docutils literal notranslate"><span class="pre">domains</span></code> dictionary; this is identical to
+<code class="docutils literal notranslate"><span class="pre">hosts[]</span></code>.</p>
+<p>Ports are also available on a per-protocol basis. For example, <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{ports[ws][0]}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code> is replaced with the first (and only)
+WebSockets port, while <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{ports[http][1]}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code> is
+replaced with the second HTTP port.</p>
+<p>The request URL itself can be used as part of the substitution using
+the <code class="docutils literal notranslate"><span class="pre">location</span></code> dictionary, which has entries matching the
+<code class="docutils literal notranslate"><span class="pre">window.location</span></code> API. For example, <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{location[host]}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code>is replaced by <code class="docutils literal notranslate"><span class="pre">hostname:port</span></code> for the current request,
+matching <code class="docutils literal notranslate"><span class="pre">location.host</span></code>.</p>
+</div>
+<div class="section" id="tests-requiring-special-headers">
+<h3>Tests Requiring Special Headers<a class="headerlink" href="#tests-requiring-special-headers" title="Permalink to this headline">¶</a></h3>
+<p>For tests requiring that a certain HTTP header is set to some static
+value, a file with the same path as the test file except for an an
+additional <code class="docutils literal notranslate"><span class="pre">.headers</span></code> suffix may be created. For example for
+<code class="docutils literal notranslate"><span class="pre">/example/test.html</span></code>, the headers file would be
+<code class="docutils literal notranslate"><span class="pre">/example/test.html.headers</span></code>. This file consists of lines of the form</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">header</span><span class="o">-</span><span class="n">name</span><span class="p">:</span> <span class="n">header</span><span class="o">-</span><span class="n">value</span>
+</pre></div>
+</div>
+<p>For example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Content</span><span class="o">-</span><span class="n">Type</span><span class="p">:</span> <span class="n">text</span><span class="o">/</span><span class="n">html</span><span class="p">;</span> <span class="n">charset</span><span class="o">=</span><span class="n">big5</span>
+</pre></div>
+</div>
+<p>To apply the same headers to all files in a directory use a
+<code class="docutils literal notranslate"><span class="pre">__dir__.headers</span></code> file. This will only apply to the immediate
+directory and not subdirectories.</p>
+<p>Headers files may be used in combination with substitutions by naming
+the file e.g. <code class="docutils literal notranslate"><span class="pre">test.html.sub.headers</span></code>.</p>
+</div>
+<div class="section" id="tests-requiring-full-control-over-the-http-response">
+<h3>Tests Requiring Full Control Over The HTTP Response<a class="headerlink" href="#tests-requiring-full-control-over-the-http-response" title="Permalink to this headline">¶</a></h3>
+<p>For full control over the request and response the server provides the
+ability to write <code class="docutils literal notranslate"><span class="pre">.asis</span></code> files; these are served as literal HTTP
+responses. It also provides the ability to write Python scripts that
+have access to request data and can manipulate the content and timing
+of the response. For details see the
+<a class="reference external" href="https://wptserve.readthedocs.org">wptserve documentation</a>.</p>
+</div>
+<div class="section" id="writing-tests-for-http-2-0">
+<h3>Writing tests for HTTP/2.0<a class="headerlink" href="#writing-tests-for-http-2-0" title="Permalink to this headline">¶</a></h3>
+<p>The server now has a prototype HTTP/2.0 server which gives you access to
+some of the HTTP/2.0 specific functionality. Currently, the server is off
+by default and needs to be run using <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">serve</span> <span class="pre">--h2</span></code> in order to enable it.
+The HTTP/2.0 server supports handlers that work per-frame; these, along with the
+API are documented in <a class="reference internal" href="h2tests.html"><span class="doc">Writing H2 Tests</span></a>.</p>
+<blockquote>
+<div><b>Important:</b> The HTTP/2.0 server requires you to have Python 2.7.10+
+and OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
+<a class="reference external" href="https://tools.ietf.org/html/rfc7301">TLS ALPN</a> extension, which is only supported in <a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</div></blockquote>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Writing Tests</a><ul>
+      <li>Previous: <a href="rendering.html" title="previous chapter">Rendering Test Guidelines</a></li>
+      <li>Next: <a href="submission-process.html" title="next chapter">Submitting Tests</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/server-features.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

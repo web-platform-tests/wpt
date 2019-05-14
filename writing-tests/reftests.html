@@ -1,0 +1,335 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Reftests &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Rendering Test Guidelines" href="rendering.html" />
+    <link rel="prev" title="Manual Tests" href="manual.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="reftests">
+<h1>Reftests<a class="headerlink" href="#reftests" title="Permalink to this headline">¶</a></h1>
+<p>Reftests are one of the primary tools for testing things relating to
+rendering; they are made up of the test and one or more other pages
+(“references”) with assertions as to whether they render identically
+or not.</p>
+<div class="section" id="how-to-run-reftests">
+<h2>How to Run Reftests<a class="headerlink" href="#how-to-run-reftests" title="Permalink to this headline">¶</a></h2>
+<p>Reftests can be run manually simply by opening the test and the
+reference file in multiple windows or tabs and flipping between the
+two. In automation the comparison is done in an automated fashion,
+which can lead to differences hard for the human eye to notice to
+cause the test to fail.</p>
+</div>
+<div class="section" id="components-of-a-reftest">
+<h2>Components of a Reftest<a class="headerlink" href="#components-of-a-reftest" title="Permalink to this headline">¶</a></h2>
+<p>In the simplest case, a reftest consists of a pair of files called the
+<em>test</em> and the <em>reference</em>.</p>
+<p>The <em>test</em> file is the one that makes use of the technology being
+tested. It also contains a <code class="docutils literal notranslate"><span class="pre">link</span></code> element with <code class="docutils literal notranslate"><span class="pre">rel=&quot;match&quot;</span></code> or
+<code class="docutils literal notranslate"><span class="pre">rel=&quot;mismatch&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">href</span></code> attribute pointing to the <em>reference</em>
+file, e.g. <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=match</span> <span class="pre">href=references/green-box-ref.html&gt;</span></code>. A
+<code class="docutils literal notranslate"><span class="pre">match</span></code> test only passes if the two files render pixel-for-pixel
+identically within a 800x600 window <em>including</em> scroll-bars if
+present; a <code class="docutils literal notranslate"><span class="pre">mismatch</span></code> test only passes if they <em>don’t</em> render
+identically.</p>
+<p>The <em>reference</em> file is typically written to be as simple as possible,
+and does not use the technology under test. It is desirable that the
+reference be rendered correctly even in UAs with relatively poor
+support for CSS and no support for the technology under test.</p>
+</div>
+<div class="section" id="writing-a-good-reftest">
+<h2>Writing a Good Reftest<a class="headerlink" href="#writing-a-good-reftest" title="Permalink to this headline">¶</a></h2>
+<p>In general the files used in a reftest should follow
+the <a class="reference internal" href="general-guidelines.html"><span class="doc">general guidelines</span></a> and
+the <a class="reference internal" href="rendering.html"><span class="doc">rendering test guidelines</span></a>. They should also be
+self-describing, to allow a human to determine whether the the
+rendering is as expected.</p>
+<p>References can be shared between tests; this is strongly encouraged as
+it makes it easier to tell at a glance whether a test passes (through
+familiarity) and enables some optimizations in automated test
+runners. Shared references are typically placed in <code class="docutils literal notranslate"><span class="pre">references</span></code>
+directories, either alongside the tests they are expected to be useful
+for or at the top level if expected to be generally applicable (e.g.,
+many layout tests can be written such that the correct rendering is a
+100x100 green square!). For references that are applicable only to a
+single test, it is recommended to use the test name with a suffix of
+<code class="docutils literal notranslate"><span class="pre">-ref</span></code> as their filename; e.g., <code class="docutils literal notranslate"><span class="pre">test.html</span></code> would have <code class="docutils literal notranslate"><span class="pre">test-ref.html</span></code>
+as a reference.</p>
+</div>
+<div class="section" id="complex-pass-conditions">
+<h2>Complex Pass Conditions<a class="headerlink" href="#complex-pass-conditions" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes it is desirable for a file to match multiple references or,
+in rare cases, to allow it to match more than one possible reference.</p>
+<p>References can have links to other references (through the same <code class="docutils literal notranslate"><span class="pre">link</span></code>
+element relation), and in this case for the test to pass the test must
+render identically (assuming a <code class="docutils literal notranslate"><span class="pre">match</span></code> relation) to the reference, and
+the reference must render identically to its reference (again,
+assuming a <code class="docutils literal notranslate"><span class="pre">match</span></code> relation). Note that this can continue indefinitely
+to require tests to match an arbitrary number of references; also that
+<code class="docutils literal notranslate"><span class="pre">match</span></code> is used here purely for explanatory reasons: both <code class="docutils literal notranslate"><span class="pre">match</span></code> and
+<code class="docutils literal notranslate"><span class="pre">mismatch</span></code> can be used (and mixed on one sequence of references). This
+can be thought of as an AND operator!</p>
+<p>Similarly, multiple references can be linked from a single file to
+implement alternates and allow multiple renderings. In this case, the
+file passes if it matches one of the references provided (and that
+reference likewise matches any references, etc.). This can be thought
+of as an OR operator!</p>
+<p>These two techniques can be combined to build up arbitrarily complex
+pass conditions with boolean logic. For example, consider when:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">a.html</span></code> has <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=match</span> <span class="pre">href=b.html&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=match</span> <span class="pre">href=c.html&gt;</span></code>,</li>
+<li><code class="docutils literal notranslate"><span class="pre">b.html</span></code> has <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=match</span> <span class="pre">href=b1.html&gt;</span></code>, and</li>
+<li><code class="docutils literal notranslate"><span class="pre">c.html</span></code> has <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=mismatch</span> <span class="pre">href=c1.html&gt;</span></code>.</li>
+</ul>
+<p>Or, graphically:</p>
+<p><img src="{{ site.baseurl }}{% link assets/reftest_graph_example.svg %}"
+alt="diagram of the above reftest graph as a directed graph"></p>
+<p>In this case, to pass we must either have <code class="docutils literal notranslate"><span class="pre">a.html</span></code>, <code class="docutils literal notranslate"><span class="pre">b.html</span></code> and
+<code class="docutils literal notranslate"><span class="pre">b1.html</span></code> all rendering identically, or <code class="docutils literal notranslate"><span class="pre">a.html</span></code> and <code class="docutils literal notranslate"><span class="pre">c.html</span></code>
+rendering identically with <code class="docutils literal notranslate"><span class="pre">c1.html</span></code> rendering differently. (These
+are, in terms of the graph, all the paths from the source nodes to
+leaf nodes.)</p>
+</div>
+<div class="section" id="controlling-when-comparison-occurs">
+<h2>Controlling When Comparison Occurs<a class="headerlink" href="#controlling-when-comparison-occurs" title="Permalink to this headline">¶</a></h2>
+<p>By default reftest screenshots are taken after the <code class="docutils literal notranslate"><span class="pre">load</span></code> event has
+fired, and web fonts (if any) are loaded. In some cases it is
+necessary to delay the screenshot later than this, for example because
+some DOM manipulation is required to set up the desired test
+conditions. To enable this, the test may have a <code class="docutils literal notranslate"><span class="pre">class=&quot;reftest-wait&quot;</span></code>
+attribute specified on the root element. This will cause the
+screenshot to be delayed until the <code class="docutils literal notranslate"><span class="pre">load</span></code> event has fired and the
+<code class="docutils literal notranslate"><span class="pre">reftest-wait</span></code> class has been removed from the root element. Note that
+in neither case is exact timing of the screenshot guaranteed: it is
+only guaranteed to be after those events.</p>
+</div>
+<div class="section" id="fuzzy-matching">
+<h2>Fuzzy Matching<a class="headerlink" href="#fuzzy-matching" title="Permalink to this headline">¶</a></h2>
+<p>In some situations a test may have subtle differences in rendering
+compared to the reference due to, e.g., anti-aliasing. To allow for
+these small differences, we allow tests to specify a fuzziness
+characterised by two parameters, both of which must be specified:</p>
+<ul class="simple">
+<li>A maximum difference in the per-channel color value for any pixel.</li>
+<li>A number of total pixels that may be different.</li>
+</ul>
+<p>The maximum difference in the per pixel color value is formally
+defined as follows: let <code>T<sub>x,y,c</sub></code> be the value of
+colour channel <code class="docutils literal notranslate"><span class="pre">c</span></code> at pixel coordinates <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code> in the test image and
+<code>R<sub>x,y,c</sub></code> be the corresponding value in the
+reference image, and let <code>width</code> and <code>height</code> be
+the dimensions of the image in pixels. Then <code>maxDifference =
+max<sub>x=[0,width) y=[0,height), c={r,g,b}</sub>(|T<sub>x,y,c</sub> -
+R<sub>x,y,c</sub>|)</code>.</p>
+<p>To specify the fuzziness in the test file one may add a <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=fuzzy&gt;</span></code> element (or, in the case of more complex tests, to any
+page containing the <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=[mis]match&gt;</span></code> elements). In the simplest
+case this has a <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute containing the parameters above,
+separated by a colon e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;maxDifference=15;totalPixels=300&quot;</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>would allow for a  difference of exactly 15 / 255 on any color channel
+and 300 exactly pixels total difference. The argument names are optional
+and may be elided; the above is the same as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;15;300&quot;</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The values may also be given as ranges e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;maxDifference=10-15;totalPixels=200-300&quot;</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;10-15;200-300&quot;</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>In this case the maximum pixel difference must be in the range
+<code class="docutils literal notranslate"><span class="pre">10-15</span></code> and the total number of different pixels must be in the range
+<code class="docutils literal notranslate"><span class="pre">200-300</span></code>.</p>
+<p>In cases where a single test has multiple possible refs and the
+fuzziness is not the same for all refs, a ref may be specified by
+prefixing the <code class="docutils literal notranslate"><span class="pre">content</span></code> value with the relative url for the ref e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">fuzzy</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;option1-ref.html:10-15;200-300&quot;</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>One meta element is required per reference requiring a unique
+fuzziness value, but any unprefixed value will automatically be
+applied to any ref that doesn’t have a more specific value.</p>
+</div>
+<div class="section" id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
+<p>In some cases, a test cannot be a reftest. For example, there is no
+way to create a reference for underlining, since the position and
+thickness of the underline depends on the UA, the font, and/or the
+platform. However, once it’s established that underlining an inline
+element works, it’s possible to construct a reftest for underlining
+a block element, by constructing a reference using underlines on a
+<code class="docutils literal notranslate"><span class="pre">&lt;span&gt;</span></code> that wraps all the content inside the block.</p>
+</div>
+<div class="section" id="example-reftests">
+<h2>Example Reftests<a class="headerlink" href="#example-reftests" title="Permalink to this headline">¶</a></h2>
+<p>This example follows the recommended approach in being a
+self-describing test as it has a simple statement on the page
+describing how it should render to pass the tests.</p>
+<div class="section" id="test-file">
+<h3>Test File<a class="headerlink" href="#test-file" title="Permalink to this headline">¶</a></h3>
+<p>This test verifies that a right-to-left rendering of <strong>SAW</strong> within a
+<code class="docutils literal notranslate"><span class="pre">&lt;bdo&gt;</span></code> element displays as <strong>WAS</strong>.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>BDO element dir=rtl<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;help&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://html.spec.whatwg.org/#the-bdo-element&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;assert&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;BDO element&#39;s DIR content attribute renders corrently given value of &#39;rtl&#39;.&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;match&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;test-bdo-001.html&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Pass if you see WAS displayed below.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">bdo</span> <span class="na">dir</span><span class="o">=</span><span class="s">&quot;rtl&quot;</span><span class="p">&gt;</span>SAW<span class="p">&lt;/</span><span class="nt">bdo</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="reference-file">
+<h3>Reference File<a class="headerlink" href="#reference-file" title="Permalink to this headline">¶</a></h3>
+<p>The reference file must look exactly like the test file,
+except that the code behind it is different.</p>
+<ul class="simple">
+<li>All metadata is removed.</li>
+<li>The <code class="docutils literal notranslate"><span class="pre">title</span></code> need not match.</li>
+<li>The markup that created the actual test data is
+different: here, the same effect is created with
+very mundane, dependable technology.</li>
+</ul>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>HTML Reference File<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Pass if you see WAS displayed below.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>WAS<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Writing Tests</a><ul>
+      <li>Previous: <a href="manual.html" title="previous chapter">Manual Tests</a></li>
+      <li>Next: <a href="rendering.html" title="next chapter">Rendering Test Guidelines</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/reftests.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

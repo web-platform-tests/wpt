@@ -1,0 +1,205 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Writing Tests &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="General Test Guidelines" href="general-guidelines.html" />
+    <link rel="prev" title="Writing Your Own Runner" href="../running-tests/custom-runner.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="writing-tests">
+<h1>Writing Tests<a class="headerlink" href="#writing-tests" title="Permalink to this headline">¶</a></h1>
+<p>If you haven’t already, it’s strongly recommended to read
+the <a class="reference internal" href="../introduction.html"><span class="doc">introduction</span></a> first, as it introduces the various test types.</p>
+<p>There’s also a load of <a class="reference internal" href="general-guidelines.html"><span class="doc">general guidelines</span></a> that apply to all tests.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l1"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+</ul>
+</div>
+<div class="section" id="test-type">
+<h2>Test Type<a class="headerlink" href="#test-type" title="Permalink to this headline">¶</a></h2>
+<p>Tests in this project use a few different approaches to verify expected
+behavior. The tests can be classified based on the way they express
+expectations:</p>
+<ul class="simple">
+<li>Rendering tests should be used to verify that the browser graphically
+displays pages as expected. See the [rendering test guidelines][rendering]
+for tips on how to write great rendering tests. There are a few different
+ways to write rendering tests:<ul>
+<li><a class="reference internal" href="reftests.html"><span class="doc">Reftests</span></a> should be used to test rendering and layout. They
+consist of two or more pages with assertions as to whether they render
+identically or not.</li>
+<li><a class="reference internal" href="visual.html"><span class="doc">Visual tests</span></a> should be used for checking rendering where there is
+a large number of conforming renderings such that reftests are impractical.
+They consist of a page that renders to final state at which point a
+screenshot can be taken and compared to an expected rendering for that user
+agent on that platform.</li>
+</ul>
+</li>
+<li><a class="reference internal" href="testharness.html"><span class="doc">testharness.js</span></a> tests should be used (where possible!) for
+testing everything else. They are built with the testharness.js unit testing
+framework, and consist of assertions written in JavaScript.</li>
+<li><a class="reference internal" href="wdspec.html"><span class="doc">wdspec</span></a> tests are written in Python using
+<a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a> and test <a class="reference external" href="https://w3c.github.io/webdriver/">the WebDriver browser
+automation protocol</a></li>
+<li><a class="reference internal" href="manual.html"><span class="doc">Manual tests</span></a> are used as a last resort for anything that can’t be
+tested using any of the above. They consist of a page that needs manual
+interaction or verification of the final result.</li>
+</ul>
+<p>In general, there is a strong preference towards reftests and testharness.js
+tests types (as they can be easily run without human interaction), so they
+should be used in preference to the others even if it results in a
+somewhat cumbersome test; there is a far weaker preference between the
+two test types, and it is at times advisable to use testharness.js tests
+for things which would typically be tested using reftests but for
+which it would be overly cumbersome.</p>
+<p>See <a class="reference internal" href="file-names.html"><span class="doc">file names</span></a> for test types and features determined by the file names,
+and <a class="reference internal" href="server-features.html"><span class="doc">server features</span></a> for advanced testing features.</p>
+</div>
+<div class="section" id="submitting-tests">
+<h2>Submitting Tests<a class="headerlink" href="#submitting-tests" title="Permalink to this headline">¶</a></h2>
+<p>Once you’ve written tests, please submit them using
+the <a class="reference internal" href="submission-process.html"><span class="doc">typical GitHub Pull Request workflow</span></a>; please
+make sure you run the <a class="reference internal" href="lint-tool.html"><span class="doc">lint script</span></a> before opening a pull request!</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing Tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../running-tests/custom-runner.html" title="previous chapter">Writing Your Own Runner</a></li>
+      <li>Next: <a href="general-guidelines.html" title="next chapter">General Test Guidelines</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/index.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

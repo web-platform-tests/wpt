@@ -1,0 +1,217 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Running Tests from the Local System &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chrome" href="chrome.html" />
+    <link rel="prev" title="Running Tests from the Web" href="from-web.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="running-tests-from-the-local-system">
+<h1>Running Tests from the Local System<a class="headerlink" href="#running-tests-from-the-local-system" title="Permalink to this headline">¶</a></h1>
+<p>The tests are designed to be run from your local computer.</p>
+<div class="section" id="system-setup">
+<h2>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this headline">¶</a></h2>
+<p>The test environment requires <a class="reference external" href="http://www.python.org/downloads">Python 2.7+</a>
+(but not Python 3.x).</p>
+<p>On Windows, be sure to add the Python directory (<code class="docutils literal notranslate"><span class="pre">c:\python2x</span></code>, by default) to
+your <code class="docutils literal notranslate"><span class="pre">%Path%</span></code> <a class="reference external" href="http://www.computerhope.com/issues/ch000549.htm">Environment Variable</a>,
+and read the <a class="reference external" href="#windows-notes">Windows Notes</a> section below.</p>
+<p>To get the tests running, you need to set up the test domains in your
+<a class="reference external" href="http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system"><code class="docutils literal notranslate"><span class="pre">hosts</span></code> file</a>.</p>
+<p>The necessary content can be generated with <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">make-hosts-file</span></code>; on
+Windows, you will need to preceed the prior command with <code class="docutils literal notranslate"><span class="pre">python</span></code> or
+the path to the Python binary (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">wpt</span> <span class="pre">make-hosts-file</span></code>).</p>
+<p>For example, on most UNIX-like systems, you can setup the hosts file with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt make-hosts-file <span class="p">|</span> sudo tee -a /etc/hosts
+</pre></div>
+</div>
+<p>And on Windows (this must be run in a PowerShell session with Administrator privileges):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python wpt make-hosts-file <span class="p">|</span> Out-File %SystemRoot%<span class="se">\S</span>ystem32<span class="se">\d</span>rivers<span class="se">\e</span>tc<span class="se">\h</span>osts -Encoding ascii -Append
+</pre></div>
+</div>
+<p>If you are behind a proxy, you also need to make sure the domains above are
+excluded from your proxy lookups.</p>
+<div class="section" id="windows-notes">
+<h3>Windows Notes<a class="headerlink" href="#windows-notes" title="Permalink to this headline">¶</a></h3>
+<p>Generally Windows Subsystem for Linux will provide the smoothest user
+experience for running web-platform-tests on Windows.</p>
+<p>The standard Windows shell requires that all <code class="docutils literal notranslate"><span class="pre">wpt</span></code> commands are prefixed
+by the Python binary i.e. assuming <code class="docutils literal notranslate"><span class="pre">python</span></code> is on your path the server is
+started using:</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">wpt</span> <span class="pre">serve</span></code></p>
+</div>
+</div>
+<div class="section" id="via-the-browser">
+<h2>Via the browser<a class="headerlink" href="#via-the-browser" title="Permalink to this headline">¶</a></h2>
+<p>The test environment can then be started using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">serve</span>
+</pre></div>
+</div>
+<p>This will start HTTP servers on two ports and a websockets server on
+one port. By default the web servers start on ports 8000 and 8443 and the other
+ports are randomly-chosen free ports. Tests must be loaded from the
+<em>first</em> HTTP server in the output. To change the ports,
+create a <code class="docutils literal notranslate"><span class="pre">config.json</span></code> file in the wpt root directory, and add
+port definitions of your choice e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;ports&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;http&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1234</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;https&quot;</span><span class="p">:[</span><span class="mi">5678</span><span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>After your <code class="docutils literal notranslate"><span class="pre">hosts</span></code> file is configured, the servers will be locally accessible at:</p>
+<p>http://web-platform.test:8000/<br>
+https://web-platform.test:8443/ *</p>
+<p>This server has all the capabilities of the publicly-deployed version–see
+<a class="reference internal" href="from-web.html"><span class="doc">Running the Tests from the Web</span></a>.</p>
+<p>*<em>See <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/README.md#trusting-root-ca">Trusting Root CA</a></em></p>
+</div>
+<div class="section" id="via-the-command-line">
+<h2>Via the command line<a class="headerlink" href="#via-the-command-line" title="Permalink to this headline">¶</a></h2>
+<p>Many tests can be automatically executed in a new browser instance using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="p">[</span><span class="n">browsername</span><span class="p">]</span> <span class="p">[</span><span class="n">tests</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This will automatically load the tests in the chosen browser and extract the
+test results. For example to run the <code class="docutils literal notranslate"><span class="pre">dom/historical.html</span></code> tests in a local
+copy of Chrome:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="n">chrome</span> <span class="n">dom</span><span class="o">/</span><span class="n">historical</span><span class="o">.</span><span class="n">html</span>
+</pre></div>
+</div>
+<p>Or to run in a specified copy of Firefox:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">binary</span> <span class="o">~/</span><span class="n">local</span><span class="o">/</span><span class="n">firefox</span><span class="o">/</span><span class="n">firefox</span> <span class="n">firefox</span> <span class="n">dom</span><span class="o">/</span><span class="n">historical</span><span class="o">.</span><span class="n">html</span>
+</pre></div>
+</div>
+<p>For details on the supported products and a large number of other options for
+customising the test run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>Additional browser-specific documentation:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="chrome.html">Chrome</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chrome_android.html">Chrome for Android</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chrome_android.html#hosts">Hosts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chrome_android.html#ca-certificate">CA certificate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="safari.html">Safari</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Running Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="from-web.html">Running Tests from the Web</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Running Tests from the Local System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-runner.html">Writing Your Own Runner</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Running Tests</a><ul>
+      <li>Previous: <a href="from-web.html" title="previous chapter">Running Tests from the Web</a></li>
+      <li>Next: <a href="chrome.html" title="next chapter">Chrome</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/running-tests/from-local-system.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

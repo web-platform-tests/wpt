@@ -1,0 +1,206 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CSS User Stylesheets &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File Name Flags" href="file-names.html" />
+    <link rel="prev" title="CSS Metadata" href="css-metadata.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="css-user-stylesheets">
+<h1>CSS User Stylesheets<a class="headerlink" href="#css-user-stylesheets" title="Permalink to this headline">¶</a></h1>
+<p>Some test may require special user style sheets to be applied in order
+for the case to be verified. In order for proper indications and
+prerequisite to be displayed every user style sheet should contain the
+following rules.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">#</span><span class="nn">user-stylesheet-indication</span>
+<span class="p">{</span>
+   <span class="c">/* Used by the harness to display an indication there is a user</span>
+<span class="c">   style sheet applied */</span>
+    <span class="k">display</span><span class="p">:</span> <span class="kc">block</span><span class="cp">!important</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The rule <code class="docutils literal notranslate"><span class="pre">#user-stylesheet-indication</span></code> is to be used by any
+harness running the test suite.</p>
+<p>A harness should identify test that need a user style sheet by
+looking at their flags meta tag. It then should display appropriate
+messages indicating if a style sheet is applied or if a style sheet
+should not be applied.</p>
+<p>Harness style sheet rules:</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">#</span><span class="nn">userstyle</span>
+<span class="p">{</span>
+    <span class="k">color</span><span class="p">:</span> <span class="kc">green</span><span class="p">;</span>
+    <span class="k">display</span><span class="p">:</span> <span class="kc">none</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">#</span><span class="nn">nouserstyle</span>
+<span class="p">{</span>
+    <span class="k">color</span><span class="p">:</span> <span class="kc">red</span><span class="p">;</span>
+    <span class="k">display</span><span class="p">:</span> <span class="kc">none</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Harness userstyle flag found:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">p</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;user-stylesheet-indication&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;userstyle&quot;</span><span class="p">&gt;</span>A user style
+sheet is applied.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Harness userstyle flag NOT found:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">p</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;user-stylesheet-indication&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;nouserstyle&quot;</span><span class="p">&gt;</span>A user style
+sheet is applied.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Within the test case it is recommended that the case itself indicate
+the necessary user style sheet that is required.</p>
+<p>Examples: (code for the <a class="reference external" href="https://github.com/w3c/csswg-test/blob/master/css21/cascade/support/cascade.css"><code class="docutils literal notranslate"><span class="pre">cascade.css</span></code></a> file)</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">#</span><span class="nn">cascade</span> <span class="c">/* ID name should match user style sheet file name */</span>
+<span class="p">{</span>
+    <span class="c">/* Used by the test to hide the prerequisite */</span>
+    <span class="k">display</span><span class="p">:</span> <span class="kc">none</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The rule <code class="docutils literal notranslate"><span class="pre">#cascade</span></code> in the example above is used by the test
+page to hide the prerequisite text. The rule name should match the
+user style sheet CSS file name in order to keep this orderly.</p>
+<p>Examples: (code for <a class="reference external" href="https://github.com/w3c/csswg-test/blob/master/css21/cascade/cascade-001.xht">the <code class="docutils literal notranslate"><span class="pre">cascade-###.xht</span></code> files</a>)</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">p</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;cascade&quot;</span><span class="p">&gt;</span>
+    PREREQUISITE: The <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;support/cascade.css&quot;</span><span class="p">&gt;</span>
+    &quot;cascade.css&quot;<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span> file is enabled as the user agent&#39;s user style
+    sheet.
+<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>The id value should match the user style sheet CSS file name and the
+user style sheet rule that is used to hide this text when the style
+sheet is properly applied.</p>
+<p>Please flag test that require user style sheets with the userstyle
+flag so people running the tests know that a user style sheet is
+required.</p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Writing Tests</a><ul>
+      <li>Previous: <a href="css-metadata.html" title="previous chapter">CSS Metadata</a></li>
+      <li>Next: <a href="file-names.html" title="next chapter">File Name Flags</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/css-user-styles.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

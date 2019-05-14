@@ -1,0 +1,310 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Writing H2 Tests &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Lint Tool" href="lint-tool.html" />
+    <link rel="prev" title="File Name Flags" href="file-names.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="writing-h2-tests">
+<h1>Writing H2 Tests<a class="headerlink" href="#writing-h2-tests" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><b>Important:</b> The HTTP/2.0 server requires you to have Python 2.7.10+
+and OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
+<a class="reference external" href="https://tools.ietf.org/html/rfc7301">TLS ALPN</a> extension, which is only supported in <a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</div></blockquote>
+<p>These instructions assume you are already familiar with the testing
+infrastructure and know how to write a standard HTTP/1.1 test.</p>
+<p>On top of the standard <code class="docutils literal notranslate"><span class="pre">main</span></code> handler that the H1 server offers, the
+H2 server also offers support for specific frame handlers in the Python
+scripts. Currently there is support for for <code class="docutils literal notranslate"><span class="pre">handle_headers</span></code> and <code class="docutils literal notranslate"><span class="pre">handle_data</span></code>.
+Unlike the <code class="docutils literal notranslate"><span class="pre">main</span></code> handler, these  are run whenever the server receives a
+HEADERS frame (RequestReceived event) or a DATA frame (DataReceived event).
+<code class="docutils literal notranslate"><span class="pre">main</span></code> can still be used, but it will be run after the server has received
+the request in its entirety.</p>
+<p>Here is what a Python script for a test might look like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_headers</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;pass&quot;</span><span class="p">:</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="mi">200</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">([(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;passed&#39;</span><span class="p">)])</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">write_status_headers</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="mi">403</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">([(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">)])</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">write_status_headers</span><span class="p">()</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">end_stream</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">handle_data</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_data</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">data</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_data</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">End of File&#39;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above script is fairly simple:</p>
+<ol class="simple">
+<li>Upon receiving the HEADERS frame, <code class="docutils literal notranslate"><span class="pre">handle_headers</span></code> is run.<ul>
+<li>This checks for a header called ‘test’ and checks if it is set to ‘pass’.
+If true, it will immediately send a response header, otherwise it responds
+with a 403 and ends the stream.</li>
+</ul>
+</li>
+<li>Any DATA frames received will then be handled by <code class="docutils literal notranslate"><span class="pre">handle_data</span></code>. This will
+simply reverse the data and send it back.</li>
+<li>Once the request has been fully received, <code class="docutils literal notranslate"><span class="pre">main</span></code> is run which will send
+one last DATA frame and signal its the end of the stream.</li>
+</ol>
+<div class="section" id="response-writer-api">
+<h2>Response Writer API<a class="headerlink" href="#response-writer-api" title="Permalink to this headline">¶</a></h2>
+<p>The H2Response API is pretty much the same as the H1 variant, the main API
+difference lies in the H2ResponseWriter which is accessed through <code class="docutils literal notranslate"><span class="pre">response.writer</span></code></p>
+<hr class="docutils" />
+<div class="section" id="write-headers-self-headers-status-code-status-message-none-stream-id-none-last-false">
+<h3><code class="docutils literal notranslate"><span class="pre">write_headers(self,</span> <span class="pre">headers,</span> <span class="pre">status_code,</span> <span class="pre">status_message=None,</span> <span class="pre">stream_id=None,</span> <span class="pre">last=False):</span></code><a class="headerlink" href="#write-headers-self-headers-status-code-status-message-none-stream-id-none-last-false" title="Permalink to this headline">¶</a></h3>
+<p>Write a HEADER frame using the H2 Connection object, will only work if the
+stream is in a state to send HEADER frames. This will automatically format
+the headers so that pseudo headers are at the start of the list and correctly
+prefixed with ‘:’. Since this using the H2 Connection object, it requires that
+the stream is in the correct state to be sending this frame.</p>
+<blockquote>
+<div><b>Note</b>: Will raise ProtocolErrors if pseudo headers are missing.</div></blockquote>
+<ul class="simple">
+<li><b>Parameters</b><ul>
+<li><b>headers</b>: List of (header, value) tuples</li>
+<li><b>status_code</b>: The HTTP status code of the response</li>
+<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
+<li><b>last</b>: Flag to signal if this is the last frame in stream.</li>
+</ul>
+</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="write-data-self-item-last-false-stream-id-none">
+<h3><code class="docutils literal notranslate"><span class="pre">write_data(self,</span> <span class="pre">item,</span> <span class="pre">last=False,</span> <span class="pre">stream_id=None):</span></code><a class="headerlink" href="#write-data-self-item-last-false-stream-id-none" title="Permalink to this headline">¶</a></h3>
+<p>Write a DATA frame using the H2 Connection object, will only work if the
+stream is in a state to send DATA frames. Uses flow control to split data
+into multiple data frames if it exceeds the size that can be in a single frame.
+Since this using the H2 Connection object, it requires that the stream is in
+the correct state to be sending this frame.</p>
+<ul class="simple">
+<li><b>Parameters</b><ul>
+<li><b>item</b>: The content of the DATA frame</li>
+<li><b>last</b>: Flag to signal if this is the last frame in stream.</li>
+<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
+</ul>
+</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="write-push-self-promise-headers-push-stream-id-none-status-none-response-headers-none-response-data-none">
+<h3><code class="docutils literal notranslate"><span class="pre">write_push(self,</span> <span class="pre">promise_headers,</span> <span class="pre">push_stream_id=None,</span> <span class="pre">status=None,</span> <span class="pre">response_headers=None,</span> <span class="pre">response_data=None):</span></code><a class="headerlink" href="#write-push-self-promise-headers-push-stream-id-none-status-none-response-headers-none-response-data-none" title="Permalink to this headline">¶</a></h3>
+<p>This will write a push promise to the request stream. If you do not provide
+headers and data for the response, then no response will be pushed, and you
+should send them yourself using the ID returned from this function.</p>
+<ul class="simple">
+<li><b>Parameters</b><ul>
+<li><b>promise_headers</b>: A list of header tuples that matches what the client would use to
+request the pushed response</li>
+<li><b>push_stream_id</b>: The ID of the stream the response should be pushed to. If none given, will
+use the next available id.</li>
+<li><b>status</b>: The status code of the response, REQUIRED if response_headers given</li>
+<li><b>response_headers</b>: The headers of the response</li>
+<li><b>response_data</b>: The response data.</li>
+</ul>
+</li>
+<li><b>Returns</b>: The ID of the push stream</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="write-raw-header-frame-self-headers-stream-id-none-end-stream-false-end-headers-false-frame-cls-headersframe">
+<h3><code class="docutils literal notranslate"><span class="pre">write_raw_header_frame(self,</span> <span class="pre">headers,</span> <span class="pre">stream_id=None,</span> <span class="pre">end_stream=False,</span> <span class="pre">end_headers=False,</span> <span class="pre">frame_cls=HeadersFrame):</span></code><a class="headerlink" href="#write-raw-header-frame-self-headers-stream-id-none-end-stream-false-end-headers-false-frame-cls-headersframe" title="Permalink to this headline">¶</a></h3>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">write_headers</span></code>, this does not check to see if a stream is in the
+correct state to have HEADER frames sent through to it. It also won’t force
+the order of the headers or make sure pseudo headers are prefixed with ‘:’.
+It will build a HEADER frame and send it without using the H2 Connection
+object other than to HPACK encode the headers.</p>
+<blockquote>
+<div><b>Note</b>: The <code class="docutils literal notranslate"><span class="pre">frame_cls</span></code> parameter is so that this class can be reused
+by <code class="docutils literal notranslate"><span class="pre">write_raw_continuation_frame</span></code>, as their construction is identical.</div></blockquote>
+<ul class="simple">
+<li><b>Parameters</b><ul>
+<li><b>headers</b>: List of (header, value) tuples</li>
+<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
+<li><b>end_stream</b>: Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to add END_STREAM flag to frame</li>
+<li><b>end_headers</b>: Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to add END_HEADERS flag to frame</li>
+</ul>
+</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="write-raw-data-frame-self-data-stream-id-none-end-stream-false">
+<h3><code class="docutils literal notranslate"><span class="pre">write_raw_data_frame(self,</span> <span class="pre">data,</span> <span class="pre">stream_id=None,</span> <span class="pre">end_stream=False):</span></code><a class="headerlink" href="#write-raw-data-frame-self-data-stream-id-none-end-stream-false" title="Permalink to this headline">¶</a></h3>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">write_data</span></code>, this does not check to see if a stream is in the correct
+state to have DATA frames sent through to it. It will build a DATA frame and
+send it without using the H2 Connection object. It will not perform any flow control checks.</p>
+<ul class="simple">
+<li><b>Parameters</b><ul>
+<li><b>data</b>: The data to be sent in the frame</li>
+<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
+<li><b>end_stream</b>: Set to True to add END_STREAM flag to frame</li>
+</ul>
+</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="write-raw-continuation-frame-self-headers-stream-id-none-end-headers-false">
+<h3><code class="docutils literal notranslate"><span class="pre">write_raw_continuation_frame(self,</span> <span class="pre">headers,</span> <span class="pre">stream_id=None,</span> <span class="pre">end_headers=False):</span></code><a class="headerlink" href="#write-raw-continuation-frame-self-headers-stream-id-none-end-headers-false" title="Permalink to this headline">¶</a></h3>
+<p>This provides the ability to create and write a CONTINUATION frame to the
+stream, which is not exposed by <code class="docutils literal notranslate"><span class="pre">write_headers</span></code> as the h2 library handles
+the split between HEADER and CONTINUATION internally. Will perform HPACK
+encoding on the headers. It also ignores the state of the stream.</p>
+<p>This calls <code class="docutils literal notranslate"><span class="pre">write_raw_data_frame</span></code> with <code class="docutils literal notranslate"><span class="pre">frame_cls=ContinuationFrame</span></code> since
+the HEADER and CONTINUATION frames are constructed in the same way.</p>
+<ul class="simple">
+<li><b>Parameters</b>:<ul>
+<li><b>headers</b>: List of (header, value) tuples</li>
+<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
+<li><b>end_headers</b>: Set to True to add END_HEADERS flag to frame</li>
+</ul>
+</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="end-stream-self-stream-id-none">
+<h3><code class="docutils literal notranslate"><span class="pre">end_stream(self,</span> <span class="pre">stream_id=None):</span></code><a class="headerlink" href="#end-stream-self-stream-id-none" title="Permalink to this headline">¶</a></h3>
+<p>Ends the stream with the given ID, or the one that request was made on if no ID given.</p>
+<ul class="simple">
+<li><b>Parameters</b><ul>
+<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Writing Tests</a><ul>
+      <li>Previous: <a href="file-names.html" title="previous chapter">File Name Flags</a></li>
+      <li>Next: <a href="lint-tool.html" title="next chapter">Lint Tool</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/h2tests.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

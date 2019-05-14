@@ -78,7 +78,7 @@ touch .nojekyll
 # Publish the website by pushing the built contents to the `gh-pages` branch
 git add .
 
-if ! git diff --exit-code --quiet --staged ; then
+if git diff --exit-code --quiet --staged ; then
   echo No change to the website contents. Exiting without publishing.
 
   exit ${neutral_status}

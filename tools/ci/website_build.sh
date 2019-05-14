@@ -61,7 +61,7 @@ cd docs/_build/html
 git init
 git fetch --depth 1 ${remote_url} gh-pages
 git checkout FETCH_HEAD
-git rm -r .
+git rm -rf .
 
 # Build the website
 cd ../..

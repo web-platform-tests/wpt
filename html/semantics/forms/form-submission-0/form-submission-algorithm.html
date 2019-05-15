@@ -23,7 +23,6 @@ test(() => {
   let form = populateForm('<input required><input type=submit><button type=submit></button>');
   let submitter1 = form.querySelector('input[type=submit]');
   let submitter2 = form.querySelector('button[type=submit]');
-  let iframe = form.previousSibling;
   let invalid = form.querySelector('[required]');
   let counter = 0;
   invalid.oninvalid = () => {
@@ -36,18 +35,18 @@ test(() => {
 }, "If form's firing submission events is true, then return; 'invalid' event");
 
 async_test(t => {
-  let form = populateForm('<input type=hidden name=n value=v0><input type=submit>');
-  let submitter = form.querySelector('[type=submit]');
+  let form = populateForm('<input type=submit name=n value=i><button type=submit name=n value=b>');
+  let submitter1 = form.querySelector('input[type=submit]');
+  let submitter2 = form.querySelector('button[type=submit]');
   let iframe = form.previousSibling;
   form.onsubmit = () => {
-    let hidden = form.querySelector('[type=hidden]');
-    hidden.value = 'inner click()';
-    submitter.click();
-    hidden.value = 'v2';
+    // Needs to click different one because click() has reentrancy protection.
+    submitter2.click();
   };
-  submitter.click();
+  submitter1.click();
+  // We actually submit the form in order to check which 'click()' submits it.
   iframe.onload = t.step_func_done(() => {
-    assert_not_equals(iframe.contentWindow.location.search.indexOf('n=v2'), -1);
+    assert_not_equals(iframe.contentWindow.location.search.indexOf('n=i'), -1);
   });
 }, "If form's firing submission events is true, then return; 'submit' event");
 

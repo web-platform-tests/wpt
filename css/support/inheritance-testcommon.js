@@ -5,8 +5,7 @@
 function assert_initial(property, initial) {
   test(() => {
     const target = document.getElementById('target');
-    if (!getComputedStyle(target)[property])
-      return;
+    assert_own_property(getComputedStyle(target), property);
     target.style[property] = 'initial';
     assert_equals(getComputedStyle(target)[property], initial);
     target.style[property] = '';
@@ -29,8 +28,7 @@ function assert_inherited(property, initial, other) {
   test(() => {
     const container = document.getElementById('container');
     const target = document.getElementById('target');
-    if (!getComputedStyle(target)[property])
-      return;
+    assert_own_property(getComputedStyle(target), property);
     container.style[property] = 'initial';
     target.style[property] = 'unset';
     assert_not_equals(getComputedStyle(container)[property], other);
@@ -65,8 +63,7 @@ function assert_not_inherited(property, initial, other) {
   test(() => {
     const container = document.getElementById('container');
     const target = document.getElementById('target');
-    if (!getComputedStyle(target)[property])
-      return;
+    assert_own_property(getComputedStyle(target), property);
     container.style[property] = 'initial';
     target.style[property] = 'unset';
     assert_not_equals(getComputedStyle(container)[property], other);

@@ -19,6 +19,22 @@ test(() => {
 }, 'If constructing entry list flag of form is true, then return');
 
 
+test(() => {
+  let form = populateForm('<input required><input type=submit><button type=submit></button>');
+  let submitter1 = form.querySelector('input[type=submit]');
+  let submitter2 = form.querySelector('button[type=submit]');
+  let iframe = form.previousSibling;
+  let invalid = form.querySelector('[required]');
+  let counter = 0;
+  invalid.oninvalid = () => {
+    ++counter;
+    // Needs to click different one because click() has reentrancy protection.
+    submitter2.click();
+  };
+  submitter1.click();
+  assert_equals(counter, 1);
+}, "If form's firing submission events is true, then return; 'invalid' event");
+
 async_test(t => {
   let form = populateForm('<input type=hidden name=n value=v0><input type=submit>');
   let submitter = form.querySelector('[type=submit]');
@@ -33,10 +49,9 @@ async_test(t => {
   iframe.onload = t.step_func_done(() => {
     assert_not_equals(iframe.contentWindow.location.search.indexOf('n=v2'), -1);
   });
-}, "If form's firing submit event is true, then return");
+}, "If form's firing submission events is true, then return; 'submit' event");
 
-let test9 = async_test('Cannot navigate (after constructing the entry list)');
-test9.step(() => {
+async_test(t => {
   let form = populateForm('<input name=n1 value=v1>');
   form.onformdata = (e) => { e.target.remove(); };
   let wasLoaded = false;
@@ -44,13 +59,13 @@ test9.step(() => {
   // Request to load '/common/dummy.xhtml', and immediately submit the form to
   // the same frame. If the form submission is aborted, the first request
   // will be completed.
-  iframe.onload = test9.step_func_done(() => {
+  iframe.onload = t.step_func_done(() => {
     wasLoaded = true;
     assert_true(iframe.contentWindow.location.search.indexOf('n1=v1') == -1);
   });
   iframe.src = '/common/dummy.xhtml';
   assert_false(wasLoaded, 'Make sure the first loading is ongoing.');
   form.submit();
-});
+}, 'Cannot navigate (after constructing the entry list)');
 </script>
 </body>

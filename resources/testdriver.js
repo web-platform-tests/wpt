@@ -142,8 +142,8 @@
             if (!window.document.contains(element)) {
                 return Promise.reject(new Error("element in different document or shadow tree"));
             }
-
-            if (!inView(element)) {
+            bool in_view = inView(element);
+            if (!in_view) {
                 element.scrollIntoView({behavior: "instant",
                                         block: "end",
                                         inline: "nearest"});

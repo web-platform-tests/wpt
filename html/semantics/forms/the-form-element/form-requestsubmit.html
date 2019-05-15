@@ -147,6 +147,14 @@ test(() => {
   assert_equals(invalidCounter, 1, 'click() + requestSubmit()');
 }, 'requestSubmit() doesn\'t run interactive validation reentrantly');
 
+test(() => {
+  let form = document.createElement('form');
+  let submitCounter = 0;
+  form.addEventListener('submit', e => { ++submitCounter; e.preventDefault(); });
+  form.requestSubmit();
+  assert_equals(submitCounter, 0);
+}, 'requestSubmit() for a disconnected form should not submit the form');
+
 async_test(t => {
   window.addEventListener('load', t.step_func(() => {
     document.body.insertAdjacentHTML('afterbegin', `

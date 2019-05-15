@@ -28,7 +28,7 @@ test(() => {
   element.attachShadow({mode: 'closed'});
 
   // No definition and it's already a host.
-  assert_throws('InvalidStateError', () => {
+  assert_throws('NotSupportedError', () => {
     element.attachShadow({mode: 'closed'});
   });
 
@@ -45,11 +45,9 @@ test(() => {
   }
 
   customElements.define('capital-shadow-disabled-element', CapitalShadowDisabledElement);
-  try {
-    document.createElement('capital-shadow-disabled-element').attachShadow({mode: 'open'});
-  } catch (e) {
-    assert_unreached('Should throw nothing');
-  }
+
+  // Test fails if this throws
+  document.createElement('capital-shadow-disabled-element').attachShadow({mode: 'open'});
 }, 'Element.attachShadow for a custom element with disabledFeatures=["SHADOW"] should not throw a NotSupportedError');
 
 class MyCustomizedBuiltinElement extends HTMLInputElement {

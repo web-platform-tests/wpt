@@ -20,6 +20,15 @@ customElements.define('my-control', MyControl);
 
 test(() => {
   document.body.insertAdjacentHTML('beforeend',
+      '<form><my-control></my-control></form>');
+  let form = document.body.lastChild;
+  let custom = form.firstChild;
+  form.reset();
+  assert_true(custom.resetCalled);
+}, 'form.reset() should trigger formResetCallback');
+
+test(() => {
+  document.body.insertAdjacentHTML('beforeend',
       '<form><my-control></my-control><output>default</output></form>');
   let form = document.body.lastChild;
   let custom = form.firstChild;
@@ -34,9 +43,7 @@ test(() => {
 }, 'form.reset(): formResetCallback is called after reset of the last ' +
    'built-in form control and before the next statement.');
 
-let t = async_test('Clicking a reset button invokes formResetCallback in a ' +
-                   'microtask');
-t.step(() => {
+promise_test(() => {
   document.body.insertAdjacentHTML('beforeend',
       '<form><my-control></my-control><input type=reset></form>');
   let form = document.body.lastChild;
@@ -45,9 +52,7 @@ t.step(() => {
   assert_false(custom.resetCalled);
   resetButton.click();
   assert_false(custom.resetCalled);
-  window.queueMicrotask(t.step_func_done(() => {
-    assert_true(custom.resetCalled);
-  }));
-});
+  return Promise.resolve().then(() => assert_true(custom.resetCalled));
+}, 'Clicking a reset button invokes formResetCallback in a microtask');
 </script>
 </body>

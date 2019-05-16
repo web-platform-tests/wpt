@@ -3,6 +3,7 @@
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/html/semantics/forms/form-submission-0/resources/targetted-form.js"></script>
 <script>
 class MyControl extends HTMLElement {
   static get formAssociated() { return true; }
@@ -76,7 +77,15 @@ test(() => {
   form.innerHTML = '<my-control name="n1" disabled></my-control><input name="n2">'
   const formData = new FormData(form);
   assert_equals(formData.get('n1'), null);
-}, 'A disabled form-associated custom element should not submit its value');
+}, 'A disabled form-associated custom element should not provide an entry for it');
+
+promise_test(async t => {
+  let form = populateForm('<my-control name=d disabled></my-control>' +
+      '<my-control name=e></my-control>');
+  let query = await submitPromise(form, form.previousSibling);
+  assert_equals(query.indexOf('d=my-control-value'), -1);
+  assert_not_equals(query.indexOf('e=my-control-value'), -1);
+}, 'A disabled form-associated custom element should not submit an entry for it');
 
 test(() => {
   const control = new MyControl();

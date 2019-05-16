@@ -115,9 +115,39 @@ test(() => {
   assert_true(validity.valid);
   assert_equals(control.i.validationMessage, '');
 
-  assert_throws("TypeMismatchError", () => { control.i.setValidity({valueMissing: true}); },
+  assert_throws(new TypeError(), () => { control.i.setValidity({valueMissing: true}); },
       'setValidity() requires the second argument if the first argument contains true');
 }, 'validity and setValidity()');
+
+test(() => {
+  document.body.insertAdjacentHTML('beforebegin', '<my-control><light-child></my-control>');
+  let control = document.body.firstChild;
+  const flags = {valueMissing: true};
+  const m = 'non-empty message';
+
+  assert_throws('NotFoundError', () => {
+    control.i.setValidity(flags, m, document.body);
+  }, 'Not a descendant');
+
+  assert_throws('NotFoundError', () => {
+    control.i.setValidity(flags, m, control);
+  }, 'Self');
+
+  // A descendant
+  control.i.setValidity(flags, m, control.querySelector('light-child'));
+
+  // An element in the direct shadow tree
+  let shadow1 = control.attachShadow({mode: 'open'});
+  let shadowChild = document.createElement('div');
+  shadow1.appendChild(shadowChild);
+  control.i.setValidity(flags, m, shadowChild);
+
+  // An element in an nested shadow trees
+  let shadow2 = shadowChild.attachShadow({mode: 'closed'});
+  let nestedShadowChild = document.createElement('span');
+  shadow2.appendChild(nestedShadowChild);
+  control.i.setValidity(flags, m, nestedShadowChild);
+}, '"anchor" argument of setValidity()');
 
 test(() => {
   const control = document.createElement('my-control');
@@ -150,16 +180,13 @@ test(() => {
   assert_true(control.i.reportValidity(), 'default state');
   assert_equals(invalidCount, 0);
 
-  assert_not_equals(document.activeElement, control);
   control.i.setValidity({customError:true}, 'foo');
   assert_false(control.i.reportValidity());
   assert_equals(invalidCount, 1);
-  assert_equals(document.activeElement, control);
 
   control.blur();
   control.addEventListener('invalid', e => e.preventDefault());
   assert_false(control.i.reportValidity());
-  assert_not_equals(document.activeElement, control);
 }, 'reportValidity()');
 
 test(() => {
@@ -168,26 +195,28 @@ test(() => {
   const form = container.querySelector('form');
   const control = container.querySelector('my-control');
   control.tabIndex = 0;
+  let invalidCount = 0;
+  control.addEventListener('invalid', e => { ++invalidCount; });
 
   assert_true(control.i.checkValidity());
   assert_true(form.checkValidity());
   control.i.setValidity({valueMissing: true}, 'Please fill out this field');
   assert_false(form.checkValidity());
+  assert_equals(invalidCount, 1);
 
   assert_false(form.reportValidity());
-  assert_equals(document.activeElement, control);
+  assert_equals(invalidCount, 2);
 
-  control.blur();
   container.querySelector('input[type=submit]').click();
-  assert_equals(document.activeElement, control);
+  assert_equals(invalidCount, 3);
 }, 'Custom control affects validation at the owner form');
 
-function isValid(element, comment) {
+function isValidAccordingToCSS(element, comment) {
   assert_true(element.matches(':valid'), comment ? (comment + ' - :valid') : undefined);
   assert_false(element.matches(':invalid'), comment ? (comment + ' - :invalid') : undefined);
 }
 
-function isInvalid(element, comment) {
+function isInvalidAccordingToCSS(element, comment) {
   assert_false(element.matches(':valid'), comment ? (comment + ' - :valid') : undefined);
   assert_true(element.matches(':invalid'), comment ? (comment + ' - :invalid') : undefined);
 }
@@ -199,27 +228,28 @@ test(() => {
   const fieldset = container.querySelector('fieldset');
   const control = container.querySelector('my-control');
 
-  isValid(control);
-  isValid(form);
-  isValid(fieldset);
+  isValidAccordingToCSS(control);
+  isValidAccordingToCSS(form);
+  isValidAccordingToCSS(fieldset);
 
   control.i.setValidity({typeMismatch: true}, 'Invalid format');
-  isInvalid(control);
-  isInvalid(form);
-  isInvalid(fieldset);
+  isInvalidAccordingToCSS(control);
+  isInvalidAccordingToCSS(form);
+  isInvalidAccordingToCSS(fieldset);
 
   control.remove();
-  isValid(form);
-  isValid(fieldset);
+  isInvalidAccordingToCSS(control);
+  isValidAccordingToCSS(form);
+  isValidAccordingToCSS(fieldset);
 
   fieldset.appendChild(control);
-  isInvalid(form);
-  isInvalid(fieldset);
+  isInvalidAccordingToCSS(form);
+  isInvalidAccordingToCSS(fieldset);
 
   control.i.setValidity({});
-  isValid(control);
-  isValid(form);
-  isValid(fieldset);
-}, ':valid :invalid for FORM and FIELDSET');
+  isValidAccordingToCSS(control);
+  isValidAccordingToCSS(form);
+  isValidAccordingToCSS(fieldset);
+}, 'Custom control affects :valid :invalid for FORM and FIELDSET');
 </script>
 </body>

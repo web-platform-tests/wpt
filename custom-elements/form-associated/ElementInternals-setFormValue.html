@@ -15,9 +15,9 @@ class MyControl extends HTMLElement {
   get value() {
     return this.value_;
   }
-  set value(str) {
-    this.internals_.setFormValue(str);
-    this.value_ = str;
+  set value(v) {
+    this.internals_.setFormValue(v);
+    this.value_ = v;
   }
   setValues(nameValues) {
     const formData = new FormData();
@@ -34,7 +34,7 @@ function submitPromise(t) {
   return new Promise((resolve, reject) => {
     const iframe = $('iframe');
     iframe.onload = () => resolve(iframe.contentWindow.location.search);
-    iframe.onerror = () => reject();
+    iframe.onerror = () => reject(new Error('iframe onerror fired'));
     $('form').submit();
   });
 }
@@ -64,15 +64,20 @@ promise_test(t => {
 }, 'Single value - empty name exists');
 
 promise_test(t => {
-  $('#container').innerHTML = '<form action="/common/blank.html" target="if1">' +
+  $('#container').innerHTML = '<form action="/common/blank.html" target="if1" accept-charset=utf-8>' +
       '<input name=name-pd1 value="value-pd1">' +
       '<my-control name="name-ce1"></my-control>' +
-      '<my-control name="name-ce2"></my-control>' +
+      '<my-control name="name-usv"></my-control>' +
+      '<my-control name="name-file"></my-control>' +
       '</form>' +
       '<iframe name="if1"></iframe>';
-  $('my-control').value = 'value-ce1';
+  const USV_INPUT = 'abc\uDC00\uD800def';
+  const USV_OUTPUT = 'abc\uFFFD\uFFFDdef';
+  const FILE_NAME = 'test_file.txt';
+  $('[name=name-usv]').value = USV_INPUT;
+  $('[name=name-file]').value = new File(['file content'], FILE_NAME);
   return submitPromise(t).then(query => {
-    assert_equals(query, '?name-pd1=value-pd1&name-ce1=value-ce1&name-ce2=');
+    assert_equals(query, `?name-pd1=value-pd1&name-ce1=&name-usv=${encodeURIComponent(USV_OUTPUT)}&name-file=${FILE_NAME}`);
   });
 }, 'Single value - Non-empty name exists');
 

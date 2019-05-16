@@ -586,7 +586,7 @@ IdlArray.prototype.is_json_type = function(type)
 
     // sequence types
     if (type.generic == "sequence" || type.generic == "FrozenArray") {
-        return this.is_json_type(idlType);
+        return this.is_json_type(idlType[0]);
     }
 
     if (typeof idlType != "string") { throw new Error("Unexpected type " + JSON.stringify(idlType)); }
@@ -984,7 +984,7 @@ IdlArray.prototype.assert_type_is = function(value, type)
             // Nothing we can do.
             return;
         }
-        this.assert_type_is(value[0], type.idlType);
+        this.assert_type_is(value[0], type.idlType[0]);
         return;
     }
 
@@ -1004,11 +1004,11 @@ IdlArray.prototype.assert_type_is = function(value, type)
             // Nothing we can do.
             return;
         }
-        this.assert_type_is(value[0], type.idlType);
+        this.assert_type_is(value[0], type.idlType[0]);
         return;
     }
 
-    type = type.idlType;
+    type = Array.isArray(type.idlType) ? type.idlType[0] : type.idlType;
 
     switch(type)
     {

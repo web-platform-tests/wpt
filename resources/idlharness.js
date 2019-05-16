@@ -2991,7 +2991,7 @@ function IdlInterfaceMember(obj)
      * We just forward all properties to this object without modification,
      * except for special extAttrs handling.
      */
-    for (var k in obj)
+    for (var k in obj.toJSON())
     {
         this[k] = obj[k];
     }

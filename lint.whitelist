@@ -64,6 +64,9 @@ TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.sxg
 
 TRAILING WHITESPACE: xhr/resources/headers-some-are-empty.asis
 
+## .gitignore
+W3C-TEST.ORG: .gitignore
+
 ## Documentation ##
 
 W3C-TEST.ORG: README.md
@@ -73,6 +76,8 @@ SET TIMEOUT: docs/*
 WEB-PLATFORM.TEST:README.md
 WEB-PLATFORM.TEST:*/README.md
 WEB-PLATFORM.TEST:docs/*
+INDENT TABS:docs/*
+CR AT EOL:docs/*
 
 ## Helper scripts ##
 
@@ -142,6 +147,7 @@ SET TIMEOUT: cookies/resources/testharness-helpers.js
 SET TIMEOUT: common/reftest-wait.js
 SET TIMEOUT: conformance-checkers/*
 SET TIMEOUT: content-security-policy/*
+SET TIMEOUT: css/css-display/display-contents-shadow-dom-1.html
 SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-001.html
 SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-002.html
 SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-003.html
@@ -175,7 +181,7 @@ SET TIMEOUT: html/webappapis/scripting/events/event-handler-processing-algorithm
 SET TIMEOUT: html/webappapis/scripting/processing-model-2/*
 SET TIMEOUT: IndexedDB/*
 SET TIMEOUT: infrastructure/*
-SET TIMEOUT: intersection-observer/resources/v2-subframe.html
+SET TIMEOUT: intersection-observer/resources/*
 SET TIMEOUT: intersection-observer/target-in-different-window.html
 SET TIMEOUT: media-source/mediasource-util.js
 SET TIMEOUT: media-source/URL-createObjectURL-revoke.html
@@ -797,7 +803,10 @@ MISSING-LINK: css/filter-effects/*.any.js
 
 # Tests that use WebKit/Blink testing APIs
 LAYOUTTESTS APIS: css/css-regions/interactivity/*
+LAYOUTTESTS APIS: import-maps/resolving.tentative.html
+LAYOUTTESTS APIS: permissions/test-background-fetch-permission.html
 LAYOUTTESTS APIS: resources/chromium/generic_sensor_mocks.js
+LAYOUTTESTS APIS: resources/chromium/webxr-test.js
 
 # Gecko additons to remove
 CSS-COLLIDING-REF-NAME: css/css-contain/reference/contain-size-fieldset-001-ref.html

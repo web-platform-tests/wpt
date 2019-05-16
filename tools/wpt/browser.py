@@ -461,35 +461,47 @@ class Chrome(Browser):
     def find_webdriver(self, channel=None):
         return find_executable("chromedriver")
 
-    def _latest_chromedriver_url(self, browser_binary=None):
-        latest = None
-        chrome_version = self.version(browser_binary)
-        assert chrome_version, "Cannot detect the version of Chrome"
-
-        # Remove channel suffixes (e.g. " dev").
-        chrome_version = chrome_version.split(' ')[0]
+    def _official_chromedriver_url(self, chrome_version):
+        # http://chromedriver.chromium.org/downloads/version-selection
         parts = chrome_version.split(".")
-        if len(parts) == 4:
-            latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s.%s.%s" % tuple(parts[:-1])
+        assert len(parts) == 4
+        latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s.%s.%s" % tuple(parts[:-1])
+        try:
+            latest = get(latest_url).text.strip()
+        except requests.RequestException:
+            latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s" % parts[0]
             try:
                 latest = get(latest_url).text.strip()
             except requests.RequestException:
-                latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s" % parts[0]
-                try:
-                    latest = get(latest_url).text.strip()
-                except requests.RequestException:
-                    pass
-        if latest is None:
-            # Fall back to *Chromium* build archives.
+                return None
+        return "https://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (
+            latest, self.platform_string())
+
+    def _chromium_chromedriver_url(self, chrome_version):
+        try:
+            # Try to find the Chromium build with the same revision.
             omaha = get("https://omahaproxy.appspot.com/deps.json?version=" + chrome_version).json()
             revision = omaha['chromium_base_position']
             url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/chromedriver_%s.zip" % (
                 self.chromium_platform_string(), revision, self.platform_string())
-        else:
-            url = "https://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (
-                latest, self.platform_string())
-
+            # Check the status without downloading the content (this is a streaming request).
+            get(url)
+        except requests.RequestException:
+            # Fall back to the tip-of-tree Chromium build.
+            revision_url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/LAST_CHANGE" % (
+                self.chromium_platform_string())
+            revision = get(revision_url).text.strip()
+            url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/chromedriver_%s.zip" % (
+                self.chromium_platform_string(), revision, self.platform_string())
         return url
+
+    def _latest_chromedriver_url(self, browser_binary=None):
+        chrome_version = self.version(browser_binary)
+        assert chrome_version, "Cannot detect the version of Chrome"
+        # Remove channel suffixes (e.g. " dev").
+        chrome_version = chrome_version.split(' ')[0]
+        return (self._official_chromedriver_url(chrome_version) or
+                self._chromium_chromedriver_url(chrome_version))
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         if dest is None:
@@ -620,6 +632,53 @@ class Opera(Browser):
         if m:
             return m.group(0)
 
+class EdgeChromium(Browser):
+    """MicrosoftEdge-specific interface."""
+
+    product = "edgechromium"
+    requirements = "requirements_edge_chromium.txt"
+
+    def install(self, dest=None, channel=None):
+        raise NotImplementedError
+
+    def find_binary(self, venv_path=None, channel=None):
+        raise find_executable("msedge")
+
+    def find_webdriver(self, channel=None):
+        return find_executable("msedgedriver")
+
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
+        if uname[0] != "Windows":
+            raise ValueError("Only Windows platform is currently supported")
+
+        if dest is None:
+            dest = os.pwd
+
+        platform = "x64" if uname[4] == "x86_64" else "x86"
+        url = "https://az813057.vo.msecnd.net/webdriver/msedgedriver_%s/msedgedriver.exe" % platform
+
+        self.logger.info("Downloading MSEdgeDriver from %s" % url)
+        resp = get(url)
+        installer_path = os.path.join(dest, "msedgedriver.exe")
+        with open(installer_path, "wb") as f:
+            f.write(resp.content)
+
+        return find_executable("msedgedriver", dest)
+
+    def version(self, binary=None, webdriver_binary=None):
+        if uname[0] != "Windows":
+            try:
+                version_string = call(binary, "--version").strip()
+            except subprocess.CalledProcessError:
+                self.logger.warning("Failed to call %s" % binary)
+                return None
+            m = re.match(r"(?:MSEdge|Edge) (.*)", version_string)
+            if not m:
+                self.logger.warning("Failed to extract version from: %s" % version_string)
+                return None
+            return m.group(1)
+        self.logger.warning("Unable to extract version from binary on Windows.")
+        return None
 
 class Edge(Browser):
     """Edge-specific interface."""

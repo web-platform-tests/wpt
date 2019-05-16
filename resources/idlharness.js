@@ -694,11 +694,11 @@ function exposure_set(object, default_set) {
         result = new Set(result);
     }
     if (exposed && exposed.length) {
-        var set = exposed[0].rhs.value;
+        const { rhs } = exposed[0];
         // Could be a list or a string.
-        if (typeof set == "string") {
-            set = [ set ];
-        }
+        const set = rhs.type === "identifier-list" ?
+            rhs.value.map(id => id.value) :
+            [ rhs.value ];
         result = new Set(set);
     }
     if (result && result.has("Worker")) {
@@ -1647,7 +1647,7 @@ IdlInterface.prototype.test_self = function()
             }
             var aliases;
             if (rhs.type === "identifier-list") {
-                aliases = rhs.value;
+                aliases = rhs.value.map(id => id.value);
             } else { // rhs.type === identifier
                 aliases = [ rhs.value ];
             }

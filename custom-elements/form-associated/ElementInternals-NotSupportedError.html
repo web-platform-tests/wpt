@@ -7,17 +7,17 @@ test(() => {
   class NotFormAssociatedElement extends HTMLElement {}
   customElements.define('my-element1', NotFormAssociatedElement);
   const element = new NotFormAssociatedElement();
-  const internals = element.attachInternals();
+  const i = element.attachInternals();
 
-  assert_throws('NotSupportedError', () => internals.setFormValue(''));
-  assert_throws('NotSupportedError', () => internals.form);
-  assert_throws('NotSupportedError', () => internals.setValidity({}));
-  assert_throws('NotSupportedError', () => internals.willValidate);
-  assert_throws('NotSupportedError', () => internals.validity);
-  assert_throws('NotSupportedError', () => internals.validationMessage);
-  assert_throws('NotSupportedError', () => internals.checkValidity());
-  assert_throws('NotSupportedError', () => internals.reportValidity());
-  assert_throws('NotSupportedError', () => internals.labels);
+  assert_throws('NotSupportedError', () => i.setFormValue(''));
+  assert_throws('NotSupportedError', () => i.form);
+  assert_throws('NotSupportedError', () => i.setValidity({}));
+  assert_throws('NotSupportedError', () => i.willValidate);
+  assert_throws('NotSupportedError', () => i.validity);
+  assert_throws('NotSupportedError', () => i.validationMessage);
+  assert_throws('NotSupportedError', () => i.checkValidity());
+  assert_throws('NotSupportedError', () => i.reportValidity());
+  assert_throws('NotSupportedError', () => i.labels);
 }, 'Form-related operations and attributes should throw NotSupportedErrors' +
      ' for non-form-associated custom elements.');
 </script>

@@ -120,7 +120,7 @@ test(() => {
 }, 'validity and setValidity()');
 
 test(() => {
-  document.body.insertAdjacentHTML('beforebegin', '<my-control><light-child></my-control>');
+  document.body.insertAdjacentHTML('afterbegin', '<my-control><light-child></my-control>');
   let control = document.body.firstChild;
   const flags = {valueMissing: true};
   const m = 'non-empty message';

@@ -14,8 +14,8 @@ for (var src of srcs) {
   async_test(t => {
     var img = document.createElement('IMG');
     img.intrinsicSize = '400 x 500';
-    var expected_intrinsic_width = 400;
-    var expected_intrinsic_height = 500;
+    var expected_intrinsic_width = Math.round(400 / 3);
+    var expected_intrinsic_height = Math.round(500 / 3);
     var expected_width = expected_intrinsic_width;
     var expected_height = expected_intrinsic_height;
 
@@ -33,11 +33,11 @@ for (var src of srcs) {
   async_test(t => {
     var img = document.createElement('IMG');
     img.intrinsicSize = '400 x 500';
-    img.width = '800'; /* 2x of intrinsic width */
-    var expected_intrinsic_width = 400;
-    var expected_intrinsic_height = 500;
-    var expected_width = expected_intrinsic_width * 2;
-    var expected_height = expected_intrinsic_height * 2;
+    img.width = '800';
+    var expected_intrinsic_width = Math.round(400 / 3);
+    var expected_intrinsic_height = Math.round(500 / 3);
+    var expected_width = 800;
+    var expected_height = 800 * (500 / 400);  // intrinsicsize defines aspect ratio
 
     document.body.appendChild(img);
     img.addEventListener('load', t.step_func(() => {
@@ -55,8 +55,8 @@ for (var src of srcs) {
     img.intrinsicSize = '400 x 500';
     img.width = '800';
     img.style = 'height:800px;';
-    var expected_intrinsic_width = 400;
-    var expected_intrinsic_height = 500;
+    var expected_intrinsic_width = Math.round(400 / 3);
+    var expected_intrinsic_height = Math.round(500 / 3);
     var expected_width = 800;
     var expected_height = 800;
 

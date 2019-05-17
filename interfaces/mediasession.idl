@@ -21,7 +21,6 @@ enum MediaSessionAction {
   "seekforward",
   "previoustrack",
   "nexttrack",
-  "skipad",
   "stop",
 };
 

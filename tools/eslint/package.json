@@ -1,0 +1,13 @@
+{
+  "name": "wpt-eslint",
+  "description": "ESLint for web-platform-tests",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --config .eslintrc --ext .html,.js ../../fullscreen"
+  },
+  "dependencies": {
+    "eslint": "5.16.0",
+    "eslint-plugin-html": "5.0.5"
+  }
+}

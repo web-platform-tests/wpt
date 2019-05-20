@@ -67,19 +67,23 @@ for mathvariant in mathvariantTransforms:
         mathfont.createGlyphFromValue(font, transformedChar)
     mathfont.save(font)
 
-# Create a test font for each mathvariant.
+# Create a MathML and CSS test for each mathvariant.
 for mathvariant in mathvariantTransforms:
-    print("Generating test for %s..." % mathvariant, end="")
+    print("Generating tests for %s..." % mathvariant, end="")
     reftest = open("../relations/css-styling/mathvariant-%s.html" % mathvariant, "w")
     reftestReference = open("../relations/css-styling/mathvariant-%s-ref.html" % mathvariant, "w")
+    CSSreftest = open("../../css/css-text/text-transform/text-transform-math-%s-001.tentative.html" % mathvariant, "w")
+    CSSreftestReference = open("../../css/css-text/text-transform/text-transform-math-%s-001.tentative-ref.html" % mathvariant, "w")
     source = '\
 <!DOCTYPE html>\n\
 <html>\n\
 <head>\n\
 <meta charset="utf-8"/>\n\
-<title>mathvariant %s</title>\n'
-    reftest.write(source % mathvariant)
-    reftestReference.write(source % ("%s (reference)" % mathvariant))
+<title>%s</title>\n'
+    reftest.write(source % ("mathvariant %s" % mathvariant))
+    reftestReference.write(source % ("mathvariant %s (reference)" % mathvariant))
+    CSSreftest.write(source % ("text-transform math-%s" % mathvariant))
+    CSSreftestReference.write(source % ("text-transform math-%s (reference)" % mathvariant))
     source ='\
 <link rel="help" href="https://mathml-refresh.github.io/mathml-core/#css-styling">\n\
 <link rel="help" href="https://mathml-refresh.github.io/mathml-core/#the-mathvariant-attribute">\n\
@@ -87,6 +91,11 @@ for mathvariant in mathvariantTransforms:
 <link rel="match" href="mathvariant-%s-ref.html"/>\n\
 <meta name="assert" content="Verify that a single-char <mtext> with a %s mathvariant is equivalent to an <mtext> with the transformed unicode character.">\n'
     reftest.write(source % (mathvariant, mathvariant))
+    source = '\
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/3745"/>\n\
+<link rel="match" href="text-transform-math-%s-001.tentative-ref.html"/>\n\
+<meta name="assert" content="Verify that a character with \'text-transform: math-%s\' renders the same as the transformed unicode character.">\n'
+    CSSreftest.write(source % (mathvariant, mathvariant))
     source = '\
 <style>\n\
   @font-face {\n\
@@ -100,7 +109,7 @@ for mathvariant in mathvariantTransforms:
     font-family: monospace;\n\
     font-size: 10px;\n\
   }\n\
-  math {\n\
+  .testfont {\n\
     font-family: TestFont;\n\
     font-size: 10px;\n\
   }\n\
@@ -110,20 +119,32 @@ for mathvariant in mathvariantTransforms:
   <p>Test passes if all the equalities below are true.</p>\n' % mathvariant
     reftest.write(source)
     reftestReference.write(source)
+    CSSreftest.write(source)
+    CSSreftestReference.write(source)
     charIndex = 0
     for baseChar in mathvariantTransforms[mathvariant]:
         transformedChar = mathvariantTransforms[mathvariant][baseChar]
-        reftest.write('  <span><math><mtext mathvariant="%s">&#x%0X;</mtext></math>=<span>%05X</span></span>' % (mathvariant, baseChar, transformedChar))
-        reftestReference.write('  <span><math><mtext>&#x%0X;</mtext></math>=<span>%05X</span></span>' % (transformedChar, transformedChar))
+        reftest.write('  <span><math class="testfont"><mtext mathvariant="%s">&#x%0X;</mtext></math>=<span>%05X</span></span>' % (mathvariant, baseChar, transformedChar))
+        reftestReference.write('  <span><math class="testfont"><mtext>&#x%0X;</mtext></math>=<span>%05X</span></span>' % (transformedChar, transformedChar))
+        CSSreftest.write('  <span><span class="testfont" style="text-transform: math-%s">&#x%0X;</span>=<span>%05X</span></span>' % (mathvariant, baseChar, transformedChar))
+        CSSreftestReference.write('  <span><span class="testfont">&#x%0X;</span>=<span>%05X</span></span>' % (transformedChar, transformedChar))
         charIndex += 1
         if charIndex % 10 == 0:
             reftest.write('<br/>')
             reftestReference.write('<br/>')
+            CSSreftest.write('<br/>')
+            CSSreftestReference.write('<br/>')
         reftest.write('\n')
         reftestReference.write('\n')
+        CSSreftest.write('\n')
+        CSSreftestReference.write('\n')
     source = '</body>\n</html>\n'
     reftest.write(source)
     reftestReference.write(source)
+    CSSreftest.write(source)
+    CSSreftestReference.write(source)
     reftest.close()
     reftestReference.close()
+    CSSreftest.close()
+    CSSreftestReference.close()
     print(" done.")

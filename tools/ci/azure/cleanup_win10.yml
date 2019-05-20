@@ -24,7 +24,7 @@ steps:
     $hostFile = "$env:systemroot\System32\drivers\etc\hosts"
     Copy-Item -Path "$hostFile.back" -Destination $hostFile -Force
 
-    # uinstall Edge
+    # uninstall Edge
     UninstallEdge "$env:localappdata\Microsoft\Edge\Application" "--uninstall --force-uninstall"
     # uninstall Edge Canary channel
     UninstallEdge "$env:localappdata\Microsoft\Edge SxS\Application" "--uninstall --msedge-sxs --system-level --force-uninstall"

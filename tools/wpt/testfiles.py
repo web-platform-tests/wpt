@@ -293,19 +293,33 @@ def affected_testfiles(files_changed, skip_dirs=None,
 
     return tests_changed, affected_testfiles
 
+def read_ignore_rules(ingore_rules_file):
+    if wpt_root not in ingore_rules_file:
+        ingore_rules_file = os.path.join(wpt_root, ingore_rules_file)
+    ignore_rules = []
+    with open(ingore_rules_file, "r") as fp:
+        for line in fp:
+            if not line.startswith("#"):
+                ignore_rules.append(line.strip())
+    return set(ignore_rules)
+
+class IgnoreRulesAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        ignore_rules = read_ignore_rules(values)
+        if not ignore_rules:
+            ignore_rules = set(["resources/testharness*"])
+        setattr(namespace, self.dest, values)
+        setattr(namespace, "ignore_rules", ignore_rules)
 
 def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("revish", default=None, help="Commits to consider. Defaults to the "
                         "commits on the current branch", nargs="?")
-    # TODO: Consolidate with `./wpt run --affected`:
-    # https://github.com/web-platform-tests/wpt/issues/14560
-    parser.add_argument("--ignore-rules", nargs="*", type=set,
-                        default={"resources/testharness*"},
-                        help="Rules for paths to exclude from lists of changes. Rules are paths "
-                        "relative to the test root, with * before a separator or the end matching "
-                        "anything other than a path separator and ** in that position matching "
-                        "anything")
+    parser.add_argument("--ignore-rules-file", type=str,
+                        default=os.path.join(wpt_root, ".ignorerules"),
+                        action=IgnoreRulesAction,
+                        help="Filename of the text file in the working root directory."
+                        "The content of the file is about the rules for paths to exclude from lists of changes.")
     parser.add_argument("--modified", action="store_true",
                         help="Include files under version control that have been "
                         "modified or staged")
@@ -337,6 +351,9 @@ def get_revish(**kwargs):
 
 def run_changed_files(**kwargs):
     revish = get_revish(**kwargs)
+    if not hasattr(kwargs, "ignore_rules"):
+        # default ignore rules for ./wpt tests-affected
+        kwargs["ignore_rules"] = read_ignore_rules(kwargs["ignore_rules_file"])
     changed, _ = files_changed(revish, kwargs["ignore_rules"],
                                include_uncommitted=kwargs["modified"],
                                include_new=kwargs["new"])
@@ -349,6 +366,9 @@ def run_changed_files(**kwargs):
 
 def run_tests_affected(**kwargs):
     revish = get_revish(**kwargs)
+    if not hasattr(kwargs, "ignore_rules"):
+        # default ignore rules for ./wpt tests-affected
+        kwargs["ignore_rules"] = read_ignore_rules(kwargs["ignore_rules_file"])
     changed, _ = files_changed(revish, kwargs["ignore_rules"],
                                include_uncommitted=kwargs["modified"],
                                include_new=kwargs["new"])

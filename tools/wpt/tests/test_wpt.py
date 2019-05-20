@@ -367,6 +367,55 @@ def test_tests_affected_idlharness(capsys, manifest_dir):
                    reason="Tests currently don't work on Windows for path reasons")
 @pytest.mark.skipif(sys.platform == "win32",
                     reason="https://github.com/web-platform-tests/wpt/issues/12934")
+def test_tests_affected_default_ignore_rules(capsys):
+    commit = "5ea38548d904c16134eb654c7e913e46f901d265"
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["tests-affected", "%s~..%s" % (commit, commit)])
+    assert excinfo.value.code == 0
+    out, err = capsys.readouterr()
+    assert "css/css-transitions/event-dispatch.tentative.html\n" == out
+
+
+@pytest.mark.slow  # this updates the manifest
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
+@pytest.mark.skipif(sys.platform == "win32",
+                    reason="https://github.com/web-platform-tests/wpt/issues/12934")
+def test_tests_affected_default_ignore_rules_file(capsys):
+    commit = "5ea38548d904c16134eb654c7e913e46f901d265"
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["tests-affected", "--ignore-rules-file",
+                       os.path.join(wpt.localpaths.repo_root, ".ignorerules"),
+                       "%s~..%s" % (commit, commit)])
+    assert excinfo.value.code == 0
+    out, err = capsys.readouterr()
+    assert "css/css-transitions/event-dispatch.tentative.html\n" == out
+
+
+@pytest.mark.slow  # this updates the manifest
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
+@pytest.mark.skipif(sys.platform == "win32",
+                    reason="https://github.com/web-platform-tests/wpt/issues/12934")
+def test_tests_affected_customized_ignore_rules_file(capsys):
+    commit = "5ea38548d904c16134eb654c7e913e46f901d265"
+    temp_ignore_rules = "resources/testharness*\ncss/**"
+    path = os.path.join(wpt.localpaths.repo_root, "test_ignore_file")
+    with open(path, "w") as fp:
+        fp.write(temp_ignore_rules)
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["tests-affected", "--ignore-rules-file", path,
+                       "%s~..%s" % (commit, commit)])
+    assert excinfo.value.code == 0
+    out, err = capsys.readouterr()
+    assert "" == out
+    os.remove(path)
+
+@pytest.mark.slow  # this updates the manifest
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
+@pytest.mark.skipif(sys.platform == "win32",
+                    reason="https://github.com/web-platform-tests/wpt/issues/12934")
 def test_tests_affected_null(capsys, manifest_dir):
     # This doesn't really work properly for random commits because we test the files in
     # the current working directory for references to the changed files, not the ones at

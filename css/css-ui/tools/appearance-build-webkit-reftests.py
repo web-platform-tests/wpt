@@ -7,7 +7,7 @@ re_link_match = re.compile(r'<link rel="(mis)?match"')
 
 files = {}
 
-parentdir = os.path.abspath(os.pardir)
+parentdir = os.path.abspath(os.path.join(__file__, os.pardir, os.pardir))
 assert parentdir.endswith('/css-ui')
 
 for filename in os.listdir(parentdir):

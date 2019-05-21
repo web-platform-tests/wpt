@@ -11,7 +11,7 @@ parentdir = os.path.abspath(os.path.join(__file__, os.pardir, os.pardir))
 assert parentdir.endswith('/css-ui')
 
 for filename in os.listdir(parentdir):
-    path = parentdir + '/' + filename
+    path = os.path.join(parentdir, filename)
     if os.path.isfile(path) and re_testname.search(filename) and not filename in files:
         with open(path, "r") as file:
             files[filename] = file.read()
@@ -24,5 +24,5 @@ Edit the appearance-* file instead and then run:
 
 for filename, text in files.items():
     if re_link_match.search(text):
-        with open(parentdir + "/" + filename.replace("appearance-", "webkit-appearance-"), "w") as outfile:
+        with open(os.path.join(parentdir, filename.replace("appearance-", "webkit-appearance-")), "w") as outfile:
             outfile.write(warning + text.replace("appearance:", "-webkit-appearance:"))

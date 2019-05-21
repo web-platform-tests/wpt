@@ -1,0 +1,27 @@
+<!doctype html>
+<title>CSS Transitions Test: Transitions do not start an element changing from display:none</title>
+<link rel="help" title="Starting transitions" href="https://drafts.csswg.org/css-transitions/#starting">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #trans {
+    transition-duration: 10s;
+    transition-timing-function: step-end;
+    display: none;
+  }
+  #trans.translate {
+    transform: translateX(100px);
+    display: block;
+  }
+</style>
+<div id="trans"></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(trans).transform, "none");
+  }, "Transform initially 'none'");
+
+  test(() => {
+    trans.className = "translate";
+    assert_equals(getComputedStyle(trans).transform, "matrix(1, 0, 0, 1, 100, 0)");
+  }, "Computed transform changes instantly.");
+</script>

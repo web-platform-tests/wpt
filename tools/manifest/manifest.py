@@ -2,14 +2,14 @@ import itertools
 import json
 import os
 from collections import MutableMapping, defaultdict
-from six import iterkeys, iteritems, itervalues, string_types
+from six import iteritems, iterkeys, itervalues, string_types
 
 from . import vcs
-from .item import (ManifestItem, ManualTest, WebDriverSpecTest, Stub, RefTestNode, RefTest,
-                   TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest)
+from .item import (ConformanceCheckerTest, ManifestItem, ManualTest, RefTest, RefTestNode, Stub,
+                   SupportFile, TestharnessTest, VisualTest, WebDriverSpecTest)
 from .log import get_logger
-from .utils import from_os_path, to_os_path
 from .sourcefile import SourceFile
+from .utils import from_os_path, to_os_path
 
 MYPY = False
 if MYPY:

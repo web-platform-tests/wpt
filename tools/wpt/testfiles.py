@@ -322,13 +322,13 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
                 continue
 
             with open(test_full_path, "rb") as fh:
-                file_contents = fh.read()  # type: Union[bytes, Text]
-                if file_contents.startswith("\xfe\xff"):
-                    file_contents = file_contents.decode("utf-16be", "replace")
+                raw_file_contents = fh.read()  # type: bytes
+                if raw_file_contents.startswith("\xfe\xff"):
+                    file_contents = raw_file_contents.decode("utf-16be", "replace")  # type: Text
                 elif file_contents.startswith("\xff\xfe"):
-                    file_contents = file_contents.decode("utf-16le", "replace")
+                    file_contents = raw_file_contents.decode("utf-16le", "replace")
                 else:
-                    file_contents = file_contents.decode("utf8", "replace")
+                    file_contents = raw_file_contents.decode("utf8", "replace")
                 for full_path, repo_path in nontest_changed_paths:
                     rel_path = os.path.relpath(full_path, root).replace(os.path.sep, "/")
                     if rel_path in file_contents or repo_path in file_contents or affected_by_interfaces(file_contents):

@@ -134,6 +134,7 @@ function perform_test() {
     addEntryIfExists(entries, expected_entries, pathname + 'empty.py?id=fetch', 'fetch');
     addEntryIfExists(entries, expected_entries, pathname + 'empty.py?favicon', 'link');
     addEntryIfExists(entries, expected_entries, pathname + 'eventsource.py?id=eventsource', 'other');
+    addEntryIfExists(entries, expected_entries, '/fonts/ahem.css', 'link');
 
     test_resource_entries(entries, expected_entries);
     done();

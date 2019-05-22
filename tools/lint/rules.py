@@ -9,7 +9,7 @@ import six
 MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
-    from typing import List, Optional, Pattern, Text, Match, Tuple, Any, cast
+    from typing import Any, List, Match, Optional, Pattern, Text, Tuple, cast
     Error = Tuple[Text, Text, Text, Optional[int]]
 
 

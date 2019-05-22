@@ -325,7 +325,7 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
                 raw_file_contents = fh.read()  # type: bytes
                 if raw_file_contents.startswith("\xfe\xff"):
                     file_contents = raw_file_contents.decode("utf-16be", "replace")  # type: Text
-                elif file_contents.startswith("\xff\xfe"):
+                elif raw_file_contents.startswith("\xff\xfe"):
                     file_contents = raw_file_contents.decode("utf-16le", "replace")
                 else:
                     file_contents = raw_file_contents.decode("utf8", "replace")

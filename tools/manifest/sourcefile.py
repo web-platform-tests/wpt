@@ -302,13 +302,7 @@ class SourceFile(object):
             with self.open() as f:
                 content = f.read()
 
-            if PY3:
-                length = str(len(content)).encode("ascii")  # type: bytes
-            else:
-                length = str(len(content))
-
-            data = b"".join((b"blob ", length, b"\0", content))
-
+            data = b"".join((b"blob ", b"%d" % len(content), b"\0", content))
             hash_str = hashlib.sha1(data).hexdigest()  # type: str
             if PY3:
                 self._hash = hash_str.encode("ascii")

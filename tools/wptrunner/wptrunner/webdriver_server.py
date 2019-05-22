@@ -1,5 +1,6 @@
 import abc
 import errno
+import multiprocessing
 import os
 import platform
 import socket
@@ -9,7 +10,7 @@ import traceback
 import mozprocess
 
 
-__all__ = ["SeleniumServer", "ChromeDriverServer", "OperaDriverServer",
+__all__ = ["SeleniumServer", "ChromeDriverServer", "EdgeChromiumDriverServer", "OperaDriverServer",
            "GeckoDriverServer", "InternetExplorerDriverServer", "EdgeDriverServer",
            "ServoDriverServer", "WebKitDriverServer", "WebDriverServer"]
 
@@ -19,6 +20,7 @@ class WebDriverServer(object):
 
     default_base_path = "/"
     _used_ports = set()
+    _used_ports_lock = multiprocessing.Lock()
 
     def __init__(self, logger, binary, host="127.0.0.1", port=None,
                  base_path="", env=None, args=None):
@@ -111,8 +113,9 @@ class WebDriverServer(object):
 
     @staticmethod
     def _find_next_free_port():
-        port = get_free_port(4444, exclude=WebDriverServer._used_ports)
-        WebDriverServer._used_ports.add(port)
+        with WebDriverServer._used_ports_lock:
+            port = get_free_port(4444, exclude=WebDriverServer._used_ports)
+            WebDriverServer._used_ports.add(port)
         return port
 
 
@@ -125,6 +128,17 @@ class SeleniumServer(WebDriverServer):
 
 class ChromeDriverServer(WebDriverServer):
     def __init__(self, logger, binary="chromedriver", port=None,
+                 base_path="", args=None):
+        WebDriverServer.__init__(
+            self, logger, binary, port=port, base_path=base_path, args=args)
+
+    def make_command(self):
+        return [self.binary,
+                cmd_arg("port", str(self.port)),
+                cmd_arg("url-base", self.base_path) if self.base_path else ""] + self._args
+
+class EdgeChromiumDriverServer(WebDriverServer):
+    def __init__(self, logger, binary="msedgedriver", port=None,
                  base_path="", args=None):
         WebDriverServer.__init__(
             self, logger, binary, port=port, base_path=base_path, args=args)

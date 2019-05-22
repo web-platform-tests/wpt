@@ -486,12 +486,14 @@ def load_and_update(tests_root,
 
         if manifest is not None and manifest.url_base != url_base:
             logger.info("Manifest url base did not match, rebuilding")
+            manifest = None
 
     if manifest is None:
         manifest = Manifest(tests_root, url_base)
+        rebuild = True
         update = True
 
-    if update:
+    if rebuild or update:
         tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
                             working_copy, rebuild)
         changed = manifest.update(tree)

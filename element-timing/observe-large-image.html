@@ -12,7 +12,11 @@ body {
 <script src="resources/element-timing-helpers.js"></script>
 <script>
   let beforeRender;
+  let img;
   async_test(function (t) {
+    if (!window.PerformanceElementTiming) {
+      assert_unreached("PerformanceElementTiming is not implemented");
+    }
     const observer = new PerformanceObserver(
       t.step_func_done(function(entryList) {
         assert_equals(entryList.getEntries().length, 1);
@@ -20,7 +24,7 @@ body {
         const index = window.location.href.lastIndexOf('/');
         const pathname = window.location.href.substring(0, index) +
             '/resources/square20.jpg';
-        checkElement(entry, pathname, '', 'large_one', beforeRender);
+        checkElement(entry, pathname, '', 'large_one', beforeRender, img);
         // Assume viewport hasn't changed, so the element occupies all of it.
         checkRect(entry,
           [0, document.documentElement.clientWidth, 0, document.documentElement.clientHeight]);
@@ -32,7 +36,7 @@ body {
     // in time for it to observe the element timing.
     window.onload = () => {
       // Add an image setting width and height equal to viewport.
-      const img = document.createElement('img');
+      img = document.createElement('img');
       img.src = 'resources/square20.jpg';
       img.width = document.documentElement.clientWidth;
       img.height = document.documentElement.clientHeight;

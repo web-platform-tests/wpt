@@ -94,8 +94,7 @@ class ManifestItem(with_metaclass(ManifestItemMeta)):
         path = to_os_path(path)
         tests_root = manifest.tests_root
         assert tests_root is not None
-        return cls(tests_root,
-                   path)
+        return cls(tests_root, path)
 
 
 class URLManifestItem(ManifestItem):

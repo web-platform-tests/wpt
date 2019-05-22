@@ -2,7 +2,7 @@ import hashlib
 import re
 import os
 from collections import deque
-from six import binary_type
+from six import binary_type, PY3
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
 
@@ -272,7 +272,7 @@ class SourceFile(object):
         if self.contents is not None:
             wrapped = ContextManagerBytesIO(self.contents)
             if MYPY:
-                file_obj = cast(BinaryIO, ContextManagerBytesIO)
+                file_obj = cast(BinaryIO, wrapped)
             else:
                 file_obj = wrapped
         else:
@@ -301,8 +301,20 @@ class SourceFile(object):
         if not self._hash:
             with self.open() as f:
                 content = f.read()
-            data = b"".join((b"blob ", bytes(len(content)), b"\0", content))
-            self._hash = hashlib.sha1(data).hexdigest()
+
+            if PY3:
+                length = str(len(content)).encode("ascii")  # type: bytes
+            else:
+                length = str(len(content))
+
+            data = b"".join((b"blob ", length, b"\0", content))
+
+            hash_str = hashlib.sha1(data).hexdigest()  # type: str
+            if PY3:
+                self._hash = hash_str.encode("ascii")
+            else:
+                self._hash = hash_str
+
         return self._hash
 
     def in_non_test_dir(self):

@@ -80,50 +80,10 @@ testReflectAttributeWithParentNode(
   'value2', 'defaultValue on HTMLTextAreaElement', 'textarea',
   getParentElement, HTMLTextAreaElement
 );
-
-test(() => {
-  let element = define_build_in_custom_element(
-    ['dirname'], HTMLTextAreaElement, 'textarea'
-  );
-  let instance = document.createElement('textarea', { is: element.name });
-
-  assert_array_equals(element.takeLog().types(), ['constructed']);
-  document.getElementById('form').appendChild(instance);
-  assert_array_equals(element.takeLog().types(), ['connected']);
-  instance['name'] = 'comment1';
-  instance['dirName'] = 'comment1.dir';
-  let logEntries = element.takeLog();
-  assert_array_equals(logEntries.types(), ['attributeChanged']);
-  assert_attribute_log_entry(
-    logEntries.last(),
-    {name: 'dirname', oldValue: null, newValue: 'comment1.dir', namespace: null}
-  );
-}, 'dirName on HTMLTextAreaElement must enqueue an attributeChanged reaction'
-  + 'when adding a new attribute');
-
-test(() => {
-  let element = define_build_in_custom_element(
-    ['dirname'], HTMLTextAreaElement, 'textarea'
-  );
-  let instance = document.createElement('textarea', { is: element.name });
-  document.getElementById("form").appendChild(instance);
-
-  assert_array_equals(element.takeLog().types(), ['constructed', 'connected']);
-  instance['name'] = 'comment1';
-  instance['dirName'] = 'comment1.dir';
-  assert_array_equals(element.takeLog().types(), ['attributeChanged']);
-  instance['name'] = 'comment2';
-  instance['dirName'] = 'comment2.dir';
-  let logEntries = element.takeLog();
-  assert_array_equals(logEntries.types(), ['attributeChanged']);
-  assert_attribute_log_entry(
-    logEntries.last(),
-    {
-      name: 'dirname', oldValue: 'comment1.dir',
-      newValue: 'comment2.dir', namespace: null
-    }
-  );
-}, 'dirName on HTMLTextAreaElement must enqueue an attributeChanged reaction'
-  + 'when replacing an existing attribute');
+testReflectAttributeWithParentNode(
+  'dirName', 'dirname', 'comment1.dir',
+  'comment2.dir', 'dirName on HTMLTextAreaElement', 'textarea',
+  getParentElement, HTMLTextAreaElement
+);
 
 </script>

@@ -59,9 +59,9 @@ promise_test(async t => {
   }
   await Promise.all([waitForIceStateChange(pc1, ['connected', 'completed']),
                      waitForIceStateChange(pc2, ['connected', 'completed'])]);
-  const candidate_pair = pc1.sctp.transport.iceTransport.getSelectedCandidatePair();
-  assert_equals(candidate_pair.local.type, 'host');
-  assert_equals(candidate_pair.remote.type, 'prflx');
+  const candidate_pair = await getSelectedCandidatePairFromStats(pc1);
+  assert_equals(candidate_pair.local.candidateType, 'host');
+  assert_equals(candidate_pair.remote.candidateType, 'prflx');
 }, 'Adding only caller -> callee candidates gives a connection');
 
 promise_test(async t => {
@@ -86,9 +86,9 @@ promise_test(async t => {
   }
   await Promise.all([waitForIceStateChange(pc1, ['connected', 'completed']),
                      waitForIceStateChange(pc2, ['connected', 'completed'])]);
-  const candidate_pair = pc2.sctp.transport.iceTransport.getSelectedCandidatePair();
-  assert_equals(candidate_pair.local.type, 'host');
-  assert_equals(candidate_pair.remote.type, 'prflx');
+  const candidate_pair = await getSelectedCandidatePairFromStats(pc2);
+  assert_equals(candidate_pair.local.candidateType, 'host');
+  assert_equals(candidate_pair.remote.candidateType, 'prflx');
 }, 'Adding only callee -> caller candidates gives a connection');
 
 </script>

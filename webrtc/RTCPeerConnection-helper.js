@@ -729,6 +729,29 @@ function findTransceiverForSender(pc, sender) {
   return null;
 }
 
+async function getSelectedCandidatePairFromStats(pc) {
+    let selectedCandidatePair;
+    const stats = await pc.getStats();
+    stats.forEach(report => {
+        if (report.type === 'transport') {
+            selectedCandidatePair = stats.get(report.selectedCandidatePairId);
+        }
+    });
+    if (!selectedCandidatePair) { // Firefox fallback.
+        stats.forEach(report => {
+            if (report.type === 'candidate-pair' && report.selected) {
+                selectedCandidatePair = report;
+            }
+        });
+    }
+    if (selectedCandidatePair) {
+        return {
+            local: stats.get(selectedCandidatePair.localCandidateId),
+            remote: stats.get(selectedCandidatePair.remoteCandidateId),
+        };
+    }
+}
+
 // Contains a set of values and will yell at you if you try to add a value twice.
 class UniqueSet extends Set {
   constructor(items) {

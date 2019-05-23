@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
-import os, json
+import sys, os, json
 import spec_validator
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'common', 'security-features', 'tools'))
+import util
 
 def rmtree(top):
     top = os.path.abspath(top)
     assert top != os.path.expanduser("~")
     assert len(top) > len(os.path.expanduser("~"))
-    assert "web-platform-tests" in top
+    assert "wpt" in top
     assert "referrer-policy" in top
 
     for root, dirs, files in os.walk(top, topdown=False):
@@ -19,11 +22,13 @@ def rmtree(top):
     os.rmdir(top)
 
 def main():
-    spec_json = load_spec_json();
+    generated_spec_json_filename = "spec_json.js"
+    spec_json = util.load_spec_json("spec.src.json");
     spec_validator.assert_valid_spec_json(spec_json)
 
     for spec in spec_json['specification']:
-        generated_dir = os.path.join(spec_directory, spec["name"])
+        #generated_dir = os.path.join(spec_directory, spec["name"])
+        generated_dir = spec["name"]
         if (os.path.isdir(generated_dir)):
             rmtree(generated_dir)
 

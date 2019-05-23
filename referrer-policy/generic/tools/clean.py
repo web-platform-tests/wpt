@@ -27,7 +27,6 @@ def main():
     spec_validator.assert_valid_spec_json(spec_json)
 
     for spec in spec_json['specification']:
-        #generated_dir = os.path.join(spec_directory, spec["name"])
         generated_dir = spec["name"]
         if (os.path.isdir(generated_dir)):
             rmtree(generated_dir)

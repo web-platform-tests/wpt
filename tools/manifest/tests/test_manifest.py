@@ -141,7 +141,7 @@ def test_manifest_to_json_backslash():
         'url_base': '/',
         'items': {
             'testharness': {
-                'a/b': [['a/b', {}]]
+                'a/b': [('a/b', {})]
             }
         }
     }

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Add and retrieve PerformanceEntries from a FetchEvent</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+<script>
+
+const worker_url = 'resources/workerTiming.js';
+const iframe_url = 'resources/workerTiming-iframe.html';
+
+/*
+promise_test(async t => {
+  const registration = await service_worker_unregister_and_register(
+      t, worker_url, iframe_url);
+  t.add_cleanup(() => registration.unregister());  // service_worker_unregister(t, scope);
+  await wait_for_state(t, registration.installing, 'activated');
+
+  const iframe = await with_iframe(iframe_url);
+  t.add_cleanup(() => iframe.remove());
+
+  const entries = iframe.contentWindow.performance.getEntriesByType('navigation');
+  assert_equals(entries.length, 1);
+  assert_equals(entries[0].workerTiming && entries[0].workerTiming.length, 1);
+
+  const custom_entry = entries[0].workerTiming[0];
+  assert_equals(custom_entry.name, 'navigation-mark');
+  assert_equals(custom_entry.entryType, 'mark');
+}, 'addPerformanceEntry can intercept navigation requests');
+*/
+
+promise_test(async t => {
+  const registration = await service_worker_unregister_and_register(
+      t, worker_url, iframe_url);
+  t.add_cleanup(() => registration.unregister());  // service_worker_unregister(t, scope);
+  await wait_for_state(t, registration.installing, 'activated');
+
+  const iframe = await with_iframe(iframe_url);
+  t.add_cleanup(() => iframe.remove());
+
+  const entries = iframe.contentWindow.performance.getEntriesByType('resource');
+  assert_equals(entries.length, 1);
+  assert_equals(entries[0].workerTiming && entries[0].workerTiming.length, 1);
+
+  const custom_entry = entries[0].workerTiming[0];
+  assert_equals(custom_entry.name, 'subresource-mark');
+  assert_equals(custom_entry.entryType, 'mark');
+}, 'addPerformanceEntry can intercept subresource requests');
+</script>

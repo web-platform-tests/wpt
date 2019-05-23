@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os, json
-from common_paths import *
 import spec_validator
 
 def rmtree(top):

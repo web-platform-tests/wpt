@@ -2,7 +2,10 @@
 
 from __future__ import print_function
 
-import json, sys
+import sys, os, json
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'common', 'security-features', 'tools'))
+import util
 
 def assert_non_empty_string(obj, field):
     assert field in obj, 'Missing field "%s"' % field
@@ -163,7 +166,7 @@ def assert_valid_spec_json(spec_json):
 
 
 def main():
-    spec_json = load_spec_json();
+    spec_json = util.load_spec_json("spec.src.json");
     assert_valid_spec_json(spec_json)
     print("Spec JSON is valid.")
 

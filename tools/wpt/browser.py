@@ -666,19 +666,16 @@ class EdgeChromium(Browser):
         return find_executable("msedgedriver", dest)
 
     def version(self, binary=None, webdriver_binary=None):
-        if uname[0] != "Windows":
-            try:
-                version_string = call(binary, "--version").strip()
-            except subprocess.CalledProcessError:
-                self.logger.warning("Failed to call %s" % binary)
-                return None
-            m = re.match(r"(?:MSEdge|Edge) (.*)", version_string)
-            if not m:
-                self.logger.warning("Failed to extract version from: %s" % version_string)
-                return None
-            return m.group(1)
-        self.logger.warning("Unable to extract version from binary on Windows.")
-        return None
+        try:
+            version_string = call(binary, "--version").strip()
+        except subprocess.CalledProcessError:
+            self.logger.warning("Failed to call %s" % binary)
+            return None
+        m = re.match(r"(?:MSEdge|Edge) (.*)", version_string)
+        if not m:
+            self.logger.warning("Failed to extract version from: %s" % version_string)
+            return None
+        return m.group(1)
 
 class Edge(Browser):
     """Edge-specific interface."""

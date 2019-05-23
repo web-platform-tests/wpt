@@ -975,7 +975,7 @@ for (const workletType of ['animation', 'audio', 'layout', 'paint']) {
          The fetch result of `assertUrl` should indicate whether
          `testUrl` is actually sent to the server or not.
 */
-function getRequestURLs(subresourceType, originType, redirectionType) {
+function getRequestURLs(subresourceType, originType, redirectionType, redirectionOrigin) {
   const key = guid();
   const value = guid();
 
@@ -984,13 +984,16 @@ function getRequestURLs(subresourceType, originType, redirectionType) {
 
   const stashEndpoint = "/common/security-features/subresource/xhr.py?key=" +
                         key + "&path=" + stashPath;
-  return {
-    testUrl:
-      getSubresourceOrigin(originType) +
+  let testUrl = getSubresourceOrigin(originType) +
         subresourceMap[subresourceType].path +
         "?redirection=" + encodeURIComponent(redirectionType) +
         "&action=purge&key=" + key +
-        "&path=" + stashPath,
+        "&path=" + stashPath;
+  if (redirectionOrigin)
+    testUrl += "&redirection-origin=" + encodeURIComponent(redirectionOrigin);
+
+  return {
+    testUrl: testUrl,
     announceUrl: stashEndpoint + "&action=put&value=" + value,
     assertUrl: stashEndpoint + "&action=take",
   };

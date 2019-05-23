@@ -20,7 +20,7 @@
     <script>
       promise_test(function(css_test) {
         var id = token();
-        var css_url = location.protocol + "//www1." + location.hostname + ":" + location.port +
+        var css_url = crossOriginBaseURL() +
           "/common/security-features/subresource/stylesheet.py?id=" + id +
           "&import-rule" + "&type=image";
         var url_prefix = location.protocol + "//" + location.hostname + ":" + location.port;

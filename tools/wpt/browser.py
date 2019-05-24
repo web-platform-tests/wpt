@@ -677,8 +677,13 @@ class EdgeChromium(Browser):
                 self.logger.warning("Failed to extract version from: %s" % version_string)
                 return None
             return m.group(1)
-        self.logger.warning("Unable to extract version from binary on Windows.")
-        return None
+        else:
+            command = "(Get-Item '%s').VersionInfo.FileVersion" % binary
+            try:
+                return call("powershell.exe", command).strip()
+            except (subprocess.CalledProcessError, OSError):
+                self.logger.warning("Failed to call %s in PowerShell" % command)
+                return None
 
 class Edge(Browser):
     """Edge-specific interface."""

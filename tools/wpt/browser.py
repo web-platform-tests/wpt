@@ -634,7 +634,11 @@ class Opera(Browser):
 
 class EdgeChromium(Browser):
     """MicrosoftEdge-specific interface."""
-
+    platform = {
+        "Linux": "linux",
+        "Windows": "win",
+        "Darwin": "macos"
+    }.get(uname[0])
     product = "edgechromium"
     requirements = "requirements_edge_chromium.txt"
 
@@ -642,7 +646,29 @@ class EdgeChromium(Browser):
         raise NotImplementedError
 
     def find_binary(self, venv_path=None, channel=None):
-        raise find_executable("msedge")
+        binary = None
+        if self.platform == "win":
+            binaryname = "msedge"
+            binary = find_executable(binaryname)
+            if not binary:
+                # Use paths from different Edge channels starting with Release\Beta\Dev\Canary
+                winpaths = [os.path.expanduser("~\\AppData\\Local\\Microsoft\\Edge\\Application"),
+                            os.path.expandvars("$SYSTEMDRIVE\\Program Files\\Microsoft\\Edge Beta\\Application"),
+                            os.path.expandvars("$SYSTEMDRIVE\\Program Files\\Microsoft\\Edge Dev\\Application"),
+                            os.path.expandvars("$SYSTEMDRIVE\\Program Files (x86)\\Microsoft\\Edge Beta\\Application"),
+                            os.path.expandvars("$SYSTEMDRIVE\\Program Files (x86)\\Microsoft\\Edge Dev\\Application"),
+                            os.path.expanduser("~\\AppData\Local\\Microsoft\\Edge SxS\\Application"),]
+                return find_executable(binaryname, os.pathsep.join(winpaths))
+        if self.platform == "macos":
+            binaryname = "Microsoft Edge Canary"
+            binary = find_executable(binaryname)
+            if not binary:
+                macpaths = ["/Applications/Microsoft Edge.app/Contents/MacOS",
+                    os.path.expanduser("~/Applications/Microsoft Edge.app/Contents/MacOS"),
+                    "/Applications/Microsof Edge Canary.app/Contents/MacOS",
+                    os.path.expanduser("~/Applications/Microsoft Edge Canary.app/Contents/MacOS")]
+                return find_executable("Microsoft Edge Canary", os.pathsep.join(macpaths))
+        return binary
 
     def find_webdriver(self, channel=None):
         return find_executable("msedgedriver")
@@ -678,12 +704,17 @@ class EdgeChromium(Browser):
                 return None
             return m.group(1)
         else:
-            command = "(Get-Item '%s').VersionInfo.FileVersion" % binary
-            try:
-                return call("powershell.exe", command).strip()
-            except (subprocess.CalledProcessError, OSError):
-                self.logger.warning("Failed to call %s in PowerShell" % command)
-                return None
+            if binary is None:
+                binary = self.find_binary()
+            if binary is not None:
+                command = "(Get-Item '%s').VersionInfo.FileVersion" % binary
+                try:
+                    return call("powershell.exe", command).strip()
+                except (subprocess.CalledProcessError, OSError):
+                    self.logger.warning("Failed to call %s in PowerShell" % command)
+                    return None
+            self.logger.warning("Failed to find Edge binary.")
+            return None
 
 class Edge(Browser):
     """Edge-specific interface."""

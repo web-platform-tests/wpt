@@ -1,0 +1,107 @@
+<!doctype html>
+<title>control-internal pseudo-elements getComputedStyle</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<style>
+::-webkit-file-upload-button { z-index: 1 }
+::-webkit-inner-spin-button { z-index: 1 }
+::-webkit-meter-bar { z-index: 1 }
+::-webkit-meter-even-less-good-value { z-index: 1 }
+::-webkit-meter-inner-element { z-index: 1 }
+::-webkit-meter-optimum-value { z-index: 1 }
+::-webkit-meter-suboptimum-value { z-index: 1 }
+::-webkit-outer-spin-button { z-index: 1 }
+::-webkit-progress-bar { z-index: 1 }
+::-webkit-progress-inner-element { z-index: 1 }
+::-webkit-progress-value { z-index: 1 }
+::-webkit-search-cancel-button { z-index: 1 }
+::-webkit-search-results-button { z-index: 1 }
+::-webkit-slider-runnable-track { z-index: 1 }
+::-webkit-slider-thumb { z-index: 1 }
+::-moz-color-swatch { z-index: 1 }
+::-moz-progress-bar { z-index: 1 }
+::-moz-range-progress { z-index: 1 }
+::-moz-range-thumb { z-index: 1 }
+::-moz-range-track { z-index: 1 }
+::-ms-browse { z-index: 1 }
+::-ms-check { z-index: 1 }
+::-ms-clear { z-index: 1 }
+::-ms-expand { z-index: 1 }
+::-ms-fill { z-index: 1 }
+::-ms-fill-lower { z-index: 1 }
+::-ms-fill-upper { z-index: 1 }
+::-ms-reveal { z-index: 1 }
+::-ms-thumb { z-index: 1 }
+::-ms-ticks-after { z-index: 1 }
+::-ms-ticks-before { z-index: 1 }
+::-ms-tooltip { z-index: 1 }
+::-ms-track { z-index: 1 }
+::-ms-value { z-index: 1 }
+</style>
+<input type=file><!-- ::-webkit-file-upload-button ::-ms-browse -->
+<input type=number><!-- ::-webkit-inner-spin-button ::-webkit-outer-spin-button -->
+<meter></meter><!-- ::-webkit-meter-inner-element -->
+<meter class=less-good max=5 value=1 low=2 high=3 optimum=4></meter><!-- ::-webkit-meter-even-less-good-value -->
+<meter class=optimum max=5 value=2 low=1 high=3></meter><!-- ::-webkit-meter-optimum-value -->
+<meter class=suboptimum max=5 value=1 low=2 high=3></meter><!-- ::-webkit-meter-suboptimum-value -->
+<progress></progress><!-- ::-webkit-progress-bar ::-webkit-progress-inner-element ::-moz-progress-bar ::ms-fill -->
+<progress value=0></progress><!-- ::-webkit-progress-bar ::-webkit-progress-inner-element -->
+<progress value=0.5></progress><!-- ::-webkit-progress-value -->
+<input type=search value=search autofocus><!-- ::-webkit-search-cancel-button ::-ms-clear -->
+<input type=search results=1><!-- ::-webkit-search-results-button -->
+<input type=range><!-- ::-webkit-slider-* ::-moz-range-* ::-ms-fill-* ::-ms-thumb ::-ms-ticks-* ::-ms-track -->
+<input type=color><!-- ::-moz-color-swatch -->
+<input type=checkbox checked><!-- ::-ms-check -->
+<input type=radio checked><!-- ::-ms-check -->
+<select><option>foo</option></select><!-- ::-ms-expand ::-ms-value -->
+<input type=password value=hunter2><!-- ::-ms-reveal -->
+<input type=text value=foobar><!-- ::-ms-value -->
+
+<script>
+const tests = {
+'::-webkit-file-upload-button': 'input[type=file]',
+'::-webkit-inner-spin-button': 'input[type=number]',
+'::-webkit-meter-bar': 'meter',
+'::-webkit-meter-even-less-good-value': 'meter.less-good',
+'::-webkit-meter-inner-element': 'meter',
+'::-webkit-meter-optimum-value': 'meter.optimum',
+'::-webkit-meter-suboptimum-value': 'meter.suboptimum',
+'::-webkit-outer-spin-button': 'input[type=number]',
+'::-webkit-progress-bar': 'progress',
+'::-webkit-progress-inner-element': 'progress',
+'::-webkit-progress-value': 'progress[value="0.5"]',
+'::-webkit-search-cancel-button': 'input[type=search][autofocus]',
+'::-webkit-search-results-button': 'input[type=search][results]',
+'::-webkit-slider-runnable-track': 'input[type=range]',
+'::-webkit-slider-thumb': 'input[type=range]',
+'::-moz-color-swatch': 'input[type=color]',
+'::-moz-progress-bar': 'progress',
+'::-moz-range-progress': 'input[type=range]',
+'::-moz-range-thumb': 'input[type=range]',
+'::-moz-range-track': 'input[type=range]',
+'::-ms-browse': 'input[type=file]',
+'::-ms-check': 'input[type=checkbox], input[type=radio]',
+'::-ms-clear': 'input[type=search][autofocus]',
+'::-ms-expand': 'select',
+'::-ms-fill': 'progress, input[type=range]',
+'::-ms-fill-lower': 'input[type=range]',
+'::-ms-fill-upper': 'input[type=range]',
+'::-ms-reveal': 'input[type=password]',
+'::-ms-thumb': 'input[type=range]',
+'::-ms-ticks-after': 'input[type=range]',
+'::-ms-ticks-before': 'input[type=range]',
+'::-ms-tooltip': 'input[type=range]',
+'::-ms-track': 'input[type=range]',
+'::-ms-value': 'input[type=text]',
+};
+for (const pe in tests) {
+  test(t => {
+    const selector = tests[pe];
+    const elms = Array.from(document.querySelectorAll(selector));
+    for (const elm of elms) {
+      assert_not_equals(getComputedStyle(elm, pe).zIndex, '1', elm.outerHTML);
+    }
+  }, pe);
+}
+</script>
+

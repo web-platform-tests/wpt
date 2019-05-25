@@ -1,0 +1,1524 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Command-Line Arguments &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="command-line-arguments">
+<h1>Command-Line Arguments<a class="headerlink" href="#command-line-arguments" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">wpt</span></code> command-line application offers a number of features for interacting
+with WPT. The functionality is organized into “sub-commands”, and each accepts
+a different set of command-line arguments.</p>
+<p>This page documents all of the available sub-commands and associated arguments.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">wpt</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+           <span class="p">{</span><span class="n">tc</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">run</span><span class="p">,</span><span class="n">install</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">jobs</span><span class="p">,</span><span class="n">create</span><span class="p">,</span><span class="n">lint</span><span class="p">,</span><span class="n">serve</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">expectations</span><span class="p">,</span><span class="n">manifest</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">verify</span><span class="p">,</span><span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span><span class="p">,</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">files</span><span class="o">-</span><span class="n">changed</span><span class="p">,</span><span class="n">tests</span><span class="o">-</span><span class="n">affected</span><span class="p">}</span>
+           <span class="o">...</span>
+</pre></div>
+</div>
+<div class="section" id="Sub-commands:">
+<h2>Sub-commands:<a class="headerlink" href="#Sub-commands:" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="tc-download">
+<h3>tc-download<a class="headerlink" href="#tc-download" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tc</span><span class="o">-</span><span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ref</span> <span class="n">REF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">artifact</span><span class="o">-</span><span class="n">name</span> <span class="n">ARTIFACT_NAME</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">repo</span><span class="o">-</span><span class="n">name</span> <span class="n">REPO_NAME</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">token</span><span class="o">-</span><span class="n">file</span> <span class="n">TOKEN_FILE</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">out</span><span class="o">-</span><span class="nb">dir</span> <span class="n">OUT_DIR</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--ref</kbd></td>
+<td><p class="first">Branch (in the GitHub repository) or commit to fetch logs for</p>
+<p class="last">Default: “master”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--artifact-name</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Log type to fetch</p>
+<p class="last">Default: “wpt_report.json.gz”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--repo-name</kbd></td>
+<td><p class="first">GitHub repo name in the format owner/repo. This must be the repo from which the TaskCluster run was scheduled (for PRs this is the repo into which the PR would merge)</p>
+<p class="last">Default: “web-platform-tests/wpt”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--token-file</kbd></td>
+<td>File containing GitHub token</td></tr>
+<tr><td class="option-group">
+<kbd>--out-dir</kbd></td>
+<td><p class="first">Path to save the logfiles</p>
+<p class="last">Default: “.”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="run">
+<h3>run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">run</span> <span class="p">[</span><span class="o">--</span><span class="n">affected</span> <span class="n">AFFECTED</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">yes</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">browser</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">channel</span> <span class="p">{</span><span class="n">dev</span><span class="p">,</span><span class="n">nightly</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span><span class="n">stable</span><span class="p">,</span><span class="n">release</span><span class="p">,</span><span class="n">preview</span><span class="p">,</span><span class="n">experimental</span><span class="p">}]</span>
+        <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manifest</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">manifest</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">multiplier</span> <span class="n">TIMEOUT_MULTIPLIER</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">run</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="nb">dir</span> <span class="p">[</span><span class="n">RUN_BY_DIR</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">processes</span> <span class="n">PROCESSES</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">capture</span><span class="o">-</span><span class="n">stdio</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">fail</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">disabled</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">list</span><span class="o">-</span><span class="n">tests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">full</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">repeat</span><span class="o">-</span><span class="n">loop</span> <span class="n">VERIFY_REPEAT_LOOP</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">repeat</span><span class="o">-</span><span class="n">restart</span> <span class="n">VERIFY_REPEAT_RESTART</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="p">[{</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="o">...</span><span class="p">]]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">manifest</span> <span class="n">INCLUDE_MANIFEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tag</span> <span class="n">TAGS</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">exclude</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debugger</span> <span class="p">[</span><span class="n">DEBUGGER</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">debugger</span><span class="o">-</span><span class="n">args</span> <span class="n">DEBUGGER_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rerun</span> <span class="n">RERUN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">repeat</span> <span class="n">REPEAT</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="n">until</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pause</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">test</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">pause</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">test</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pause</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">restart</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">symbols</span><span class="o">-</span><span class="n">path</span> <span class="n">SYMBOLS_PATH</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">stackwalk</span><span class="o">-</span><span class="n">binary</span> <span class="n">STACKWALK_BINARY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pdb</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">binary</span> <span class="n">BINARY</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">binary</span><span class="o">-</span><span class="n">arg</span> <span class="n">BINARY_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">binary</span> <span class="n">BINARY</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">arg</span> <span class="n">WEBDRIVER_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">package</span><span class="o">-</span><span class="n">name</span> <span class="n">PACKAGE_NAME</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">device</span><span class="o">-</span><span class="n">serial</span> <span class="n">DEVICE_SERIAL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metadata</span> <span class="n">METADATA_ROOT</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">tests</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manifest</span> <span class="n">MANIFEST_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">run</span><span class="o">-</span><span class="n">info</span> <span class="n">RUN_INFO</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">product</span> <span class="p">{</span><span class="n">chrome</span><span class="p">,</span><span class="n">chrome_android</span><span class="p">,</span><span class="n">edgechromium</span><span class="p">,</span><span class="n">edge</span><span class="p">,</span><span class="n">edge_webdriver</span><span class="p">,</span><span class="n">fennec</span><span class="p">,</span><span class="n">firefox</span><span class="p">,</span><span class="n">ie</span><span class="p">,</span><span class="n">safari</span><span class="p">,</span><span class="n">sauce</span><span class="p">,</span><span class="n">servo</span><span class="p">,</span><span class="n">servodriver</span><span class="p">,</span><span class="n">opera</span><span class="p">,</span><span class="n">webkit</span><span class="p">,</span><span class="n">epiphany</span><span class="p">}]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">browser</span><span class="o">-</span><span class="n">version</span> <span class="n">BROWSER_VERSION</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">browser</span><span class="o">-</span><span class="n">channel</span> <span class="n">BROWSER_CHANNEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">fonts</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">font</span><span class="o">-</span><span class="nb">dir</span> <span class="n">FONT_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">headless</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">headless</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="o">-</span><span class="n">build</span> <span class="o">|</span> <span class="o">--</span><span class="n">release</span><span class="o">-</span><span class="n">build</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">total</span><span class="o">-</span><span class="n">chunks</span> <span class="n">TOTAL_CHUNKS</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">this</span><span class="o">-</span><span class="n">chunk</span> <span class="n">THIS_CHUNK</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">chunk</span><span class="o">-</span><span class="nb">type</span> <span class="p">{</span><span class="n">none</span><span class="p">,</span><span class="nb">hash</span><span class="p">,</span><span class="n">dir_hash</span><span class="p">}]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="nb">type</span> <span class="p">{</span><span class="n">openssl</span><span class="p">,</span><span class="n">pregenerated</span><span class="p">,</span><span class="n">none</span><span class="p">}]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">openssl</span><span class="o">-</span><span class="n">binary</span> <span class="n">OPENSSL_BINARY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">certutil</span><span class="o">-</span><span class="n">binary</span> <span class="n">CERTUTIL_BINARY</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">ca</span><span class="o">-</span><span class="n">cert</span><span class="o">-</span><span class="n">path</span> <span class="n">CA_CERT_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">key</span><span class="o">-</span><span class="n">path</span> <span class="n">HOST_KEY_PATH</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">cert</span><span class="o">-</span><span class="n">path</span> <span class="n">HOST_CERT_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefs</span><span class="o">-</span><span class="n">root</span> <span class="n">PREFS_ROOT</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">e10s</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">stackfix</span><span class="o">-</span><span class="nb">dir</span> <span class="n">STACKFIX_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">lsan</span><span class="o">-</span><span class="nb">dir</span> <span class="n">LSAN_DIR</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">setpref</span> <span class="n">PREF</span><span class="o">=</span><span class="n">VALUE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">leak</span><span class="o">-</span><span class="n">check</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">leak</span><span class="o">-</span><span class="n">check</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">stylo</span><span class="o">-</span><span class="n">threads</span> <span class="n">STYLO_THREADS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reftest</span><span class="o">-</span><span class="n">internal</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">reftest</span><span class="o">-</span><span class="n">external</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reftest</span><span class="o">-</span><span class="n">screenshot</span> <span class="p">{</span><span class="n">always</span><span class="p">,</span><span class="n">fail</span><span class="p">,</span><span class="n">unexpected</span><span class="p">}]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">chaos</span> <span class="p">[</span><span class="n">CHAOS_MODE_FLAGS</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">user</span><span class="o">-</span><span class="n">stylesheet</span> <span class="n">USER_STYLESHEETS</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">browser</span> <span class="n">SAUCE_BROWSER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">platform</span> <span class="n">SAUCE_PLATFORM</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">version</span> <span class="n">SAUCE_VERSION</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">build</span> <span class="n">SAUCE_BUILD</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">tags</span> <span class="p">[</span><span class="n">SAUCE_TAGS</span> <span class="p">[</span><span class="n">SAUCE_TAGS</span> <span class="o">...</span><span class="p">]]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">tunnel</span><span class="o">-</span><span class="nb">id</span> <span class="n">SAUCE_TUNNEL_ID</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">user</span> <span class="n">SAUCE_USER</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">key</span> <span class="n">SAUCE_KEY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">connect</span><span class="o">-</span><span class="n">binary</span> <span class="n">SAUCE_CONNECT_BINARY</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">init</span><span class="o">-</span><span class="n">timeout</span> <span class="n">SAUCE_INIT_TIMEOUT</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">connect</span><span class="o">-</span><span class="n">arg</span> <span class="n">SAUCE_CONNECT_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">webkit</span><span class="o">-</span><span class="n">port</span> <span class="n">WEBKIT_PORT</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">unittest</span> <span class="n">LOG_UNITTEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">wptreport</span> <span class="n">LOG_WPTREPORT</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">raw</span> <span class="n">LOG_RAW</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">wptscreenshot</span> <span class="n">LOG_WPTSCREENSHOT</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">chromium</span> <span class="n">LOG_CHROMIUM</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span> <span class="n">LOG_MACH</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">grouped</span> <span class="n">LOG_GROUPED</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">html</span> <span class="n">LOG_HTML</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">tbpl</span> <span class="n">LOG_TBPL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">xunit</span> <span class="n">LOG_XUNIT</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">raw</span><span class="o">-</span><span class="n">level</span> <span class="n">LOG_RAW_LEVEL</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">wptscreenshot</span><span class="o">-</span><span class="n">api</span> <span class="n">LOG_WPTSCREENSHOT_API</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">verbose</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">screenshot</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">level</span> <span class="n">LOG_MACH_LEVEL</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">buffer</span> <span class="n">LOG_MACH_BUFFER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">screenshot</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">tbpl</span><span class="o">-</span><span class="n">compact</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">tbpl</span><span class="o">-</span><span class="n">level</span> <span class="n">LOG_TBPL_LEVEL</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">tbpl</span><span class="o">-</span><span class="n">buffer</span> <span class="n">LOG_TBPL_BUFFER</span><span class="p">]</span>
+        <span class="n">product</span> <span class="p">[</span><span class="n">test_list</span> <span class="p">[</span><span class="n">test_list</span> <span class="o">...</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>product</kbd></td>
+<td>Browser to run tests in</td></tr>
+<tr><td class="option-group">
+<kbd>test_list</kbd></td>
+<td>List of URLs for tests to run, or paths including tests to run. (equivalent to –include)</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat1">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--affected</kbd></td>
+<td>Run affected tests since revish</td></tr>
+<tr><td class="option-group">
+<kbd>--yes, -y</kbd></td>
+<td><p class="first">Don’t prompt before installing components</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--install-browser</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Install the browser from the release channel specified by –channel (or the nightly channel by default).</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--channel</kbd></td>
+<td><p class="first">Possible choices: dev, nightly, beta, stable, release, preview, experimental</p>
+<p class="last">Name of browser release channel. “stable” and “release” are synonyms for the latest browser stable release, “nightly”, “dev”, “experimental”, and “preview” are all synonyms for the latest available development release. (For WebDriver installs, we attempt to select an appropriate, compatible version for the latest browser release on the selected channel.) This flag overrides –browser-channel.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--manifest-update</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Regenerate the test manifest.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--no-manifest-update</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Prevent regeneration of the test manifest.</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--manifest-download</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Attempt to download a preexisting manifest when updating.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--no-manifest-download</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Prevent download of the test manifest.</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--timeout-multiplier</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Multiplier relative to standard test timeout to use</td></tr>
+<tr><td class="option-group">
+<kbd>--run-by-dir</kbd></td>
+<td><p class="first">Split run into groups by directories. With a parameter,limit the depth of splits e.g. –run-by-dir=1 to split by top-leveldirectory</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--processes</kbd></td>
+<td>Number of simultaneous processes to use</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--no-capture-stdio</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Don’t capture stdio and write to logging</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--no-fail-on-unexpected</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Exit with status code 0 when test expectations are violated</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--verify</kbd></td>
+<td><p class="first">Run a stability check on the selected tests</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--verify-no-chaos-mode</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Disable chaos mode when running on Firefox</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--verify-chaos-mode</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Enable chaos mode when running on Firefox</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--verify-no-output-results</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Prints individuals test results and messages</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--verify-output-results</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Disable printing individuals test results and messages</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--debug-build</kbd></td>
+<td>Build is a debug build (overrides any mozinfo file)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--release-build</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Build is a release (overrides any mozinfo file)</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Mode">
+<h4>Mode<a class="headerlink" href="#Mode" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd>--list-test-groups</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">List the top level directories containing tests that will run.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--list-disabled</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">List the tests that are disabled on the current platform</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--list-tests</kbd></td>
+<td><p class="first">List all tests that will run</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--verify-log-full</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Output per-iteration test results when running verify</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--verify-repeat-loop</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Number of iterations for a run that reloads each test without restart.</p>
+<p class="last">Default: 10</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--verify-repeat-restart</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Number of iterations, for a run that restarts the runner between each iteration</p>
+<p class="last">Default: 5</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--verify-max-time</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The maximum number of minutes for the job to run</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Test Selection">
+<h4>Test Selection<a class="headerlink" href="#Test Selection" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--test-types</kbd></td>
+<td><p class="first">Possible choices: reftest, wdspec, testharness</p>
+<p>Test types to run</p>
+<p class="last">Default: set([‘reftest’, ‘wdspec’, ‘testharness’])</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--include</kbd></td>
+<td>URL prefix to include</td></tr>
+<tr><td class="option-group">
+<kbd>--exclude</kbd></td>
+<td>URL prefix to exclude</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--include-manifest</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to manifest listing tests to include</td></tr>
+<tr><td class="option-group">
+<kbd>--skip-timeout</kbd></td>
+<td><p class="first">Skip tests that are expected to time out</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--tag</kbd></td>
+<td>Labels applied to tests to include in the run. Labels starting dir: are equivalent to top-level directories.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--default-exclude</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Only run the tests explicitly given in arguments. No tests will run if the list is empty, and the program will exit with status code 0.</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Debugging">
+<h4>Debugging<a class="headerlink" href="#Debugging" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--debugger</kbd></td>
+<td>run under a debugger, e.g. gdb or valgrind</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--debugger-args</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>arguments to the debugger</td></tr>
+<tr><td class="option-group">
+<kbd>--rerun</kbd></td>
+<td><p class="first">Number of times to re run each test without restarts</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--repeat</kbd></td>
+<td><p class="first">Number of times to run the tests, restarting between each run</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--repeat-until-unexpected</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Run tests in a loop until one returns an unexpected result</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--pause-after-test</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Halt the test runner after each test (this happens by default if only a single test is run)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--no-pause-after-test</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Don’t halt the test runner irrespective of the number of tests run</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--pause-on-unexpected</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Halt the test runner when an unexpected result is encountered</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--no-restart-on-unexpected</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Don’t restart on an unexpected result</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--symbols-path</kbd></td>
+<td>Path or url to symbols file used to analyse crash minidumps.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--stackwalk-binary</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to stackwalker program used to analyse minidumps.</td></tr>
+<tr><td class="option-group">
+<kbd>--pdb</kbd></td>
+<td><p class="first">Drop into pdb on python exception</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Configuration">
+<h4>Configuration<a class="headerlink" href="#Configuration" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--binary</kbd></td>
+<td>Desktop binary to run tests against</td></tr>
+<tr><td class="option-group">
+<kbd>--binary-arg</kbd></td>
+<td><p class="first">Extra argument for the binary</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--webdriver-binary</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>WebDriver server binary to use</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--webdriver-arg</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Extra argument for the WebDriver binary</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--package-name</kbd></td>
+<td>Android package name to run tests against</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--device-serial</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Running Android instance to connect to, if not emulator-5554</td></tr>
+<tr><td class="option-group">
+<kbd>--metadata</kbd></td>
+<td>Path to root directory containing test metadata</td></tr>
+<tr><td class="option-group">
+<kbd>--tests</kbd></td>
+<td>Path to root directory containing test files</td></tr>
+<tr><td class="option-group">
+<kbd>--manifest</kbd></td>
+<td>Path to test manifest (default is ${metadata_root}/MANIFEST.json)</td></tr>
+<tr><td class="option-group">
+<kbd>--run-info</kbd></td>
+<td>Path to directory containing extra json files to add to run info</td></tr>
+<tr><td class="option-group">
+<kbd>--product</kbd></td>
+<td><p class="first">Possible choices: chrome, chrome_android, edgechromium, edge, edge_webdriver, fennec, firefox, ie, safari, sauce, servo, servodriver, opera, webkit, epiphany</p>
+<p class="last">Browser against which to run tests</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--browser-version</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Informative string detailing the browser release version. This is included in the run_info data.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--browser-channel</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Informative string detailing the browser release channel. This is included in the run_info data.</td></tr>
+<tr><td class="option-group">
+<kbd>--config</kbd></td>
+<td>Path to config file</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--install-fonts</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Allow the wptrunner to install fonts on your system</td></tr>
+<tr><td class="option-group">
+<kbd>--font-dir</kbd></td>
+<td>Path to local font installation directory</td></tr>
+<tr><td class="option-group">
+<kbd>--headless</kbd></td>
+<td>Run browser in headless mode</td></tr>
+<tr><td class="option-group">
+<kbd>--no-headless</kbd></td>
+<td><p class="first">Don’t run browser in headless mode</p>
+<p class="last">Default: True</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Test Chunking">
+<h4>Test Chunking<a class="headerlink" href="#Test Chunking" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--total-chunks</kbd></td>
+<td><p class="first">Total number of chunks to use</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--this-chunk</kbd></td>
+<td><p class="first">Chunk number to run</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--chunk-type</kbd></td>
+<td><p class="first">Possible choices: none, hash, dir_hash</p>
+<p class="last">Chunking type to use</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="SSL/TLS">
+<h4>SSL/TLS<a class="headerlink" href="#SSL/TLS" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--ssl-type</kbd></td>
+<td><p class="first">Possible choices: openssl, pregenerated, none</p>
+<p class="last">Type of ssl support to enable (running without ssl may lead to spurious errors)</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--openssl-binary</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Path to openssl binary</p>
+<p class="last">Default: “openssl”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--certutil-binary</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to certutil binary for use with Firefox + ssl</td></tr>
+<tr><td class="option-group">
+<kbd>--ca-cert-path</kbd></td>
+<td>Path to ca certificate when using pregenerated ssl certificates</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--host-key-path</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to host private key when using pregenerated ssl certificates</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--host-cert-path</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to host certificate when using pregenerated ssl certificates</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Gecko-specific">
+<h4>Gecko-specific<a class="headerlink" href="#Gecko-specific" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--prefs-root</kbd></td>
+<td>Path to the folder containing browser prefs</td></tr>
+<tr><td class="option-group">
+<kbd>--disable-e10s</kbd></td>
+<td><p class="first">Run tests without electrolysis preferences</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--stackfix-dir</kbd></td>
+<td>Path to directory containing assertion stack fixing scripts</td></tr>
+<tr><td class="option-group">
+<kbd>--lsan-dir</kbd></td>
+<td>Path to directory containing LSAN suppressions file</td></tr>
+<tr><td class="option-group">
+<kbd>--setpref</kbd></td>
+<td><p class="first">Defines an extra user preference (overrides those in prefs_root)</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--leak-check</kbd></td>
+<td>Enable leak checking (enabled by default for debug builds, silently ignored for opt)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--no-leak-check</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Disable leak checking</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--stylo-threads</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Number of parallel threads to use for stylo</p>
+<p class="last">Default: 1</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--reftest-internal</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable reftest runner implemented inside Marionette</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--reftest-external</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Disable reftest runner implemented inside Marionette</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--reftest-screenshot</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Possible choices: always, fail, unexpected</p>
+<p class="last">With –reftest-internal, when to take a screenshot</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--chaos</kbd></td>
+<td>Enable chaos mode with the specified feature flag (see <a class="reference external" href="http://searchfox.org/mozilla-central/source/mfbt/ChaosMode.h">http://searchfox.org/mozilla-central/source/mfbt/ChaosMode.h</a> for details). If no value is supplied, all features are activated</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Servo-specific">
+<h4>Servo-specific<a class="headerlink" href="#Servo-specific" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd>--user-stylesheet</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Inject a user CSS stylesheet into every test.</p>
+<p class="last">Default: []</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Sauce Labs-specific">
+<h4>Sauce Labs-specific<a class="headerlink" href="#Sauce Labs-specific" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd>--sauce-browser</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Sauce Labs browser name</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--sauce-platform</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Sauce Labs OS platform</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--sauce-version</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Sauce Labs browser version</td></tr>
+<tr><td class="option-group">
+<kbd>--sauce-build</kbd></td>
+<td>Sauce Labs build identifier</td></tr>
+<tr><td class="option-group">
+<kbd>--sauce-tags</kbd></td>
+<td><p class="first">Sauce Labs identifying tag</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--sauce-tunnel-id</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Sauce Connect tunnel identifier</td></tr>
+<tr><td class="option-group">
+<kbd>--sauce-user</kbd></td>
+<td>Sauce Labs user name</td></tr>
+<tr><td class="option-group">
+<kbd>--sauce-key</kbd></td>
+<td>Sauce Labs access key</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--sauce-connect-binary</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to Sauce Connect binary</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--sauce-init-timeout</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Number of seconds to wait for Sauce Connect tunnel to be available before aborting</p>
+<p class="last">Default: 30</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--sauce-connect-arg</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Command-line argument to forward to the Sauce Connect binary (repeatable)</p>
+<p class="last">Default: []</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="WebKit-specific">
+<h4>WebKit-specific<a class="headerlink" href="#WebKit-specific" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--webkit-port</kbd></td>
+<td>WebKit port</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Output Logging">
+<h4>Output Logging<a class="headerlink" href="#Output Logging" title="Permalink to this headline">¶</a></h4>
+<p>Each option represents a possible logging format and takes a filename to write that format to, or ‘-‘ to write to stdout. Some options are provided by the mozlog utility; see <a class="reference external" href="https://firefox-source-docs.mozilla.org/mozbase/mozlog.html">https://firefox-source-docs.mozilla.org/mozbase/mozlog.html</a> for extended documentation.</p>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--log-unittest</kbd></td>
+<td>Unittest style output (provided by mozlog)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-wptreport</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>wptreport format</td></tr>
+<tr><td class="option-group">
+<kbd>--log-raw</kbd></td>
+<td>Raw structured log messages (provided by mozlog)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-wptscreenshot</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>wpt.fyi screenshots</td></tr>
+<tr><td class="option-group">
+<kbd>--log-chromium</kbd></td>
+<td>Chromium Layout Tests format</td></tr>
+<tr><td class="option-group">
+<kbd>--log-mach</kbd></td>
+<td>Human-readable output (provided by mozlog)</td></tr>
+<tr><td class="option-group">
+<kbd>--log-grouped</kbd></td>
+<td>Grouped summary of test results (provided by mozlog)</td></tr>
+<tr><td class="option-group">
+<kbd>--log-html</kbd></td>
+<td>HTML report (provided by mozlog)</td></tr>
+<tr><td class="option-group">
+<kbd>--log-tbpl</kbd></td>
+<td>TBPL style log format (provided by mozlog)</td></tr>
+<tr><td class="option-group">
+<kbd>--log-xunit</kbd></td>
+<td>xUnit compatible XML (povided by mozlog)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-raw-level</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>A least log level to subscribe to for the given formatter (debug, info, error, etc.)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-wptscreenshot-api</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Cache API (default: <a class="reference external" href="https://wpt.fyi/api/screenshots/hashes">https://wpt.fyi/api/screenshots/hashes</a>)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-mach-verbose</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enables verbose mode for the given formatter.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-mach-screenshot</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable logging reftest-analyzer compatible screenshot data.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-mach-level</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>A least log level to subscribe to for the given formatter (debug, info, error, etc.)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-mach-buffer</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>If specified, enables message buffering at the given buffer size limit.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-mach-no-screenshot</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Disable logging reftest-analyzer compatible screenshot data.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-tbpl-compact</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enables compact mode for the given formatter.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-tbpl-level</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>A least log level to subscribe to for the given formatter (debug, info, error, etc.)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-tbpl-buffer</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>If specified, enables message buffering at the given buffer size limit.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="install">
+<h3>install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">install</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">--</span><span class="n">channel</span> <span class="p">{</span><span class="n">dev</span><span class="p">,</span><span class="n">nightly</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span><span class="n">stable</span><span class="p">,</span><span class="n">release</span><span class="p">,</span><span class="n">preview</span><span class="p">,</span><span class="n">experimental</span><span class="p">}]</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DESTINATION</span><span class="p">]</span>
+            <span class="p">{</span><span class="n">firefox</span><span class="p">,</span><span class="n">chrome</span><span class="p">,</span><span class="n">servo</span><span class="p">}</span> <span class="p">{</span><span class="n">browser</span><span class="p">,</span><span class="n">webdriver</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat1">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat1" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>browser</kbd></td>
+<td><p class="first">Possible choices: firefox, chrome, servo</p>
+<p class="last">name of web browser product</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>component</kbd></td>
+<td><p class="first">Possible choices: browser, webdriver</p>
+<p class="last">name of component</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat2">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--channel</kbd></td>
+<td><p class="first">Possible choices: dev, nightly, beta, stable, release, preview, experimental</p>
+<p>Name of browser release channel. “stable” and “release” are synonyms for the latest browser stable release,”nightly”, “dev”, “experimental”, and “preview” are all synonyms for the latest available development release. For WebDriver installs, we attempt to select an appropriate, compatible, version for the latest browser release on the selected channel.</p>
+<p class="last">Default: “nightly”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>-d, --destination</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>filesystem directory to place the component</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="test-jobs">
+<h3>test-jobs<a class="headerlink" href="#test-jobs" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">test</span><span class="o">-</span><span class="n">jobs</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">all</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">includes</span> <span class="p">[</span><span class="n">INCLUDES</span> <span class="p">[</span><span class="n">INCLUDES</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="n">revish</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat2">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>revish</kbd></td>
+<td>Commits to consider. Defaults to the commits on the current branch</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat3">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--all</kbd></td>
+<td><p class="first">List all jobs unconditionally.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--includes</kbd></td>
+<td>Jobs to check for. Return code is 0 if all jobs are found, otherwise 1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="create">
+<h3>create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">create</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">editor</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">EDITOR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">long</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">overwrite</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span>
+           <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">REF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mismatch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">wait</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span>
+           <span class="n">path</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat3">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>path</kbd></td>
+<td>Path to the test file</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat4">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--no-editor</kbd></td>
+<td><p class="first">Don’t try to open the test in an editor</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-e, --editor</kbd></td>
+<td>Editor to use</td></tr>
+<tr><td class="option-group">
+<kbd>--long-timeout</kbd></td>
+<td><p class="first">Test should be given a long timeout (typically 60s rather than 10s, but varies depending on environment)</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--overwrite</kbd></td>
+<td><p class="first">Allow overwriting an existing test file</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-r, --reftest</kbd></td>
+<td><p class="first">Create a reftest rather than a testharness (js) test</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>-m, --reference</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to the reference file</td></tr>
+<tr><td class="option-group">
+<kbd>--mismatch</kbd></td>
+<td><p class="first">Create a mismatch reftest</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--wait</kbd></td>
+<td><p class="first">Create a reftest that waits until takeScreenshot() is called</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--tests-root</kbd></td>
+<td><p class="first">Path to the root of the wpt directory</p>
+<p class="last">Default: “/github/workspace/tools/wpt/../..”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="lint">
+<h3>lint<a class="headerlink" href="#lint" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">lint</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">json</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">markdown</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">repo</span><span class="o">-</span><span class="n">root</span> <span class="n">REPO_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">all</span><span class="p">]</span>
+         <span class="p">[</span><span class="n">paths</span> <span class="p">[</span><span class="n">paths</span> <span class="o">...</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat4">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>paths</kbd></td>
+<td></td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat5">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--json</kbd></td>
+<td>Default: False</td></tr>
+<tr><td class="option-group">
+<kbd>--markdown</kbd></td>
+<td>Default: False</td></tr>
+<tr><td class="option-group">
+<kbd>--repo-root</kbd></td>
+<td></td></tr>
+<tr><td class="option-group">
+<kbd>--all</kbd></td>
+<td>Default: False</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="serve">
+<h3>serve<a class="headerlink" href="#serve" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">serve</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">latency</span> <span class="n">LATENCY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG_PATH</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">doc_root</span> <span class="n">DOC_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ws_doc_root</span> <span class="n">WS_DOC_ROOT</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">h2</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments_repeat6">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--latency</kbd></td>
+<td>Artificial latency to add before sending http responses, in ms</td></tr>
+<tr><td class="option-group">
+<kbd>--config</kbd></td>
+<td>Path to external config file</td></tr>
+<tr><td class="option-group">
+<kbd>--doc_root</kbd></td>
+<td>Path to document root. Overrides config.</td></tr>
+<tr><td class="option-group">
+<kbd>--ws_doc_root</kbd></td>
+<td>Path to WebSockets document root. Overrides config.</td></tr>
+<tr><td class="option-group">
+<kbd>--alias_file</kbd></td>
+<td>File with entries for aliases/multiple doc roots. In form of <cite>/ALIAS_NAME/, DOC_ROOTn</cite></td></tr>
+<tr><td class="option-group">
+<kbd>--h2</kbd></td>
+<td><p class="first">Flag for enabling the HTTP/2.0 server</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="update-expectations">
+<h3>update-expectations<a class="headerlink" href="#update-expectations" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">update</span><span class="o">-</span><span class="n">expectations</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">product</span> <span class="p">{</span><span class="n">chrome</span><span class="p">,</span><span class="n">chrome_android</span><span class="p">,</span><span class="n">edgechromium</span><span class="p">,</span><span class="n">edge</span><span class="p">,</span><span class="n">edge_webdriver</span><span class="p">,</span><span class="n">fennec</span><span class="p">,</span><span class="n">firefox</span><span class="p">,</span><span class="n">ie</span><span class="p">,</span><span class="n">safari</span><span class="p">,</span><span class="n">sauce</span><span class="p">,</span><span class="n">servo</span><span class="p">,</span><span class="n">servodriver</span><span class="p">,</span><span class="n">opera</span><span class="p">,</span><span class="n">webkit</span><span class="p">,</span><span class="n">epiphany</span><span class="p">}]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metadata</span> <span class="n">METADATA_ROOT</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">tests</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manifest</span> <span class="n">MANIFEST_PATH</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">sync</span><span class="o">-</span><span class="n">path</span> <span class="n">SYNC_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">remote_url</span> <span class="n">REMOTE_URL</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">branch</span> <span class="n">BRANCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rev</span> <span class="n">REV</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">patch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">patch</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">sync</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">existing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">stability</span> <span class="p">[</span><span class="n">STABILITY</span><span class="p">]]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">remove</span><span class="o">-</span><span class="n">obsolete</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">store</span><span class="o">-</span><span class="n">state</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">continue</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">abort</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="p">[</span><span class="n">EXCLUDE</span> <span class="p">[</span><span class="n">EXCLUDE</span> <span class="o">...</span><span class="p">]]]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="p">[</span><span class="n">INCLUDE</span> <span class="p">[</span><span class="n">INCLUDE</span> <span class="o">...</span><span class="p">]]]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">extra</span><span class="o">-</span><span class="nb">property</span> <span class="n">EXTRA_PROPERTY</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">unittest</span> <span class="n">LOG_UNITTEST</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">wptreport</span> <span class="n">LOG_WPTREPORT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">raw</span> <span class="n">LOG_RAW</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">wptscreenshot</span> <span class="n">LOG_WPTSCREENSHOT</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">chromium</span> <span class="n">LOG_CHROMIUM</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span> <span class="n">LOG_MACH</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">grouped</span> <span class="n">LOG_GROUPED</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">html</span> <span class="n">LOG_HTML</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">tbpl</span> <span class="n">LOG_TBPL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">xunit</span> <span class="n">LOG_XUNIT</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">raw</span><span class="o">-</span><span class="n">level</span> <span class="n">LOG_RAW_LEVEL</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">wptscreenshot</span><span class="o">-</span><span class="n">api</span> <span class="n">LOG_WPTSCREENSHOT_API</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">verbose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">screenshot</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">level</span> <span class="n">LOG_MACH_LEVEL</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">buffer</span> <span class="n">LOG_MACH_BUFFER</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">screenshot</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">tbpl</span><span class="o">-</span><span class="n">compact</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">tbpl</span><span class="o">-</span><span class="n">level</span> <span class="n">LOG_TBPL_LEVEL</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">tbpl</span><span class="o">-</span><span class="n">buffer</span> <span class="n">LOG_TBPL_BUFFER</span><span class="p">]</span>
+                        <span class="p">[</span><span class="n">run_log</span> <span class="p">[</span><span class="n">run_log</span> <span class="o">...</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat5">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>run_log</kbd></td>
+<td>Log file from run of tests</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat7">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--product</kbd></td>
+<td><p class="first">Possible choices: chrome, chrome_android, edgechromium, edge, edge_webdriver, fennec, firefox, ie, safari, sauce, servo, servodriver, opera, webkit, epiphany</p>
+<p class="last">Browser for which metadata is being updated</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--config</kbd></td>
+<td>Path to config file</td></tr>
+<tr><td class="option-group">
+<kbd>--metadata</kbd></td>
+<td>Path to the folder containing test metadata</td></tr>
+<tr><td class="option-group">
+<kbd>--tests</kbd></td>
+<td>Path to web-platform-tests</td></tr>
+<tr><td class="option-group">
+<kbd>--manifest</kbd></td>
+<td>Path to test manifest (default is ${metadata_root}/MANIFEST.json)</td></tr>
+<tr><td class="option-group">
+<kbd>--sync-path</kbd></td>
+<td>Path to store git checkout of web-platform-tests during update</td></tr>
+<tr><td class="option-group">
+<kbd>--remote_url</kbd></td>
+<td>URL of web-platfrom-tests repository to sync against</td></tr>
+<tr><td class="option-group">
+<kbd>--branch</kbd></td>
+<td>Remote branch to sync against</td></tr>
+<tr><td class="option-group">
+<kbd>--rev</kbd></td>
+<td>Revision to sync to</td></tr>
+<tr><td class="option-group">
+<kbd>--patch</kbd></td>
+<td>Create a VCS commit containing the changes.</td></tr>
+<tr><td class="option-group">
+<kbd>--no-patch</kbd></td>
+<td><p class="first">Don’t create a VCS commit containing the changes.</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--sync</kbd></td>
+<td><p class="first">Sync the tests with the latest from upstream (implies –patch)</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--ignore-existing</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">When updating test results only consider results from the logfiles provided, not existing expectations.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--stability</kbd></td>
+<td>Reason for disabling tests. When updating test results, disable tests that have inconsistent results across many runs with the given reason.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--no-remove-obsolete</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Don’t remove metadata files that no longer correspond to a test file</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--no-store-state</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Store state so that steps can be resumed after failure</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--continue</kbd></td>
+<td><p class="first">Continue a previously started run of the update script</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--abort</kbd></td>
+<td><p class="first">Clear state from a previous incomplete run of the update script</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--exclude</kbd></td>
+<td>List of glob-style paths to exclude when syncing tests</td></tr>
+<tr><td class="option-group">
+<kbd>--include</kbd></td>
+<td>List of glob-style paths to include which would otherwise be excluded when syncing tests</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--extra-property</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Extra property from run_info.json to use in metadata update</p>
+<p class="last">Default: []</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Output Logging_repeat1">
+<h4>Output Logging<a class="headerlink" href="#Output Logging_repeat1" title="Permalink to this headline">¶</a></h4>
+<p>Each option represents a possible logging format and takes a filename to write that format to, or ‘-‘ to write to stdout. Some options are provided by the mozlog utility; see <a class="reference external" href="https://firefox-source-docs.mozilla.org/mozbase/mozlog.html">https://firefox-source-docs.mozilla.org/mozbase/mozlog.html</a> for extended documentation.</p>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--log-unittest</kbd></td>
+<td>Unittest style output (provided by mozlog)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-wptreport</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>wptreport format</td></tr>
+<tr><td class="option-group">
+<kbd>--log-raw</kbd></td>
+<td>Raw structured log messages (provided by mozlog)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-wptscreenshot</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>wpt.fyi screenshots</td></tr>
+<tr><td class="option-group">
+<kbd>--log-chromium</kbd></td>
+<td>Chromium Layout Tests format</td></tr>
+<tr><td class="option-group">
+<kbd>--log-mach</kbd></td>
+<td>Human-readable output (provided by mozlog)</td></tr>
+<tr><td class="option-group">
+<kbd>--log-grouped</kbd></td>
+<td>Grouped summary of test results (provided by mozlog)</td></tr>
+<tr><td class="option-group">
+<kbd>--log-html</kbd></td>
+<td>HTML report (provided by mozlog)</td></tr>
+<tr><td class="option-group">
+<kbd>--log-tbpl</kbd></td>
+<td>TBPL style log format (provided by mozlog)</td></tr>
+<tr><td class="option-group">
+<kbd>--log-xunit</kbd></td>
+<td>xUnit compatible XML (povided by mozlog)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-raw-level</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>A least log level to subscribe to for the given formatter (debug, info, error, etc.)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-wptscreenshot-api</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Cache API (default: <a class="reference external" href="https://wpt.fyi/api/screenshots/hashes">https://wpt.fyi/api/screenshots/hashes</a>)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-mach-verbose</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enables verbose mode for the given formatter.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-mach-screenshot</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable logging reftest-analyzer compatible screenshot data.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-mach-level</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>A least log level to subscribe to for the given formatter (debug, info, error, etc.)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-mach-buffer</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>If specified, enables message buffering at the given buffer size limit.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-mach-no-screenshot</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Disable logging reftest-analyzer compatible screenshot data.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-tbpl-compact</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enables compact mode for the given formatter.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-tbpl-level</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>A least log level to subscribe to for the given formatter (debug, info, error, etc.)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--log-tbpl-buffer</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>If specified, enables message buffering at the given buffer size limit.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="manifest">
+<h3>manifest<a class="headerlink" href="#manifest" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">manifest</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">url</span><span class="o">-</span><span class="n">base</span> <span class="n">URL_BASE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">download</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cache</span><span class="o">-</span><span class="n">root</span> <span class="n">CACHE_ROOT</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments_repeat8">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>-p, --path</kbd></td>
+<td>Path to manifest file.</td></tr>
+<tr><td class="option-group">
+<kbd>--tests-root</kbd></td>
+<td><p class="first">Path to root of tests.</p>
+<p class="last">Default: /github/workspace</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-r, --rebuild</kbd></td>
+<td><p class="first">Force a full rebuild of the manifest.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--url-base</kbd></td>
+<td><p class="first">Base url to use as the mount point for tests in this manifest.</p>
+<p class="last">Default: “/”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--no-download</kbd></td>
+<td><p class="first">Never attempt to download the manifest.</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--cache-root</kbd></td>
+<td><p class="first">Path in which to store any caches (default &lt;tests_root&gt;/.wptcache/</p>
+<p class="last">Default: “/github/workspace/.wptcache”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="tc-verify">
+<h3>tc-verify<a class="headerlink" href="#tc-verify" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tc</span><span class="o">-</span><span class="n">verify</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="make-hosts-file">
+<h3>make-hosts-file<a class="headerlink" href="#make-hosts-file" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">address</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat6">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>address</kbd></td>
+<td><p class="first">Address that hosts should point at</p>
+<p class="last">Default: “127.0.0.1”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="manifest-download">
+<h3>manifest-download<a class="headerlink" href="#manifest-download" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">manifest</span><span class="o">-</span><span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments_repeat9">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>-p, --path</kbd></td>
+<td>Path to manifest file.</td></tr>
+<tr><td class="option-group">
+<kbd>--tests-root</kbd></td>
+<td><p class="first">Path to root of tests.</p>
+<p class="last">Default: /github/workspace</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--force</kbd></td>
+<td><p class="first">Always download, even if the existing manifest is recent</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="files-changed">
+<h3>files-changed<a class="headerlink" href="#files-changed" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">files</span><span class="o">-</span><span class="n">changed</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">rules</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="o">...</span><span class="p">]]]</span>
+                  <span class="p">[</span><span class="o">--</span><span class="n">modified</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">new</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">null</span><span class="p">]</span>
+                  <span class="p">[</span><span class="n">revish</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat7">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>revish</kbd></td>
+<td>Commits to consider. Defaults to the commits on the current branch</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat10">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--ignore-rules</kbd></td>
+<td><p class="first">Rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything</p>
+<p class="last">Default: set([‘resources/testharness*’])</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--modified</kbd></td>
+<td><p class="first">Include files under version control that have been modified or staged</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--new</kbd></td>
+<td><p class="first">Include files in the worktree that are not in version control</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--show-type</kbd></td>
+<td><p class="first">Print the test type along with each affected test</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--null</kbd></td>
+<td><p class="first">Separate items with a null byte</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="tests-affected">
+<h3>tests-affected<a class="headerlink" href="#tests-affected" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tests</span><span class="o">-</span><span class="n">affected</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">rules</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="o">...</span><span class="p">]]]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">modified</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">new</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">null</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">metadata</span> <span class="n">METADATA_ROOT</span><span class="p">]</span>
+                   <span class="p">[</span><span class="n">revish</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat8">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat8" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>revish</kbd></td>
+<td>Commits to consider. Defaults to the commits on the current branch</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat11">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--ignore-rules</kbd></td>
+<td><p class="first">Rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything</p>
+<p class="last">Default: set([‘resources/testharness*’])</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--modified</kbd></td>
+<td><p class="first">Include files under version control that have been modified or staged</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--new</kbd></td>
+<td><p class="first">Include files in the worktree that are not in version control</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--show-type</kbd></td>
+<td><p class="first">Print the test type along with each affected test</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--null</kbd></td>
+<td><p class="first">Separate items with a null byte</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--metadata</kbd></td>
+<td><p class="first">Directory that will contain MANIFEST.json</p>
+<p class="last">Default: “/github/workspace”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/running-tests/command-line-arguments.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

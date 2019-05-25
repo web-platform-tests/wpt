@@ -1,0 +1,23 @@
+<!doctype html>
+<title>Reference for control-internal pseudo-elements appearance: none</title>
+<style>
+body > * { -webkit-appearance: none; appearance: none; }
+</style>
+<input type=file><!-- ::-webkit-file-upload-button ::-ms-browse -->
+<input type=number><!-- ::-webkit-inner-spin-button ::-webkit-outer-spin-button -->
+<meter></meter><!-- ::-webkit-meter-inner-element -->
+<meter max=5 value=1 low=2 high=3 optimum=4></meter><!-- ::-webkit-meter-even-less-good-value -->
+<meter max=5 value=2 low=1 high=3></meter><!-- ::-webkit-meter-optimum-value -->
+<meter max=5 value=1 low=2 high=3></meter><!-- ::-webkit-meter-suboptimum-value -->
+<progress></progress><!-- ::-webkit-progress-bar ::-webkit-progress-inner-element ::-moz-progress-bar ::ms-fill -->
+<progress value=0></progress><!-- ::-webkit-progress-bar ::-webkit-progress-inner-element -->
+<progress value=0.5></progress><!-- ::-webkit-progress-value -->
+<input type=search value=search autofocus><!-- ::-webkit-search-cancel-button ::-ms-clear -->
+<input type=search results=1><!-- ::-webkit-search-results-button -->
+<input type=range><!-- ::-webkit-slider-* ::-moz-range-* ::-ms-fill-* ::-ms-thumb ::-ms-ticks-* ::-ms-track -->
+<input type=color><!-- ::-moz-color-swatch -->
+<input type=checkbox checked><!-- ::-ms-check -->
+<input type=radio checked><!-- ::-ms-check -->
+<select><option>foo</option></select><!-- ::-ms-expand ::-ms-value -->
+<input type=password value=hunter2><!-- ::-ms-reveal -->
+<input type=text value=foobar><!-- ::-ms-value -->

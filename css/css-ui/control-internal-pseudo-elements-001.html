@@ -1,0 +1,57 @@
+<!doctype html>
+<title>control-internal pseudo-elements</title>
+<link rel=match href=control-internal-pseudo-elements-001-ref.html>
+<style>
+::-webkit-file-upload-button { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-inner-spin-button { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-meter-bar { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-meter-even-less-good-value { background: black; color: black; border: solid black; outline: solid black; } /* black becaues it's red by default */
+::-webkit-meter-inner-element { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-meter-optimum-value { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-meter-suboptimum-value { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-outer-spin-button { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-progress-bar { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-progress-inner-element { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-progress-value { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-search-cancel-button { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-search-results-button { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-slider-runnable-track { background: red; color: red; border: solid red; outline: solid red; }
+::-webkit-slider-thumb { background: red; color: red; border: solid red; outline: solid red; }
+::-moz-color-swatch { background: red; color: red; border: solid red; outline: solid red; }
+::-moz-progress-bar { background: red; color: red; border: solid red; outline: solid red; }
+::-moz-range-progress { background: red; color: red; border: solid red; outline: solid red; }
+::-moz-range-thumb { background: red; color: red; border: solid red; outline: solid red; }
+::-moz-range-track { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-browse { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-check { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-clear { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-expand { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-fill { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-fill-lower { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-fill-upper { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-reveal { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-thumb { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-ticks-after { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-ticks-before { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-tooltip { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-track { background: red; color: red; border: solid red; outline: solid red; }
+::-ms-value { background: red; color: red; border: solid red; outline: solid red; }
+</style>
+<input type=file><!-- ::-webkit-file-upload-button ::-ms-browse -->
+<input type=number><!-- ::-webkit-inner-spin-button ::-webkit-outer-spin-button -->
+<meter></meter><!-- ::-webkit-meter-inner-element -->
+<meter max=5 value=1 low=2 high=3 optimum=4></meter><!-- ::-webkit-meter-even-less-good-value -->
+<meter max=5 value=2 low=1 high=3></meter><!-- ::-webkit-meter-optimum-value -->
+<meter max=5 value=1 low=2 high=3></meter><!-- ::-webkit-meter-suboptimum-value -->
+<progress></progress><!-- ::-webkit-progress-bar ::-webkit-progress-inner-element ::-moz-progress-bar ::ms-fill -->
+<progress value=0></progress><!-- ::-webkit-progress-bar ::-webkit-progress-inner-element -->
+<progress value=0.5></progress><!-- ::-webkit-progress-value -->
+<input type=search value=search autofocus><!-- ::-webkit-search-cancel-button ::-ms-clear -->
+<input type=search results=1><!-- ::-webkit-search-results-button -->
+<input type=range><!-- ::-webkit-slider-* ::-moz-range-* ::-ms-fill-* ::-ms-thumb ::-ms-ticks-* ::-ms-track -->
+<input type=color><!-- ::-moz-color-swatch -->
+<input type=checkbox checked><!-- ::-ms-check -->
+<input type=radio checked><!-- ::-ms-check -->
+<select><option>foo</option></select><!-- ::-ms-expand ::-ms-value -->
+<input type=password value=hunter2><!-- ::-ms-reveal -->
+<input type=text value=foobar><!-- ::-ms-value -->

@@ -1412,24 +1412,25 @@ interface Path2D {
 };
 Path2D includes CanvasPath;
 
-[Exposed=Window]
+[Exposed=(Window,Worker)]
 interface ImageBitmapRenderingContext {
-  readonly attribute HTMLCanvasElement canvas;
-  void transferFromImageBitmap(ImageBitmap? bitmap);
+    [ImplementedAs=getHTMLOrOffscreenCanvas] readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
+
+    [RaisesException] void transferFromImageBitmap(ImageBitmap? bitmap);
 };
 
 dictionary ImageBitmapRenderingContextSettings {
   boolean alpha = true;
 };
 
-typedef (OffscreenCanvasRenderingContext2D or WebGLRenderingContext or WebGL2RenderingContext) OffscreenRenderingContext;
+typedef (OffscreenCanvasRenderingContext2D or WebGLRenderingContext or WebGL2RenderingContext or ImageBitmapRenderingContext) OffscreenRenderingContext;
 
 dictionary ImageEncodeOptions {
   DOMString type = "image/png";
   unrestricted double quality;
 };
 
-enum OffscreenRenderingContextId { "2d", "webgl", "webgl2" };
+enum OffscreenRenderingContextId { "2d", "webgl", "webgl2", "bitmaprenderer"};
 
 [Constructor([EnforceRange] unsigned long long width, [EnforceRange] unsigned long long height), Exposed=(Window,Worker), Transferable]
 interface OffscreenCanvas : EventTarget {

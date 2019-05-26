@@ -1,0 +1,86 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Test 'loading-image-default-eager' behavior when disabled.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+body {
+  width: 100%;
+  height: 100%;
+}
+
+img {
+  width: 200px;
+  height: 200px;
+  border: solid 1px black;
+}
+
+#image-container {
+  position: absolute;
+  top: 10000px;
+}
+</style>
+<body>
+  <script>
+    "use strict"
+    const time_before_imgs = performance.now();
+  </script>
+  <p>Image inserted further below.</p>
+  <div id="image-container">
+    <img loading="auto" id="auto" onload="did_load('auto');"
+         src="http://{{hosts[][www]}}:{{ports[http][0]}}/feature-policy/experimental-features/resources/lazyload.png">
+
+    <img loading="lazy" id="lazy" onload="did_load('lazy');"
+         src="http://{{hosts[][www2]}}:{{ports[http][0]}}/feature-policy/experimental-features/resources/lazyload.png">
+
+    <img loading="eager" id="eager" onload="did_load('eager');"
+         src="http://{{hosts[alt][www]}}:{{ports[http][0]}}/feature-policy/experimental-features/resources/lazyload.png">
+  </div>
+  <script>
+    "use strict"
+
+    let load_callback_ = () => {};
+    const loaded_ =
+        { "eager": false, "lazy": false, "auto": false, "window": false};
+
+    function did_load(id) {
+      loaded_[id] = true;
+      load_callback_();
+    }
+
+    window.addEventListener("load", () => did_load("window"));
+
+    // Resolved at the very next load event.
+    function next_load() {
+      return new Promise( (resolve) => load_callback_ = resolve);
+    }
+
+    promise_test( async (t) => {
+      await next_load();
+      assert_true(
+          loaded_["eager"],
+          `Expected the <img> with 'loading="eager"' to load.`);
+      await next_load();
+      assert_true(
+          loaded_["window"],
+          "'load' event for 'window' should have fire.");
+      // At this point the behavior of the 'loading' attribute and policy seem
+      // correct, i.e., no load events with the other images before window fires
+      // load event. The rest of the test is a conservative sanity-check. The
+      // test waits for the next load but will fire a fake load after the given
+      // delay which matches the time to window load event. Then it verifies the
+      // "lazy" and "auto" images did not load.
+      const load_delay = performance.now() - time_before_imgs;
+      t.step_timeout(() => did_load("foo"), load_delay);
+      await next_load();
+      assert_false(
+          loaded_["lazy"],
+          `Did not expect the <img> with 'loading="lazy"' to load at all.`);
+      assert_false(
+          loaded_["auto"],
+          `Did not expect the <img> with 'loading="auto"' to load at all.`);
+    },
+     "Verify with 'loading-image-default-eager' disabled, 'loading' " +
+     " attribute 'auto' behaves the same as 'lazy'.");
+  </script>
+</body>

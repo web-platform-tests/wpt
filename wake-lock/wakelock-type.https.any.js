@@ -4,7 +4,7 @@ promise_test(async t => {
   await promise_rejects(t, new TypeError(), WakeLock.request());
 }, "'TypeError' is thrown when set an empty wake lock type");
 
-promise_test(async t => {
+promise_test(t => {
   const invalidTypes = [
     "invalid",
     null,

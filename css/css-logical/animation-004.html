@@ -146,6 +146,7 @@ test(t => {
     "width": "0px",
     "height": "0px",
     "block-size": "0px",
+    "transition-property": "none",
   }, {
     "block-size": "100px",
   });
@@ -162,6 +163,7 @@ promise_test(async t => {
     "width": "0px",
     "height": "0px",
     "block-size": "0px",
+    "transition-property": "none",
   }, {
     "block-size": "100px",
   }, {
@@ -183,6 +185,7 @@ test(t => {
   transition(t, {
     "width": "0px",
     "height": "0px",
+    "transition-property": "none",
   }, {
     "block-size": "100px",
     "height": "200px",
@@ -204,6 +207,7 @@ test(t => {
   transition(t, {
     "width": "100px",
     "height": "100px",
+    "transition-property": "none",
   }, {
     "width": "500px",
     "block-size": "200px",
@@ -229,6 +233,7 @@ test(t => {
     "height": "0px",
     "writing-mode": "var(--writingMode)",
     "block-size": "0px",
+    "transition-property": "none",
   }, {
     "block-size": "100px"
   });
@@ -243,6 +248,7 @@ test(t => {
 test(t => {
   transition(t, {
     "margin-inline-start": "0px",
+    "transition-property": "none",
   }, {
     "margin-inline-start": "100px",
   });
@@ -257,6 +263,7 @@ test(t => {
 test(t => {
   transition(t, {
     "margin-inline-start": "100px",
+    "transition-property": "none",
   }, {
     "margin-left": "200px",
   });
@@ -271,6 +278,7 @@ test(t => {
 test(t => {
   transition(t, {
     "margin-left": "200px",
+    "transition-property": "none",
   }, {
     "margin-inline-start": "100px",
   });

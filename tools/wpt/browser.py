@@ -632,6 +632,7 @@ class Opera(Browser):
         if m:
             return m.group(0)
 
+
 class EdgeChromium(Browser):
     """MicrosoftEdge-specific interface."""
 
@@ -666,7 +667,14 @@ class EdgeChromium(Browser):
         return find_executable("msedgedriver", dest)
 
     def version(self, binary=None, webdriver_binary=None):
-        if uname[0] != "Windows":
+        if uname[0] == "Windows":
+            command = "(Get-Item '%s').VersionInfo.FileVersion" % binary
+            try:
+                return call("powershell.exe", command).strip()
+            except (subprocess.CalledProcessError, OSError):
+                self.logger.warning("Failed to call %s in PowerShell" % command)
+                return None
+        else:
             try:
                 version_string = call(binary, "--version").strip()
             except subprocess.CalledProcessError:
@@ -677,8 +685,7 @@ class EdgeChromium(Browser):
                 self.logger.warning("Failed to extract version from: %s" % version_string)
                 return None
             return m.group(1)
-        self.logger.warning("Unable to extract version from binary on Windows.")
-        return None
+
 
 class Edge(Browser):
     """Edge-specific interface."""

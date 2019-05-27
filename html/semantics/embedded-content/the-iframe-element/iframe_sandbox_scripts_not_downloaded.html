@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Sandboxed &lt;iframe&gt; does not download scripts</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#attr-iframe-sandbox">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#the-iframe-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/iframe_sandbox_download_helper.js"></script>
+<body>
+  <!-- normal >iframe> whose scripts are expected to be fetched -->
+  <iframe src="support/iframe_sandbox_033.html"></iframe>
+  <!-- sandboxed <iframe> whose resources are not expected to be fetched. -->
+  <iframe sandbox src="support/iframe_sandbox_034.html"></iframe>
+<script>
+  const NOT_SANDBOXED_TOKEN = "87a515b8-7194-11e9-a923-1681be663d3e";
+  const SANDBOXED_TOKEN = "87a512fc-7194-11e9-a923-1681be663d3e";
+  const TOKEN_SET = "TOKEN_SET";
+  const TOKEN_NOT_SET = "TOKEN_NOT_SET";
+
+  window.addEventListener("load", () => {
+    window.did_load = true;
+  });
+  function window_load() {
+    return new Promise ((resolve) => {
+      window.addEventListener("load", resolve);
+      if (window.did_load)
+        resolve();
+    });
+  }
+
+  function check_token(token) {
+    return new Promise( (resolve) => {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'support/download_stash.py?verify-token&token=' + token);
+      xhr.addEventListener("load", () => {
+        resolve(xhr.response);
+      });
+      xhr.send(null);
+    });
+  }
+
+  promise_test( async (t) => {
+    await window_load();
+    const result = await check_token(SANDBOXED_TOKEN);
+    assert_equals(result, TOKEN_NOT_SET, "Token from sandboxed frame must not be set.");
+  },  "Verify that a resource request for <script> is not sent when frame is sandboxed.");
+
+
+  promise_test( async (t) => {
+    await window_load();
+    const result = await check_token(NOT_SANDBOXED_TOKEN);
+    assert_equals(result, TOKEN_SET, "Token from sandboxed frame must be set.");
+  },  "Verify that a resource request for <script> is not sent when frame is sandboxed.");
+
+</script>
+</body>

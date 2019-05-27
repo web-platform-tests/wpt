@@ -17,7 +17,7 @@ promise_test(async t => {
                           {types: ['feature-policy-violation']}).observe();
   });
   try {
-    new WakeLock("screen");
+    await WakeLock.request("screen");
     check_report_format(await report);
   } catch (err) {
     // In case the show call was rejected, the report should be generated

@@ -3006,6 +3006,10 @@ function IdlInterfaceMember(obj)
 
 IdlInterfaceMember.prototype = Object.create(IdlObject.prototype);
 
+IdlInterfaceMember.prototype.toJSON = function() {
+    return this;
+};
+
 IdlInterfaceMember.prototype.is_to_json_regular_operation = function() {
     return this.type == "operation" && this.special !== "static" && this.name == "toJSON";
 };

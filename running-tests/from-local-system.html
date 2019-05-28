@@ -44,6 +44,15 @@
 <p>On Windows, be sure to add the Python directory (<code class="docutils literal notranslate"><span class="pre">c:\python2x</span></code>, by default) to
 your <code class="docutils literal notranslate"><span class="pre">%Path%</span></code> <a class="reference external" href="http://www.computerhope.com/issues/ch000549.htm">Environment Variable</a>,
 and read the <a class="reference external" href="#windows-notes">Windows Notes</a> section below.</p>
+<!--
+  There does not appear to be a cross-platform means of installing `pip`.
+  https://github.com/web-platform-tests/wpt/pull/16670
+--><p>Install <code class="docutils literal notranslate"><span class="pre">pip</span></code>. On many systems, this can be achieved with the command <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">ensurepip</span></code>. If this is not possible, use your system’s package manager to
+install the <code class="docutils literal notranslate"><span class="pre">python-pip</span></code> package.</p>
+<p>Next, install <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> using the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install virtualenv
+</pre></div>
+</div>
 <p>To get the tests running, you need to set up the test domains in your
 <a class="reference external" href="http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system"><code class="docutils literal notranslate"><span class="pre">hosts</span></code> file</a>.</p>
 <p>The necessary content can be generated with <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">make-hosts-file</span></code>; on

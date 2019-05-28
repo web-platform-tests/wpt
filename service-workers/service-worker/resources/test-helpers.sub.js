@@ -75,7 +75,8 @@ function wait_for_update(test, registration) {
   }
 
   return new Promise(test.step_func(function(resolve) {
-      registration.addEventListener('updatefound', test.step_func(function() {
+    // Comment-change to trigger tests.
+    registration.addEventListener('updatefound', test.step_func(function() {
           resolve(registration.installing);
         }));
     }));

@@ -665,7 +665,7 @@ class EdgeChromium(Browser):
             if not binary:
                 macpaths = ["/Applications/Microsoft Edge.app/Contents/MacOS",
                     os.path.expanduser("~/Applications/Microsoft Edge.app/Contents/MacOS"),
-                    "/Applications/Microsof Edge Canary.app/Contents/MacOS",
+                    "/Applications/Microsoft Edge Canary.app/Contents/MacOS",
                     os.path.expanduser("~/Applications/Microsoft Edge Canary.app/Contents/MacOS")]
                 return find_executable("Microsoft Edge Canary", os.pathsep.join(macpaths))
         return binary
@@ -674,7 +674,7 @@ class EdgeChromium(Browser):
         return find_executable("msedgedriver")
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
-        if uname[0] != "Windows":
+        if self.platform == "win":
             raise ValueError("Only Windows platform is currently supported")
 
         if dest is None:
@@ -692,20 +692,20 @@ class EdgeChromium(Browser):
         return find_executable("msedgedriver", dest)
 
     def version(self, binary=None, webdriver_binary=None):
-        if uname[0] != "Windows":
+        if binary is None:
+            binary = self.find_binary()
+        if self.platform != "win":
             try:
                 version_string = call(binary, "--version").strip()
             except subprocess.CalledProcessError:
                 self.logger.warning("Failed to call %s" % binary)
                 return None
-            m = re.match(r"(?:MSEdge|Edge) (.*)", version_string)
+            m = re.match(r"Microsoft Edge (.*) ", version_string)
             if not m:
                 self.logger.warning("Failed to extract version from: %s" % version_string)
                 return None
             return m.group(1)
         else:
-            if binary is None:
-                binary = self.find_binary()
             if binary is not None:
                 command = "(Get-Item '%s').VersionInfo.FileVersion" % binary
                 try:

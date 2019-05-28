@@ -237,7 +237,10 @@ def check_css_globally_unique(repo_root, paths):
 
     for path in paths:
         if os.name == "nt":
-            path = path.replace(b"\\", b"/")
+            if isinstance(path, binary_type):
+                path = path.replace(b"\\", b"/")
+            else:
+                path = path.replace(u"\\", u"/")
 
         if not path.startswith("css/"):
             continue

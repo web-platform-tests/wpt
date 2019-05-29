@@ -8,7 +8,7 @@
 <script src='/resources/WebIDLParser.js'></script>
 <script src='/resources/idlharness.js'></script>
 <script type='text/plain'>
-[Constructor] interface XPathEvaluator {
+interface mixin XPathEvaluatorBase {
   [NewObject] XPathExpression createExpression(DOMString expression,
                                                optional XPathNSResolver? resolver);
   Node createNSResolver(Node nodeResolver);
@@ -17,6 +17,8 @@
                        optional unsigned short type,
                        optional object? result);
 };
+
+[Constructor] interface XPathEvaluator {};
 
 interface XPathExpression {
   XPathResult evaluate(Node contextNode,
@@ -52,7 +54,7 @@ interface XPathResult {
 </script>
 <script type='text/plain' class='untested'>
 interface Document {};
-Document implements XPathEvaluator;
+Document includes XPathEvaluatorBase;
 </script>
 <script>
 "use strict";

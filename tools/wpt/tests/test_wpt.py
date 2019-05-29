@@ -108,8 +108,6 @@ def test_list_tests(manifest_dir):
 
 
 @pytest.mark.slow
-@pytest.mark.xfail(sys.platform == "win32",
-                   reason="https://github.com/web-platform-tests/wpt/issues/12935")
 def test_list_tests_missing_manifest(manifest_dir):
     """The `--list-tests` option should not produce an error in the absence of
     a test manifest file."""
@@ -133,8 +131,6 @@ def test_list_tests_missing_manifest(manifest_dir):
 
 
 @pytest.mark.slow
-@pytest.mark.xfail(sys.platform == "win32",
-                   reason="https://github.com/web-platform-tests/wpt/issues/12935")
 def test_list_tests_invalid_manifest(manifest_dir):
     """The `--list-tests` option should not produce an error in the presence of
     a malformed test manifest file."""

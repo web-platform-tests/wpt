@@ -149,7 +149,7 @@ class Firefox(Browser):
 
         installer_path = os.path.join(dest, filename)
 
-        with open(installer_path, "w") as f:
+        with open(installer_path, "wb") as f:
             f.write(resp.content)
 
         try:

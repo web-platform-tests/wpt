@@ -215,7 +215,7 @@ class Firefox(Browser):
         path = find_executable("certutil")
         if path is None:
             return None
-        if os.path.splitdrive(path)[1].split(os.path.sep) == ["", "Windows", "system32", "certutil.exe"]:
+        if os.path.splitdrive(os.path.normcase(path))[1].split(os.path.sep) == ["", "windows", "system32", "certutil.exe"]:
             return None
         return path
 

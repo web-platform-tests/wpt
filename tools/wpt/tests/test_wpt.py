@@ -255,7 +255,7 @@ def test_install_chromedriver():
 @pytest.mark.slow
 @pytest.mark.remote_network
 @pytest.mark.xfail(sys.platform == "win32",
-                   reason="Tests currently don't work on Windows for path reasons")
+                   reason="https://github.com/web-platform-tests/wpt/issues/17074")
 def test_install_firefox():
     if sys.platform == "darwin":
         fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "browsers", "nightly", "Firefox Nightly.app")

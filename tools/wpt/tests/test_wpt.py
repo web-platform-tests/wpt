@@ -378,8 +378,8 @@ def test_tests_affected_null(capsys, manifest_dir):
 
 
 @pytest.mark.slow
-@pytest.mark.xfail(sys.platform == "win32",
-                   reason="Tests currently don't work on Windows for path reasons")
+@pytest.mark.skipif(sys.platform == "win32",
+                    reason="no os.setsid/killpg to easily cleanup the process tree")
 def test_serve():
     if is_port_8000_in_use():
         pytest.skip("port 8000 already in use")

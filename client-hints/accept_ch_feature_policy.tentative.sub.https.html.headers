@@ -1,2 +1,2 @@
-Accept-CH: device-memory, dpr, viewport-width, rtt, downlink, ect
-Feature-Policy: ch-device-memory *; ch-dpr 'none'; ch-viewport-width 'self'
+Accept-CH: device-memory, dpr, viewport-width, rtt, downlink, ect, lang
+Feature-Policy: ch-device-memory *; ch-dpr 'none'; ch-viewport-width 'self'; ch-lang 'none'

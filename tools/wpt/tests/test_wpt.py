@@ -270,41 +270,39 @@ def test_install_firefox():
     shutil.rmtree(fx_path)
 
 
-@pytest.mark.xfail(sys.platform == "win32",
-                   reason="Tests currently don't work on Windows for path reasons")
 def test_files_changed(capsys):
     commit = "9047ac1d9f51b1e9faa4f9fad9c47d109609ab09"
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["files-changed", "%s~..%s" % (commit, commit)])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
-    assert out == """html/browsers/offline/appcache/workers/appcache-worker.html
+    expected = """html/browsers/offline/appcache/workers/appcache-worker.html
 html/browsers/offline/appcache/workers/resources/appcache-dedicated-worker-not-in-cache.js
 html/browsers/offline/appcache/workers/resources/appcache-shared-worker-not-in-cache.js
 html/browsers/offline/appcache/workers/resources/appcache-worker-data.py
 html/browsers/offline/appcache/workers/resources/appcache-worker-import.py
 html/browsers/offline/appcache/workers/resources/appcache-worker.manifest
 html/browsers/offline/appcache/workers/resources/appcache-worker.py
-"""
+""".replace("/", os.path.sep)
+    assert out == expected
     assert err == ""
 
 
-@pytest.mark.xfail(sys.platform == "win32",
-                   reason="Tests currently don't work on Windows for path reasons")
 def test_files_changed_null(capsys):
     commit = "9047ac1d9f51b1e9faa4f9fad9c47d109609ab09"
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["files-changed", "--null", "%s~..%s" % (commit, commit)])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
-    assert out == "\0".join(["html/browsers/offline/appcache/workers/appcache-worker.html",
+    expected = "\0".join(["html/browsers/offline/appcache/workers/appcache-worker.html",
         "html/browsers/offline/appcache/workers/resources/appcache-dedicated-worker-not-in-cache.js",
         "html/browsers/offline/appcache/workers/resources/appcache-shared-worker-not-in-cache.js",
         "html/browsers/offline/appcache/workers/resources/appcache-worker-data.py",
         "html/browsers/offline/appcache/workers/resources/appcache-worker-import.py",
         "html/browsers/offline/appcache/workers/resources/appcache-worker.manifest",
         "html/browsers/offline/appcache/workers/resources/appcache-worker.py",
-        ""])
+        ""]).replace("/", os.path.sep)
+    assert out == expected
     assert err == ""
 
 

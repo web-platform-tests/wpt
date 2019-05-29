@@ -1,0 +1,519 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Response &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Stash" href="stash.html" />
+    <link rel="prev" title="Request" href="request.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="response">
+<h1>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h1>
+<p>Response object. This object is used to control the response that will
+be sent to the HTTP client. A handler function will take the response
+object and fill in various parts of the response. For example, a plain
+text response with the body ‘Some example content’ could be produced as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;Some example content&quot;</span>
+</pre></div>
+</div>
+<p>The response object also gives access to a ResponseWriter, which
+allows direct access to the response socket. For example, one could
+write a similar response but with more explicit control as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">add_required_headers</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># Don&#39;t implicitly add HTTP headers</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_status</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_header</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write_header</span><span class="p">(</span><span class="s2">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="s2">&quot;Some example content&quot;</span><span class="p">))</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">end_headers</span><span class="p">()</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Some &quot;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;example content&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that when writing the response directly like this it is always
+necessary to either set the Content-Length header or set
+<cite>response.close_connection = True</cite>. Without one of these, the client
+will not be able to determine where the response body ends and will
+continue to load indefinitely.</p>
+<div class="section" id="module-wptserve.response">
+<span id="interface"></span><span id="response-interface"></span><h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code><a class="headerlink" href="#module-wptserve.response" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="wptserve.response.H2Response">
+<em class="property">class </em><code class="descclassname">wptserve.response.</code><code class="descname">H2Response</code><span class="sig-paren">(</span><em>handler</em>, <em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.H2Response" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="wptserve.response.H2Response.write_content">
+<code class="descname">write_content</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.H2Response.write_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write out the response content</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.H2Response.write_status_headers">
+<code class="descname">write_status_headers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.H2Response.write_status_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write out the status line and headers for the response</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wptserve.response.Response">
+<em class="property">class </em><code class="descclassname">wptserve.response.</code><code class="descname">Response</code><span class="sig-paren">(</span><em>handler</em>, <em>request</em>, <em>response_writer_cls=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object representing the response to a HTTP request</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>handler</strong> – RequestHandler being used for this response</li>
+<li><strong>request</strong> – Request that this is the response for</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="wptserve.response.Response.request">
+<code class="descname">request</code><a class="headerlink" href="#wptserve.response.Response.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request associated with this Response.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wptserve.response.Response.encoding">
+<code class="descname">encoding</code><a class="headerlink" href="#wptserve.response.Response.encoding" title="Permalink to this definition">¶</a></dt>
+<dd><p>The encoding to use when converting unicode to strings for output.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wptserve.response.Response.add_required_headers">
+<code class="descname">add_required_headers</code><a class="headerlink" href="#wptserve.response.Response.add_required_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean indicating whether mandatory headers should be added to the
+response.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wptserve.response.Response.send_body_for_head_request">
+<code class="descname">send_body_for_head_request</code><a class="headerlink" href="#wptserve.response.Response.send_body_for_head_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean, default False, indicating whether the body content should be
+sent when the request method is HEAD.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wptserve.response.Response.explicit_flush">
+<code class="descname">explicit_flush</code><a class="headerlink" href="#wptserve.response.Response.explicit_flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean indicating whether output should be flushed automatically or only
+when requested.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wptserve.response.Response.writer">
+<code class="descname">writer</code><a class="headerlink" href="#wptserve.response.Response.writer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ResponseWriter for this response</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wptserve.response.Response.status">
+<code class="descname">status</code><a class="headerlink" href="#wptserve.response.Response.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Status tuple (code, message). Can be set to an integer, in which case the
+message part is filled in automatically, or a tuple.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wptserve.response.Response.headers">
+<code class="descname">headers</code><a class="headerlink" href="#wptserve.response.Response.headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of HTTP headers to send with the response. Each item in the list is a
+tuple of (name, value).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wptserve.response.Response.content">
+<code class="descname">content</code><a class="headerlink" href="#wptserve.response.Response.content" title="Permalink to this definition">¶</a></dt>
+<dd><p>The body of the response. This can either be a string or a iterable of response
+parts. If it is an iterable, any item may be a string or a function of zero
+parameters which, when called, returns a string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.Response.delete_cookie">
+<code class="descname">delete_cookie</code><span class="sig-paren">(</span><em>name</em>, <em>path='/'</em>, <em>domain=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.delete_cookie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a cookie on the client by setting it to the empty string
+and to expire in the past</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.Response.iter_content">
+<code class="descname">iter_content</code><span class="sig-paren">(</span><em>read_file=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.iter_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator returning chunks of response body content.</p>
+<p>If any part of the content is a function, this will be called
+and the resulting value (if any) returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>read_file</strong> – <ul class="simple">
+<li>boolean controlling the behaviour when content</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>is a file handle. When set to False the handle will be returned directly
+allowing the file to be passed to the output in small chunks. When set to
+True, the entire content of the file will be returned as a string facilitating
+non-streaming operations like template substitution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.Response.set_cookie">
+<code class="descname">set_cookie</code><span class="sig-paren">(</span><em>name</em>, <em>value</em>, <em>path='/'</em>, <em>domain=None</em>, <em>max_age=None</em>, <em>expires=None</em>, <em>secure=False</em>, <em>httponly=False</em>, <em>comment=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.set_cookie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a cookie to be sent with a Set-Cookie header in the
+response</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> – String name of the cookie</li>
+<li><strong>value</strong> – String value of the cookie</li>
+<li><strong>max_age</strong> – datetime.timedelta int representing the time (in seconds)
+until the cookie expires</li>
+<li><strong>path</strong> – String path to which the cookie applies</li>
+<li><strong>domain</strong> – String domain to which the cookie applies</li>
+<li><strong>secure</strong> – Boolean indicating whether the cookie is marked as secure</li>
+<li><strong>httponly</strong> – Boolean indicating whether the cookie is marked as
+HTTP Only</li>
+<li><strong>comment</strong> – String comment</li>
+<li><strong>expires</strong> – datetime.datetime or datetime.timedelta indicating a
+time or interval from now when the cookie expires</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.Response.set_error">
+<code class="descname">set_error</code><span class="sig-paren">(</span><em>code</em>, <em>message=''</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.set_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the response status headers and body to indicate an
+error</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.Response.unset_cookie">
+<code class="descname">unset_cookie</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.unset_cookie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a cookie from those that are being sent with the response</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.Response.write">
+<code class="descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the whole response</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.Response.write_content">
+<code class="descname">write_content</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.write_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write out the response content</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.Response.write_status_headers">
+<code class="descname">write_status_headers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.write_status_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write out the status line and headers for the response</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wptserve.response.ResponseHeaders">
+<em class="property">class </em><code class="descclassname">wptserve.response.</code><code class="descname">ResponseHeaders</code><a class="headerlink" href="#wptserve.response.ResponseHeaders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary-like object holding the headers for the response</p>
+<dl class="method">
+<dt id="wptserve.response.ResponseHeaders.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseHeaders.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new header with a given name, not overwriting any existing
+headers with the same name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> – Name of the header to add</li>
+<li><strong>value</strong> – Value to set for the header</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.ResponseHeaders.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>key</em>, <em>default=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseHeaders.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the set values for a particular header.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.ResponseHeaders.set">
+<code class="descname">set</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseHeaders.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a header to a specific value, overwriting any previous header
+with the same name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> – Name of the header to set</li>
+<li><strong>value</strong> – Value to set the header to</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wptserve.response.ResponseWriter">
+<em class="property">class </em><code class="descclassname">wptserve.response.</code><code class="descname">ResponseWriter</code><span class="sig-paren">(</span><em>handler</em>, <em>response</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object providing an API to write out a HTTP response.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>handler</strong> – The RequestHandler being used.</li>
+<li><strong>response</strong> – The Response associated with this writer.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>After each part of the response is written, the output is
+flushed unless response.explicit_flush is False, in which case
+the user must call .flush() explicitly.</p>
+<dl class="method">
+<dt id="wptserve.response.ResponseWriter.encode">
+<code class="descname">encode</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert unicode to bytes according to response.encoding.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.ResponseWriter.end_headers">
+<code class="descname">end_headers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.end_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finish writing headers and write the separator.</p>
+<p>Unless add_required_headers on the response is False,
+this will also add HTTP-mandated headers that have not yet been supplied
+to the response headers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.ResponseWriter.flush">
+<code class="descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flush the output. Returns False if the flush failed due to
+the socket being closed by the remote end.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.ResponseWriter.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write directly to the response, converting unicode to bytes
+according to response.encoding. Does not flush.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.ResponseWriter.write_content">
+<code class="descname">write_content</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the body of the response.</p>
+<p>HTTP-mandated headers will be automatically added with status default to 200 if they have not been explicitly set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.ResponseWriter.write_content_file">
+<code class="descname">write_content_file</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_content_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a file-like object directly to the response in chunks.
+Does not flush.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.ResponseWriter.write_header">
+<code class="descname">write_header</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write out a single header for the response.</p>
+<p>If a status has not been written, a default status will be written (currently 200)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> – Name of the header field</li>
+<li><strong>value</strong> – Value of the header field</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.ResponseWriter.write_raw_content">
+<code class="descname">write_raw_content</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_raw_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the data ‘as is’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.response.ResponseWriter.write_status">
+<code class="descname">write_status</code><span class="sig-paren">(</span><em>code</em>, <em>message=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write out the status line of a response.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>code</strong> – The integer status code of the response.</li>
+<li><strong>message</strong> – The message of the response. Defaults to the message commonly used
+with the status code.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Writing Tests</a><ul>
+  <li><a href="../server-features.html">Server Features</a><ul>
+  <li><a href="index.html">Python Handlers</a><ul>
+      <li>Previous: <a href="request.html" title="previous chapter">Request</a></li>
+      <li>Next: <a href="stash.html" title="next chapter">Stash</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/writing-tests/python-handlers/response.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

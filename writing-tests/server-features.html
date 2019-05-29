@@ -16,7 +16,7 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Submitting Tests" href="submission-process.html" />
+    <link rel="next" title="Python Handlers" href="python-handlers/index.html" />
     <link rel="prev" title="Rendering Test Guidelines" href="rendering.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -103,12 +103,18 @@ the file e.g. <code class="docutils literal notranslate"><span class="pre">test.
 </div>
 <div class="section" id="tests-requiring-full-control-over-the-http-response">
 <h3>Tests Requiring Full Control Over The HTTP Response<a class="headerlink" href="#tests-requiring-full-control-over-the-http-response" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python-handlers/index.html">Python Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server-pipes.html">wptserve Pipes</a></li>
+</ul>
+</div>
 <p>For full control over the request and response the server provides the
 ability to write <code class="docutils literal notranslate"><span class="pre">.asis</span></code> files; these are served as literal HTTP
-responses. It also provides the ability to write Python scripts that
-have access to request data and can manipulate the content and timing
-of the response. For details see the
-<a class="reference external" href="https://wptserve.readthedocs.org">wptserve documentation</a>.</p>
+responses. It also provides the ability to write <a class="reference internal" href="python-handlers/index.html"><span class="doc">Python
+“handlers”</span></a>–Python scripts that have access to request
+data and can manipulate the content and timing of the response. Responses are
+also influenced by <a class="reference internal" href="server-pipes.html"><span class="doc">the pipe query string parameter</span></a>.</p>
 </div>
 <div class="section" id="writing-tests-for-http-2-0">
 <h3>Writing tests for HTTP/2.0<a class="headerlink" href="#writing-tests-for-http-2-0" title="Permalink to this headline">¶</a></h3>
@@ -177,7 +183,7 @@ and OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Writing Tests</a><ul>
       <li>Previous: <a href="rendering.html" title="previous chapter">Rendering Test Guidelines</a></li>
-      <li>Next: <a href="submission-process.html" title="next chapter">Submitting Tests</a></li>
+      <li>Next: <a href="python-handlers/index.html" title="next chapter">Python Handlers</a></li>
   </ul></li>
   </ul></li>
 </ul>

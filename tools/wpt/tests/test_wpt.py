@@ -94,8 +94,6 @@ def test_help():
 
 
 @pytest.mark.slow
-@pytest.mark.xfail(sys.platform == "win32",
-                   reason="https://github.com/web-platform-tests/wpt/issues/12935")
 def test_list_tests(manifest_dir):
     """The `--list-tests` option should not produce an error under normal
     conditions."""
@@ -160,8 +158,6 @@ def test_list_tests_invalid_manifest(manifest_dir):
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-@pytest.mark.xfail(sys.platform == "win32",
-                   reason="Tests currently don't work on Windows for path reasons")
 def test_run_zero_tests():
     """A test execution describing zero tests should be reported as an error
     even in the presence of the `--no-fail-on-unexpected` option."""
@@ -182,8 +178,6 @@ def test_run_zero_tests():
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-@pytest.mark.xfail(sys.platform == "win32",
-                   reason="Tests currently don't work on Windows for path reasons")
 def test_run_failing_test():
     """Failing tests should be reported with a non-zero exit status unless the
     `--no-fail-on-unexpected` option has been specified."""
@@ -207,8 +201,6 @@ def test_run_failing_test():
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-@pytest.mark.xfail(sys.platform == "win32",
-                   reason="Tests currently don't work on Windows for path reasons")
 def test_run_verify_unstable(temp_test):
     """Unstable tests should be reported with a non-zero exit status. Stable
     tests should be reported with a zero exit status."""
@@ -239,10 +231,11 @@ def test_run_verify_unstable(temp_test):
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-@pytest.mark.xfail(sys.platform == "win32",
-                   reason="Tests currently don't work on Windows for path reasons")
 def test_install_chromedriver():
-    chromedriver_path = os.path.join(wpt.localpaths.repo_root, "_venv", "bin", "chromedriver")
+    if sys.platform == "win32":
+        chromedriver_path = os.path.join(wpt.localpaths.repo_root, "_venv", "Scripts", "chromedriver.exe")
+    else:
+        chromedriver_path = os.path.join(wpt.localpaths.repo_root, "_venv", "bin", "chromedriver")
     if os.path.exists(chromedriver_path):
         os.unlink(chromedriver_path)
     with pytest.raises(SystemExit) as excinfo:

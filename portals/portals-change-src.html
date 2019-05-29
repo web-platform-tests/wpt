@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_test(async t => {
+    var portal = document.createElement("portal");
+    portal.src = "resources/simple-portal.html";
+    document.body.appendChild(portal);
+    try {
+      await new Promise(resolve => portal.onload = resolve);
+
+      portal.postMessage("hello");
+      portal.removeAttribute("src");
+      assert_throws("InvalidStateError", () => portal.postMessage("goodbye"));
+    } finally {
+      portal.remove();
+    }
+}, "Removing the src attribute should drop the portal browsing context");
+
+promise_test(async t => {
+    var portal = document.createElement("portal");
+    portal.src = "resources/simple-portal.html";
+    document.body.appendChild(portal);
+    try {
+      await new Promise(resolve => portal.onload = resolve);
+
+      portal.postMessage("hello");
+      portal.src = "";
+      assert_throws("InvalidStateError", () => portal.postMessage("goodbye"));
+    } finally {
+      portal.remove();
+    }
+}, "Assigning an empty URL should drop the portal browsing context");
+
+promise_test(async t => {
+    var portal = document.createElement("portal");
+    portal.src = "resources/simple-portal.html";
+    document.body.appendChild(portal);
+    try {
+      await new Promise(resolve => portal.onload = resolve);
+
+      portal.postMessage("hello");
+      portal.src = "http://";
+      assert_throws("InvalidStateError", () => portal.postMessage("goodbye"));
+    } finally {
+      portal.remove();
+    }
+}, "Assigning an invalid URL should drop the portal browsing context");
+</script>
+</body>

@@ -17,6 +17,16 @@ from utils import call, get, untar, unzip
 uname = platform.uname()
 
 
+def _get_fileversion(binary, logger=None):
+    command = "(Get-Item '%s').VersionInfo.FileVersion" % binary.replace("'", "''")
+    try:
+        return call("powershell.exe", command).strip()
+    except (subprocess.CalledProcessError, OSError):
+        if logger is not None:
+            logger.warning("Failed to call %s in PowerShell" % command)
+        return None
+
+
 class Browser(object):
     __metaclass__ = ABCMeta
 
@@ -418,7 +428,8 @@ class Chrome(Browser):
             return "/usr/bin/google-chrome"
         if uname[0] == "Darwin":
             return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-        # TODO Windows?
+        if uname[0] == "Windows":
+            return os.path.expandvars("$SYSTEMDRIVE\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")
         self.logger.warning("Unable to find the browser binary.")
         return None
 
@@ -521,19 +532,19 @@ class Chrome(Browser):
 
     def version(self, binary=None, webdriver_binary=None):
         binary = binary or self.binary
-        if uname[0] != "Windows":
-            try:
-                version_string = call(binary, "--version").strip()
-            except subprocess.CalledProcessError:
-                self.logger.warning("Failed to call %s" % binary)
-                return None
-            m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string)
-            if not m:
-                self.logger.warning("Failed to extract version from: %s" % version_string)
-                return None
-            return m.group(1)
-        self.logger.warning("Unable to extract version from binary on Windows.")
-        return None
+        if uname[0] == "Windows":
+            return _get_fileversion(binary, self.logger)
+
+        try:
+            version_string = call(binary, "--version").strip()
+        except subprocess.CalledProcessError:
+            self.logger.warning("Failed to call %s" % binary)
+            return None
+        m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string)
+        if not m:
+            self.logger.warning("Failed to extract version from: %s" % version_string)
+            return None
+        return m.group(1)
 
 
 class ChromeAndroid(Browser):
@@ -711,12 +722,7 @@ class EdgeChromium(Browser):
             return m.group(1)
         else:
             if binary is not None:
-                command = "(Get-Item '%s').VersionInfo.FileVersion" % binary
-                try:
-                    return call("powershell.exe", command).strip()
-                except (subprocess.CalledProcessError, OSError):
-                    self.logger.warning("Failed to call %s in PowerShell" % command)
-                    return None
+                return _get_fileversion(binary, self.logger)
             self.logger.warning("Failed to find Edge binary.")
             return None
 

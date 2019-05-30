@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Keyboard scroll removed node</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<style>
+  ul {
+    width: 30vw;
+    height: 40vh;
+    overflow-y: scroll;
+  }
+  li {
+    width: 95%;
+    height: 10vh;
+    border: 1px solid black;
+  }
+  #target {
+    background-color: grey;
+  }
+</style>
+</head>
+
+<body>
+  <ul id="list">
+    <li>ITEM 1</li>
+    <li>ITEM 2</li>
+    <li id="target">TARGET ITEM 3</li>
+    <li>ITEM 4</li>
+    <li>ITEM 5</li>
+    <li>ITEM 6</li>
+    <li>ITEM 7</li>
+  </ul>
+</body>
+
+<script>
+  async_test(t => {
+    let listElement = document.getElementById("list");
+    let targetElement = document.getElementById("target");
+    let firstScrollTop, secondScrollTop;
+    let ArrowDownKey = "\uE015";
+    let firstActions = new test_driver.Actions()
+      .pointerMove(10, 10, { origin: targetElement })
+      .pointerDown()
+      .pointerUp()
+      .addTick()
+      .keyDown(ArrowDownKey)
+      .keyUp(ArrowDownKey)
+      .send()
+      .then(() => {
+        firstScrollTop = listElement.scrollTop;
+        targetElement.remove();
+        let secondAction = new test_driver.Actions()
+          .keyDown(ArrowDownKey)
+          .keyUp(ArrowDownKey)
+          .send()
+          .then(() => {
+            secondScrollTop = listElement.scrollTop;
+            assert_greater_than(secondScrollTop, firstScrollTop);
+            t.done();
+          })
+          .catch(e => t.step_func(() => assert_unreached("Second actions sequence failed " + e)));
+      })
+      .catch(e => t.step_func(() => assert_unreached("First actions sequence failed " + e)));
+  }, "Keyboard scrolls, after clicked element is removed, continue to affect previous scroller");
+</script>
+
+</html>

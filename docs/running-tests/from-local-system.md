@@ -49,7 +49,7 @@ To get the tests running, you need to set up the test domains in your
 
 **GNU/Linux & macOS**
 
-On most UNIX-like systems, you can setup the hosts file with:
+On most UNIX-like systems, you can set up the hosts file with:
 
 ```bash
 ./wpt make-hosts-file | sudo tee -a /etc/hosts

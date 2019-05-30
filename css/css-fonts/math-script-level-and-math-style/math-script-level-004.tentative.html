@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>math-script-level</title>
+    <meta charset="utf-8">
+    <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/3746">
+    <meta name="assert" content="Check the resolved value of math-script-level">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+      @font-face {
+        font-family: scriptpercentscaledown80-scriptscriptpercentscaledown40;
+        src: url("/fonts/math/scriptpercentscaledown80-scriptscriptpercentscaledown40.woff");
+      }
+      @font-face {
+        font-family: scriptpercentscaledown0-scriptscriptpercentscaledown40;
+        src: url("/fonts/math/scriptpercentscaledown0-scriptscriptpercentscaledown40.woff");
+      }
+      @font-face {
+        font-family: scriptpercentscaledown80-scriptscriptpercentscaledown0;
+        src: url("/fonts/math/scriptpercentscaledown80-scriptscriptpercentscaledown0.woff");
+      }
+      #scale80-40 {
+          font-family: scriptpercentscaledown80-scriptscriptpercentscaledown40;
+      }
+      #scale0-40 {
+          font-family: scriptpercentscaledown0-scriptscriptpercentscaledown40;
+      }
+      #scale80-0 {
+          font-family: scriptpercentscaledown80-scriptscriptpercentscaledown0;
+      }
+      .container {
+          math-script-level: -1;
+          font-size: 2000px;
+      }
+      .level0 {
+          math-script-level: 0;
+      }
+      .level1 {
+          math-script-level: 1;
+      }
+      .level2 {
+          math-script-level: 2;
+      }
+      .level3 {
+          math-script-level: 3;
+      }
+    </style>
+    <script>
+      function mathScriptLevel(element) {
+          return parseInt(window.getComputedStyle(element).getPropertyValue("math-script-level"));
+      }
+      function fontSize(element) {
+          return parseFloat((/(.+)px/).exec(getComputedStyle(element).getPropertyValue("font-size"))[1]);
+      }
+      setup({ explicit_done: true });
+      window.addEventListener("load", function() {
+        // Delay the check to workaround WebKit's bug https://webkit.org/b/174030.
+        requestAnimationFrame(() => { document.fonts.ready.then(runTests); });
+      });
+      function runTests() {
+          test(function() {
+              var container = document.getElementById("scale80-40"), divs;
+              assert_equals(mathScriptLevel(container), -1);
+              assert_equals(fontSize(container), 2000);
+              divs = container.getElementsByClassName("level0");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 0);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71, 1, `level0-${i}`);
+              }
+              divs = container.getElementsByClassName("level1");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 1);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71*.8, 1, `level1-${i}`);
+              }
+              divs = container.getElementsByClassName("level2");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 2);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71*.4, 1, `level2-${i}`);
+              }
+              divs = container.getElementsByClassName("level3");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 3);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71*.4*.71, 1, `level3-${i}`);
+              }
+          }, "scriptPercentScaleDown=80, scriptScriptPercentScaleDown=40");
+          test(function() {
+              var container = document.getElementById("scale0-40"), divs;
+              assert_equals(mathScriptLevel(container), -1);
+              assert_equals(fontSize(container), 2000);
+              divs = container.getElementsByClassName("level0");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 0);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71, 1, `level0-${i}`);
+              }
+              divs = container.getElementsByClassName("level1");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 1);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71*.71, 1, `level1-${i}`);
+              }
+              divs = container.getElementsByClassName("level2");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 2);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71*.4, 1, `level2-${i}`);
+              }
+              divs = container.getElementsByClassName("level3");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 3);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71*.4*.71, 1, `level3-${i}`);
+              }
+          }, "scriptPercentScaleDown=0, scriptScriptPercentScaleDown=40");
+          test(function() {
+              var container = document.getElementById("scale80-0"), divs;
+              assert_equals(mathScriptLevel(container), -1);
+              assert_equals(fontSize(container), 2000);
+              divs = container.getElementsByClassName("level0");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 0);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71, 1, `level0-${i}`);
+              }
+              divs = container.getElementsByClassName("level1");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 1);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71*.8, 1, `level1-${i}`);
+              }
+              divs = container.getElementsByClassName("level2");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 2);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71*.8*.71, 1, `level2-${i}`);
+              }
+              divs = container.getElementsByClassName("level3");
+              for (var i = 0; i < divs.length; i++) {
+                  assert_equals(mathScriptLevel(divs[i]), 3);
+                  assert_approx_equals(fontSize(divs[i]), 2000*.71*.8*.71*.71, 1, `level3-${i}`);
+              }
+          }, "scriptPercentScaleDown=80, scriptScriptPercentScaleDown=0");
+          done();
+      }
+    </script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div class="container" id="scale80-40">
+      <div class="level0">
+        <div class="level1">
+          <div class="level2">
+            <div class="level3">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="level1">
+        <div class="level2">
+          <div class="level3">
+          </div>
+        </div>
+        <div class="level3">
+        </div>
+      </div>
+      <div class="level2">
+        <div class="level3">
+        </div>
+      </div>
+      <div class="level3">
+      </div>
+    </div>
+    <div class="container" id="scale0-40">
+      <div class="level0">
+        <div class="level1">
+          <div class="level2">
+            <div class="level3">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="level1">
+        <div class="level2">
+          <div class="level3">
+          </div>
+        </div>
+        <div class="level3">
+        </div>
+      </div>
+      <div class="level2">
+        <div class="level3">
+        </div>
+      </div>
+      <div class="level3">
+      </div>
+    </div>
+    <div class="container" id="scale80-0">
+      <div class="level0">
+        <div class="level1">
+          <div class="level2">
+            <div class="level3">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="level1">
+        <div class="level2">
+          <div class="level3">
+          </div>
+        </div>
+        <div class="level3">
+        </div>
+      </div>
+      <div class="level2">
+        <div class="level3">
+        </div>
+      </div>
+      <div class="level3">
+      </div>
+    </div>
+  </body>
+</html>

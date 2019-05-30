@@ -217,7 +217,7 @@ from .protocol import (BaseProtocolPart,
                        TestDriverProtocolPart)
 ```
 
-Here we have the setup method which just redefines the webdriver object at this level. The important part is the `set_window_rect` function (and it's important it is named that since we called it that earlier). This will be call the WebDriver API for [set window rect](https://w3c.github.io/webdriver/#set-window-rect).
+Here we have the setup method which just redefines the webdriver object at this level. The important part is the `set_window_rect` function (and it's important it is named that since we called it that earlier). This will call the WebDriver API for [set window rect](https://w3c.github.io/webdriver/#set-window-rect).
 
 Finally, we just need to tell the WebDriverProtocol to implement this part.
 
@@ -264,7 +264,7 @@ from .protocol import (BaseProtocolPart,
                        TestDriverProtocolPart)
 ```
 
-Here we have the setup method which just redefines the webdriver object at this level. The important part is the `set_window_rect` function (and it's important it is named that since we called it that earlier). This will be call the Marionette API for [set window rect](https://firefox-source-docs.mozilla.org/python/marionette_driver.html#marionette_driver.marionette.Marionette.set_window_rect) (`self.marionette` is a marionette instance here).
+Here we have the setup method which just redefines the webdriver object at this level. The important part is the `set_window_rect` function (and it's important it is named that since we called it that earlier). This will call the Marionette API for [set window rect](https://firefox-source-docs.mozilla.org/python/marionette_driver.html#marionette_driver.marionette.Marionette.set_window_rect) (`self.marionette` is a marionette instance here).
 
 Finally, we just need to tell the MarionetteProtocol to implement this part.
 
@@ -284,7 +284,7 @@ class MarionetteProtocol(Protocol):
 
 ### Other Browsers
 
-Other browsers may use executorselenium (such as safari), or a completely new executor (such as servo). For these, you must change the executor in the same way as we did with chrome and firefox.
+Other browsers (such as safari) may use executorselenium, or a completely new executor (such as servo). For these, you must change the executor in the same way as we did with chrome and firefox.
 
 ### Write an infra test
 
@@ -311,7 +311,7 @@ promise_test(async t => {
 ### What about testdriver-vendor.js?
 
 The file [testdriver-vendor.js](https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver-vendor.js) is the equivalent to testdriver-extra.js above, except it is
-run instead of testdriver-extra.js in browser specific test environments. For example, in [Chromium web_tests](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/).
+run instead of testdriver-extra.js in browser-specific test environments. For example, in [Chromium web_tests](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/).
 
 ### What if I need to return a value from my testdriver API?
 

@@ -43,7 +43,7 @@ pip install virtualenv
 ```
 
 To get the tests running, you need to set up the test domains in your
-[`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system). The necessary content can be generated with `./wpt make-hosts-file`.
+[`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system).
 
 <section class="platform">
 

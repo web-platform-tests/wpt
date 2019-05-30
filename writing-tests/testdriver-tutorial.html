@@ -42,14 +42,14 @@
 <p>We assume the following in this writeup:</p>
 <ul class="simple">
 <li>You know what web-platform-tests is and you have a working checkout and can run tests</li>
-<li>You know what WebDriver or Selenium is</li>
+<li>You know what WebDriver is</li>
 <li>Familiarity with JavaScript and Python</li>
 </ul>
 </div>
 <div class="section" id="introduction">
 <h2>Introduction!<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>Let’s implement window resizing. We can do this via the <a class="reference external" href="https://w3c.github.io/webdriver/webdriver-spec.html#dfn-set-window-rect">Set Window Rect</a> command in WebDriver.</p>
-<p>First, we need to think of what the API will look like a little. We will be using Selenium and Marionette for this, so we can look and see that they take in x, y coordinates, width and height integers.</p>
+<p>First, we need to think of what the API will look like a little. We will be using WebDriver and Marionette for this, so we can look and see that they take in x, y coordinates, width and height integers.</p>
 <p>The first part of this will be browser agnostic, but later we will need to implement a specific layer for each browser (here we will do Firefox and Chrome).</p>
 </div>
 <div class="section" id="code">
@@ -212,9 +212,9 @@ Now we write the browser specific implementations.</p>
 </div>
 <div class="section" id="chrome">
 <h3>Chrome<a class="headerlink" href="#chrome" title="Permalink to this headline">¶</a></h3>
-<p>We will use <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executorselenium.py">executorselenium</a> and use the Selenium API (in the future there are plans to use the WebDriver API directly).</p>
+<p>We will use <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executorwebdriver.py">executorwebdriver</a> and use the WebDriver API.</p>
 <p>There isn’t too much work to do here, we just need to define a subclass of the protocol part we defined earlier.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SeleniumSetWindowRectProtocolPart</span><span class="p">(</span><span class="n">SetWindowRectProtocolPart</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WebDriverSetWindowRectProtocolPart</span><span class="p">(</span><span class="n">SetWindowRectProtocolPart</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">webdriver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">webdriver</span>
 
@@ -234,17 +234,17 @@ Now we write the browser specific implementations.</p>
                        <span class="n">TestDriverProtocolPart</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Here we have the setup method which just redefines the webdriver object at this level. The important part is the <code class="docutils literal notranslate"><span class="pre">set_window_rect</span></code> function (and it’s important it is named that since we called it that earlier). This will be call the Selenium API for <a class="reference external" href="http://selenium-python.readthedocs.io/api.html#selenium.webdriver.remote.webdriver.WebDriver.set_window_rect">set window rect</a> (<code class="docutils literal notranslate"><span class="pre">self.webdriver</span></code> is a Selenium WebDriver instance here).</p>
-<p>Finally, we just need to tell the SeleniumProtocol to implement this part.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SeleniumProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-    <span class="n">implements</span> <span class="o">=</span> <span class="p">[</span><span class="n">SeleniumBaseProtocolPart</span><span class="p">,</span>
-                  <span class="n">SeleniumTestharnessProtocolPart</span><span class="p">,</span>
-                  <span class="n">SeleniumSelectorProtocolPart</span><span class="p">,</span>
-                  <span class="n">SeleniumClickProtocolPart</span><span class="p">,</span>
-                  <span class="n">SeleniumSendKeysProtocolPart</span><span class="p">,</span>
+<p>Here we have the setup method which just redefines the webdriver object at this level. The important part is the <code class="docutils literal notranslate"><span class="pre">set_window_rect</span></code> function (and it’s important it is named that since we called it that earlier). This will call the WebDriver API for <a class="reference external" href="https://w3c.github.io/webdriver/#set-window-rect">set window rect</a>.</p>
+<p>Finally, we just need to tell the WebDriverProtocol to implement this part.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WebDriverProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="n">implements</span> <span class="o">=</span> <span class="p">[</span><span class="n">WebDriverBaseProtocolPart</span><span class="p">,</span>
+                  <span class="n">WebDriverTestharnessProtocolPart</span><span class="p">,</span>
+                  <span class="n">WebDriverSelectorProtocolPart</span><span class="p">,</span>
+                  <span class="n">WebDriverClickProtocolPart</span><span class="p">,</span>
+                  <span class="n">WebDriverSendKeysProtocolPart</span><span class="p">,</span>
                   <span class="p">{</span><span class="o">...</span> <span class="n">other</span> <span class="n">protocol</span> <span class="n">parts</span><span class="p">}</span>
-                  <span class="n">SeleniumSetWindowRectProtocolPart</span><span class="p">,</span>
-                  <span class="n">SeleniumTestDriverProtocolPart</span><span class="p">]</span>
+                  <span class="n">WebDriverSetWindowRectProtocolPart</span><span class="p">,</span> <span class="c1"># add this!</span>
+                  <span class="n">WebDriverTestDriverProtocolPart</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -273,8 +273,8 @@ Now we write the browser specific implementations.</p>
                        <span class="n">TestDriverProtocolPart</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Here we have the setup method which just redefines the webdriver object at this level. The important part is the <code class="docutils literal notranslate"><span class="pre">set_window_rect</span></code> function (and it’s important it is named that since we called it that earlier). This will be call the Marionette API for <a class="reference external" href="http://marionette-client.readthedocs.io/en/master/reference.html#marionette_driver.marionette.Marionette.set_window_rect">set window rect</a> (<code class="docutils literal notranslate"><span class="pre">self.marionette</span></code> is a marionette instance here).</p>
-<p>Finally, we just need to tell the SeleniumProtocol to implement this part.</p>
+<p>Here we have the setup method which just redefines the webdriver object at this level. The important part is the <code class="docutils literal notranslate"><span class="pre">set_window_rect</span></code> function (and it’s important it is named that since we called it that earlier). This will call the Marionette API for <a class="reference external" href="https://firefox-source-docs.mozilla.org/python/marionette_driver.html#marionette_driver.marionette.Marionette.set_window_rect">set window rect</a> (<code class="docutils literal notranslate"><span class="pre">self.marionette</span></code> is a marionette instance here).</p>
+<p>Finally, we just need to tell the MarionetteProtocol to implement this part.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MarionetteProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="n">implements</span> <span class="o">=</span> <span class="p">[</span><span class="n">MarionetteBaseProtocolPart</span><span class="p">,</span>
                   <span class="n">MarionetteTestharnessProtocolPart</span><span class="p">,</span>
@@ -284,14 +284,14 @@ Now we write the browser specific implementations.</p>
                   <span class="n">MarionetteClickProtocolPart</span><span class="p">,</span>
                   <span class="n">MarionetteSendKeysProtocolPart</span><span class="p">,</span>
                   <span class="p">{</span><span class="o">...</span> <span class="n">other</span> <span class="n">protocol</span> <span class="n">parts</span><span class="p">}</span>
-                  <span class="n">MarionetteSetWindowRectProtocolPart</span> <span class="c1"># add this</span>
+                  <span class="n">MarionetteSetWindowRectProtocolPart</span><span class="p">,</span> <span class="c1"># add this</span>
                   <span class="n">MarionetteTestDriverProtocolPart</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="other-browsers">
 <h3>Other Browsers<a class="headerlink" href="#other-browsers" title="Permalink to this headline">¶</a></h3>
-<p>Other browsers may also use executorselenium (such as safari), or a completely new executor (such as servo). For these, you must change the executor in the same way as we did with chrome and firefox.</p>
+<p>Other browsers (such as safari) may use executorselenium, or a completely new executor (such as servo). For these, you must change the executor in the same way as we did with chrome and firefox.</p>
 </div>
 <div class="section" id="write-an-infra-test">
 <h3>Write an infra test<a class="headerlink" href="#write-an-infra-test" title="Permalink to this headline">¶</a></h3>
@@ -317,7 +317,7 @@ Now we write the browser specific implementations.</p>
 <div class="section" id="what-about-testdriver-vendor-js">
 <h3>What about testdriver-vendor.js?<a class="headerlink" href="#what-about-testdriver-vendor-js" title="Permalink to this headline">¶</a></h3>
 <p>The file <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver-vendor.js">testdriver-vendor.js</a> is the equivalent to testdriver-extra.js above, except it is
-run instead of testdriver-extra.js in browser specific test environments. For example, in <a class="reference external" href="https://cs.chromium.org/chromium/src/third_party/WebKit/LayoutTests/?q=LayoutTests&amp;sq=package:chromium&amp;dr">Chromium LayoutTests</a>.</p>
+run instead of testdriver-extra.js in browser-specific test environments. For example, in <a class="reference external" href="https://cs.chromium.org/chromium/src/third_party/blink/web_tests/">Chromium web_tests</a>.</p>
 </div>
 <div class="section" id="what-if-i-need-to-return-a-value-from-my-testdriver-api">
 <h3>What if I need to return a value from my testdriver API?<a class="headerlink" href="#what-if-i-need-to-return-a-value-from-my-testdriver-api" title="Permalink to this headline">¶</a></h3>

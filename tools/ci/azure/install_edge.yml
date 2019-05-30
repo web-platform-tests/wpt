@@ -1,5 +1,5 @@
 parameters:
-  channel: canary
+  channel: dev
 
 # Should match https://web-platform-tests.org/running-tests/chrome.html
 # Just replace chrome with edgechromium

@@ -207,6 +207,14 @@ class Firefox(Browser):
         path = os.path.join(venv_path, "browsers", channel)
         binary = self.find_binary_path(path, channel)
 
+        if not binary and self.platform == "win":
+            winpaths = [os.path.expandvars("$SYSTEMDRIVE\\Program Files\\Mozilla Firefox"),
+                        os.path.expandvars("$SYSTEMDRIVE\\Program Files (x86)\\Mozilla Firefox")]
+            for winpath in winpaths:
+                binary = self.find_binary_path(winpath, channel)
+                if binary is not None:
+                    break
+
         if not binary and self.platform == "macos":
             macpaths = ["/Applications/Firefox Nightly.app/Contents/MacOS",
                         os.path.expanduser("~/Applications/Firefox Nightly.app/Contents/MacOS"),

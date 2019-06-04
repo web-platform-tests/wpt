@@ -185,6 +185,19 @@ document_types().filter(function (entry) { return !entry.isOwner && entry.hasBro
 
 });
 
+test(() => {
+    class ShadowDisabledElement extends HTMLElement {
+      static get disabledFeatures() { return ['shadow']; }
+    }
+    let element = document.createElement('shadow-disabled');
+    element.attachShadow({mode: 'open'});
+    customElements.define('shadow-disabled', ShadowDisabledElement);
+    customElements.upgrade(element);
+    assert_false(element instanceof ShadowDisabledElement,
+                 'Upgrading should fail.');
+}, 'If definition\'s disable shadow is true and element\'s shadow root is ' +
+    'non-null, then throw a "NotSupportedError" DOMException.');
+
 </script>
 </body>
 </html>

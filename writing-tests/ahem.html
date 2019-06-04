@@ -57,6 +57,11 @@ that its bottom is flush with the baseline.</li>
 <p>Most other US-ASCII characters in the font have the same glyph as X.</p>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Ahem should be loaded in tests as a web font. To simplify this, a test can
+link to the <code class="docutils literal notranslate"><span class="pre">/fonts/ahem.css</span></code> stylesheet:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">link</span> <span class="n">rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/css&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;/fonts/ahem.css&quot;</span> <span class="o">/&gt;</span>
+</pre></div>
+</div>
 <p>If the test uses the Ahem font, make sure its computed font-size is a
 multiple of 5px, otherwise baseline alignment may be rendered
 inconsistently. A minimum computed font-size of 20px is suggested.</p>

@@ -27,6 +27,7 @@
 </div>
 
 <script>
+setup({explicit_done: true});
 document.fonts.ready.then(()=> {
   // Single values.
   TestingUtils.testGridTemplateColumnsRows("emptyGrid", "none", "none", "none", "none");
@@ -83,5 +84,6 @@ document.fonts.ready.then(()=> {
   TestingUtils.testGridTemplateColumnsRows("grid", "100px, 200px", "300px, 400px", "90px", "10px");
   TestingUtils.testGridTemplateColumnsRows("emptyGrid", "minmax(100px, 200px, 300px)", "minmax(100px, 200px, 300px)", "none", "none");
   TestingUtils.testGridTemplateColumnsRows("grid", "minmax(100px, 200px, 300px)", "minmax(100px, 200px, 300px)", "90px", "10px");
+  done();
 });
 </script>

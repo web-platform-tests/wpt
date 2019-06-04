@@ -27,6 +27,7 @@
 </div>
 
 <script>
+setup({explicit_done: true});
 document.fonts.ready.then(()=> {
   // Valid values.
   TestingUtils.testGridTemplateColumnsRows("emptyGrid", "repeat(1, auto)", "repeat(1, auto)", "0px", "0px");
@@ -77,5 +78,6 @@ document.fonts.ready.then(()=> {
   TestingUtils.testGridTemplateColumnsRows("grid", "repeat(2, 50px repeat(2, 100px))", "repeat(2, 50px repeat(2, 100px))", "90px", "10px");
   TestingUtils.testGridTemplateColumnsRows("emptyGrid", "100px repeat(2, [a])", "100px repeat(2, [a])", "none", "none");
   TestingUtils.testGridTemplateColumnsRows("grid", "100px repeat(2, [a])", "100px repeat(2, [a])", "90px", "10px");
+  done();
 });
 </script>

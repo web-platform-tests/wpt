@@ -27,6 +27,7 @@
 </div>
 
 <script>
+setup({explicit_done: true});
 document.fonts.ready.then(()=> {
   // Valid values.
   TestingUtils.testGridTemplateColumnsRows("emptyGrid", "[first] auto [last]", "[first] auto [last]", "[first] 0px [last]", "[first] 0px [last]");
@@ -117,5 +118,6 @@ document.fonts.ready.then(()=> {
   TestingUtils.testGridTemplateColumnsRows("grid", "[inherit] auto", "[inherit] auto", "90px", "10px");
   TestingUtils.testGridTemplateColumnsRows("emptyGrid", "[default] auto", "[default] auto", "none", "none");
   TestingUtils.testGridTemplateColumnsRows("grid", "[default] auto", "[default] auto", "90px", "10px");
+  done();
 });
 </script>

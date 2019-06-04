@@ -89,7 +89,7 @@ a different set of command-line arguments.</p>
 <div class="section" id="run">
 <h3>run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">run</span> <span class="p">[</span><span class="o">--</span><span class="n">affected</span> <span class="n">AFFECTED</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">yes</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">browser</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">channel</span> <span class="p">{</span><span class="n">dev</span><span class="p">,</span><span class="n">nightly</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span><span class="n">stable</span><span class="p">,</span><span class="n">release</span><span class="p">,</span><span class="n">preview</span><span class="p">,</span><span class="n">experimental</span><span class="p">}]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">channel</span> <span class="p">{</span><span class="n">nightly</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span><span class="n">experimental</span><span class="p">,</span><span class="n">stable</span><span class="p">,</span><span class="n">release</span><span class="p">,</span><span class="n">canary</span><span class="p">,</span><span class="n">preview</span><span class="p">,</span><span class="n">dev</span><span class="p">}]</span>
         <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manifest</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">manifest</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">multiplier</span> <span class="n">TIMEOUT_MULTIPLIER</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">run</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="nb">dir</span> <span class="p">[</span><span class="n">RUN_BY_DIR</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">processes</span> <span class="n">PROCESSES</span><span class="p">]</span>
@@ -186,7 +186,7 @@ a different set of command-line arguments.</p>
 </td></tr>
 <tr><td class="option-group">
 <kbd>--channel</kbd></td>
-<td><p class="first">Possible choices: dev, nightly, beta, stable, release, preview, experimental</p>
+<td><p class="first">Possible choices: nightly, beta, experimental, stable, release, canary, preview, dev</p>
 <p class="last">Name of browser release channel. “stable” and “release” are synonyms for the latest browser stable release, “nightly”, “dev”, “experimental”, and “preview” are all synonyms for the latest available development release. (For WebDriver installs, we attempt to select an appropriate, compatible version for the latest browser release on the selected channel.) This flag overrides –browser-channel.</p>
 </td></tr>
 <tr><td class="option-group" colspan="2">
@@ -787,7 +787,7 @@ a different set of command-line arguments.</p>
 <div class="section" id="install">
 <h3>install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">install</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-            <span class="p">[</span><span class="o">--</span><span class="n">channel</span> <span class="p">{</span><span class="n">dev</span><span class="p">,</span><span class="n">nightly</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span><span class="n">stable</span><span class="p">,</span><span class="n">release</span><span class="p">,</span><span class="n">preview</span><span class="p">,</span><span class="n">experimental</span><span class="p">}]</span>
+            <span class="p">[</span><span class="o">--</span><span class="n">channel</span> <span class="p">{</span><span class="n">nightly</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span><span class="n">experimental</span><span class="p">,</span><span class="n">stable</span><span class="p">,</span><span class="n">release</span><span class="p">,</span><span class="n">canary</span><span class="p">,</span><span class="n">preview</span><span class="p">,</span><span class="n">dev</span><span class="p">}]</span>
             <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DESTINATION</span><span class="p">]</span>
             <span class="p">{</span><span class="n">firefox</span><span class="p">,</span><span class="n">chrome</span><span class="p">,</span><span class="n">servo</span><span class="p">}</span> <span class="p">{</span><span class="n">browser</span><span class="p">,</span><span class="n">webdriver</span><span class="p">}</span>
 </pre></div>
@@ -819,7 +819,7 @@ a different set of command-line arguments.</p>
 <tbody valign="top">
 <tr><td class="option-group">
 <kbd>--channel</kbd></td>
-<td><p class="first">Possible choices: dev, nightly, beta, stable, release, preview, experimental</p>
+<td><p class="first">Possible choices: nightly, beta, experimental, stable, release, canary, preview, dev</p>
 <p>Name of browser release channel. “stable” and “release” are synonyms for the latest browser stable release,”nightly”, “dev”, “experimental”, and “preview” are all synonyms for the latest available development release. For WebDriver installs, we attempt to select an appropriate, compatible, version for the latest browser release on the selected channel.</p>
 <p class="last">Default: “nightly”</p>
 </td></tr>

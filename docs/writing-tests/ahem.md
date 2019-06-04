@@ -23,7 +23,7 @@ that its bottom is flush with the baseline.
 Most other US-ASCII characters in the font have the same glyph as X.
 
 ## Usage
-Ahem should be loaded in tests as a WebFont. To simplify this, a test can
+Ahem should be loaded in tests as a web font. To simplify this, a test can
 link to the `/fonts/ahem.css` stylesheet:
 
 ```

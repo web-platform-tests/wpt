@@ -124,3 +124,106 @@ promise_test(async t => {
     assert_equals(await getFileContents(handle), 'abc\0\0');
     assert_equals(await getFileSize(handle), 5);
 }, 'truncate() to grow a file');
+
+promise_test(async t => {
+  const handle = await createEmptyFile(t, 'stream_writer');
+  const stream = await handle.createWritable();
+
+  const writer = await stream.getWriter();
+  await writer.ready;
+  await writer.write("foo");
+
+  // Wait until queue is clear to close.
+  await writer.ready;
+  await writer.close();
+
+  assert_equals(await getFileContents(handle), 'foo');
+  assert_equals(await getFileSize(handle), 3);
+}, 'getWriter() to write string');
+
+promise_test(async t => {
+  const handle = await createEmptyFile(t, 'stream_writer_write');
+  const stream = await handle.createWritable();
+
+  const writer = await stream.getWriter();
+  await writer.ready;
+  await writer.write(new Blob(['abc']));
+
+  // Wait until queue is clear to close.
+  await writer.ready;
+  await writer.close();
+
+  assert_equals(await getFileContents(handle), 'abc');
+  assert_equals(await getFileSize(handle), 3);
+}, 'getWriter() to write blob');
+
+promise_test(async t => {
+  const handle = await createEmptyFile(t, 'stream_writer_multiple_writes');
+  const stream = await handle.createWritable();
+
+  const writer = await stream.getWriter();
+  await writer.ready;
+  await writer.write('foo');
+  await writer.write('bar');
+
+  // Wait until queue is clear to close.
+  await writer.ready;
+  await writer.close();
+
+  assert_equals(await getFileContents(handle), 'foobar');
+  assert_equals(await getFileSize(handle), 6);
+}, 'getWriter().write() tracks file offset');
+
+promise_test(async t => {
+  const handle = await createEmptyFile(t, 'stream_writer_separate_writers');
+  const stream = await handle.createWritable();
+
+  const writer1 = await stream.getWriter();
+  await writer1.ready;
+  await writer1.write('foo');
+
+  await writer1.ready;
+  writer1.releaseLock();
+  assert_false(stream.locked, "stream is unlocked");
+
+  const writer2 = await stream.getWriter();
+  await writer2.ready;
+  await writer2.write('bar');
+
+  // Wait until queue is clear to close.
+  await writer2.ready;
+  await writer2.close();
+
+  assert_equals(await getFileContents(handle), 'foobar');
+  assert_equals(await getFileSize(handle), 6);
+}, 'writing with multiple Writer instances from the same stream in succession appends');
+
+promise_test(async t => {
+  const handle = await createEmptyFile(t, 'streams_maintain_position');
+  const stream1 = await handle.createWritable();
+  const stream2 = await handle.createWritable({position: 3});
+
+  const writer1 = stream1.getWriter();
+  const writer2 = stream2.getWriter();
+
+  await writer1.ready;
+  writer1.write('foo');
+  await writer1.ready;
+  await writer1.close();
+
+  await writer2.ready;
+  writer2.write('bar');
+  await writer2.ready;
+  await writer2.close();
+
+  assert_equals(await getFileContents(handle), 'foobar');
+  assert_equals(await getFileSize(handle), 6);
+}, 'getWriter().write(): streams maintain positions');
+
+promise_test(async t => {
+  const handle = await createEmptyFile(t, 'streams_offset_error');
+  const stream = await handle.createWritable({position: 5});
+  const writer = stream.getWriter();
+  await writer.ready;
+  await promise_rejects(t, 'InvalidStateError', writer.write('foo'));
+}, 'getWriter().write(): writing past end of file rejects');

@@ -30,8 +30,8 @@ deferTest();
 step_timeout(t.step_func_done(function () {
     ctx.font = '50px CanvasTest';
     ctx.direction = 'ltr';
-    ctx.align = 'left'
-    ctx.baseline = 'alphabetic'
+    ctx.align = 'left';
+    ctx.baseline = 'alphabetic';
     // Some platforms may return '-0'.
     _assertSame(Math.abs(ctx.measureText('A').actualBoundingBoxLeft), 0, "Math.abs(ctx.measureText('A').actualBoundingBoxLeft)", "0");
     // Different platforms may render text slightly different.

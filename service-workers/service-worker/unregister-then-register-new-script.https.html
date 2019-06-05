@@ -107,8 +107,6 @@ promise_test(async function(t) {
 
   assert_equals(newIframe.contentWindow.navigator.serviceWorker.controller, null, 'Document should not be controlled');
 }, 'Registering a new script URL that 404s does not resurrect unregistered registration');
-// Service worker used to 'ressurect' registrations, so registration and newRegistration would be equal.
-// This has since been changed.
 
 promise_test(async function(t) {
   const scope = 'resources/scope/unregister-then-register-new-script-that-404s';
@@ -134,6 +132,4 @@ promise_test(async function(t) {
   assert_equals(registration.active, null, 'registration.active');
   assert_not_equals(registration, newRegistration, 'New registration is different');
 }, 'Registering a new script URL that fails to install does not resurrect unregistered registration');
-// Service worker used to 'ressurect' registrations, so registration and newRegistration would be equal.
-// This has since been changed.
 </script>

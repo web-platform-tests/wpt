@@ -39,8 +39,6 @@ promise_test(async function(t) {
     'Unregister and register should always create a new registration'
   );
 }, 'Unregister then register does not resolve to the original value even if the registration is in use.');
-// Service worker used to 'ressurect' registrations, so registration and new_registration would be equal.
-// This has since been changed.
 
 promise_test(function(t) {
     var scope = 'resources/scope/re-register-does-not-affect-existing-controllee';
@@ -105,6 +103,4 @@ promise_test(async function(t) {
   assert_not_equals(registration, newRegistration, 'Registrations are different');
   assert_equals(newRegistration, iframeRegistration, 'iFrame uses new registration');
 }, 'Unregister then register does not resurrect the registration');
-// Service worker used to 'ressurect' registrations, so registration and new_registration would be equal.
-// This has since been changed.
 </script>

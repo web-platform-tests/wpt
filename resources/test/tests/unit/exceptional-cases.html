@@ -116,44 +116,6 @@ promise_test(() => {
 }, 'uncaught exception during promise_test');
 
 promise_test(() => {
-  window.asyncTestCleanupCount = 0;
-  return makeTest(
-      () => {
-        async_test((t) => {
-          t.add_cleanup(() => window.parent.asyncTestCleanupCount += 1);
-          setTimeout(() => {
-            throw new Error('this error is expected');
-          });
-        }, 'test');
-      }
-    ).then(({harness, tests}) => {
-      assert_equals(harness, 'ERROR');
-      assert_equals(tests.test, 'TIMEOUT');
-      assert_equals(window.asyncTestCleanupCount, 1);
-    });
-}, 'uncaught exception during async_test which times out');
-
-promise_test(() => {
-  window.promiseTestCleanupCount = 0;
-  return makeTest(
-      () => {
-        promise_test((t) => {
-          t.add_cleanup(() => window.parent.promiseTestCleanupCount += 1);
-          setTimeout(() => {
-            throw new Error('this error is expected');
-          });
-
-          return new Promise(() => {});
-        }, 'test');
-      }
-    ).then(({harness, tests}) => {
-      assert_equals(harness, 'ERROR');
-      assert_equals(tests.test, 'TIMEOUT');
-      assert_equals(window.promiseTestCleanupCount, 1);
-    });
-}, 'uncaught exception during promise_test which times out');
-
-promise_test(() => {
   return makeTest(
       () => { test(() => {}, 'before'); },
       () => { throw new Error('this error is expected'); },

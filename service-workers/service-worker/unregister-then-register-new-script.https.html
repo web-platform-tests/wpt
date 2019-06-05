@@ -5,71 +5,77 @@
 <script>
 var worker_url = 'resources/empty-worker.js';
 
-async_test(function(t) {
-    var scope = 'resources/scope/unregister-then-register-new-script-that-exists';
-    var new_worker_url = worker_url + '?new';
-    var iframe;
-    var registration;
-    var new_registration;
+promise_test(async function(t) {
+  const scope = 'resources/scope/unregister-then-register-new-script-that-exists';
+  const registration = await service_worker_unregister_and_register(t, worker_url, scope);
+  const newWorkerURL = worker_url + '?new';
+  await wait_for_state(t, registration.installing, 'activated');
 
-    service_worker_unregister_and_register(t, worker_url, scope)
-      .then(function(r) {
-          registration = r;
-          return wait_for_state(t, r.installing, 'activated');
-        })
-      .then(function() {
-          return with_iframe(scope);
-        })
-      .then(function(frame) {
-          iframe = frame;
-          return registration.unregister();
-        })
-      .then(function() {
-          return navigator.serviceWorker.register(new_worker_url,
-                                                  { scope: scope });
-        })
-      .then(function(r) {
-          new_registration = r;
-          assert_equals(registration.installing.scriptURL,
-                        normalizeURL(new_worker_url),
-                        'before activated registration.installing');
-          assert_equals(registration.waiting, null,
-                        'before activated registration.waiting');
-          assert_equals(registration.active.scriptURL, normalizeURL(worker_url),
-                        'before activated registration.active');
-          assert_equals(new_registration.installing.scriptURL,
-                        normalizeURL(new_worker_url),
-                        'before activated new_registration.installing');
-          assert_equals(new_registration.waiting, null,
-                        'before activated new_registration.waiting');
-          assert_equals(new_registration.active.scriptURL,
-                        normalizeURL(worker_url),
-                        'before activated new_registration.active');
-          iframe.remove();
-          return wait_for_state(t, registration.installing, 'activated');
-        })
-      .then(function() {
-          assert_equals(new_registration.installing, null,
-                        'after activated new_registration.installing');
-          assert_equals(new_registration.waiting, null,
-                        'after activated new_registration.waiting');
-          assert_equals(new_registration.active.scriptURL,
-                        normalizeURL(new_worker_url),
-                        'after activated new_registration.active');
-          return with_iframe(scope);
-        })
-      .then(function(frame) {
-          assert_equals(
-              frame.contentWindow.navigator.serviceWorker.controller.scriptURL,
-              normalizeURL(new_worker_url),
-              'the new worker should control a new document');
-          frame.remove();
-          return registration.unregister();
-        })
-      .then(function() {
-          t.done();
-        })
-      .catch(unreached_rejection(t));
+  const iframe = await with_iframe(scope);
+
+  await registration.unregister();
+
+  const newRegistration = await navigator.serviceWorker.register(newWorkerURL, { scope });
+
+  assert_equals(
+    registration.installing.scriptURL,
+    normalizeURL(newWorkerURL),
+    'before activated registration.installing'
+  );
+  assert_equals(
+    registration.waiting,
+    null,
+    'before activated registration.waiting'
+  );
+  assert_equals(
+    registration.active.scriptURL,
+    normalizeURL(worker_url),
+    'before activated registration.active'
+  );
+  assert_equals(
+    newRegistration.installing.scriptURL,
+    normalizeURL(newWorkerURL),
+    'before activated newRegistration.installing'
+  );
+  assert_equals(
+    newRegistration.waiting,
+    null,
+    'before activated newRegistration.waiting'
+  );
+  assert_equals(
+    newRegistration.active.scriptURL,
+    normalizeURL(worker_url),
+    'before activated newRegistration.active'
+  );
+  iframe.remove();
+
+  await wait_for_state(t, registration.installing, 'activated');
+
+  assert_equals(
+    newRegistration.installing,
+    null,
+    'after activated newRegistration.installing'
+  );
+  assert_equals(
+    newRegistration.waiting,
+    null,
+    'after activated newRegistration.waiting'
+  );
+  assert_equals(
+    newRegistration.active.scriptURL,
+    normalizeURL(newWorkerURL),
+    'after activated newRegistration.active'
+  );
+
+  const newIFrame = await with_iframe(scope);
+
+  assert_equals(
+    newIFrame.contentWindow.navigator.serviceWorker.controller.scriptURL,
+    normalizeURL(newWorkerURL),
+    'the new worker should control a new document'
+  );
+  newIFrame.remove();
+  await registration.unregister();
 }, 'Registering a new script URL while an unregistered registration is in use');
 
 promise_test(async function(t) {

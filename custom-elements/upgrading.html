@@ -186,19 +186,6 @@ document_types().filter(function (entry) { return !entry.isOwner && entry.hasBro
 });
 
 test(() => {
-    class InternalsDisabledElement extends HTMLElement {
-      static get disabledFeatures() { return ['internals']; }
-    }
-    let element = document.createElement('internals-disabled');
-    customElements.define('internals-disabled', InternalsDisabledElement);
-    element.attachInternals();
-    customElements.upgrade(element);
-    assert_false(element instanceof InternalsDisabledElement,
-                 'Upgrading should fail.');
-}, 'If definition\'s disable internals is true and element\'s attached ' +
-     'internals is true, then throw a "NotSupportedError" DOMException.');
-
-test(() => {
     class ShadowDisabledElement extends HTMLElement {
       static get disabledFeatures() { return ['shadow']; }
     }

@@ -19,26 +19,30 @@
 
 <span style="font-family: CanvasTest; position: absolute; visibility: hidden">A</span>
 <p class="output">Actual output:</p>
-<canvas id="c" class="output" width="100" height="50"><p class="fallback">FAIL (fallback content)</p></canvas>
+<canvas id="c" class="output" width="100" height="50">
+<p class="fallback">FAIL (fallback content)</p>
+</canvas>
 
 <ul id="d"></ul>
 <script>
 var t = async_test("Testing fontBoundingBox");
-_addTest(function(canvas, ctx) {
+_addTest(function (canvas, ctx) {
+  deferTest();
+  var f = new FontFace("CanvasTest", "/fonts/CanvasTest.ttf");
+  document.fonts.add(f);
+  document.fonts.ready.then(() => {
+    step_timeout(t.step_func_done(function () {
+      ctx.font = '50px CanvasTest';
+      ctx.direction = 'ltr';
+      ctx.align = 'left'
+      ctx.baseline = 'alphabetic'
+      _assertSame(ctx.measureText('A').fontBoundingBoxAscent, 85, "ctx.measureText('A').fontBoundingBoxAscent", "85");
+      _assertSame(ctx.measureText('A').fontBoundingBoxDescent, 39, "ctx.measureText('A').fontBoundingBoxDescent", "39");
 
-deferTest();
-step_timeout(t.step_func_done(function () {
-    ctx.font = '50px CanvasTest';
-    ctx.direction = 'ltr';
-    ctx.align = 'left'
-    _assertSame(ctx.measureText('A').fontBoundingBoxAscent, 85, "ctx.measureText('A').fontBoundingBoxAscent", "85");
-    _assertSame(ctx.measureText('A').fontBoundingBoxDescent, 39, "ctx.measureText('A').fontBoundingBoxDescent", "39");
-
-    _assertSame(ctx.measureText('ABCD').fontBoundingBoxAscent, 85, "ctx.measureText('ABCD').fontBoundingBoxAscent", "85");
-    _assertSame(ctx.measureText('ABCD').fontBoundingBoxDescent, 39, "ctx.measureText('ABCD').fontBoundingBoxDescent", "39");
-}), 500);
-
-
+      _assertSame(ctx.measureText('ABCD').fontBoundingBoxAscent, 85, "ctx.measureText('ABCD').fontBoundingBoxAscent", "85");
+      _assertSame(ctx.measureText('ABCD').fontBoundingBoxDescent, 39, "ctx.measureText('ABCD').fontBoundingBoxDescent", "39");
+    }), 0);
+  });
 });
 </script>
-
+</body>>

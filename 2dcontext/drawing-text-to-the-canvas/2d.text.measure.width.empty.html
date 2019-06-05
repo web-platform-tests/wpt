@@ -19,20 +19,23 @@
 
 <span style="font-family: CanvasTest; position: absolute; visibility: hidden">A</span>
 <p class="output">Actual output:</p>
-<canvas id="c" class="output" width="100" height="50"><p class="fallback">FAIL (fallback content)</p></canvas>
+<canvas id="c" class="output" width="100" height="50">
+<p class="fallback">FAIL (fallback content)</p>
+</canvas>
 
 <ul id="d"></ul>
 <script>
 var t = async_test("The empty string has zero width");
-_addTest(function(canvas, ctx) {
-
-deferTest();
-step_timeout(t.step_func_done(function () {
-    ctx.font = '50px CanvasTest';
-    _assertSame(ctx.measureText("").width, 0, "ctx.measureText(\"\").width", "0");
-}), 500);
-
-
+_addTest(function (canvas, ctx) {
+  deferTest();
+  var f = new FontFace("CanvasTest", "/fonts/CanvasTest.ttf");
+  document.fonts.add(f);
+  document.fonts.ready.then(() => {
+    step_timeout(t.step_func_done(function () {
+      ctx.font = '50px CanvasTest';
+      _assertSame(ctx.measureText("").width, 0, "ctx.measureText(\"\").width", "0");
+    }), 0);
+  });
 });
 </script>
-
+</body>>

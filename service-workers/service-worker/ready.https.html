@@ -278,7 +278,7 @@ promise_test(async function(t) {
 
   assert_equals(readyReg, reg2, 'Resolves with the second registration');
   assert_not_equals(reg1, reg2, 'Registrations should be different');
-}, 'resolve ready after unregistrating and reregistering');
+}, 'resolve ready after unregistering and reregistering');
 
 promise_test(async function(t) {
   const url = 'resources/empty-worker.js';
@@ -309,5 +309,5 @@ promise_test(async function(t) {
 
   assert_equals(readyReg, reg1, 'Resolves with the first registration');
   assert_not_equals(reg1, reg2, 'Registrations should be different');
-}, 'resolve ready before unregistrating and reregistering');
+}, 'resolve ready before unregistering and reregistering');
 </script>

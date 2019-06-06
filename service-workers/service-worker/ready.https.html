@@ -296,6 +296,8 @@ promise_test(async function(t) {
   // This registration will resolve all ready promises in clients that match the scope.
   // That includes frame's client.
 
+  const reg1Active = reg1.active;
+
   await reg1.unregister();
 
   // Access the ready promise while the registration is unregistering.
@@ -309,7 +311,7 @@ promise_test(async function(t) {
 
   const readyReg = await readyPromise;
 
-  assert_equals(readyReg.active.scriptURL, reg1.active.scriptURL, 'Resolves with the second registration');
+  assert_equals(readyReg.active.scriptURL, reg1Active.scriptURL, 'Resolves with the first registration');
   assert_not_equals(reg1, reg2, 'Registrations should be different');
 }, 'resolve ready before unregistering and reregistering');
 </script>

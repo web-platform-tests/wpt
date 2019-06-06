@@ -156,7 +156,6 @@ if ('onunhandledrejection' in window) {
   promise_test(() => {
     return makeTest(
         () => {
-          async_test('pending');
           async_test((t) => {
             Promise.reject(new Error('this error is expected'));
 
@@ -169,7 +168,6 @@ if ('onunhandledrejection' in window) {
         }
       ).then(({harness, tests}) => {
         assert_equals(harness, 'ERROR');
-        assert_equals(tests.pending, 'NOTRUN');
         assert_equals(tests.during, 'PASS');
         assert_equals(tests.after, 'PASS');
       });
@@ -211,8 +209,7 @@ if ('onunhandledrejection' in window) {
       ).then(({harness, tests}) => {
         assert_equals(harness, 'ERROR');
         assert_equals(tests.before, 'PASS');
-        // TODO: investigate why this is not present
-        assert_false('after' in tests);
+        assert_true('after' in tests);
       });
   }, 'unhandled rejection between tests');
 
@@ -248,8 +245,7 @@ if ('onunhandledrejection' in window) {
       ).then(({harness, tests}) => {
         assert_equals(harness, 'ERROR');
         assert_equals(tests.before, 'PASS');
-        // TODO: investigate why this is not present
-        assert_false('after' in tests);
+        assert_true('after' in tests);
       });
   }, 'unhandled rejection between promise_tests');
 

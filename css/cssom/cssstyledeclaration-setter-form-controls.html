@@ -1,0 +1,109 @@
+<!doctype html>
+<title>CSSOM test: no side effects from setting "height"</title>
+<link rel="help" href="https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-setproperty">
+<link rel="help" href="https://bugs.webkit.org/show_bug.cgi?id=107380">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<p>
+Historically, the Apple Safari web browser has added an "intrinsic margin" to
+form controls which do not specify a `height`. It removed this margin following
+modification of the `height`. <a
+href="https://bugs.webkit.org/show_bug.cgi?id=107380">This non-standard
+behavior was identified as a source of confusion for web developers.</a>
+</p>
+
+<script>
+test(function() {
+  var element = document.createElement('input');
+  element.setAttribute('type', 'text');
+  document.body.appendChild(element);
+  var computed = getComputedStyle(element);
+  var initial = [computed.marginTop, computed.marginBottom];
+
+  element.style.setProperty('height', '12px');
+
+  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+}, 'text input element');
+
+test(function() {
+  var element = document.createElement('input');
+  element.setAttribute('type', 'button');
+  document.body.appendChild(element);
+  var computed = getComputedStyle(element);
+  var initial = [computed.marginTop, computed.marginBottom];
+
+  element.style.setProperty('height', '12px');
+
+  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+}, 'button input element');
+
+test(function() {
+  var element = document.createElement('input');
+  element.setAttribute('type', 'submit');
+  document.body.appendChild(element);
+  var computed = getComputedStyle(element);
+  var initial = [computed.marginTop, computed.marginBottom];
+
+  element.style.setProperty('height', '12px');
+
+  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+}, 'submit input element');
+
+test(function() {
+  var element = document.createElement('input');
+  element.setAttribute('type', 'radio');
+  document.body.appendChild(element);
+  var computed = getComputedStyle(element);
+  var initial = [computed.marginTop, computed.marginBottom];
+
+  element.style.setProperty('height', '12px');
+
+  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+}, 'radio input element');
+
+test(function() {
+  var element = document.createElement('input');
+  element.setAttribute('type', 'checkbox');
+  document.body.appendChild(element);
+  var computed = getComputedStyle(element);
+  var initial = [computed.marginTop, computed.marginBottom];
+
+  element.style.setProperty('height', '12px');
+
+  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+}, 'checkbox input element');
+
+test(function() {
+  var element = document.createElement('textarea');
+  document.body.appendChild(element);
+  var computed = getComputedStyle(element);
+  var initial = [computed.marginTop, computed.marginBottom];
+
+  element.style.setProperty('height', '12px');
+
+  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+}, 'textarea element');
+
+test(function() {
+  var element = document.createElement('select');
+  document.body.appendChild(element);
+  var computed = getComputedStyle(element);
+  var initial = [computed.marginTop, computed.marginBottom];
+
+  element.style.setProperty('height', '12px');
+
+  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+}, 'select element');
+
+test(function() {
+  var element = document.createElement('button');
+  document.body.appendChild(element);
+  var computed = getComputedStyle(element);
+  var initial = [computed.marginTop, computed.marginBottom];
+
+  element.style.setProperty('height', '12px');
+
+  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+}, 'button element');
+</script>

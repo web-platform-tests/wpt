@@ -63,7 +63,8 @@ class TestharnessResultConverter(object):
     test_codes = {0: "PASS",
                   1: "FAIL",
                   2: "TIMEOUT",
-                  3: "NOTRUN"}
+                  3: "NOTRUN",
+                  4: "SKIP"}
 
     def __call__(self, test, result, extra=None):
         """Convert a JSON result into a (TestResult, [SubtestResult]) tuple"""

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<link rel="author" href="mailto:atotic@google.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://crbug.com/968788">
+<meta name="assert" content="display:table position:absolute Element width is correct when constrained.">
+<style>
+.container {
+  position: relative;
+  width: 400px;
+  height: 100px;
+  background: gray;
+}
+.table {
+  position: absolute;
+  display: table;
+  border: 3px solid black;
+  padding: 5px;
+  right: 200px;
+  background: linear-gradient(to right, green 0px, green 200px, red 201px, red 100%);
+}
+.tile {
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+}
+.float {
+  float: left;
+}
+</style>
+<div class="container">
+  <div class="table">
+    <div class="tile float"></div>
+    <div class="tile float"></div>
+    <div class="tile float"></div>
+    <div class="tile float"></div>
+    <div class="tile float"></div>
+    <div class="tile float"></div>
+  </div>
+</div>
+<div class="container">
+  <div class="table" style="padding:20px">
+    <div class="tile float"></div>
+    <div class="tile float"></div>
+    <div class="tile float"></div>
+    <div class="tile float"></div>
+    <div class="tile float"></div>
+    <div class="tile float"></div>
+  </div>
+</div>
+<div class="container">
+  <table class="table">
+    <tr>
+      <td class="tile"></td>
+      <td class="tile"></td>
+      <td class="tile"></td>
+      <td class="tile"></td>
+      <td class="tile"></td>
+      <td class="tile"></td>
+    </tr>
+  </table>
+</div>
+<div class="container">
+  <div class="table" style="width:50px">
+    <div style="width:calc(200px - 3px * 2 - 5px * 2)"></div>
+  </div>
+</div>
+<script>
+test(() => {
+  Array.from(document.querySelectorAll(".table")).forEach(el => {
+    assert_equals(el.offsetWidth, 200);
+  });
+}, 'display:table elements should be 200px wide');
+</script>

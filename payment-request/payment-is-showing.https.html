@@ -70,32 +70,30 @@
       const request1 = new PaymentRequest(methods, details);
       const request2 = new PaymentRequest(methods, details);
 
-      // Sets the "payment-relevant browsing context's payment request is showing boolean" to true.
-      const showPromise1 = test_driver.bless('show payment request', () =>
-        request1.show(),
+      // Sets the "payment-relevant browsing context's payment request is
+      // showing boolean" to true and then try to show a second payment sheet in
+      // the same window. The second show() should reject.
+      const [showPromise1, showPromise2] = await test_driver.bless(
+        'testing one payment sheet per window',
+        () => {
+          return [request1.show(), request2.show()];
+        },
       );
-
-      // Try to show a second payment sheet in the same window, which should reject.
-      const showPromise2 = test_driver.bless('show payment request', () =>
-        // Sets the request's state to "closed", and rejects with AbortError.
-        // See: https://github.com/w3c/payment-request/pull/821
-        request2.show(),
-      );
-
       await promise_rejects(
         t,
         'AbortError',
         showPromise2,
         'Attempting to show a second payment request must reject.',
       );
-      await request1.abort();
 
+      await request1.abort();
       await promise_rejects(
         t,
         'AbortError',
         showPromise1,
         'request1 was aborted via .abort()',
       );
+
       // Finally, request2 should have been "closed", so trying to show
       // it will again result in promise rejected with an InvalidStateError.
       // See: https://github.com/w3c/payment-request/pull/821
@@ -123,12 +121,15 @@
       const windowRequest = new window.PaymentRequest(methods, details);
 
       // Let's get some blessed showPromises
-      const showPromise = test_driver.bless('show payment request', () => {
-        // iframe sets "is showing boolean", ignore the returned promise.
-        iframeRequest.show();
-        // The top level window now tries to show() the payment request.
-        return windowRequest.show();
-      });
+      const [showPromise] = await test_driver.bless(
+        'testing top window show() blocked by payment sheet in iframe',
+        () => {
+          // iframe sets "is showing boolean", ignore the returned promise.
+          iframeRequest.show();
+          // The top level window now tries to show() the payment request.
+          return [windowRequest.show()];
+        },
+      );
 
       await promise_rejects(
         t,
@@ -150,14 +151,15 @@
       const iframeRequest = new iframeWindow.PaymentRequest(methods, details);
       const windowRequest = new window.PaymentRequest(methods, details);
 
-      // We show a payment request via the the top level browsing context,
-      // windowRequest.show() sets "is showing boolean" to true.
-      // We don't care about the returned promise.
-      test_driver.bless('show payment request', () => windowRequest.show());
-
-      // calling iframeRequest.show() must return a rejected promise.
-      const iframeShowPromise = test_driver.bless('show payment request', () =>
-        iframeRequest.show(),
+      // We first show a payment request via the the top level browsing context,
+      // windowRequest.show() sets "is showing boolean" to true. Then we try to
+      // show a payment request in the iframe, which should reject.
+      const [iframeShowPromise] = await test_driver.bless(
+        'testing iframe show() blocked by payment sheet in top window',
+        () => {
+          windowRequest.show();
+          return [iframeRequest.show()];
+        },
       );
 
       await promise_rejects(
@@ -212,13 +214,16 @@
         windowShowPromise,
         popupShowPromise,
         iframeShowPromise,
-      ] = await test_driver.bless('show payment request', () => {
-        return [
-          windowRequest.show(),
-          popupRequest.show(),
-          iframeRequest.show(),
-        ];
-      });
+      ] = await test_driver.bless(
+        'test multiple nested browsing context',
+        () => {
+          return [
+            windowRequest.show(),
+            popupRequest.show(),
+            iframeRequest.show(),
+          ];
+        },
+      );
 
       // popupRequest and iframeRequest will both reject
       await promise_rejects(
@@ -298,13 +303,16 @@
         iframeShowPromise,
         popupShowPromise,
         windowShowPromise,
-      ] = await test_driver.bless('show payment request', () => {
-        return [
-          iframeRequest.show(),
-          popupRequest.show(),
-          windowRequest.show(),
-        ];
-      });
+      ] = await test_driver.bless(
+        'test multiple browsing context and iframe show first',
+        () => {
+          return [
+            iframeRequest.show(),
+            popupRequest.show(),
+            windowRequest.show(),
+          ];
+        },
+      );
 
       // windowShowPromise and iframeRequest will both reject
       await promise_rejects(
@@ -330,8 +338,9 @@
       const iframe = await attachIframe();
       const iframeWindow = iframe.contentWindow;
       const iframeRequest = new iframeWindow.PaymentRequest(methods, details);
-      const iframeShowPromise = test_driver.bless('show payment request', () =>
-        iframeRequest.show(),
+      const iframeShowPromise = test_driver.bless(
+        'test iframe navigation resets is showing boolean',
+        () => iframeRequest.show(),
       );
 
       // We navigate away, causing the payment sheet to close

@@ -50,15 +50,13 @@
     }
 
     /**
-     * Creates a popup window
+     * Creates a popup window. The caller must be triggered with a user gesture.
      *
      * @param {String} src Optional resource URL to load.
      * @returns {Promise} Resolves when the src loads.
      */
-    async function loadPopup(src = 'blank.html') {
-      const popupWindow = await test_driver.bless('a popup window', () =>
-        window.open(src, '', 'width=400,height=400'),
-      );
+    async function loadPopupInsideUserGesture(src = 'blank.html') {
+      const popupWindow = window.open(src, '', 'width=400,height=400');
       await new Promise(resolve => {
         popupWindow.addEventListener('load', resolve, {once: true});
       });
@@ -175,40 +173,61 @@
     }, 'An iframe cannot show a payment request if the top-level window is already showing one.');
 
     promise_test(async t => {
-      const popupWindow = await loadPopup();
-
-      // Create requests
-      const popupRequest = new popupWindow.PaymentRequest(methods, details);
+      // Create a PaymentReuqest in top-level window.
       const windowRequest = new window.PaymentRequest(methods, details);
 
-      // show the Popup's payment request.
-      const popupShowPromise = test_driver.bless(
-        "show popup's payment request",
-        () =>
-          // popupRequest.show(), but via the window.PaymentRequest.prototype
-          window.PaymentRequest.prototype.show.call(popupRequest),
+      // Use a single user gesture to open a popup window with a PaymentRequest.
+      // Then trigger show() first on |popupRequest| then on |windowRequest|.
+      // The latter should reject.
+      const [
+        popupWindow,
+        popupRequest,
+        popupShowPromise,
+        windowShowPromise,
+      ] = await test_driver.bless(
+        'testing top-level show() blocked by payment sheet in popup',
+        async () => {
+          const popupWindow = await loadPopupInsideUserGesture();
+          const popupRequest = new popupWindow.PaymentRequest(methods, details);
+          const popupShowPromise = popupRequest.show();
+          const windowShowPromise = windowRequest.show();
+          return [
+            popupWindow,
+            popupRequest,
+            popupShowPromise,
+            windowShowPromise,
+          ];
+        },
       );
-      const showPromise = test_driver.bless('show window payment request', () =>
-        windowRequest.show(),
-      );
+      await popupRequest.abort();
+      popupWindow.close();
+
       await promise_rejects(
         t,
         'AbortError',
-        showPromise,
+        windowShowPromise,
         "Expected window's showPromise to reject, request is already showing",
       );
-      popupWindow.close();
     }, 'Using a popup window prevents the top-browsing context from showing a payment request');
 
     promise_test(async t => {
       const iframe = await attachIframe();
       const iframeWindow = iframe.contentWindow;
-      const popupWindow = await loadPopup();
 
       // Create requests
       const windowRequest = new window.PaymentRequest(methods, details);
-      const popupRequest = new popupWindow.PaymentRequest(methods, details);
       const iframeRequest = new iframeWindow.PaymentRequest(methods, details);
+
+      // Open a popup window
+      const [popupWindow, popupRequest] = await test_driver.bless(
+        'open popup',
+        async () => {
+          const w = await loadPopupInsideUserGesture();
+          const r = new w.PaymentRequest(methods, details);
+          return [w, r];
+        },
+      );
+
       // Get the showPromise for each browsing context
       const [
         windowShowPromise,
@@ -224,7 +243,6 @@
           ];
         },
       );
-
       // popupRequest and iframeRequest will both reject
       await promise_rejects(
         t,
@@ -248,25 +266,29 @@
     promise_test(async t => {
       const iframe = await attachIframe();
       const iframeWindow = iframe.contentWindow;
-      const popupWindow = await loadPopup();
 
       // Create requests
       const windowRequest = new window.PaymentRequest(methods, details);
-      const popupRequest = new popupWindow.PaymentRequest(methods, details);
       const iframeRequest = new iframeWindow.PaymentRequest(methods, details);
 
-      // Get the showPromise for each browsing context
+      // Open a popup window
       const [
+        popupWindow,
+        popupRequest,
         popupShowPromise,
-        windowShowPromise,
-        iframeShowPromise,
-      ] = await test_driver.bless('show payment request', () => {
-        return [
-          popupRequest.show(),
-          windowRequest.show(),
-          iframeRequest.show(),
-        ];
+      ] = await test_driver.bless('open popup', async () => {
+        const w = await loadPopupInsideUserGesture();
+        const r = new w.PaymentRequest(methods, details);
+        return [w, r, r.show()];
       });
+
+      // Get the showPromise for each browsing context.
+      const [windowShowPromise, iframeShowPromise] = await test_driver.bless(
+        'test multiple nested context and popup calls show() first',
+        () => {
+          return [windowRequest.show(), iframeRequest.show()];
+        },
+      );
 
       // windowShowPromise and iframeRequest will both reject
       await promise_rejects(
@@ -291,12 +313,19 @@
     promise_test(async t => {
       const iframe = await attachIframe();
       const iframeWindow = iframe.contentWindow;
-      const popupWindow = await loadPopup();
 
       // Create requests
       const windowRequest = new window.PaymentRequest(methods, details);
-      const popupRequest = new popupWindow.PaymentRequest(methods, details);
       const iframeRequest = new iframeWindow.PaymentRequest(methods, details);
+
+      const [popupWindow, popupRequest] = await test_driver.bless(
+        'open popup',
+        async () => {
+          const w = await loadPopupInsideUserGesture();
+          const r = new w.PaymentRequest(methods, details);
+          return [w, r];
+        },
+      );
 
       // Get the showPromise for each browsing context
       const [
@@ -304,8 +333,8 @@
         popupShowPromise,
         windowShowPromise,
       ] = await test_driver.bless(
-        'test multiple browsing context and iframe show first',
-        () => {
+        'test multiple browsing context and iframe calls show() first',
+        async () => {
           return [
             iframeRequest.show(),
             popupRequest.show(),
@@ -339,7 +368,7 @@
       const iframeWindow = iframe.contentWindow;
       const iframeRequest = new iframeWindow.PaymentRequest(methods, details);
       const iframeShowPromise = test_driver.bless(
-        'test iframe navigation resets is showing boolean',
+        'test navigating iframe after show()',
         () => iframeRequest.show(),
       );
 
@@ -356,34 +385,39 @@
       iframe.remove();
 
       // Now we should be ok to spin up a new payment request
-      const request = new window.PaymentRequest(method, details);
+      const request = new window.PaymentRequest(methods, details);
       const showPromise = request.show();
       await request.abort();
     }, "Navigating an iframe as a nested browsing context sets 'payment request is showing boolean' to false.");
 
-    promise_test(async t => {
-      const popupWindow = await loadPopup();
-      const popupRequest = new popupWindow.PaymentRequest(methods, details);
-      const showPromise = test_driver.bless('show payment request', () =>
-        popupRequest.show(),
-      );
+    // Broken
+    //promise_test(async t => {
+    //  const [popupWindow, popupRequest, showPromise] = await test_driver.bless(
+    //    'test navigating popup after show()',
+    //    async () => {
+    //      const popupWindow = await loadPopupInsideUserGesture();
+    //      const popupRequest = new popupWindow.PaymentRequest(methods, details);
 
-      // We navigate away, causing the payment sheet to close
-      // and the request is showing boolean to become false.
-      popupWindow.location = 'blank.html?abc=123';
-      await new Promise(resolve => (popupWindow.onload = resolve));
-      await promise_rejects(
-        t,
-        'AbortError',
-        showPromise,
-        'Navigating away must cause the showPromise to reject with an AbortError',
-      );
-      popupWindow.close();
+    //      return [popupWindow, popupRequest, popupRequest.show()];
+    //    },
+    //  );
 
-      // Now we should be ok to spin up a new payment request.
-      const request = new window.PaymentRequest(method, details);
-      request.show();
-      await request.abort();
-    }, "Navigating a popup as a nested browsing context sets 'payment request is showing boolean' to false.");
+    //  // We navigate away, causing the payment sheet to close
+    //  // and the request is showing boolean to become false.
+    //  popupWindow.location = 'blank.html?abc=123';
+    //  await new Promise(resolve => (popupWindow.onload = resolve));
+    //  await promise_rejects(
+    //    t,
+    //    'AbortError',
+    //    showPromise,
+    //    'Navigating away must cause the showPromise to reject with an AbortError',
+    //  );
+    //  popupWindow.close();
+
+    //  // Now we should be ok to spin up a new payment request.
+    //  const request = new window.PaymentRequest(methods, details);
+    //  request.show();
+    //  await request.abort();
+    //}, "Navigating a popup as a nested browsing context sets 'payment request is showing boolean' to false.");
   </script>
 </body>

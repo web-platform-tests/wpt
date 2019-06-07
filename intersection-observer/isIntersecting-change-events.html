@@ -103,8 +103,8 @@ function step2() {
 
 function step3() {
   assert_equals(entries.length, 5, "Has 5 total notifications.");
-  checkRect(entries[4].boundingClientRect, [0, 100, 200, 300], "Check 4th entry rect");
-  assert_equals(entries[4].target.id, 'target4', "Check 4th entry target id.");
+  checkRect(entries[4].boundingClientRect, [0, 100, 200, 300], "Check 5th entry rect");
+  assert_equals(entries[4].target.id, 'target4', "Check 5th entry target id.");
   checkIsIntersecting(entries, 4, true);
   assert_equals(entries[4].intersectionRatio, 0, 'target4 still has intersectionRatio of 0.');
   root.scrollTop = 0; // reset to make it easier to refresh and run the test

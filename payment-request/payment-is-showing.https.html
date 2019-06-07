@@ -10,24 +10,24 @@
 <script src="/resources/testdriver.js"></script>
 <body>
   <script>
-    "use strict";
+    'use strict';
     const applePayMethod = {
-      supportedMethods: "https://apple.com/apple-pay",
+      supportedMethods: 'https://apple.com/apple-pay',
       data: {
         version: 3,
-        merchantIdentifier: "merchant.com.example",
-        countryCode: "US",
-        merchantCapabilities: ["supports3DS"],
-        supportedNetworks: ["visa"],
+        merchantIdentifier: 'merchant.com.example',
+        countryCode: 'US',
+        merchantCapabilities: ['supports3DS'],
+        supportedNetworks: ['visa'],
       },
     };
-    const methods = [{ supportedMethods: "basic-card" }, applePayMethod];
+    const methods = [{supportedMethods: 'basic-card'}, applePayMethod];
     const details = {
       total: {
-        label: "Total",
+        label: 'Total',
         amount: {
-          currency: "USD",
-          value: "1.00",
+          currency: 'USD',
+          value: '1.00',
         },
       },
     };
@@ -38,13 +38,13 @@
      * @param {String} src Optional resource URL to load.
      * @returns {Promise} Resolves when the src loads.
      */
-    async function attachIframe(src = "blank.html") {
-      const iframe = document.createElement("iframe");
+    async function attachIframe(src = 'blank.html') {
+      const iframe = document.createElement('iframe');
       iframe.allowPaymentRequest = true;
       iframe.src = src;
       document.body.appendChild(iframe);
       await new Promise(resolve => {
-        iframe.addEventListener("load", resolve, { once: true });
+        iframe.addEventListener('load', resolve, {once: true});
       });
       return iframe;
     }
@@ -55,12 +55,12 @@
      * @param {String} src Optional resource URL to load.
      * @returns {Promise} Resolves when the src loads.
      */
-    async function loadPopup(src = "blank.html") {
-      const popupWindow = await test_driver.bless("a popup window", () =>
-        window.open(src, "", "width=400,height=400")
+    async function loadPopup(src = 'blank.html') {
+      const popupWindow = await test_driver.bless('a popup window', () =>
+        window.open(src, '', 'width=400,height=400'),
       );
       await new Promise(resolve => {
-        popupWindow.addEventListener("load", resolve, { once: true });
+        popupWindow.addEventListener('load', resolve, {once: true});
       });
       popupWindow.focus();
       return popupWindow;
@@ -71,30 +71,30 @@
       const request2 = new PaymentRequest(methods, details);
 
       // Sets the "payment-relevant browsing context's payment request is showing boolean" to true.
-      const showPromise1 = test_driver.bless("show payment request", () =>
-        request1.show()
+      const showPromise1 = test_driver.bless('show payment request', () =>
+        request1.show(),
       );
 
       // Try to show a second payment sheet in the same window, which should reject.
-      const showPromise2 = test_driver.bless("show payment request", () =>
+      const showPromise2 = test_driver.bless('show payment request', () =>
         // Sets the request's state to "closed", and rejects with AbortError.
         // See: https://github.com/w3c/payment-request/pull/821
-        request2.show()
+        request2.show(),
       );
 
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         showPromise2,
-        "Attempting to show a second payment request must reject."
+        'Attempting to show a second payment request must reject.',
       );
       await request1.abort();
 
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         showPromise1,
-        "request1 was aborted via .abort()"
+        'request1 was aborted via .abort()',
       );
       // Finally, request2 should have been "closed", so trying to show
       // it will again result in promise rejected with an InvalidStateError.
@@ -102,17 +102,17 @@
       const rejectedPromise = request2.show();
       await promise_rejects(
         t,
-        "InvalidStateError",
+        'InvalidStateError',
         rejectedPromise,
-        "Attempting to show a second payment request must reject."
+        'Attempting to show a second payment request must reject.',
       );
       // Finally, we confirm that request2's returned promises are unique.
       assert_not_equals(
         showPromise2,
         rejectedPromise,
-        "Returned Promises be unique"
+        'Returned Promises be unique',
       );
-    }, "The top browsing context can only show one payment sheet at a time.");
+    }, 'The top browsing context can only show one payment sheet at a time.');
 
     promise_test(async t => {
       const iframe = await attachIframe();
@@ -123,7 +123,7 @@
       const windowRequest = new window.PaymentRequest(methods, details);
 
       // Let's get some blessed showPromises
-      const showPromise = test_driver.bless("show payment request", () => {
+      const showPromise = test_driver.bless('show payment request', () => {
         // iframe sets "is showing boolean", ignore the returned promise.
         iframeRequest.show();
         // The top level window now tries to show() the payment request.
@@ -132,9 +132,9 @@
 
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         showPromise,
-        "iframe is already showing a payment request."
+        'iframe is already showing a payment request.',
       );
 
       // Cleanup
@@ -153,24 +153,24 @@
       // We show a payment request via the the top level browsing context,
       // windowRequest.show() sets "is showing boolean" to true.
       // We don't care about the returned promise.
-      test_driver.bless("show payment request", () => windowRequest.show());
+      test_driver.bless('show payment request', () => windowRequest.show());
 
       // calling iframeRequest.show() must return a rejected promise.
-      const iframeShowPromise = test_driver.bless("show payment request", () =>
-        iframeRequest.show()
+      const iframeShowPromise = test_driver.bless('show payment request', () =>
+        iframeRequest.show(),
       );
 
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         iframeShowPromise,
-        "The top window is already showing a payment request."
+        'The top window is already showing a payment request.',
       );
 
       // Cleanup
       await windowRequest.abort();
       iframe.remove();
-    }, "An iframe cannot show a payment request if the top-level window is already showing one.");
+    }, 'An iframe cannot show a payment request if the top-level window is already showing one.');
 
     promise_test(async t => {
       const popupWindow = await loadPopup();
@@ -184,19 +184,19 @@
         "show popup's payment request",
         () =>
           // popupRequest.show(), but via the window.PaymentRequest.prototype
-          window.PaymentRequest.prototype.show.call(popupRequest)
+          window.PaymentRequest.prototype.show.call(popupRequest),
       );
-      const showPromise = test_driver.bless("show window payment request", () =>
-        windowRequest.show()
+      const showPromise = test_driver.bless('show window payment request', () =>
+        windowRequest.show(),
       );
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         showPromise,
-        "Expected window's showPromise to reject, request is already showing"
+        "Expected window's showPromise to reject, request is already showing",
       );
       popupWindow.close();
-    }, "Using a popup window prevents the top-browsing context from showing a payment request");
+    }, 'Using a popup window prevents the top-browsing context from showing a payment request');
 
     promise_test(async t => {
       const iframe = await attachIframe();
@@ -212,7 +212,7 @@
         windowShowPromise,
         popupShowPromise,
         iframeShowPromise,
-      ] = await test_driver.bless("show payment request", () => {
+      ] = await test_driver.bless('show payment request', () => {
         return [
           windowRequest.show(),
           popupRequest.show(),
@@ -223,16 +223,16 @@
       // popupRequest and iframeRequest will both reject
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         popupShowPromise,
-        "Expected popupShowPromise to reject, request is already showing."
+        'Expected popupShowPromise to reject, request is already showing.',
       );
 
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         iframeShowPromise,
-        "Expected iframeShowPromise to reject, request is already showing."
+        'Expected iframeShowPromise to reject, request is already showing.',
       );
 
       await windowRequest.abort();
@@ -255,7 +255,7 @@
         popupShowPromise,
         windowShowPromise,
         iframeShowPromise,
-      ] = await test_driver.bless("show payment request", () => {
+      ] = await test_driver.bless('show payment request', () => {
         return [
           popupRequest.show(),
           windowRequest.show(),
@@ -266,16 +266,16 @@
       // windowShowPromise and iframeRequest will both reject
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         windowShowPromise,
-        "Expected windowShowPromise to reject, the popup is showing a payment request."
+        'Expected windowShowPromise to reject, the popup is showing a payment request.',
       );
 
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         iframeShowPromise,
-        "Expected iframeShowPromise to reject, the popup is showing a payment request."
+        'Expected iframeShowPromise to reject, the popup is showing a payment request.',
       );
 
       await popupRequest.abort();
@@ -298,7 +298,7 @@
         iframeShowPromise,
         popupShowPromise,
         windowShowPromise,
-      ] = await test_driver.bless("show payment request", () => {
+      ] = await test_driver.bless('show payment request', () => {
         return [
           iframeRequest.show(),
           popupRequest.show(),
@@ -309,16 +309,16 @@
       // windowShowPromise and iframeRequest will both reject
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         windowShowPromise,
-        "Expected windowShowPromise to reject, the popup is showing a payment request."
+        'Expected windowShowPromise to reject, the popup is showing a payment request.',
       );
 
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         popupShowPromise,
-        "Expected popupShowPromise to reject, the popup is showing a payment request."
+        'Expected popupShowPromise to reject, the popup is showing a payment request.',
       );
 
       await iframeRequest.abort();
@@ -330,19 +330,19 @@
       const iframe = await attachIframe();
       const iframeWindow = iframe.contentWindow;
       const iframeRequest = new iframeWindow.PaymentRequest(methods, details);
-      const iframeShowPromise = test_driver.bless("show payment request", () =>
-        iframeRequest.show()
+      const iframeShowPromise = test_driver.bless('show payment request', () =>
+        iframeRequest.show(),
       );
 
       // We navigate away, causing the payment sheet to close
       // and the request is showing boolean to become false.
-      iframe.src = "blank.html?abc=123";
+      iframe.src = 'blank.html?abc=123';
       await new Promise(resolve => (iframe.onload = resolve));
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         iframeShowPromise,
-        "Navigating iframe away must cause the iframeShowPromise to reject."
+        'Navigating iframe away must cause the iframeShowPromise to reject.',
       );
       iframe.remove();
 
@@ -355,19 +355,19 @@
     promise_test(async t => {
       const popupWindow = await loadPopup();
       const popupRequest = new popupWindow.PaymentRequest(methods, details);
-      const showPromise = test_driver.bless("show payment request", () =>
-        popupRequest.show()
+      const showPromise = test_driver.bless('show payment request', () =>
+        popupRequest.show(),
       );
 
       // We navigate away, causing the payment sheet to close
       // and the request is showing boolean to become false.
-      popupWindow.location = "blank.html?abc=123";
+      popupWindow.location = 'blank.html?abc=123';
       await new Promise(resolve => (popupWindow.onload = resolve));
       await promise_rejects(
         t,
-        "AbortError",
+        'AbortError',
         showPromise,
-        "Navigating away must cause the showPromise to reject with an AbortError"
+        'Navigating away must cause the showPromise to reject with an AbortError',
       );
       popupWindow.close();
 

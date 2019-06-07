@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="variant" content="?keep-promise">
+<title>Test#skip</title>
+<script src="../../variants.js"></script>
+</head>
+<body>
+<h1>Test#skip</h1>
+<div id="log"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(function(t) {
+    t.skip("custom message");
+  }, 'test (synchronous)');
+
+async_test(function(t) {
+    t.step_timeout(function() {
+        t.skip();
+      }, 0);
+  }, 'async_test');
+
+promise_test(function(t) {
+    t.skip();
+
+    return new Promise(function() {});
+  }, 'promise_test');
+</script>
+<script type="text/json" id="expected">
+{
+  "summarized_status": {
+    "status_string": "OK",
+    "message": null
+  },
+  "summarized_tests": [
+    {
+      "status_string": "SKIP",
+      "name": "async_test",
+      "message": "Test skipped",
+      "properties": {}
+    },
+    {
+      "status_string": "SKIP",
+      "name": "promise_test",
+      "message": "Test skipped",
+      "properties": {}
+    },
+    {
+      "status_string": "SKIP",
+      "name": "test (synchronous)",
+      "message": "custom message",
+      "properties": {}
+    }
+  ],
+  "type": "complete"
+}
+</script>
+</body>
+</html>

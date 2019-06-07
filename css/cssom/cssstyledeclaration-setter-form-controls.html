@@ -14,96 +14,90 @@ behavior was identified as a source of confusion for web developers.</a>
 </p>
 
 <script>
-test(function() {
-  var element = document.createElement('input');
-  element.setAttribute('type', 'text');
+function makeElement(tagName) {
+  var element = document.createElement(tagName);
   document.body.appendChild(element);
+  return element;
+}
+function makeInputElement(type) {
+  var element = makeElement('input');
+  element.setAttribute('type', type);
+  return element;
+}
+function measure(element) {
   var computed = getComputedStyle(element);
-  var initial = [computed.marginTop, computed.marginBottom];
+  return [computed.marginTop, computed.marginBottom];
+}
+
+test(function() {
+  var element = makeInputElement('text');
+  var initial = measure(element);
 
   element.style.setProperty('height', '12px');
 
-  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+  assert_array_equals(measure(element), initial);
 }, 'text input element');
 
 test(function() {
-  var element = document.createElement('input');
-  element.setAttribute('type', 'button');
-  document.body.appendChild(element);
-  var computed = getComputedStyle(element);
-  var initial = [computed.marginTop, computed.marginBottom];
+  var element = makeInputElement('button');
+  var initial = measure(element);
 
   element.style.setProperty('height', '12px');
 
-  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+  assert_array_equals(measure(element), initial);
 }, 'button input element');
 
 test(function() {
-  var element = document.createElement('input');
-  element.setAttribute('type', 'submit');
-  document.body.appendChild(element);
-  var computed = getComputedStyle(element);
-  var initial = [computed.marginTop, computed.marginBottom];
+  var element = makeInputElement('submit');
+  var initial = measure(element);
 
   element.style.setProperty('height', '12px');
 
-  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+  assert_array_equals(measure(element), initial);
 }, 'submit input element');
 
 test(function() {
-  var element = document.createElement('input');
-  element.setAttribute('type', 'radio');
-  document.body.appendChild(element);
-  var computed = getComputedStyle(element);
-  var initial = [computed.marginTop, computed.marginBottom];
+  var element = makeInputElement('radio');
+  var initial = measure(element);
 
   element.style.setProperty('height', '12px');
 
-  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+  assert_array_equals(measure(element), initial);
 }, 'radio input element');
 
 test(function() {
-  var element = document.createElement('input');
-  element.setAttribute('type', 'checkbox');
-  document.body.appendChild(element);
-  var computed = getComputedStyle(element);
-  var initial = [computed.marginTop, computed.marginBottom];
+  var element = makeInputElement('checkbox');
+  var initial = measure(element);
 
   element.style.setProperty('height', '12px');
 
-  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+  assert_array_equals(measure(element), initial);
 }, 'checkbox input element');
 
 test(function() {
-  var element = document.createElement('textarea');
-  document.body.appendChild(element);
-  var computed = getComputedStyle(element);
-  var initial = [computed.marginTop, computed.marginBottom];
+  var element = makeElement('textarea');
+  var initial = measure(element);
 
   element.style.setProperty('height', '12px');
 
-  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+  assert_array_equals(measure(element), initial);
 }, 'textarea element');
 
 test(function() {
-  var element = document.createElement('select');
-  document.body.appendChild(element);
-  var computed = getComputedStyle(element);
-  var initial = [computed.marginTop, computed.marginBottom];
+  var element = makeElement('select');
+  var initial = measure(element);
 
   element.style.setProperty('height', '12px');
 
-  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+  assert_array_equals(measure(element), initial);
 }, 'select element');
 
 test(function() {
-  var element = document.createElement('button');
-  document.body.appendChild(element);
-  var computed = getComputedStyle(element);
-  var initial = [computed.marginTop, computed.marginBottom];
+  var element = makeElement('button')
+  var initial = measure(element);
 
   element.style.setProperty('height', '12px');
 
-  assert_array_equals([computed.marginTop, computed.marginBottom], initial);
+  assert_array_equals(measure(element), initial);
 }, 'button element');
 </script>

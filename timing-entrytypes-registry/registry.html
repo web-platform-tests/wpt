@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Registry test for Performance Timeline</title>
+<link rel="help" href="https://w3c.github.io/timing-entrytypes-registry/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const STEPS = {};
+
+const types = (self.PerformanceObserver
+                  && self.PerformanceObserver.supportedEntryTypes)?
+    self.PerformanceObserver.supportedEntryTypes
+    : undefined;
+
+if (types) {
+  // we observe everything as soon as possible
+  new PerformanceObserver(function (list, observer) {
+    for (const entry of list.getEntries())
+      if (STEPS[entry.entryType]) STEPS[entry.entryType](entry);
+  }).observe({entryTypes: self.PerformanceObserver.supportedEntryTypes});
+}
+
+function test_support(def) {
+  if (!types || !types.includes(def[0])) {
+    return;
+  }
+  const desc = `'${def[0]}' entries should be observable`;
+  const t = async_test(desc);
+
+  STEPS[def[0]] = (entry) => {
+    t.step(() => assert_equals(Object.prototype.toString.call(entry),
+    `[object ${def[1]}]`,
+    `Class name of entry should be ${def[1]}.`));
+    t.done();
+  }
+}
+
+test(() => {
+  assert_true(!!self.PerformanceObserver, "PerformanceObserver");
+  assert_true(!!self.PerformanceObserver.supportedEntryTypes,
+              "PerformanceObserver.supportedEntryTypes");
+}, "PerformanceObserver.supportedEntryTypes exists");
+
+// UPDATE HERE if new entry
+[
+  [ "mark", "PerformanceMark" ],
+  [ "measure", "PerformanceMeasure" ],
+  [ "resource", "PerformanceResourceTiming" ],
+  [ "longtask", "PerformanceLongTaskTiming" ],
+  [ "navigation", "PerformanceNavigationTiming" ],
+  [ "paint", "PerformancePaintTiming" ],
+].forEach(test_support);
+
+// UPDATE BELOW to ensure the entry gets created
+
+// mark
+self.performance.mark('mymark');
+
+// measure
+self.performance.measure('mymeasure');
+
+// resource
+fetch(self.location.href + "?" + Math.random());
+
+// longtask
+function syncWait(waitDuration) {
+  if (waitDuration <= 0)
+    return;
+
+  const startTime = performance.now();
+  let unused = '';
+  for (let i = 0; i < 10000; i++)
+    unused += '' + Math.random();
+
+  return syncWait(waitDuration - (performance.now() - startTime));
+}
+syncWait(50);
+
+// paint
+if (self.document) document.head.parentNode.appendChild(document.createTextNode('foo'));
+
+</script>
+</head>
+<body>
+    <h1>Description</h1>
+    <p>This test validates the registered entry types.</p>
+    <div id="log"></div>
+  </body>
+</html>

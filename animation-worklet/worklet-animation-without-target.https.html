@@ -71,6 +71,43 @@ async function setupAndRegisterTests() {
     animation.cancel();
   }, 'The existence of a target does not affect the animation.');
 
+  promise_test(async t => {
+    const effect = new KeyframeEffect(document.getElementById('box'),
+      { transform: ['translateY(100px)', 'translateY(200px)'] },
+      { duration: Infinity, iterations: 1 }
+    );
+
+    const animation = new WorkletAnimation('passthrough', effect);
+    animation.play();
+
+    // Allow one async animation frame to pass so that animation is running.
+    await waitForAsyncAnimationFrames(1);
+    assert_equals(animation.playState, "running");
+    // Allow time to advance so that we have a non-zero current time.
+    await waitForDocumentTimelineAdvance();
+    const t0 = document.timeline.currentTime;
+    assert_greater_than(animation.currentTime, 0);
+    assert_times_equal(animation.currentTime, (t0 - animation.startTime));
+    assert_equals(animation.playState, "running");
+
+    animation.pause();
+    await waitForDocumentTimelineAdvance();
+    animation.effect.target = null;
+    animation.play();
+    await waitForDocumentTimelineAdvance();
+    const t1 = document.timeline.currentTime;
+    assert_times_equal(animation.currentTime, (t1 - animation.startTime));
+    assert_equals(animation.playState, "running");
+
+    await waitForDocumentTimelineAdvance();
+    animation.effect.target = document.getElementById('box');
+    const t2 = document.timeline.currentTime;
+    assert_times_equal(animation.currentTime, (t2 - animation.startTime));
+    assert_equals(animation.playState, "running");
+
+    animation.cancel();
+  }, 'Removing the target from paused animation does not affect the animation.');
+
   done();
 }
 </script>

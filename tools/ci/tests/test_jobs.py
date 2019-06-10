@@ -105,3 +105,5 @@ def test_wpt_integration():
 def test_wpt_infrastructure():
     assert jobs.get_jobs(["tools/hammer.html"],
                          includes=["wptrunner_infrastructure"]) == {"wptrunner_infrastructure"}
+    assert jobs.get_jobs(["infrastructure/assumptions/ahem.html"],
+                         includes=["wptrunner_infrastructure"]) == {"wptrunner_infrastructure"}

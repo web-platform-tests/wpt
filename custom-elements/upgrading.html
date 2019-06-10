@@ -14,6 +14,7 @@
 <body>
 <div id="log"></div>
 <script>
+setup({allow_uncaught_exception:true});
 
 class PredefinedCustomElement extends HTMLElement {}
 customElements.define('predefined-custom-element', PredefinedCustomElement);
@@ -189,12 +190,16 @@ test(() => {
     class ShadowDisabledElement extends HTMLElement {
       static get disabledFeatures() { return ['shadow']; }
     }
+    let error = null;
+    window.addEventListener('error', e => { error = e.error; }, {once: true});
     let element = document.createElement('shadow-disabled');
     element.attachShadow({mode: 'open'});
     customElements.define('shadow-disabled', ShadowDisabledElement);
     customElements.upgrade(element);
     assert_false(element instanceof ShadowDisabledElement,
                  'Upgrading should fail.');
+    assert_true(error instanceof DOMException);
+    assert_equals(error.name, 'NotSupportedError');
 }, 'If definition\'s disable shadow is true and element\'s shadow root is ' +
     'non-null, then throw a "NotSupportedError" DOMException.');
 

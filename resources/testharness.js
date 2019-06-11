@@ -2466,7 +2466,7 @@ policies and contribution forms [3].
                  {
                      callback(this_obj.tests, this_obj.status);
                  });
-        }.bind(this), 300);
+        }.bind(this), 600);
     };
 
     /*

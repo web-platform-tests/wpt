@@ -1526,6 +1526,13 @@ policies and contribution forms [3].
         // of a programming error, but they cannot be reported
         // deterministically.
         if (tests.phase === tests.phases.COMPLETE) {
+            var xhr = new XMLHttpRequest();
+            xhr.open(
+                'GET',
+                '/encrypted-media/log.py?name=' + name,
+                false
+            );
+            xhr.send(null);
             return;
         }
 
@@ -2453,11 +2460,13 @@ policies and contribution forms [3].
             }
         }
 
+        setTimeout(function() {
         forEach (this.all_done_callbacks,
                  function(callback)
                  {
                      callback(this_obj.tests, this_obj.status);
                  });
+        }.bind(this), 300);
     };
 
     /*

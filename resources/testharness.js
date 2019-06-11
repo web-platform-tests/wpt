@@ -26,6 +26,42 @@ policies and contribution forms [3].
         test_timeout:null,
         message_events: ["start", "test_state", "result", "completion"]
     };
+    function clone(storage) {
+      var obj = Object.create(null);
+      Object.keys(storage).forEach(function(key) {
+        obj[key] = storage[key];
+      });
+      return obj;
+    }
+    function cookieObj(cookies) {
+      var obj = Object.create(null);
+      cookies.split(';').forEach(function(cookie) {
+        var parts = cookie.split('=');
+        obj[parts[0]] = parts.slice(1).join('=');
+      });
+      return obj;
+    }
+    function hasNewKeys(a, b) {
+      return Object.keys(b).some(function(key) {
+        return !(key in a);
+      });
+    }
+    function hasDifferentValues(a, b) {
+      return Object.keys(b).some(function(key) {
+        return b[key] !== a[key];
+      });
+    }
+    function isDirty(a, b) {
+      if (hasNewKeys(a, b)) {
+        return 'new-keys';
+      } else if (hasDifferentValues(a, b)) {
+        return 'different-values';
+      }
+      return null;
+    }
+    var startLocalStorage = clone(localStorage);
+    var startSessionStorage = clone(sessionStorage);
+    var startCookies = cookieObj(document.cookie);
 
     var xhtml_ns = "http://www.w3.org/1999/xhtml";
 
@@ -2458,6 +2494,39 @@ policies and contribution forms [3].
                  {
                      callback(this_obj.tests, this_obj.status);
                  });
+
+        var reason;
+
+        reason = isDirty(startLocalStorage, clone(localStorage));
+        if (reason) {
+           var xhr = new XMLHttpRequest();
+           xhr.open(
+               'GET',
+               '/encrypted-media/log.py?name=localStorage:' + reason,
+               false
+           );
+           xhr.send(null);
+        }
+        reason = isDirty(startSessionStorage, clone(sessionStorage));
+        if (reason) {
+           var xhr = new XMLHttpRequest();
+           xhr.open(
+               'GET',
+               '/encrypted-media/log.py?name=sessionStorage:' + reason,
+               false
+           );
+           xhr.send(null);
+        }
+        reason = isDirty(startCookies, cookieObj(document.cookie));
+        if (reason) {
+           var xhr = new XMLHttpRequest();
+           xhr.open(
+               'GET',
+               '/encrypted-media/log.py?name=cookie:' + reason,
+               false
+           );
+           xhr.send(null);
+        }
     };
 
     /*

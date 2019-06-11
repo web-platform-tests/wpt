@@ -38,4 +38,10 @@
   do_test('DELETE', "data:text/plain,Hello, World!");
   do_test('HEAD', "data:text/plain,Hello, World!");
   do_test('UNICORN', "data:text/plain,Hello, World!");
+
+test(function() {
+  document.cookie = 'goo=dfssa';
+  localStorage.foo = 'barz';
+  sessionStorage.baz = 'bopz';
+}, 'control sub-test');
 </script>

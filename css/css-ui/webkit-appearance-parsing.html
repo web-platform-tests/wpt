@@ -10,7 +10,7 @@
 <script>
 test(function() {
   var input = document.createElement('input');
-  input.style = '-webkit-appearance: none;';
+  input.setAttribute('style', '-webkit-appearance: none;');
 
   assert_equals(
     input.style.getPropertyValue('-webkit-appearance'),

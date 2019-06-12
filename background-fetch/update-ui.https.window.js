@@ -1,5 +1,6 @@
 // META: script=/service-workers/service-worker/resources/test-helpers.sub.js
 // META: script=resources/utils.js
+
 'use strict';
 
 // Covers functionality provided by BackgroundFetchUpdateUIEvent.updateUI().

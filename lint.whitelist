@@ -124,6 +124,9 @@ CONSOLE: service-workers/service-worker/resources/clients-get-other-origin.html
 CONSOLE: webrtc/tools/*
 CONSOLE: webaudio/resources/audit.js:39
 
+# FOR DEBUGGING ONLY DO NOT CHECK IN:
+CONSOLE: webxr/*
+
 # use of console in a public library - annotation-model ensures
 # it is not actually used
 CONSOLE: annotation-model/scripts/ajv.min.js

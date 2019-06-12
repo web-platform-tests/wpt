@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/test-constants.js"></script>
@@ -14,6 +15,11 @@ let inlineTestName = "XRWebGLLayer reports a valid viewports for inline sessions
 let fakeDeviceInitParams = { supportsImmersive:true };
 
 let testFunction = function(session, fakeDeviceController, t) {
+      function logMsg(message) {
+        console.error(session.mode + ": " + message);
+      }
+
+      logMsg("start");
   // Need to have a valid pose.
   fakeDeviceController.setXRPresentationFrameData(VALID_POSE_MATRIX, [{
       eye:"left",
@@ -25,12 +31,15 @@ let testFunction = function(session, fakeDeviceController, t) {
       viewMatrix: VALID_VIEW_MATRIX
     }]);
 
+  logMsg("request Refernece Space");
   return session.requestReferenceSpace('viewer')
       .then((space) => new Promise((resolve) => {
     function onFrame(time, xrFrame) {
+      logMsg("On Frame");
       let viewer_pose = xrFrame.getViewerPose(space);
 
       let layer = xrFrame.session.renderState.baseLayer;
+      logMsg("pre-asserts");
       for (view of viewer_pose.views) {
         let viewport = layer.getViewport(view);
 
@@ -44,11 +53,12 @@ let testFunction = function(session, fakeDeviceController, t) {
         assert_greater_than_equal(viewport.width, 1);
         assert_greater_than_equal(viewport.height, 1);
       }
-
+      logMsg("post-asserts");
       // Finished test.
       resolve();
     }
 
+    logMsg("requestAnimationFrame");
     session.requestAnimationFrame(onFrame);
   }));
 };

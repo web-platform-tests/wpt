@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="timeout" content="long">
 <body>
   <script src=/resources/testharness.js></script>
   <script src=/resources/testharnessreport.js></script>
@@ -20,16 +21,28 @@
     const validViewMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 4, 3, 2, 1];
 
     let testFunction = function(session, fakeDeviceController, t) {
+
+      function logMsg(message) {
+        console.error(session.mode + ": " + message);
+      }
+
+      logMsg("start");
+
       return session.requestReferenceSpace('local')
         .then((referenceSpace) => new Promise((resolve, reject) => {
+      logMsg("got reference space");
           let counter = 0;
           function onFrame(time, vrFrame) {
+            logMsg("OnFrame: " + counter);
             session.requestAnimationFrame(onFrame);
             if (counter == 0) {
               t.step( () => {
+                logMsg("getting pose");
                 // Expecting to not get a pose since none has been supplied
                 assert_equals(vrFrame.getViewerPose(referenceSpace), null);
+                logMsg("got pose");
 
+                logMsg("setting frame data");
                 fakeDeviceController.setXRPresentationFrameData(
                   validPoseMatrix, [{
                     eye:"left",
@@ -40,12 +53,14 @@
                     projectionMatrix: validProjectionMatrix,
                     viewMatrix: validViewMatrix
                   }]);
+                logMsg("setFrameData");
 
                 // Check that pose does not update pose within the same frame.
                 assert_equals(vrFrame.getViewerPose(referenceSpace), null);
               });
             } else {
               t.step( () => {
+                logMsg("Getting Pose");
                 let pose = vrFrame.getViewerPose(referenceSpace);
                 assert_not_equals(pose, null);
 
@@ -55,6 +70,8 @@
                 for(let i = 0; i < poseMatrix.length; i++) {
                   assert_equals(poseMatrix[i], validPoseMatrix[i]);
                 }
+                logMsg("Passed all asserts");
+
               });
 
               // Finished.
@@ -63,6 +80,7 @@
             counter++;
           }
 
+          logMsg("requesting first frame");
           session.requestAnimationFrame(onFrame);
         }));
     };

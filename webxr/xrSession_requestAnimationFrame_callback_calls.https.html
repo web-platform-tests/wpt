@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="timeout" content="long">
 <body>
   <script src=/resources/testharness.js></script>
   <script src=/resources/testharnessreport.js></script>
@@ -13,14 +14,29 @@
 
     let fakeDeviceInitParams = { supportsImmersive:true };
 
-    let testFunction = (testSession) => new Promise((resolve) => {
+    let testFunction = (session) => new Promise((resolve) => {
+
+
+      function logMsg(message) {
+        console.error(session.mode + ": " + message);
+      }
+
+      logMsg("start");
+
       function onFrame(time, xrFrame) {
+        logMsg("onFrame");
+        if (xrFrame instanceof XRFrame) {
+          logMsg("assert valid");
+        } else {
+          logMsg("assert invalid");
+        }
         assert_true(xrFrame instanceof XRFrame);
         // Test does not complete until the returned promise resolves.
         resolve();
       }
 
-      testSession.requestAnimationFrame(onFrame);
+      logMsg("requestingAnimationFrame");
+      session.requestAnimationFrame(onFrame);
     });
 
     xr_session_promise_test(immersiveTestName, testFunction,

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/test-constants.js"></script>
@@ -14,6 +15,12 @@ let nonImmersiveTestName = "XRFrame.getPose works for non-immersive sessions";
 let fakeDeviceInitParams = { supportsImmersive:true };
 
 let testFunction = function(session, fakeDeviceController, t) {
+
+      function logMsg(message) {
+        console.error(session.mode + ": " + message);
+      }
+
+      logMsg("start");
   // Need to have a valid pose or input events don't process.
   fakeDeviceController.setXRPresentationFrameData(VALID_POSE_MATRIX, [{
       eye:"left",
@@ -24,12 +31,14 @@ let testFunction = function(session, fakeDeviceController, t) {
       projectionMatrix: VALID_PROJECTION_MATRIX,
       viewMatrix: VALID_VIEW_MATRIX
     }]);
+  logMsg("set frame data");
 
   return Promise.all([
     session.requestReferenceSpace('local'),
     session.requestReferenceSpace('local')
   ]).then((spaces) => new Promise((resolve) => {
     function onFrame(time, xrFrame) {
+      logMsg("onFrame");
       const radians = Math.PI / 2.0; // 90 degrees
 
       // Both eye-level spaces start out with originOffset = identity matrix.
@@ -75,12 +84,15 @@ let testFunction = function(session, fakeDeviceController, t) {
         0, 1, 0, 0, // 3rd column
         1, 0, 1, 1 // 4th column
       ];
+      logMsg("Pre-assert");
       assert_matrix_approx_equals(space1_from_space2.transform.matrix, EXPECTED_POSE_MATRIX, FLOAT_EPSILON);
+      logMsg("Post-assert");
 
       // Finished test.
       resolve();
     }
 
+      logMsg("RAF");
     session.requestAnimationFrame(onFrame);
   }));
 };

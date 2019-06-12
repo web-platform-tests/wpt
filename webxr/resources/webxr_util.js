@@ -60,9 +60,10 @@ function xr_session_promise_test(
                               session.updateRenderState({
                                   baseLayer: glLayer
                               });
-                              resolve(func(session, testDeviceController, t));
+                              return resolve(func(session, testDeviceController, t));
                             })
                             .catch((err) => {
+                              console.error(sessionMode + " was rejected");
                               reject(
                                   'Session with params ' +
                                   JSON.stringify(sessionMode) +

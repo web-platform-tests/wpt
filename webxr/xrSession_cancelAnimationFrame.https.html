@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="timeout" content="long">
 <body>
   <script src=/resources/testharness.js></script>
   <script src=/resources/testharnessreport.js></script>
@@ -15,6 +16,12 @@
 
     let testFunction = (session) => new Promise((resolve, reject) => {
 
+      function logMsg(message) {
+        console.error(session.mode + ": " + message);
+      }
+
+      logMsg("testFunction start");
+
       // Schedule and immediately cancel animation frame
       session.cancelAnimationFrame(session.requestAnimationFrame(
         (time, vrFrame) => { reject("Cancelled frame callback was called"); }));
@@ -22,8 +29,10 @@
       let counter = 0;
       let handle;
       function onFrame(time, vrFrame) {
+        logMsg("onFrame: " + counter);
         // Cancel the second animation frame.
         if (handle != 0) {
+          logMsg("cancelling");
           session.cancelAnimationFrame(handle);
           handle = 0;
         }
@@ -32,9 +41,11 @@
         // going to call.
         counter++;
         if (counter >= 4) {
+          logMsg("Resolving");
           // Ok, we're done here.
           resolve();
         } else {
+          logMsg("Requesting Animation Frame");
           session.requestAnimationFrame(onFrame);
         }
       }

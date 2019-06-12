@@ -234,7 +234,7 @@ tasks:
           script: >-
             export TOXENV=py36;
             export HYPOTHESIS_PROFILE=ci;
-            sudo apt update;
+            sudo apt update -qqy;
             sudo apt install -qqy python3-pip;
             ./tools/ci/run_tc.py \
               tools_unittest \
@@ -247,7 +247,7 @@ tasks:
             Integration tests for wpt commands
           script: >-
             export TOXENV=py27;
-            sudo apt update;
+            sudo apt update -qqy;
             sudo apt install -qqy libnss3-tools;
             ./tools/ci/run_tc.py \
               --oom-killer \
@@ -276,7 +276,7 @@ tasks:
           description: >-
             Smoketests for wptrunner
           script: >-
-            sudo apt update;
+            sudo apt update -qqy;
             sudo apt install -qqy libnss3-tools libappindicator1 fonts-liberation;
             ./tools/ci/run_tc.py \
               --oom-killer \

@@ -7,6 +7,7 @@ test(() => {
   assert_equals(registration.active, null, 'registration.active');
   assert_true('serviceWorker' in self, 'self.serviceWorker exists');
   assert_equals(serviceWorker.state, 'parsed', 'serviceWorker.state');
+  assert_readonly(self, 'serviceWorker', `self.serviceWorker is read only`);
 }, 'First run');
 
 async_test((t) => {

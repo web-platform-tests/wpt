@@ -11,7 +11,6 @@ test(() => {
   [ "mark", "PerformanceMark" ],
   [ "measure", "PerformanceMeasure" ],
   [ "resource", "PerformanceResourceTiming" ],
-  [ "longtask", "PerformanceLongTaskTiming" ],
 ].forEach(test_support);
 
 // UPDATE BELOW to ensure the entry gets created
@@ -24,18 +23,3 @@ self.performance.measure('mymeasure');
 
 // resource
 fetch(self.location.href + "?" + Math.random());
-
-// longtask
-function syncWait(waitDuration) {
-  if (waitDuration <= 0)
-    return;
-
-  const startTime = performance.now();
-  let unused = '';
-  for (let i = 0; i < 10000; i++)
-    unused += '' + Math.random();
-
-  return syncWait(waitDuration - (performance.now() - startTime));
-}
-syncWait(50);
-

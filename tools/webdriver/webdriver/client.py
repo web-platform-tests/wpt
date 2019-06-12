@@ -218,8 +218,9 @@ class Actions(object):
                         ``ActionSequence.dict``.
         """
         body = {"actions": [] if actions is None else actions}
-        self.session.send_session_command("POST", "actions", body)
-    　　 return self.session.switch_frame("parent")
+        actions = self.session.send_session_command("POST", "actions", body)
+        self.session.switch_frame("parent")
+        return actions
 
     @command
     def release(self):

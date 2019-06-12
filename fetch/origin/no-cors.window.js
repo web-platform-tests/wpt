@@ -121,29 +121,13 @@ function fetchReferrerPolicy(referrerPolicy, destination, fetchMode, expectedOri
     const redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
 
     let fetchUrl =
-        (destination=== "same-origin" ? origins.HTTP_ORIGIN
-                                      : origins.HTTP_REMOTE_ORIGIN) +
+        (destination === "same-origin" ? origins.HTTP_ORIGIN
+                                       : origins.HTTP_REMOTE_ORIGIN) +
         redirectPath + "?stash=" + stash;
-    let json;
 
-    await new Promise(resolve => {
-      const frame = document.createElement("iframe");
-      frame.src = origins.HTTP_ORIGIN + referrerPolicyPath +
-                  "?referrerPolicy=" + referrerPolicy;
-      self.addEventListener("message", e => {
-        if (e.data === "action") {
-          fetch(fetchUrl, { mode: fetchMode, method: "POST" })
-            .then(() => fetch(redirectPath + "?dump&stash=" + stash))
-            .then(rsp => rsp.json())
-            .then(data=>{
-              json = data;
-              frame.remove();
-              resolve();
-            });
-        }
-      }, { once: true });
-      document.body.appendChild(frame);
-    });
+    await fetch(fetchUrl, { mode: fetchMode, method: "POST" , "referrerPolicy": referrerPolicy});
+
+    const json = await (await fetch(redirectPath + "?dump&stash=" + stash)).json();
 
     assert_equals(json[0], expectedOrigin);
   };

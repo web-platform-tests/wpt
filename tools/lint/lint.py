@@ -149,7 +149,7 @@ def check_path_length(repo_root, path):
 def check_file_type(repo_root, path):
     # type: (str, str) -> List[rules.Error]
     if os.path.islink(path):
-        return [rules.FileType.error(path, (path, "link"))]
+        return [rules.FileType.error(path, (path, "symlink"))]
     return []
 
 

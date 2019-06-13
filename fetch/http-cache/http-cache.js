@@ -146,6 +146,7 @@ function makeCheckResponse (idx, config) {
       assert_equals(response.status, config.response_status[0],
         `Response ${reqNum} status is ${response.status}, not ${config.response_status[0]}`)
     } else {
+      console.log(response.status)
       assert_equals(response.status, 200, `Response ${reqNum} status is ${response.status}, not 200`)
     }
     if ('response_headers' in config) {

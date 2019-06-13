@@ -46,7 +46,7 @@ def test_forbidden_path_endings(path_ending, generated):
 def test_file_type():
     path = "test/test"
 
-    message = "/%s is an unsupported file type (link)" % (path,)
+    message = "/%s is an unsupported file type (symlink)" % (path,)
 
     with mock.patch("os.path.islink", returnvalue=True):
         errors = check_path("/foo/", path)

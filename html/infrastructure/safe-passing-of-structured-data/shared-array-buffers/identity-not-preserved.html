@@ -29,7 +29,7 @@ async_test(t => {
 
 async_test(t => {
   const sab = new SharedArrayBuffer();
-  const worker = new Worker("resources/echo-worker.js");
+  const worker = new Worker("../resources/echo-worker.js");
 
   worker.addEventListener("message", t.step_func(({ data }) => {
     if (data.testId !== 2) {
@@ -58,7 +58,7 @@ async_test(t => {
   iframe.onload = t.step_func(() => {
     iframe.contentWindow.postMessage({ testId: 3, sab }, "*");
   });
-  iframe.src = "resources/echo-iframe.html";
+  iframe.src = "../resources/echo-iframe.html";
   document.body.appendChild(iframe);
 }, "postMessaging to an iframe and back does not give back the same SharedArrayBuffer");
 </script>

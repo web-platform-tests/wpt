@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html dir="rtl">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Verify computed direction</title>
+    <link rel="help" href="https://mathml-refresh.github.io/mathml-core/#attributes-common-to-html-and-mathml-elements">
+    <meta name="assert" content="Verify computed direction value.">
+    <link rel="match" href="direction-ref.html">
+    <script>
+      function checkDirection()
+      {
+        for (var i = 1; i <= 4; i++) {
+          document.getElementById('y'+i).innerHTML = window.getComputedStyle(document.getElementById('x'+i)).direction;
+        }
+      }
+    </script>
+  </head>
+  <body onload="checkDirection()">
+
+    <!-- Test the CSS direction and dir attribute on the <math> element. It
+         should be "ltr", except if an explicit dir="rtl" is used. -->
+
+    <p>שורשי משוואה מודגשת זו <math id="x1"> <mstyle mathvariant="bold"> <msup> <mi>y</mi> <mn>3</mn> </msup> <mo>+</mo> <mi>p</mi> <mi>y</mi> <mo>+</mo> <mi>q</mi> <mo>=</mo> <mn>0</mn> </mstyle> </math> מודגשים גם הם</p>
+
+    <p id="y1"></p>
+
+    <p>שורשי משוואה מודגשת זו <math id="x2" dir="ltr"> <mstyle mathvariant="bold"> <msup> <mi>y</mi> <mn>3</mn> </msup> <mo>+</mo> <mi>p</mi> <mi>y</mi> <mo>+</mo> <mi>q</mi> <mo>=</mo> <mn>0</mn> </mstyle> </math> מודגשים גם הם</p>
+
+    <p id="y2"></p>
+
+    <p>שורשי משוואה מודגשת זו <math id="x3" dir="invalid"> <mstyle mathvariant="bold"> <msup> <mi>y</mi> <mn>3</mn> </msup> <mo>+</mo> <mi>p</mi> <mi>y</mi> <mo>+</mo> <mi>q</mi> <mo>=</mo> <mn>0</mn> </mstyle> </math> מודגשים גם הם</p>
+
+    <p id="y3"></p>
+
+    <p>שורשי משוואה מודגשת זו <math id="x4" dir="rtl"> <mstyle mathvariant="bold"> <msup> <mi>y</mi> <mn>3</mn> </msup> <mo>+</mo> <mi>p</mi> <mi>y</mi> <mo>+</mo> <mi>q</mi> <mo>=</mo> <mn>0</mn> </mstyle> </math> מודגשים גם הם</p>
+
+    <p id="y4"></p>
+
+  </body>
+</html>

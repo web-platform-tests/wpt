@@ -76,8 +76,8 @@ for mathvariant in mathvariantTransforms:
     print("Generating tests for %s..." % mathvariant, end="")
     reftest = open("../relations/css-styling/mathvariant-%s.html" % mathvariant, "w")
     reftestReference = open("../relations/css-styling/mathvariant-%s-ref.html" % mathvariant, "w")
-    CSSreftest = open("../../css/css-text/text-transform/text-transform-math-%s-001.tentative.html" % mathvariant, "w")
-    CSSreftestReference = open("../../css/css-text/text-transform/text-transform-math-%s-001.tentative-ref.html" % mathvariant, "w")
+    CSSreftest = open("../../css/css-text/text-transform/math/text-transform-math-%s-001.tentative.html" % mathvariant, "w")
+    CSSreftestReference = open("../../css/css-text/text-transform/math/text-transform-math-%s-001.tentative-ref.html" % mathvariant, "w")
     source = '\
 <!DOCTYPE html>\n\
 <html>\n\

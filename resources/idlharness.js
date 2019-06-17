@@ -250,7 +250,7 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
         all_deps.add(k);
         this.includes[k].forEach(v => all_deps.add(v));
     });
-    this.partials.map(p => p.name).forEach(v => all_deps.add(v.idlType));
+    this.partials.forEach(p => all_deps.add(p.name));
 
     // Add the attribute idlTypes of all the nested members of idls.
     const attrDeps = parsedIdls => {

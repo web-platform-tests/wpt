@@ -25,6 +25,8 @@ There's also a load of [general guidelines](general-guidelines) that apply to al
    testharness
    visual
    wdspec
+   testdriver
+   testdriver-tutorial
 ```
 
 ## Test Type

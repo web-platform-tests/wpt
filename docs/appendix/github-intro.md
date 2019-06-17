@@ -249,7 +249,11 @@ GitHub UI.  Below is one method and others can be found on
 4. Wait for feedback on your pull request and once your pull request is
 accepted, delete your branch (see '[When Pull Request is Accepted](#cleanup)').
 
-That's it! Your pull request will go into a queue and will be reviewed soon.
+That's it! A number of project maintainers will be informed of your submission,
+and one of them should give you feedback within three Western business days
+(i.e. Monday through Friday). If you don't receive any response, you may find
+support by asking in [the "#testing" chat room on the W3C IRC
+server](http://irc.w3.org/).
 
 ## Modify
 

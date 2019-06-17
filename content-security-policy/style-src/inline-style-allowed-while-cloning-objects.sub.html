@@ -8,6 +8,7 @@
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script>
+        setup({ explicit_done: true });
         var t = async_test("Test that violation report event was fired");
         window.addEventListener("securitypolicyviolation", t.step_func_done(function(e) {
             assert_equals(e.violatedDirective, "style-src");
@@ -101,8 +102,8 @@
             test(function() {
                 assert_equals(ops.id, clonedOps.id)
             });
+            done();
         };
-
     </script>
 </head>
 

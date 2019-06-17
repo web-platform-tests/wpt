@@ -4,6 +4,11 @@ class MessageQueue {
   }
 
   push(item) {
+    // Testdriver can not handle concurrent actions right now, so throw a meaningful error if
+    // that happens. See https://github.com/web-platform-tests/wpt/issues/10990
+    if (this._queue.length != 0) {
+      throw "Multiple actions queued but testdriver can not handle concurrent actions";
+    }
     this._queue.push(item);
     __wptrunner_process_next_event();
   }

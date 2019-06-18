@@ -8,7 +8,7 @@
 idl_test(
   ['longtasks'],
   ['performance-timeline', 'hr-time'],
-  (idl_array, t) => new Promise(async (resolve, reject) => {
+  (idl_array, t) => new Promise((resolve, reject) => {
 
 
     const longTask = () => {

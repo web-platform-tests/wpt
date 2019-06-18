@@ -258,6 +258,7 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
             if (parsed.members) {
                 for (const attr of Object.values(parsed.members).filter(m => m.type === 'attribute')) {
                     let attrType = attr.idlType;
+                    // Check for generic members (e.g. FrozenArray<MyType>)
                     if (attrType.generic) {
                         deps.add(attrType.generic);
                         attrType = attrType.idlType;

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<title>Custom Elements: CEReactions on HTMLTextAreaElement interface</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<meta name="help" content="https://html.spec.whatwg.org/#the-textarea-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/custom-elements-helpers.js"></script>
+<script src="./resources/reactions.js"></script>
+
+<form id="form"></form>
+<script>
+
+function getParentElement() {
+  let parentElement = document.getElementById("form");
+  return parentElement;
+}
+
+function setAttributes(instance) {
+  instance.setAttribute('cols', '5');
+}
+
+testReflectAttributeWithParentNode(
+  'autocomplete', 'autocomplete', 'male',
+  'female', 'autocomplete on HTMLTextAreaElement', 'textarea',
+  getParentElement, HTMLTextAreaElement
+);
+testReflectBooleanAttributeWithParentNode(
+  'autofocus', 'autofocus', 'autofocus on HTMLTextAreaElement',
+  'textarea', getParentElement, HTMLTextAreaElement
+);
+testReflectAttributeWithParentNode(
+  'cols', 'cols', '3',
+  '4', 'cols on HTMLTextAreaElement', 'textarea',
+  getParentElement, HTMLTextAreaElement
+);
+testReflectBooleanAttributeWithParentNode(
+  'disabled', 'disabled', 'disabled on HTMLTextAreaElement',
+  'textarea', getParentElement, HTMLTextAreaElement
+);
+testReflectAttributeWithParentNode(
+  'maxLength', 'maxlength ', '15',
+  '18', 'maxLength on HTMLTextAreaElement', 'textarea',
+  getParentElement, HTMLTextAreaElement
+);
+testReflectAttributeWithParentNode(
+  'minLength', 'minlength', '2',
+  '3', 'minLength on HTMLTextAreaElement', 'textarea',
+  getParentElement, HTMLTextAreaElement
+);
+testReflectAttributeWithParentNode(
+  'name', 'name', 'textarea1',
+  'textarea2', 'name on HTMLTextAreaElement', 'textarea',
+  getParentElement, HTMLTextAreaElement
+);
+testReflectAttributeWithParentNode(
+  'placeholder', 'placeholder', 'New comment text',
+  'Update comment text', 'placeholder on HTMLTextAreaElement', 'textarea',
+  getParentElement, HTMLTextAreaElement
+);
+testReflectBooleanAttributeWithParentNode(
+  'readOnly', 'readonly ', 'readOnly on HTMLTextAreaElement',
+  'textarea', getParentElement, HTMLTextAreaElement
+);
+testReflectBooleanAttributeWithParentNode(
+  'required', 'required', 'required on HTMLTextAreaElement',
+  'textarea', getParentElement, HTMLTextAreaElement
+);
+testReflectAttributeWithParentNode(
+  'rows', 'rows', '1',
+  '2', 'rows on HTMLTextAreaElement', 'textarea',
+  getParentElement, HTMLTextAreaElement
+);
+testReflectAttributeWithDependentAttributes(
+  'wrap', 'wrap', 'hard',
+  'soft', 'wrap on HTMLTextAreaElement', 'textarea',
+  getParentElement, instance => setAttributes(instance), HTMLTextAreaElement
+);
+testReflectAttributeWithParentNode(
+  'defaultValue', 'defaultValue', 'value1',
+  'value2', 'defaultValue on HTMLTextAreaElement', 'textarea',
+  getParentElement, HTMLTextAreaElement
+);
+testReflectAttributeWithParentNode(
+  'dirName', 'dirname', 'comment1.dir',
+  'comment2.dir', 'dirName on HTMLTextAreaElement', 'textarea',
+  getParentElement, HTMLTextAreaElement
+);
+
+</script>

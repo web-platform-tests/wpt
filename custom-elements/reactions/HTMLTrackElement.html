@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<title>Custom Elements: CEReactions on HTMLTrackElement interface</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<meta name="help" content="https://html.spec.whatwg.org/#the-track-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/custom-elements-helpers.js"></script>
+<script src="./resources/reactions.js"></script>
+
+<video id="video" autoplay controls
+  onplaying="this.onplaying = null; this.pause(); this.currentTime = 0;">
+  <source src="/media/white.webm" type="video/webm">
+  <source src="/media/white.mp4" type="video/mp4">
+</video>
+
+<script>
+
+function getParentElement() {
+  return document.getElementById('video');
+}
+
+function setAttributes(instance, attributes) {
+  for (let [attribute, value] of attributes) {
+    instance.setAttribute(attribute, value);
+  }
+}
+
+testReflectAttributeWithDependentAttributes(
+  'kind', 'kind', 'descriptions',
+  'metadata', 'kind on HTMLTrackElement', 'track',
+  getParentElement,
+  instance => setAttributes(instance, [['src', '/media/foo.vtt']]),
+  HTMLTrackElement
+);
+testReflectAttributeWithDependentAttributes(
+  'src', 'src', '/media/foo.vtt',
+  '/media/foo-no-cors.vtt', 'src on HTMLTrackElement', 'track',
+  getParentElement,
+  instance => setAttributes(instance, [['kind', 'descriptions']]),
+  HTMLTrackElement
+);
+testReflectAttributeWithDependentAttributes(
+  'srclang', 'srclang', 'en',
+  'de', 'srclang on HTMLTrackElement', 'track',
+  getParentElement,
+  instance => setAttributes(
+    instance, [['kind', 'subtitles'], ['src', '/media/foo.vtt']]
+  ),
+  HTMLTrackElement
+);
+testReflectAttributeWithDependentAttributes(
+  'label', 'label', 'label1',
+  'label2', 'label on HTMLTrackElement', 'track',
+  getParentElement,
+  instance => setAttributes(
+    instance,
+    [['kind', 'subtitles'],
+    ['src', '/media/foo.vtt'],
+    ['srclang', 'en']]
+  ),
+  HTMLTrackElement);
+testReflectBooleanAttributeWithDependentAttributes(
+  'default', 'default', 'default on HTMLTrackElement',
+  'track', getParentElement,
+  instance => setAttributes(
+    instance,
+    [['kind', 'subtitles'],
+    ['src', '/media/foo.vtt'],
+    ['srclang', 'en']]
+  ),
+  HTMLTrackElement
+);
+
+</script>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<title>Custom Elements: CEReactions on HTMLVideoElement interface</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<meta name="help" content="https://html.spec.whatwg.org/#the-video-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/custom-elements-helpers.js"></script>
+<script src="./resources/reactions.js"></script>
+
+<body>
+<script>
+
+function getParentElement() {
+  return document.body;
+}
+
+function setAttributes(instance) {
+  instance.setAttribute('src', '/media/movie_5.mp4');
+}
+
+testReflectAttributeWithDependentAttributes(
+  'width', 'width', '25',
+  '26', 'width on HTMLVideoElement', 'video',
+  getParentElement, instance => setAttributes(instance), HTMLVideoElement
+);
+testReflectAttributeWithDependentAttributes(
+  'height', 'height', '25',
+  '26', 'height on HTMLVideoElement', 'video',
+  getParentElement, instance => setAttributes(instance), HTMLVideoElement
+);
+testReflectAttributeWithDependentAttributes(
+  'poster', 'poster', '/images/green.png',
+  '/images/red.png', 'poster on HTMLVideoElement', 'video',
+  getParentElement, instance => setAttributes(instance), HTMLVideoElement
+);
+testReflectBooleanAttributeWithDependentAttributes(
+  'playsInline', 'playsinline', 'playsInline on HTMLVideoElement',
+  'video', getParentElement, instance => setAttributes(instance),
+  HTMLVideoElement
+);
+
+</script>
+</body>

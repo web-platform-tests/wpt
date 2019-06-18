@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<title>Custom Elements: CEReactions on HTMLHyperlinkElementUtils interface mixin</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<meta name="help" content="https://html.spec.whatwg.org/#api-for-a-and-area-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/custom-elements-helpers.js"></script>
+<script src="./resources/reactions.js"></script>
+
+<body>
+<script>
+
+function getParentElement() {
+  return document.body;
+}
+
+function setAttributes(instance) {
+  instance.setAttribute('href', 'http://w3c-test.org');
+}
+
+testReflectAttribute(
+  'href', 'href', 'http://w3c-test.org',
+  'https://w3c-test.org', 'href on HTMLHyperlinkElementUtils in a', 'a',
+  HTMLAnchorElement
+);
+testReflectAttributeWithDependentAttributes(
+  'protocol', 'protocol', 'https:',
+  'http:', 'protocol on HTMLHyperlinkElementUtils in a', 'a',
+  getParentElement, instance => setAttributes(instance), HTMLAnchorElement
+);
+testReflectAttributeWithDependentAttributes(
+  'username', 'username', 'name1',
+  'name2', 'username on HTMLHyperlinkElementUtils in a', 'a',
+  getParentElement, instance => setAttributes(instance), HTMLAnchorElement
+);
+testReflectAttributeWithDependentAttributes(
+  'password', 'password', 'password1',
+  'password2', 'password on HTMLHyperlinkElementUtils in a', 'a',
+  getParentElement, instance => setAttributes(instance), HTMLAnchorElement
+);
+testReflectAttributeWithDependentAttributes(
+  'host', 'host', 'w3c-test1.org',
+  'w3c-test.org', 'host on HTMLHyperlinkElementUtils in a', 'a',
+  getParentElement, instance => setAttributes(instance), HTMLAnchorElement
+);
+testReflectAttributeWithDependentAttributes(
+  'hostname', 'hostname', 'w3c-test1.org',
+  'w3c-test.org', 'hostname on HTMLHyperlinkElementUtils in a', 'a',
+  getParentElement, instance => setAttributes(instance), HTMLAnchorElement
+);
+testReflectAttributeWithDependentAttributes(
+  'port', 'port', '8081',
+  '8082', 'port on HTMLHyperlinkElementUtils in a', 'a',
+  getParentElement, instance => setAttributes(instance), HTMLAnchorElement
+);
+testReflectAttributeWithDependentAttributes(
+  'pathname', 'pathname', '/html',
+  '/css', 'pathname on HTMLHyperlinkElementUtils in a', 'a',
+  getParentElement, instance => setAttributes(instance), HTMLAnchorElement
+);
+testReflectAttributeWithDependentAttributes(
+  'search', 'search', '?a=1',
+  '?a=2', 'search on HTMLHyperlinkElementUtils in a', 'a',
+  getParentElement, instance => setAttributes(instance), HTMLAnchorElement
+);
+testReflectAttributeWithDependentAttributes(
+  'hash', 'hash', '#hash1',
+  '#hash2', 'hash on HTMLHyperlinkElementUtils in a', 'a',
+  getParentElement, instance => setAttributes(instance), HTMLAnchorElement
+);
+
+testReflectAttribute(
+  'href', 'href', 'http://w3c-test.org',
+  'https://w3c-test.org', 'href on HTMLHyperlinkElementUtils in area', 'area',
+  HTMLAreaElement
+);
+testReflectAttributeWithDependentAttributes(
+  'protocol', 'protocol', 'https:',
+  'http:', 'protocol on HTMLHyperlinkElementUtils in area', 'area',
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
+);
+testReflectAttributeWithDependentAttributes(
+  'username', 'username', 'name1',
+  'name2', 'username on HTMLHyperlinkElementUtils in area', 'area',
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
+);
+testReflectAttributeWithDependentAttributes(
+  'password', 'password', 'password1',
+  'password2', 'password on HTMLHyperlinkElementUtils in area', 'area',
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
+);
+testReflectAttributeWithDependentAttributes(
+  'host', 'host', 'w3c-test1.org',
+  'w3c-test.org', 'host on HTMLHyperlinkElementUtils in area', 'area',
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
+);
+testReflectAttributeWithDependentAttributes(
+  'hostname', 'hostname', 'w3c-test1.org',
+  'w3c-test.org', 'hostname on HTMLHyperlinkElementUtils in area', 'area',
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
+);
+testReflectAttributeWithDependentAttributes(
+  'port', 'port', '8081',
+  '8082', 'port on HTMLHyperlinkElementUtils in area', 'area',
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
+);
+testReflectAttributeWithDependentAttributes(
+  'pathname', 'pathname', '/html',
+  '/css', 'pathname on HTMLHyperlinkElementUtils in area', 'area',
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
+);
+testReflectAttributeWithDependentAttributes(
+  'search', 'search', '?a=1',
+  '?a=2', 'search on HTMLHyperlinkElementUtils in area', 'area',
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
+);
+testReflectAttributeWithDependentAttributes(
+  'hash', 'hash', '#hash1',
+  '#hash2', 'hash on HTMLHyperlinkElementUtils in area', 'area',
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
+);
+
+</script>
+</body>

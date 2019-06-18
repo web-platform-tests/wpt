@@ -3,14 +3,242 @@
 <title>Custom Elements: CEReactions on HTMLInputElement interface</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Wanming Lin" href="mailto:wanming.lin@intel.com">
-<meta name="assert" content="capture of HTMLInputElement interface must have CEReactions">
 <meta name="help" content="https://www.w3.org/TR/html-media-capture/#the-capture-attribute">
+<meta name="help" content="https://html.spec.whatwg.org/#the-input-element">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/custom-elements-helpers.js"></script>
 <script src="./resources/reactions.js"></script>
-<body>
+
+<form action="/costom.py" id="form"></form>
 <script>
+
+function getParentElement() {
+  return document.getElementById("form");
+}
+
+function setAttributes(instance, attribute, value) {
+  instance.setAttribute(attribute, value);
+}
+
+function setAttributesforImageType(instance) {
+  instance.setAttribute('type', 'image');
+  instance.setAttribute('alt', 'description');
+  instance.setAttribute('src', '/images/green-1x1.png');
+}
+
+function setAttributesToTestAlt(instance) {
+  instance.setAttribute('type', 'image');
+  instance.setAttribute('src', '/images/green-1x1.png');
+}
+
+function setAttributesToTestSrc(instance) {
+  instance.setAttribute('type', 'image');
+  instance.setAttribute('alt', 'image');
+}
+
+testReflectAttributeWithDependentAttributes(
+  'accept', 'accept', 'image/*',
+  'video/*', 'accept on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'file'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'alt', 'alt', 'description1',
+  'description2', 'alt on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributesToTestAlt(instance),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'autocomplete', 'autocomplete', 'off',
+  'on', 'autocomplete on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectBooleanAttributeWithDependentAttributes(
+  'autofocus', 'autofocus', 'autofocus on HTMLInputElement',
+  'input', getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectBooleanAttributeWithDependentAttributes(
+  'defaultChecked', 'checked', 'defaultChecked on HTMLInputElement',
+  'input', getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'dirName', 'dirname', 'name1.dir',
+  'name2.dir', 'dirName on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectBooleanAttributeWithDependentAttributes(
+  'disabled', 'disabled', 'disabled on HTMLInputElement',
+  'input', getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'formAction', 'formaction', '/costom1.py',
+  '/costom2.py', 'formAction on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributesforImageType(instance),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'formEnctype', 'formenctype', 'text/plain',
+  'multipart/form-data', 'formEnctype on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributesforImageType(instance),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'formMethod', 'formmethod', 'post',
+  'get', 'formMethod on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributesforImageType(instance),
+  HTMLInputElement
+);
+
+testReflectBooleanAttributeWithDependentAttributes(
+  'formNoValidate', 'formnovalidate', 'formNoValidate on HTMLInputElement',
+  'input', getParentElement, instance => setAttributesforImageType(instance),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'formTarget', 'formtarget', '_parent',
+  '_blank', 'formTarget on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributesforImageType(instance),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'height', 'height', '2',
+  '3', 'height on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributesforImageType(instance),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'max', 'max', '2',
+  '3', 'max on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'number'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'maxLength', 'maxlength', '2',
+  '3', 'maxLength on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'min', 'min', '2',
+  '3', 'min on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'number'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'minLength', 'minlength', '2',
+  '3', 'minLength on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectBooleanAttributeWithDependentAttributes(
+  'multiple', 'multiple', 'multiple on HTMLInputElement',
+  'input', getParentElement, instance => setAttributes(instance, 'type', 'email'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'name', 'name', 'name1',
+  'name2', 'name on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'pattern', 'pattern', '[A-Za-z]{3}',
+  '[A-Za-z]{2}', 'pattern on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'placeholder', 'placeholder', 'value1',
+  'value2', 'placeholder on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectBooleanAttributeWithDependentAttributes(
+  'readOnly', 'readonly', 'readOnly on HTMLInputElement',
+  'input', getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectBooleanAttributeWithDependentAttributes(
+  'required', 'required', 'required on HTMLInputElement',
+  'input', getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'size', 'size', '1',
+  '2', 'size on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'src', 'src', '/custom1',
+  '/custom2', 'src on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributesToTestSrc(instance),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'step', 'step', '2',
+  '3', 'step on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'number'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithParentNode(
+  'type', 'type', 'text',
+  'number', 'type on HTMLInputElement', 'input',
+  getParentElement, HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'defaultValue', 'value', 'value1',
+  'value2', 'defaultValue on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'value', 'value', 'value1',
+  'value2', 'value on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributes(instance, 'type', 'text'),
+  HTMLInputElement
+);
+
+testReflectAttributeWithDependentAttributes(
+  'width', 'width', '2',
+  '3', 'width on HTMLInputElement', 'input',
+  getParentElement, instance => setAttributesforImageType(instance),
+  HTMLInputElement
+);
+
 if (HTMLInputElement.prototype.capture) {
     test(() => {
         const element = define_build_in_custom_element(['capture'], HTMLInputElement, 'input');
@@ -57,10 +285,6 @@ if (HTMLInputElement.prototype.capture) {
         assert_array_equals(logEntries.types(), ['attributeChanged']);
         assert_attribute_log_entry(logEntries.last(), {name: 'capture', oldValue: 'user', newValue: '', namespace: null});
     }, 'capture on HTMLInputElement must enqueue an attributeChanged reaction when removing the attribute');
-} else {
-    // testharness.js doesn't allow a test file with no tests.
-    test(() => {
-    }, 'No tests if HTMLInputEement has no "capture" IDL attribute');
 }
+
 </script>
-</body>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<title>Custom Elements: CEReactions on HTMLLinkElement interface</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<meta name="help" content="https://html.spec.whatwg.org/#the-link-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/custom-elements-helpers.js"></script>
+<script src="./resources/reactions.js"></script>
+
+<script>
+
+function getParentElement() {
+  return document.head;
+}
+
+function setAttributes(instance) {
+  instance.setAttribute('href', 'http://www.intel.com');
+  instance.setAttribute('rel', 'author');
+}
+
+testReflectAttributeWithDependentAttributes(
+  'href', 'href', 'http://www.intel1.com',
+  'http://www.intel.com', 'href on HTMLLinkElement', 'link',
+  getParentElement, instance => {instance.setAttribute('rel', 'author');},
+  HTMLLinkElement
+);
+testReflectAttributeWithDependentAttributes(
+  'crossOrigin', 'crossorigin', 'use-credentials',
+  'anonymous', 'crossOrigin on HTMLLinkElement', 'link',
+  getParentElement, instance => setAttributes(instance), HTMLLinkElement
+);
+testReflectAttributeWithDependentAttributes(
+  'rel', 'rel', 'author',
+  'help', 'rel on HTMLLinkElement', 'link',
+  getParentElement,
+  instance => {instance.setAttribute('href', 'http://www.intel.com');},
+  HTMLLinkElement
+);
+testReflectAttributeWithDependentAttributes(
+  'as', 'as', 'style',
+  'script', 'as on HTMLLinkElement', 'link',
+  getParentElement,
+  instance => {
+    instance.setAttribute('href', 'http://www.intel.com');
+    instance.setAttribute('rel', 'preload');
+  },
+  HTMLLinkElement);
+testReflectAttributeWithDependentAttributes(
+  'media', 'media', 'print',
+  'all', 'media on HTMLLinkElement', 'link',
+  getParentElement, instance => setAttributes(instance), HTMLLinkElement
+);
+testReflectAttributeWithDependentAttributes(
+  'integrity', 'integrity',
+  'sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC',
+  'sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f',
+  'integrity on HTMLLinkElement', 'link',
+  getParentElement, instance => setAttributes(instance), HTMLLinkElement
+);
+testReflectAttributeWithDependentAttributes(
+  'hreflang', 'hreflang', 'zh',
+  'en', 'hreflang on HTMLLinkElement', 'link',
+  getParentElement, instance => setAttributes(instance), HTMLLinkElement
+);
+testReflectAttributeWithDependentAttributes(
+  'type', 'type', 'text/css',
+  'text/javascript', 'type on HTMLLinkElement', 'link',
+  getParentElement, instance => setAttributes(instance), HTMLLinkElement
+);
+testReflectAttributeWithDependentAttributes(
+  'referrerPolicy', 'referrerpolicy', 'unsafe-url',
+  'same-origin', 'referrerPolicy on HTMLLinkElement', 'link',
+  getParentElement, instance => setAttributes(instance), HTMLLinkElement
+);
+
+</script>

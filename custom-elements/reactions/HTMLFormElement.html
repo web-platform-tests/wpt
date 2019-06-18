@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<title>Custom Elements: CEReactions on HTMLFormElement interface</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<meta name="help" content="https://html.spec.whatwg.org/#the-form-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/custom-elements-helpers.js"></script>
+<script src="./resources/reactions.js"></script>
+
+<body>
+<script>
+
+function getParentElement() {
+  return document.body;
+}
+
+function setAttributes(instance) {
+  instance.setAttribute('method', 'post');
+}
+
+testReflectAttribute(
+  'acceptCharset', 'accept-charset', 'ISO-8859-1',
+  'UTF-8', 'acceptCharset on HTMLFormElement', 'form',
+  HTMLFormElement
+);
+testReflectAttribute(
+  'action', 'action', '/action1.php',
+  '/action2.php', 'action on HTMLFormElement', 'form',
+  HTMLFormElement
+);
+testReflectAttribute(
+  'autocomplete', 'autocomplete', 'off',
+  'on', 'autocomplete on HTMLFormElement', 'form',
+  HTMLFormElement
+);
+testReflectAttributeWithDependentAttributes(
+  'enctype', 'enctype', 'text/plain',
+  'multipart/form-data', 'enctype on HTMLFormElement', 'form',
+  getParentElement, instance => setAttributes(instance), HTMLFormElement
+);
+testReflectAttributeWithDependentAttributes(
+  'encoding', 'enctype', 'text/plain',
+  'multipart/form-data', 'encoding on HTMLFormElement', 'form',
+  getParentElement, instance => setAttributes(instance), HTMLFormElement
+);
+testReflectAttribute(
+  'method', 'method', 'post',
+  'get', 'method on HTMLFormElement', 'form',
+  HTMLFormElement
+);
+testReflectAttribute(
+  'name', 'name', 'name1',
+  'name2', 'name on HTMLFormElement', 'form',
+  HTMLFormElement
+);
+testReflectBooleanAttribute(
+  'noValidate', 'novalidate', 'noValidate on HTMLFormElement',
+  'form', HTMLFormElement
+);
+testReflectAttribute(
+  'target', 'target', '_parent',
+  '_blank', 'target on HTMLFormElement', 'form',
+  HTMLFormElement
+);
+
+test(() => {
+  let element = define_build_in_custom_element(['value'], HTMLInputElement, 'input');
+  let input = document.createElement('input', { is: element.name });
+  let form = document.createElement('form');
+  form.appendChild(input);
+
+  input['value'] = 'value';
+  assert_equals(input['value'], 'value');
+  assert_array_equals(element.takeLog().types(), ['constructed', 'attributeChanged']);
+  form.reset();
+  assert_equals(input['value'], '');
+  let logEntries = element.takeLog();
+  assert_array_equals(logEntries.types(), ['attributeChanged']);
+  assert_attribute_log_entry(logEntries.last(), { name: 'input', oldValue: 'value', newValue: '', namespace: null });
+}, 'reset on HTMLFormElement must enqueue an attributeChanged reaction when replacing an existing attribute');
+
+</script>
+</body>

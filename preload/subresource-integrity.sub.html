@@ -62,99 +62,85 @@
       + '//' + www_host_and_port
       + '/subresource-integrity/crossorigin-ineligible-style.css?';
 
-    // Script tests
-    /*
-    new SRIScriptTest(
-        true,
-        "Same-origin with correct sha256 hash.",
-        "/subresource-integrity/matching-digest.js",
-        "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E="
-    ).execute();
-    */
-
-    // Preload test tests.
+    // Preload tests
     new SRIPreloadTest(
-        true,
-        true, // this doesn't matter right now.
-        "Same-origin with correct sha256 hash.",
-        {
-          href: "/subresource-integrity/matching-digest.js",
-          integrity: "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E=",
-          as: "script"
-        },
-        {src: "/subresource-integrity/matching-digest.js"}
+        true,                                                               /* preload_sri_success */
+        true,                                                               /* subresource_sri_success */
+        "Same-origin with correct sha256 hash.",                            /* name */
+        "script",                                                           /* destination */
+        "/subresource-integrity/matching-digest.js?1",                      /* resource_url */
+        {integrity: "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E="}, /* link_attrs */
+        {}                                                                  /* subresource_attrs */
     ).execute();
 
     new SRIPreloadTest(
-        false,
-        false, // this doesn't matter right now.
-        "Same-origin with correct sha256 hash.",
-        {
-          href: "/subresource-integrity/matching-digest.js?1",
-          integrity: "sha256-deadbeefkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E=",
-          as: "script"
-        },
-        {src: "/subresource-integrity/matching-digest.js?1"}
-    ).execute();
-
-    /*
-    new SRIScriptTest(
+        true,
         true,
         "Same-origin with correct sha384 hash.",
-        "/subresource-integrity/matching-digest.js",
-        "sha384-BDRTPSywZFyxfLEAzaLcL4FfERBgJgXfEkuT0r04LG93Yqn1PWNYPZMomaqEfE3H"
+        "script",
+        "/subresource-integrity/matching-digest.js?2",
+        {integrity: "sha384-BDRTPSywZFyxfLEAzaLcL4FfERBgJgXfEkuT0r04LG93Yqn1PWNYPZMomaqEfE3H"},
+        {}
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
+        true,
         true,
         "Same-origin with correct sha512 hash.",
-        "/subresource-integrity/matching-digest.js",
-        "sha512-geByvIIRspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg=="
+        "script",
+        "/subresource-integrity/matching-digest.js?3",
+        {integrity: "sha512-geByvIIRspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg=="},
+        {}
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
+        true,
         true,
         "Same-origin with empty integrity.",
+        "script",
         "/subresource-integrity/matching-digest.js",
-        ""
+        {},
+        {}
     ).execute();
 
-    new SRIScriptTest(
+    /*
+    new SRIPreloadTest(
+        false,
         false,
         "Same-origin with incorrect hash.",
         "/subresource-integrity/non-matching-digest.js",
         "sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         true,
         "Same-origin with multiple sha256 hashes, including correct.",
         "/subresource-integrity/matching-digest.js",
         "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E= sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         true,
         "Same-origin with multiple sha256 hashes, including unknown algorithm.",
         "/subresource-integrity/matching-digest.js",
         "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E= foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         true,
         "Same-origin with sha256 mismatch, sha512 match",
         "/subresource-integrity/matching-digest.js",
         "sha512-geByvIIRspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         false,
         "Same-origin with sha256 match, sha512 mismatch",
         "/subresource-integrity/matching-digest.js",
         "sha512-deadbeefspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E="
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         true,
         "<crossorigin='anonymous'> with correct hash, ACAO: *",
         xorigin_anon_script,
@@ -162,7 +148,7 @@
         "anonymous"
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         false,
         "<crossorigin='anonymous'> with incorrect hash, ACAO: *",
         xorigin_anon_script,
@@ -170,7 +156,7 @@
         "anonymous"
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         true,
         "<crossorigin='use-credentials'> with correct hash, CORS-eligible",
         xorigin_creds_script,
@@ -178,7 +164,7 @@
         "use-credentials"
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         false,
         "<crossorigin='use-credentials'> with incorrect hash CORS-eligible",
         xorigin_creds_script,
@@ -186,7 +172,7 @@
         "use-credentials"
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         false,
         "<crossorigin='anonymous'> with CORS-ineligible resource",
         xorigin_ineligible_script,
@@ -194,35 +180,35 @@
         "anonymous"
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         false,
         "Cross-origin, not CORS request, with correct hash",
         xorigin_anon_script,
         "sha256-51AjITq701Y0yKSx3/UoIKtIY2UQ9+H8WGyyMuOWOC0="
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         false,
         "Cross-origin, not CORS request, with hash mismatch",
         xorigin_anon_script,
         "sha256-deadbeef01Y0yKSx3/UoIKtIY2UQ9+H8WGyyMuOWOC0="
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         true,
         "Cross-origin, empty integrity",
         xorigin_anon_script,
         ""
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         true,
         "Same-origin with correct hash, options.",
         "/subresource-integrity/matching-digest.js",
         "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E=?foo=bar?spam=eggs"
     ).execute();
 
-    new SRIScriptTest(
+    new SRIPreloadTest(
         true,
         "Same-origin with unknown algorithm only.",
         "/subresource-integrity/matching-digest.js",

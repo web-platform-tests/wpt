@@ -32,22 +32,29 @@ SRIScriptTest.prototype.execute = function() {
     document.body.appendChild(e);
 };
 
-function buildElementFromDestination(destination, attrs) {
+function buildElementFromDestination(resource_url, destination, attrs) {
   // Assert: |destination| is a valid destination.
   let element;
+
+  // The below switch is responsible for:
+  //   1. Creating the correct subresource element
+  //   2. Setting said element's href, src, or fetch-instigating property
+  //      appropriately.
   switch (destination) {
     case "script":
-    case "audio":
       element = document.createElement(destination);
+      element.src = resource_url;
       break;
     case "font":
       element = document.createElement('link');
+      element.href = resource_url;
       break;
     default:
       console.error("INVALID DESTINATION: ", destination);
   }
 
   // TODO(domfarolino): Hmm, maybe simplify this?
+  // Apply the rest of the attributes, if any.
   for (const [attr_name, attr_val] of Object.entries(attrs)) {
     element[attr_name] = attr_val;
   }
@@ -56,14 +63,22 @@ function buildElementFromDestination(destination, attrs) {
   return element;
 }
 
-var SRIPreloadTest = function(preload_sri_success, subresource_sri_success, name, link_attrs, subresource_attrs) {
+// TODO(domfarolino): Consider refactoring SRIScriptTest and SRIPreloadTest to
+// have the constructor just create and run the test, instead of:
+//   1. Have the constructor just copy a bunch of data.
+//   2. Have the |execute()| method do all the work, but call it immediately
+//      after constructing (this doesn't make a whole lot of sense).
+// TODO(domfarolino): We may be able to get rid of |preload_sri_success|.
+var SRIPreloadTest = function(preload_sri_success, subresource_sri_success, name, destination, resource_url, link_attrs, subresource_attrs) {
   this.preload_sri_success = preload_sri_success
   this.subresource_sri_success = subresource_sri_success;
+  this.resource_url = resource_url;
   this.name = name;
 
   // |destination| is used to create the appropriate subresource-fetching
   // element that will attempt to utilize the preload.
-  this.destination = link_attrs.as;
+  this.destination = destination;
+  this.resource_url = resource_url;
   this.link_attrs = link_attrs;
   this.subresource_attrs = subresource_attrs;
 }
@@ -71,13 +86,15 @@ var SRIPreloadTest = function(preload_sri_success, subresource_sri_success, name
 SRIPreloadTest.prototype.execute = function() {
   const test = async_test(this.name);
   const link = document.createElement('link');
-  const subresource_element = buildElementFromDestination(this.destination, this.subresource_attrs);
+  const subresource_element = buildElementFromDestination(this.resource_url, this.destination, this.subresource_attrs);
 
   // Build up the link. |subresource_element| is built-up by
   // |buildElementFromDestination()|.
   link.rel = 'preload';
+  link.as = this.destination;
+  link.href = this.resource_url;
   for (const [attr_name, attr_val] of Object.entries(this.link_attrs)) {
-    link[attr_name] = attr_val;
+    link[attr_name] = attr_val; // This may override `rel` to modulepreload.
   }
 
   // Link preload success and failure loading functions.

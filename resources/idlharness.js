@@ -277,7 +277,7 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
     attrDeps(testedMembers).forEach(dep => all_deps.add(dep));
 
     const testedPartials = this.partials.filter(m => !m.untested && m.members);
-    Array.from(attrDeps(testedPartials)).forEach(dep => all_deps.add(dep));
+    attrDeps(testedPartials).forEach(dep => all_deps.add(dep));
 
 
     if (options && options.except && options.only) {

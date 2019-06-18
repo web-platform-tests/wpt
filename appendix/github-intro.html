@@ -74,9 +74,10 @@ See <a class="reference external" href="https://help.github.com/articles/caching
 </div>
 <div class="section" id="fork-the-test-repository">
 <h2>Fork the test repository<a class="headerlink" href="#fork-the-test-repository" title="Permalink to this headline">¶</a></h2>
-<p>Now that you have Git set up, you will need to fork the test repository. This
-will enable you to <a class="reference external" href="#submit">submit</a> your tests using a pull request (more on this
-<a class="reference external" href="#submit">below</a>).</p>
+<p>Now that you have Git set up, you will need to “fork” the test repository. Your
+fork will be a completely independent version of the repository, hosted on
+GitHub.com. This will enable you to <a class="reference external" href="#submit">submit</a> your tests using a pull
+request (more on this <a class="reference external" href="#submit">below</a>).</p>
 <ol class="simple">
 <li>In the browser, go to <a class="reference external" href="https://github.com/web-platform-tests/wpt">web-platform-tests on GitHub</a>.</li>
 <li>Click the <img alt="../_images/forkbtn.png" src="../_images/forkbtn.png" />fork button in the upper right.</li>
@@ -90,26 +91,26 @@ You will now be at
 <div class="section" id="clone">
 <h2>Clone<a class="headerlink" href="#clone" title="Permalink to this headline">¶</a></h2>
 <p>If your <a class="reference external" href="#fork">fork</a> was successful, the next step is to clone (download a copy of the files).</p>
-<div class="section" id="clone-the-test-repo">
-<h3>Clone the test repo<a class="headerlink" href="#clone-the-test-repo" title="Permalink to this headline">¶</a></h3>
-<p>At the command prompt, cd into the directory where you want to keep the tests.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    $ git clone https://github.com/username/wpt.git
+<div class="section" id="clone-the-test-repository">
+<h3>Clone the test repository<a class="headerlink" href="#clone-the-test-repository" title="Permalink to this headline">¶</a></h3>
+<p>Open a command prompt in the directory where you want to keep the tests. Then
+execute the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/username/wpt.git
 </pre></div>
 </div>
-<p><em>This will download the tests into a directory named for the repo:</em> <code class="docutils literal notranslate"><span class="pre">wpt/</span></code>.</p>
-<ul class="simple">
-<li>You should now have a full copy of the test repository on your local
+<p>This will download the tests into a directory named for the repository: <code class="docutils literal notranslate"><span class="pre">wpt/</span></code>.</p>
+<p>You should now have a full copy of the test repository on your local
 machine. Feel free to browse the directories on your hard drive. You can also
-browse them on <a class="reference external" href="https://github.com/w3c">github.com</a> and see the full history of contributions
-there.</li>
-</ul>
+<a class="reference external" href="https://github.com/web-platform-tests/wpt">browse them on github.com</a> and see the full history of
+contributions there.</p>
 </div>
 </div>
 <div class="section" id="configure-remote-upstream">
 <h2>Configure Remote / Upstream<a class="headerlink" href="#configure-remote-upstream" title="Permalink to this headline">¶</a></h2>
-<p>Synchronizing your forked repository with the W3C repository will enable you to
-keep your forked local copy up-to-date with the latest commits in the W3C
-repository.</p>
+<p>Your forked repository is completely independent of the canonical repository,
+which is commonly referred to as the “upstream” repository. Synchronizing your
+forked repository with the upstream repository will keep your forked local copy
+up-to-date with the latest commits.</p>
 <ol>
 <li><p class="first">On the command line, navigate to to the directory where your forked copy of
 the repository is located.</p>
@@ -160,8 +161,7 @@ branch you will end up with a big nested mess.</em></p>
 </div>
 <p>This will create a branch named <code class="docutils literal notranslate"><span class="pre">topic</span></code> and immediately
 switch this to be your active working branch.</p>
-<p><em>The branch name should describe specifically what you are testing.
-For Example:</em></p>
+<p>The branch name should describe specifically what you are testing. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git checkout -b flexbox-flex-direction-prop
 </pre></div>
 </div>
@@ -171,13 +171,13 @@ For Example:</em></p>
 <div class="section" id="commit">
 <h2>Commit<a class="headerlink" href="#commit" title="Permalink to this headline">¶</a></h2>
 <p>Before you submit your tests for review and contribution to the main test
-repo, you’ll need to first commit them locally, where you now have your own
-personal version control system with git. In fact, as you are writing your
+repository, you’ll need to first commit them locally, where you now have your
+own personal version control system with git. In fact, as you are writing your
 tests, you may want to save versions of your work as you go before you submit
 them to be reviewed and merged.</p>
 <ol>
-<li><p class="first">When you’re ready to save a version of your work, go to the command
-prompt and cd to the directory where your files are.</p>
+<li><p class="first">When you’re ready to save a version of your work, open a command
+prompt and change to the directory where your files are.</p>
 </li>
 <li><p class="first">First, ask git what new or modified files you have:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git status
@@ -196,10 +196,9 @@ list of things you’d like to commit:</p>
 </div>
 </li>
 <li><p class="first">Run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code> again to see what you have on the ‘Changes to be
-committed’ list. These files are now ‘staged’.</p>
-</li>
-<li><p class="first">Alternatively, you can run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span> <span class="pre">--staged</span></code>, which will show you the
-diff of things to be committed.</p>
+committed’ list. These files are now ‘staged’. Alternatively, you can run
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span> <span class="pre">--staged</span></code> to see a visual representation of the changes to be
+committed.</p>
 </li>
 <li><p class="first">Once you’ve added everything, you can commit and add a message to this
 set of changes:</p>
@@ -216,10 +215,8 @@ set of changes:</p>
 <p>The Web Platform Test project has an automated tool
 to verify that coding conventions have been followed,
 and to catch a number of common mistakes.</p>
-<p>You can and should run this tool locally.
-It will be run on your submissions anyway,
-and any failure will be grounds for rejection,
-so you might as well fix them first.</p>
+<p>We recommend running this tool locally. That will help you discover and fix
+issues that would make it hard for us to accept your contribution.</p>
 <ol class="simple">
 <li>On the command line, navigate to to the directory where your clone
 of the repository is located.</li>
@@ -234,21 +231,21 @@ of the repository is located.</li>
 some awesome tests and are ready to submit them. Congratulations and welcome
 back!</p>
 <ol>
-<li><p class="first">The first thing you do before submitting them to the W3C repo is to push
-them back up to the server:</p>
+<li><p class="first">The first thing you do before submitting them to the web-platform-tests
+repository is to push them back up to your fork:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git push origin topic
 </pre></div>
 </div>
-<p><em>Note: Here,</em> <code class="docutils literal notranslate"><span class="pre">origin</span></code> <em>refers to remote repo from which you cloned
+<p><em>Note: Here,</em> <code class="docutils literal notranslate"><span class="pre">origin</span></code> <em>refers to remote repository from which you cloned
 (downloaded) the files after you forked, referred to as
 web-platform-tests.git in the previous example;</em>
 <code class="docutils literal notranslate"><span class="pre">topic</span></code> <em>refers to the name of your local branch that
-you want to push</em>.</p>
+you want to share</em>.</p>
 </li>
 <li><p class="first">Now you can send a message that you have changes or additions you’d like
 to be reviewed and merged into the main (original) test repository. You do
-this by using a pull request. In a browser, open the GitHub page for your
-forked repository: <strong>https://github.com/username/wpt</strong>.</p>
+this by creating a pull request. In a browser, open the GitHub page for
+your forked repository: <strong>https://github.com/username/wpt</strong>.</p>
 </li>
 <li><p class="first">Now create the pull request.  There are several ways to create a PR in the
 GitHub UI.  Below is one method and others can be found on
@@ -256,16 +253,15 @@ GitHub UI.  Below is one method and others can be found on
 <ol>
 <li><p class="first">Click the <img alt="../_images/pullrequestbtn.png" src="../_images/pullrequestbtn.png" />new pull request button.</p>
 </li>
-<li><p class="first">On the left, you should see the base repo is the
+<li><p class="first">On the left, you should see the base repository is the
 web-platform-tests/wpt. On the right, you should see your fork of that
-repo. In the branch menu of your forked repo, switch to <code class="docutils literal notranslate"><span class="pre">topic</span></code></p>
-<p><strong>Note:</strong> If you see <em>‘There isn’t anything to compare’</em>,
-make sure your fork and your <code class="docutils literal notranslate"><span class="pre">topic</span></code>
-branch is selected on the right side.</p>
+repository. In the branch menu of your forked repository, switch to <code class="docutils literal notranslate"><span class="pre">topic</span></code></p>
+<p>If you see “There isn’t anything to compare”, make sure your fork and
+your <code class="docutils literal notranslate"><span class="pre">topic</span></code> branch is selected on the right side.</p>
 </li>
 <li><p class="first">Select the <img alt="../_images/createpr.png" src="../_images/createpr.png" />create pull request button at the top.</p>
 </li>
-<li><p class="first">Scroll down and review the diff</p>
+<li><p class="first">Scroll down and review the summary of changes.</p>
 </li>
 <li><p class="first">Scroll back up and in the Title field, enter a brief description for
 your submission.</p>
@@ -284,12 +280,11 @@ accepted, delete your branch (see ‘<a class="reference external" href="#cleanu
 </ol>
 <p>That’s it! Your pull request will go into a queue and will be reviewed soon.</p>
 </div>
-<div class="section" id="modify">
-<h2>Modify<a class="headerlink" href="#modify" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="refine">
+<h2>Refine<a class="headerlink" href="#refine" title="Permalink to this headline">¶</a></h2>
 <p>Once you submit your pull request, a reviewer will check your proposed changes
-for correctness and style. It is likely that this process will lead to some
-comments asking for modifications to your code. When you are ready to make the
-changes, follow these steps:</p>
+for correctness and style. They may ask you to modify your code. When you are
+ready to make the changes, follow these steps:</p>
 <ol>
 <li><p class="first">Check out the branch corresponding to your changes e.g. if your branch was
 called <code class="docutils literal notranslate"><span class="pre">topic</span></code>
@@ -317,11 +312,11 @@ platform.</p>
 <div class="section" id="cleanup">
 <h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h2>
 <p>Once your pull request has been accepted, you will be notified in the GitHub
-UI and you may get an email. At this point, your changes have been merged
+user interface, and you may get an email. At this point, your changes have been merged
 into the main test repository. You do not need to take any further action
 on the test but you should delete your branch. This can easily be done in
-the GitHub UI by navigating to the pull requests and clicking the
-‘Delete Branch’ button.</p>
+the GitHub user interface by navigating to the pull request and clicking the
+“Delete Branch” button.</p>
 <p><img alt="../_images/praccepteddelete.png" src="../_images/praccepteddelete.png" />pull request accepted delete branch</p>
 <p>Alternatively, you can delete the branch on the command line.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git push origin --delete &lt;branchName&gt;

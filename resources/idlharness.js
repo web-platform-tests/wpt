@@ -284,15 +284,14 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
         throw new IdlHarnessError("The only and except options can't be used together.");
     }
 
-    const defined_or_untested = parsed => {
+    const defined_or_untested = name => {
         // NOTE: Deps are untested, so we're lenient, and skip re-encountered definitions.
         // e.g. for 'idl' containing A:B, B:C, C:D
         //      array.add_idls(idl, {only: ['A','B']}).
         //      array.add_dependency_idls(idl);
         // B would be encountered as tested, and encountered as a dep, so we ignore.
-        return parsed.name
-            && (parsed.name in this.members
-                || this.is_excluded_by_options(parsed.name, options));
+        return name in this.members
+            || this.is_excluded_by_options(name, options);
     }
     // Maps name -> [parsed_idl, ...]
     const process = function(parsed) {
@@ -308,7 +307,9 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
         }
 
         deps = deps.filter(function(name) {
-            if (!name || defined_or_untested(parsed) || !all_deps.has(name)) {
+            if (!name
+                || name === parsed.name && defined_or_untested(name)
+                || !all_deps.has(name)) {
                 // Flag as skipped, if it's not already processed, so we can
                 // come back to it later if we retrospectively call it a dep.
                 if (name && !(name in this.members)) {
@@ -349,13 +350,6 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
                         follow_up.add(dep);
                     }
                 }
-            }
-            for (const attrDep of attrDeps([parsed])) {
-                if (!new_options.only.includes(attrDep)) {
-                    new_options.only.push(attrDep);
-                }
-                all_deps.add(attrDep);
-                follow_up.add(attrDep);
             }
 
             for (const deferred of follow_up) {

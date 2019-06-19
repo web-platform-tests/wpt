@@ -7,7 +7,7 @@ def main(request, response):
       response_headers.append(("Access-Control-Allow-Origin", "*")) 
     elif "with_credentials" in request.GET:
       response_headers.extend([
-        ("Access-Control-Allow-Origin", request.url),
+        ("Access-Control-Allow-Origin", request.headers.get("Origin", None)),
         ("Access-Control-Allow-Credentials", "true")
       ])
 

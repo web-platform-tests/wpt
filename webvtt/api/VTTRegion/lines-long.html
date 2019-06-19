@@ -1,5 +1,5 @@
 <!doctype html>
-<title>VTTRegion.lines</title>
+<title>VTTRegion.lines unsiged long</title>
 <link rel="help" href="https://w3c.github.io/webvtt/#dom-vttregion-lines">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
@@ -15,16 +15,11 @@ test(function() {
     }
 
     // https://heycam.github.io/webidl/#abstract-opdef-converttoint
-    [[0, 0],
-     [-0, 0],
-     [-1, 'IndexSizeError'],
-     [-100, 'IndexSizeError'],
-     [101, 101],
-     [-2147483648, 'IndexSizeError'],
-     [2147483647, 2147483647],
-     [NaN, 0],
-     [Infinity, 0],
-     [-Infinity, 0]].forEach(function (pair) {
+    [
+     [2147483648, 2147483648],
+     [4294967295, 4294967295],
+     [4294967296, 'IndexSizeError']
+    ].forEach(function (pair) {
         var input = pair[0];
         var expected = pair[1];
 

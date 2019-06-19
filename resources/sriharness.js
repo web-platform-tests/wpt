@@ -99,15 +99,17 @@ SRIPreloadTest.prototype.execute = function() {
 
   // Link preload success and failure loading functions.
   // The first two are just to weed out loading steps that unexpectedly fail.
-  const good_load_failed = test.step_func(() => { assert_unreached("Good load fired error handler.") });
-  const bad_load_succeeded = test.step_func(() => { assert_unreached("Bad load succeeded.") });
+  const valid_preload_failed = test.step_func(() => { assert_unreached("Valid preload fired error handler.") });
+  const invalid_preload_succeeded = test.step_func(() => { assert_unreached("Invalid preload load succeeded.") });
+  const valid_subresource_failed = test.step_func(() => { assert_unreached("Valid subresource fired error handler.") });
+  const invalid_subresource_succeeded = test.step_func(() => { assert_unreached("Invalid subresource load succeeded.") });
   const subresource_pass = test.step_func(() => { test.done(); });
   const preload_pass = test.step_func(() => {
     if (this.subresource_sri_success) {
       subresource_element.onload = subresource_pass;
-      subresource_element.onerror = good_load_failed;
+      subresource_element.onerror = valid_subresource_failed;
     } else {
-      subresource_element.onload = bad_load_succeeded;
+      subresource_element.onload = invalid_subresource_succeeded;
       subresource_element.onerror = subresource_pass;
     }
 
@@ -116,9 +118,9 @@ SRIPreloadTest.prototype.execute = function() {
 
   if (this.preload_sri_success) {
     link.onload = preload_pass;
-    link.onerror = good_load_failed;
+    link.onerror = valid_preload_failed;
   } else {
-    link.onload = bad_load_succeeded;
+    link.onload = invalid_preload_succeeded;
     link.onerror = preload_pass;
   }
 

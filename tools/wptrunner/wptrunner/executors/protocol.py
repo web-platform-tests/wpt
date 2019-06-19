@@ -308,6 +308,16 @@ class ActionSequenceProtocolPart(ProtocolPart):
         :param actions: A protocol-specific handle to an array of actions."""
         pass
 
+class FreezeProtocolPart(ProtocolPart):
+    """Protocol part for performing trusted freeze"""
+    __metaclass__ = ABCMeta
+
+    name = "freeze"
+
+    @abstractmethod
+    def freeze(self):
+        """Freeze the page."""
+        pass
 
 class TestDriverProtocolPart(ProtocolPart):
     """Protocol part that implements the basic functionality required for

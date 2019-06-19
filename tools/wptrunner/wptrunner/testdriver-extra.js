@@ -99,4 +99,13 @@
         window.__wptrunner_message_queue.push({"type": "action", "action": "generate_test_report", "message": message});
         return pending_promise;
     };
+
+    window.test_driver_internal.freeze = function(window_to_freeze) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.__wptrunner_message_queue.push({"type": "action", "action": "freeze", "title": window_to_freeze.document.title});
+        return pending_promise;
+    };
 })();

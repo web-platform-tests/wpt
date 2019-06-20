@@ -1,4 +1,5 @@
 // META: script=websocket.sub.js
+// META: timeout=long
 
 async_test(t => {
   window.wsurl = 'wss://' + __SERVER__NAME + ':' + __SECURE__PORT +

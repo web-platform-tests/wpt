@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Subresource Integrity</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/sriharness.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/subresource-integrity/sri-test-helpers.sub.js"></script>
+
+<div id="log"></div>
+
+<div id="container"></div>
+<script>
+  // This array a list of information for each preload destination. The
+  // information is used in a loop iterating over the below tests, so that
+  // each test is run for each destination.
+  const preload_destination_info = [
+    {destination: 'script', ext: '.js', supports_sri: true},
+    // TODO(domfarolino): Add more destinations.
+  ];
+
+  for (const info of preload_destination_info) {
+    const {destination, ext, supports_sri} = info;
+
+    // Preload tests
+    new SRIPreloadTest(
+        true,                                                               /* preload_sri_success */
+        true,                                                               /* subresource_sri_success */
+        "Same-origin with correct sha256 hash.",                            /* name */
+        destination,                                                        /* destination */
+        same_origin_prefix + destination + ext + `?${token()}`,             /* resource_url (for preload + subresource) */
+        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="}, /* link_attrs */
+        {}                                                                  /* subresource_attrs */
+    ).execute();
+
+    new SRIPreloadTest(
+        true,
+        true,
+        "Same-origin with correct sha384 hash.",
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: "sha384-cINXh+nCzEHPWzXS7eoT+vYMBpyqczOybRLNU3XAButFWCRhHT5hLByIbPRqIm2f"},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        true,
+        true,
+        "Same-origin with correct sha512 hash.",
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: "sha512-KZdenhzBd7X7Q/vmaOSyvFz1CGdoVt26xzCZjlkU9lfBEK+V/ougGys7iYDi0+tOHIQSQa87bIqx95R7GU7I9Q=="},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        true,
+        true,
+        "Same-origin with empty integrity.",
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        false,
+        false,
+        "Same-origin with incorrect hash.",
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: "sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        true,
+        true,
+        "Same-origin with multiple sha256 hashes, including correct.",
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA= sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        true,
+        true,
+        "Same-origin with multiple sha256 hashes, including unknown algorithm.",
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA= foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        true,
+        true,
+        "Same-origin with sha256 mismatch, sha512 match",
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: "sha512-KZdenhzBd7X7Q/vmaOSyvFz1CGdoVt26xzCZjlkU9lfBEK+V/ougGys7iYDi0+tOHIQSQa87bIqx95R7GU7I9Q== sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        false,
+        false,
+        "Same-origin with sha256 match, sha512 mismatch",
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: "sha512-deadbeefspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        true,
+        true,
+        "<crossorigin='anonymous'> with correct hash, ACAO: *",
+        destination,
+        xorigin_prefix + destination + ext + `?${token()}` + anonymous,
+        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=", crossOrigin: 'anonymous'},
+        {crossOrigin: "anonymous"}
+    ).execute();
+
+    new SRIPreloadTest(
+        false,
+        false,
+        "<crossorigin='anonymous'> with incorrect hash, ACAO: *",
+        destination,
+        xorigin_prefix + destination + ext + `?${token()}` + anonymous,
+        {integrity: "sha256-sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead", crossOrigin: "anonymous"},
+        {crossOrigin: "anonymous"}
+    ).execute();
+
+    new SRIPreloadTest(
+        true,
+        true,
+        "<crossorigin='use-credentials'> with correct hash, CORS-eligible",
+        destination,
+        xorigin_prefix + destination + ext + `?${token()}` + use_credentials,
+        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=", crossOrigin: "use-credentials"},
+        {crossOrigin: "use-credentials"}
+    ).execute();
+
+    new SRIPreloadTest(
+        false,
+        false,
+        "<crossorigin='use-credentials'> with incorrect hash CORS-eligible",
+        destination,
+        xorigin_prefix + destination + ext + `?${token()}` + use_credentials,
+        {integrity: "sha256-deadbeef2S+pTRZgiw3DWrhC6JLDlt2zRyGpwH7unU8=", crossOrigin: "use-credentials"},
+        {crossOrigin: "use-credentials"}
+    ).execute();
+
+    new SRIPreloadTest(
+        false,
+        false,
+        "<crossorigin='anonymous'> with CORS-ineligible resource",
+        destination,
+        /* not piping ACAO header makes this CORS-ineligible */
+        xorigin_prefix + destination + ext + `?${token()}`,
+        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=", crossOrigin: "anonymous"},
+        {crossOrigin: "anonymous"}
+    ).execute();
+
+    new SRIPreloadTest(
+        false,
+        false,
+        "Cross-origin, not CORS request, with correct hash",
+        destination,
+        xorigin_prefix + destination + ext + `?${token()}` + anonymous,
+        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        false,
+        false,
+        "Cross-origin, not CORS request, with hash mismatch",
+        destination,
+        xorigin_prefix + destination + ext + `?${token()}` + anonymous,
+        {integrity: "sha256-deadbeef01Y0yKSx3/UoIKtIY2UQ9+H8WGyyMuOWOC0="},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        true,
+        true,
+        "Cross-origin, empty integrity",
+        destination,
+        xorigin_prefix + destination + ext + `?${token()}` + anonymous,
+        {},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        true,
+        true,
+        "Same-origin with correct hash, options.",
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=?foo=bar?spam=eggs"},
+        {}
+    ).execute();
+
+    new SRIPreloadTest(
+        true,
+        true,
+        "Same-origin with unknown algorithm only.",
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: "foo666-8aBiAJl3ukQwSJ6eTs5wl6hGjnOtyXjcTRdAf89uIfY="},
+        {}
+    ).execute();
+
+    // TODO(domfarolino): Extend the test coverage here by adding the
+    // preload-specific tests described in the tables of
+    // https://docs.google.com/document/d/1Mv-Y18leB5kNc6GshVRx2NEZmLu7WGlnQ6OZ5Oj5vgA/edit#heading=h.bzg4jh59kr7j.
+
+  } // for-of
+</script>

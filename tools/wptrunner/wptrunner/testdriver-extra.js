@@ -97,6 +97,7 @@
         for (let actionSequence of actions) {
             if (actionSequence.type == "pointer") {
                 for (let action of actionSequence.actions) {
+                    // The origin of each action can only be an element or a string of a value "viewport" or "pointer".
                     if (action.type == "pointerMove" && typeof(action.origin) != 'string') {
                         let frame = get_frame(action.origin, window);
                         if (frame != null) {

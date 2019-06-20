@@ -11,8 +11,11 @@ The test environment requires [Python 2.7+](http://www.python.org/downloads)
 
 **Windows**
 
-Generally Windows Subsystem for Linux will provide the smoothest user
-experience for running web-platform-tests on Windows.
+Generally, [Windows Subsystem for
+Linux](https://docs.microsoft.com/en-us/windows/wsl/about) will provide the
+smoothest user experience for running web-platform-tests on Windows. If you
+choose to use Windows Subsyste for Linux, disregard this guide's instructions
+for Windows and instead use the instructions for GNU/Linux.
 
 Be sure to add the Python directory (`c:\python2x`, by default) to your
 `%Path%` [Environment

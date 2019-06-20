@@ -14,35 +14,13 @@ idl_test(
     idlArray.add_untested_idls("[Exposed=(Window,Worker)] interface ArrayBuffer {};");
     idlArray.add_objects({
       WebAuthentication: ['navigator.authentication'],
-      PublicKeyCredential: ['cred', 'assertion'],
-      AuthenticatorAttestationResponse: ['cred.response'],
-      AuthenticatorAssertionResponse: ['assertion.response']
+      // The following are tested in idlharness-manual:
+      // PublicKeyCredential: ['cred', 'assertion'],
+      // AuthenticatorAttestationResponse: ['cred.response'],
+      // AuthenticatorAssertionResponse: ['assertion.response']
     });
 
     const challengeBytes = new Uint8Array(16);
     window.crypto.getRandomValues(challengeBytes);
-
-    self.cred = await createCredential({
-      options: {
-        publicKey: {
-          timeout: 3000,
-          user: {
-            id: new Uint8Array(16),
-          },
-        }
-      }
-    });
-
-    self.assertion = await navigator.credentials.get({
-      publicKey: {
-        timeout: 3000,
-        allowCredentials: [{
-          id: cred.rawId,
-          transports: ["usb", "nfc", "ble"],
-          type: "public-key"
-        }],
-        challenge: challengeBytes,
-      }
-    });
   }
 );

@@ -14,7 +14,7 @@ idl_test(
     idlArray.add_untested_idls("[Exposed=(Window,Worker)] interface ArrayBuffer {};");
     idlArray.add_objects({
       WebAuthentication: ['navigator.authentication'],
-      // The following are tested in idlharness-manual:
+      // The following are tested in idlharness-manual.https.window.js:
       // PublicKeyCredential: ['cred', 'assertion'],
       // AuthenticatorAttestationResponse: ['cred.response'],
       // AuthenticatorAssertionResponse: ['assertion.response']

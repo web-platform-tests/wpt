@@ -4,7 +4,7 @@
 <iframe id="i" src="about:blank"></iframe>
 <script>
 async_test(function(t) {
-  i.src = "data:text/html,This should navigate the iframe";
-  i.onload = () => t.done();
+  window.onmessage = () => t.done();
+  i.src = "data:text/html,This should navigate the iframe<script>top.postMessage('done', '*');</sc" + "ript>";
 });
 </script>

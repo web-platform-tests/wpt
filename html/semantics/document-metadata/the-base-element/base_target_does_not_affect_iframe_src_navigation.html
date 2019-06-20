@@ -1,0 +1,10 @@
+<base id="base" target="_blank">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="i" src="about:blank"></iframe>
+<script>
+async_test(function(t) {
+  i.src = "data:text/html,This should navigate the iframe";
+  i.onload = () => t.done();
+});
+</script>

@@ -88,6 +88,7 @@ function navigationReferrerPolicy(referrerPolicy, destination, expectedOrigin) {
 
     await new Promise(resolve => {
       const frame = document.createElement("iframe");
+      document.body.appendChild(frame);
       frame.src = origins.HTTP_ORIGIN + referrerPolicyPath +
                   "?referrerPolicy=" + referrerPolicy;
       self.addEventListener("message", function listener(e) {
@@ -105,7 +106,6 @@ function navigationReferrerPolicy(referrerPolicy, destination, expectedOrigin) {
           submit.click();
         }
       });
-      document.body.appendChild(frame);
     });
 
     const json = await (await fetch(redirectPath + "?dump&stash=" + stash)).json();
@@ -152,7 +152,7 @@ function fetchReferrerPolicyFromIframe(referrerPolicy, destination, fetchMode, e
                   "?referrerPolicy=" + referrerPolicy;
       self.addEventListener("message", e => {
         if (e.data === "action") {
-          fetch(fetchUrl, { mode: fetchMode, method: "POST" })
+          frame.contentWindow.fetch(fetchUrl, { mode: fetchMode, method: "POST" })
             .then(() => fetch(redirectPath + "?dump&stash=" + stash))
             .then(rsp => rsp.json())
             .then(data=>{
@@ -233,7 +233,6 @@ function referrerPolicyTestString(referrerPolicy, destination) {
                                      origins.HTTP_ORIGIN),
                  referrerPolicyTestString(testObj.policy,
                                           destination.name + " fetch cors mode"));
-
 
     // Test fetch which pulls the ReferrerPolicy from iframe owning to not
     // specifying ReferrerPolicy

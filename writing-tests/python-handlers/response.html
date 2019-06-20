@@ -179,17 +179,16 @@ and the resulting value (if any) returned.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>read_file</strong> – <ul class="simple">
-<li>boolean controlling the behaviour when content</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>read_file</strong> – boolean controlling the behaviour when content is a
+file handle. When set to False the handle will be
+returned directly allowing the file to be passed to
+the output in small chunks. When set to True, the
+entire content of the file will be returned as a
+string facilitating non-streaming operations like
+template substitution.</td>
 </tr>
 </tbody>
 </table>
-<p>is a file handle. When set to False the handle will be returned directly
-allowing the file to be passed to the output in small chunks. When set to
-True, the entire content of the file will be returned as a string facilitating
-non-streaming operations like template substitution.</p>
 </dd></dl>
 
 <dl class="method">

@@ -15,12 +15,31 @@
   // information is used in a loop iterating over the below tests, so that
   // each test is run for each destination.
   const preload_destination_info = [
-    {destination: 'script', ext: '.js', supports_sri: true},
+    /*
+    {
+      destination: 'script', ext: '.js', supports_sri: true,
+      sha256: 'sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=',
+      sha384: 'sha384-cINXh+nCzEHPWzXS7eoT+vYMBpyqczOybRLNU3XAButFWCRhHT5hLByIbPRqIm2f',
+      sha512: 'sha512-KZdenhzBd7X7Q/vmaOSyvFz1CGdoVt26xzCZjlkU9lfBEK+V/ougGys7iYDi0+tOHIQSQa87bIqx95R7GU7I9Q=='
+    },
+    {
+      destination: 'style', ext: '.css', supports_sri: true,
+      sha256: 'sha256-CzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk7gyCWUV4=',
+      sha384: 'sha384-wDAWxH4tOWBwAwHfBn9B7XuNmFxHTMeigAMwn0iVQ0zq3FtmYMLxihcGnU64CwcX',
+      sha512: 'sha512-9wXDjd6Wq3H6nPAhI9zOvG7mJkUr03MTxaO+8ztTKnfJif42laL93Be/IF6YYZHHF4esitVYxiwpY2HSZX4l6w=='
+    },
+    */
+    {
+      destination: 'image', ext: '.png', supports_sri: false,
+      sha256: 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=',
+      sha384: 'sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb',
+      sha512: 'sha512-z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg=='
+    },
     // TODO(domfarolino): Add more destinations.
   ];
 
   for (const info of preload_destination_info) {
-    const {destination, ext, supports_sri} = info;
+    const {destination, ext, supports_sri, sha256, sha384, sha512} = info;
 
     // Preload + Subresource Integrity tests. These tests work by passing some
     // destination-specific information (defined in |preload_destination_info|
@@ -35,13 +54,13 @@
     // subresource will either load or fail to load, and the result will be
     // compared with an expectation passed to the test.
     new SRIPreloadTest(
-        true,                                                               /* preload_sri_success */
-        true,                                                               /* subresource_sri_success */
-        `Same-origin ${destination} with correct sha256 hash.`,             /* name */
-        destination,                                                        /* destination */
-        same_origin_prefix + destination + ext + `?${token()}`,             /* resource_url (for preload + subresource) */
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="}, /* link_attrs */
-        {}                                                                  /* subresource_attrs */
+        true,                                                   /* preload_sri_success */
+        true,                                                   /* subresource_sri_success */
+        `Same-origin ${destination} with correct sha256 hash.`, /* name */
+        destination,                                            /* destination */
+        same_origin_prefix + destination + ext + `?${token()}`, /* resource_url (for preload + subresource) */
+        {integrity: sha256},                                    /* link_attrs */
+        {}                                                      /* subresource_attrs */
     ).execute();
 
     new SRIPreloadTest(
@@ -50,7 +69,7 @@
         `Same-origin ${destination} with correct sha384 hash.`,
         destination,
         same_origin_prefix + destination + ext + `?${token()}`,
-        {integrity: "sha384-cINXh+nCzEHPWzXS7eoT+vYMBpyqczOybRLNU3XAButFWCRhHT5hLByIbPRqIm2f"},
+        {integrity: sha384},
         {}
     ).execute();
 
@@ -60,7 +79,7 @@
         `Same-origin ${destination} with correct sha512 hash.`,
         destination,
         same_origin_prefix + destination + ext + `?${token()}`,
-        {integrity: "sha512-KZdenhzBd7X7Q/vmaOSyvFz1CGdoVt26xzCZjlkU9lfBEK+V/ougGys7iYDi0+tOHIQSQa87bIqx95R7GU7I9Q=="},
+        {integrity: sha512},
         {}
     ).execute();
 
@@ -90,7 +109,7 @@
         `Same-origin ${destination} with multiple sha256 hashes, including correct.`,
         destination,
         same_origin_prefix + destination + ext + `?${token()}`,
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA= sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"},
+        {integrity: `${sha256} sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead`},
         {}
     ).execute();
 
@@ -100,7 +119,7 @@
         `Same-origin ${destination} with multiple sha256 hashes, including unknown algorithm.`,
         destination,
         same_origin_prefix + destination + ext + `?${token()}`,
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA= foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"},
+        {integrity: `${sha256} foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead`},
         {}
     ).execute();
 
@@ -110,7 +129,7 @@
         `Same-origin ${destination} with sha256 mismatch, sha512 match`,
         destination,
         same_origin_prefix + destination + ext + `?${token()}`,
-        {integrity: "sha512-KZdenhzBd7X7Q/vmaOSyvFz1CGdoVt26xzCZjlkU9lfBEK+V/ougGys7iYDi0+tOHIQSQa87bIqx95R7GU7I9Q== sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"},
+        {integrity: `${sha512} sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead`},
         {}
     ).execute();
 
@@ -120,7 +139,7 @@
         `Same-origin ${destination} with sha256 match, sha512 mismatch`,
         destination,
         same_origin_prefix + destination + ext + `?${token()}`,
-        {integrity: "sha512-deadbeefspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="},
+        {integrity: `sha512-deadbeefspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== ${sha256}`},
         {}
     ).execute();
 
@@ -130,7 +149,7 @@
         `<crossorigin='anonymous'> ${destination} with correct hash, ACAO: *`,
         destination,
         xorigin_prefix + destination + ext + `?${token()}` + anonymous,
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=", crossOrigin: 'anonymous'},
+        {integrity: sha256, crossOrigin: 'anonymous'},
         {crossOrigin: "anonymous"}
     ).execute();
 
@@ -150,7 +169,7 @@
         `<crossorigin='use-credentials'> ${destination} with correct hash, CORS-eligible`,
         destination,
         xorigin_prefix + destination + ext + `?${token()}` + use_credentials,
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=", crossOrigin: "use-credentials"},
+        {integrity: sha256, crossOrigin: "use-credentials"},
         {crossOrigin: "use-credentials"}
     ).execute();
 
@@ -171,7 +190,7 @@
         destination,
         // not piping ACAO header makes this CORS-ineligible
         xorigin_prefix + destination + ext + `?${token()}`,
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=", crossOrigin: "anonymous"},
+        {integrity: sha256, crossOrigin: "anonymous"},
         {crossOrigin: "anonymous"}
     ).execute();
 
@@ -181,7 +200,7 @@
         `Cross-origin ${destination}, not CORS request, with correct hash`,
         destination,
         xorigin_prefix + destination + ext + `?${token()}` + anonymous,
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="},
+        {integrity: sha256},
         {}
     ).execute();
 
@@ -211,7 +230,7 @@
         `Same-origin ${destination} with correct hash, options.`,
         destination,
         same_origin_prefix + destination + ext + `?${token()}`,
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=?foo=bar?spam=eggs"},
+        {integrity: `${sha256}?foo=bar?spam=eggs`},
         {}
     ).execute();
 
@@ -235,8 +254,8 @@
         `Same-origin ${destination} with matching digest re-uses preload with matching digest.`,
         destination,
         same_origin_prefix + destination + ext + `?${token()}`,
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="},
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="}
+        {integrity: sha256},
+        {integrity: sha256}
       ).execute();
 
       new SRIPreloadTest(
@@ -245,7 +264,7 @@
         `Same-origin ${destination} with non-matching digest does not re-use preload with matching digest.`,
         destination,
         same_origin_prefix + destination + ext + `?${token()}`,
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="},
+        {integrity: sha256},
         {integrity: "sha256-deadbeefQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="}
       ).execute();
 
@@ -256,7 +275,7 @@
         destination,
         same_origin_prefix + destination + ext + `?${token()}`,
         {integrity: "sha256-deadbeefQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="},
-        {integrity: "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="}
+        {integrity: sha256}
       ).execute();
 
       new SRIPreloadTest(

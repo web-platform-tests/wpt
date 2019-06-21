@@ -45,6 +45,15 @@ function buildElementFromDestination(resource_url, destination, attrs) {
       element = document.createElement(destination);
       element.src = resource_url;
       break;
+    case "style":
+      element = document.createElement('link');
+      element.rel = 'stylesheet';
+      element.href = resource_url;
+      break;
+    case "image":
+      element = document.createElement('img');
+      element.src = resource_url;
+      break;
     case "font":
       element = document.createElement('link');
       element.href = resource_url;
@@ -68,7 +77,6 @@ function buildElementFromDestination(resource_url, destination, attrs) {
 //   1. Have the constructor just copy a bunch of data.
 //   2. Have the |execute()| method do all the work, but call it immediately
 //      after constructing (this doesn't make a whole lot of sense).
-// TODO(domfarolino): We may be able to get rid of |preload_sri_success|.
 var SRIPreloadTest = function(preload_sri_success, subresource_sri_success, name, destination, resource_url, link_attrs, subresource_attrs) {
   this.preload_sri_success = preload_sri_success
   this.subresource_sri_success = subresource_sri_success;
@@ -86,10 +94,8 @@ var SRIPreloadTest = function(preload_sri_success, subresource_sri_success, name
 SRIPreloadTest.prototype.execute = function() {
   const test = async_test(this.name);
   const link = document.createElement('link');
-  const subresource_element = buildElementFromDestination(this.resource_url, this.destination, this.subresource_attrs);
 
-  // Build up the link. |subresource_element| is built-up by
-  // |buildElementFromDestination()|.
+  // Build up the link.
   link.rel = 'preload';
   link.as = this.destination;
   link.href = this.resource_url;
@@ -97,14 +103,24 @@ SRIPreloadTest.prototype.execute = function() {
     link[attr_name] = attr_val; // This may override `rel` to modulepreload.
   }
 
-  // Link preload success and failure loading functions.
+  // Preload + subresource success and failure loading functions.
   // The first two are just to weed out loading steps that unexpectedly fail.
-  const valid_preload_failed = test.step_func(() => { assert_unreached("Valid preload fired error handler.") });
-  const invalid_preload_succeeded = test.step_func(() => { assert_unreached("Invalid preload load succeeded.") });
-  const valid_subresource_failed = test.step_func(() => { assert_unreached("Valid subresource fired error handler.") });
-  const invalid_subresource_succeeded = test.step_func(() => { assert_unreached("Invalid subresource load succeeded.") });
+  const valid_preload_failed = test.step_func(() =>
+    { assert_unreached("Valid preload fired error handler.") });
+  const invalid_preload_succeeded = test.step_func(() =>
+    { assert_unreached("Invalid preload load succeeded.") });
+  const valid_subresource_failed = test.step_func(() =>
+    { assert_unreached("Valid subresource fired error handler.") });
+  const invalid_subresource_succeeded = test.step_func(() =>
+    { assert_unreached("Invalid subresource load succeeded.") });
   const subresource_pass = test.step_func(() => { test.done(); });
   const preload_pass = test.step_func(() => {
+    // TODO(domfarolino): Move this elsewhere.
+    const subresource_element = buildElementFromDestination(
+      this.resource_url,
+      this.destination,
+      this.subresource_attrs
+    );
     if (this.subresource_sri_success) {
       subresource_element.onload = subresource_pass;
       subresource_element.onerror = valid_subresource_failed;

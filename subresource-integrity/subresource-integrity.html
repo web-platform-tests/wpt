@@ -90,7 +90,7 @@
     new SRIScriptTest(
         true,
         "<crossorigin='anonymous'> with correct hash, ACAO: *",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        `${xorigin_prefix}script.js?${token()}${anonymous}`,
         "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=",
         "anonymous"
     ).execute();
@@ -98,7 +98,7 @@
     new SRIScriptTest(
         false,
         "<crossorigin='anonymous'> with incorrect hash, ACAO: *",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        `${xorigin_prefix}script.js?${token()}${anonymous}`,
         "sha256-deadbeefcSLlbFZCj1OACLxTxVck2TOrBTEdUbwz1yU=",
         "anonymous"
     ).execute();
@@ -106,7 +106,7 @@
     new SRIScriptTest(
         true,
         "<crossorigin='use-credentials'> with correct hash, CORS-eligible",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Credentials,true)|header(Access-Control-Allow-Origin,${location.origin})`,
+        `${xorigin_prefix}script.js?${token()}${use_credentials}`,
         "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=",
         "use-credentials"
     ).execute();
@@ -114,7 +114,7 @@
     new SRIScriptTest(
         false,
         "<crossorigin='use-credentials'> with incorrect hash CORS-eligible",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Credentials,true)|header(Access-Control-Allow-Origin,${location.origin})`,
+        `${xorigin_prefix}script.js?${token()}${use_credentials}`,
         "sha256-deadbeef2S+pTRZgiw3DWrhC6JLDlt2zRyGpwH7unU8=",
         "use-credentials"
     ).execute();
@@ -130,21 +130,21 @@
     new SRIScriptTest(
         false,
         "Cross-origin, not CORS request, with correct hash",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        `${xorigin_prefix}script.js?${token()}${anonymous}`,
         "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="
     ).execute();
 
     new SRIScriptTest(
         false,
         "Cross-origin, not CORS request, with hash mismatch",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        `${xorigin_prefix}script.js?${token()}${anonymous}`,
         "sha256-deadbeef01Y0yKSx3/UoIKtIY2UQ9+H8WGyyMuOWOC0="
     ).execute();
 
     new SRIScriptTest(
         true,
         "Cross-origin, empty integrity",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        `${xorigin_prefix}script.js?${token()}${anonymous}`,
         ""
     ).execute();
 

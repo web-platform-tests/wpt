@@ -10,6 +10,10 @@ The Python files must define a function named `main` with the signature:
 
     main(request, response)
 
+...where `request` is [a wptserve `Request`
+object](/tools/wptserve/docs/request) and `response` is [a wptserve `Response`
+object](/tools/wptserve/docs/response).
+
 This function must return a value in one of the following four formats:
 
     ((status_code, reason), headers, content)

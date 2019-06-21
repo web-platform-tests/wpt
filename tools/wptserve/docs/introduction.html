@@ -1,0 +1,164 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Introduction &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Server" href="server.html" />
+    <link rel="prev" title="Web Platform Test Server" href="index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>wptserve has been designed with the specific goal of making a server
+that is suitable for writing tests for the web platform. This means
+that it cannot use common abstractions over HTTP such as WSGI, since
+these assume that the goal is to generate a well-formed HTTP
+response. Testcases, however, often require precise control of the
+exact bytes sent over the wire and their timing. The full list of
+design goals for the server are:</p>
+<ul class="simple">
+<li>Suitable to run on individual test machines and over the public internet.</li>
+<li>Support plain TCP and SSL servers.</li>
+<li>Serve static files with the minimum of configuration.</li>
+<li>Allow headers to be overwritten on a per-file and per-directory
+basis.</li>
+<li>Full customisation of headers sent (e.g. altering or omitting
+“mandatory” headers).</li>
+<li>Simple per-client state.</li>
+<li>Complex logic in tests, up to precise control over the individual
+bytes sent and the timing of sending them.</li>
+</ul>
+<div class="section" id="request-handling">
+<h2>Request Handling<a class="headerlink" href="#request-handling" title="Permalink to this headline">¶</a></h2>
+<p>At the high level, the design of the server is based around similar
+concepts to those found in common web frameworks like Django, Pyramid
+or Flask. In particular the lifecycle of a typical request will be
+familiar to users of these systems. Incoming requests are parsed and a
+<a class="reference internal" href="request.html"><span class="doc">Request</span></a> object is constructed. This object is passed
+to a <a class="reference internal" href="router.html#router-interface"><span class="std std-ref">Router</span></a> instance, which is
+responsible for mapping the request method and path to a handler
+function. This handler is passed two arguments; the request object and
+a <a class="reference internal" href="response.html"><span class="doc">Response</span></a> object. In cases where only simple
+responses are required, the handler function may fill in the
+properties of the response object and the server will take care of
+constructing the response. However each Response also contains a
+<a class="reference internal" href="response.html#response-interface"><span class="std std-ref">ResponseWriter</span></a> which can be
+used to directly control the TCP socket.</p>
+<p>By default there are several built-in handler functions that provide a
+higher level API than direct manipulation of the Response
+object. These are documented in <a class="reference internal" href="handlers.html"><span class="doc">Handlers</span></a>.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../admin/index.html">Project Administration</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../admin/index.html#tooling">Tooling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../admin/index.html#secrets">Secrets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../admin/index.html#third-party-account-owners">Third-party account owners</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../admin/index.html">Project Administration</a><ul>
+  <li><a href="index.html">Web Platform Test Server</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Web Platform Test Server</a></li>
+      <li>Next: <a href="server.html" title="next chapter">Server</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/tools/wptserve/docs/introduction.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

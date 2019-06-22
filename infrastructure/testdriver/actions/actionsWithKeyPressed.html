@@ -40,9 +40,9 @@ async_test(t => {
   let test1 = document.getElementById("test1");
   let test2 = document.getElementById("test2");
   document.getElementById("test1").addEventListener("click",
-    e => {keys.push(e.getModifierState("Control"))});
+    e => {console.log("test1 click "); keys.push(e.getModifierState("Control"))});
   document.getElementById("test2").addEventListener("click",
-    e => {keys.push(e.getModifierState("Control"))});
+    e => {console.log("test2 click "); keys.push(e.getModifierState("Control"))});
 
   let actions = new test_driver.Actions()
     .keyDown("\uE009")

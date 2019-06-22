@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Whenever `srcdoc` attribute is set, changed, or removed, the UA must process the &lt;iframe> attributes</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:process-the-iframe-attributes-2">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+function createIFrameWithBlobSrc() {
+  var iframe = document.createElement("iframe");
+  iframe.src = URL.createObjectURL(new Blob(["src"], {type: "text/html"}));
+  return iframe;
+}
+
+async_test(function(t) {
+  var iframe = createIFrameWithBlobSrc();
+  iframe.onload = t.step_func(function() {
+    assert_equals(iframe.contentDocument.location.protocol, "blob:");
+    assert_equals(iframe.contentDocument.body.textContent, "src");
+
+    iframe.onload = t.step_func(function() {
+      assert_false(isSetting);
+      assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
+      assert_equals(iframe.contentDocument.body.textContent, "srcdoc");
+      t.done();
+    });
+
+    var isSetting = true;
+    iframe.setAttribute("srcdoc", "srcdoc");
+    isSetting = false;
+  });
+
+  document.body.appendChild(iframe);
+}, "Setting `srcdoc` triggers attributes processing");
+
+async_test(function(t) {
+  var iframe = createIFrameWithBlobSrc();
+  iframe.srcdoc = "old";
+  iframe.onload = t.step_func(function() {
+    assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
+    assert_equals(iframe.contentDocument.body.textContent, "old");
+
+    iframe.onload = t.step_func(function() {
+      assert_false(isChanging);
+      assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
+      assert_equals(iframe.contentDocument.body.textContent, "new");
+      t.done();
+    });
+
+    var isChanging = true;
+    iframe.srcdoc = "new";
+    isChanging = false;
+  });
+
+  document.body.appendChild(iframe);
+}, "Changing `srcdoc` triggers attributes processing");
+
+async_test(function(t) {
+  var iframe = createIFrameWithBlobSrc();
+  iframe.srcdoc = "srcdoc";
+  iframe.onload = t.step_func(function() {
+    assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
+    assert_equals(iframe.contentDocument.body.textContent, "srcdoc");
+
+    iframe.onload = t.step_func(function() {
+      assert_false(isRemoving);
+      assert_equals(iframe.contentDocument.location.protocol, "blob:");
+      assert_equals(iframe.contentDocument.body.textContent, "src");
+      t.done();
+    });
+
+    var isRemoving = true;
+    iframe.removeAttribute("srcdoc");
+    isRemoving = false;
+  });
+
+  document.body.appendChild(iframe);
+}, "Removing `srcdoc` triggers attributes processing");
+</script>

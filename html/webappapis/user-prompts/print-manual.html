@@ -42,7 +42,7 @@ function testBtn(btn) {
     out("beforeprint");
     // It seems like in Chrome, exceptions in beforeprint/afterprint event
     // listeners are not propagated to error events, so explicitly wrap a
-    // queueMicrotask() around the checks.
+    // queueMicrotask() around the checks. See https://crbug.com/977828.
     queueMicrotask(() => {
       assert_equals(ev.__proto__, Event.prototype);
       assert_equals(this, window);

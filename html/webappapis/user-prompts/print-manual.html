@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Printing</title>
+<link rel=help href="https://html.spec.whatwg.org/#printing">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({explicit_timeout: true})
+</script>
+
+<p>Click on the button below.</p>
+<p>If the browser offers to print the current page, dismiss the prompt to
+return to this page. The following should then appear in the box marked as
+"Output":</p>
+<pre>
+before calling print()
+beforeprint
+afterprint
+after calling print()
+</pre>
+<p>If no user dialog appears, either the above or the following should be
+printed in the box marked as "Output":</p>
+<pre>
+before calling print()
+after calling print()
+</pre>
+<p>The test passes if the above criteria are satisfied and "PASS" appears in a
+table below this paragraph. The test fails otherwise.</p>
+
+<button onclick="testBtn(this)">Click here!</button>
+<h3>Output</h3>
+<pre id=output></pre>
+
+<script>
+"use strict";
+function out(str) {
+  output.appendChild(document.createTextNode(str + "\n"));
+}
+function testBtn(btn) {
+  btn.remove();
+  window.addEventListener("beforeprint", function (ev) {
+    out("beforeprint");
+    // It seems like in Chrome, exceptions in beforeprint/afterprint event
+    // listeners are not propagated to error events, so explicitly wrap a
+    // queueMicrotask() around the checks.
+    queueMicrotask(() => {
+      assert_equals(ev.__proto__, Event.prototype);
+      assert_equals(this, window);
+      assert_equals(ev.target, window);
+      assert_equals(ev.type, "beforeprint");
+    });
+  });
+  window.addEventListener("afterprint", function (ev) {
+    out("afterprint");
+    queueMicrotask(() => {
+      assert_equals(ev.__proto__, Event.prototype);
+      assert_equals(this, window);
+      assert_equals(ev.target, window);
+      assert_equals(ev.type, "afterprint");
+    });
+  });
+  out("before calling print()");
+  print();
+  out("after calling print()");
+
+  // Call done after all checks are done. The queued microtasks must have run
+  // by the point the timeout runs.
+  step_timeout(done);
+}
+</script>

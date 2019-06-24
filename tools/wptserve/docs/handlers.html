@@ -52,21 +52,21 @@ directly in the handler or not is all-or-nothing.</p>
 <span id="handlers-python"></span><h2>Python Handlers<a class="headerlink" href="#python-handlers" title="Permalink to this headline">¶</a></h2>
 <p>Python handlers are functions which provide a higher-level API over
 manually updating the response object, by causing the return value of
-the function to provide (part of) the response. There are three
+the function to provide (part of) the response. There are four
 possible sets of values that may be returned:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">((</span><span class="n">status_code</span><span class="p">,</span> <span class="n">reason</span><span class="p">),</span> <span class="n">headers</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+<span class="p">(</span><span class="n">status_code</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
 <span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
 <span class="n">content</span>
 </pre></div>
 </div>
-<p>Here <cite>status</cite> is either a tuple (status code, message) or simply a
-integer status code, <cite>headers</cite> is a list of (field name, value) pairs,
-and <cite>content</cite> is a string or an iterable returning strings. Such a
-function may also update the response manually. For example one may
-use <cite>response.headers.set</cite> to set a response header, and only return
-the content. One may even use this kind of handler, but manipulate
-the output socket directly, in which case the return value of the
-function, and the properties of the response object, will be ignored.</p>
+<p>Here <cite>status_code</cite> is an integer status code, <cite>headers</cite> is a list of (field
+name, value) pairs, and <cite>content</cite> is a string or an iterable returning strings.
+Such a function may also update the response manually. For example one may use
+<cite>response.headers.set</cite> to set a response header, and only return the content.
+One may even use this kind of handler, but manipulate the output socket
+directly, in which case the return value of the function, and the properties of
+the response object, will be ignored.</p>
 <p>The most common way to make a user function into a python handler is
 to use the provided <cite>wptserve.handlers.handler</cite> decorator:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wptserve.handlers</span> <span class="k">import</span> <span class="n">handler</span>

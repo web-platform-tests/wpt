@@ -41,10 +41,27 @@ requests made to the corresponding URL. This is hooked up to a route like
 <code class="docutils literal notranslate"><span class="pre">(&quot;*&quot;,</span> <span class="pre">&quot;*.py&quot;,</span> <span class="pre">python_file_handler)</span></code>, meaning that any .py file will be
 treated as a handler file (note that this makes it easy to write unsafe
 handlers, particularly when running the server in a web-exposed setting).</p>
-<p>The Python files must define a single function <code class="docutils literal notranslate"><span class="pre">main</span></code> with the signature::</p>
+<p>The Python files must define a function named <code class="docutils literal notranslate"><span class="pre">main</span></code> with the signature:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">main</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>…where <code class="docutils literal notranslate"><span class="pre">request</span></code> is <a class="reference internal" href="../../tools/wptserve/docs/request.html"><span class="doc">a wptserve Request
+object</span></a> and <code class="docutils literal notranslate"><span class="pre">response</span></code> is <a class="reference internal" href="../../tools/wptserve/docs/response.html"><span class="doc">a wptserve Response
+object</span></a>.</p>
+<p>This function must return a value in one of the following four formats:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">((</span><span class="n">status_code</span><span class="p">,</span> <span class="n">reason</span><span class="p">),</span> <span class="n">headers</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+<span class="p">(</span><span class="n">status_code</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+<span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+<span class="n">content</span>
+</pre></div>
+</div>
+<p>Above, <code class="docutils literal notranslate"><span class="pre">headers</span></code> is a list of (field name, value) pairs, and <code class="docutils literal notranslate"><span class="pre">content</span></code> is a
+string or an iterable returning strings. The <code class="docutils literal notranslate"><span class="pre">main</span></code> function may also update
+the response manually. For example, one may use <code class="docutils literal notranslate"><span class="pre">response.headers.set</span></code> to set a
+response header, and only return the content. One may even use this kind of
+handler, but manipulate the output socket directly, in which case the return
+value of the function, and the properties of the response object, will be
+ignored.</p>
 <p>The wptserver implements a number of Python APIs for controlling traffic.</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -52,6 +69,39 @@ handlers, particularly when running the server in a web-exposed setting).</p>
 <li class="toctree-l1"><a class="reference internal" href="../../tools/wptserve/docs/response.html">Response</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tools/wptserve/docs/stash.html">Stash</a></li>
 </ul>
+</div>
+<div class="section" id="example-dynamic-http-headers">
+<h2>Example: Dynamic HTTP headers<a class="headerlink" href="#example-dynamic-http-headers" title="Permalink to this headline">¶</a></h2>
+<p>The following code defines a Python handler that allows the requester to
+control the value of the <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> HTTP response header:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="s1">&#39;content-type&#39;</span><span class="p">)</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="n">content_type</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;my status text&#39;</span><span class="p">),</span> <span class="n">headers</span><span class="p">,</span> <span class="s1">&#39;my response content&#39;</span>
+</pre></div>
+</div>
+<p>If saved to a file named <code class="docutils literal notranslate"><span class="pre">resources/control-content-type.py</span></code>, the WPT server
+will respond to requests for <code class="docutils literal notranslate"><span class="pre">resources/control-content-type.py</span></code> by executing
+that code.</p>
+<p>This could be used from a <a class="reference internal" href="../testharness.html"><span class="doc">testharness.js test</span></a> like so:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Demonstrating the WPT server&#39;s Python handler feature<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;resources/control-content-type.py?content-type=text/foobar&#39;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">assert_equals</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
+      <span class="nx">assert_equals</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusText</span><span class="p">,</span> <span class="s1">&#39;my status text&#39;</span><span class="p">);</span>
+      <span class="nx">assert_equals</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">),</span> <span class="s1">&#39;text/foobar&#39;</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
 </div>
 </div>
 

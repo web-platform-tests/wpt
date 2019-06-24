@@ -673,7 +673,7 @@ class ActionSequenceAction(object):
         self.protocol.action_sequence.send_actions({"actions": actions})
 
     def get_element(self, element_selector, frame):
-        element = self.protocol.select.element_by_selector(element_selector)
+        element = self.protocol.select.element_by_selector(element_selector, frame)
         return element
 
 class GenerateTestReportAction(object):

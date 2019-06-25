@@ -3,7 +3,7 @@
 // META: script=/resources/idlharness.js
 
 test(() => {
-  assert_throws(DOMException.SYNTAX_ERR, () => { new EventSource("http://this is invalid/"); });
+  assert_throws('SyntaxError', () => { new EventSource("http://this is invalid/"); });
 });
 
 done();

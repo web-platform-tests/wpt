@@ -8,7 +8,7 @@ approach is insufficient, including:
 
 * Tests that depend on setting specific headers or status codes
 
-* Tests that need to inspect the browser sent request
+* Tests that need to inspect the browser-sent request
 
 * Tests that require state to be stored on the server
 
@@ -109,9 +109,9 @@ the file e.g. `test.html.sub.headers`.
    server-pipes
 ```
 
-For full control over the request and response the server provides the ability
+For full control over the request and response, the server provides the ability
 to write `.asis` files; these are served as literal HTTP responses. In other
-words, they are sent byte for byte to the server without adding a HTTP status
+words, they are sent byte-for-byte to the server without adding an HTTP status
 line, headers, or anything else. This makes them suitable for testing
 situations where the precise bytes on the wire are static, and control over the
 timing is unnecessary, but the response does not conform to HTTP requirements.

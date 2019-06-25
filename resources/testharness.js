@@ -1436,6 +1436,13 @@ policies and contribution forms [3].
                 NotAllowedError: 0
             };
 
+            var code_name_map = {};
+            for (let [k, v] of Object.entries(name_code_map)) {
+                if (v > 0) {
+                    code_name_map[v] = k;
+                }
+            }
+
             var required_props = { code };
 
             if (typeof code === "number") {
@@ -1444,6 +1451,7 @@ policies and contribution forms [3].
                 } else if (!Array.from(Object.values(name_code_map)).includes(code)) {
                     throw new AssertionError('Test bug: unrecognized DOMException code "' + code + '" passed to assert_throws()');
                 }
+                name = code_name_map[code];
             } else if (typeof code === "string") {
                 if (!(name in name_code_map)) {
                     throw new AssertionError('Test bug: unrecognized DOMException code "' + code + '" passed to assert_throws()');

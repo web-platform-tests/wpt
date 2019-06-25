@@ -170,14 +170,14 @@
     test(function()
     {
         var e = {code:0, name:"TEST_ERR", TEST_ERR:0}
-        assert_throws("TEST_ERR", function() {throw e});
-    }, "Test assert_throws with non-DOM-exception expected to Fail");
+        assert_throws(0, function() {throw e});
+    }, "Test assert_throws with ambiguous DOM-exception expected to Fail");
 
     test(function()
     {
         var e = {code:0, name:"TEST_ERR", TEST_ERR:0}
-        assert_throws(0, function() {throw e});
-    }, "Test assert_throws with ambiguous DOM-exception expected to Fail");
+        assert_throws("TEST_ERR", function() {throw e});
+    }, "Test assert_throws with non-DOM-exception expected to Fail");
 
     test(function()
     {
@@ -231,14 +231,14 @@
     },
     {
       "status_string": "FAIL",
-      "name": "Test assert_throws with non-DOM-exception expected to Fail",
-      "message": "Test bug: unrecognized DOMException code \"TEST_ERR\" passed to assert_throws()",
+      "name": "Test assert_throws with ambiguous DOM-exception expected to Fail",
+      "message": "Test bug: ambiguous DOMException code 0 passed to assert_throws()",
       "properties": {}
     },
     {
       "status_string": "FAIL",
-      "name": "Test assert_throws with ambiguous DOM-exception expected to Fail",
-      "message": "Test bug: ambiguous DOMException code 0 passed to assert_throws()",
+      "name": "Test assert_throws with non-DOM-exception expected to Fail",
+      "message": "Test bug: unrecognized DOMException code \"TEST_ERR\" passed to assert_throws()",
       "properties": {}
     },
     {

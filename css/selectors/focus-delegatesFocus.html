@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>CSS Test (Selectors): :focus behavior with shadow hosts & delegatesFocus </title>
+  <link rel="author" title="Rakina Zata Amni" href="rakina@chromium.org" />
+  <link rel="help" href="https://html.spec.whatwg.org/multipage/semantics-other.html#selector-focus" />
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <style>
+    :focus {
+      background-color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="hostDelegatesFocus"></div>
+  <div id="hostNonDelegatesFocus"></div>
+<script>
+function resetFocus() {
+  document.body.focus();
+}
+
+function createFocusableDiv() {
+  const div = document.createElement("div");
+  div.innerText = "foo";
+  div.tabIndex = 0;
+  return div;
+}
+
+const shadowRootDelegatesFocus = hostDelegatesFocus.attachShadow({ mode: "open", delegatesFocus: true });
+const shadowRootNonDelegatesFocus = hostNonDelegatesFocus.attachShadow({ mode: "open", delegatesFocus: false });
+shadowRootDelegatesFocus.innerHTML = shadowRootNonDelegatesFocus.innerHTML = "<style> :focus { background-color: red; } </style><slot></slot>";
+const redBackgroundColor = "rgb(255, 0, 0)";
+
+test(() => {
+  resetFocus();
+  const shadowChild = createFocusableDiv();
+  shadowRootDelegatesFocus.appendChild(shadowChild);
+
+  shadowChild.focus();
+  assert_equals(getComputedStyle(shadowChild).backgroundColor, redBackgroundColor);
+  assert_equals(getComputedStyle(hostDelegatesFocus).backgroundColor, redBackgroundColor);
+}, ":focus applies to host with delegatesFocus=true when the shadow root's descendant has focus");
+
+test(() => {
+  resetFocus();
+  const slotted = createFocusableDiv();
+  hostDelegatesFocus.appendChild(slotted);
+  slotted.focus();
+  assert_equals(getComputedStyle(slotted).backgroundColor, redBackgroundColor);
+  assert_not_equals(getComputedStyle(hostDelegatesFocus).backgroundColor, redBackgroundColor);
+}, ":focus doesn't apply to host with delegatesFocus=true when slotted element has focus");
+
+test(() => {
+  resetFocus();
+  const shadowChild = createFocusableDiv();
+  shadowRootNonDelegatesFocus.appendChild(shadowChild);
+
+  shadowChild.focus();
+  assert_equals(getComputedStyle(shadowChild).backgroundColor, redBackgroundColor);
+  assert_not_equals(getComputedStyle(hostNonDelegatesFocus).backgroundColor, redBackgroundColor);
+}, ":focus doesn't apply to host with delegatesFocus=false when the shadow root's descendant has focus");
+
+test(() => {
+  resetFocus();
+  const nestedHost = document.createElement("div");
+  const nestedShadowChild = createFocusableDiv();
+  const nestedShadowRoot = nestedHost.attachShadow({ mode: "open", delegatesFocus: true });
+  nestedShadowRoot.innerHTML = "<style> :focus { background-color: red; } </style>";
+  nestedShadowRoot.appendChild(nestedShadowChild);
+  shadowRootDelegatesFocus.appendChild(nestedHost);
+
+  nestedShadowChild.focus();
+  assert_equals(getComputedStyle(nestedShadowChild).backgroundColor, redBackgroundColor);
+  assert_equals(getComputedStyle(nestedHost).backgroundColor, redBackgroundColor);
+  assert_equals(getComputedStyle(hostDelegatesFocus).backgroundColor, redBackgroundColor);
+}, ":focus applies to host with delegatesFocus=true when an element in a nested shadow tree with delegatesFocus=true is focused");
+
+test(() => {
+  resetFocus();
+  const nestedHost = document.createElement("div");
+  const nestedShadowChild = createFocusableDiv();
+  const nestedShadowRoot = nestedHost.attachShadow({ mode: "open", delegatesFocus: false });
+  nestedShadowRoot.innerHTML = "<style> :focus { background-color: red; } </style>";
+  nestedShadowRoot.appendChild(nestedShadowChild);
+  shadowRootDelegatesFocus.appendChild(nestedHost);
+
+  nestedShadowChild.focus();
+  assert_equals(getComputedStyle(nestedShadowChild).backgroundColor, redBackgroundColor);
+  assert_not_equals(getComputedStyle(nestedHost).backgroundColor, redBackgroundColor);
+  assert_equals(getComputedStyle(hostDelegatesFocus).backgroundColor, redBackgroundColor);
+}, ":focus applies to host with delegatesFocus=true when an element in a nested shadow tree with delegatesFocus=false is focused");
+</script>
+</body>

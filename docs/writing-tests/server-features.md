@@ -18,11 +18,11 @@ To make writing such tests possible, we are using a number of
 server-side components designed to make it easy to manipulate the
 precise details of the response:
 
-* *wptserve*, a custom python HTTP server.
+* *wptserve*, a custom Python HTTP server.
 
 * *pywebsocket*, an existing websockets server
 
-wptserve is a python-based web server. By default it serves static
+wptserve is a Python-based web server. By default it serves static
 files in the testsuite. For more sophisticated requirements, several
 mechanisms are available to take control of the response. These are
 outlined below.

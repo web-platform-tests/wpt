@@ -133,42 +133,6 @@ function fetchReferrerPolicy(referrerPolicy, destination, fetchMode, expectedOri
   };
 }
 
-function fetchReferrerPolicyFromIframe(referrerPolicy, destination, fetchMode, expectedOrigin) {
-  return async function () {
-    const stash = token();
-    const referrerPolicyPath = "/fetch/origin/resources/referrer-policy.py";
-    const redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
-
-    let fetchUrl =
-        (destination === "same-origin" ? origins.HTTP_ORIGIN
-                                       : origins.HTTP_REMOTE_ORIGIN) +
-        redirectPath + "?stash=" + stash;
-
-    let json;
-
-    await new Promise(resolve => {
-      const frame = document.createElement("iframe");
-      frame.src = origins.HTTP_ORIGIN + referrerPolicyPath +
-                  "?referrerPolicy=" + referrerPolicy;
-      self.addEventListener("message", e => {
-        if (e.data === "action") {
-          frame.contentWindow.fetch(fetchUrl, { mode: fetchMode, method: "POST" })
-            .then(() => fetch(redirectPath + "?dump&stash=" + stash))
-            .then(rsp => rsp.json())
-            .then(data=>{
-              json = data;
-              frame.remove();
-              resolve();
-            });
-        }
-      }, { once: true });
-      document.body.appendChild(frame);
-    });
-
-    assert_equals(json[0], expectedOrigin);
-  };
-}
-
 function referrerPolicyTestString(referrerPolicy, destination) {
   return "Origin header and POST " + destination + " with Referrer-Policy " +
          referrerPolicy;
@@ -233,15 +197,6 @@ function referrerPolicyTestString(referrerPolicy, destination) {
                                      origins.HTTP_ORIGIN),
                  referrerPolicyTestString(testObj.policy,
                                           destination.name + " fetch cors mode"));
-
-    // Test fetch which pulls the ReferrerPolicy from iframe owning to not
-    // specifying ReferrerPolicy
-    promise_test(fetchReferrerPolicyFromIframe(testObj.policy,
-                                               destination.name,
-                                               "no-cors",
-                                               destination.expectedOrigin),
-                 referrerPolicyTestString(testObj.policy,
-                                          destination.name + " fetch no-cors mode in iframe"));
   });
 });
 

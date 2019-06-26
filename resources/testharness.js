@@ -1448,7 +1448,7 @@ policies and contribution forms [3].
             if (typeof code === "number") {
                 if (code === 0) {
                     throw new AssertionError('Test bug: ambiguous DOMException code 0 passed to assert_throws()');
-                } else if (!Array.from(Object.values(name_code_map)).includes(code)) {
+                } else if (!(code in code_name_map)) {
                     throw new AssertionError('Test bug: unrecognized DOMException code "' + code + '" passed to assert_throws()');
                 }
                 name = code_name_map[code];

@@ -663,6 +663,7 @@ class EdgeChromium(Browser):
         "Darwin": "macos"
     }.get(uname[0])
     product = "edgechromium"
+    edgedriver_name = "msedgedriver"
     requirements = "requirements_edge_chromium.txt"
 
     def install(self, dest=None, channel=None):
@@ -697,22 +698,32 @@ class EdgeChromium(Browser):
         return find_executable("msedgedriver")
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
-        if self.platform != "win":
-            raise ValueError("Only Windows platform is currently supported")
+        if self.platform != "win" and self.platform != "macos":
+            raise ValueError("Only Windows and Mac platforms are currently supported")
 
         if dest is None:
             dest = os.pwd
 
-        platform = "x64" if uname[4] == "x86_64" else "x86"
-        url = "https://az813057.vo.msecnd.net/webdriver/msedgedriver_%s/msedgedriver.exe" % platform
+        if channel is None:
+            version_url = "https://msedgedriver.azureedge.net/LATEST_DEV"
+        else:
+            version_url = "https://msedgedriver.azureedge.net/LATEST_%s" % channel.upper()
+        version = get(version_url).text.strip()
+
+        if self.platform == "macos":
+            bits = "mac64"
+            edgedriver_path = os.path.join(dest, self.edgedriver_name)
+        else:
+            bits = "win64" if uname[4] == "x86_64" else "win32"
+            edgedriver_path = os.path.join(dest, "%s.exe" % self.edgedriver_name)
+        url = "https://msedgedriver.azureedge.net/%s/edgedriver_%s.zip" % (version, bits)
 
         self.logger.info("Downloading MSEdgeDriver from %s" % url)
-        resp = get(url)
-        installer_path = os.path.join(dest, "msedgedriver.exe")
-        with open(installer_path, "wb") as f:
-            f.write(resp.content)
-
-        return find_executable("msedgedriver", dest)
+        unzip(get(url).raw, dest)
+        
+        if os.path.isfile(edgedriver_path):
+            self.logger.info("Successfully downloaded MSEdgeDriver to %s" % edgedriver_path)
+        return find_executable(self.edgedriver_name, dest)
 
     def version(self, binary=None, webdriver_binary=None):
         if binary is None:

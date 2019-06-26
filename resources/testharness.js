@@ -1437,11 +1437,11 @@ policies and contribution forms [3].
             };
 
             var code_name_map = {};
-            for (let [k, v] of Object.entries(name_code_map)) {
-                if (v > 0) {
-                    code_name_map[v] = k;
+            Object.entries(name_code_map).forEach(function(keyValue) {
+                if (keyValue[1] > 0) {
+                    code_name_map[keyValue[1]] = keyValue[0];
                 }
-            }
+            });
 
             var required_props = { code };
 

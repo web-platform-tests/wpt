@@ -15,6 +15,7 @@ function prepareDOM(container, delegatesFocus) {
   const aboveHost = document.createElement("div");
   aboveHost.innerText = "aboveHost";
   const host = document.createElement("div");
+  host.id = "host";
   const slottedBelow = document.createElement("div");
   slottedBelow.innerText = "slotted below";
   slottedBelow.slot = "below";
@@ -69,3 +70,14 @@ function navigateFocusForward() {
   return test_driver.send_keys(document.body, "\ue004");
 }
 
+function assertFocusOrder(expectedOrder) {
+  let shadowRoot = document.getElementById("host").shadowRoot;
+  return new Promise(async (resolve, reject) => {
+    for (let el of expectedOrder) {
+      await navigateFocusForward();
+      let focused = shadowRoot.activeElement ? shadowRoot.activeElement : document.activeElement;
+      assert_equals(focused, el);
+    }
+    resolve();
+  });
+}

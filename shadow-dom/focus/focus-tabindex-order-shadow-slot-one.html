@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: focus - the sequential focus navigation order with shadow dom and negative host tabindex</title>
+<title>HTML Test: focus - the sequential focus navigation order with shadow dom and all tabindex=0 except for one of the slot</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#sequential-focus-navigation">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,31 +11,27 @@
 <script>
 // Structure:
 // <div #aboveHost tabindex=0>
-// <div #host tabindex=-1>
+// <div #host tabindex=0>
 //    #shadowRoot
 //      <div #aboveSlot tabindex=0>
 //      <slot #slotAbove tabindex=0>
 //        (slotted) <div #slottedAbove tabindex=0>
-//      <slot #slotBelow tabindex=0>
+//      <slot #slotBelow tabindex=1>
 //        (slotted) <div #slottedBelow tabindex=0>
 //      <div #belowSlot tabindex=0>
 // <div #belowHost tabindex=0>
 
-async_test(async (t) => {
+promise_test(() => {
   let elementsInFlatTreeOrder;
   let [aboveHost, host, aboveSlot, slotAbove, slottedAbove, slotBelow, slottedBelow, belowSlot, belowHost] =
     elementsInFlatTreeOrder = prepareDOM(document.body, false);
   setTabIndex(elementsInFlatTreeOrder, 0);
-  host.tabIndex = -1;
+  slotBelow.tabIndex = 1;
   resetFocus();
-  // Focus willl only move within the focus navigation scope of the document (not going to get into #host).
-  const expectedOrder = [aboveHost, belowHost];
-  for (let el of expectedOrder) {
-    await navigateFocusForward();
-    let focused = host.shadowRoot.activeElement ? host.shadowRoot.activeElement : document.activeElement;
-    t.step(() => { assert_equals(focused, el) });
-  }
-  t.done();
-}, "Order when all tabindex=0 except for host, which has tabindex=-1");
+  // Focus should move first according to flat tree order to #aboveHost and #host, then into #host's focus scope.
+  // It will then move to #slottedBelow because #slotBelow has tabindex=1 (though we actually won't focus on the slot),
+  // and then back to #host's focus scope again, finally getting out to the document focus scope.
+  return assertFocusOrder([aboveHost, host, slottedBelow, aboveSlot, slottedAbove, belowSlot, belowHost]);
+}, "Order when all tabindex=0, except for one slot that has tabindex=1");
 </script>
 </body>

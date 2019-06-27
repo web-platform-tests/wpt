@@ -21,20 +21,14 @@
 //      <div #belowSlot tabindex=-1>
 // <div #belowHost tabindex=0>
 
-async_test(async (t) => {
+promise_test(() => {
   let elementsInFlatTreeOrder;
   let [aboveHost, host, aboveSlot, slotAbove, slottedAbove, slotBelow, slottedBelow, belowSlot, belowHost] =
     elementsInFlatTreeOrder = prepareDOM(document.body, false);
   setTabIndex(elementsInFlatTreeOrder, -1);
   setTabIndex([aboveHost, host, belowHost], 0);
   resetFocus();
-  const expectedOrder = [aboveHost, host, belowHost]; 
-  for (let el of expectedOrder) {
-    await navigateFocusForward();
-    let focused = host.shadowRoot.activeElement ? host.shadowRoot.activeElement : document.activeElement;
-    t.step(() => { assert_equals(focused, el) });
-  }
-  t.done();
-}, "Order when all tabindex=0 is and delegatesFocus = false");
+  return assertFocusOrder([aboveHost, host, belowHost]);
+}, "Order when all elements in shadow tree has negative tabindex");
 </script>
 </body>

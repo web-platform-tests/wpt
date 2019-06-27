@@ -21,7 +21,7 @@
 //      <div #belowSlot tabindex=2>
 // <div #belowHost tabindex=3>
 
-async_test(async (t) => {
+promise_test(() => {
   let elementsInFlatTreeOrder;
   let [aboveHost, host, aboveSlot, slotAbove, slottedAbove, slotBelow, slottedBelow, belowSlot, belowHost] =
     elementsInFlatTreeOrder = prepareDOM(document.body, false);
@@ -30,13 +30,7 @@ async_test(async (t) => {
   setTabIndex([aboveHost, host, belowHost], 3);
   setTabIndex([slottedAbove, slottedBelow], 4);
   resetFocus();
-  const expectedOrder = [aboveHost, host, slottedAbove, slottedBelow, aboveSlot, belowSlot, belowHost];
-  for (let el of expectedOrder) {
-    await navigateFocusForward();
-    let focused = host.shadowRoot.activeElement ? host.shadowRoot.activeElement : document.activeElement;
-    t.step(() => { assert_equals(focused, el) });
-  }
-  t.done();
+  return assertFocusOrder([aboveHost, host, slottedAbove, slottedBelow, aboveSlot, belowSlot, belowHost]);
 }, "Order with various tabindex values");
 </script>
 </body>

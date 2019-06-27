@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: focus - the sequential focus navigation order with shadow dom that delegates focus and all tabindex=0</title>
+<title>HTML Test: focus - the sequential focus navigation order with shadow dom and non-focusable host</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#sequential-focus-navigation">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,8 +11,8 @@
 <script>
 // Structure:
 // <div #aboveHost tabindex=0>
-// <div #host tabindex=0>
-//    #shadowRoot (delegatesFocus)
+// <div #host>
+//    #shadowRoot
 //      <div #aboveSlot tabindex=0>
 //      <slot #slotAbove tabindex=0>
 //        (slotted) <div #slottedAbove tabindex=0>
@@ -21,20 +21,17 @@
 //      <div #belowSlot tabindex=0>
 // <div #belowHost tabindex=0>
 
-async_test(async (t) => {
+promise_test(() => {
   let elementsInFlatTreeOrder;
-  let [aboveHost, host, aboveSlot, slotAbove, slottedAbove, slotBelow, slottedBelow, belowSlot, belowHost] = elementsInFlatTreeOrder = prepareDOM(document.body, true);
+  let [aboveHost, host, aboveSlot, slotAbove, slottedAbove, slotBelow, slottedBelow, belowSlot, belowHost] =
+    elementsInFlatTreeOrder = prepareDOM(document.body, false);
   setTabIndex(elementsInFlatTreeOrder, 0);
+  removeTabIndex([host]);
   resetFocus();
   // Focus should move in flat tree order since every one of them has tabindex ==0,
-  // but doesn't include slots and #host.
-  const expectedOrder = elementsInFlatTreeOrder.filter(el => (el !== slotAbove && el !== slotBelow && el !== host));
-  for (let el of expectedOrder) {
-    await navigateFocusForward();
-    let focused = host.shadowRoot.activeElement ? host.shadowRoot.activeElement : document.activeElement;
-    t.step(() => { assert_equals(focused, el) });
-  }
-  t.done();
-}, "Order when all tabindex=0 is and delegatesFocus = true");
+  // but doesn't include #slot since it's not rendered and #host since its tabindex is not set
+  // (but #host is considered as 0 in focus scope navigation, keeping the flat tree order for the shadow root's descendants).
+  return assertFocusOrder(elementsInFlatTreeOrder.filter(el => (el !== slotAbove && el !== slotBelow && el !== host)));
+}, "Order when all tabindex=0 except host (tabindex not set)");
 </script>
 </body>

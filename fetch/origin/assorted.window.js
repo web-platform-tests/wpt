@@ -1,5 +1,6 @@
 // META: script=/common/utils.js
 // META: script=/common/get-host-info.sub.js
+
 const origins = get_host_info();
 
 promise_test(async function () {
@@ -199,4 +200,3 @@ function referrerPolicyTestString(referrerPolicy, destination) {
                                           destination.name + " fetch cors mode"));
   });
 });
-

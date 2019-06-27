@@ -237,10 +237,13 @@ class SelectorProtocolPart(ProtocolPart):
 
     def element_by_selector(self, element_selector, frame="window"):
         elements = self.elements_by_selector_and_frame(element_selector, frame)
+        frame_name = "window"
+        if (frame != "window"):
+            frame_name = frame.id
         if len(elements) == 0:
-            raise ValueError("Selector '%s' matches no elements" % element_selector)
+            raise ValueError("Selector '%s' in frame '%s' matches no elements" % (element_selector, frame_name))
         elif len(elements) > 1:
-            raise ValueError("Selector '%s' matches multiple elements" % element_selector)
+            raise ValueError("Selector '%s' in frame '%s' matches multiple elements" % (element_selector, frame_name))
         return elements[0]
 
     @abstractmethod

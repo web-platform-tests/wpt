@@ -12,18 +12,16 @@ function nextMessage(target) {
 }
 
 async function openPortalAndActivate(logic, activateOptions) {
-  const bc = new BroadcastChannel('portal-activate-data');
   const w = window.open();
   try {
     const portal = w.document.createElement('portal');
     portal.src = new URL('resources/portal-activate-data-portal.html?logic=' + encodeURIComponent(logic), location.href);
     w.document.body.appendChild(portal);
-    assert_equals((await nextMessage(bc)).data, 'ready');
+    assert_equals((await nextMessage(portal)).data, 'ready');
     await portal.activate(activateOptions);
-    return (await nextMessage(bc)).data;
+    return (await nextMessage(w.portalHost)).data;
   } finally {
     w.close();
-    bc.close();
   }
 }
 

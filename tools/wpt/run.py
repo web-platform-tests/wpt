@@ -106,7 +106,7 @@ otherwise install OpenSSL and ensure that it's on your $PATH.""")
 
 
 def check_environ(product):
-    if product not in ("firefox", "servo"):
+    if product not in ("chrome", "firefox", "servo"):
         config_builder = serve.build_config(os.path.join(wpt_root, "config.json"))
         # Override the ports to avoid looking for free ports
         config_builder.ssl = {"type": "none"}
@@ -121,9 +121,14 @@ def check_environ(product):
 
         missing_hosts = set(expected_hosts)
         if is_windows:
-            hosts_path = "%s\System32\drivers\etc\hosts" % os.environ.get("SystemRoot", "C:\Windows")
+            hosts_path = r"%s\System32\drivers\etc\hosts" % os.environ.get("SystemRoot", r"C:\Windows")
         else:
             hosts_path = "/etc/hosts"
+
+        if os.path.abspath(os.curdir) == wpt_root:
+            wpt_path = "wpt"
+        else:
+            wpt_path = os.path.join(wpt_root, "wpt")
 
         with open(hosts_path, "r") as f:
             for line in f:
@@ -136,13 +141,14 @@ def check_environ(product):
                 if is_windows:
                     message = """Missing hosts file configuration. Run
 
-python wpt make-hosts-file | Out-File %s -Encoding ascii -Append
+python %s make-hosts-file | Out-File %s -Encoding ascii -Append
 
-in PowerShell with Administrator privileges.""" % hosts_path
+in PowerShell with Administrator privileges.""" % (wpt_path, hosts_path)
                 else:
                     message = """Missing hosts file configuration. Run
 
-./wpt make-hosts-file | sudo tee -a %s""" % hosts_path
+%s make-hosts-file | sudo tee -a %s""" % ("./wpt" if wpt_path == "wpt" else wpt_path,
+                                          hosts_path)
                 raise WptrunError(message)
 
 
@@ -266,7 +272,7 @@ class Chrome(BrowserSetup):
 
                 if install:
                     logger.info("Downloading chromedriver")
-                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path)
+                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path, browser_binary=kwargs["binary"])
             else:
                 logger.info("Using webdriver binary %s" % webdriver_binary)
 
@@ -277,15 +283,8 @@ class Chrome(BrowserSetup):
         if kwargs["browser_channel"] == "dev":
             logger.info("Automatically turning on experimental features for Chrome Dev")
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
-
-        # Allow audio autoplay without a user gesture.
-        kwargs["binary_args"].append("--autoplay-policy=no-user-gesture-required")
-
-        # Allow WebRTC tests to call getUserMedia.
-        kwargs["binary_args"] += ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"]
-
-        # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
-        kwargs["binary_args"].append("--short-reporting-delay")
+            # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
+            kwargs["webdriver_args"].append("--disable-build-check")
 
 
 class ChromeAndroid(BrowserSetup):
@@ -332,6 +331,34 @@ class Opera(BrowserSetup):
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
                 raise WptrunError("Unable to locate or install operadriver binary")
+
+
+class EdgeChromium(BrowserSetup):
+    name = "MicrosoftEdge"
+    browser_cls = browser.EdgeChromium
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["webdriver_binary"] is None:
+            webdriver_binary = self.browser.find_webdriver()
+
+            if webdriver_binary is None:
+                install = self.prompt_install("msedgedriver")
+
+                if install:
+                    logger.info("Downloading msedgedriver")
+                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path)
+            else:
+                logger.info("Using webdriver binary %s" % webdriver_binary)
+
+            if webdriver_binary:
+                kwargs["webdriver_binary"] = webdriver_binary
+            else:
+                raise WptrunError("Unable to locate or install msedgedriver binary")
+        if kwargs["browser_channel"] == "dev":
+            logger.info("Automatically turning on experimental features for Edge Dev")
+            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
+        # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/17403
+        kwargs["webdriver_args"].append("--disable-build-check")
 
 
 class Edge(BrowserSetup):
@@ -472,6 +499,7 @@ product_setup = {
     "firefox": Firefox,
     "chrome": Chrome,
     "chrome_android": ChromeAndroid,
+    "edgechromium": EdgeChromium,
     "edge": Edge,
     "edge_webdriver": EdgeWebDriver,
     "ie": InternetExplorer,
@@ -553,7 +581,8 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
             kwargs["browser_channel"] = channel
         else:
             logger.info("Valid channels for %s not known; using argument unmodified" % kwargs["product"])
-    del kwargs["channel"]
+            kwargs["browser_channel"] = kwargs["channel"]
+        del kwargs["channel"]
 
     if install_browser:
         logger.info("Installing browser")
@@ -568,8 +597,12 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
     if not venv.skip_virtualenv_setup:
         venv.install_requirements(os.path.join(wptrunner_path, "requirements.txt"))
 
-    kwargs['browser_version'] = setup_cls.browser.version(binary=kwargs.get("binary"),
-                                                          webdriver_binary=kwargs.get("webdriver_binary"))
+    # Only update browser_version if it was not given as a command line
+    # argument, so that it can be overridden on the command line.
+    if not kwargs["browser_version"]:
+        kwargs["browser_version"] = setup_cls.browser.version(binary=kwargs.get("binary"),
+                                                              webdriver_binary=kwargs.get("webdriver_binary"))
+
     return kwargs
 
 

@@ -1,18 +1,16 @@
 import base64
 import hashlib
-import httplib
+from six.moves.http_client import HTTPConnection
 import io
 import os
 import threading
 import traceback
 import socket
-import urlparse
+from six.moves.urllib.parse import urljoin, urlsplit, urlunsplit
 from abc import ABCMeta, abstractmethod
 
-from PIL import Image, ImageChops, ImageStat
-
 from ..testrunner import Stop
-from protocol import Protocol, BaseProtocolPart
+from .protocol import Protocol, BaseProtocolPart
 
 here = os.path.split(__file__)[0]
 
@@ -50,10 +48,10 @@ def strip_server(url):
 
     e.g. http://example.org:8000/tests?id=1#2 becomes /tests?id=1#2"""
 
-    url_parts = list(urlparse.urlsplit(url))
+    url_parts = list(urlsplit(url))
     url_parts[0] = ""
     url_parts[1] = ""
-    return urlparse.urlunsplit(url_parts)
+    return urlunsplit(url_parts)
 
 
 class TestharnessResultConverter(object):
@@ -213,7 +211,7 @@ class TestExecutor(object):
                                self.server_config["ports"][protocol][0])
 
     def test_url(self, test):
-        return urlparse.urljoin(self.server_url(test.environment["protocol"]), test.url)
+        return urljoin(self.server_url(test.environment["protocol"]), test.url)
 
     @abstractmethod
     def do_test(self, test):
@@ -311,11 +309,15 @@ class RefTestImplementation(object):
             self.logger.info("Allowed %s pixels different, maximum difference per channel %s" %
                              ("-".join(str(item) for item in allowed_different),
                               "-".join(str(item) for item in allowed_per_channel)))
-            equal = (allowed_per_channel[0] <= max_per_channel <= allowed_per_channel[1] and
-                     allowed_different[0] <= pixels_different <= allowed_different[1])
+            equal = ((pixels_different == 0 and allowed_different[0] == 0) or
+                     (max_per_channel == 0 and allowed_per_channel[0] == 0) or
+                     (allowed_per_channel[0] <= max_per_channel <= allowed_per_channel[1] and
+                      allowed_different[0] <= pixels_different <= allowed_different[1]))
         return equal if relation == "==" else not equal
 
     def get_differences(self, screenshots):
+        from PIL import Image, ImageChops, ImageStat
+
         lhs = Image.open(io.BytesIO(base64.b64decode(screenshots[0]))).convert("RGB")
         rhs = Image.open(io.BytesIO(base64.b64decode(screenshots[1]))).convert("RGB")
         diff = ImageChops.difference(lhs, rhs)
@@ -563,7 +565,7 @@ class WebDriverProtocol(Protocol):
         An HTTP request to an invalid path that results in a 404 is
         proof enough to us that the server is alive and kicking.
         """
-        conn = httplib.HTTPConnection(self.server.host, self.server.port)
+        conn = HTTPConnection(self.server.host, self.server.port)
         conn.request("HEAD", self.server.base_path + "invalid")
         res = conn.getresponse()
         return res.status == 404

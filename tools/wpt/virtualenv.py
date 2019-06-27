@@ -4,7 +4,17 @@ import sys
 import logging
 from distutils.spawn import find_executable
 
-import pkg_resources
+# The `pkg_resources` module is provided by `setuptools`, which is itself a
+# dependency of `virtualenv`. Tolerate its absence so that this module may be
+# evaluated when that module is not available. Because users may not recognize
+# the `pkg_resources` module by name, raise a more descriptive error if it is
+# referenced during execution.
+try:
+    import pkg_resources as _pkg_resources
+    get_pkg_resources = lambda: _pkg_resources
+except ImportError:
+    def get_pkg_resources():
+        raise ValueError("The Python module `virtualenv` is not installed.")
 
 from tools.wpt.utils import call
 
@@ -45,9 +55,23 @@ class Virtualenv(object):
 
     @property
     def lib_path(self):
-        if sys.platform == 'win32':
-            return os.path.join(self.path, 'Lib', 'site-packages')
-        return os.path.join(self.path, 'lib', 'python%s' % sys.version[:3], 'site-packages')
+        base = self.path
+
+        # this block is literally taken from virtualenv 16.4.3
+        IS_PYPY = hasattr(sys, "pypy_version_info")
+        IS_JYTHON = sys.platform.startswith("java")
+        if IS_JYTHON:
+            site_packages = os.path.join(base, "Lib", "site-packages")
+        elif IS_PYPY:
+            site_packages = os.path.join(base, "site-packages")
+        else:
+            IS_WIN = sys.platform == "win32"
+            if IS_WIN:
+                site_packages = os.path.join(base, "Lib", "site-packages")
+            else:
+                site_packages = os.path.join(base, "lib", "python{}".format(sys.version[:3]), "site-packages")
+
+        return site_packages
 
     @property
     def working_set(self):
@@ -55,7 +79,7 @@ class Virtualenv(object):
             raise ValueError("trying to read working_set when venv doesn't exist")
 
         if self._working_set is None:
-            self._working_set = pkg_resources.WorkingSet((self.lib_path,))
+            self._working_set = get_pkg_resources().WorkingSet((self.lib_path,))
 
         return self._working_set
 
@@ -71,7 +95,7 @@ class Virtualenv(object):
     def install(self, *requirements):
         try:
             self.working_set.require(*requirements)
-        except pkg_resources.ResolutionError:
+        except Exception:
             pass
         else:
             return
@@ -84,7 +108,7 @@ class Virtualenv(object):
         with open(requirements_path) as f:
             try:
                 self.working_set.require(f.read())
-            except pkg_resources.ResolutionError:
+            except Exception:
                 pass
             else:
                 return

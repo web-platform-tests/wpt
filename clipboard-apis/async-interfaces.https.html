@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <title>Clipboard IDL test</title>
-<link rel='help' href='https://w3c.github.io/clipboard-apis/'>
+<link rel='help' href='https://w3c.github.io/clipboard-apis/#async-clipboard-api'>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/WebIDLParser.js"></script>
@@ -19,7 +19,7 @@ function doTest(idl, dom) {
   idl_array.add_objects({
     Navigator: ['navigator'],
     Clipboard: ['navigator.clipboard'],
-    ClipboardEvent: [new ClipboardEvent('x')],
+    ClipboardEvent: ['new ClipboardEvent("x")'],
   });
   idl_array.test();
 };

@@ -25,7 +25,7 @@ function xr_promise_test(name, func, properties) {
 // device, and the test object.
 // Requires a webglCanvas on the page.
 function xr_session_promise_test(
-    name, func, fakeDeviceInit, sessionOptions, properties) {
+    name, func, fakeDeviceInit, sessionMode, properties) {
   let testDeviceController;
   let testSession;
 
@@ -48,21 +48,24 @@ function xr_session_promise_test(
               .then(() => new Promise((resolve, reject) => {
                       // Perform the session request in a user gesture.
                       XRTest.simulateUserActivation(() => {
-                        navigator.xr.requestSession(sessionOptions)
+                        navigator.xr.requestSession(sessionMode)
                             .then((session) => {
                               testSession = session;
+                              session.mode = sessionMode;
+                              let glLayer = new XRWebGLLayer(session, gl, {
+                                compositionDisabled: session.mode == 'inline'
+                              });
                               // Session must have a baseLayer or frame requests
                               // will be ignored.
                               session.updateRenderState({
-                                  baseLayer: new XRWebGLLayer(session, gl),
-                                  outputContext: getOutputContext()
+                                  baseLayer: glLayer
                               });
                               resolve(func(session, testDeviceController, t));
                             })
                             .catch((err) => {
                               reject(
                                   'Session with params ' +
-                                  JSON.stringify(sessionOptions) +
+                                  JSON.stringify(sessionMode) +
                                   ' was rejected on device ' +
                                   JSON.stringify(fakeDeviceInit) +
                                   ' with error: ' + err);
@@ -75,15 +78,6 @@ function xr_session_promise_test(
                 XRTest.simulateDeviceDisconnection();
               }),
       properties);
-}
-
-// A utility function to create an output context as required by non-immersive
-// sessions.
-// https://immersive-web.github.io/webxr/#xrsessioncreationoptions-interface
-function getOutputContext() {
-  let outputCanvas = document.createElement('canvas');
-  document.body.appendChild(outputCanvas);
-  return outputCanvas.getContext('xrpresent');
 }
 
 // This functions calls a callback with each API object as specified
@@ -115,7 +109,7 @@ function forEachWebxrObject(callback) {
 
 // Code for loading test api in chromium.
 let loadChromiumResources = Promise.resolve().then(() => {
-  if (!MojoInterfaceInterceptor) {
+  if (!('MojoInterfaceInterceptor' in self)) {
     // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
     // not present in the global namespace.
     return;

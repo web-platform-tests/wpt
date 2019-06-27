@@ -5,9 +5,9 @@
 
 dictionary RTCConfiguration {
              sequence<RTCIceServer> iceServers;
-             RTCIceTransportPolicy iceTransportPolicy = "all";
-             RTCBundlePolicy bundlePolicy = "balanced";
-             RTCRtcpMuxPolicy rtcpMuxPolicy = "require";
+             RTCIceTransportPolicy iceTransportPolicy;
+             RTCBundlePolicy bundlePolicy;
+             RTCRtcpMuxPolicy rtcpMuxPolicy;
              DOMString peerIdentity;
              sequence<RTCCertificate> certificates;
              [EnforceRange]
@@ -183,7 +183,7 @@ dictionary RTCIceCandidateInit {
              DOMString candidate = "";
              DOMString? sdpMid = null;
              unsigned short? sdpMLineIndex = null;
-             DOMString usernameFragment;
+             DOMString? usernameFragment = null;
 };
 
 enum RTCIceProtocol {
@@ -382,6 +382,7 @@ dictionary RTCRtpContributingSource {
     required DOMHighResTimeStamp timestamp;
     required unsigned long source;
              double audioLevel;
+    required unsigned long rtpTimestamp;
 };
 
 dictionary RTCRtpSynchronizationSource : RTCRtpContributingSource {
@@ -465,6 +466,7 @@ enum RTCIceTransportState {
 };
 
 enum RTCIceRole {
+    "unknown",
     "controlling",
     "controlled"
 };
@@ -496,7 +498,7 @@ partial interface RTCPeerConnection {
                     attribute EventHandler ondatachannel;
 };
 
-[Exposed=Window] interface RTCSctpTransport {
+[Exposed=Window] interface RTCSctpTransport : EventTarget {
     readonly        attribute RTCDtlsTransport transport;
     readonly        attribute RTCSctpTransportState state;
     readonly        attribute unrestricted double maxMessageSize;
@@ -611,7 +613,7 @@ dictionary RTCStatsEventInit : EventInit {
 
 [
     Exposed=Window,
-    Constructor(RTCErrorInit init, optional DOMString message = "")] interface RTCError {
+    Constructor(RTCErrorInit init, optional DOMString message = "")] interface RTCError : DOMException {
     readonly attribute RTCErrorDetailType errorDetail;
     readonly attribute long? sdpLineNumber;
     readonly attribute long? httpRequestStatusCode;

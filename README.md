@@ -46,7 +46,7 @@ For example, on most UNIX-like systems, you can setup the hosts file with:
 
 And on Windows (this must be run in a PowerShell session with Administrator privileges):
 
-```bash
+```powershell
 python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
 ```
 
@@ -155,55 +155,6 @@ commands are:
 * `wpt manifest` - For updating or generating a `MANIFEST.json` test manifest
 * `wpt install` - For installing the latest release of a browser or
   webdriver server on the local machine.
-
-<span id="submodules">Submodules</span>
-=======================================
-
-Some optional components of web-platform-tests (test components from
-third party software and pieces of the CSS build system) are included
-as submodules. To obtain these components run the following in the
-root of your checkout:
-
-```
-git submodule update --init --recursive
-```
-
-Prior to commit `39d07eb01fab607ab1ffd092051cded1bdd64d78` submodules
-were required for basic functionality. If you are working with an
-older checkout, the above command is required in all cases.
-
-When moving between a commit prior to `39d07eb` and one after it git
-may complain
-
-```
-$ git checkout master
-error: The following untracked working tree files would be overwritten by checkout:
-[…]
-```
-
-...followed by a long list of files. To avoid this error, remove
-the `resources` and `tools` directories before switching branches:
-
-```
-$ rm -r resources/ tools/
-$ git checkout master
-Switched to branch 'master'
-Your branch is up-to-date with 'origin/master'
-```
-
-When moving in the opposite direction, i.e. to a commit that does have
-submodules, you will need to `git submodule update`, as above. If git
-throws an error like:
-
-```
-fatal: No url found for submodule path 'resources/webidl2/test/widlproc' in .gitmodules
-Failed to recurse into submodule path 'resources/webidl2'
-fatal: No url found for submodule path 'tools/html5lib' in .gitmodules
-Failed to recurse into submodule path 'resources'
-Failed to recurse into submodule path 'tools'
-```
-
-...then remove the `tools` and `resources` directories, as above.
 
 <span id="windows-notes">Windows Notes</span>
 =============================================

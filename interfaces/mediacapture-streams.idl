@@ -38,7 +38,6 @@ interface MediaStreamTrack : EventTarget {
     MediaTrackConstraints getConstraints();
     MediaTrackSettings getSettings();
     Promise<void> applyConstraints(optional MediaTrackConstraints constraints);
-                    attribute EventHandler onoverconstrained;
 };
 
 enum MediaStreamTrackState {
@@ -53,7 +52,6 @@ dictionary MediaTrackSupportedConstraints {
              boolean frameRate = true;
              boolean facingMode = true;
              boolean resizeMode = true;
-             boolean volume = true;
              boolean sampleRate = true;
              boolean sampleSize = true;
              boolean echoCancellation = true;
@@ -72,7 +70,6 @@ dictionary MediaTrackCapabilities {
              DoubleRange frameRate;
              sequence<DOMString> facingMode;
              sequence<DOMString> resizeMode;
-             DoubleRange volume;
              ULongRange sampleRate;
              ULongRange sampleSize;
              sequence<boolean> echoCancellation;
@@ -95,7 +92,6 @@ dictionary MediaTrackConstraintSet {
              ConstrainDouble frameRate;
              ConstrainDOMString facingMode;
              ConstrainDOMString resizeMode;
-             ConstrainDouble volume;
              ConstrainULong sampleRate;
              ConstrainULong sampleSize;
              ConstrainBoolean echoCancellation;
@@ -114,7 +110,6 @@ dictionary MediaTrackSettings {
              double frameRate;
              DOMString facingMode;
              DOMString resizeMode;
-             double volume;
              long sampleRate;
              long sampleSize;
              boolean echoCancellation;
@@ -147,16 +142,6 @@ interface MediaStreamTrackEvent : Event {
 
 dictionary MediaStreamTrackEventInit : EventInit {
     required MediaStreamTrack track;
-};
-
-[Exposed=Window,
- Constructor(DOMString type, OverconstrainedErrorEventInit eventInitDict)]
-interface OverconstrainedErrorEvent : Event {
-    readonly        attribute OverconstrainedError? error;
-};
-
-dictionary OverconstrainedErrorEventInit : EventInit {
-             OverconstrainedError? error = null;
 };
 
 partial interface Navigator {

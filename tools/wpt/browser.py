@@ -3,6 +3,7 @@ import platform
 import re
 import shutil
 import stat
+import errno
 import subprocess
 import tempfile
 import urlparse
@@ -26,6 +27,14 @@ def _get_fileversion(binary, logger=None):
             logger.warning("Failed to call %s in PowerShell" % command)
         return None
 
+
+def handleRemoveReadonly(func, path, exc):
+    excvalue = exc[1]
+    if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
+        os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
+        func(path)
+    else:
+        raise
 
 class Browser(object):
     __metaclass__ = ABCMeta
@@ -717,6 +726,15 @@ class EdgeChromium(Browser):
             bits = "win64" if uname[4] == "x86_64" else "win32"
             edgedriver_path = os.path.join(dest, "%s.exe" % self.edgedriver_name)
         url = "https://msedgedriver.azureedge.net/%s/edgedriver_%s.zip" % (version, bits)
+
+        # cleanup existing Edge driver files to avoid access_denied errors when unzipping
+        if os.path.isfile(edgedriver_path):
+            # remove read-only attribute
+            os.chmod(edgedriver_path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
+            os.remove(edgedriver_path)
+            driver_notes_path = os.path.join(dest, "Driver_notes")
+            if os.path.isdir(driver_notes_path):
+                shutil.rmtree(driver_notes_path, ignore_errors=False, onerror=handleRemoveReadonly)
 
         self.logger.info("Downloading MSEdgeDriver from %s" % url)
         unzip(get(url).raw, dest)

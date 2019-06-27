@@ -348,7 +348,8 @@ class EdgeChromium(BrowserSetup):
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = self.browser.find_webdriver()
 
-            if webdriver_binary is None:
+            # Install browser if none are found or if it's found in venv path
+            if webdriver_binary is None or self.venv.bin_path in webdriver_binary:
                 install = self.prompt_install("msedgedriver")
 
                 if install:

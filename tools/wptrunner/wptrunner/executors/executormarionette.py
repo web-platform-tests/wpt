@@ -383,7 +383,10 @@ class MarionetteSelectorProtocolPart(SelectorProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
 
-    def elements_by_selector(self, element_selector, frame="window"):
+    def elements_by_selector(self, selector):
+        return self.marionette.find_elements("css selector", selector)
+
+    def elements_by_selector_and_frame(self, element_selector, frame):
         return self.marionette.find_elements("css selector", element_selector)
 
 

@@ -236,7 +236,7 @@ class SelectorProtocolPart(ProtocolPart):
     name = "select"
 
     def element_by_selector(self, element_selector, frame="window"):
-        elements = self.elements_by_selector(element_selector, frame)
+        elements = self.elements_by_selector_and_frame(element_selector, frame)
         frame_name = "window"
         if (frame != "window"):
             frame_name = frame.id

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>CSS Test (Selectors): :focus behavior with shadow hosts & delegatesFocus </title>
+  <link rel="author" title="Rakina Zata Amni" href="rakina@chromium.org" />
+  <link rel="help" href="https://html.spec.whatwg.org/multipage/semantics-other.html#selector-focus" />
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+</head>
+
+<body>
+<script>
+function resetFocus() {
+  document.body.focus();
+}
+
+function createFocusableDiv() {
+  const div = document.createElement("div");
+  div.innerText = "foo";
+  div.tabIndex = 0;
+  return div;
+}
+
+function createShadowHost(delegatesFocus, container) {
+  const host = document.createElement("div");
+  host.attachShadow({ mode: "open", delegatesFocus: delegatesFocus });
+  container.appendChild(host);
+  return host;
+}
+
+test(() => {
+  resetFocus();
+  const host = createShadowHost(true, document.body);
+  const shadowChild = createFocusableDiv();
+  host.shadowRoot.appendChild(shadowChild);
+
+  shadowChild.focus();
+  assert_true(shadowChild.matches(":focus"));
+  assert_true(host.matches(":focus"));
+}, ":focus applies to host with delegatesFocus=true when the shadow root's descendant has focus");
+
+test(() => {
+  resetFocus();
+  const host = createShadowHost(true, document.body);
+  const slotted = createFocusableDiv();
+  host.shadowRoot.appendChild(document.createElement("slot"));
+  host.appendChild(slotted);
+
+  slotted.focus();
+  assert_true(slotted.matches(":focus"));
+  assert_false(host.matches(":focus"));
+}, ":focus doesn't apply to host with delegatesFocus=true when slotted element has focus");
+
+test(() => {
+  const host = createShadowHost(false, document.body);
+  const shadowChild = createFocusableDiv();
+  host.shadowRoot.appendChild(shadowChild);
+
+  shadowChild.focus();
+  assert_true(shadowChild.matches(":focus"));
+  assert_false(host.matches(":focus"));
+}, ":focus doesn't apply to host with delegatesFocus=false when the shadow root's descendant has focus");
+
+test(() => {
+  resetFocus();
+  const host = createShadowHost(true, document.body);
+  const nestedHost = createShadowHost(true, host.shadowRoot);
+  const nestedShadowChild = createFocusableDiv();
+  nestedHost.shadowRoot.appendChild(nestedShadowChild);
+
+  nestedShadowChild.focus();
+  assert_true(nestedShadowChild.matches(":focus"));
+  assert_true(nestedHost.matches(":focus"));
+  assert_true(host.matches(":focus"));
+}, ":focus applies to host with delegatesFocus=true when an element in a nested shadow tree with delegatesFocus=true is focused");
+
+test(() => {
+  resetFocus();
+  const host = createShadowHost(true, document.body);
+  const nestedHost = createShadowHost(false, host.shadowRoot);
+  const nestedShadowChild = createFocusableDiv();
+  nestedHost.shadowRoot.appendChild(nestedShadowChild);
+
+  nestedShadowChild.focus();
+  assert_true(nestedShadowChild.matches(":focus"));
+  assert_false(nestedHost.matches(":focus"));
+  assert_false(host.matches(":focus"));
+}, ":focus doesn't apply to host with delegatesFocus=true when an element in a nested shadow tree with delegatesFocus=false is focused");
+</script>
+</body>

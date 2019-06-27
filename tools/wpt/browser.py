@@ -28,7 +28,7 @@ def _get_fileversion(binary, logger=None):
         return None
 
 
-def handleRemoveReadonly(func, path, exc):
+def handle_remove_readonly(func, path, exc):
     excvalue = exc[1]
     if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
         os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
@@ -734,7 +734,7 @@ class EdgeChromium(Browser):
             os.remove(edgedriver_path)
             driver_notes_path = os.path.join(dest, "Driver_notes")
             if os.path.isdir(driver_notes_path):
-                shutil.rmtree(driver_notes_path, ignore_errors=False, onerror=handleRemoveReadonly)
+                shutil.rmtree(driver_notes_path, ignore_errors=False, onerror=handle_remove_readonly)
 
         self.logger.info("Downloading MSEdgeDriver from %s" % url)
         unzip(get(url).raw, dest)

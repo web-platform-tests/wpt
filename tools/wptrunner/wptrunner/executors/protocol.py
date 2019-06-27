@@ -247,9 +247,16 @@ class SelectorProtocolPart(ProtocolPart):
         return elements[0]
 
     @abstractmethod
-    def elements_by_selector(self, element_selector, frame="window"):
+    def elements_by_selector(self, selector):
         """Select elements matching a CSS selector
 
+        :param str selector: The CSS selector
+        :returns: A list of protocol-specific handles to elements"""
+        pass
+
+    @abstractmethod
+    def elements_by_selector_and_frame(self, element_selector, frame):
+        """Select elements matching a CSS selector
         :param str selector: The CSS selector
         :returns: A list of protocol-specific handles to elements"""
         pass

@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="variant" content="">
+  <title>idlharness: Exposure subset</title>
+  <script src="/resources/test/variants.js"></script>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/WebIDLParser.js"></script>
+  <script src="/resources/idlharness.js"></script>
+</head>
+<body>
+<p>Verify that interfaces which inherit a base assert that the exposure set is
+  a subset of the inherited interface's exposure set.</p>
+<script>
+  "use strict";
+
+  test(() => {
+    var idl = new IdlArray();
+    idl.add_untested_idls('[Exposed=(Window,ServiceWorker)] interface A : B { };');
+    idl.add_untested_idls('[Exposed=Window] interface B {};');
+    idl.test();
+  });
+</script>
+<script type="text/json" id="expected">
+{
+  "summarized_status": {
+    "status_string": "OK",
+    "message": null
+  },
+  "summarized_tests": [
+    {
+      "name": "idlharness: Exposure subset",
+      "status_string": "FAIL",
+      "properties": {},
+      "message": "A is exposed to 'ServiceWorker', but its base B is not."
+    }
+  ],
+  "type": "complete"
+}
+</script>
+</body>
+</html>

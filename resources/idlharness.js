@@ -867,6 +867,15 @@ IdlArray.prototype.test = function()
             if (!lhs_is_interface) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${lhs} is not an interface.`);
             if (!rhs_is_interface) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${rhs} is not an interface.`);
         }
+        // Check [Exposed] for A is subset of [Exposed] for B.
+        const inheritorExposure = exposure_set(member);
+        const memberExposure = exposure_set(this.members[member.base]);
+        inheritorExposure.forEach(name => {
+            if (!memberExposure || !memberExposure.has(name)) {
+                throw new IdlHarnessError(
+                    `${member.name} is exposed to '${name}', but its base ${member.base} is not.`);
+            }
+        });
         // Check for circular dependencies.
         member.get_inheritance_stack();
     }

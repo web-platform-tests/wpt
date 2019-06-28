@@ -38,7 +38,8 @@ bluetooth_test(
                           }
 
                       for (let iframe of iframes) {
-                        await callWithTrustedClick(
+                        await test_driver.bless(
+                            "Click to enable Bluetooth functionality",
                             () => iframe.contentWindow.postMessage(
                                 {type: 'RequestDevice'}, '*'));
                       }

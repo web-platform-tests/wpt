@@ -240,34 +240,17 @@ function waitForDocumentReady() {
   });
 }
 
-function callWithTrustedClick(callback) {
-  return waitForDocumentReady()
-    .then(() => new Promise(resolve => {
-      let button = document.createElement('button');
-      button.textContent = 'click to continue test';
-      button.style.display = 'block';
-      button.style.fontSize = '20px';
-      button.style.padding = '10px';
-      button.onclick = () => {
-        document.body.removeChild(button);
-        resolve(callback());
-      };
-      document.body.appendChild(button);
-      test_driver.click(button);
-    }));
-}
-
 // Calls requestDevice() in a context that's 'allowed to show a popup'.
 function requestDeviceWithTrustedClick() {
   let args = arguments;
-  return callWithTrustedClick(
+  return test_driver.bless("Click to enable Bluetooth functionality",
       () => navigator.bluetooth.requestDevice.apply(navigator.bluetooth, args));
 }
 
 // Calls requestLEScan() in a context that's 'allowed to show a popup'.
 function requestLEScanWithTrustedClick() {
   let args = arguments;
-  return callWithTrustedClick(
+  return test_driver.bless("Click to enable Bluetooth functionality",
       () => navigator.bluetooth.requestLEScan.apply(navigator.bluetooth, args));
 }
 
@@ -889,7 +872,8 @@ function getHealthThermometerDeviceWithServicesDiscovered(options) {
       iframe.addEventListener('load', resolve);
     }))
     .then(() => new Promise((resolve, reject) => {
-      callWithTrustedClick(() => {
+      test_driver.bless("Click to enable Bluetooth functionality",
+        () => {
         iframe.contentWindow.postMessage({
           type: 'DiscoverServices',
           options: options

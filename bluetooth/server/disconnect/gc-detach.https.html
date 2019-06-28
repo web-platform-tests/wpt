@@ -19,7 +19,7 @@ bluetooth_test(() => setUpConnectableHealthThermometerDevice()
     }))
     // 2. Connect device, run garbage collection, and detach iframe.
     .then(() => new Promise(resolve => {
-      callWithTrustedClick(() => {
+      test_driver.bless("Click to enable Bluetooth functionality", () => {
         iframe.contentWindow.postMessage({
           type: 'RequestAndConnect',
           options: {filters: [{services: ['health_thermometer']}]}

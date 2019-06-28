@@ -10,7 +10,8 @@ const test_desc = 'requestDevice calls do not consume user gestures.';
 
 bluetooth_test(
     () => setUpHealthThermometerAndHeartRateDevices().then(
-        () => callWithTrustedClick(() => {
+        () => test_driver.bless("Click to enable Bluetooth functionality",
+          () => {
           let first = navigator.bluetooth.requestDevice(
               {filters: [{services: ['heart_rate']}]});
           let second = navigator.bluetooth.requestDevice(

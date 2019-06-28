@@ -33,7 +33,8 @@ function send_message(iframe, command, arg, assert_func) {
   if (command === 'RequestAndConnect') {
     arg = {filters: [{services: [arg]}]};
   }
-  callWithTrustedClick(() => iframe.contentWindow.postMessage({
+  test_driver.bless("Click to enable Bluetooth functionality",
+    () => iframe.contentWindow.postMessage({
       type: command,
       options: arg,
     }, '*'));

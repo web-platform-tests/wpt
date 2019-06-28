@@ -18,11 +18,10 @@ async_test(function(t) {
     assert_equals(iframe.contentDocument.location.protocol, "blob:");
     assert_equals(iframe.contentDocument.body.textContent, "src");
 
-    iframe.onload = t.step_func(function() {
       assert_false(isSetting);
+    iframe.onload = t.step_func_done(function() {
       assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
       assert_equals(iframe.contentDocument.body.textContent, "srcdoc");
-      t.done();
     });
 
     var isSetting = true;
@@ -40,11 +39,10 @@ async_test(function(t) {
     assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
     assert_equals(iframe.contentDocument.body.textContent, "old");
 
-    iframe.onload = t.step_func(function() {
       assert_false(isChanging);
+    iframe.onload = t.step_func_done(function() {
       assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
       assert_equals(iframe.contentDocument.body.textContent, "new");
-      t.done();
     });
 
     var isChanging = true;
@@ -62,11 +60,10 @@ async_test(function(t) {
     assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
     assert_equals(iframe.contentDocument.body.textContent, "srcdoc");
 
-    iframe.onload = t.step_func(function() {
       assert_false(isRemoving);
+    iframe.onload = t.step_func_done(function() {
       assert_equals(iframe.contentDocument.location.protocol, "blob:");
       assert_equals(iframe.contentDocument.body.textContent, "src");
-      t.done();
     });
 
     var isRemoving = true;

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- Copyright © 2019 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
+<html>
+    <head>
+        <title>MediaSource-in-Worker looped playback test case; terminates worker at various places to help verify stability of implementation.</title>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    </head>
+    <body>
+        <script>
+
+function terminateWorkerAfterMultipleStableStates(test, worker, timeouts_remaining, cb) {
+  if (timeouts_remaining <= 0) {
+    worker.terminate();
+    test.step_timeout(() => { test.done(); }, 0);
+  } else {
+    test.step_timeout(() => { terminateWorkerAfterMultipleStableStates(test, worker, --timeouts_remaining, cb); }, 0);
+  }
+}
+
+function startMSEWorkerAndTerminateWorker(test, when_to_start_timeouts, timeouts_to_await) {
+  let video = document.createElement('video');
+  document.body.appendChild(video);
+  video.onerror = test.unreached_func("video element error");
+
+  if (when_to_start_timeouts == "after first ended event") {
+    video.addEventListener("ended", () => {
+      terminateWorkerAfterMultipleStableStates(test, worker, timeouts_to_await, test.step_func_done);
+      video.currentTime = 0;
+      video.loop = true;
+    }, { once : true });
+  } else {
+    video.loop = true;
+  }
+
+  let worker = new Worker("mediasource-worker-util.js");
+  worker.onerror = test.unreached_func("worker error");
+
+  if (when_to_start_timeouts == "before setting src") {
+    terminateWorkerAfterMultipleStableStates(test, worker, timeouts_to_await, test.step_func_done);
+  }
+
+  worker.onmessage = test.step_func(function(evt) {
+    if (evt.data.substr(0,6) == "Error:") {
+      assert_unreached("Worker error: " + evt.data);
+    } else {
+      video.src = evt.data;  // Should be a MediaSource ObjectURL.
+      if (when_to_start_timeouts == "after setting src") {
+        terminateWorkerAfterMultipleStableStates(test, worker, timeouts_to_await, test.step_func_done);
+      }
+      video.play();
+    }
+  });
+}
+
+[ "before setting src", "after setting src", "after first ended event" ].forEach((when) => {
+  for (let timeouts = 0; timeouts < 10; ++timeouts) {
+    async_test((test) => { startMSEWorkerAndTerminateWorker(test, when, timeouts); },
+        "MediaSource-in-Workers: Test worker termination afer at least " + timeouts+
+            " main thread stable states, starting counting " + when);
+  }
+});
+
+        </script>
+    </body>
+</html>

@@ -28,16 +28,16 @@
     (() => {
       const idlArray = new IdlArray();
       idlArray.add_untested_idls(`
-        [Exposed=(Worker)]
+        [Exposed=(Worker, Worklet)]
         interface B {};
 
-        [Exposed=(DedicatedWorker, ServiceWorker, SharedWorker)]
+        [Exposed=(DedicatedWorker, ServiceWorker, SharedWorker, PaintWorklet)]
         interface C {};`);
       idlArray.add_idls(`
         [Exposed=(DedicatedWorker, ServiceWorker, SharedWorker)]
         partial interface B {};
 
-        [Exposed=(Worker)]
+        [Exposed=(Worker, PaintWorklet)]
         partial interface C {};`);
       idlArray.collapse_partials();
     })();

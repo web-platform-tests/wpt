@@ -738,11 +738,20 @@ function exposure_set(object, default_set) {
             [ rhs.value ];
         result = new Set(set);
     }
-    if (result && result.has("Worker")) {
-        result.delete("Worker");
-        result.add("DedicatedWorker");
-        result.add("ServiceWorker");
-        result.add("SharedWorker");
+    // Explode shared globals as their individual aliases.
+    if (result) {
+        var explode = {
+            Worker: ["DedicatedWorker", "ServiceWorker", "SharedWorker"],
+            Worklet: ["LayoutWorklet", "PaintWorklet", "AudioWorklet", "AnimationWorklet"],
+        };
+        Object.entries(explode).forEach(function(keyValue) {
+            if (result.has(keyValue[0])) {
+                result.delete(keyValue[0]);
+                keyValue[1].forEach(function(value) {
+                    result.add(value);
+                });
+            }
+        });
     }
     return result;
 }

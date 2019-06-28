@@ -14,19 +14,19 @@ function createIFrameWithBlobSrc() {
 
 async_test(function(t) {
   var iframe = createIFrameWithBlobSrc();
+  var isAdded = false;
   iframe.onload = t.step_func(function() {
     assert_equals(iframe.contentDocument.location.protocol, "blob:");
     assert_equals(iframe.contentDocument.body.textContent, "src");
 
-      assert_false(isSetting);
     iframe.onload = t.step_func_done(function() {
+      assert_false(isAdded);
       assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
       assert_equals(iframe.contentDocument.body.textContent, "srcdoc");
     });
 
-    var isSetting = true;
     iframe.setAttribute("srcdoc", "srcdoc");
-    isSetting = false;
+    isAdded = true;
   });
 
   document.body.appendChild(iframe);
@@ -34,20 +34,20 @@ async_test(function(t) {
 
 async_test(function(t) {
   var iframe = createIFrameWithBlobSrc();
+  var isChanged = false;
   iframe.srcdoc = "old";
   iframe.onload = t.step_func(function() {
     assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
     assert_equals(iframe.contentDocument.body.textContent, "old");
 
-      assert_false(isChanging);
     iframe.onload = t.step_func_done(function() {
+      assert_false(isChanged);
       assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
       assert_equals(iframe.contentDocument.body.textContent, "new");
     });
 
-    var isChanging = true;
     iframe.srcdoc = "new";
-    isChanging = false;
+    isChanged = true;
   });
 
   document.body.appendChild(iframe);
@@ -55,20 +55,20 @@ async_test(function(t) {
 
 async_test(function(t) {
   var iframe = createIFrameWithBlobSrc();
+  var isRemoved = false;
   iframe.srcdoc = "srcdoc";
   iframe.onload = t.step_func(function() {
     assert_equals(iframe.contentDocument.location.href, "about:srcdoc");
     assert_equals(iframe.contentDocument.body.textContent, "srcdoc");
 
-      assert_false(isRemoving);
     iframe.onload = t.step_func_done(function() {
+      assert_false(isRemoved);
       assert_equals(iframe.contentDocument.location.protocol, "blob:");
       assert_equals(iframe.contentDocument.body.textContent, "src");
     });
 
-    var isRemoving = true;
     iframe.removeAttribute("srcdoc");
-    isRemoving = false;
+    isRemoved = true;
   });
 
   document.body.appendChild(iframe);

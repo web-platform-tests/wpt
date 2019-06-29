@@ -222,7 +222,7 @@ class Actions(object):
         """WebDriver window should be set to the top level window when wptrunner
         processes the next event.
         """
-        self.session.switch_frame("parent")
+        self.session.switch_frame(None)
         return actions
 
     @command

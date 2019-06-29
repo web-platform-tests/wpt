@@ -219,7 +219,7 @@ class Actions(object):
         """
         body = {"actions": [] if actions is None else actions}
         actions = self.session.send_session_command("POST", "actions", body)
-        self.session.switch_frame("parent")
+        self.session.switch_frame(None)
         return actions
 
     @command

@@ -223,7 +223,7 @@ class Actions(object):
         processes the next event. Now we can only go one frame deep, so switching
         the frame's parent is sufficient.
         """
-        self.session.switch_frame("parent")
+        self.session.switch_frame(None)
         return actions
 
     @command

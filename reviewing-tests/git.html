@@ -1,0 +1,211 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Working with Pull Requests as a reviewer &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Project Administration" href="../admin/index.html" />
+    <link rel="prev" title="Email Filters" href="email.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="working-with-pull-requests-as-a-reviewer">
+<h1>Working with Pull Requests as a reviewer<a class="headerlink" href="#working-with-pull-requests-as-a-reviewer" title="Permalink to this headline">¶</a></h1>
+<p>In order to do a thorough review,
+it is sometimes desirable to have a local copy of the tests one wishes to review.</p>
+<p>Reviewing tests also often results in wanting a few things to be changed.
+Generally, the reviewer should ask the author to make the desired changes.
+However, sometimes the original author does not respond to the requests,
+or the changes are so trivial (e.g. fixing a typo)
+that bothering the original author seems like a waste of time.</p>
+<p>Here is how to do all that.</p>
+<div class="section" id="trivial-cases">
+<h2>Trivial cases<a class="headerlink" href="#trivial-cases" title="Permalink to this headline">¶</a></h2>
+<p>If it is possible to review the tests without a local copy,
+but the reviewer still wants to make some simple tweaks to the tests before merging,
+it is possible to do so via the Github web UI.</p>
+<ol>
+<li><p class="first">Open the pull request. E.g. https://github.com/web-platform-tests/wpt/pull/1234</p>
+</li>
+<li><p class="first">Go to the <img alt="../_images/files-changed.png" src="../_images/files-changed.png" />Files changed view (e.g. https://github.com/web-platform-tests/wpt/pull/1234/files)</p>
+</li>
+<li><p class="first">Locate the files you wish to change, and click the <img alt="../_images/pencil-icon.png" src="../_images/pencil-icon.png" />pencil icon in the upper right corner</p>
+</li>
+<li><p class="first">Make the desired change</p>
+</li>
+<li><p class="first">Write a commit message (including a good title) at the bottom</p>
+</li>
+<li><p class="first">Make sure the <img alt="../_images/commit-directly.png" src="../_images/commit-directly.png" />Commit directly to the [name-of-the-PR-branch] branch. radio button is selected.</p>
+<p><em>Note: If the PR predates the introduction of this feature by Github,
+or if the author of the PR has disabled write-access by reviewers to the PR branch,
+this may not be available,
+and your only option would be to commit to a new branch, creating a new PR.</em></p>
+</li>
+<li><p class="first">Click the <img alt="../_images/commitbtn.png" src="../_images/commitbtn.png" />Commit Changes button.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="the-normal-way">
+<h2>The Normal Way<a class="headerlink" href="#the-normal-way" title="Permalink to this headline">¶</a></h2>
+<p>This is how to import the Pull Request’s branch into your existing local
+checkout of the repository. If you don’t have one, go <a class="reference external" href="../appendix/github-intro.html#fork-the-test-repository">fork</a>,
+<a class="reference external" href="../appendix/github-intro.html#clone">clone</a>, and <a class="reference external" href="../appendix/github-intro.html#configure-remote-upstream">configure</a> it.</p>
+<ol>
+<li><p class="first">Move into your local clone: <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">wherever-you-put-your-repo</span></code></p>
+</li>
+<li><p class="first">Add a remote for the PR author’s repo: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">remote</span> <span class="pre">add</span> <span class="pre">&lt;author-id&gt;</span> <span class="pre">git://github.com/&lt;author-id&gt;/&lt;repo-name&gt;.git</span></code></p>
+</li>
+<li><p class="first">Fetch the PR: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span> <span class="pre">&lt;author-id&gt;</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code></p>
+</li>
+<li><p class="first">Checkout that branch: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code></p>
+<p><em>The relevant <code class="docutils literal notranslate"><span class="pre">&lt;author-id&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;repo-name&gt;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&lt;name-of-the-PR-branch&gt;</span></code> can be found by looking for this sentence in on the Github page of the PR:
+<img alt="../_images/more-commits.png" src="../_images/more-commits.png" />Add more commits by pushing to the name-of-the-PR-branch branch on author-id/repo-name.</em></p>
+</li>
+</ol>
+<p>If all you meant to do was reviewing files locally, you’re all set.
+If you wish to make changes to the PR branch:</p>
+<ol>
+<li><p class="first">Make changes and <a class="reference external" href="../appendix/github-intro.html#commit">commit</a> normally</p>
+</li>
+<li><p class="first">Push your changes upstream: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">&lt;author-id&gt;</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code></p>
+<p><em>Note: If the PR predates the introduction of this feature by Github,
+or if the author of the PR has disabled write-access by reviewers to the PR branch,
+this will not work, and you will need to use the alternative described below.</em></p>
+</li>
+</ol>
+<p>If, instead of modifying the existing PR, you wish to make a new one based on it:</p>
+<ol>
+<li><p class="first">Set up a new branch that contains the existing PR by doing one of the following:</p>
+<ol class="simple">
+<li>Create a new branch from the tip of the PR:
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span> <span class="pre">&lt;your-new-branch&gt;</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span> <span class="pre">&amp;&amp;</span> <span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">&lt;your-new-branch&gt;</span></code></li>
+<li>Create a new branch from <code class="docutils literal notranslate"><span class="pre">master</span></code> and merge the PR into it:
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span> <span class="pre">&lt;your-new-branch&gt;</span> <span class="pre">master</span> <span class="pre">&amp;&amp;</span> <span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">&lt;your-new-branch&gt;</span> <span class="pre">&amp;&amp;</span> <span class="pre">git</span> <span class="pre">merge</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code></li>
+</ol>
+</li>
+<li><p class="first">Make changes and <a class="reference external" href="../appendix/github-intro.html#commit">commit</a> normally</p>
+</li>
+<li><p class="first">Push your changes to <strong>your</strong> repo: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">&lt;your-new-branch&gt;</span></code></p>
+</li>
+<li><p class="first">Go to the Github Web UI to <a class="reference external" href="../appendix/github-intro.html#submit">submit a new Pull Request</a>.</p>
+<p><em>Note: You should also close the original pull request.</em></p>
+</li>
+</ol>
+<p>When you’re done reviewing or making changes,
+you can delete the branch: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span> <span class="pre">-d</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code>
+(use <code class="docutils literal notranslate"><span class="pre">-D</span></code> instead of <code class="docutils literal notranslate"><span class="pre">-d</span></code> to delete a branch that has not been merged into master yet).</p>
+<p>If you do not expect work with more PRs from the same author,
+you may also discard your connection to their repo:
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">remote</span> <span class="pre">remove</span> <span class="pre">&lt;author-id&gt;</span></code></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reviewing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="checklist.html">Review Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="email.html">Email Filters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Working with Pull Requests as a reviewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-review-policy">Test Review Policy</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Reviewing Tests</a><ul>
+      <li>Previous: <a href="email.html" title="previous chapter">Email Filters</a></li>
+      <li>Next: <a href="../admin/index.html" title="next chapter">Project Administration</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/reviewing-tests/git.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

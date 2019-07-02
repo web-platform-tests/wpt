@@ -101,6 +101,7 @@ for mathvariant in mathvariantTransforms:
     reftest.write(source % (mathvariant, mathAssert))
     source = '\
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/3745"/>\n\
+<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#new-text-transform-values">\n\
 <link rel="match" href="text-transform-math-%s-001.tentative-ref.html"/>\n\
 <meta name="assert" content="Verify that a character with \'text-transform: math-%s\' renders the same as the transformed unicode character.">\n'
     CSSreftest.write(source % (mathvariant, mathvariant))

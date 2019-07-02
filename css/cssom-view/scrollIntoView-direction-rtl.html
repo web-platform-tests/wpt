@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<title>CSSOM View - scrollIntoView considers vertical-rl writing mode</title>
+<meta charset="utf-8">
+<link rel="author" title="Suneel Kota" href="mailto:suneel.kota@samsung.com">
+<link rel="help" href="https://drafts.csswg.org/cssom-view/#dom-element-scrollintoview">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+.box {
+  float: left;
+  width: 200px;
+  height: 200px;
+}
+#scroller {
+  direction: rtl;
+  overflow-x: scroll;
+  width: 300px;
+  height: 215px;
+}
+#container{
+  width: 600px;
+  height: 200px;
+}
+#target {
+  background-color: #ff0;
+}
+</style>
+<body>
+<div id="scroller">
+  <div id="container">
+
+    <!-- ROW-2 -->
+    <div class="row">
+      <div class="box"></div>
+      <div class="box" id="target"></div>
+      <div class="box"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var target = document.getElementById("target");
+var scroller = document.getElementById("scroller");
+var box_width = target.offsetWidth;
+
+scroller.scrollLeft = -10000;
+var leftEdge = scroller.scrollLeft + box_width;
+scroller.scrollLeft = 10000;
+var rightEdge = scroller.scrollLeft - box_width;
+
+
+test(() => {
+  scroller.scrollTo(0, 0);
+  target.scrollIntoView({inline: "start"});
+  assert_approx_equals(scroller.scrollLeft, rightEdge, 0.5, "start should be the right edge");
+}, `scrollIntoView({inline: "start"}), direction: rtl`);
+
+test(() => {
+  scroller.scrollTo(0, 0);
+  target.scrollIntoView({inline: "end"});
+  assert_approx_equals(scroller.scrollLeft, leftEdge, 0.5, "end should be the left edge");
+}, `scrollIntoView({inline: "end"}), direction: rtl`);
+
+</script>
+
+</body>
+</html>

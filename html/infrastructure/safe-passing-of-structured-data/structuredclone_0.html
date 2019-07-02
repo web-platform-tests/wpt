@@ -9,6 +9,7 @@
 </head>
 <body>
  <div id="log"></div>
+ <iframe></iframe> <!-- used for grabbing an URIError from another realm -->
 
 <script type="text/javascript">
     var worker;
@@ -497,8 +498,24 @@
                 });
             },
             function() {
-                var t = async_test("Cloning a modified Error");
+                var t = async_test("URIError objects from other realms are treated as Error");
                 t.id = 35;
+                worker.onmessage = t.step_func_done(function(e) {
+                    assert_equals(Object.getPrototypeOf(e.data), Error.prototype, "Checking prototype");
+                    assert_equals(e.data.constructor, Error, "Checking constructor");
+                    assert_equals(e.data.name, "Error", "Checking name");
+                    assert_equals(e.data.message, "some message", "Checking message");
+                    assert_equals(e.data.foo, undefined, "Checking custom property");
+                });
+                t.step(function() {
+                    const error = frames[0].URIError("some message");
+                    error.foo = "bar";
+                    worker.postMessage(error);
+                });
+            },
+            function() {
+                var t = async_test("Cloning a modified Error");
+                t.id = 36;
                 worker.onmessage = t.step_func_done(function(e) {
                     assert_equals(Object.getPrototypeOf(e.data), SyntaxError.prototype, "Checking prototype");
                     assert_equals(e.data.constructor, SyntaxError, "Checking constructor");
@@ -518,7 +535,7 @@
             },
             function() {
                 var t = async_test("Error.message: getter is ignored when cloning");
-                t.id = 36;
+                t.id = 37;
                 worker.onmessage = t.step_func_done(function(e) {
                     assert_equals(Object.getPrototypeOf(e.data), Error.prototype, "Checking prototype");
                     assert_equals(e.data.constructor, Error, "Checking constructor");
@@ -535,7 +552,7 @@
             },
             function() {
                 var t = async_test("Error.message: undefined property is stringified");
-                t.id = 37;
+                t.id = 38;
                 worker.onmessage = t.step_func_done(function(e) {
                     assert_equals(Object.getPrototypeOf(e.data), Error.prototype, "Checking prototype");
                     assert_equals(e.data.constructor, Error, "Checking constructor");
@@ -552,7 +569,7 @@
             },
             function() {
                 var t = async_test("DOMException objects can be cloned");
-                t.id = 38;
+                t.id = 39;
                 worker.onmessage = t.step_func_done(function(e) {
                     assert_equals(Object.getPrototypeOf(e.data), DOMException.prototype, "Checking prototype");
                     assert_equals(e.data.constructor, DOMException, "Checking constructor");
@@ -568,7 +585,7 @@
             },
             function() {
                 var t = async_test("DOMException objects created by the UA can be cloned");
-                t.id = 39;
+                t.id = 40;
                 worker.onmessage = t.step_func_done(function(e) {
                     assert_equals(Object.getPrototypeOf(e.data), DOMException.prototype, "Checking prototype");
                     assert_equals(e.data.constructor, DOMException, "Checking constructor");

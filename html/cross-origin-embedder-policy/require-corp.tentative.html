@@ -1,6 +1,6 @@
 <!doctype html>
 <meta name="timeout" content="long">
-<title>Cross-Origin header and nested navigable resource without such header</title>
+<title>Cross-Origin-Embedder-Policy header and nested navigable resource without such header</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -16,51 +16,30 @@ async_test(t => {
   frame.src = "/common/blank.html";
   document.body.append(frame);
   assert_equals(frame.contentDocument.body.localName, "body");
-}, "Top-level with anonymous policy: navigating a frame to a null policy should fail.");
+}, `"require-corp" top-level: navigating a frame to "none" should fail`);
 
 async_test(t => {
   const frame = document.createElement("iframe");
-
-  const CHANNEL_NAME = "frame-anon-to-blank";
+  const CHANNEL_NAME = "frame-require-corp-to-none";
   let bc = new BroadcastChannel(CHANNEL_NAME);
   bc.onmessage = t.step_func((event) => {
     assert_not_equals(frame.contentDocument, null);
     let payload = event.data;
     assert_equals(payload, "loaded");
     t.step_timeout(() => {
-      assert_equals(frame.contentDocument, null, "Navigation to null policy should fail");
+      assert_equals(frame.contentDocument, null);
       t.done();
     }, 1500);
   });
 
-  frame.src = `resources/navigate_anonymous.sub.html?channelName=${CHANNEL_NAME}&to=/common/blank.html`;
+  frame.src = `resources/navigate-require-corp.sub.html?channelName=${CHANNEL_NAME}&to=/common/blank.html`;
   document.body.append(frame);
   assert_equals(frame.contentDocument.body.localName, "body");
-}, "Top-level with anonymous policy: navigating a frame from an anonymous policy to a null policy should fail.");
-
-
-async_test(t => {
-  const frame = document.createElement("iframe");
-
-  const CHANNEL_NAME = "frame-usecredentials-to-blank";
-  let bc = new BroadcastChannel(CHANNEL_NAME);
-  bc.onmessage = t.step_func((event) => {
-    assert_not_equals(frame.contentDocument, null);
-    let payload = event.data;
-    assert_equals(payload, "loaded");
-    t.step_timeout(() => {
-      assert_equals(frame.contentDocument, null, "Navigation to null policy should fail");
-      t.done();
-    }, 1500);
-  });
-  frame.src = `resources/navigate_usecredentials.sub.html?channelName=${CHANNEL_NAME}&to=/common/blank.html`;
-  document.body.append(frame);
-  assert_equals(frame.contentDocument.body.localName, "body");
-}, "Top-level with anonymous policy: navigating a frame from a use-credentials policy to a null policy should fail.");
+}, `"require-corp" top-level: navigating a frame from "require-corp" to "none" should fail`);
 
 async_test(t => {
   let pageLoaded = false;
-  const CHANNEL_NAME = "anon-null-window-noopener";
+  const CHANNEL_NAME = "require-corp-none-window-noopener";
   let bc = new BroadcastChannel(CHANNEL_NAME);
   let finished = false;
   bc.onmessage = t.step_func((event) => {
@@ -69,16 +48,16 @@ async_test(t => {
     pageLoaded = true;
   });
 
-  const SECOND_CHANNEL = "anon-null-window-noopener-second";
+  const SECOND_CHANNEL = "require-corp-none-window-noopener-second";
   let bc2 = new BroadcastChannel(SECOND_CHANNEL);
   bc2.onmessage = t.step_func_done((event) => {
     let payload = event.data;
     assert_equals(payload, "loaded");
-    assert_equals(pageLoaded, true, "Opening a null window (noopener) from anon window should work");
+    assert_equals(pageLoaded, true);
   });
 
-  let win = window.open(`resources/navigate_null.sub.html?channelName=${CHANNEL_NAME}&to=navigate_null.sub.html?channelName=${SECOND_CHANNEL}`, "_blank", "noopener");
-}, "Top-level with anonymous policy: creating a noopener popup with null policy should work.");
+  let win = window.open(`resources/navigate-none.sub.html?channelName=${CHANNEL_NAME}&to=navigate-none.sub.html?channelName=${SECOND_CHANNEL}`, "_blank", "noopener");
+}, `"require-corp" top-level: creating a noopener "none" popup should succeed`);
 
 async_test(t => {
   let pageLoaded = false;
@@ -90,13 +69,13 @@ async_test(t => {
     assert_equals(payload, "loaded");
   });
 
-  let win = window.open(`resources/navigate_null.sub.html?channelName=${CHANNEL_NAME}&to=/common/blank.html`, "_blank");
+  let win = window.open(`resources/navigate-none.sub.html?channelName=${CHANNEL_NAME}&to=/common/blank.html`, "_blank");
   t.add_cleanup(() => win.close());
   t.step_timeout(() => {
-    assert_equals(pageLoaded, false, "Opening a null window from anon window should fail");
+    assert_equals(pageLoaded, true);
     t.done();
   }, 500);
-}, "Top-level with anonymous policy: creating a popup with null policy should fail.");
+}, `"require-corp" top-level: creating a "none" popup should succeed.`);
 
 async_test(t => {
   let pageLoaded = false;
@@ -113,21 +92,24 @@ async_test(t => {
   bc2.onmessage = t.step_func_done((event) => {
     let payload = event.data;
     assert_equals(payload, "loaded");
-    assert_equals(pageLoaded, true, "Opening a null window (noopener) from anon window should work");
+    assert_equals(pageLoaded, true);
   });
 
-  let win = window.open(`resources/navigate_anonymous.sub.html?channelName=${CHANNEL_NAME}&to=navigate_null.sub.html?channelName=${SECOND_CHANNEL}`, "_blank", "noopener");
+  let win = window.open(`resources/navigate-require-corp.sub.html?channelName=${CHANNEL_NAME}&to=navigate-none.sub.html?channelName=${SECOND_CHANNEL}`, "_blank", "noopener");
 
-}, "Top-level noopener with anonymous policy: navigating to a different policy should work");
+}, `"require-corp" top-level (as noopener popup): navigating to "none" should succeed`);
 
 promise_test(t => {
   let host_info = get_host_info();
-  return fetch(host_info.HTTP_REMOTE_ORIGIN+"/html/cross-origin/resources/nothing.txt",
-        {"mode": "no-cors", "method": "GET", "headers":{}}).then(r => {
-    assert_equals(r.type, "cors", "type should have been changed to cors");
+  return fetch(host_info.HTTP_REMOTE_ORIGIN+"/html/cross-origin-embedder-policy/resources/nothing.txt").then(r => {
+    assert_equals(r.type, "opaque");
   });
-}, "Fetch policy: anonymous policy no-cors fetches should be changed to cors");
+}, `"require-corp" top-level: fetch() to CORP: cross-origin response should succeed`);
 
+promise_test(t => {
+  let host_info = get_host_info();
+  promise_rejects(t, new TypeError(), fetch(host_info.HTTP_REMOTE_ORIGIN+"/common/blank.html"));
+}, `"require-corp" top-level: fetch() to response without CORP should fail`);
 
 async_test(t => {
   let pageLoaded = false;
@@ -148,7 +130,7 @@ async_test(t => {
     assert_equals(payload, "loaded");
   });
 
-  let win = window.open(`resources/navigate_anonymous.sub.html?channelName=${CHANNEL_NAME}&to=navigate_null.sub.html?channelName=${SECOND_CHANNEL}`, "_blank");
+  let win = window.open(`resources/navigate-require-corp.sub.html?channelName=${CHANNEL_NAME}&to=navigate-none.sub.html?channelName=${SECOND_CHANNEL}`, "_blank");
   t.add_cleanup(() => win.close());
   t.step_timeout(() => {
     assert_equals(pageLoaded, true, "Opening the popup window from anon window should work");
@@ -215,5 +197,4 @@ async_test(t => {
 
   let win = window.open(`resources/popup_and_close.sub.html?channelName=${CHANNEL_NAME}&to=navigate_null.sub.html?channelName=${SECOND_CHANNEL}`, "_blank", "noopener");
 }, "Top-level popup with anonymous policy: Navigating the popup to a null policy should fail. (even opener window is closed)");
-
 </script>

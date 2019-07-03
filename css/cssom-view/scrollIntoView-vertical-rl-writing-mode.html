@@ -66,7 +66,7 @@ var box_width = target.offsetWidth;
 var box_height = target.offsetHeight;
 
 var expectedX;
-// If scroll bar is on the left side, scroller.scrollLeft won't bigger than 0,
+// If scroll bar is on the left side, scroller.scrollLeft won't get bigger than 0,
 scroller.scrollLeft = scrollbar_width;
 if (scroller.scrollLeft == 0) {
   expectedX = {
@@ -91,6 +91,8 @@ var expectedY = {
 // As browsers differ in the meaning of scrollLeft when
 // in a right-to-left mode, we adjust the expectation
 // to match the semantics of scrollLeft.
+// In vertical-rl mode, the scroll x coordinate should be nonpositive per the the spec.
+// But some browsers is nonnegative, so we adjust the expectation.
 scroller.scrollLeft = -1000;
 if(scroller.scrollLeft === 0) {
   expectedX = {

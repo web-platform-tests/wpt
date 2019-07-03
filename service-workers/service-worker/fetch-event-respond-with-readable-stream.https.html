@@ -24,8 +24,7 @@ function iframeTest(url, callback, name) {
     );
     await wait_for_state(t, registration.installing, 'activated');
     const iframe = await with_iframe(url);
-    const contentWindow = iframe.contentWindow;
-    await callback(t, contentWindow);
+    await callback(t, iframe.contentWindow);
   }, name);
 }
 

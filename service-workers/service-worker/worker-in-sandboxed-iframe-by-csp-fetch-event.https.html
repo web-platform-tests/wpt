@@ -63,7 +63,6 @@ promise_test(async t => {
     if (registration) await registration.unregister();
   });
 
-  worker = registration.installing;
   await wait_for_state(t, registration.installing, 'activated');
 }, 'Prepare a service worker.');
 

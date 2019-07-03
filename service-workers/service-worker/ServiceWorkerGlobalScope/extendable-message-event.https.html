@@ -18,6 +18,7 @@ promise_test(async t => {
     SCOPE
   );
   await wait_for_state(t, registration.installing, 'activated');
+
   const saw_message = new Promise(function(resolve) {
     navigator.serviceWorker.onmessage = function(event) {
       resolve(event.data);
@@ -26,6 +27,7 @@ promise_test(async t => {
   const channel = new MessageChannel;
   registration.active.postMessage('', [channel.port1]);
   const results = await saw_message;
+
   const expected = {
     constructor: { name: 'ExtendableMessageEvent' },
     origin: location.origin,
@@ -56,9 +58,9 @@ promise_test(async t => {
     SCRIPT,
     SCOPE
   );
-
   await wait_for_state(t, registration.installing, 'activated');
   const frame = await with_iframe(SCOPE);
+
   const saw_message = new Promise(function(resolve) {
     frame.contentWindow.navigator.serviceWorker.onmessage = function(event) {
       resolve(event.data);
@@ -66,6 +68,7 @@ promise_test(async t => {
   });
   frame.contentWindow.navigator.serviceWorker.controller.postMessage('');
   const results = await saw_message;
+
   const expected = {
     constructor: { name: 'ExtendableMessageEvent' },
     origin: location.origin,
@@ -90,7 +93,6 @@ promise_test(async t => {
 
   const SCRIPT = 'resources/extendable-message-event-loopback-worker.js';
   const SCOPE = 'resources/scope/extendable-message-event-loopback';
-  let results = [];
 
   const registration = await service_worker_unregister_and_register(
     t,
@@ -99,19 +101,20 @@ promise_test(async t => {
   );
   await wait_for_state(t, registration.installing, 'activated');
   const saw_message = new Promise(function(resolve) {
+    const records = [];
     navigator.serviceWorker.onmessage = function(event) {
       switch (event.data.type) {
         case 'record':
-          results.push(event.data.results);
+          records.push(event.data.results);
           break;
         case 'finish':
-          resolve(results);
+          resolve(records);
           break;
       };
     };
   });
   registration.active.postMessage({type: 'start'});
-  results = await saw_message;
+  const results = await saw_message;
   assert_equals(results.length, 2);
   const expected_trial_1 = {
     constructor: { name: 'ExtendableMessageEvent' },
@@ -155,7 +158,6 @@ promise_test(async t => {
   const SCRIPT1 = 'resources/extendable-message-event-ping-worker.js';
   const SCRIPT2 = 'resources/extendable-message-event-pong-worker.js';
   const SCOPE = 'resources/scope/extendable-message-event-pingpong';
-  let results = [];
 
   let registration = await service_worker_unregister_and_register(
     t,
@@ -171,19 +173,20 @@ promise_test(async t => {
   );
   await wait_for_state(t, registration.installing, 'installed');
   const saw_message = new Promise(function(resolve) {
+    const records = [];
     navigator.serviceWorker.onmessage = function(event) {
       switch (event.data.type) {
         case 'record':
-          results.push(event.data.results);
+          records.push(event.data.results);
           break;
         case 'finish':
-          resolve(results);
+          resolve(records);
           break;
       }
     };
   });
   registration.active.postMessage({type: 'start'});
-  results = await saw_message;
+  const results = await saw_message;
   assert_equals(results.length, 2);
 
   const expected_ping = {

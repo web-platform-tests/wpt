@@ -17,11 +17,13 @@ promise_test(async t => {
     SCRIPT,
     SCOPE
   );
-  await new Promise(function(resolve) {
+  const saw_message = new Promise(function(resolve) {
     navigator.serviceWorker.onmessage = function(e) {
-      assert_equals(e.data, 'matched');
-      resolve();
+      resolve(e.data);
     };
   });
+
+  const results = await saw_message;
+  assert_equals(results, 'matched');
 }, 'Test Clients.matchAll() on script evaluation');
 </script>

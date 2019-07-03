@@ -30,6 +30,7 @@ promise_test(async t => {
     SCOPE
   );
   await wait_for_state(t, registration.installing, 'activated');
+
   const frame1 = await with_iframe(SCOPE);
   let client_id = await new Promise(function(resolve, reject) {
     function get_client_id(e) {
@@ -38,6 +39,7 @@ promise_test(async t => {
     }
     window.addEventListener('message', get_client_id, false);
   });
+
   const frame2 = await with_iframe(other_origin_iframe);
   frame2.contentWindow.postMessage(
     { clientId: client_id, type: 'getClientId' },

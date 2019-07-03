@@ -27,7 +27,7 @@ promise_test(async t => {
   await wait_for_state(t, registration.installing, 'activated');
   const iframe = await with_iframe(SCOPE);
   const response = await iframe.contentWindow.fetch('body-in-chunk');
-  const result = await response.text()
+  const result = await response.text();
   assert_equals(result, 'TEST_TRICKLE\nTEST_TRICKLE\nTEST_TRICKLE\n' +
                 'TEST_TRICKLE\n');
 }, 'Respond by chunks with a Response being loaded');

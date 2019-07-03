@@ -32,6 +32,7 @@ function range_request_test(script, expected, description) {
       scope
     );
     await wait_for_state(t, registration.installing, 'activated');
+
     const frame = await with_iframe(scope);
     const video_url = 'fetch-access-control.py?VIDEO&PartialContent';
     const result = await frame.contentWindow.create_test_case_promise(

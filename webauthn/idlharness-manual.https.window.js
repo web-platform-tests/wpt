@@ -11,6 +11,8 @@ idl_test(
   ['webauthn'],
   ['credential-management'],
   async idlArray => {
+    idlArray.add_untested_idls("[Exposed=(Window,Worker)] interface ArrayBuffer {};");
+
     idlArray.add_objects({
       PublicKeyCredential: ['cred', 'assertion'],
       AuthenticatorAttestationResponse: ['cred.response'],
@@ -36,23 +38,16 @@ idl_test(
       }),
     ]);
 
-    if (self.cred) {
-      self.assertion = await Promise.race([
-        new Promise((_, reject) => window.setTimeout(() => {
-          reject('Timed out waiting for user to touch security key')
-        }, 3000)),
-        navigator.credentials.get({
-          publicKey: {
-            timeout: 3000,
-            allowCredentials: [{
-              id: cred.rawId,
-              transports: ["usb", "nfc", "ble"],
-              type: "public-key"
-            }],
-            challenge: challengeBytes,
-          }
-        })
-      ]);
-    }
+    self.assertion = await navigator.credentials.get({
+      publicKey: {
+        timeout: 3000,
+        allowCredentials: [{
+          id: cred.rawId,
+          transports: ["usb", "nfc", "ble"],
+          type: "public-key"
+        }],
+        challenge: challengeBytes,
+      }
+    });
   }
 );

@@ -821,10 +821,19 @@ IdlArray.prototype.test = function()
             if (!(this.members[lhs] instanceof IdlInterface)) throw errStr + lhs + " is not an interface.";
             if (!(rhs in this.members)) throw errStr + rhs + " is undefined.";
             if (!(this.members[rhs] instanceof IdlInterface)) throw errStr + rhs + " is not an interface.";
-            this.members[rhs].members.forEach(function(member)
-            {
-                this.members[lhs].members.push(new IdlInterfaceMember(member));
-            }.bind(this));
+
+            if (this.members[rhs].members.length) {
+                test(function () {
+                    this.members[rhs].members.forEach(function(member) {
+                        assert_false(
+                            this.members[lhs].members.some(function(m) {
+                                return m.name === member.name
+                            }),
+                            "member " + member.name + " is already defined");
+                        this.members[lhs].members.push(new IdlInterfaceMember(member));
+                    }.bind(this));
+                }.bind(this), lhs + " includes " + rhs + ": member names are unique");
+            }
         }.bind(this));
     }
     this["includes"] = {};
@@ -899,11 +908,13 @@ IdlArray.prototype.collapse_partials = function()
             test(function () {
                 assert_true(originalExists, `Original ${parsed_idl.type} should be defined`);
 
-                var expected = IdlInterface;
+                var expected;
                 switch (parsed_idl.type) {
-                    case 'interface': expected = IdlInterface; break;
                     case 'dictionary': expected = IdlDictionary; break;
                     case 'namespace': expected = IdlNamespace; break;
+                    case 'interface':
+                    case 'interface mixin':
+                        expected = IdlInterface; break;
                 }
                 assert_true(
                     expected.prototype.isPrototypeOf(this.members[parsed_idl.name]),
@@ -949,10 +960,18 @@ IdlArray.prototype.collapse_partials = function()
                 this.members[parsed_idl.name].extAttrs.push(extAttr);
             }.bind(this));
         }
-        parsed_idl.members.forEach(function(member)
-        {
-            this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
-        }.bind(this));
+
+        if (parsed_idl.members.length) {
+            test(function () {
+                parsed_idl.members.forEach(function(member)
+                {
+                    assert_false(
+                        this.members[parsed_idl.name].members.some(m => m.name === member.name),
+                        "member " + member.name + " is already defined");
+                    this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
+                }.bind(this));
+            }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: member names are unique`);
+        }
     }.bind(this));
     this.partials = [];
 }

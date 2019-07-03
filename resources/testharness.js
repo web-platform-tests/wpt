@@ -1437,13 +1437,13 @@ policies and contribution forms [3].
             };
 
             var code_name_map = {};
-            Object.entries(name_code_map).forEach(function(keyValue) {
-                if (keyValue[1] > 0) {
-                    code_name_map[keyValue[1]] = keyValue[0];
+            for (var key in name_code_map) {
+                if (name_code_map[key] > 0) {
+                    code_name_map[name_code_map[key]] = key;
                 }
-            });
+            }
 
-            var required_props = { code };
+            var required_props = { code: code };
 
             if (typeof code === "number") {
                 if (code === 0) {

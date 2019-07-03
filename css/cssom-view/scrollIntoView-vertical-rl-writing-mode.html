@@ -69,7 +69,7 @@ var expectedY = [ box_height, ((3*box_height - scroller_height)/2) + (scrollbar_
 // in a right-to-left mode, we adjust the expectation
 // to match the semantics of scrollLeft.
 if(scroller.scrollLeft === 0)
-  expectedX = [ -box_width, -(((3*box_width - scroller_width)/2)+ (scrollbar_width/2)), -(((2*box_width)-scroller_width)+scrollbar_width)];
+  expectedX = [ -(box_width - scrollbar_width), -(((3*box_width - scroller_width)/2) + (scrollbar_width/2) - scrollbar_width), -((2*box_width) - scroller_width) ];
 
 // This formats dict as a string suitable as test name.
 // format_value() is provided by testharness.js,

@@ -11,17 +11,11 @@ idl_test(
   ['webauthn'],
   ['credential-management'],
   async idlArray => {
-    idlArray.add_untested_idls("[Exposed=(Window,Worker)] interface ArrayBuffer {};");
     idlArray.add_objects({
-      // Tested in (non-manual) idlharness.https.window.js:
-      // WebAuthentication: ['navigator.authentication'],
       PublicKeyCredential: ['cred', 'assertion'],
       AuthenticatorAttestationResponse: ['cred.response'],
       AuthenticatorAssertionResponse: ['assertion.response']
     });
-
-    const challengeBytes = new Uint8Array(16);
-    window.crypto.getRandomValues(challengeBytes);
 
     self.cred = await Promise.race([
       new Promise((_, reject) => window.setTimeout(() => {

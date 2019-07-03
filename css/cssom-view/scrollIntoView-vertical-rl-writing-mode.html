@@ -69,7 +69,7 @@ var expectedY = [ box_height, ((3*box_height - scroller_height)/2) + (scrollbar_
 // in a right-to-left mode, we adjust the expectation
 // to match the semantics of scrollLeft.
 if(scroller.scrollLeft === 0) {
-  // If scroll bar is on the left side, scroller.scrollLeft won't bigger then 0,
+  // If scroll bar is on the left side, scroller.scrollLeft won't bigger than 0,
   scroller.scrollLeft = 1000;
   if (scroller.scrollLeft == 0) {
     // Scroll bar is on the left side.

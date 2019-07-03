@@ -17,6 +17,9 @@ idl_test(
       AuthenticatorAssertionResponse: ['assertion.response']
     });
 
+    const challengeBytes = new Uint8Array(16);
+    window.crypto.getRandomValues(challengeBytes);
+
     self.cred = await Promise.race([
       new Promise((_, reject) => window.setTimeout(() => {
         reject('Timed out waiting for user to touch security key')

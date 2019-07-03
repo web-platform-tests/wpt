@@ -825,11 +825,9 @@ IdlArray.prototype.test = function()
             if (this.members[rhs].members.length) {
                 test(function () {
                     this.members[rhs].members.forEach(function(member) {
-                        assert_false(
-                            this.members[lhs].members.some(function(m) {
-                                return m.name === member.name
-                            }),
-                            "member " + member.name + " is already defined");
+                        assert_true(
+                            this.members[lhs].members.every(m => this.are_different_members(m, member)),
+                            "member " + member.name + " is unique");
                         this.members[lhs].members.push(new IdlInterfaceMember(member));
                     }.bind(this));
                 }.bind(this), lhs + " includes " + rhs + ": member names are unique");
@@ -895,16 +893,16 @@ IdlArray.prototype.collapse_partials = function()
                 || this.members[parsed_idl.name] instanceof IdlDictionary
                 || this.members[parsed_idl.name] instanceof IdlNamespace);
 
+        // Ensure unique test name in case of multiple partials.
         let partialTestName = parsed_idl.name;
-        if (!parsed_idl.untested) {
-            // Ensure unique test name in case of multiple partials.
-            let partialTestCount = 1;
-            if (testedPartials.has(parsed_idl.name)) {
-                partialTestCount += testedPartials.get(parsed_idl.name);
-                partialTestName = `${partialTestName}[${partialTestCount}]`;
-            }
-            testedPartials.set(parsed_idl.name, partialTestCount);
+        let partialTestCount = 1;
+        if (testedPartials.has(parsed_idl.name)) {
+            partialTestCount += testedPartials.get(parsed_idl.name);
+            partialTestName = `${partialTestName}[${partialTestCount}]`;
+        }
+        testedPartials.set(parsed_idl.name, partialTestCount);
 
+        if (!parsed_idl.untested) {
             test(function () {
                 assert_true(originalExists, `Original ${parsed_idl.type} should be defined`);
 
@@ -965,15 +963,26 @@ IdlArray.prototype.collapse_partials = function()
             test(function () {
                 parsed_idl.members.forEach(function(member)
                 {
-                    assert_false(
-                        this.members[parsed_idl.name].members.some(m => m.name === member.name),
-                        "member " + member.name + " is already defined");
+                    assert_true(
+                        this.members[parsed_idl.name].members.every(m => this.are_different_members(m, member)),
+                        "member " + member.name + " is unique");
                     this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
                 }.bind(this));
             }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: member names are unique`);
         }
     }.bind(this));
     this.partials = [];
+}
+
+IdlArray.prototype.are_different_members = function(m1, m2) {
+    if (m1.name !== m2.name) {
+        return true;
+    } else if (m1.type === 'operation' && m2.type === 'operation'
+        && m1.arguments.length !== m2.arguments.length) {
+        // Method overload.
+        return true;
+    }
+    return false;
 }
 
 IdlArray.prototype.assert_type_is = function(value, type)

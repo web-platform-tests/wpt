@@ -804,10 +804,19 @@ IdlArray.prototype.test = function()
             if (!(this.members[lhs] instanceof IdlInterface)) throw errStr + lhs + " is not an interface.";
             if (!(rhs in this.members)) throw errStr + rhs + " is undefined.";
             if (!(this.members[rhs] instanceof IdlInterface)) throw errStr + rhs + " is not an interface.";
-            this.members[rhs].members.forEach(function(member)
-            {
-                this.members[lhs].members.push(new IdlInterfaceMember(member));
-            }.bind(this));
+
+            if (this.members[rhs].members.length) {
+                test(function () {
+                    this.members[rhs].members.forEach(function(member) {
+                        assert_false(
+                            this.members[lhs].members.some(function (m) {
+                                return m.name === member.name
+                            }),
+                            "member " + member.name  + " is already defined");
+                        this.members[lhs].members.push(new IdlInterfaceMember(member));
+                    }.bind(this));
+                }.bind(this), lhs + " implements " + rhs + ": member names are unique");
+            }
         }.bind(this));
     }
     this["implements"] = {};
@@ -912,6 +921,7 @@ IdlArray.prototype.collapse_partials = function()
                     case 'namespace': expected = IdlNamespace; break;
                     case 'interface':
                     case 'interface mixin':
+                    default:
                         expected = IdlInterface; break;
                 }
                 assert_true(
@@ -958,7 +968,6 @@ IdlArray.prototype.collapse_partials = function()
                 this.members[parsed_idl.name].extAttrs.push(extAttr);
             }.bind(this));
         }
-
         if (parsed_idl.members.length) {
             test(function () {
                 parsed_idl.members.forEach(function(member)

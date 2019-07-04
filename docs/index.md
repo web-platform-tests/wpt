@@ -1,10 +1,10 @@
 # web-platform-tests documentation
 
-The web-platform-tests Project is a W3C-coordinated attempt to build a
+The web-platform-tests project is a W3C-coordinated attempt to build a
 cross-browser testsuite for [the Web-platform
 stack](https://platform.html5.org). Writing tests in a way that allows them to
 be run in all browsers gives browser projects confidence that they are shipping
-software that is compatible with other implementations, and that later
+software which is compatible with other implementations, and that later
 implementations will be compatible with their implementations. This in turn
 gives Web authors/developers confidence that they can actually rely on the Web
 platform to deliver on the promise of working across browsers and devices

@@ -220,8 +220,7 @@ class Actions(object):
         body = {"actions": [] if actions is None else actions}
         actions = self.session.send_session_command("POST", "actions", body)
         """WebDriver window should be set to the top level window when wptrunner
-        processes the next event. Now we can only go one frame deep, so switching
-        the frame's parent is sufficient.
+        processes the next event.
         """
         self.session.switch_frame(None)
         return actions

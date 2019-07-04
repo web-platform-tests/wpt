@@ -19,12 +19,24 @@
             paint(ellipse) top left/50% 20% repeat-y,
             paint(ellipse) center right/50% 50% no-repeat;
     }
+
+    #three {
+        background:
+            paint(ellipse) top left/50% 50% space;
+    }
+
+    #four {
+        background:
+            paint(ellipse) round;
+    }
 </style>
 <script src="/common/reftest-wait.js"></script>
 <script src="/common/worklet-reftest.js"></script>
 <body>
 <div id="one"></div>
 <div id="two"></div>
+<div id="three"></div>
+<div id="four"></div>
 
 <script id="code" type="text/worklet">
 registerPaint('ellipse', class {

@@ -15,16 +15,29 @@ def take_element_screenshot(session, element_id):
         )
     )
 
-# In some cases, such as "dismiss and notify" & "accept and notify" dismiss
-# the dialog and throw an error. This fixture checks those cases.
 @pytest.fixture
-def check_user_prompt_closed_with_error(session, create_dialog):
-    def check_user_prompt_closed_with_error(dialog_type):
+def check_user_prompt_closed_without_exception(session, create_dialog):
+    def check_user_prompt_closed_without_exception(dialog_type):
         session.url = inline("<input/>")
         element = session.find.css("input", all=False)
 
         create_dialog(dialog_type, text=dialog_type)
-        assert session.alert.text == dialog_type
+
+        response = take_element_screenshot(session, element.id)
+        value = assert_success(response)
+
+        assert_png(value)
+
+    return check_user_prompt_closed_without_exception
+
+
+@pytest.fixture
+def check_user_prompt_closed_with_exception(session, create_dialog):
+    def check_user_prompt_closed_with_exception(dialog_type):
+        session.url = inline("<input/>")
+        element = session.find.css("input", all=False)
+
+        create_dialog(dialog_type, text=dialog_type)
 
         response = take_element_screenshot(session, element.id)
         assert_error(response, "unexpected alert open")
@@ -36,36 +49,16 @@ def check_user_prompt_closed_with_error(session, create_dialog):
 
         assert_png(value)
 
-    return check_user_prompt_closed_with_error
+    return check_user_prompt_closed_with_exception
 
-# In the case of "accept" and "dismiss" the dialog will be silently
-# removed and should not affect element screenshot.
+
 @pytest.fixture
-def check_user_prompt_automatically_closed(session, create_dialog):
-    def check_user_prompt_automatically_closed(dialog_type):
+def check_user_prompt_not_closed_but_exception(session, create_dialog):
+    def check_user_prompt_not_closed_but_exception(dialog_type):
         session.url = inline("<input/>")
         element = session.find.css("input", all=False)
 
         create_dialog(dialog_type, text=dialog_type)
-        assert session.alert.text == dialog_type
-
-        response = take_element_screenshot(session, element.id)
-        value = assert_success(response)
-
-        assert_png(value)
-
-    return check_user_prompt_automatically_closed
-
-# In the case of "ignore" or no unhandledPromptBehavior specified the dialog will
-# not be touched and this should block the screenshot.
-@pytest.fixture
-def check_user_prompt_not_modified(session, create_dialog):
-    def check_user_prompt_not_modified(dialog_type):
-        session.url = inline("<input/>")
-        element = session.find.css("input", all=False)
-
-        create_dialog(dialog_type, text=dialog_type)
-        assert session.alert.text == dialog_type
 
         response = take_element_screenshot(session, element.id)
         assert_error(response, "unexpected alert open")
@@ -76,39 +69,40 @@ def check_user_prompt_not_modified(session, create_dialog):
 
         assert_png(value)
 
-    return check_user_prompt_not_modified
+    return check_user_prompt_not_closed_but_exception
+
 
 @pytest.mark.capabilities({"unhandledPromptBehavior": "accept"})
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
-def test_accept(check_user_prompt_automatically_closed, dialog_type):
-    check_user_prompt_automatically_closed(dialog_type)
+def test_accept(check_user_prompt_closed_without_exception, dialog_type):
+    check_user_prompt_closed_without_exception(dialog_type)
 
 
 @pytest.mark.capabilities({"unhandledPromptBehavior": "accept and notify"})
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
-def test_accept_and_notify(check_user_prompt_closed_with_error, dialog_type):
-    check_user_prompt_closed_with_error(dialog_type)
+def test_accept_and_notify(check_user_prompt_closed_with_exception, dialog_type):
+    check_user_prompt_closed_with_exception(dialog_type)
 
 
 @pytest.mark.capabilities({"unhandledPromptBehavior": "dismiss"})
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
-def test_dismiss(check_user_prompt_automatically_closed, dialog_type):
-    check_user_prompt_automatically_closed(dialog_type)
+def test_dismiss(check_user_prompt_closed_without_exception, dialog_type):
+    check_user_prompt_closed_without_exception(dialog_type)
 
 
 @pytest.mark.capabilities({"unhandledPromptBehavior": "dismiss and notify"})
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
-def test_dismiss_and_notify(check_user_prompt_closed_with_error, dialog_type):
-    check_user_prompt_closed_with_error(dialog_type)
+def test_dismiss_and_notify(check_user_prompt_closed_with_exception, dialog_type):
+    check_user_prompt_closed_with_exception(dialog_type)
 
 
 @pytest.mark.capabilities({"unhandledPromptBehavior": "ignore"})
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
-def test_ignore(check_user_prompt_not_modified, dialog_type):
-    check_user_prompt_not_modified(dialog_type)
+def test_ignore(check_user_prompt_not_closed_but_exception, dialog_type):
+    check_user_prompt_not_closed_but_exception(dialog_type)
 
 # When unhandledPromptBehavior is not specified, element screenshot should
 # fail with an error.
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
-def test_default(check_user_prompt_closed_with_error, dialog_type):
-    check_user_prompt_closed_with_error(dialog_type)
+def test_default(check_user_prompt_closed_with_exception, dialog_type):
+    check_user_prompt_closed_with_exception(dialog_type)

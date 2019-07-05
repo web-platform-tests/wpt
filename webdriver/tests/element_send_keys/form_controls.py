@@ -50,7 +50,7 @@ def test_input_append_with_focus(session):
 
     element_send_keys(session, element, "b")
     assert element.property("value") == "ab"
-    element_send_keys(session, element, [Keys.LEFT])
+    element_send_keys(session, element, Keys.LEFT)
     assert element.property("value") == "ab"
     assert_element_has_focus(element)
     element_send_keys(session, element, "c")

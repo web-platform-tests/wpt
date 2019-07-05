@@ -10,7 +10,7 @@ function coop_test(t, host, coop, channelName, hasOpener) {
     assert_equals(payload.opener, hasOpener);
   });
 
-  let w = window.open(`${host.origin}/html/cross-origin-opener/resources/coop_window.py?path=window.sub.html&coop=${escape(coop)}&channel=${channelName}`, channelName);
+  let w = window.open(`${host.origin}/html/cross-origin-opener-policy/resources/coop_window.py?path=window.sub.html&coop=${escape(coop)}&channel=${channelName}`, channelName);
 
   // w will be closed by its postback iframe. When out of process,
   // window.close() does not work.
@@ -19,10 +19,10 @@ function coop_test(t, host, coop, channelName, hasOpener) {
 
 function run_coop_tests(mainTest, testArray) {
   for (let test of tests) {
-   async_test(t => {
-    coop_test(t, test[0], test[1],
-              `${mainTest}_to_${test[0].name}_${test[1].replace(/ /g,"-")}`,
-              test[2]);
-  }, `${mainTest} document opening popup to ${test[0].origin} with COOP: "${test[1]}"`);
- }
+    async_test(t => {
+      coop_test(t, test[0], test[1],
+                `${mainTest}_to_${test[0].name}_${test[1].replace(/ /g,"-")}`,
+                test[2]);
+    }, `${mainTest} document opening popup to ${test[0].origin} with COOP: "${test[1]}"`);
+  }
 }

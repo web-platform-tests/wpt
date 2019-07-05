@@ -12,7 +12,7 @@
       iframe.contentWindow.postMessage(payload, "*");
     };
     let channelName = new URL(location).searchParams.get("channel");
-    iframe.src = `${get_host_info().HTTP_ORIGIN}/html/cross-origin-opener/resources/postback.sub.html?channel=${channelName}`;
+    iframe.src = `${get_host_info().HTTP_ORIGIN}/html/cross-origin-opener-policy/resources/postback.sub.html?channel=${channelName}`;
     document.body.appendChild(iframe);
   });
 </script>

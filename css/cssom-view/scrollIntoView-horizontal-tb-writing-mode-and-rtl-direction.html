@@ -84,18 +84,7 @@ var expectedY = {
     blockStart: box_height,
     blockCenter: (3*box_height - scroller_height)/2 + scrollbar_width/2,
     blockEnd: 2*box_height - scroller_height + scrollbar_width,
-  };
-
-// This formats dict as a string suitable as test name.
-// format_value() is provided by testharness.js,
-// which also preserves sign for -0.
-function format_dict(dict) {
-  const props = [];
-  for (let prop in dict) {
-    props.push(`${prop}: ${format_value(dict[prop])}`);
-  }
-  return `{${props.join(", ")}}`;
-}
+};
 
 [
   [{block: "start", inline: "start"}, expectedX.inlineStart, expectedY.blockStart],
@@ -113,7 +102,7 @@ function format_dict(dict) {
     target.scrollIntoView(input);
     assert_approx_equals(scroller.scrollLeft, expectedX, 0.5, "scrollX");
     assert_approx_equals(scroller.scrollTop, expectedY, 0.5, "scrollY");
-  }, `scrollIntoView(${format_dict(input)})`);
+  }, `scrollIntoView(${JSON.stringify(input)})`);
 })
 
 </script>

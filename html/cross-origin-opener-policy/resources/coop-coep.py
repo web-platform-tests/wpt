@@ -1,10 +1,16 @@
 def main(request, response):
     coop = request.GET.first("coop")
     coep = request.GET.first("coep")
+    redirect = request.GET.first("redirect", None)
     if coop != "":
         response.headers.set("Cross-Origin-Opener-Policy", coop)
     if coep != "":
         response.headers.set("Cross-Origin-Embedder-Policy", coep)
+
+    if redirect != None:
+        response.status = 302
+        response.headers.set("Location", redirect)
+        return
 
     # This uses an <iframe> as BroadcastChannel is same-origin bound.
     response.content = """

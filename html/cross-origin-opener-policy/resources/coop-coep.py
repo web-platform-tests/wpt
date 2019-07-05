@@ -1,6 +1,6 @@
 def main(request, response):
-    coop = request.GET.first("coop", "same-origin")
-    coep = request.GET.first("coep", "require-corp")
+    coop = request.GET.first("coop")
+    coep = request.GET.first("coep")
     if coop != "":
         response.headers.set("Cross-Origin-Opener-Policy", coop)
     if coep != "":

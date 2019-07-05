@@ -10,7 +10,7 @@ function coop_coep_test(t, host, coop, coep, channelName, hasOpener) {
     assert_equals(payload.opener, hasOpener);
   });
 
-  const w = window.open(`${host.origin}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=${coop}&coep${coep}&channel=${channelName}`, channelName);
+  const w = window.open(`${host.origin}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=${coop}&coep=${coep}&channel=${channelName}`, channelName);
 
   // w will be closed by its postback iframe. When out of process,
   // window.close() does not work.

@@ -33,7 +33,12 @@
 ].forEach(variant => {
   async_test(t => {
     coop_coep_test(t, SAME_ORIGIN, variant.coop, variant.coep, variant.title.replace(/ /g,"-"), variant.opener);
-  }, variant.title);
+  }, `Same-origin ${variant.title}`);
+
+  // This seems useful to test, CROSS_SITE is probably too redundant though.
+  async_test(t => {
+    coop_coep_test(t, SAME_SITE, variant.coop, variant.coep, `same-site-${variant.title.replace(/ /g,"-")}`, false);
+  }, `Same-site ${variant.title}`);
 });
 
 /*

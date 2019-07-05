@@ -1,0 +1,59 @@
+<!doctype html>
+<title>Cross-Origin-Opener-Policy and Cross-Origin-Embedder-Policy</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/common.js"></script>
+<script>
+[
+  {
+    "title": "coop/coep",
+    "coop": "same-origin",
+    "coep": "require-corp",
+    "opener": true
+  },
+  {
+    "title": "no coop/coep",
+    "coop": "",
+    "coep": "require-corp",
+    "opener": false
+  },
+  {
+    "title": "coop/no coep",
+    "coop": "same-origin",
+    "coep": "",
+    "opener": false
+  },
+  {
+    "title": "no coop/no coep",
+    "coop": "",
+    "coep": "",
+    "opener": false
+  },
+  {
+    "title": "coop unsafe-inherit/coep",
+    "coop": "unsafe-inherit",
+    "coep": "require-corp",
+    "opener": true
+  },
+  {
+    "title": "coop unsafe-inherit/no coep",
+    "coop": "unsafe-inherit",
+    "coep": "",
+    "opener": false
+  }
+].forEach(variant => {
+  ["same-origin", "same-site"].forEach(site => {
+    const title = `Popup navigating to ${site} with ${variant.title}`;
+    const channel = title.replace(/ /g,"-");
+    console.log(channel);
+    const navigateHost = site === "same-origin" ? SAME_ORIGIN : SAME_SITE;
+    const navigateURL = `${navigateHost.origin}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=${variant.coop}&coep=${variant.coep}&channel=${channel}`;
+    const opener = site === "same-origin" ? variant.opener : false;
+
+    async_test(t => {
+      url_test(t, `${SAME_ORIGIN.origin}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=same-origin&coep=require-corp&navigate=${encodeURIComponent(navigateURL)}`, channel, opener);
+    }, title);
+  });
+});
+</script>

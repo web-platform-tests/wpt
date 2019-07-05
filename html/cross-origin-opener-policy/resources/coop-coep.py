@@ -13,12 +13,17 @@ def main(request, response):
 <script src="/common/get-host-info.sub.js"></script>
 <iframe></iframe>
 <script>
-  const iframe = document.querySelector("iframe");
-  iframe.onload = () => {
-    const payload = { name: self.name, opener: !!self.opener };
-    iframe.contentWindow.postMessage(payload, "*");
-  };
-  const channelName = new URL(location).searchParams.get("channel");
-  iframe.src = `${get_host_info().HTTP_ORIGIN}/html/cross-origin-opener-policy/resources/postback.html?channel=${channelName}`;
+  const navigate = new URL(location).searchParams.get("navigate");
+  if (navigate !== null) {
+    self.location = navigate;
+  } else {
+    const iframe = document.querySelector("iframe");
+    iframe.onload = () => {
+      const payload = { name: self.name, opener: !!self.opener };
+      iframe.contentWindow.postMessage(payload, "*");
+    };
+    const channelName = new URL(location).searchParams.get("channel");
+    iframe.src = `${get_host_info().HTTP_ORIGIN}/html/cross-origin-opener-policy/resources/postback.html?channel=${channelName}`;
+  }
 </script>
 """

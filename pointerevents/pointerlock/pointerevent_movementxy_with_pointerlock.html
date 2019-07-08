@@ -84,18 +84,13 @@
                             assert_array_equals(pointereventMovements, mouseeventMovements, "pointermove should have movementX/Y same as mousemove");
                         });
                     }
+                    pointerHoverInTarget('mouse', target, 'right').then(function() {
+                        return clickInTarget("mouse", target);
+                    });
                 });
 
                 // Inject mouse inputs.
                 pointerHoverInTarget('mouse', target, 'right').then(function() {
-                    return clickInTarget("mouse", target);
-                }).then(function() {
-                    return pointerHoverInTarget('mouse', target, 'right');
-                }).then(function() {
-                    return clickInTarget("mouse", target);
-                }).then(function() {
-                    return pointerHoverInTarget('mouse', target, 'right');
-                }).then(function() {
                     return clickInTarget("mouse", target);
                 });
             }

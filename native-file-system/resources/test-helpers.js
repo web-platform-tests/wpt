@@ -15,8 +15,12 @@ if (navigator.userAgent.includes("Windows NT")) {
 
 async function cleanupSandboxedFileSystem() {
     const dir = await FileSystemDirectoryHandle.getSystemDirectory({ type: 'sandbox' });
-    for await (let entry of dir.getEntries())
-        dir.removeEntry(entry.name, { recursive: entry.isDirectory });
+    for await (let entry of dir.getEntries()) {
+        if (entry.isDirectory)
+            await entry.removeRecursively();
+        else
+            await entry.remove();
+   }
 }
 
 async function getFileSize(handle) {
@@ -56,7 +60,7 @@ async function createDirectory(test, name, parent) {
   const new_dir_handle = await parent_dir_handle.getDirectory(name, { create: true });
   test.add_cleanup(async () => {
         try {
-            await parent_dir_handle.removeEntry(name, { recursive: true });
+            await new_dir_handle.removeRecursively();
         } catch (e) {
             // Ignore any errors when removing directories, as tests might
             // have already removed the directory.
@@ -70,7 +74,7 @@ async function createEmptyFile(test, name, parent) {
     const handle = await dir.getFile(name, { create: true });
     test.add_cleanup(async () => {
         try {
-            await dir.removeEntry(name);
+            await handle.remove();
         } catch (e) {
             // Ignore any errors when removing files, as tests might already remove the file.
         }

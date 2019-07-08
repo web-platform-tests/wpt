@@ -216,7 +216,6 @@ class Actions(object):
         :param actions: List of input source action sequences. A single action
                         sequence may be created with the help of
                         ``ActionSequence.dict``.
-        switch_frame to None               
         """
         body = {"actions": [] if actions is None else actions}
         actions = self.session.send_session_command("POST", "actions", body)

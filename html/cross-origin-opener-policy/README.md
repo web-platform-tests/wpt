@@ -5,3 +5,7 @@ This directory as well as `../cross-origin-embedder-policy/` contains tests for 
 * [COEP processing model](https://mikewest.github.io/corpp/)
 * [Open COOP issues](https://github.com/whatwg/html/labels/topic%3A%20cross-origin-opener-policy)
 * [Open COEP issues](https://github.com/whatwg/html/labels/topic%3A%20cross-origin-embedder-policy)
+
+Notes:
+
+* Top-level navigation to a `data:` URL does not work in Chrome and Firefox and is therefore not tested. (This should probably be standardized.)

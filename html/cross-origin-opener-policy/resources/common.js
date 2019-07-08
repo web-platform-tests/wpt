@@ -4,7 +4,7 @@ const CROSS_ORIGIN = {origin: get_host_info().HTTP_NOTSAMESITE_ORIGIN, name: "CR
 
 function url_test(t, url, channelName, hasOpener) {
   const bc = new BroadcastChannel(channelName);
-  bc.onmessage = t.step_func_done((event) => {
+  bc.onmessage = t.step_func_done(event => {
     const payload = event.data;
     assert_equals(payload.name, hasOpener ? channelName : "");
     assert_equals(payload.opener, hasOpener);
@@ -15,7 +15,6 @@ function url_test(t, url, channelName, hasOpener) {
   // w will be closed by its postback iframe. When out of process,
   // window.close() does not work.
   t.add_cleanup(() => w.close());
-
 }
 
 function coop_coep_test(t, host, coop, coep, channelName, hasOpener) {

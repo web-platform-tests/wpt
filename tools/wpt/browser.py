@@ -738,7 +738,6 @@ class EdgeChromium(Browser):
 
         self.logger.info("Downloading MSEdgeDriver from %s" % url)
         unzip(get(url).raw, dest)
-        
         if os.path.isfile(edgedriver_path):
             self.logger.info("Successfully downloaded MSEdgeDriver to %s" % edgedriver_path)
         return find_executable(self.edgedriver_name, dest)

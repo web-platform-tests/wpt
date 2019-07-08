@@ -45,7 +45,7 @@
 // The promise from |startRendering| is returned.
 function doTest(context, should, options) {
   let merger = new ChannelMergerNode(
-      context, {numberOfInputs: context.destination.channelCount});
+      context, {numberOfInputs: context.destination.numberOfChannels});
   merger.connect(context.destination);
 
   let src = null;

@@ -32,7 +32,7 @@
               });
 
               let merger = new ChannelMergerNode(
-                  context, {numberOfInputs: context.destination.channelCount});
+                  context, {numberOfInputs: context.numberOfChannels});
               merger.connect(context.destination);
               let inverter = new GainNode(context, {gain: -1});
               inverter.connect(merger, 0, 2);

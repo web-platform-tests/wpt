@@ -30,7 +30,7 @@ Object.entries(cases).forEach(([k, v]) => {
   );
 
   promise_test(async () => {
-    await Promise.resolve(loaded);
+    await loaded;
     assert_true(
       window[`${k}Script`],
       'script element from XSLTProcessor.transformToFragment() is evaluated'

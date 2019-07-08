@@ -31,7 +31,7 @@ def _get_fileversion(binary, logger=None):
 def handle_remove_readonly(func, path, exc):
     excvalue = exc[1]
     if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
-        os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
+        os.chmod(path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
         func(path)
     else:
         raise
@@ -730,7 +730,7 @@ class EdgeChromium(Browser):
         # cleanup existing Edge driver files to avoid access_denied errors when unzipping
         if os.path.isfile(edgedriver_path):
             # remove read-only attribute
-            os.chmod(edgedriver_path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
+            os.chmod(edgedriver_path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
             os.remove(edgedriver_path)
             driver_notes_path = os.path.join(dest, "Driver_notes")
             if os.path.isdir(driver_notes_path):

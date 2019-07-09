@@ -12,11 +12,14 @@
 <button hidden>button</button>
 <a>a</a>
 <a href="#">a</a>
+<link id="nohref">
 <textarea></textarea>
-<select></select>
+<select><optgroup><option>option</option></optgroup></select>
+<select multiple></select>
 <iframe width="10" height="10"></iframe>
 <span></span>
 <div></div>
+<details><summary>summary</summary><summary id="secondsummary">second summary</summary>details</details>
 <div id="hostDelegatesFocus"></div>
 <div id="hostNonDelegatesFocus"></div>
 <script>
@@ -32,9 +35,17 @@ const defaultList = [
   ["a[href]", 0],
   ["textarea", 0],
   ["select", 0],
+  ["select[multiple]", 0],
+  ["option", -1],
+  ["optgroup", -1],
   ["iframe", 0],
   ["span", -1],
   ["div", -1],
+  ["link#nohref", -1],
+  ["link[href]", -1],
+  ["details", -1],
+  ["summary", 0],
+  ["summary#secondsummary", -1],
   ["#hostDelegatesFocus", -1],
   ["#hostNonDelegatesFocus", -1],
 ];

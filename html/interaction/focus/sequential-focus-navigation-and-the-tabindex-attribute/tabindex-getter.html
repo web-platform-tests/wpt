@@ -22,7 +22,6 @@
 <script>
 hostDelegatesFocus.attachShadow({ mode: "open", delegatesFocus: true });
 hostNonDelegatesFocus.attachShadow({ mode: "open", delegatesFocus: false });
-
 const defaultList = [
   ["input", 0],
   ["input[type='hidden']", 0],
@@ -39,16 +38,13 @@ const defaultList = [
   ["#hostDelegatesFocus", -1],
   ["#hostNonDelegatesFocus", -1],
 ];
-
 const tabIndexValue = [-1, 0, 1];
-
-for (entry of defaultList) {
-  let element = document.querySelector(entry[0]);
+for (const entry of defaultList) {
+  const element = document.querySelector(entry[0]);
   test(() => {
     assert_equals(element.tabIndex, entry[1]);
   }, entry[0] + ".tabIndex should return " + entry[1] + " by default");
-
-  for (setValue of tabIndexValue ) {
+  for (const setValue of tabIndexValue ) {
     test(() => {
       element.setAttribute("tabindex", setValue);
       assert_equals(element.tabIndex, setValue);

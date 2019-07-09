@@ -1,4 +1,3 @@
-
 // Structure:
 // <div #aboveHost>
 // <div #host>
@@ -50,13 +49,13 @@ function prepareDOM(container, delegatesFocus) {
 }
 
 function setTabIndex(elements, value) {
-  for (let el of elements) {
+  for (const el of elements) {
     el.tabIndex = value;
   }
 }
 
 function removeTabIndex(elements) {
-  for (let el of elements) {
+  for (const el of elements) {
     el.removeAttribute("tabindex");
   }
 }
@@ -70,14 +69,11 @@ function navigateFocusForward() {
   return test_driver.send_keys(document.body, "\ue004");
 }
 
-function assertFocusOrder(expectedOrder) {
-  let shadowRoot = document.getElementById("host").shadowRoot;
-  return new Promise(async (resolve, reject) => {
-    for (let el of expectedOrder) {
-      await navigateFocusForward();
-      let focused = shadowRoot.activeElement ? shadowRoot.activeElement : document.activeElement;
-      assert_equals(focused, el);
-    }
-    resolve();
-  });
+async function assertFocusOrder(expectedOrder) {
+  const shadowRoot = document.getElementById("host").shadowRoot;
+  for (const el of expectedOrder) {
+    await navigateFocusForward();
+    const focused = shadowRoot.activeElement ? shadowRoot.activeElement : document.activeElement;
+    assert_equals(focused, el);
+  }
 }

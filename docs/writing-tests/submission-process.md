@@ -56,7 +56,7 @@ collaborator](https://help.github.com/en/articles/permission-levels-for-a-user-a
 on WPT, the label and the preview will be created automatically. Because the
 WPT server will execute Python code in the mirrored submissions, previews are
 not created automatically for non-collaborators. Collaborators are encouraged
-to enable the preview by adding the label provided they trust the authors not
+to enable the preview by adding the label, provided they trust the authors not
 to submit malicious code.
 
 [repo]: https://github.com/web-platform-tests/wpt/

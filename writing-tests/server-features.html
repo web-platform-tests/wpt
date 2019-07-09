@@ -36,14 +36,29 @@
             
   <div class="section" id="server-features">
 <h1>Server Features<a class="headerlink" href="#server-features" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="advanced-testing-features">
-<h2>Advanced Testing Features<a class="headerlink" href="#advanced-testing-features" title="Permalink to this headline">¶</a></h2>
-<p>Certain test scenarios require more than just static HTML
-generation. This is supported through the
-<a class="reference external" href="http://wptserve.readthedocs.io">wptserve</a> server, and controlled by
-<a class="reference internal" href="file-names.html"><span class="doc">file name flags</span></a>. Several scenarios in particular are common:</p>
+<p>For many tests, writing one or more static HTML files is
+sufficient. However there are a large class of tests for which this
+approach is insufficient, including:</p>
+<ul class="simple">
+<li>Tests that require cross-domain access</li>
+<li>Tests that depend on setting specific headers or status codes</li>
+<li>Tests that need to inspect the browser-sent request</li>
+<li>Tests that require state to be stored on the server</li>
+<li>Tests that require precise timing of the response.</li>
+</ul>
+<p>To make writing such tests possible, we are using a number of
+server-side components designed to make it easy to manipulate the
+precise details of the response:</p>
+<ul class="simple">
+<li><em>wptserve</em>, a custom Python HTTP server.</li>
+<li><em>pywebsocket</em>, an existing websockets server</li>
+</ul>
+<p>wptserve is a Python-based web server. By default it serves static
+files in the testsuite. For more sophisticated requirements, several
+mechanisms are available to take control of the response. These are
+outlined below.</p>
 <div class="section" id="tests-involving-multiple-origins">
-<h3>Tests Involving Multiple Origins<a class="headerlink" href="#tests-involving-multiple-origins" title="Permalink to this headline">¶</a></h3>
+<h2>Tests Involving Multiple Origins<a class="headerlink" href="#tests-involving-multiple-origins" title="Permalink to this headline">¶</a></h2>
 <p>Our test servers are guaranteed to be accessible through two domains
 and five subdomains under each. The ‘main’ domain is unnamed; the
 other is called ‘alt’. These subdomains are: <code class="docutils literal notranslate"><span class="pre">www</span></code>, <code class="docutils literal notranslate"><span class="pre">www1</span></code>, <code class="docutils literal notranslate"><span class="pre">www2</span></code>,
@@ -82,7 +97,7 @@ the <code class="docutils literal notranslate"><span class="pre">location</span>
 matching <code class="docutils literal notranslate"><span class="pre">location.host</span></code>.</p>
 </div>
 <div class="section" id="tests-requiring-special-headers">
-<h3>Tests Requiring Special Headers<a class="headerlink" href="#tests-requiring-special-headers" title="Permalink to this headline">¶</a></h3>
+<h2>Tests Requiring Special Headers<a class="headerlink" href="#tests-requiring-special-headers" title="Permalink to this headline">¶</a></h2>
 <p>For tests requiring that a certain HTTP header is set to some static
 value, a file with the same path as the test file except for an an
 additional <code class="docutils literal notranslate"><span class="pre">.headers</span></code> suffix may be created. For example for
@@ -102,22 +117,26 @@ directory and not subdirectories.</p>
 the file e.g. <code class="docutils literal notranslate"><span class="pre">test.html.sub.headers</span></code>.</p>
 </div>
 <div class="section" id="tests-requiring-full-control-over-the-http-response">
-<h3>Tests Requiring Full Control Over The HTTP Response<a class="headerlink" href="#tests-requiring-full-control-over-the-http-response" title="Permalink to this headline">¶</a></h3>
+<h2>Tests Requiring Full Control Over The HTTP Response<a class="headerlink" href="#tests-requiring-full-control-over-the-http-response" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="python-handlers/index.html">Python Handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="server-pipes.html">wptserve Pipes</a></li>
 </ul>
 </div>
-<p>For full control over the request and response the server provides the
-ability to write <code class="docutils literal notranslate"><span class="pre">.asis</span></code> files; these are served as literal HTTP
-responses. It also provides the ability to write <a class="reference internal" href="python-handlers/index.html"><span class="doc">Python
+<p>For full control over the request and response, the server provides the ability
+to write <code class="docutils literal notranslate"><span class="pre">.asis</span></code> files; these are served as literal HTTP responses. In other
+words, they are sent byte-for-byte to the server without adding an HTTP status
+line, headers, or anything else. This makes them suitable for testing
+situations where the precise bytes on the wire are static, and control over the
+timing is unnecessary, but the response does not conform to HTTP requirements.</p>
+<p>The server also provides the ability to write <a class="reference internal" href="python-handlers/index.html"><span class="doc">Python
 “handlers”</span></a>–Python scripts that have access to request
 data and can manipulate the content and timing of the response. Responses are
 also influenced by <a class="reference internal" href="server-pipes.html"><span class="doc">the pipe query string parameter</span></a>.</p>
 </div>
 <div class="section" id="writing-tests-for-http-2-0">
-<h3>Writing tests for HTTP/2.0<a class="headerlink" href="#writing-tests-for-http-2-0" title="Permalink to this headline">¶</a></h3>
+<h2>Writing tests for HTTP/2.0<a class="headerlink" href="#writing-tests-for-http-2-0" title="Permalink to this headline">¶</a></h2>
 <p>The server now has a prototype HTTP/2.0 server which gives you access to
 some of the HTTP/2.0 specific functionality. Currently, the server is off
 by default and needs to be run using <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">serve</span> <span class="pre">--h2</span></code> in order to enable it.
@@ -127,7 +146,6 @@ API are documented in <a class="reference internal" href="h2tests.html"><span cl
 <div><b>Important:</b> The HTTP/2.0 server requires you to have Python 2.7.10+
 and OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
 <a class="reference external" href="https://tools.ietf.org/html/rfc7301">TLS ALPN</a> extension, which is only supported in <a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</div></blockquote>
-</div>
 </div>
 </div>
 

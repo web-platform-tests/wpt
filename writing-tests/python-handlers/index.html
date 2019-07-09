@@ -56,12 +56,14 @@ object</span></a>.</p>
 </pre></div>
 </div>
 <p>Above, <code class="docutils literal notranslate"><span class="pre">headers</span></code> is a list of (field name, value) pairs, and <code class="docutils literal notranslate"><span class="pre">content</span></code> is a
-string or an iterable returning strings. The <code class="docutils literal notranslate"><span class="pre">main</span></code> function may also update
-the response manually. For example, one may use <code class="docutils literal notranslate"><span class="pre">response.headers.set</span></code> to set a
-response header, and only return the content. One may even use this kind of
-handler, but manipulate the output socket directly, in which case the return
-value of the function, and the properties of the response object, will be
-ignored.</p>
+string or an iterable returning strings.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">main</span></code> function may also update the response manually. For example, one may
+use <code class="docutils literal notranslate"><span class="pre">response.headers.set</span></code> to set a response header, and only return the
+content. One may even use this kind of handler, but manipulate the output
+socket directly. The <code class="docutils literal notranslate"><span class="pre">writer</span></code> property of the response exposes a
+<code class="docutils literal notranslate"><span class="pre">ResponseWriter</span></code> object that allows writing specific parts of the request or
+direct access to the underlying socket. If used, the return value of the
+<code class="docutils literal notranslate"><span class="pre">main</span></code> function and the properties of the <code class="docutils literal notranslate"><span class="pre">response</span></code> object will be ignored.</p>
 <p>The wptserver implements a number of Python APIs for controlling traffic.</p>
 <div class="toctree-wrapper compound">
 <ul>

@@ -36,6 +36,11 @@
             
   <div class="section" id="wptserve-pipes">
 <h1>wptserve Pipes<a class="headerlink" href="#wptserve-pipes" title="Permalink to this headline">¶</a></h1>
+<p>Pipes are designed to allow simple manipulation of the way that
+static files are sent without requiring any custom code. They are also
+useful for cross-origin tests because they can be used to activate a
+substitution mechanism which can fill in details of ports and server
+names in the setup on which the tests are being run.</p>
 <div class="section" id="enabling">
 <h2>Enabling<a class="headerlink" href="#enabling" title="Permalink to this headline">¶</a></h2>
 <p>Pipes are functions that may be used when serving files to alter parts
@@ -61,7 +66,9 @@ preventing the use of HTTP 1.1 keepalive.</p>
 <div class="section" id="sub">
 <h3><code class="docutils literal notranslate"><span class="pre">sub</span></code><a class="headerlink" href="#sub" title="Permalink to this headline">¶</a></h3>
 <p>Used to substitute variables from the server environment, or from the
-request into the response.</p>
+request into the response. A typical use case is for testing
+cross-domain since the exact domain name and ports of the servers are
+generally unknown.</p>
 <p>Substitutions are marked in a file using a block delimited by <code class="docutils literal notranslate"><span class="pre">{{</span></code>
 and <code class="docutils literal notranslate"><span class="pre">}}</span></code>. Inside the block the following variables are available:</p>
 <ul class="simple">

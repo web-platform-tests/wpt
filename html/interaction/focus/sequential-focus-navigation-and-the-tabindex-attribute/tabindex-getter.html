@@ -20,8 +20,8 @@
 <div id="hostDelegatesFocus"></div>
 <div id="hostNonDelegatesFocus"></div>
 <script>
-hostDelegatesFocus.attachShadow({ mode: "open", delegatesFocus: true });
-hostNonDelegatesFocus.attachShadow({ mode: "open", delegatesFocus: false });
+document.getElementById("hostDelegatesFocus").attachShadow({ mode: "open", delegatesFocus: true });
+document.getElementById("hostNonDelegatesFocus").attachShadow({ mode: "open", delegatesFocus: false });
 const defaultList = [
   ["input", 0],
   ["input[type='hidden']", 0],

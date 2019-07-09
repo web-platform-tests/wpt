@@ -12,6 +12,7 @@
   produce a different set of tokens when re-parsed.
   The spec requires that a comment must be inserted between such tokens in the serialization,
   to ensure that they round-trip correctly.
+-->
 
 <script>
 
@@ -35,7 +36,7 @@ testTokenPairs("foo", "123");
 testTokenPairs("foo", "123%");
 testTokenPairs("foo", "123em");
 testTokenPairs("foo", "-->");
-testTokenPairs("foo", "(");
+testTokenPairs("foo", "()");
 
 testTokenPairs("@foo", "bar");
 testTokenPairs("@foo", "bar()");

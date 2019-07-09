@@ -350,6 +350,7 @@ def sub(request, response, escape_type="html"):
       For example:
 
         {{header_or_default(X-Test, test-header-absent)}}
+
     GET
       A dictionary of query parameters supplied with the request.
     uuid()
@@ -359,6 +360,7 @@ def sub(request, response, escape_type="html"):
       sha224, sha256, sha384, and sha512. For example:
 
         {{file_hash(md5, dom/interfaces.html)}}
+
     fs_path(filepath)
       The absolute path to a file inside the wpt document root
 
@@ -369,16 +371,15 @@ def sub(request, response, escape_type="html"):
       {{domains[www]}} => www.localhost
       {{ports[http][1]}} => 81
 
+    It is also possible to assign a value to a variable name, which must start
+    with the $ character, using the ":" syntax e.g.
 
-    It is also possible to assign a value to a variable name, which must start with
-    the $ character, using the ":" syntax e.g.
-
-    {{$id:uuid()}}
+      {{$id:uuid()}}
 
     Later substitutions in the same file may then refer to the variable
     by name e.g.
 
-    {{$id}}
+      {{$id}}
     """
     content = resolve_content(response)
 

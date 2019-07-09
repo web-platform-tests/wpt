@@ -1,3 +1,5 @@
+// META: script=/common/utils.js
+
 // .stack properties on errors are unspecified, but are present in most
 // browsers, most of the time. https://github.com/tc39/proposal-error-stacks/ tracks standardizing them.
 // Tests will pass automatically if the .stack property isn't present.
@@ -52,11 +54,8 @@ function stackTests(errorFactory, description) {
     worker.postMessage(error);
   }, description + ' (worker)');
 
-  // testId needed because they all share window's message event.
-  let testId = 0;
   async_test(t => {
-    const thisTestId = testId;
-    ++testId;
+    const thisTestId = token();
 
     const error = errorFactory();
     const originalStack = error.stack;

@@ -9,6 +9,17 @@
         <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script>
+            function driver() {
+            }
+            driver.prototype.sendPointerActions = function(actions) {
+              return new Promise(function(resolve, reject) {
+                if (window.chrome && chrome.gpuBenchmarking) {
+                  chrome.gpuBenchmarking.pointerActionSequence(actions, resolve);
+                } else {
+                  reject('Automation APIs are not enabled on your browser.');
+                }
+              });
+            };
             var detected_pointertypes = {};
             var detected_eventTypes = {};
             var eventList = ['pointerover', 'pointerenter', 'pointermove', 'pointerdown', 'pointerup', 'pointerout', 'pointerleave'];
@@ -89,7 +100,7 @@
             }
 
             function run() {
-                var test_pointerEvent = setup_pointerevent_test("pointerevent attributes", HOVERABLE_POINTERS);
+                var test_pointerEvent = setup_pointerevent_test("pointerevent attributes", ['mouse']);
                 var square1 = document.getElementById("square1");
                 var rectSquare1 = square1.getBoundingClientRect();
                 var innerFrame = document.getElementById('innerFrame');
@@ -115,6 +126,54 @@
                             test_pointerEvent.done();
                         }
                     });
+                });
+
+
+                // ===================== Synthetic input =====================
+
+                var target = document.querySelector('#square1');
+                var targetRect = target.getBoundingClientRect();
+                var xPosition1 = targetRect.left + 5;
+                var yPosition1 = targetRect.top + 5;
+
+                target = document.querySelector('#innerFrame').contentDocument.querySelector('#square2');
+                var frameRect = document.querySelector('#innerFrame').getBoundingClientRect();
+                targetRect = target.getBoundingClientRect();
+                var xPosition2 = frameRect.left + targetRect.left + 5;
+                var yPosition2 = frameRect.top + targetRect.top + 5;
+
+                actions = [
+                  {
+                    'source': 'mouse',
+                    'actions': [
+                      {'name': 'pointerMove', 'x': xPosition1, 'y': yPosition1},
+                      {'name': 'pointerDown', 'x': xPosition1, 'y': yPosition1},
+                      {'name': 'pointerUp'},
+                      {'name': 'pointerMove', 'x': xPosition2, 'y': yPosition2},
+                      {'name': 'pointerDown', 'x': xPosition2, 'y': yPosition2},
+                      {'name': 'pointerUp'},
+                      {'name': 'pointerMove', 'x': 0, 'y': 0},
+                    ]
+                  },
+                  // No support for pen in this implementation yet.
+                  //{
+                  //  'source': 'pen',
+                  //  'actions': [
+                  //    {'name': 'pointerMove', 'x': xPosition1, 'y': yPosition1},
+                  //    {'name': 'pointerDown', 'x': xPosition1, 'y': yPosition1},
+                  //    {'name': 'pointerUp'},
+                  //    {'name': 'pointerMove', 'x': xPosition2, 'y': yPosition2},
+                  //    {'name': 'pointerDown', 'x': xPosition2, 'y': yPosition2},
+                  //    {'name': 'pointerUp'},
+                  //    {'name': 'pointerMove', 'x': 0, 'y': 0},
+                  //  ]
+                  //}
+                ];
+
+                new driver().sendPointerActions(actions).then(function(result) {
+                  console.log('Input was successful.');
+                }).catch(function(reason) {
+                  console.log('Something went wrong. ' + reason);
                 });
             }
         </script>

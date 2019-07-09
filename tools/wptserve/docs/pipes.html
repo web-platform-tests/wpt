@@ -137,8 +137,9 @@ includes the leading ‘?’, but other delimiters are omitted.</dd>
 <dt>header_or_default(header, default)</dt>
 <dd><p class="first">The value of an HTTP header, or a default value if it is absent.
 For example:</p>
-<blockquote class="last">
-<div>{{header_or_default(X-Test, test-header-absent)}}</div></blockquote>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{{</span><span class="n">header_or_default</span><span class="p">(</span><span class="n">X</span><span class="o">-</span><span class="n">Test</span><span class="p">,</span> <span class="n">test</span><span class="o">-</span><span class="n">header</span><span class="o">-</span><span class="n">absent</span><span class="p">)}}</span>
+</pre></div>
+</div>
 </dd>
 <dt>GET</dt>
 <dd>A dictionary of query parameters supplied with the request.</dd>
@@ -147,8 +148,9 @@ For example:</p>
 <dt>file_hash(algorithm, filepath)</dt>
 <dd><p class="first">The cryptographic hash of a file. Supported algorithms: md5, sha1,
 sha224, sha256, sha384, and sha512. For example:</p>
-<blockquote class="last">
-<div>{{file_hash(md5, dom/interfaces.html)}}</div></blockquote>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{{</span><span class="n">file_hash</span><span class="p">(</span><span class="n">md5</span><span class="p">,</span> <span class="n">dom</span><span class="o">/</span><span class="n">interfaces</span><span class="o">.</span><span class="n">html</span><span class="p">)}}</span>
+</pre></div>
+</div>
 </dd>
 <dt>fs_path(filepath)</dt>
 <dd>The absolute path to a file inside the wpt document root</dd>
@@ -160,12 +162,16 @@ subdomain and a http server on ports 80 and 81:</p>
 <span class="p">{{</span><span class="n">ports</span><span class="p">[</span><span class="n">http</span><span class="p">][</span><span class="mi">1</span><span class="p">]}}</span> <span class="o">=&gt;</span> <span class="mi">81</span>
 </pre></div>
 </div>
-<p>It is also possible to assign a value to a variable name, which must start with
-the $ character, using the “:” syntax e.g.</p>
-<p>{{$id:uuid()}}</p>
+<p>It is also possible to assign a value to a variable name, which must start
+with the $ character, using the “:” syntax e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{{$id:uuid()}}
+</pre></div>
+</div>
 <p>Later substitutions in the same file may then refer to the variable
-by name e.g.</p>
-<p>{{$id}}</p>
+by name e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{{$id}}
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">

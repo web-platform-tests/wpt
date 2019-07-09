@@ -1,4 +1,8 @@
-import BaseHTTPServer
+try:
+    from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+except ImportError:
+    # Python 3 case
+    from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import os
 import subprocess
@@ -11,14 +15,14 @@ subject = os.path.join(
 test_host = 'localhost'
 
 
-class MockHandler(BaseHTTPServer.BaseHTTPRequestHandler, object):
+class MockHandler(BaseHTTPRequestHandler, object):
     def do_all(self):
         request = (self.command, self.path)
         self.server.requests.append(request)
         status_code, body = self.server.responses.get(request, (200, '{}'))
         self.send_response(status_code)
         self.end_headers()
-        self.wfile.write(body)
+        self.wfile.write(body.encode('utf-8'))
 
     def do_DELETE(self):
         return self.do_all()
@@ -33,7 +37,7 @@ class MockHandler(BaseHTTPServer.BaseHTTPRequestHandler, object):
         return self.do_all()
 
 
-class MockServer(BaseHTTPServer.HTTPServer, object):
+class MockServer(HTTPServer, object):
     '''HTTP server that responds to all requests with status code 200 and body
     '{}' unless an alternative status code and body are specified for the given
     method and path in the `responses` parameter.'''
@@ -180,8 +184,8 @@ def test_open_without_label_for_collaborator():
     assert_success(returncode)
     create_label = ('POST', '/repos/test-org/test-repo/issues/543/labels')
     create_tag = ('POST', '/repos/test-org/test-repo/git/refs')
-    assert responses.keys()[0] in requests
-    assert responses.keys()[1] in requests
+    assert list(responses.keys())[0] in requests
+    assert list(responses.keys())[1] in requests
     assert create_label in requests
     assert create_tag in requests
 
@@ -226,7 +230,7 @@ def test_add_active_label():
 
     assert_success(returncode)
     expected = ('POST', '/repos/test-org/test-repo/git/refs')
-    assert responses.keys()[0] in requests
+    assert list(responses.keys())[0] in requests
     assert expected in requests
 
 
@@ -251,7 +255,7 @@ def test_remove_active_label():
     returncode, requests = run(event_data, responses)
 
     assert_success(returncode)
-    assert responses.keys()[0] in requests
+    assert list(responses.keys())[0] in requests
 
 
 def test_synchronize_without_label():

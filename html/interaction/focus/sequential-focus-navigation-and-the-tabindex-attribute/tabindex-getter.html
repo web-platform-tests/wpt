@@ -12,11 +12,15 @@
 <button hidden>button</button>
 <a>a</a>
 <a href="#">a</a>
+<svg><a>svg a</a></svg>
+<svg><a>svg a</a></svg>
 <link id="nohref">
 <textarea></textarea>
 <select><optgroup><option>option</option></optgroup></select>
 <select multiple></select>
 <iframe width="10" height="10"></iframe>
+<embed width="10" height="10"></embed>
+<object width="10" height="10"></object>
 <span></span>
 <div></div>
 <details><summary>summary</summary><summary id="secondsummary">second summary</summary>details</details>
@@ -33,12 +37,15 @@ const defaultList = [
   ["button[hidden]", 0],
   ["a", 0],
   ["a[href]", 0],
+  ["svg a", 0],
   ["textarea", 0],
   ["select", 0],
   ["select[multiple]", 0],
   ["option", -1],
   ["optgroup", -1],
   ["iframe", 0],
+  ["embed", 0],
+  ["object", 0],
   ["span", -1],
   ["div", -1],
   ["link#nohref", -1],

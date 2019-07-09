@@ -74,27 +74,26 @@ ways:</p>
 <li>From script, using the <code class="docutils literal notranslate"><span class="pre">location</span></code> API.</li>
 <li>By using a textual substitution feature of the server.</li>
 </ul>
-<p>In order for the latter to work, a file must either have a name of the
-form <code class="docutils literal notranslate"><span class="pre">{name}.sub.{ext}</span></code> e.g. <code class="docutils literal notranslate"><span class="pre">example-test.sub.html</span></code> or be referenced
-through a URL containing <code class="docutils literal notranslate"><span class="pre">pipe=sub</span></code> in the query string
-e.g. <code class="docutils literal notranslate"><span class="pre">example-test.html?pipe=sub</span></code>. The substitution syntax uses <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{</span> <span class="pre">}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code> to delimit items for substitution. For
-example to substitute in the main host name, one would write:
-<code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{host}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code>.</p>
-<p>To get full domains, including subdomains, there is the <code class="docutils literal notranslate"><span class="pre">hosts</span></code>
-dictionary, where the first dimension is the name of the domain, and
-the second the subdomain. For example, <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{hosts[][www]}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code> would give the <code class="docutils literal notranslate"><span class="pre">www</span></code> subdomain under the main (unnamed)
-domain, and <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{hosts[alt][élève]}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code> would give
-the <code class="docutils literal notranslate"><span class="pre">élève</span></code> subdomain under the alt domain.</p>
+<p>In order for the latter to work, a file must either have a name of the form
+<code class="docutils literal notranslate"><span class="pre">{name}.sub.{ext}</span></code> e.g. <code class="docutils literal notranslate"><span class="pre">example-test.sub.html</span></code> or be referenced through a URL
+containing <code class="docutils literal notranslate"><span class="pre">pipe=sub</span></code> in the query string e.g. <code class="docutils literal notranslate"><span class="pre">example-test.html?pipe=sub</span></code>.
+The substitution syntax uses <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">}}</span></code> to delimit items for substitution. For
+example to substitute in the main host name, one would write: <code class="docutils literal notranslate"><span class="pre">{{host}}</span></code>.</p>
+<p>To get full domains, including subdomains, there is the <code class="docutils literal notranslate"><span class="pre">hosts</span></code> dictionary,
+where the first dimension is the name of the domain, and the second the
+subdomain. For example, <code class="docutils literal notranslate"><span class="pre">{{hosts[][www]}}</span></code> would give the <code class="docutils literal notranslate"><span class="pre">www</span></code> subdomain under
+the main (unnamed) domain, and <code class="docutils literal notranslate"><span class="pre">{{hosts[alt][élève]}}</span></code> would give the <code class="docutils literal notranslate"><span class="pre">élève</span></code>
+subdomain under the alt domain.</p>
 <p>For mostly historic reasons, the subdomains of the main domain are
 also available under the <code class="docutils literal notranslate"><span class="pre">domains</span></code> dictionary; this is identical to
 <code class="docutils literal notranslate"><span class="pre">hosts[]</span></code>.</p>
-<p>Ports are also available on a per-protocol basis. For example, <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{ports[ws][0]}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code> is replaced with the first (and only)
-WebSockets port, while <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{ports[http][1]}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code> is
-replaced with the second HTTP port.</p>
-<p>The request URL itself can be used as part of the substitution using
-the <code class="docutils literal notranslate"><span class="pre">location</span></code> dictionary, which has entries matching the
-<code class="docutils literal notranslate"><span class="pre">window.location</span></code> API. For example, <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">raw</span> <span class="pre">%}{{location[host]}}{%</span> <span class="pre">endraw</span> <span class="pre">%}</span></code>is replaced by <code class="docutils literal notranslate"><span class="pre">hostname:port</span></code> for the current request,
-matching <code class="docutils literal notranslate"><span class="pre">location.host</span></code>.</p>
+<p>Ports are also available on a per-protocol basis. For example,
+<code class="docutils literal notranslate"><span class="pre">{{ports[ws][0]}}</span></code> is replaced with the first (and only) WebSockets port, while
+<code class="docutils literal notranslate"><span class="pre">{{ports[http][1]}}</span></code> is replaced with the second HTTP port.</p>
+<p>The request URL itself can be used as part of the substitution using the
+<code class="docutils literal notranslate"><span class="pre">location</span></code> dictionary, which has entries matching the <code class="docutils literal notranslate"><span class="pre">window.location</span></code> API.
+For example, <code class="docutils literal notranslate"><span class="pre">{{location[host]}}</span></code> is replaced by <code class="docutils literal notranslate"><span class="pre">hostname:port</span></code> for the
+current request, matching <code class="docutils literal notranslate"><span class="pre">location.host</span></code>.</p>
 </div>
 <div class="section" id="tests-requiring-special-headers">
 <h2>Tests Requiring Special Headers<a class="headerlink" href="#tests-requiring-special-headers" title="Permalink to this headline">¶</a></h2>

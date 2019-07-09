@@ -1,9 +1,8 @@
 <!doctype html>
 <meta name="timeout" content="long">
-<title>Cross-Origin header and nested navigable resource without such header</title>
+<title>Cross-Origin-Embedder-Policy header and nested navigable resource without such header</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src="/common/get-host-info.sub.js"></script>
 <div id=log></div>
 <script>
 async_test(t => {
@@ -49,8 +48,8 @@ async_test(t => {
 
 async_test(t => {
   let pageLoaded = false;
-  const CHANNEL_NAME = "require-corp-none-top-navigation";
-  let bc = new BroadcastChannel(CHANNEL_NAME);
+  const CHANNEL = "require-corp-none-top-navigation";
+  let bc = new BroadcastChannel(CHANNEL);
   let finished = false;
   bc.onmessage = t.step_func((event) => {
     pageLoaded = true;
@@ -66,7 +65,7 @@ async_test(t => {
     assert_equals(payload, "loaded");
   });
 
-  let win = window.open(`resources/navigate-require-corp.sub.html?channelName=${CHANNEL_NAME}&to=navigate-none.sub.html?channelName=${SECOND_CHANNEL}`, "_blank", "noopener");
+  let win = window.open(`resources/navigate-require-corp.sub.html?channelName=${CHANNEL}&to=navigate-none.sub.html?channelName=${SECOND_CHANNEL}`, "_blank", "noopener");
 
   t.step_timeout(() => {
     assert_equals(pageLoaded, true);

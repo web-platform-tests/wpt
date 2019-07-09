@@ -124,12 +124,12 @@ async_test(t => {
 });
 
 promise_test(t => {
-  return fetch(get_host_info().HTTP_REMOTE_ORIGIN+"/html/cross-origin-embedder-policy/resources/nothing.txt", {mode: "no-cors"}).then(r => {
+  return fetch(get_host_info().HTTPS_REMOTE_ORIGIN+"/html/cross-origin-embedder-policy/resources/nothing.txt", {mode: "no-cors"}).then(r => {
     assert_equals(r.type, "opaque");
   });
 }, `"require-corp" top-level: fetch() to CORP: cross-origin response should succeed`);
 
 promise_test(t => {
-  promise_rejects(t, new TypeError(), fetch(get_host_info().HTTP_REMOTE_ORIGIN+"/common/blank.html", {mode: "no-cors"}));
+  promise_rejects(t, new TypeError(), fetch(get_host_info().HTTPS_REMOTE_ORIGIN+"/common/blank.html", {mode: "no-cors"}));
 }, `"require-corp" top-level: fetch() to response without CORP should fail`);
 </script>

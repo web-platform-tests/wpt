@@ -29,7 +29,7 @@ def main(request, response):
       iframe.contentWindow.postMessage(payload, "*");
     };
     const channelName = new URL(location).searchParams.get("channel");
-    iframe.src = `${get_host_info().HTTP_ORIGIN}/html/cross-origin-opener-policy/resources/postback.html?channel=${channelName}`;
+    iframe.src = `${get_host_info().HTTPS_ORIGIN}/html/cross-origin-opener-policy/resources/postback.html?channel=${channelName}`;
   }
 </script>
 """

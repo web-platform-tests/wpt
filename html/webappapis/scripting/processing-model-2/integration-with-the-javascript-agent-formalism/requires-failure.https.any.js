@@ -8,5 +8,3 @@ test(() => {
     Atomics.wait(ta, 0, 0, 10);
   });
 }, `[[CanBlock]] in a ${self.constructor.name}`);
-
-done();

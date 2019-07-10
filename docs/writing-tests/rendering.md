@@ -76,7 +76,7 @@ ways:
  * Silver or light gray is often used for irrelevant content, such as
    filler text.
 
-Obviously, none of this can be taken as absolute rules, as testing of
+None of these rules are absolute because testing
 color-related functionality will necessitate using some of these
 colors!
 

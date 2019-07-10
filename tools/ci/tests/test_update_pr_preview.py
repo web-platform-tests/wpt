@@ -119,7 +119,7 @@ def test_close_active_with_label():
         '/repos/test-org/test-repo/issues/543/labels/pull-request-has-preview'
     )
     delete_tag = (
-        'DELETE', '/repos/test-org/test-repo/git/refs/tags/pr_preview_543'
+        'DELETE', '/repos/test-org/test-repo/git/refs/previews/gh-543'
     )
 
     returncode, requests = run(event_data)
@@ -166,7 +166,7 @@ def test_open_with_label():
     assert_success(returncode)
     expected = (
         'PATCH',
-        '/repos/test-org/test-repo/git/refs/tags/pr_preview_543'
+        '/repos/test-org/test-repo/git/refs/previews/gh-543'
     )
     assert expected in requests
 
@@ -175,7 +175,7 @@ def test_open_without_label_for_collaborator():
     event_data = default_data('opened')
     responses = {
         ('GET', '/repos/test-org/test-repo/collaborators/rms'): (204, ''),
-        ('GET', '/repos/test-org/test-repo/git/refs/tags/pr_preview_543'):
+        ('GET', '/repos/test-org/test-repo/git/refs/previews/gh-543'):
             (404, '{}')
     }
 
@@ -223,7 +223,7 @@ def test_add_active_label():
         {'name': 'pull-request-has-preview'}
     )
     responses = {(
-        'GET', '/repos/test-org/test-repo/git/refs/tags/pr_preview_543'
+        'GET', '/repos/test-org/test-repo/git/refs/previews/gh-543'
     ): (404, '{}')}
 
     returncode, requests = run(event_data, responses)
@@ -248,7 +248,7 @@ def test_remove_active_label():
     event_data = default_data('unlabeled')
     event_data['label'] = {'name': 'pull-request-has-preview'}
     responses = {
-        ('DELETE', '/repos/test-org/test-repo/git/refs/tags/pr_preview_543'):
+        ('DELETE', '/repos/test-org/test-repo/git/refs/previews/gh-543'):
         (204, '')
     }
 
@@ -278,7 +278,7 @@ def test_synchronize_with_label():
     assert_success(returncode)
     expected = (
         'PATCH',
-        '/repos/test-org/test-repo/git/refs/tags/pr_preview_543'
+        '/repos/test-org/test-repo/git/refs/previews/gh-543'
     )
     assert expected in requests
 

@@ -1,11 +1,11 @@
 # wpt-submissions.live is a public deployment of WPT, maintained in an external
-# repository. It automatically fetches and deploys all tags in the WPT
+# repository. It automatically fetches and deploys all refs in the WPT
 # repository which match a certain pattern. This behavior is intended to be
 # used for pull requests so that reviewers can preview changes without running
 # the WPT server locally.
 #
-# This script facilitates the service by maintaining the git tags. It creates
-# and updates tags in response to GitHub events. It does this automatically for
+# This script facilitates the service by maintaining the git refs. It creates
+# and updates refs in response to GitHub events. It does this automatically for
 # pull requests from GitHub users who have "collaborator" access permissions to
 # the WPT repository. It also does this for any pull requests which bear the
 # `pull-request-has-preview` label. Collaborators can add or remove this label
@@ -92,45 +92,45 @@ class GitHub(object):
             )
         )
 
-    def tag_exists(self, tag):
+    def ref_exists(self, ref):
         return resource_exists(
-            '{}/repos/{}/{}/git/refs/tags/{}'.format(
-                self.api_root, self.owner, self.repo, tag
+            '{}/repos/{}/{}/git/refs/{}'.format(
+                self.api_root, self.owner, self.repo, ref
             )
         )
 
-    def create_tag(self, tag, sha):
+    def create_ref(self, ref, sha):
         data = {
-            'ref': 'refs/tags/{}'.format(tag),
+            'ref': 'refs/{}'.format(ref),
             'sha': sha
         }
         url = '{}/repos/{}/{}/git/refs'.format(
             self.api_root, self.owner, self.repo
         )
 
-        logger.info('Creating tag "{}" as {}'.format(tag, sha))
+        logger.info('Creating ref "{}" as {}'.format(ref, sha))
 
         request(url, 'post', json_data=data)
 
-    def update_tag(self, tag, sha):
+    def update_ref(self, ref, sha):
         data = {
             'force': True,
             'sha': sha
         }
-        url = '{}/repos/{}/{}/git/refs/tags/{}'.format(
-            self.api_root, self.owner, self.repo, tag
+        url = '{}/repos/{}/{}/git/refs/{}'.format(
+            self.api_root, self.owner, self.repo, ref
         )
 
-        logger.info('Updating tag "{}" as {}'.format(tag, sha))
+        logger.info('Updating ref "{}" as {}'.format(ref, sha))
 
         request(url, 'patch', json_data=data)
 
-    def delete_tag(self, tag):
-        url = '{}/repos/{}/{}/git/refs/tags/{}'.format(
-            self.api_root, self.owner, self.repo, tag
+    def delete_ref(self, ref):
+        url = '{}/repos/{}/{}/git/refs/{}'.format(
+            self.api_root, self.owner, self.repo, ref
         )
 
-        logger.info('Deleting tag "{}"'.format(tag))
+        logger.info('Deleting ref "{}"'.format(ref))
 
         try:
             request(url, 'delete', ignore_body=True)
@@ -139,14 +139,14 @@ class GitHub(object):
                 raise
 
             logger.info(
-                'Attempted to delete non-existent tag: {}'.format(tag)
+                'Attempted to delete non-existent ref: {}'.format(ref)
             )
 
-    def tag(self, tag, sha):
-        if self.tag_exists(tag):
-            self.update_tag(tag, sha)
+    def set_ref(self, ref, sha):
+        if self.ref_exists(ref):
+            self.update_ref(ref, sha)
         else:
-            self.create_tag(tag, sha)
+            self.create_ref(ref, sha)
 
     def add_label(self, pr_number, label_name):
         data = {
@@ -191,7 +191,7 @@ def main(api_root):
     github = GitHub(api_root, owner, repo)
     action = event['action']
     pr_number = event['pull_request']['number']
-    tag_name = 'pr_preview_{}'.format(pr_number)
+    ref_name = 'previews/gh-{}'.format(pr_number)
     sha = event['pull_request']['head']['sha']
     is_open = event['pull_request']['closed_at'] is None
     login = event['pull_request']['user']['login']
@@ -206,7 +206,7 @@ def main(api_root):
             github.remove_label(pr_number, active_label)
 
             # Removing a label from a GitHub Action will not trigger another
-            # Workflow, so the corresponding tag must be deleted while
+            # Workflow, so the corresponding ref must be deleted while
             # processing the "closed" action.
             #
             # > An action can't trigger other workflows. For example, a push,
@@ -215,19 +215,19 @@ def main(api_root):
             # > on push, deploy, or any other supported action triggers.
             #
             # https://developer.github.com/actions/managing-workflows/workflow-configuration-options/
-            github.delete_tag(tag_name)
+            github.delete_ref(ref_name)
 
             return Status.SUCCESS
 
         return Status.NEUTRAL
 
     if action in ('opened', 'reopened') and has_label:
-        github.tag(tag_name, sha)
+        github.set_ref(ref_name, sha)
     elif action in ('opened', 'reopened') and github.is_collaborator(login):
         github.add_label(pr_number, active_label)
 
         # Removing a label from a GitHub Action will not trigger another
-        # Workflow, so the corresponding tag must be created while processing
+        # Workflow, so the corresponding ref must be created while processing
         # the "opened" and "reopened" actions.
         #
         # > An action can't trigger other workflows. For example, a push,
@@ -236,13 +236,13 @@ def main(api_root):
         # > push, deploy, or any other supported action triggers.
         #
         # https://developer.github.com/actions/managing-workflows/workflow-configuration-options/
-        github.tag(tag_name, sha)
+        github.set_ref(ref_name, sha)
     elif action == 'labeled' and target_label == active_label:
-        github.tag(tag_name, sha)
+        github.set_ref(ref_name, sha)
     elif action == 'unlabeled' and target_label == active_label:
-        github.delete_tag(tag_name)
+        github.delete_ref(ref_name)
     elif action == 'synchronize' and has_label:
-        github.tag(tag_name, sha)
+        github.set_ref(ref_name, sha)
     else:
         return Status.NEUTRAL
 

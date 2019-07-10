@@ -39,7 +39,7 @@ on [file names][file-name-flags].
 
 Various support files are available in in the directories named `/common/`,
 `/media/`, and `/css/support/`. Reusing existing resources is encouraged where
-possible, as is adding generally useful files to these common areas rather than
+possible, as is adding generally-useful files to these common areas rather than
 to specific test suites.
 
 

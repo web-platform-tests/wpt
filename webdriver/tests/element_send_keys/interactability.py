@@ -28,6 +28,27 @@ def test_body_is_interactable(session):
     assert session.active_element == element
     assert result.property("value") == "foo"
 
+
+def test_document_element_is_interactable(session):
+    session.url = inline("""
+        <html onkeypress="document.querySelector('input').value += event.key">
+          <input>
+        </html>
+    """)
+
+    body = session.find.css("body", all=False)
+    element = session.find.css(":root", all=False)
+    result = session.find.css("input", all=False)
+
+    # By default body is the active element
+    assert session.active_element == body
+
+    response = element_send_keys(session, element, "foo")
+    assert_success(response)
+    assert session.active_element == element or session.active_element == body
+    assert result.property("value") == "foo"
+
+
 def test_iframe_is_interactable(session):
     session.url = inline(iframe("""
         <body onkeypress="document.querySelector('input').value += event.key">

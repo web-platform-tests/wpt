@@ -73,6 +73,7 @@
                 });
                 on_event(document, 'pointerlockchange', function(event) {
                     phase++;
+                    last_event = null;
                     if (phase == PhaseEnum.PointerLocked) {
                         test_pointerEvent.step(function() {
                             assert_equals(document.pointerLockElement, target, "document.pointerLockElement should be target.");

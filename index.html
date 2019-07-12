@@ -16,7 +16,7 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Introduction" href="introduction.html" />
+    <link rel="next" title="Testsuite Design" href="testsuite-design.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -35,15 +35,50 @@
             
   <div class="section" id="web-platform-tests-documentation">
 <h1>web-platform-tests documentation<a class="headerlink" href="#web-platform-tests-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The web-platform-tests project is a W3C-coordinated attempt to build a
+cross-browser testsuite for <a class="reference external" href="https://platform.html5.org">the Web-platform
+stack</a>. Writing tests in a way that allows them to
+be run in all browsers gives browser projects confidence that they are shipping
+software which is compatible with other implementations, and that later
+implementations will be compatible with their implementations. This in turn
+gives Web authors/developers confidence that they can actually rely on the Web
+platform to deliver on the promise of working across browsers and devices
+without needing extra layers of abstraction to paper over the gaps left by
+specification editors and implementors.</p>
+<div class="section" id="help">
+<h2>Help!<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h2>
+<p>If you get stuck or want clarification about anything, feel free to
+ask on either the <a class="reference external" href="https://lists.w3.org/Archives/Public/public-test-infra/">mailing list</a> or <a class="reference external" href="irc://irc.w3.org:6667/testing">IRC</a>
+(<a class="reference external" href="http://irc.w3.org">webclient</a>, join channel <code class="docutils literal notranslate"><span class="pre">#testing</span></code>); IRC is generally
+busiest during the European working day but frequently has people on
+it at all times and should probably be the general first port of call
+for any help.</p>
+</div>
+<div class="section" id="watch-a-talk">
+<h2>Watch a Talk<a class="headerlink" href="#watch-a-talk" title="Permalink to this headline">¶</a></h2>
+<p>If you prefer watching a video, here is a talk introducing web-platform-tests:</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/XnfE3MfH5hQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
+<div class="section" id="github">
+<h2>GitHub<a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/web-platform-tests/wpt/">GitHub</a> is used both for <a class="reference external" href="https://github.com/web-platform-tests/wpt/issues">issue tracking</a> and <a class="reference external" href="https://github.com/web-platform-tests/wpt/pulls">test submissions</a>; we
+provide <a class="reference internal" href="appendix/github-intro.html"><span class="doc">a limited introduction</span></a> to both git and
+GitHub.</p>
+<p>Pull Requests are automatically labeled based on the directory the
+files they change are in; there are also comments added automatically
+to notify a number of people: this list of people comes from META.yml
+files in those same directories and their parents (i.e., they work
+recursively: <code class="docutils literal notranslate"><span class="pre">a/META.yml</span></code> will get notified for <code class="docutils literal notranslate"><span class="pre">a/foo.html</span></code> and
+<code class="docutils literal notranslate"><span class="pre">a/b/bar.html</span></code>).</p>
+<p>If you want to be notified about changes to tests in a directory, feel
+free to add yourself to the META.yml file!</p>
+</div>
+<div class="section" id="table-of-contents">
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#watch-a-talk">Watch a Talk</a></li>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#help">Help!</a></li>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#testsuite-design">Testsuite Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#test-layout">Test Layout</a></li>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#test-types">Test Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#github">GitHub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testsuite-design.html">Testsuite Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testsuite-design.html#test-layout">Test Layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testsuite-design.html#test-types">Test Types</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="running-tests/index.html">Running Tests</a><ul>
@@ -97,6 +132,7 @@
 </ul>
 </div>
 </div>
+</div>
 
 
           </div>
@@ -116,7 +152,7 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testsuite-design.html">Testsuite Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="running-tests/index.html">Running Tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="writing-tests/index.html">Writing Tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reviewing-tests/index.html">Reviewing Tests</a></li>
@@ -128,7 +164,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="introduction.html" title="next chapter">Introduction</a></li>
+      <li>Next: <a href="testsuite-design.html" title="next chapter">Testsuite Design</a></li>
   </ul></li>
 </ul>
 </div>
@@ -164,7 +200,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="_sources/index.rst.txt"
+      <a href="_sources/index.md.txt"
           rel="nofollow">Page source</a>
     </div>
 

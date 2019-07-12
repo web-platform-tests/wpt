@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Introduction &#8212; web-platform-tests  documentation</title>
+    <title>Testsuite Design &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -34,34 +34,13 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>web-platform-tests is a W3C-coordinated effort to build a
-cross-browser testsuite for the majority of
-the <a class="reference external" href="https://platform.html5.org">web platform</a>; it excludes only ECMAScript (whose
-testsuite lives in <a class="reference external" href="https://github.com/tc39/test262">test262</a>) and WebGL (whose testsuite
-lives in <a class="reference external" href="https://github.com/KhronosGroup/WebGL">WebGL</a>).</p>
-<div class="section" id="watch-a-talk">
-<h2>Watch a Talk<a class="headerlink" href="#watch-a-talk" title="Permalink to this headline">¶</a></h2>
-<p>If you prefer watching a video, here is a talk introducing web-platform-tests:</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/XnfE3MfH5hQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
-<div class="section" id="help">
-<h2>Help!<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h2>
-<p>If you get stuck or want clarification about anything, feel free to
-ask on either the <a class="reference external" href="https://lists.w3.org/Archives/Public/public-test-infra/">mailing list</a> or <a class="reference external" href="irc://irc.w3.org:6667/testing">IRC</a>
-(<a class="reference external" href="http://irc.w3.org">webclient</a>, join channel <code class="docutils literal notranslate"><span class="pre">#testing</span></code>); IRC is generally
-busiest during the European working day but frequently has people on
-it at all times and should probably be the general first port of call
-for any help.</p>
-</div>
-<div class="section" id="testsuite-design">
-<h2>Testsuite Design<a class="headerlink" href="#testsuite-design" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="testsuite-design">
+<h1>Testsuite Design<a class="headerlink" href="#testsuite-design" title="Permalink to this headline">¶</a></h1>
 <p>The vast majority of the testsuite is formed of HTML pages, which can
 be loaded in a browser and either programmatically provide a result or
 provide a set of steps to run the test and obtain the result.</p>
 <p>The tests are, in general, short, cross-platform, and self-contained,
 and should be easy to run in any browser.</p>
-</div>
 <div class="section" id="test-layout">
 <h2>Test Layout<a class="headerlink" href="#test-layout" title="Permalink to this headline">¶</a></h2>
 <p>Each top level directory in the repository corresponds to tests for a
@@ -108,20 +87,6 @@ automation protocol</a></li>
 result.</li>
 </ul>
 </div>
-<div class="section" id="github">
-<h2>GitHub<a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://github.com/web-platform-tests/wpt/">GitHub</a> is used both for <a class="reference external" href="https://github.com/web-platform-tests/wpt/issues">issue tracking</a> and <a class="reference external" href="https://github.com/web-platform-tests/wpt/pulls">test submissions</a>; we
-provide <a class="reference internal" href="appendix/github-intro.html"><span class="doc">a limited introduction</span></a> to both git and
-GitHub.</p>
-<p>Pull Requests are automatically labeled based on the directory the
-files they change are in; there are also comments added automatically
-to notify a number of people: this list of people comes from META.yml
-files in those same directories and their parents (i.e., they work
-recursively: <code class="docutils literal notranslate"><span class="pre">a/META.yml</span></code> will get notified for <code class="docutils literal notranslate"><span class="pre">a/foo.html</span></code> and
-<code class="docutils literal notranslate"><span class="pre">a/b/bar.html</span></code>).</p>
-<p>If you want to be notified about changes to tests in a directory, feel
-free to add yourself to the META.yml file!</p>
-</div>
 </div>
 
 
@@ -142,13 +107,9 @@ free to add yourself to the META.yml file!</p>
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#watch-a-talk">Watch a Talk</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#help">Help!</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#testsuite-design">Testsuite Design</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Testsuite Design</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#test-layout">Test Layout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#test-types">Test Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#github">GitHub</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="running-tests/index.html">Running Tests</a></li>
@@ -199,7 +160,7 @@ free to add yourself to the META.yml file!</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="_sources/introduction.md.txt"
+      <a href="_sources/testsuite-design.md.txt"
           rel="nofollow">Page source</a>
     </div>
 

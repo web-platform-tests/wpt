@@ -17,9 +17,20 @@ test_host = 'localhost'
 
 class MockHandler(BaseHTTPRequestHandler, object):
     def do_all(self):
-        request = (self.command, self.path)
+        request_body = None
+
+        if 'Content-Length' in self.headers:
+            request_body = self.rfile.read(
+                int(self.headers['Content-Length'])
+            ).decode('utf-8')
+
+            if self.headers.get('Content-Type') == 'application/json':
+                request_body = json.loads(request_body)
+
+        request = (self.command, self.path, request_body)
+
         self.server.requests.append(request)
-        status_code, body = self.server.responses.get(request, (200, '{}'))
+        status_code, body = self.server.responses.get(request[:2], (200, '{}'))
         self.send_response(status_code)
         self.end_headers()
         self.wfile.write(body.encode('utf-8'))
@@ -86,6 +97,59 @@ def run(event_data, responses=None):
 
     return child.returncode, server.requests
 
+def to_key(request):
+    return request[:2]
+
+class Requests(object):
+    read_collaborator = (
+        'GET', '/repos/test-org/test-repo/collaborators/rms', None
+    )
+    create_label = (
+        'POST',
+        '/repos/test-org/test-repo/issues/543/labels',
+        {'labels': ['pull-request-has-preview']}
+    )
+    delete_label = (
+        'DELETE',
+        '/repos/test-org/test-repo/issues/543/labels/pull-request-has-preview',
+        ''
+    )
+    get_ref_open = (
+        'GET', '/repos/test-org/test-repo/git/refs/prs-open/gh-543', None
+    )
+    get_ref_labeled = (
+        'GET',
+        '/repos/test-org/test-repo/git/refs/prs-labeled-for-preview/gh-543',
+        None
+    )
+    create_ref_open = (
+        'POST',
+        '/repos/test-org/test-repo/git/refs',
+        {'ref': 'refs/prs-open/gh-543', 'sha': 'deadbeef'}
+    )
+    create_ref_labeled = (
+        'POST',
+        '/repos/test-org/test-repo/git/refs',
+        {'ref': 'refs/prs-labeled-for-preview/gh-543', 'sha': 'deadbeef'}
+    )
+    delete_ref_open = (
+        'DELETE', '/repos/test-org/test-repo/git/refs/prs-open/gh-543', ''
+    )
+    delete_ref_labeled = (
+        'DELETE',
+        '/repos/test-org/test-repo/git/refs/prs-labeled-for-preview/gh-543', ''
+    )
+    update_ref_open = (
+        'PATCH',
+        '/repos/test-org/test-repo/git/refs/prs-open/gh-543',
+        {'force': True, 'sha': 'deadbeef'}
+    )
+    update_ref_labeled = (
+        'PATCH',
+        '/repos/test-org/test-repo/git/refs/prs-labeled-for-preview/gh-543',
+        {'force': True, 'sha': 'deadbeef'}
+    )
+
 
 def default_data(action):
     return {
@@ -107,26 +171,19 @@ def default_data(action):
     }
 
 
-
 def test_close_active_with_label():
     event_data = default_data('closed')
     event_data['pull_request']['closed_at'] = '2019-07-05'
     event_data['pull_request']['labels'].append(
         {'name': 'pull-request-has-preview'}
     )
-    delete_label = (
-        'DELETE',
-        '/repos/test-org/test-repo/issues/543/labels/pull-request-has-preview'
-    )
-    delete_tag = (
-        'DELETE', '/repos/test-org/test-repo/git/refs/previews/gh-543'
-    )
 
     returncode, requests = run(event_data)
 
     assert_success(returncode)
-    assert delete_label in requests
-    assert delete_tag in requests
+    assert Requests.delete_label in requests
+    assert Requests.delete_ref_open in requests
+    assert Requests.delete_ref_labeled not in requests
 
 
 def test_close_active_with_label_error():
@@ -135,10 +192,9 @@ def test_close_active_with_label_error():
     event_data['pull_request']['labels'].append(
         {'name': 'pull-request-has-preview'}
     )
-    responses = {(
-        'DELETE',
-        '/repos/test-org/test-repo/issues/543/labels/pull-request-has-preview'
-    ): (500, '{}')}
+    responses = {
+        to_key(Requests.delete_label): (500, '{}')
+    }
 
     returncode, requests = run(event_data, responses)
 
@@ -164,30 +220,24 @@ def test_open_with_label():
     returncode, requests = run(event_data)
 
     assert_success(returncode)
-    expected = (
-        'PATCH',
-        '/repos/test-org/test-repo/git/refs/previews/gh-543'
-    )
-    assert expected in requests
+    assert Requests.update_ref_open in requests
+    assert Requests.update_ref_labeled in requests
 
 
 def test_open_without_label_for_collaborator():
     event_data = default_data('opened')
     responses = {
-        ('GET', '/repos/test-org/test-repo/collaborators/rms'): (204, ''),
-        ('GET', '/repos/test-org/test-repo/git/refs/previews/gh-543'):
-            (404, '{}')
+        to_key(Requests.read_collaborator): (204, ''),
+        to_key(Requests.get_ref_open): (404, '{}'),
+        to_key(Requests.get_ref_labeled): (404, '{}'),
     }
 
     returncode, requests = run(event_data, responses)
 
     assert_success(returncode)
-    create_label = ('POST', '/repos/test-org/test-repo/issues/543/labels')
-    create_tag = ('POST', '/repos/test-org/test-repo/git/refs')
-    assert list(responses.keys())[0] in requests
-    assert list(responses.keys())[1] in requests
-    assert create_label in requests
-    assert create_tag in requests
+    assert Requests.create_label in requests
+    assert Requests.create_ref_open in requests
+    assert Requests.create_ref_labeled in requests
 
 
 def test_open_without_label_for_non_collaborator():
@@ -199,10 +249,7 @@ def test_open_without_label_for_non_collaborator():
     returncode, requests = run(event_data, responses)
 
     assert_neutral(returncode)
-    expected = [(
-        'GET', '/repos/test-org/test-repo/collaborators/rms'
-    )]
-    assert expected == requests
+    assert [Requests.read_collaborator] == requests
 
 
 def test_add_unrelated_label():
@@ -222,16 +269,16 @@ def test_add_active_label():
     event_data['pull_request']['labels'].append(
         {'name': 'pull-request-has-preview'}
     )
-    responses = {(
-        'GET', '/repos/test-org/test-repo/git/refs/previews/gh-543'
-    ): (404, '{}')}
+    responses = {
+        to_key(Requests.get_ref_open): (404, '{}'),
+        to_key(Requests.get_ref_labeled): (404, '{}')
+    }
 
     returncode, requests = run(event_data, responses)
 
     assert_success(returncode)
-    expected = ('POST', '/repos/test-org/test-repo/git/refs')
-    assert list(responses.keys())[0] in requests
-    assert expected in requests
+    assert Requests.create_ref_open not in requests
+    assert Requests.create_ref_labeled in requests
 
 
 def test_remove_unrelated_label():
@@ -248,14 +295,14 @@ def test_remove_active_label():
     event_data = default_data('unlabeled')
     event_data['label'] = {'name': 'pull-request-has-preview'}
     responses = {
-        ('DELETE', '/repos/test-org/test-repo/git/refs/previews/gh-543'):
-        (204, '')
+        to_key(Requests.delete_ref_labeled): (204, '')
     }
 
     returncode, requests = run(event_data, responses)
 
     assert_success(returncode)
-    assert list(responses.keys())[0] in requests
+    assert Requests.delete_ref_labeled in requests
+    assert Requests.delete_ref_open not in requests
 
 
 def test_synchronize_without_label():
@@ -276,11 +323,8 @@ def test_synchronize_with_label():
     returncode, requests = run(event_data)
 
     assert_success(returncode)
-    expected = (
-        'PATCH',
-        '/repos/test-org/test-repo/git/refs/previews/gh-543'
-    )
-    assert expected in requests
+    assert Requests.update_ref_open in requests
+    assert Requests.update_ref_labeled in requests
 
 
 def test_unrecognized_action():

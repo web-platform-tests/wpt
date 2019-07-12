@@ -191,7 +191,8 @@ def main(api_root):
     github = GitHub(api_root, owner, repo)
     action = event['action']
     pr_number = event['pull_request']['number']
-    ref_name = 'previews/gh-{}'.format(pr_number)
+    ref_open = 'prs-open/gh-{}'.format(pr_number)
+    ref_labeled = 'prs-labeled-for-preview/gh-{}'.format(pr_number)
     sha = event['pull_request']['head']['sha']
     is_open = event['pull_request']['closed_at'] is None
     login = event['pull_request']['user']['login']
@@ -215,14 +216,15 @@ def main(api_root):
             # > on push, deploy, or any other supported action triggers.
             #
             # https://developer.github.com/actions/managing-workflows/workflow-configuration-options/
-            github.delete_ref(ref_name)
+            github.delete_ref(ref_open)
 
             return Status.SUCCESS
 
         return Status.NEUTRAL
 
     if action in ('opened', 'reopened') and has_label:
-        github.set_ref(ref_name, sha)
+        github.set_ref(ref_open, sha)
+        github.set_ref(ref_labeled, sha)
     elif action in ('opened', 'reopened') and github.is_collaborator(login):
         github.add_label(pr_number, active_label)
 
@@ -236,13 +238,15 @@ def main(api_root):
         # > push, deploy, or any other supported action triggers.
         #
         # https://developer.github.com/actions/managing-workflows/workflow-configuration-options/
-        github.set_ref(ref_name, sha)
+        github.set_ref(ref_open, sha)
+        github.set_ref(ref_labeled, sha)
     elif action == 'labeled' and target_label == active_label:
-        github.set_ref(ref_name, sha)
+        github.set_ref(ref_labeled, sha)
     elif action == 'unlabeled' and target_label == active_label:
-        github.delete_ref(ref_name)
+        github.delete_ref(ref_labeled)
     elif action == 'synchronize' and has_label:
-        github.set_ref(ref_name, sha)
+        github.set_ref(ref_open, sha)
+        github.set_ref(ref_labeled, sha)
     else:
         return Status.NEUTRAL
 

@@ -10,7 +10,7 @@ towards the end of this tutorial. Although it includes some very brief
 instructions on using git, you can find more guidance in [the tutorial for git
 and GitHub](../appendix/github-intro).
 
-WPT's reftests are great for testing web platform features that have some
+WPT's reftests are great for testing web-platform features that have some
 visual effect. [The reftests reference page](reftests) describes them in the
 abstract, but for the purposes of this guide, we'll take it for granted that
 the reftest is the perfect way to test for bidirectional text overrides.
@@ -103,8 +103,8 @@ That's pretty dense! Let's break it down:
 
   The "assert" metadata is a structured way for you to describe exactly what
   you want your reftest to verify. For a direct test like the one we're writing
-  here, it might seem a liitle superfluous. It's much more helpful for more
-  involved tests where reviewers might need some help understanding your
+  here, it might seem a liitle superfluous. It's much more helpful for
+  more-involved tests where reviewers might need some help understanding your
   intentions.
 
   This tag is optional, so you can skip it if you think it's unnecessary. We
@@ -137,7 +137,7 @@ browser and drag the new `rtl.html` file into an open web browser window.
 
 Sighted people can open that document and verify whether or not the stated
 expectation is satisfied. If we were writing a [manual test](manual), we'd be
-done. However, it's time consuming for a human to run tests, so we should
+done. However, it's time-consuming for a human to run tests, so we should
 prefer making tests automatic whenever possible. Remember that we set out to
 write a "reference test." Now it's time to write the reference file.
 
@@ -242,7 +242,7 @@ First, let's stage the new files for committing:
     $ git add html/semantics/text-level-semantics/the-bdo-element/rtl-ref.html
 
 We can make sure the commit has everything we want to submit (and nothing we
-don't) using `git diff`:
+don't) by using `git diff`:
 
     $ git diff --staged
 

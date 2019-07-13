@@ -207,8 +207,8 @@ def test_close_active_without_label():
 
     returncode, requests = run(event_data)
 
-    assert_neutral(returncode)
-    assert len(requests) == 0
+    assert_success(returncode)
+    assert [Requests.delete_ref_open] == requests
 
 
 def test_open_with_label():
@@ -281,6 +281,25 @@ def test_add_active_label():
     assert Requests.create_ref_labeled in requests
 
 
+def test_add_active_label_to_closed():
+    event_data = default_data('labeled')
+    event_data['pull_request']['closed_at'] = '2019-07-05'
+    event_data['label'] = {'name': 'pull-request-has-preview'}
+    event_data['pull_request']['labels'].append(
+        {'name': 'pull-request-has-preview'}
+    )
+    responses = {
+        to_key(Requests.get_ref_open): (404, '{}'),
+        to_key(Requests.get_ref_labeled): (404, '{}')
+    }
+
+    returncode, requests = run(event_data, responses)
+
+    assert_success(returncode)
+    assert Requests.create_ref_open not in requests
+    assert Requests.create_ref_labeled in requests
+
+
 def test_remove_unrelated_label():
     event_data = default_data('unlabeled')
     event_data['label'] = {'name': 'foobar'}
@@ -293,6 +312,21 @@ def test_remove_unrelated_label():
 
 def test_remove_active_label():
     event_data = default_data('unlabeled')
+    event_data['label'] = {'name': 'pull-request-has-preview'}
+    responses = {
+        to_key(Requests.delete_ref_labeled): (204, '')
+    }
+
+    returncode, requests = run(event_data, responses)
+
+    assert_success(returncode)
+    assert Requests.delete_ref_labeled in requests
+    assert Requests.delete_ref_open not in requests
+
+
+def test_remove_active_label_from_closed():
+    event_data = default_data('unlabeled')
+    event_data['pull_request']['closed_at'] = '2019-07-05'
     event_data['label'] = {'name': 'pull-request-has-preview'}
     responses = {
         to_key(Requests.delete_ref_labeled): (204, '')

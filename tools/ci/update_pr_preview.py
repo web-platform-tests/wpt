@@ -202,27 +202,24 @@ def main(api_root):
     ])
     target_label = event.get('label', {}).get('name')
 
-    if not is_open:
-        if action == 'closed' and has_label:
+    if action == 'closed':
+        if has_label:
             github.remove_label(pr_number, active_label)
 
-            # Removing a label from a GitHub Action will not trigger another
-            # Workflow, so the corresponding ref must be deleted while
-            # processing the "closed" action.
-            #
-            # > An action can't trigger other workflows. For example, a push,
-            # > deployment, or any task performed within an action with the
-            # > provided `GITHUB_TOKEN` will not trigger a workflow listening
-            # > on push, deploy, or any other supported action triggers.
-            #
-            # https://developer.github.com/actions/managing-workflows/workflow-configuration-options/
-            github.delete_ref(ref_open)
+        # Removing a label from a GitHub Action will not trigger another
+        # Workflow, so the corresponding ref must be deleted while processing
+        # the "closed" action.
+        #
+        # > An action can't trigger other workflows. For example, a push,
+        # > deployment, or any task performed within an action with the
+        # > provided `GITHUB_TOKEN` will not trigger a workflow listening on
+        # > push, deploy, or any other supported action triggers.
+        #
+        # https://developer.github.com/actions/managing-workflows/workflow-configuration-options/
+        github.delete_ref(ref_open)
 
-            return Status.SUCCESS
-
-        return Status.NEUTRAL
-
-    if action in ('opened', 'reopened') and has_label:
+        return Status.SUCCESS
+    elif action in ('opened', 'reopened') and has_label:
         github.set_ref(ref_open, sha)
         github.set_ref(ref_labeled, sha)
     elif action in ('opened', 'reopened') and github.is_collaborator(login):

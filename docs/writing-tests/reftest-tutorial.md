@@ -103,7 +103,7 @@ That's pretty dense! Let's break it down:
 
   The "assert" metadata is a structured way for you to describe exactly what
   you want your reftest to verify. For a direct test like the one we're writing
-  here, it might seem a liitle superfluous. It's much more helpful for
+  here, it might seem a little superfluous. It's much more helpful for
   more-involved tests where reviewers might need some help understanding your
   intentions.
 

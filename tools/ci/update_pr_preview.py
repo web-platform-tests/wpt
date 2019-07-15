@@ -194,7 +194,6 @@ def main(api_root):
     ref_open = 'prs-open/gh-{}'.format(pr_number)
     ref_labeled = 'prs-labeled-for-preview/gh-{}'.format(pr_number)
     sha = event['pull_request']['head']['sha']
-    is_open = event['pull_request']['closed_at'] is None
     login = event['pull_request']['user']['login']
     has_label = any([
         label['name'] == active_label

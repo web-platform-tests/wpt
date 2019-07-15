@@ -15,13 +15,13 @@ function testCanvas(ctx, r, g, b, a)
 }
 
 promise_test(function() {
-    function testTransferFromImageBitmapNullability(greenImage) {
+    function testTransferFromImageBitmapToBlobOffscreen(greenImage) {
         var bitmapCanvas = new OffscreenCanvas(width,height);
         var bitmapCtx = bitmapCanvas.getContext('bitmaprenderer');
         bitmapCtx.transferFromImageBitmap(greenImage);
 
         // Make sure the bitmap renderer canvas is filled correctly.
-        var pngImage = document.getElementById("img");
+        var pngImage = new Image();
         bitmapCanvas.convertToBlob().then(function(blob){
           pngImage.src = URL.createObjectURL(blob);
           var myCanvasToTest = document.createElement('canvas');
@@ -43,7 +43,7 @@ promise_test(function() {
     return Promise.all([
         createImageBitmap(greenCanvas),
     ]).then(([greenImage]) => {
-        testTransferFromImageBitmapNullability(greenImage);
+        testTransferFromImageBitmapToBlobOffscreen(greenImage);
     });
 },'Test that transferToBlob works and produce the expected image');
 

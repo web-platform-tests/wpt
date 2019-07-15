@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+async_test(t => {
+  window.addEventListener("message", t.step_func(({ data }) => {
+    assert_true(data.success);
+    assert_equals(data.origin, window.origin);
+    t.done();
+  }));
+}, "Cross-Origin-Embedder-Policy and srcdoc");
+</script>
+<iframe srcdoc="<script>window.parent.postMessage({ success: true, origin: self.origin }, '*')</script>"></iframe>

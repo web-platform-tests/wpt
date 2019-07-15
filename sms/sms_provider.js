@@ -5,7 +5,7 @@ let interceptor = (async function() {
     '/gen/mojo/public/mojom/base/big_buffer.mojom-lite.js',
     '/gen/mojo/public/mojom/base/string16.mojom-lite.js',
     '/gen/mojo/public/mojom/base/time.mojom-lite.js',
-    '/gen/third_party/blink/public/mojom/sms/sms_manager.mojom-lite.js',
+    '/gen/third_party/blink/public/mojom/sms/sms_receiver.mojom-lite.js',
   ].forEach(path => {
     let script = document.createElement('script');
     script.src = path;
@@ -20,38 +20,34 @@ let interceptor = (async function() {
 })();
 
 class SmsProvider {
-  getNextMessage(timeout) {
-    return this.handler.getNextMessage(timeout);
+  constructor() {
+    this.returnValues = {}
   }
-  setHandler(handler) {
-    this.handler = handler;
+
+  receive(timeout) {
+    let call = this.returnValues.receive.shift();
+    if (!call) {
+      throw new Error("Unexpected call.");
+    }
+    return call(timeout);
+  }
+
+  pushReturnValues(callName, returnValues) {
+    this.returnValues[callName] = this.returnValues[callName] || [];
+    this.returnValues[callName].push(returnValues);
     return this;
-  }
-  setBinding(binding) {
-    this.binding = binding;
-    return this;
-  }
-  close() {
-    this.binding.close();
   }
 }
 
-function getNextMessage(timeout, callback) {
+function receive(timeout, callback) {
   throw new Error("expected to be overriden by tests");
-}
-
-async function close() {
-  let provider = await interceptor;
-  provider.close();
 }
 
 function expect(call) {
   return {
     async andReturn(callback) {
-      let handler = {};
-      handler[call.name] = callback;
       let provider = await interceptor;
-      provider.setHandler(handler);
+      provider.pushReturnValues(call.name, callback);
     }
   }
 }
@@ -61,10 +57,11 @@ const Status = {};
 function intercept() {
   let provider = new SmsProvider();
 
-  let interceptor = new MojoInterfaceInterceptor(blink.mojom.SmsManager.$interfaceName);
+  let interceptor = new MojoInterfaceInterceptor(
+      blink.mojom.SmsReceiver.$interfaceName);
   interceptor.oninterfacerequest = (e) => {
-    let impl = new blink.mojom.SmsManager(provider);
-    impl.bindHandle(e.handle);
+    let impl = new blink.mojom.SmsReceiver(provider);
+    impl.$.bindHandle(e.handle);
   }
 
   interceptor.start();

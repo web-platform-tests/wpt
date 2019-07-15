@@ -1,11 +1,22 @@
+// A special path component meaning "this directory."
+const kCurrentDirectory = ".";
+
+// A special path component meaning "the parent directory."
+const kParentDirectory = "..";
+
+// Array of separators used to separate components in hierarchical paths.
+let kPathSeparators;
+if (navigator.userAgent.includes("Windows NT")) {
+    // Windows uses both '/' and '\' as path separators.
+    kPathSeparators = ['/', '\\' ];
+} else {
+    kPathSeparators = [ '/' ];
+}
+
 async function cleanupSandboxedFileSystem() {
     const dir = await FileSystemDirectoryHandle.getSystemDirectory({ type: 'sandbox' });
-    for await (let entry of dir.getEntries()) {
-        if (entry.isDirectory)
-            await entry.removeRecursively();
-        else
-            await entry.remove();
-   }
+    for await (let entry of dir.getEntries())
+        dir.removeEntry(entry.name, { recursive: entry.isDirectory });
 }
 
 async function getFileSize(handle) {
@@ -38,12 +49,28 @@ async function getSortedDirectoryEntries(handle) {
     return result;
 }
 
+async function createDirectory(test, name, parent) {
+  const parent_dir_handle = parent ? parent :
+      await FileSystemDirectoryHandle.getSystemDirectory({ type: 'sandbox' });
+
+  const new_dir_handle = await parent_dir_handle.getDirectory(name, { create: true });
+  test.add_cleanup(async () => {
+        try {
+            await parent_dir_handle.removeEntry(name, { recursive: true });
+        } catch (e) {
+            // Ignore any errors when removing directories, as tests might
+            // have already removed the directory.
+        }
+  });
+  return new_dir_handle;
+}
+
 async function createEmptyFile(test, name, parent) {
     const dir = parent ? parent : await FileSystemDirectoryHandle.getSystemDirectory({ type: 'sandbox' });
     const handle = await dir.getFile(name, { create: true });
     test.add_cleanup(async () => {
         try {
-            await handle.remove();
+            await dir.removeEntry(name);
         } catch (e) {
             // Ignore any errors when removing files, as tests might already remove the file.
         }

@@ -257,6 +257,25 @@ class MarionettePrefsProtocolPart(PrefsProtocolPart):
                 case prefInterface.PREF_INT:
                     prefInterface.setIntPref(pref, value);
                     break;
+                case prefInterface.PREF_INVALID:
+                    // Pref doesn't seem to be defined already; guess at the
+                    // right way to set it based on the type of value we have.
+                    switch (typeof value) {
+                        case "boolean":
+                            prefInterface.setBoolPref(pref, value);
+                            break;
+                        case "string":
+                            prefInterface.setCharPref(pref, value);
+                            break;
+                        case "number":
+                            prefInterface.setIntPref(pref, value);
+                            break;
+                        default:
+                            throw new Error("Unknown pref value type: " + (typeof value));
+                    }
+                    break;
+                default:
+                    throw new Error("Unknown pref type " + type);
             }
             """ % (name, value)
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
@@ -307,7 +326,7 @@ class MarionetteStorageProtocolPart(StorageProtocolPart):
                                 .newURI(url);
             let ssm = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
                                 .getService(Ci.nsIScriptSecurityManager);
-            let principal = ssm.createCodebasePrincipal(uri, {});
+            let principal = ssm.createContentPrincipal(uri, {});
             let qms = Components.classes["@mozilla.org/dom/quota-manager-service;1"]
                                 .getService(Components.interfaces.nsIQuotaManagerService);
             qms.clearStoragesForPrincipal(principal, "default", null, true);
@@ -366,6 +385,9 @@ class MarionetteSelectorProtocolPart(SelectorProtocolPart):
 
     def elements_by_selector(self, selector):
         return self.marionette.find_elements("css selector", selector)
+
+    def elements_by_selector_and_frame(self, element_selector, frame):
+        return self.marionette.find_elements("css selector", element_selector)
 
 
 class MarionetteClickProtocolPart(ClickProtocolPart):

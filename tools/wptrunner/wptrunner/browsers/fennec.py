@@ -50,6 +50,7 @@ def browser_kwargs(test_type, run_info_data, config, **kwargs):
             "stackwalk_binary": kwargs["stackwalk_binary"],
             "certutil_binary": kwargs["certutil_binary"],
             "ca_certificate_path": config.ssl_config["ca_cert_path"],
+            "enable_webrender": kwargs["enable_webrender"],
             "stackfix_dir": kwargs["stackfix_dir"],
             "binary_args": kwargs["binary_args"],
             "timeout_multiplier": get_timeout_multiplier(test_type,
@@ -100,7 +101,6 @@ def write_hosts_file(config, device):
 
 
 class FennecBrowser(FirefoxBrowser):
-    used_ports = set()
     init_timeout = 300
     shutdown_timeout = 60
 
@@ -127,8 +127,7 @@ class FennecBrowser(FirefoxBrowser):
 
     def start(self, **kwargs):
         if self.marionette_port is None:
-            self.marionette_port = get_free_port(2828, exclude=self.used_ports)
-            self.used_ports.add(self.marionette_port)
+            self.marionette_port = get_free_port()
 
         env = {}
         env["MOZ_CRASHREPORTER"] = "1"
@@ -137,6 +136,10 @@ class FennecBrowser(FirefoxBrowser):
         env["STYLO_THREADS"] = str(self.stylo_threads)
         if self.chaos_mode_flags is not None:
             env["MOZ_CHAOSMODE"] = str(self.chaos_mode_flags)
+        if self.enable_webrender:
+            env["MOZ_WEBRENDER"] = "1"
+        else:
+            env["MOZ_WEBRENDER"] = "0"
 
         preferences = self.load_prefs()
 

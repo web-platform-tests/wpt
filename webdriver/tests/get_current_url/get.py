@@ -46,11 +46,14 @@ def test_get_current_url_file_protocol(session, server_config):
     # when navigated privileged documents
     path = server_config["doc_root"]
     if platform_name == "windows":
-        path = path.replace("\\", "/")
-    url = u"file:///{}".format(path)
+        # Convert the path into the format eg. /c:/foo/bar
+        path = "/{}".format(path.replace("\\", "/"))
+    url = u"file://{}".format(path)
     session.url = url
 
     response = get_current_url(session)
+    if response.status == 200 and response.body['value'].endswith('/'):
+        url += '/'
     assert_success(response, url)
 
 

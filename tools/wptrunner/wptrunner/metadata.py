@@ -330,10 +330,12 @@ class ExpectedUpdater(object):
                 action_map["test_status"]({"test": test["test"],
                                            "subtest": subtest["name"],
                                            "status": subtest["status"],
-                                           "expected": subtest.get("expected")})
+                                           "expected": subtest.get("expected"),
+                                           "known_intermittent": subtest.get("known_intermittent")})
             action_map["test_end"]({"test": test["test"],
                                     "status": test["status"],
-                                    "expected": test.get("expected")})
+                                    "expected": test.get("expected"),
+                                    "known_intermittent": test.get("known_intermittent")})
             if "asserts" in test:
                 asserts = test["asserts"]
                 action_map["assertion_count"]({"test": test["test"],
@@ -445,9 +447,10 @@ def create_test_tree(metadata_path, test_manifest):
     """
     do_delayed_imports()
     id_test_map = {}
-    exclude_types = frozenset(["stub", "helper", "manual", "support", "conformancechecker", "reftest_base"])
-    all_types = manifestitem.item_types.keys()
-    include_types = set(all_types) - exclude_types
+    exclude_types = frozenset(["stub", "manual", "support", "conformancechecker"])
+    all_types = set(manifestitem.item_types.keys())
+    assert all_types > exclude_types
+    include_types = all_types - exclude_types
     for item_type, test_path, tests in test_manifest.itertypes(*include_types):
         test_file_data = TestFileData(intern(test_manifest.url_base.encode("utf8")),
                                       intern(item_type.encode("utf8")),

@@ -39,23 +39,26 @@ function xr_session_promise_test(
 
   xr_promise_test(
       name,
-      (t) =>
-          XRTest.simulateDeviceConnection(fakeDeviceInit)
+      (t) =>{
+          return navigator.xr.test.simulateDeviceConnection(fakeDeviceInit)
               .then((controller) => {
                 testDeviceController = controller;
                 return gl.makeXRCompatible();
               })
               .then(() => new Promise((resolve, reject) => {
                       // Perform the session request in a user gesture.
-                      XRTest.simulateUserActivation(() => {
+                      navigator.xr.test.simulateUserActivation(() => {
                         navigator.xr.requestSession(sessionMode)
                             .then((session) => {
                               testSession = session;
+                              session.mode = sessionMode;
+                              let glLayer = new XRWebGLLayer(session, gl, {
+                                compositionDisabled: session.mode == 'inline'
+                              });
                               // Session must have a baseLayer or frame requests
                               // will be ignored.
                               session.updateRenderState({
-                                  baseLayer: new XRWebGLLayer(session, gl),
-                                  outputContext: getOutputContext()
+                                  baseLayer: glLayer
                               });
                               resolve(func(session, testDeviceController, t));
                             })
@@ -72,18 +75,10 @@ function xr_session_promise_test(
               .then(() => {
                 // Cleanup system state.
                 testSession.end().catch(() => {});
-                XRTest.simulateDeviceDisconnection();
-              }),
+                return navigator.xr.test.disconnectAllDevices();
+              })
+            },
       properties);
-}
-
-// A utility function to create an output context as required by non-immersive
-// sessions.
-// https://immersive-web.github.io/webxr/#xrsessioncreationoptions-interface
-function getOutputContext() {
-  let outputCanvas = document.createElement('canvas');
-  document.body.appendChild(outputCanvas);
-  return outputCanvas.getContext('xrpresent');
 }
 
 // This functions calls a callback with each API object as specified
@@ -115,7 +110,7 @@ function forEachWebxrObject(callback) {
 
 // Code for loading test api in chromium.
 let loadChromiumResources = Promise.resolve().then(() => {
-  if (!MojoInterfaceInterceptor) {
+  if (!('MojoInterfaceInterceptor' in self)) {
     // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
     // not present in the global namespace.
     return;

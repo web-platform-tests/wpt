@@ -12,6 +12,7 @@ import testloader
 import wptcommandline
 import wptlogging
 import wpttest
+from mozlog import capture
 from font import FontInstaller
 from testrunner import ManagerGroup
 from browsers.base import NullBrowser
@@ -51,7 +52,8 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, **kwargs):
                                     browser_channel=kwargs.get("browser_channel"),
                                     verify=kwargs.get("verify"),
                                     debug=debug,
-                                    extras=run_info_extras)
+                                    extras=run_info_extras,
+                                    enable_webrender=kwargs.get("enable_webrender"))
 
     test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=kwargs["manifest_update"],
                                                manifest_download=kwargs["manifest_download"]).load()
@@ -132,7 +134,7 @@ def get_pause_after_test(test_loader, **kwargs):
 
 
 def run_tests(config, test_paths, product, **kwargs):
-    with wptlogging.CaptureIO(logger, not kwargs["no_capture_stdio"]):
+    with capture.CaptureIO(logger, not kwargs["no_capture_stdio"]):
         env.do_delayed_imports(logger, test_paths)
 
         product = products.load_product(config, product, load_cls=True)

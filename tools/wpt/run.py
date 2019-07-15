@@ -125,6 +125,11 @@ def check_environ(product):
         else:
             hosts_path = "/etc/hosts"
 
+        if os.path.abspath(os.curdir) == wpt_root:
+            wpt_path = "wpt"
+        else:
+            wpt_path = os.path.join(wpt_root, "wpt")
+
         with open(hosts_path, "r") as f:
             for line in f:
                 line = line.split("#", 1)[0].strip()
@@ -136,13 +141,14 @@ def check_environ(product):
                 if is_windows:
                     message = """Missing hosts file configuration. Run
 
-python wpt make-hosts-file | Out-File %s -Encoding ascii -Append
+python %s make-hosts-file | Out-File %s -Encoding ascii -Append
 
-in PowerShell with Administrator privileges.""" % hosts_path
+in PowerShell with Administrator privileges.""" % (wpt_path, hosts_path)
                 else:
                     message = """Missing hosts file configuration. Run
 
-./wpt make-hosts-file | sudo tee -a %s""" % hosts_path
+%s make-hosts-file | sudo tee -a %s""" % ("./wpt" if wpt_path == "wpt" else wpt_path,
+                                          hosts_path)
                 raise WptrunError(message)
 
 
@@ -332,15 +338,23 @@ class EdgeChromium(BrowserSetup):
     browser_cls = browser.EdgeChromium
 
     def setup_kwargs(self, kwargs):
+        browser_channel = kwargs["browser_channel"]
+        if kwargs["binary"] is None:
+            binary = self.browser.find_binary(channel=browser_channel)
+            if binary:
+                kwargs["binary"] = self.browser.find_binary()
+            else:
+                raise WptrunError("Unable to locate Edge binary")
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = self.browser.find_webdriver()
 
-            if webdriver_binary is None:
+            # Install browser if none are found or if it's found in venv path
+            if webdriver_binary is None or webdriver_binary in self.venv.bin_path:
                 install = self.prompt_install("msedgedriver")
 
                 if install:
                     logger.info("Downloading msedgedriver")
-                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path)
+                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path, channel=browser_channel)
             else:
                 logger.info("Using webdriver binary %s" % webdriver_binary)
 
@@ -348,6 +362,9 @@ class EdgeChromium(BrowserSetup):
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
                 raise WptrunError("Unable to locate or install msedgedriver binary")
+        if browser_channel == "dev":
+            logger.info("Automatically turning on experimental features for Edge Dev")
+            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
 
 
 class Edge(BrowserSetup):
@@ -570,7 +587,8 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
             kwargs["browser_channel"] = channel
         else:
             logger.info("Valid channels for %s not known; using argument unmodified" % kwargs["product"])
-    del kwargs["channel"]
+            kwargs["browser_channel"] = kwargs["channel"]
+        del kwargs["channel"]
 
     if install_browser:
         logger.info("Installing browser")

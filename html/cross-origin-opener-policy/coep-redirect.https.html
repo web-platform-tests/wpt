@@ -15,6 +15,14 @@
     "opener": true
   },
   {
+    "title": "coop/coep to no coop/coep",
+    "redirectCOOP": "same-origin",
+    "redirectCOEP": "require-corp",
+    "coop": "",
+    "coep": "require-corp",
+    "opener": false
+  },
+  {
     "title": "no coop/no coep to coop/coep",
     "redirectCOOP": "",
     "redirectCOEP": "",
@@ -37,7 +45,6 @@
     "coop": "same-origin",
     "coep": "require-corp",
     "opener": true
-
   },
   {
     "title": "coop unsafe-inherit/coep to coop unsafe-inherit/coep",
@@ -46,7 +53,6 @@
     "coop": "unsafe-inherit",
     "coep": "require-corp",
     "opener": true
-
   }
 ].forEach(variant => {
   const title = `Redirect from ${variant.title}`;

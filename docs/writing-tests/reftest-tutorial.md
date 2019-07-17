@@ -1,5 +1,16 @@
 # Writing a reftest
 
+<!--
+Note to maintainers:
+
+This tutorial is designed to be an authentic depiction of the WPT contribution
+experience. It is not intended to be comprehensive; its scope is intentionally
+limited in order to demonstrate authoring a complete test without overwhelming
+the reader with features. This should be updated as typical WPT usage patterns
+change, but please weigh extensions against the demotivating effect that a
+lengthy guide can have on new contributors.
+-->
+
 Let's say you've discovered that WPT doesn't have any tests for the `dir`
 attribute of [the `<bdo>`
 element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo). This
@@ -257,6 +268,16 @@ And now we can push the commit to our fork of WPT:
 
     $ git push origin reftest-for-bdo
 
-The last step is to submit the test for review. We do this by creating a pull
-request on GitHub. [The guide on git and GitHub](../appendix/github-intro) has
-all the details on how to do that.
+The last step is to submit the test for review. WPT doesn't actually need the
+test we wrote in this tutorial, but if we wanted to submit it for inclusion in
+the repository, we would create a pull request on GitHub. [The guide on git and
+GitHub](../appendix/github-intro) has all the details on how to do that.
+
+## More practice
+
+Here are some ways you can keep experimenting with WPT using this test:
+
+- Improve coverage by adding more tests for related behaviors (e.g. nested
+  `<bdo>` elements)
+- Add another reference document which describes what the test should *not*
+  look like using [`rel=mismatch`](reftests)

@@ -1,4 +1,4 @@
-function get_host_info() {
+;function get_host_info() {
 
   var HTTP_PORT = '{{ports[http][0]}}';
   var HTTP_PORT2 = '{{ports[http][1]}}';

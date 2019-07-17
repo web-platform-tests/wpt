@@ -5,6 +5,11 @@
 <script src="resources/shapedetection-helpers.js"></script>
 <script>
 
+promise_test(async t => {
+  const result = await BarcodeDetector.getSupportedFormats();
+  assert_equals(result.length, 0, 'result.length');
+}, 'getSupportedFormats() resolves with empty list when unsupported');
+
 detection_test('BarcodeDetectionTest', async t => {
   const result = await BarcodeDetector.getSupportedFormats();
   assert_equals(result.length, 3, 'Number of supported formats');

@@ -62,7 +62,7 @@ const run_test = test => {
       window.addEventListener('message', t.step_func(function(e) {
         win.close();
         assert_equals(e.data, "PASS", "message from opened page");
-        t.step_timeout(resolve, 1500);
+        fetch("/client-hints/resources/clear-site-data.html").then(resolve);
       }));
       // Open a new window. Verify that the user agent attaches client hints.
       win = window.open(test.expect_url);

@@ -1,0 +1,21 @@
+<!doctype html>
+<title>Accept-CH-Lifetime test</title>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/accept-ch-lifetime-test.js"></script>
+
+<script>
+setup({ explicit_done: true });
+
+run_test({ name: "same origin navigation",
+    initial_url: echo,
+    accept_url: httpequiv_accept,
+    expect_url: expect,
+    type: "navigation" });
+done();
+
+</script>
+</body>
+</html>

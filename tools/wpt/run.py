@@ -318,6 +318,7 @@ class ChromeiOS(BrowserSetup):
         if kwargs["webdriver_binary"] is None:
             raise WptrunError("Unable to locate or install chromedriver binary")
 
+
 class Opera(BrowserSetup):
     name = "opera"
     browser_cls = browser.Opera

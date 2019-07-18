@@ -21,11 +21,11 @@ async_test(t => {
   frame.sandbox = "allow-scripts";
   frame.srcdoc = `<script>
 let i = 0;
-let data = { sameOriginWithoutCORP: false,
-             sameOriginWithSameOriginCORP: false,
-             sameOriginWithCrossOriginCORP: false,
-             crossOriginWithCrossOriginCORP: false,
-             origin: self.origin };
+const data = { sameOriginWithoutCORP: false,
+               sameOriginWithSameOriginCORP: false,
+               sameOriginWithCrossOriginCORP: false,
+               crossOriginWithCrossOriginCORP: false,
+               origin: self.origin };
 function report(token, success) {
   i++;
   data[token] = success;

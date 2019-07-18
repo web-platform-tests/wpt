@@ -3,10 +3,12 @@
 <title>Cross-Origin-Embedder-Policy header and nested navigable resource without such header</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script src=/common/utils.js></script> <!-- Use token() to allow running tests in parallel -->
 <div id=log></div>
 <script>
 async_test(t => {
   const frame = document.createElement("iframe");
+  t.add_cleanup(() => frame.remove());
   frame.onload = t.step_func_done(() => {
     assert_not_equals(frame.contentDocument, null);
   });
@@ -17,24 +19,26 @@ async_test(t => {
 
 async_test(t => {
   const frame = document.createElement("iframe");
+  t.add_cleanup(() => frame.remove());
+  const blank = "/common/blank.html";
   let firstNavOk = false;
   frame.onload = t.step_func(() => {
     assert_not_equals(frame.contentDocument, null);
     firstNavOk = true;
   });
   t.step_timeout(() => {
-    assert_equals(firstNavOk, true);
+    assert_true(firstNavOk);
     assert_not_equals(frame.contentDocument, null);
+    assert_equals(frame.contentWindow.location.pathname, blank);
     t.done();
   }, 500);
-  frame.src = "resources/navigate-require-corp.sub.html?to=/common/blank.html";
+  frame.src = `resources/navigate-require-corp.sub.html?to=${blank}`;
   document.body.append(frame);
   assert_equals(frame.contentDocument.body.localName, "body");
 }, `"none" top-level: navigating a frame from "require-corp" to "none" should succeed`);
 
 async_test(t => {
-  let w = window.open(`resources/navigate-none.sub.html?to=navigate-require-corp.sub.html`, "window_name");
-
+  const w = window.open(`resources/navigate-none.sub.html?to=navigate-require-corp.sub.html`, "window_name");
   t.add_cleanup(() => w.close());
 
   t.step_timeout(() => {
@@ -48,8 +52,7 @@ async_test(t => {
 
 async_test(t => {
   let pageLoaded = false;
-  const CHANNEL = "require-corp-none-top-navigation";
-  let bc = new BroadcastChannel(CHANNEL);
+  const bc = new BroadcastChannel(token());
   let finished = false;
   bc.onmessage = t.step_func((event) => {
     pageLoaded = true;
@@ -57,19 +60,19 @@ async_test(t => {
     assert_equals(payload, "loaded");
   });
 
-  const SECOND_CHANNEL = "require-corp-none-top-navigation-final";
-  let bc2 = new BroadcastChannel(SECOND_CHANNEL);
+  const bc2 = new BroadcastChannel(token());
   bc2.onmessage = t.step_func((event) => {
     finished = true;
     let payload = event.data;
     assert_equals(payload, "loaded");
   });
 
-  let win = window.open(`resources/navigate-require-corp.sub.html?channelName=${CHANNEL}&to=navigate-none.sub.html?channelName=${SECOND_CHANNEL}`, "_blank", "noopener");
+  const win = window.open(`resources/navigate-require-corp.sub.html?channelName=${bc.name}&to=navigate-none.sub.html?channelName=${bc2.name}`, "_blank", "noopener");
+  assert_equals(win, null);
 
   t.step_timeout(() => {
-    assert_equals(pageLoaded, true);
-    assert_equals(finished, true);
+    assert_true(pageLoaded);
+    assert_true(finished);
     t.done();
   }, 500);
 }, `"require-corp" top-level noopener popup: navigating to "none" should succeed`);

@@ -7,13 +7,12 @@
 <script>
 async_test(t => {
   const frame = document.createElement("iframe");
-  const channelName = token();
-  const channel = new BroadcastChannel(channelName);
+  const channel = new BroadcastChannel(token());
   channel.onmessage = t.unreached_func("A COOP popup was created from a sandboxed frame");
   t.add_cleanup(() => frame.remove());
   frame.sandbox = "allow-popups allow-scripts allow-same-origin";
   frame.srcdoc = `<script>
-const popup = window.open("resources/coop-coep.py?coop=same-origin&coep=&channel=${channelName}");
+const popup = window.open("resources/coop-coep.py?coop=same-origin&coep=&channel=${channel.name}");
 <\/script>`;
   document.body.append(frame);
   t.step_timeout(() => {

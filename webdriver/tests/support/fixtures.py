@@ -141,7 +141,7 @@ def session(capabilities, configuration, request):
         _current_session.end()
         _current_session = None
 
-    if _current_session is None:
+    if _current_session is None or _current_session.session_id is None:
         _current_session = webdriver.Session(
             configuration["host"],
             configuration["port"],

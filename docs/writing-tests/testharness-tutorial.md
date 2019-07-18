@@ -6,9 +6,9 @@ Note to maintainers:
 This tutorial is designed to be an authentic depiction of the WPT contribution
 experience. It is not intended to be comprehensive; its scope is intentionally
 limited in order to demonstrate authoring a complete test without overwhelming
-the reader with features. This should be updated as typical WPT usage patterns
-change, but please weigh extensions against the demotivating effect that a
-lengthy guide can have on new contributors.
+the reader with features. Because typical WPT usage patterns change over time,
+this should be updated periodically; please weigh extensions against the
+demotivating effect that a lengthy guide can have on new contributors.
 -->
 
 Let's say you've discovered that WPT doesn't have any tests for how [the Fetch
@@ -339,12 +339,12 @@ Firefox this time:
     python ./wpt run firefox fetch/api/basic/set-cookie.html
 
 We expect this test to pass, so if it does, we're ready to submit it. If we
-were testing a web platform feature that Firefox didn't support, we would
+were testing a web-platform feature that Firefox didn't support, we would
 expect the test to fail instead.
 
 There are a few problems to look out for in addition to passing/failing status.
-The report will describe fewer tests than we expect if the isn't run at all.
-That's usually a sign of a formatting mistake, so you'll want to make sure
+The report will describe fewer tests than we expect if the test isn't run at
+all. That's usually a sign of a formatting mistake, so you'll want to make sure
 you've used the right file names and metadata. Separately, the web browser
 might crash. That's often a sign of a browser bug, so you should consider
 reporting it to the browser's maintainers!

@@ -21,8 +21,8 @@ GitHub](../appendix/github-intro).
 WPT's testharness.js is a framework designed to help people write tests for the
 web platform's JavaScript APIs. [The testharness.js reference
 page](testharness) describes the framework in the abstract, but for the
-purposes of this guide, we'll take it for granted that testharness.js is the
-best way to test the behavior of `fetch`.
+purposes of this guide, we'll only consider the features we need to test the
+behavior of `fetch`.
 
 ```eval_rst
 .. contents::
@@ -36,7 +36,9 @@ located in the root of the WPT git repository:
 
     $ git fetch git@github.com:web-platform-tests/wpt.git
 
-Next, create a new branch named `fetch-cookie` from that revision:
+Next, we need a place to store the change set we're about to author. Here's how
+to create a new git branch named `fetch-cookie` from the revision of WPT we
+just downloaded:
 
     $ git checkout -b fetch-cookie FETCH_HEAD
 
@@ -347,7 +349,8 @@ The report will describe fewer tests than we expect if the test isn't run at
 all. That's usually a sign of a formatting mistake, so you'll want to make sure
 you've used the right file names and metadata. Separately, the web browser
 might crash. That's often a sign of a browser bug, so you should consider
-reporting it to the browser's maintainers!
+[reporting it to the browser's
+maintainers](https://rachelandrew.co.uk/archives/2017/01/30/reporting-browser-bugs/)!
 
 ## Submitting the test
 

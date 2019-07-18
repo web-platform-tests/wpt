@@ -23,8 +23,8 @@ and GitHub](../appendix/github-intro).
 
 WPT's reftests are great for testing web-platform features that have some
 visual effect. [The reftests reference page](reftests) describes them in the
-abstract, but for the purposes of this guide, we'll take it for granted that
-the reftest is the perfect way to test for bidirectional text overrides.
+abstract, but for the purposes of this guide, we'll only consider the features
+we need to test the `<bdo>` element.
 
 ```eval_rst
 .. contents::
@@ -38,7 +38,9 @@ located in the root of the WPT git repository:
 
     $ git fetch git@github.com:web-platform-tests/wpt.git
 
-Next, create a new branch named `reftest-for-bdo` from that revision:
+Next, we need a place to store the change set we're about to author. Here's how
+to create a new git branch named `reftest-for-bdo` from the revision of WPT we
+just downloaded:
 
     $ git checkout -b reftest-for-bdo FETCH_HEAD
 
@@ -243,7 +245,8 @@ The report will describe fewer tests than we expect if the test isn't run at
 all. That's usually a sign of a formatting mistake, so you'll want to make sure
 you've used the right file names and metadata. Separately, the web browser
 might crash. That's often a sign of a browser bug, so you should consider
-reporting it to the browser's maintainers!
+[reporting it to the browser's
+maintainers](https://rachelandrew.co.uk/archives/2017/01/30/reporting-browser-bugs/)!
 
 ## Submitting the test
 

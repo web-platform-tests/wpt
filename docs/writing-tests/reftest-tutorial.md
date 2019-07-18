@@ -239,8 +239,8 @@ were testing a web platform feature that Firefox didn't support, we would
 expect the test to fail instead.
 
 There are a few problems to look out for in addition to passing/failing status.
-The report will describe fewer tests than we expect if the isn't run at all.
-That's usually a sign of a formatting mistake, so you'll want to make sure
+The report will describe fewer tests than we expect if the test isn't run at
+all. That's usually a sign of a formatting mistake, so you'll want to make sure
 you've used the right file names and metadata. Separately, the web browser
 might crash. That's often a sign of a browser bug, so you should consider
 reporting it to the browser's maintainers!

@@ -6,9 +6,9 @@ Note to maintainers:
 This tutorial is designed to be an authentic depiction of the WPT contribution
 experience. It is not intended to be comprehensive; its scope is intentionally
 limited in order to demonstrate authoring a complete test without overwhelming
-the reader with features. This should be updated as typical WPT usage patterns
-change, but please weigh extensions against the demotivating effect that a
-lengthy guide can have on new contributors.
+the reader with features. Because typical WPT usage patterns change over time,
+this should be updated periodically; please weigh extensions against the
+demotivating effect that a lengthy guide can have on new contributors.
 -->
 
 Let's say you've discovered that WPT doesn't have any tests for the `dir`

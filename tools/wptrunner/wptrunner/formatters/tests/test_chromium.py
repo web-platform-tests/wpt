@@ -162,3 +162,51 @@ def test_subtest_messages(capfd):
 
     t2_log = output_json["tests"]["t2"]["artifacts"]["log"]
     assert t2_log == "[TIMEOUT] t2_message\n"
+
+
+def test_subtest_failure(capfd):
+    # Tests that a test fails if a subtest fails
+
+    # Set up the handler.
+    output = StringIO()
+    logger = structuredlog.StructuredLogger("test_a")
+    formatter = ChromiumFormatter()
+    logger.add_handler(handlers.StreamHandler(output, formatter))
+
+    # Run a test with some subtest failures.
+    logger.suite_start(["t1"], run_info={}, time=123)
+    logger.test_start("t1")
+    logger.test_status("t1", status="FAIL", subtest="t1_a",
+                       message="t1_a_message")
+    logger.test_status("t1", status="PASS", subtest="t1_b",
+                       message="t1_b_message")
+    logger.test_status("t1", status="TIMEOUT", subtest="t1_c",
+                       message="t1_c_message")
+    # Here we just check that the test was only inserted into memory once even
+    # though there were multiple subtest failures.
+    assert formatter.tests_with_subtest_fails.count("t1") == 1
+    # The test status is reported as a pass here because the harness was able to
+    # run the test to completion.
+    logger.test_end("t1", status="PASS", expected="PASS")
+    logger.suite_end()
+
+    # check nothing got output to stdout/stderr
+    # (note that mozlog outputs exceptions during handling to stderr!)
+    captured = capfd.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+
+    # check the actual output of the formatter
+    output.seek(0)
+    output_json = json.load(output)
+
+    test_obj = output_json["tests"]["t1"]
+    t1_log = test_obj["artifacts"]["log"]
+    assert t1_log == "[FAIL] t1_a: t1_a_message\n" \
+                     "[PASS] t1_b: t1_b_message\n" \
+                     "[TIMEOUT] t1_c: t1_c_message\n"
+    # The status of the test in the output is a failure because subtests failed,
+    # despite the harness reporting that the test passed.
+    assert test_obj["actual"] == "FAIL"
+    # Also ensure that the formatter cleaned up its internal state
+    assert formatter.tests_with_subtest_fails.count("t1") == 0

@@ -184,7 +184,11 @@ Note that in the promise chain constructed in `test_function` assertions don't
 need to be wrapped in `step` or `step_func` calls.
 
 Unlike Asynchronous Tests, Promise Tests don't start running until after the
-previous Promise Test finishes.
+previous Promise Test finishes. However, be aware that a test is considered
+finished as soon as its status is resolved, and a failed test's chained actions
+may still be in progress when the next test starts. Use `[add_cleanup](#cleanup)`
+to register any needed cleanup actions such as resetting global state that need
+to happen consistently before the next test starts.
 
 `promise_rejects` can be used to test Promises that need to reject:
 

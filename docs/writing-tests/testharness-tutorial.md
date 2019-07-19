@@ -13,10 +13,10 @@ demotivating effect that a lengthy guide can have on new contributors.
 
 Let's say you've discovered that WPT doesn't have any tests for how [the Fetch
 API](https://fetch.spec.whatwg.org/) sets cookies from an HTTP response. This
-tutorial will guide you through the process of writing and submitting a test
-for exactly that. Although it includes some very brief instructions on using
-git, you can find more guidance in [the tutorial for git and
-GitHub](../appendix/github-intro).
+tutorial will guide you through the process of writing a test for the
+web-platform, verifying it, and submitting it back to WPT. Although it includes
+some very brief instructions on using git, you can find more guidance in [the
+tutorial for git and GitHub](../appendix/github-intro).
 
 WPT's testharness.js is a framework designed to help people write tests for the
 web platform's JavaScript APIs. [The testharness.js reference

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<iframe src="resources/frame-with-autofocus-element.html#anchor1"></iframe>
+<iframe src="resources/frame-with-autofocus-element.html#non-existent-anchor"></iframe>
+
+<script>
+'use strict';
+
+promise_test(async () => {
+  await waitForLoad(window);
+  await waitForAnimationFrame();
+  await waitForAnimationFrame();
+  assert_equals(document.activeElement, document.body,
+      'Autofocus elements in iframes should not be focused.');
+
+  let input = document.createElement('input');
+  input.autofocus = true;
+  document.body.appendChild(input);
+  await waitForAnimationFrame();
+  await waitForAnimationFrame();
+  assert_equals(document.activeElement, input);
+}, 'Autofocus element in a document with a URI fragment should be skipped.');
+</script>

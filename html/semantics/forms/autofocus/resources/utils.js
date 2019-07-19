@@ -6,6 +6,12 @@ function waitForEvent(target, type, options) {
   });
 }
 
+function waitForAnimationFrame() {
+  return new Promise((resolve, reject) => {
+    requestAnimationFrame(resolve);
+  });
+}
+
 function waitForLoad(target) {
   return waitForEvent(target, 'load');
 }

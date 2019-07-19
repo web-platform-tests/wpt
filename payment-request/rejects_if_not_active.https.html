@@ -65,18 +65,22 @@ promise_test(async t => {
   await new Promise(resolve => {
     iframe.addEventListener("load", resolve);
     iframe.src = "/payment-request/resources/page2.html";
+    // An implementation may optionally reject |showPromise|.
+    showPromise.catch(e => {});
   });
 
   // The navigaton should have dismissed the previous payment request so it
   // should be possible to show another one now.
   const request2 = new iframe.contentWindow.PaymentRequest(
     validMethods, validDetails);
-  const showPromise2 = request2.show();
+  const [showPromise2] = await test_driver.bless(
+    "show 2nd payment request", () => {
+      return [request2.show()];
+    });
 
   // Stop the test in 1 second if it has not rejected, which means that a
   // payment sheet is successfully shown.
-  t.step_timeout(() => {
-    request.abort();
+  t.step_timeout(async () => {
     // We are done, so clean up.
     iframe.remove();
     t.done();

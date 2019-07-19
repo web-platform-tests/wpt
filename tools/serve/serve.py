@@ -48,6 +48,14 @@ def replace_end(s, old, new):
     return s[:-len(old)] + new
 
 
+def domains_are_distinct(a, b):
+    a = a.split(".")
+    b = b.split(".")
+    l = -1 * min(len(a), len(b))
+
+    return a[l:] != b[l:]
+
+
 class WrapperHandler(object):
 
     __meta__ = abc.ABCMeta
@@ -798,6 +806,14 @@ class ConfigBuilder(config.ConfigBuilder):
             *args,
             **kwargs
         )
+        with self as c:
+            browser_host = c.get("browser_host")
+            alternate_host = c.get("alternate_hosts", {}).get("alt")
+
+            if not domains_are_distinct(browser_host, alternate_host):
+                raise ValueError(
+                    "Alternate host must be distinct from browser host"
+                )
 
     def _get_ws_doc_root(self, data):
         if data["ws_doc_root"] is not None:

@@ -26,6 +26,7 @@ policies and contribution forms [3].
         test_timeout:null,
         message_events: ["start", "test_state", "result", "completion"]
     };
+    var bad = [];
 
     var xhtml_ns = "http://www.w3.org/1999/xhtml";
 
@@ -986,6 +987,10 @@ policies and contribution forms [3].
 
     function assert_true(actual, description)
     {
+        if (arguments.length > 1 && typeof description !== 'string') {
+            bad.push('assert_true');
+        }
+
         assert(actual === true, "assert_true", description,
                                 "expected true got ${actual}", {actual:actual});
     }
@@ -993,6 +998,10 @@ policies and contribution forms [3].
 
     function assert_false(actual, description)
     {
+        if (arguments.length > 1 && typeof description !== 'string') {
+            bad.push('assert_false');
+        }
+
         assert(actual === false, "assert_false", description,
                                  "expected false got ${actual}", {actual:actual});
     }
@@ -1012,6 +1021,10 @@ policies and contribution forms [3].
 
     function assert_equals(actual, expected, description)
     {
+        if (arguments.length < 2) {
+            bad.push('assert_equals');
+        }
+
          /*
           * Test if two primitives are equal or two objects
           * are the same object
@@ -1030,6 +1043,10 @@ policies and contribution forms [3].
 
     function assert_not_equals(actual, expected, description)
     {
+        if (arguments.length < 2) {
+            bad.push('assert_not_equals');
+        }
+
          /*
           * Test if two primitives are unequal or two objects
           * are different objects
@@ -1042,6 +1059,9 @@ policies and contribution forms [3].
 
     function assert_in_array(actual, expected, description)
     {
+        if (arguments.length < 2) {
+            bad.push('assert_in_array');
+        }
         assert(expected.indexOf(actual) != -1, "assert_in_array", description,
                                                "value ${actual} not in array ${expected}",
                                                {actual:actual, expected:expected});
@@ -1050,6 +1070,9 @@ policies and contribution forms [3].
 
     function assert_object_equals(actual, expected, description)
     {
+        if (arguments.length < 2) {
+            bad.push('assert_object_equals');
+        }
          assert(typeof actual === "object" && actual !== null, "assert_object_equals", description,
                                                                "value is ${actual}, expected object",
                                                                {actual: actual});
@@ -1086,6 +1109,9 @@ policies and contribution forms [3].
 
     function assert_array_equals(actual, expected, description)
     {
+        if (arguments.length < 2) {
+            bad.push('assert_array_equals');
+        }
         assert(typeof actual === "object" && actual !== null && "length" in actual,
                "assert_array_equals", description,
                "value is ${actual}, expected array",
@@ -1111,6 +1137,9 @@ policies and contribution forms [3].
 
     function assert_array_approx_equals(actual, expected, epsilon, description)
     {
+        if (arguments.length < 3) {
+            bad.push('assert_array_approx_equals');
+        }
         /*
          * Test if two primitive arrays are equal within +/- epsilon
          */
@@ -1139,6 +1168,9 @@ policies and contribution forms [3].
 
     function assert_approx_equals(actual, expected, epsilon, description)
     {
+        if (arguments.length < 3) {
+            bad.push('assert_approx_equals');
+        }
         /*
          * Test if two primitive numbers are equal within +/- epsilon
          */
@@ -1156,6 +1188,9 @@ policies and contribution forms [3].
 
     function assert_less_than(actual, expected, description)
     {
+        if (arguments.length < 2) {
+            bad.push('assert_less_than');
+        }
         /*
          * Test if a primitive number is less than another
          */
@@ -1173,6 +1208,9 @@ policies and contribution forms [3].
 
     function assert_greater_than(actual, expected, description)
     {
+        if (arguments.length < 2) {
+            bad.push('assert_greater_then');
+        }
         /*
          * Test if a primitive number is greater than another
          */
@@ -1190,6 +1228,9 @@ policies and contribution forms [3].
 
     function assert_between_exclusive(actual, lower, upper, description)
     {
+        if (arguments.length < 3) {
+            bad.push('assert_between_exclusive');
+        }
         /*
          * Test if a primitive number is between two others
          */
@@ -1208,6 +1249,9 @@ policies and contribution forms [3].
 
     function assert_less_than_equal(actual, expected, description)
     {
+        if (arguments.length < 2) {
+            bad.push('assert_less_than_equal');
+        }
         /*
          * Test if a primitive number is less than or equal to another
          */
@@ -1225,6 +1269,9 @@ policies and contribution forms [3].
 
     function assert_greater_than_equal(actual, expected, description)
     {
+        if (arguments.length < 2) {
+            bad.push('assert_greater_than_equal');
+        }
         /*
          * Test if a primitive number is greater than or equal to another
          */
@@ -1242,6 +1289,9 @@ policies and contribution forms [3].
 
     function assert_between_inclusive(actual, lower, upper, description)
     {
+        if (arguments.length < 3) {
+            bad.push('assert_between_inclusive');
+        }
         /*
          * Test if a primitive number is between to two others or equal to either of them
          */
@@ -1259,6 +1309,9 @@ policies and contribution forms [3].
     expose(assert_between_inclusive, "assert_between_inclusive");
 
     function assert_regexp_match(actual, expected, description) {
+        if (arguments.length < 2) {
+            bad.push('assert_between_inclusive');
+        }
         /*
          * Test if a string (actual) matches a regexp (expected)
          */
@@ -1270,6 +1323,9 @@ policies and contribution forms [3].
     expose(assert_regexp_match, "assert_regexp_match");
 
     function assert_class_string(object, class_string, description) {
+        if (arguments.length < 2) {
+            bad.push('assert_class_string');
+        }
         assert_equals({}.toString.call(object), "[object " + class_string + "]",
                       description);
     }
@@ -1277,6 +1333,9 @@ policies and contribution forms [3].
 
 
     function assert_own_property(object, property_name, description) {
+        if (arguments.length < 2) {
+            bad.push('assert_own_property');
+        }
         assert(object.hasOwnProperty(property_name),
                "assert_own_property", description,
                "expected property ${p} missing", {p:property_name});
@@ -1284,6 +1343,9 @@ policies and contribution forms [3].
     expose(assert_own_property, "assert_own_property");
 
     function assert_not_own_property(object, property_name, description) {
+        if (arguments.length < 2) {
+            bad.push('assert_not_own_property');
+        }
         assert(!object.hasOwnProperty(property_name),
                "assert_not_own_property", description,
                "unexpected property ${p} is found on object", {p:property_name});
@@ -2475,6 +2537,16 @@ policies and contribution forms [3].
                  {
                      callback(this_obj.tests, this_obj.status);
                  });
+
+        if (bad.length) {
+           var xhr = new XMLHttpRequest();
+           xhr.open(
+               'GET',
+               '/encrypted-media/log.py?name=assertions:' + bad.join('_'),
+               false
+           );
+           xhr.send(null);
+        }
     };
 
     /*

@@ -38,4 +38,26 @@
   do_test('DELETE', "data:text/plain,Hello, World!");
   do_test('HEAD', "data:text/plain,Hello, World!");
   do_test('UNICORN', "data:text/plain,Hello, World!");
+
+test(function() {
+  assert_true(true, 4);
+  assert_false(false, 5);
+  assert_equals(undefined);
+  assert_not_equals(5);
+  try { assert_in_array(0); } catch (e) {}
+  try { assert_object_equals(0); } catch (e) {}
+  try { assert_array_equals([]); } catch (e) {}
+  try { assert_array_approx_equals([], []); } catch (e) {}
+  try { assert_approx_equals(0, 0); } catch (e) {}
+  try { assert_less_than(0); } catch (e) {}
+  try { assert_greater_than(0); } catch (e) {}
+  try { assert_between_exclusive(0, 1); } catch (e) {}
+  try { assert_less_than_equal(0); } catch (e) {}
+  try { assert_greater_than_equal(0); } catch (e) {}
+  try { assert_between_inclusive(0, 0); } catch (e) {}
+  try { assert_regexp_match('a'); } catch (e) {}
+  try { assert_class_string({}); } catch (e) {}
+  try { assert_own_property({}); } catch (e) {}
+  try { assert_not_own_property({}); } catch (e) {}
+}, 'control sub-test');
 </script>

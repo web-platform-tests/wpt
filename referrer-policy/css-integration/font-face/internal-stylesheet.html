@@ -19,8 +19,7 @@
     <script>
       promise_test(function(css_test) {
         let id = token();
-        let css_url = location.protocol + "//www1." + location.hostname + ":" +
-                      location.port +
+        let css_url = crossOriginBaseURL() +
                       "/common/security-features/subresource/font.py" + "?id=" +
                       id + "&type=font";
         let font_url = css_url + "&report-headers";

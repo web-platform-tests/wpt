@@ -2,14 +2,24 @@
 // - mixed-content/generic/mixed-content-test-case.js
 // - referrer-policy/generic/referrer-policy-test-case.sub.js
 // but should be moved to /common/security-features/resources/common.js.
+
+function crossOriginBaseURL()
+{
+    return getSubresourceOrigin("cross-" + location.protocol.substring(0, location.protocol.length - 1));
+}
+
+function getOriginHosts()
+{
+    return { sameOriginHost: "{{host}}", crossOriginHost: "{{hosts[alt][]}}" };
+}
+
 function getSubresourceOrigin(originType) {
   const httpProtocol = "http";
   const httpsProtocol = "https";
   const wsProtocol = "ws";
   const wssProtocol = "wss";
 
-  const sameOriginHost = "{{host}}";
-  const crossOriginHost = "{{domains[www1]}}";
+  const { sameOriginHost, crossOriginHost } = getOriginHosts();
 
   // These values can evaluate to either empty strings or a ":port" string.
   const httpPort = getNormalizedPort(parseInt("{{ports[http][0]}}", 10));
@@ -72,10 +82,17 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
     "cross-origin-http": "cross-http",
     "cross-origin-https": "cross-https"
   };
+
+  let redirectionOrigin;
+  if (scenario.redirection === "swap-origin-redirect") {
+    const { sameOriginHost, crossOriginHost } = getOriginHosts();
+    redirectionOrigin = scenario.origin === "same-origin" ? crossOriginHost : sameOriginHost;
+  }
+
   const urls = getRequestURLs(
       scenario.subresource,
       originTypeConversion[scenario.origin + '-' + scenario.target_protocol],
-      scenario.redirection);
+      scenario.redirection, redirectionOrigin);
 
   const referrerUrlResolver = {
     "omitted": function(sourceUrl) {

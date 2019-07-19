@@ -19,35 +19,29 @@ def redirect(url, response):
     response.writer.write("")
 
 
-# TODO(kristijanburnik): subdomain_prefix is a hardcoded value aligned with
-# referrer-policy-test-case.js. The prefix should be configured in one place.
-def __get_swapped_origin_netloc(netloc, subdomain_prefix = "www1."):
-    if netloc.startswith(subdomain_prefix):
-        return netloc[len(subdomain_prefix):]
-    else:
-        return subdomain_prefix + netloc
-
-
 # Creates a URL (typically a redirect target URL) that is the same as the
 # current request URL `request.url`, except for:
-# - When `swap_scheme` or `swap_origin` is True, its scheme/origin is changed
+# - When `swap_scheme` is True, its scheme is changed
 #   to the other one. (http <-> https, ws <-> wss, etc.)
+# - When `new_origin` is not None, its host name is changed
+#   to redirection_origin.
 # - `query_parameter_to_remove` parameter is removed from query part.
 #   Its default is "redirection" to avoid redirect loops.
-def create_url(request, swap_scheme = False, swap_origin = False,
+def create_url(request, swap_scheme = False, new_origin = None,
                query_parameter_to_remove = "redirection"):
     parsed = urlparse.urlsplit(request.url)
     destination_netloc = parsed.netloc
 
     scheme = parsed.scheme
+    port = parsed.port
     if swap_scheme:
         scheme = "http" if parsed.scheme == "https" else "https"
         hostname = parsed.netloc.split(':')[0]
         port = request.server.config["ports"][scheme][0]
         destination_netloc = ":".join([hostname, str(port)])
 
-    if swap_origin:
-        destination_netloc = __get_swapped_origin_netloc(destination_netloc)
+    if new_origin:
+        destination_netloc = ":".join([new_origin, str(port)])
 
     parsed_query = urlparse.parse_qsl(parsed.query, keep_blank_values=True)
     parsed_query = filter(lambda x: x[0] != query_parameter_to_remove,
@@ -76,9 +70,9 @@ def preprocess_redirection(request, response):
     elif redirection == "swap-scheme-redirect":
         redirect_url = create_url(request, swap_scheme=True)
     elif redirection == "keep-origin-redirect":
-        redirect_url = create_url(request, swap_origin=False)
+        redirect_url = create_url(request)
     elif redirection == "swap-origin-redirect":
-        redirect_url = create_url(request, swap_origin=True)
+        redirect_url = create_url(request, new_origin = request.GET["redirection-origin"])
     else:
         raise ValueError("Invalid redirection type '%s'" % redirection)
 

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Writing Modes Test: white space at the end of text-combine-horizontal</title>
+<link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net">
+<link rel="help" href="https://www.w3.org/TR/css-writing-modes-3/#text-combine-layout">
+<link rel="help" href="https://drafts.csswg.org/css-text-3/#white-space-rules">
+<link rel="match" href="reference/tcy-white-space-processing-001-ref.html">
+<meta name="assert" content="white-space at the end of a text-combine-upright with white-space:normal is trimmed">
+<style>
+.v-rl {
+  writing-mode: vertical-rl;
+  width: 200px;
+}
+span {
+  -webkit-text-combine: horizontal; /*testing the layout text-combine, not it's support in general*/
+  text-combine-upright: all;
+  white-space: normal;
+}
+#test { color: blue; }
+#ref { color: orange; }
+</style>
+<p>Test passes if the blue and orange lines of text are identical.
+
+<div class=v-rl>
+  <div id=test>あいう<span>12  </span>えお</div>
+  <div id=ref>あいう<span>12</span>えお</div>
+</div>

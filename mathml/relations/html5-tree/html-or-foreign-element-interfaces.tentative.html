@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>MathML 'HTMLOrForeignElement` Mixin Tests</title>
+    <link
+      rel="help"
+      href="https://mathml-refresh.github.io/mathml-core/#dom-and-javascript"
+    />
+    <style>
+        mi { background-color: red;  }
+        :focus { background-color: rgb(0, 255, 0); }
+      }
+    </style>
+    <meta name="assert" content="a thing." />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+  </head>
+  <body tabindex="-1">
+    <span tabindex="-1">This tests the presence and functionality of features of `HTMLOrForeignElement` (currently `HTMLOrSVGElement`)</span>
+    <math
+      tabindex="-1"
+      xmlns="http://www.w3.org/1998/Math/MathML"
+      display="block"
+    >
+      <mi>E</mi>
+    </math>
+  </body>
+  <script>
+
+    // spot check the functionality of several interfaces
+    let el = document.querySelector("mi");
+    let mathEl = document.querySelector("math");
+
+
+    test(function() {
+      el.style.backgroundColor = "blue";
+      assert_equals(
+        getComputedStyle(el).backgroundColor,
+        "rgb(0, 0, 255)",
+        "The style attribute should be present and be functional."
+      );
+    }, "The style attribute be present and be functional.");
+
+    // this really belongs in 
+    // https://github.com/web-platform-tests/wpt/blob/master/html/dom/elements/global-attributes/dataset.html
+    // it is here tentatively
+    test(function() {
+      var mathml = document.createElementNS(
+        "http://www.w3.org/1998/Math/MathML",
+        "math"
+      );
+      assert_true(mathml.dataset instanceof DOMStringMap);
+    }, "MathML elements should have a .dataset");
+
+    // exercise some basic tests on .dataset
+    test(function() {
+      assert_equals(
+        Object.keys(el.dataset).toString(),
+        "",
+        "The .dataset property should be present"
+      );
+
+      el.setAttribute("data-one", "x");
+      el.setAttribute("data-two", "y");
+
+      assert_equals(
+        el.dataset.one,
+        "x",
+        '.one should be "x" after setting the data-x attribute'
+      );
+      assert_equals(
+        el.dataset.two,
+        "y",
+        '.one should be "y" after setting the data-y attribute'
+      );
+
+      el.dataset.one = "o";
+      assert_equals(
+        el.getAttribute("data-one"),
+        "o",
+        'the data-one attribute should reflect a change to dataset.one and contain "o"'
+      );
+    }, "The dataset property should be present and be functional.");
+
+    test(function() {
+      assert_equals(
+        mathEl.tabIndex,
+        -1,
+        "MathML elements should have a tabIndex property"
+      );
+    }, "MathML elements should have a tabIndex property");
+
+
+    // this will be resolved after the focus test completes
+    // in order to then observe blur
+    let focusCompleted
+    let focusFailed
+    let focusCompletedPromise = new Promise((resolve, reject) => {
+      focusCompleted = resolve
+      focusFailed = reject
+    })
+
+
+    promise_test(function() {
+      function focus() {
+        try {
+          mathEl.focus();  
+        } catch (e) {
+          focusFailed()
+          return Promise.reject()
+        }
+        return Promise.resolve();
+      }
+
+      return focus().then(() => {
+        assert_equals(
+          getComputedStyle(mathEl).backgroundColor,
+          "rgb(0, 255, 0)",
+          "MathML elements with tabindex=-1 should be programatically focusable and apply :focus"
+        )
+        focusCompleted()
+      })
+
+    }, "MathML elements with tabindex=-1 should have a .focus() method, and support :focus styling");
+
+
+    promise_test(function() {
+      function blur() {
+        mathEl.blur();
+        return Promise.resolve();
+      }
+
+      return focusCompletedPromise.finally(() => {
+          blur().then(() => {
+            assert_equals(
+              getComputedStyle(mathEl).backgroundColor,
+              "rgba(0, 0, 0, 0)",
+              "MathML elements with tabindex=-1 be programatically blur() able"
+            )
+        });
+      })
+    }, "MathML elements with tabindex=-1 should have a .blur() method that is fired and updates the display");
+
+
+
+  </script>
+</html>

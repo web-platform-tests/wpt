@@ -3679,6 +3679,10 @@ policies and contribution forms [3].
                 tests.status.status = tests.status.ERROR;
                 tests.status.message = message;
                 tests.status.stack = stack;
+            } else {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "/encrypted-media/log.py", false);
+                xhr.send(null);
             }
             done();
         };

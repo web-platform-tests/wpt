@@ -28,6 +28,25 @@ policies and contribution forms [3].
     };
 
     var xhtml_ns = "http://www.w3.org/1999/xhtml";
+    var report = function(mechanism) {
+       var xhr = new XMLHttpRequest();
+       var href = typeof location !== 'undefined' ? location.href : '';
+
+       // testharness.js is occassionally loaded in resource files so that its
+       // assertion functions can be used. The framework assumes it is running
+       // a single-page test in such cases, but this is not relevant for the
+       // current investigation because the results are not collected.
+       if (/\/resources\//.test(href)) {
+           return;
+       }
+
+       xhr.open(
+           "GET",
+           "/encrypted-media/log.py?name=" + mechanism + "&url=" + encodeURIComponent(href),
+           false
+       );
+       xhr.send(null);
+    };
 
     /*
      * TestEnvironment is an abstraction for the environment in which the test
@@ -792,6 +811,7 @@ policies and contribution forms [3].
 
     function done() {
         if (tests.tests.length === 0) {
+            report('done');
             tests.set_file_is_test();
         }
         if (tests.file_is_test) {
@@ -3374,6 +3394,7 @@ policies and contribution forms [3].
     function assert(expected_true, function_name, description, error, substitutions)
     {
         if (tests.tests.length === 0) {
+            report('assert');
             tests.set_file_is_test();
         }
         if (expected_true !== true) {
@@ -3667,6 +3688,7 @@ policies and contribution forms [3].
     if (global_scope.addEventListener) {
         var error_handler = function(message, stack) {
             if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
+                report('error');
                 tests.set_file_is_test();
             }
 

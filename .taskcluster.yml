@@ -11,6 +11,7 @@ tasks:
           $map:
             $flatten:
               $match: {
+                true: [{name: firefox, channel: nightly}, {name: chrome, channel: dev}],
                 event.ref == "refs/heads/master": [{name: firefox, channel: nightly}, {name: chrome, channel: dev}],
                 event.ref == "refs/heads/epochs/daily": [{name: firefox, channel: stable}, {name: chrome, channel: stable}, {name: webkitgtk_minibrowser, channel: nightly}],
                 event.ref == "refs/heads/epochs/weekly": [{name: firefox, channel: beta}, {name: chrome, channel: beta}, {name: webkitgtk_minibrowser, channel: stable}],
@@ -41,12 +42,6 @@ tasks:
               - [testharness, 14, 16]
               - [testharness, 15, 16]
               - [testharness, 16, 16]
-              - [reftest, 1, 5]
-              - [reftest, 2, 5]
-              - [reftest, 3, 5]
-              - [reftest, 4, 5]
-              - [reftest, 5, 5]
-              - [wdspec, 1, 1]
             each(chunk):
               taskId: {$eval: 'as_slugid(browser.name + browser.channel + chunk[0] + str(chunk[1]))'}
               taskGroupId: {$eval: 'as_slugid("task group")'}

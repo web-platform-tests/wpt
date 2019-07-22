@@ -28,6 +28,15 @@ policies and contribution forms [3].
     };
 
     var xhtml_ns = "http://www.w3.org/1999/xhtml";
+    var report = function(mechanism) {
+       var xhr = new XMLHttpRequest();
+       xhr.open(
+           "GET",
+           "/encrypted-media/log.py?name=" + mechanism,
+           false
+       );
+       xhr.send(null);
+    };
 
     /*
      * TestEnvironment is an abstraction for the environment in which the test
@@ -793,6 +802,7 @@ policies and contribution forms [3].
     function done() {
         if (tests.tests.length === 0) {
             try {
+              report("done");
               console.warn(
                 "This test implicitly enables the 'single-page test' mode " +
                   "of testharness.js. Please explicitly enable it using the " +
@@ -3390,6 +3400,7 @@ policies and contribution forms [3].
     {
         if (tests.tests.length === 0) {
             try {
+              report("assert");
               console.warn(
                 "This test implicitly enables the 'single-page test' mode " +
                   "of testharness.js. Please explicitly enable it using the " +
@@ -3692,6 +3703,7 @@ policies and contribution forms [3].
         var error_handler = function(message, stack) {
             if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
                 try {
+                  report("error");
                   console.warn(
                     "This test implicitly enables the 'single-page test' mode " +
                       "of testharness.js. Please explicitly enable it using the " +

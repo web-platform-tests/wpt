@@ -1369,7 +1369,20 @@ policies and contribution forms [3].
     function assert_throws(code, func, description)
     {
         try {
-            func.call(this);
+            var result = func.call(this);
+
+            if (result && typeof result.then === "function") {
+                var xhr = new XMLHttpRequest();
+                var href = typeof location !== 'undefined' ? location.href : '';
+
+                xhr.open(
+                    "GET",
+                    "/encrypted-media/log.py",
+                    false
+                );
+                xhr.send(null);
+            }
+
             assert(false, "assert_throws", description,
                    "${func} did not throw", {func:func});
         } catch (e) {

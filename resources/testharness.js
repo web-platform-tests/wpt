@@ -581,6 +581,17 @@ policies and contribution forms [3].
     function promise_test(func, name, properties) {
         var test = async_test(name, properties);
         test._is_promise_test = true;
+        var test_done = test.done;
+        test.done = function() {
+           var xhr = new XMLHttpRequest();
+           xhr.open(
+               'GET',
+               '/encrypted-media/log.py?name=' + test.name,
+               false
+           );
+           xhr.send(null);
+           test_done.call(test);
+        };
 
         // If there is no promise tests queue make one.
         if (!tests.promise_tests) {
@@ -618,7 +629,7 @@ policies and contribution forms [3].
                                    "Unhandled rejection with value: ${value}", {value:value});
                         }))
                     .then(function() {
-                        test.done();
+                        test_done.call(test);
                     });
                 });
         });

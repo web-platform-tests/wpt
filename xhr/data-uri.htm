@@ -38,4 +38,11 @@
   do_test('DELETE', "data:text/plain,Hello, World!");
   do_test('HEAD', "data:text/plain,Hello, World!");
   do_test('UNICORN', "data:text/plain,Hello, World!");
+
+promise_test(async function(t) {
+  t.done();
+});
+promise_test(async function(t) {
+  t.done();
+}, 'real name');
 </script>

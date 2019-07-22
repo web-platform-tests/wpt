@@ -200,7 +200,7 @@ idl_test(
       PeerConnection: [],
       MediaStreamEvent: [],
       ErrorEvent: [],
-      WebSocket: ['new WebSocket("wss://foo")'],
+      WebSocket: ['new WebSocket("wss://{{hosts[][nonexistent]}}")'],
       CloseEvent: ['new CloseEvent("close")'],
       AbstractWorker: [],
       Worker: [],

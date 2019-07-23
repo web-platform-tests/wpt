@@ -581,8 +581,9 @@ policies and contribution forms [3].
     function promise_test(func, name, properties) {
         var test = async_test(name, properties);
         test._is_promise_test = true;
-        var test_done = test.done;
-        test.done = function() {
+        var user_test = Object.create(test);
+        user_test.done = function() {
+		   console.log('uh oh', test.name);
            var xhr = new XMLHttpRequest();
            xhr.open(
                'GET',
@@ -590,7 +591,7 @@ policies and contribution forms [3].
                false
            );
            xhr.send(null);
-           test_done.call(test);
+           test.done();
         };
 
         // If there is no promise tests queue make one.
@@ -599,7 +600,7 @@ policies and contribution forms [3].
         }
         tests.promise_tests = tests.promise_tests.then(function() {
             return new Promise(function(resolve) {
-                var promise = test.step(func, test, test);
+                var promise = test.step(func, user_test, user_test);
 
                 test.step(function() {
                     assert(!!promise, "promise_test", null,
@@ -629,7 +630,7 @@ policies and contribution forms [3].
                                    "Unhandled rejection with value: ${value}", {value:value});
                         }))
                     .then(function() {
-                        test_done.call(test);
+                        test.done();
                     });
                 });
         });

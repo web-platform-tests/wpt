@@ -2,11 +2,20 @@
 <html>
 <head>
 <meta charset="utf-8" />
-</head>
-<body>
-    navigated document!
 <script>
+  function install_page_show_listener() {
+    window.addEventListener('pageshow', event => {
+      top.postMessage("navigated", "*");
+    });
+    /*
+     * We also have to say it here because
+     * we missed the pageshow event at this point.
+     */
     top.postMessage("navigated", "*");
+  }
 </script>
+</head>
+<body onload="install_page_show_listener();">
+    navigated document!
 </body>
 </html>

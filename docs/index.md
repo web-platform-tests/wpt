@@ -11,6 +11,18 @@ platform to deliver on the promise of working across browsers and devices
 without needing extra layers of abstraction to paper over the gaps left by
 specification editors and implementors.
 
+## Video Introduction
+
+<iframe
+  width="560"
+  height="315"
+  src="TODO"
+  frameborder="0"
+  allow="autoplay; encrypted-media"
+  allowfullscreen></iframe>
+
+[Video transcript](appendix/intro-video-transcript)
+
 ## Help!
 
 If you get stuck or want clarification about anything, feel free to
@@ -19,12 +31,6 @@ ask on either the [mailing list][public-test-infra] or [IRC][]
 busiest during the European working day but frequently has people on
 it at all times and should probably be the general first port of call
 for any help.
-
-## Watch a Talk
-
-If you prefer watching a video, here is a talk introducing web-platform-tests:
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/XnfE3MfH5hQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 ## GitHub
 

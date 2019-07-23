@@ -13,12 +13,15 @@
     "https://{{domains[www]}}:{{ports[https][0]}}" + same_origin_src;
 
   promise_test(t => {
-    return navigator.getWakeLock("screen");
+    const controller = new AbortController();
+    const lock = WakeLock.request("screen", { signal: controller.signal });
+    controller.abort();
+    return promise_rejects(t, "AbortError", lock);
   }, 'Feature-Policy header wake-lock "self" allows the top-level document.');
 
   async_test(t => {
     test_feature_availability(
-      'navigator.getWakeLock("screen")',
+      'WakeLock.request("screen")',
       t,
       same_origin_src,
       expect_feature_available_default
@@ -27,7 +30,7 @@
 
   async_test(t => {
     test_feature_availability(
-      'navigator.getWakeLock("screen")',
+      'WakeLock.request("screen")',
       t,
       cross_origin_src,
       expect_feature_unavailable_default

@@ -8,12 +8,12 @@ from collections import defaultdict, namedtuple
 
 from mozlog import structuredlog
 
-import manifestupdate
-import testloader
-import wptmanifest
-import wpttest
-from expected import expected_path
-from vcs import git
+from . import manifestupdate
+from . import testloader
+from . import wptmanifest
+from . import wpttest
+from .expected import expected_path
+from .vcs import git
 manifest = None  # Module that will be imported relative to test_root
 manifestitem = None
 
@@ -55,7 +55,7 @@ def update_expected(test_paths, serve_root, log_file_names,
                         print("disabled: %s" % test.root.test_path)
 
 
-def do_delayed_imports(serve_root):
+def do_delayed_imports(serve_root=None):
     global manifest, manifestitem
     from manifest import manifest, item as manifestitem
 
@@ -330,10 +330,12 @@ class ExpectedUpdater(object):
                 action_map["test_status"]({"test": test["test"],
                                            "subtest": subtest["name"],
                                            "status": subtest["status"],
-                                           "expected": subtest.get("expected")})
+                                           "expected": subtest.get("expected"),
+                                           "known_intermittent": subtest.get("known_intermittent")})
             action_map["test_end"]({"test": test["test"],
                                     "status": test["status"],
-                                    "expected": test.get("expected")})
+                                    "expected": test.get("expected"),
+                                    "known_intermittent": test.get("known_intermittent")})
             if "asserts" in test:
                 asserts = test["asserts"]
                 action_map["assertion_count"]({"test": test["test"],
@@ -443,10 +445,12 @@ class ExpectedUpdater(object):
 def create_test_tree(metadata_path, test_manifest):
     """Create a map of test_id to TestFileData for that test.
     """
+    do_delayed_imports()
     id_test_map = {}
-    exclude_types = frozenset(["stub", "helper", "manual", "support", "conformancechecker"])
-    all_types = manifestitem.item_types.keys()
-    include_types = set(all_types) - exclude_types
+    exclude_types = frozenset(["stub", "manual", "support", "conformancechecker"])
+    all_types = set(manifestitem.item_types.keys())
+    assert all_types > exclude_types
+    include_types = all_types - exclude_types
     for item_type, test_path, tests in test_manifest.itertypes(*include_types):
         test_file_data = TestFileData(intern(test_manifest.url_base.encode("utf8")),
                                       intern(item_type.encode("utf8")),
@@ -515,7 +519,7 @@ class PackedResultList(object):
         else:
             value = status_intern.get(value_idx)
 
-        run_info = run_info_intern.get((packed & 0x00FF))
+        run_info = run_info_intern.get(packed & 0x00FF)
 
         return prop, run_info, value
 

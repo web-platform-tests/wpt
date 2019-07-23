@@ -3,19 +3,18 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Wake Lock API (https://w3c.github.io/wake-lock/)
 
+dictionary WakeLockPermissionDescriptor : PermissionDescriptor {
+  WakeLockType type;
+};
+
 enum WakeLockType { "screen", "system" };
 
-partial interface Navigator {
-  [SecureContext] Promise<WakeLock> getWakeLock(WakeLockType type);
+[SecureContext, Exposed=(DedicatedWorker,Window)]
+interface WakeLock {
+  [Exposed=Window] static Promise<PermissionState> requestPermission(WakeLockType type);
+  static Promise<void> request(WakeLockType type, optional WakeLockRequestOptions options);
 };
 
-[SecureContext, Exposed=Window] interface WakeLock : EventTarget {
-  readonly attribute WakeLockType type;
-  readonly attribute boolean active;
-  attribute EventHandler onactivechange;
-  WakeLockRequest createRequest();
-};
-
-[SecureContext, Exposed=Window] interface WakeLockRequest {
-  void cancel();
+dictionary WakeLockRequestOptions {
+  AbortSignal signal;
 };

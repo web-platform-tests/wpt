@@ -20,10 +20,6 @@
 
   // Set the global cookie name.
   window.HTTP_COOKIE = "cookie_via_http";
-
-  // If we're not on |HOST|, move ourselves there:
-  if (window.location.hostname != HOST)
-    window.location.hostname = HOST;
 })();
 
 // A tiny helper which returns the result of fetching |url| with credentials.
@@ -120,33 +116,53 @@ window.SameSiteStatus = {
   STRICT: "strict"
 };
 
+const wait_for_message = (type, origin) => {
+  return new Promise((resolve, reject) => {
+    window.addEventListener('message', e => {
+      if (e.origin != origin) {
+        reject("Message from unexpected origin in wait_for_message:" + e.origin);
+        return;
+      }
+
+      if (e.data.type && e.data.type === type)
+        resolve(e);
+    }, { once: true });
+  });
+};
+
 // Reset SameSite test cookies on |origin|. If |origin| matches `self.origin`, assert
 // (via `document.cookie`) that they were properly removed and reset.
-function resetSameSiteCookies(origin, value) {
-  return credFetch(origin + "/cookies/resources/dropSameSite.py")
-    .then(_ => {
-      if (origin == self.origin) {
-        assert_dom_cookie("samesite_strict", value, false);
-        assert_dom_cookie("samesite_lax", value, false);
-        assert_dom_cookie("samesite_none", value, false);
-      }
-    })
-    .then(_ => {
-      return credFetch(origin + "/cookies/resources/setSameSite.py?" + value)
-        .then(_ => {
-          if (origin == self.origin) {
-            assert_dom_cookie("samesite_strict", value, true);
-            assert_dom_cookie("samesite_lax", value, true);
-            assert_dom_cookie("samesite_none", value, true);
-          }
-        })
-    })
+async function resetSameSiteCookies(origin, value) {
+  let w = window.open(origin + "/cookies/samesite/resources/puppet.html");
+  try {
+    await wait_for_message("READY", origin);
+    w.postMessage({type: "drop", useOwnOrigin: true}, "*");
+    await wait_for_message("drop-complete", origin);
+    if (origin == self.origin) {
+      assert_dom_cookie("samesite_strict", value, false);
+      assert_dom_cookie("samesite_lax", value, false);
+      assert_dom_cookie("samesite_none", value, false);
+      assert_dom_cookie("samesite_unspecified", value, false);
+    }
+
+    w.postMessage({type: "set", value: value, useOwnOrigin: true}, "*");
+    await wait_for_message("set-complete", origin);
+    if (origin == self.origin) {
+      assert_dom_cookie("samesite_strict", value, true);
+      assert_dom_cookie("samesite_lax", value, true);
+      assert_dom_cookie("samesite_none", value, true);
+      assert_dom_cookie("samesite_unspecified", value, true);
+    }
+  } finally {
+    w.close();
+  }
 }
 
 // Given an |expectedStatus| and |expectedValue|, assert the |cookies| contains the
 // proper set of cookie names and values.
 function verifySameSiteCookieState(expectedStatus, expectedValue, cookies) {
-    assert_equals(cookies["samesite_none"], expectedValue, "Non-SameSite cookies are always sent.");
+    assert_equals(cookies["samesite_none"], expectedValue, "SameSite=None cookies are always sent.");
+    assert_equals(cookies["samesite_unspecified"], expectedValue, "Unspecified-SameSite cookies are always sent.");
     if (expectedStatus == SameSiteStatus.CROSS_SITE) {
       assert_not_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are not sent with cross-site requests.");
       assert_not_equals(cookies["samesite_lax"], expectedValue, "SameSite=Lax cookies are not sent with cross-site requests.");
@@ -157,6 +173,32 @@ function verifySameSiteCookieState(expectedStatus, expectedValue, cookies) {
       assert_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are sent with strict requests.");
       assert_equals(cookies["samesite_lax"], expectedValue, "SameSite=Lax cookies are sent with strict requests.");
     }
+}
+
+// Same as above except this expects samesite_unspecified to act the same as
+// samesite_lax (which is the behavior expected when SameSiteByDefault is
+// enabled).
+function verifySameSiteCookieStateWithSameSiteByDefault(expectedStatus, expectedValue, cookies) {
+    assert_equals(cookies["samesite_none"], expectedValue, "SameSite=None cookies are always sent.");
+    if (expectedStatus == SameSiteStatus.CROSS_SITE) {
+      assert_not_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are not sent with cross-site requests.");
+      assert_not_equals(cookies["samesite_lax"], expectedValue, "SameSite=Lax cookies are not sent with cross-site requests.");
+      assert_not_equals(cookies["samesite_unspecified"], expectedValue, "Unspecified-SameSite cookies are not sent with cross-site requests.");
+    } else if (expectedStatus == SameSiteStatus.LAX) {
+      assert_not_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are not sent with lax requests.");
+      assert_equals(cookies["samesite_lax"], expectedValue, "SameSite=Lax cookies are sent with lax requests.");
+      assert_equals(cookies["samesite_unspecified"], expectedValue, "Unspecified-SameSite cookies are are sent with lax requests.")
+    } else if (expectedStatus == SameSiteStatus.STRICT) {
+      assert_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are sent with strict requests.");
+      assert_equals(cookies["samesite_lax"], expectedValue, "SameSite=Lax cookies are sent with strict requests.");
+      assert_equals(cookies["samesite_unspecified"], expectedValue, "Unspecified-SameSite cookies are are sent with strict requests.")
+    }
+}
+
+// Get the proper verifier based on the test's variant type.
+function getSameSiteVerifier() {
+  return (location.search && location.search === "?samesite-by-default-cookies.tentative") ?
+      verifySameSiteCookieStateWithSameSiteByDefault : verifySameSiteCookieState;
 }
 
 //
@@ -181,6 +223,22 @@ return credFetch(origin + "/cookies/resources/dropSecure.py")
  .then(_ => {
      return credFetch(origin + "/cookie/resources/setSecure.py?" + value)
  })
+}
+
+// Reset SameSite=None test cookies on |origin|. If |origin| matches
+// `self.origin`, assert (via `document.cookie`) that they were properly
+// removed.
+function resetSameSiteNoneCookies(origin, value) {
+  return credFetch(origin + "/cookies/resources/dropSameSiteNone.py")
+    .then(_ => {
+      if (origin == self.origin) {
+        assert_dom_cookie("samesite_none_insecure", value, false);
+        assert_dom_cookie("samesite_none_secure", value, false);
+      }
+    })
+    .then(_ => {
+      return credFetch(origin + "/cookies/resources/setSameSiteNone.py?" + value);
+    })
 }
 
 //

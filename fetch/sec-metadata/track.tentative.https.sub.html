@@ -4,9 +4,12 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/fetch/sec-metadata/resources/helper.js></script>
+<script src=/common/utils.js></script>
 <body>
 </body>
 <script>
+  let nonce = token();
+
   function createVideoElement() {
     let el = document.createElement('video');
     el.src = "/media/movie_5.mp4";
@@ -25,17 +28,18 @@
 
   promise_test(t => {
     return new Promise((resolve, reject) => {
+      let key = "track-same-origin" + nonce;
       let video = createVideoElement();
       let el = createTrack();
-      el.src = "https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=track-same-origin";
+      el.src = "https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=" + key;
       el.onload = t.step_func(_ => {
         expected = {
           "dest": "track",
           "site": "same-origin",
-          "user": "?F",
+          "user": "",
           "mode": "cors" // Because the `video` element has `crossorigin`
         };
-        fetch("/fetch/sec-metadata/resources/record-header.py?retrieve=true&file=track-same-origin")
+        fetch("/fetch/sec-metadata/resources/record-header.py?retrieve=true&file=" + key)
             .then(response => response.text())
             .then(text => assert_header_equals(text, expected))
             .then(_ => resolve());
@@ -47,17 +51,18 @@
 
   promise_test(t => {
     return new Promise((resolve, reject) => {
+      let key = "track-same-site" + nonce;
       let video = createVideoElement();
       let el = createTrack();
-      el.src = "https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=track-same-site";
+      el.src = "https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=" + key;
       el.onload = t.step_func(_ => {
         expected = {
           "dest": "track",
           "site": "same-site",
-          "user": "?F",
+          "user": "",
           "mode": "cors" // Because the `video` element has `crossorigin`
         };
-        fetch("/fetch/sec-metadata/resources/record-header.py?retrieve=true&file=track-same-site")
+        fetch("/fetch/sec-metadata/resources/record-header.py?retrieve=true&file=" + key)
             .then(response => response.text())
             .then(text => assert_header_equals(text, expected))
             .then(resolve)
@@ -71,17 +76,18 @@
 
   promise_test(t => {
     return new Promise((resolve, reject) => {
+      let key = "track-cross-site" + nonce;
       let video = createVideoElement();
       let el = createTrack();
-      el.src = "https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=track-cross-site";
+      el.src = "https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=" + key;
       el.onload = t.step_func(_ => {
         expected = {
           "dest": "track",
           "site": "cross-site",
-          "user": "?F",
+          "user": "",
           "mode": "cors" // Because the `video` element has `crossorigin`
         };
-        fetch("/fetch/sec-metadata/resources/record-header.py?retrieve=true&file=track-cross-site")
+        fetch("/fetch/sec-metadata/resources/record-header.py?retrieve=true&file=" + key)
             .then(response => response.text())
             .then(text => assert_header_equals(text, expected))
             .then(resolve)
@@ -94,21 +100,22 @@
 
   promise_test(t => {
     return new Promise((resolve, reject) => {
+      let key = "track-same-origin-cors" + nonce;
       let video = createVideoElement();
 
       // Unset `crossorigin` to change the CORS mode:
       video.crossOrigin = undefined;
 
       let el = createTrack();
-      el.src = "https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=track-same-origin";
+      el.src = "https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=" + key;
       el.onload = t.step_func(_ => {
         expected = {
           "dest":"track",
           "site":"same-origin",
-          "user":"?F",
+          "user":"",
           "mode": "same-origin"
         };
-        fetch("/fetch/sec-metadata/resources/record-header.py?retrieve=true&file=track-same-origin")
+        fetch("/fetch/sec-metadata/resources/record-header.py?retrieve=true&file=" + key)
             .then(response => response.text())
             .then(text => assert_header_equals(text, expected))
             .then(_ => resolve());

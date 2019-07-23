@@ -551,9 +551,11 @@ dictionary WaveShaperOptions : AudioNodeOptions {
 interface AudioWorklet : Worklet {
 };
 
+callback AudioWorkletProcessorConstructor = AudioWorkletProcessor (object options);
+
 [Global=(Worklet, AudioWorklet), Exposed=AudioWorklet]
 interface AudioWorkletGlobalScope : WorkletGlobalScope {
-  void registerProcessor (DOMString name, VoidFunction processorCtor);
+  void registerProcessor (DOMString name, AudioWorkletProcessorConstructor processorCtor);
   readonly attribute unsigned long long currentFrame;
   readonly attribute double currentTime;
   readonly attribute float sampleRate;
@@ -566,7 +568,8 @@ interface AudioParamMap {
 
 [Exposed=Window,
  SecureContext,
- Constructor (BaseAudioContext context, DOMString name, optional AudioWorkletNodeOptions options)]
+ Constructor (BaseAudioContext context, DOMString name,
+              optional AudioWorkletNodeOptions options)]
 interface AudioWorkletNode : AudioNode {
   readonly attribute AudioParamMap parameters;
   readonly attribute MessagePort port;

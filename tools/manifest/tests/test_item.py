@@ -1,6 +1,10 @@
+import inspect
+import json
+
 import pytest
 
-from ..item import URLManifestItem, TestharnessTest
+from ..manifest import Manifest
+from ..item import TestharnessTest, RefTest, item_types
 
 
 @pytest.mark.parametrize("path", [
@@ -14,7 +18,7 @@ from ..item import URLManifestItem, TestharnessTest
     "a.b.serviceworker.c.d",
 ])
 def test_url_https(path):
-    m = URLManifestItem("/foobar", "/" + path, "/", "/foo.bar/" + path)
+    m = TestharnessTest("/foo", "bar/" + path, "/", "bar/" + path)
 
     assert m.https is True
 
@@ -36,31 +40,64 @@ def test_url_https(path):
     "a.serviceworkerb.c",
 ])
 def test_url_not_https(path):
-    m = URLManifestItem("/foobar", "/" + path, "/", "/foo.bar/" + path)
+    m = TestharnessTest("/foo", "bar/" + path, "/", "bar/" + path)
 
     assert m.https is False
 
 
-def test_testharness_meta_key_includes_jsshell():
-    a = TestharnessTest("/foobar", "/foo", "/foo.bar", "/foo.bar/foo",
-                        jsshell=False, script_metadata=[])
-    b = TestharnessTest("/foobar", "/foo", "/foo.bar", "/foo.bar/foo",
-                        jsshell=True, script_metadata=[])
-
-    assert a.meta_key() != b.meta_key()
-
-
-@pytest.mark.parametrize("script_metadata", [
-    None,
-    [],
-    [('script', '/resources/WebIDLParser.js'), ('script', '/resources/idlharness.js')],
-    [[u'script', u'/resources/WebIDLParser.js'], [u'script', u'/resources/idlharness.js']],
+@pytest.mark.parametrize("fuzzy", [
+    {('/foo/test.html', u'/foo/ref.html', '=='): [[1, 1], [200, 200]]},
+    {('/foo/test.html', u'/foo/ref.html', '=='): [[0, 1], [100, 200]]},
+    {None: [[0, 1], [100, 200]]},
+    {None: [[1, 1], [200, 200]]},
 ])
-def test_testharness_hashable_script_metadata(script_metadata):
-    a = TestharnessTest("/",
-                        "BackgroundSync/interfaces.https.any.js",
-                        "/",
-                        "/BackgroundSync/interfaces.https.any.js",
-                        script_metadata=script_metadata)
+def test_reftest_fuzzy(fuzzy):
+    t = RefTest('/',
+                'foo/test.html',
+                '/',
+                'foo/test.html',
+                [('/foo/ref.html', '==')],
+                fuzzy=fuzzy)
+    assert fuzzy == t.fuzzy
 
-    assert hash(a) is not None
+    json_obj = t.to_json()
+
+    m = Manifest("/", "/")
+    t2 = RefTest.from_json(m, t.path, json_obj)
+    assert fuzzy == t2.fuzzy
+
+    # test the roundtrip case, given tuples become lists
+    roundtrip = json.loads(json.dumps(json_obj))
+    t3 = RefTest.from_json(m, t.path, roundtrip)
+    assert fuzzy == t3.fuzzy
+
+
+@pytest.mark.parametrize("fuzzy", [
+    {('/foo/test.html', u'/foo/ref-2.html', '=='): [[0, 1], [100, 200]]},
+    {None: [[1, 1], [200, 200]], ('/foo/test.html', u'/foo/ref-2.html', '=='): [[0, 1], [100, 200]]},
+])
+def test_reftest_fuzzy_multi(fuzzy):
+    t = RefTest('/',
+                'foo/test.html',
+                '/',
+                'foo/test.html',
+                [('/foo/ref-1.html', '=='), ('/foo/ref-2.html', '==')],
+                fuzzy=fuzzy)
+    assert fuzzy == t.fuzzy
+
+    json_obj = t.to_json()
+
+    m = Manifest("/", "/")
+    t2 = RefTest.from_json(m, t.path, json_obj)
+    assert fuzzy == t2.fuzzy
+
+    # test the roundtrip case, given tuples become lists
+    roundtrip = json.loads(json.dumps(json_obj))
+    t3 = RefTest.from_json(m, t.path, roundtrip)
+    assert fuzzy == t3.fuzzy
+
+
+def test_item_types():
+    for key, value in item_types.items():
+        assert isinstance(key, str)
+        assert not inspect.isabstract(value)

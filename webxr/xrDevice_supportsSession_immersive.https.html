@@ -3,12 +3,13 @@
   <script src=/resources/testharness.js></script>
   <script src=/resources/testharnessreport.js></script>
   <script src="resources/webxr_util.js"></script>
+  <script src="resources/webxr_test_constants.js"></script>
   <script>
     xr_promise_test(
-      "supportsSessionMode resolves when immersive options supported",
+      "supportsSession resolves when immersive options supported",
       () => {
-        return XRTest.simulateDeviceConnection({ supportsImmersive:true })
-          .then( (controller) => navigator.xr.supportsSessionMode('immersive-vr'));
+        return navigator.xr.test.simulateDeviceConnection(TRACKED_IMMERSIVE_DEVICE)
+          .then( (controller) => navigator.xr.supportsSession('immersive-vr'));
       });
   </script>
 </body>

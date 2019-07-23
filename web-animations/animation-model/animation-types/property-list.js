@@ -993,6 +993,10 @@ const gCSSProperties = {
     types: [
     ]
   },
+  'offset-distance': {
+    // https://drafts.fxtf.org/motion-1/#offset-distance-property
+    types: [ 'lengthPercentageOrCalc' ]
+  },
   'offset-path': {
     // https://drafts.fxtf.org/motion-1/#offset-path-property
     types: [
@@ -1175,18 +1179,6 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ 'auto', 'smooth' ] ] }
     ]
   },
-  'scroll-snap-type-x': {
-    // https://developer.mozilla.org/en/docs/Web/CSS/scroll-snap-type-x
-    types: [
-      { type: 'discrete', options: [ [ 'mandatory', 'proximity' ] ] }
-    ]
-  },
-  'scroll-snap-type-y': {
-    // https://developer.mozilla.org/en/docs/Web/CSS/scroll-snap-type-y
-    types: [
-      { type: 'discrete', options: [ [ 'mandatory', 'proximity' ] ] }
-    ]
-  },
   'shape-outside': {
     // http://dev.w3.org/csswg/css-shapes/#propdef-shape-outside
     types: [
@@ -1218,7 +1210,7 @@ const gCSSProperties = {
     // https://svgwg.org/svg2-draft/painting.html#StrokeDasharrayProperty
     types: [
       'dasharray',
-      { type: 'discrete', options: [ [ 'none', '10, 20' ] ] }
+      { type: 'discrete', options: [ [ 'none', '10px, 20px' ] ] }
     ]
   },
   'stroke-dashoffset': {

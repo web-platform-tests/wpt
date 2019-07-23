@@ -6,10 +6,9 @@ from collections import OrderedDict
 from distutils.spawn import find_executable
 from datetime import timedelta
 
-import config
-import wpttest
-import formatters
-
+from . import config
+from . import wpttest
+from .formatters import chromium, wptreport, wptscreenshot
 
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
@@ -54,6 +53,8 @@ scheme host and port.""")
                         help="Prevent regeneration of the test manifest.")
     parser.add_argument("--manifest-download", action="store_true", default=None,
                         help="Attempt to download a preexisting manifest when updating.")
+    parser.add_argument("--no-manifest-download", action="store_false", dest="manifest_download",
+                        help="Prevent download of the test manifest.")
 
     parser.add_argument("--timeout-multiplier", action="store", type=float, default=None,
                         help="Multiplier relative to standard test timeout to use")
@@ -255,6 +256,10 @@ scheme host and port.""")
                              help="Path to the folder containing browser prefs")
     gecko_group.add_argument("--disable-e10s", dest="gecko_e10s", action="store_false", default=True,
                              help="Run tests without electrolysis preferences")
+    gecko_group.add_argument("--enable-webrender", dest="enable_webrender", action="store_true", default=None,
+                             help="Enable the WebRender compositor in Gecko (defaults to disabled).")
+    gecko_group.add_argument("--no-enable-webrender", dest="enable_webrender", action="store_false",
+                             help="Disable the WebRender compositor in Gecko.")
     gecko_group.add_argument("--stackfix-dir", dest="stackfix_dir", action="store",
                              help="Path to directory containing assertion stack fixing scripts")
     gecko_group.add_argument("--lsan-dir", dest="lsan_dir", action="store",
@@ -326,7 +331,17 @@ scheme host and port.""")
                         help="List of URLs for tests to run, or paths including tests to run. "
                              "(equivalent to --include)")
 
-    commandline.log_formatters["wptreport"] = (formatters.WptreportFormatter, "wptreport format")
+    def screenshot_api_wrapper(formatter, api):
+        formatter.api = api
+        return formatter
+
+    commandline.fmt_options["api"] = (screenshot_api_wrapper,
+                                      "Cache API (default: %s)" % wptscreenshot.DEFAULT_API,
+                                      {"wptscreenshot"}, "store")
+
+    commandline.log_formatters["chromium"] = (chromium.ChromiumFormatter, "Chromium Layout Tests format")
+    commandline.log_formatters["wptreport"] = (wptreport.WptreportFormatter, "wptreport format")
+    commandline.log_formatters["wptscreenshot"] = (wptscreenshot.WptscreenshotFormatter, "wpt.fyi screenshots")
 
     commandline.add_logging_group(parser)
     return parser
@@ -538,6 +553,9 @@ def check_args(kwargs):
 
     if kwargs["reftest_screenshot"] is None:
         kwargs["reftest_screenshot"] = "unexpected"
+
+    if kwargs["enable_webrender"] is None:
+        kwargs["enable_webrender"] = False
 
     return kwargs
 

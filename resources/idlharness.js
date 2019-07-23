@@ -1193,6 +1193,18 @@ IdlArray.prototype.assert_type_is = function(value, type)
         case "object":
             assert_in_array(typeof value, ["object", "function"], "wrong type: not object or function");
             return;
+            
+        case "Int8Array":
+        case "Int16Array":
+        case "Int32Array":
+        case "Uint8Array":
+        case "Uint16Array":
+        case "Uint32Array":
+        case "Uint8ClampedArray":
+        case "Float32Array":
+        case "Float64Array":
+            assert_equals(typeof value, "object");
+            return;
     }
 
     if (!(type in this.members))

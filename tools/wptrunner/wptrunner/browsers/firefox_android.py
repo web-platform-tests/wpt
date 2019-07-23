@@ -107,7 +107,7 @@ class FirefoxAndroidBrowser(FirefoxBrowser):
     def __init__(self, logger, prefs_root, test_type, package_name="org.mozilla.geckoview.test",
                  device_serial="emulator-5444", **kwargs):
         FirefoxBrowser.__init__(self, logger, None, prefs_root, test_type, **kwargs)
-        self.package_name = package_name 
+        self.package_name = package_name
         self.device_serial = device_serial
         self.tests_root = kwargs["tests_root"]
         self.install_fonts = kwargs["install_fonts"]

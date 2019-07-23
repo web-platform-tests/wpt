@@ -98,7 +98,8 @@ promise_test(async t => {
   assert_equals(screen.orientation.angle, orientation.angle);
   assert_not_equals(screen.orientation.type, orientationType);
   assert_not_equals(screen.orientation.angle, orientationAngle);
-  screen.orientation.unlock();
+  // currently doesn't return a promise, makes it less racy against exitFullScreen 
+  await screen.orientation.unlock();
   return document.exitFullscreen();
 }, "Test that screen.orientation values change if the orientation changes");
 </script>

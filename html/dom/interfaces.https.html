@@ -2,9 +2,10 @@
 <meta charset=utf-8>
 <title>HTML IDL tests</title>
 <meta name=timeout content=long>
-<meta name="variant" content="?include=(Document|Window)">
+<!-- Encoding | as %7C to avoid https://github.com/web-platform-tests/wpt/issues/17027 -->
+<meta name="variant" content="?include=(Document%7CWindow)">
 <meta name="variant" content="?include=HTML.*">
-<meta name="variant" content="?exclude=(Document|Window|HTML.*)">
+<meta name="variant" content="?exclude=(Document%7CWindow%7CHTML.*)">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/common/subset-tests-by-key.js></script>

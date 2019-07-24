@@ -45,7 +45,7 @@ def test_document_element_is_interactable(session):
 
     response = element_send_keys(session, element, "foo")
     assert_success(response)
-    assert session.active_element == element or session.active_element == body
+    assert session.active_element in [element, body]
     assert result.property("value") == "foo"
 
 

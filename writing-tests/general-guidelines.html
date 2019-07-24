@@ -68,11 +68,10 @@ e.g. <code class="docutils literal notranslate"><span class="pre">test-secure.ht
 on <a class="reference internal" href="file-names.html"><span class="doc">file names</span></a>.</p>
 <div class="section" id="support-files">
 <h3>Support Files<a class="headerlink" href="#support-files" title="Permalink to this headline">¶</a></h3>
-<p>Various support files are available in in the <code class="docutils literal notranslate"><span class="pre">/common/</span></code> and <code class="docutils literal notranslate"><span class="pre">/media/</span></code>
-directories (web-platform-tests) and <code class="docutils literal notranslate"><span class="pre">/support/</span></code> (in css/). Reusing
-existing resources is encouraged where possible, as is adding
-generally useful files to these common areas rather than to specific
-test suites.</p>
+<p>Various support files are available in in the directories named <code class="docutils literal notranslate"><span class="pre">/common/</span></code>,
+<code class="docutils literal notranslate"><span class="pre">/media/</span></code>, and <code class="docutils literal notranslate"><span class="pre">/css/support/</span></code>. Reusing existing resources is encouraged where
+possible, as is adding generally-useful files to these common areas rather than
+to specific test suites.</p>
 </div>
 <div class="section" id="tools">
 <h3>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h3>
@@ -90,9 +89,16 @@ subdirectory and put your script there.</p>
 </div>
 <div class="section" id="file-formats">
 <h2>File Formats<a class="headerlink" href="#file-formats" title="Permalink to this headline">¶</a></h2>
-<p>Tests must be HTML or XML (inc. XHTML and SVG) files; some
-testharness.js tests
-are <a class="reference internal" href="server-features.html"><span class="doc">auto-generated from JS files</span></a>.</p>
+<p>Tests are generally formatted as HTML (including XHTML) or XML (including SVG).
+Some test types support other formats:</p>
+<ul class="simple">
+<li><a class="reference internal" href="testharness.html"><span class="doc">testharness.js tests</span></a> may be expressed as JavaScript files
+(<a class="reference internal" href="server-features.html"><span class="doc">the WPT server automatically generates the HTML documents for these</span></a>)</li>
+<li><a class="reference internal" href="wdspec.html"><span class="doc">WebDriver specification tests</span></a> are expressed as Python files</li>
+</ul>
+<p>The best way to determine how to format a new test is to look at how similar
+tests have been formatted. You can also ask for advice in <a class="reference external" href="irc://irc.w3.org:6667/testing">the project’s IRC
+room</a>.</p>
 </div>
 <div class="section" id="character-encoding">
 <h2>Character Encoding<a class="headerlink" href="#character-encoding" title="Permalink to this headline">¶</a></h2>

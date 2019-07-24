@@ -6,6 +6,9 @@
         <link rel="stylesheet" type="text/css" href="../pointerevent_styles.css">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
+        <script src="/resources/testdriver.js"></script>
+        <script src="/resources/testdriver-actions.js"></script>
+        <script src="/resources/testdriver-vendor.js"></script>
         <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="../pointerevent_support.js"></script>
         <script>
@@ -35,6 +38,7 @@
                 var test_pointerEvent = setup_pointerevent_test("coalesced events attributes in pointerevents", ['touch']);
                 var target0 = document.getElementById("target0");
                 var target1 = document.getElementById("target1");
+                var actions_promise;
 
                 on_event(target0, 'pointercancel', function (event) {
                     if (phase == PhaseEnum.WaitingForCancel) {
@@ -61,7 +65,7 @@
                             if (eventName == 'pointerdown') {
                               expect_no_coalesced_events(event, eventName);
                               phase++;
-                              setTimeout(function(){
+                              step_timeout(function(){
                                 // This is just a way to block the main thread.
                                 var current = new Date().getTime();
                                 for (; new Date().getTime() - current < 500;);
@@ -110,11 +114,18 @@
                             if (eventName == 'pointerleave') {
                               expect_no_coalesced_events(event, eventName);
                               phase++;
-                              test_pointerEvent.done();
+                              actions_promise.then( () => {
+                                test_pointerEvent.done();
+                              });
                             }
                             break;
                         }
                     });
+                });
+
+                // Inject touch inputs.
+                actions_promise = pointerDragInTarget("touch", target0, 'right').then(function() {
+                    return pointerDragInTarget("touch", target1, 'right');
                 });
             }
         </script>

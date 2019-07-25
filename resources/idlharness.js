@@ -1165,7 +1165,6 @@ IdlArray.prototype.assert_type_is = function(value, type)
     else if (this.members[type] instanceof IdlCallback)
     {
         assert_equals(typeof value, "function");
-        // TODO: Better assertions about signature?
     }
     else
     {

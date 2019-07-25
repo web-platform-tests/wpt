@@ -36,7 +36,7 @@
       })
     );
     observer.observe({type: 'largest-contentful-paint', buffered: true});
-  }, 'Same-origin image is observable.');
+  }, 'Same-origin image after a JS initiated scroll event is observable.');
   document.body.dispatchEvent(new Event('scroll'));
   const image = new Image();
   image.id = 'image_id';

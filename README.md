@@ -175,6 +175,28 @@ Please make sure git and your text editor do not automatically convert
 line endings, as it will cause lint errors. For git, please set
 `git config core.autocrlf false` in your working tree.
 
+<span id="chromium-notes">Chromium Notes</span>
+=============================================
+
+Web Platform Tests DOES NOT support tests performed at Chromium browser.
+
+> You must use the official Google Chrome build. We don't provide support for Chromium. If the crash doesn't reproduce in Chrome you're on your own unfortunately.[Issue 943484](https://bugs.chromium.org/p/chromium/issues/detail?id=943484#c11)
+
+> This means that packaging issues will be looked at, but issues with the
+browser's behaviour should be reported upstream (and yes upstream as a
+vendor doesn't officially support Chromium, only Chrome, so it's likely
+that the first thing that they will ask is whether the issue is
+reproducible with Chrome).
+> https://launchpad.net/~chromium-team mostly handles Ubuntu-specific packaging, and bug triaging and forwarding to upstream, on a best-effort basis, because of limited manpower. [bug 1837292](https://bugs.launchpad.net/ubuntu/+source/chromium-browser/+bug/1837292/comments/6)
+
+> vendor doesn't officially support Chromium, only Chrome, so it's likely
+that the first thing that they will ask is whether the issue is
+reproducible with Chrome
+
+At no point have we claimed that Chromium is an officially supported "product" by the wpt tooling (although some Chromium developers do run wpt against Chromium occasionally with elaborate non-default CLI flags with good understanding of what they are doing). If you see any publicly discoverable docs (e.g. the top-level README or web-platform-tests.org, not code comments) that suggest you to use Chromium, you can send a PR to remove that ([#17960](https://github.com/web-platform-tests/wpt/issues/17960#issuecomment-514807491)).
+
+Web Platform Tests does not support 
+
 Certificates
 ============
 

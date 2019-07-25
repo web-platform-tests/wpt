@@ -835,7 +835,7 @@ IdlArray.prototype.test = function()
                 test(function () {
                     this.members[rhs].members.forEach(function(member) {
                         assert_true(
-                            this.members[lhs].members.every(m => this.are_different_members(m, member)),
+                            this.members[lhs].members.every(m => !this.are_duplicate_members(m, member)),
                             "member " + member.name + " is unique");
                         this.members[lhs].members.push(new IdlInterfaceMember(member));
                     }.bind(this));
@@ -973,7 +973,7 @@ IdlArray.prototype.collapse_partials = function()
                 parsed_idl.members.forEach(function(member)
                 {
                     assert_true(
-                        this.members[parsed_idl.name].members.every(m => this.are_different_members(m, member)),
+                        this.members[parsed_idl.name].members.every(m => !this.are_duplicate_members(m, member)),
                         "member " + member.name + " is unique");
                     this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
                 }.bind(this));
@@ -983,15 +983,16 @@ IdlArray.prototype.collapse_partials = function()
     this.partials = [];
 }
 
-IdlArray.prototype.are_different_members = function(m1, m2) {
+IdlArray.prototype.are_duplicate_members = function(m1, m2) {
     if (m1.name !== m2.name) {
-        return true;
-    } else if (m1.type === 'operation' && m2.type === 'operation'
+        return false;
+    }
+    if (m1.type === 'operation' && m2.type === 'operation'
         && m1.arguments.length !== m2.arguments.length) {
         // Method overload. TODO: Deep comparison of arguments.
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 
 IdlArray.prototype.assert_type_is = function(value, type)

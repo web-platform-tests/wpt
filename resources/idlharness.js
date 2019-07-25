@@ -988,7 +988,7 @@ IdlArray.prototype.are_different_members = function(m1, m2) {
         return true;
     } else if (m1.type === 'operation' && m2.type === 'operation'
         && m1.arguments.length !== m2.arguments.length) {
-        // Method overload.
+        // Method overload. TODO: Deep comparison of arguments.
         return true;
     }
     return false;

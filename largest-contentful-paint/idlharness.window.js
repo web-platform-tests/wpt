@@ -1,7 +1,7 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 
-// https://wicg.github.io/element-timing/
+// https://wicg.github.io/largest-contentful-paint/
 
 'use strict';
 

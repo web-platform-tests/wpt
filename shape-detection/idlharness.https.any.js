@@ -1,3 +1,4 @@
+// META: global=window,worker
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 // META: script=/shape-detection/resources/shapedetection-helpers.js

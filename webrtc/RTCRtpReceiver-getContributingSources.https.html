@@ -1,6 +1,10 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>RTCRtpReceiver.prototype.getContributingSources</title>
+<div id="log"></div>
+<div>
+  <video id="pc2-view" muted autoplay="autoplay"></video>
+</div>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="RTCPeerConnection-helper.js"></script>
@@ -20,6 +24,7 @@ async function connectAndExpectNoCsrcs(t, kind) {
 
   exchangeIceCandidates(pc1, pc2);
   const trackEvent = await exchangeOfferAndListenToOntrack(t, pc1, pc2);
+  document.getElementById('pc2-view').srcObject = trackEvent.streams[0];
   await exchangeAnswer(pc1, pc2);
 
   assert_array_equals(trackEvent.receiver.getContributingSources(), []);

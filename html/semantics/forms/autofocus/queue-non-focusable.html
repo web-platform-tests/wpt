@@ -13,8 +13,7 @@ promise_test(async () => {
   const [textarea, select] = document.querySelectorAll('[autofocus]');
   textarea.disabled = false;
 
-  await waitForAnimationFrame();
-  await waitForAnimationFrame();
+  await waitUntilStableAutofocusState();
   assert_equals(document.activeElement, textarea);
   assert_not_equals(document.activeElement, select);
 }, 'If the first autofocus element is not focusable, but becomes focusable before a frame, it should be focused.');

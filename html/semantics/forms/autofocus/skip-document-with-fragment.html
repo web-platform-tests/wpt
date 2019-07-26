@@ -11,16 +11,22 @@
 
 promise_test(async () => {
   await waitForLoad(window);
-  await waitForAnimationFrame();
-  await waitForAnimationFrame();
+  await waitUntilStableAutofocusState();
   assert_equals(document.activeElement, document.body,
       'Autofocus elements in iframes should not be focused.');
 
   let input = document.createElement('input');
   input.autofocus = true;
   document.body.appendChild(input);
-  await waitForAnimationFrame();
-  await waitForAnimationFrame();
+  await waitUntilStableAutofocusState();
   assert_equals(document.activeElement, input);
-}, 'Autofocus element in a document with a URI fragment should be skipped.');
+}, 'Autofocus elements in iframed documents with URL fragments should be skipped.');
+
+promise_test(async () => {
+  let w = window.open('resources/frame-with-autofocus-element.html#xpointer(//body)');
+  await waitForLoad(w);
+  await waitUntilStableAutofocusState(w);
+  assert_equals(w.document.activeElement, w.document.body);
+  w.close();
+}, 'Autofocus elements in top-level browsing context\'s documents with URI fragments should be skipped.');
 </script>

@@ -12,8 +12,7 @@
 promise_test(async () => {
   const [textarea, select] = document.querySelectorAll('[autofocus]');
 
-  await waitForAnimationFrame();
-  await waitForAnimationFrame();
+  await waitUntilStableAutofocusState();
   assert_not_equals(document.activeElement, textarea);
   assert_equals(document.activeElement, select);
 }, 'Non-focusable autofocus element is skipped.');

@@ -19,8 +19,7 @@ promise_test(async () => {
   input2.autofocus = true;
   document.body.appendChild(input2);
 
-  await waitForAnimationFrame();
-  await waitForAnimationFrame();
+  await waitUntilStableAutofocusState();
   assert_equals(document.activeElement, input1);
   assert_not_equals(document.activeElement, input2);
 }, 'The first autofocus in the document wins, even if elements are inserted later.');

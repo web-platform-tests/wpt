@@ -17,8 +17,7 @@
 promise_test(async () => {
   const [input1, input2] = document.querySelectorAll("input");
 
-  await waitForAnimationFrame();
-  await waitForAnimationFrame();
+  await waitUntilStableAutofocusState();
   assert_equals(document.activeElement, input1);
   assert_not_equals(document.activeElement, input2);
 }, 'The first autofocus element in the document should win.');

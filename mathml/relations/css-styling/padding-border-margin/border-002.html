@@ -21,13 +21,13 @@
         if (!FragmentHelper.isValidChildOfMrow(tag))
             continue;
 
-        var style = "border-left: 30px solid transparent; border-right: 40px solid transparent; border-top: solid transparent 50px; border-bottom: 60px solid transparent;";
+        var style = "border-left: 30px solid; border-right: 40px solid; border-top: 50px solid; border-bottom: 60px solid;";
 
         if (FragmentHelper.isEmpty(tag)) {
             test(function() {
                 var s = compareSizeWithAndWithoutStyle(tag, style);
-                assert_approx_equals(s.width_delta, 30+40, epsilon, "left/right border");
-                assert_approx_equals(s.height_delta, 50+60, epsilon, "top/bottom border");
+                assert_approx_equals(s.width_delta, 30 + 40, epsilon, "left/right border");
+                assert_approx_equals(s.height_delta, 50 + 60, epsilon, "top/bottom border");
             }, `Border properties on ${tag}`);
             continue;
         }

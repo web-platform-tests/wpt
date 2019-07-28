@@ -36,11 +36,12 @@
       writing-mode: sideways-lr;
     }
 
-  html::before
+  html::after
     {
       content: "This text must be vertical, with letters upright.";
       text-orientation: upright;
       /* 'text-orientation: upright' has no effect with 'sideways-lr', but does with 'vertical-lr' */
+      margin-top: 8px;
     }
 
   body

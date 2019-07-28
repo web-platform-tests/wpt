@@ -11,7 +11,7 @@
   element cause an orthogonal flow?
   https://github.com/w3c/csswg-drafts/issues/3066
   -->
-  <link rel="match" href="wm-propagation-body-035-ref.html">
+  <link rel="match" href="wm-propagation-body-047-ref.html">
 
   <meta name="flags" content="">
   <meta name="assert" content="This test checks that when the root element has a &lt;body&gt; child element, then the principal writing mode is instead taken from the values of writing-mode and direction on the first such child element instead of taken from the root element. Also, a small script in this test verifies that the computed value of 'writing-mode' of the root element itself is not affected by such propagation.">
@@ -41,12 +41,25 @@
       writing-mode: sideways-lr;
     }
 
+  html::after
+    {
+      content: "This text must be written sideways: vertically, with letters rotated 90 degrees.";
+      text-orientation: upright; /* this has no effect with sideways-rl, but does with vertical-rl*/
+    }
+
   div
     {
       background-color: teal;
       height: 100px;
       width: 100px;
     }
+  img
+    {
+      display: block;
+      margin-left: 1em;
+      margin-right: 1em;
+    }
+
 
   h1#second-test-condition
     {
@@ -75,7 +88,7 @@
 
   <div></div>
 
-  <p><img src="support/wm-propagation-body-035-exp-res.png" width="322" height="38" alt="Image download support must be enabled">
+  <img src="support/wm-propagation-body-035-exp-res.png" width="322" height="38" alt="Image download support must be enabled">
 
   <!--
   The image says:

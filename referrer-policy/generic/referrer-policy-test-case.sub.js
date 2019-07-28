@@ -138,7 +138,7 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
     // `Referer` headers with length over 4k are culled down to an origin, so, let's test around
     // that boundary for tests that would otherwise return the complete URL.
     if (scenario.referrer_url == "stripped-referrer") {
-      promise_test(_ => {
+      promise_test(t => {
         history.pushState(null, null, "/");
         history.replaceState(null, null, "A".repeat(4096 - location.href.length - 1));
         const expectedReferrer = location.href;
@@ -146,10 +146,21 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
         subresource.url += "&-1";
         return invokeRequest(subresource, [])
           .then(result => checkResult(location.href, result))
-          .finally(_ => history.back());
+          .finally(_ => {
+              history.back();
+              return new Promise(resolve => {
+                  window.addEventListener('popstate', resolve, {once: true});
+                  // Workaround for Safari: Waiting for popstate events causes
+                  // timeout in a-tag tests. To avoid timeout, we anyway resolve
+                  // the promise.
+                  if (scenario.subresource === 'a-tag') {
+                    t.step_timeout(resolve, 1000);
+                  }
+                });
+            });
       }, "`Referer` header with length < 4k is not stripped to an origin.");
 
-      promise_test(_ => {
+      promise_test(t => {
         history.pushState(null, null, "/");
         history.replaceState(null, null, "A".repeat(4096 - location.href.length));
         const expectedReferrer = location.href;
@@ -157,10 +168,18 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
         subresource.url += "&0";
         return invokeRequest(subresource, [])
           .then(result => checkResult(expectedReferrer, result))
-          .finally(_ => history.back());
+          .finally(_ => {
+              history.back();
+              return new Promise(resolve => {
+                  window.addEventListener('popstate', resolve, {once: true});
+                  if (scenario.subresource === 'a-tag') {
+                    t.step_timeout(resolve, 1000);
+                  }
+                });
+            });
       }, "`Referer` header with length == 4k is not stripped to an origin.");
 
-      promise_test(_ => {
+      promise_test(t => {
         const originString = referrerUrlResolver["origin"](currentURL);
         history.pushState(null, null, "/");
         history.replaceState(null, null, "A".repeat(4096 - location.href.length + 1));
@@ -168,7 +187,15 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
         subresource.url += "&+1";
         return invokeRequest(subresource, [])
           .then(result => checkResult(originString, result))
-          .finally(_ => history.back());
+          .finally(_ => {
+              history.back();
+              return new Promise(resolve => {
+                  window.addEventListener('popstate', resolve, {once: true});
+                  if (scenario.subresource === 'a-tag') {
+                    t.step_timeout(resolve, 1000);
+                  }
+                });
+            });
       }, "`Referer` header with length > 4k is stripped to an origin.");
     }
 

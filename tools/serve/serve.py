@@ -49,11 +49,12 @@ def replace_end(s, old, new):
 
 
 def domains_are_distinct(a, b):
-    a = a.split(".")
-    b = b.split(".")
-    l = -1 * min(len(a), len(b))
+    a_parts = a.split(".")
+    b_parts = b.split(".")
+    min_length = min(len(a_parts), len(b_parts))
+    slice_index = -1 * min_length
 
-    return a[l:] != b[l:]
+    return a_parts[slice_index:] != b_parts[slice_index:]
 
 
 class WrapperHandler(object):

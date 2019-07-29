@@ -58,11 +58,6 @@ def dump_test_parameters(selection):
 
 
 def generate_selection(config, selection, spec, test_html_template_basename):
-    # TODO: Refactor out this referrer-policy-specific part.
-    if 'referrer_policy' in spec:
-        # Oddball: it can be None, so in JS it's null.
-        selection['referrer_policy'] = spec['referrer_policy']
-
     test_parameters = dump_test_parameters(selection)
     # Adjust the template for the test invoking JS. Indent it to look nice.
     indent = "\n" + " " * 8
@@ -168,6 +163,7 @@ def generate_test_source_files(config, spec_json, target):
             expansion = expand_pattern(expansion_pattern,
                                        test_expansion_schema)
             for selection in permute_expansion(expansion, artifact_order):
+                selection['delivery_key'] = spec_json['delivery_key']
                 selection_path = config.selection_pattern % selection
                 if not selection_path in exclusion_dict:
                     if selection_path in output_dict:

@@ -184,7 +184,7 @@ Note that in the promise chain constructed in `test_function` assertions don't
 need to be wrapped in `step` or `step_func` calls.
 
 Unlike Asynchronous Tests, Promise Tests don't start running until after the
-previous Promise Test finishes. Use `[add_cleanup](#cleanup)` to register any 
+previous Promise Test finishes. Use [add_cleanup](#cleanup) to register any 
 necessary cleanup actions such as resetting global state that need to happen 
 consistently before the next test starts.
 

@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+  <head>
+    <title>MediaStreamTrackSourceNode Constructor</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/webaudio/resources/audit.js"></script>
+  </head>
+
+  <body>
+    <video id='video'>
+      <!-- Source isn't really important except that it MUST be a video with an
+      audible audio track that lasts for at least 2 sec. -->
+      <source src='/media-source/webm/test-av-640k-44100Hz-1ch-640x480-30fps-10kfr.webm'>
+      <source src='/media-source/mp4/test-av-640k-44100Hz-1ch-640x480-30fps-10kfr.mp4'>
+    </video>
+    <script>
+      const audit = Audit.createTaskRunner();
+
+      const context = new AudioContext();
+
+      // Video element being used for testing MediaStreamTrackAudioSource.
+      let video;
+
+      // The MediaStreamTrackAudioSourceNode being tested.
+      let node;
+
+      audit.define('Test MediaStreamTrack Construction', (task, should) => {
+        video = document.getElementById('video');
+
+        video.play()
+            .then(() => {
+              let stream;
+              let videotracks;
+              let audioTracks;
+
+              // These are mostly to print out some progress messages on what's
+              // happening.
+              should(() => {
+                if (typeof video.captureStream === 'function') {
+                  stream = video.captureStream();
+                } else if (typeof video.mozCaptureStream === 'function') {
+                  stream = video.mozCaptureStream();
+                } else {
+                  throw 'captureStream not defined';
+                }
+              }, 'Creating MediaStream from video tag').notThrow();
+              should(() => {
+                videoTracks = stream.getVideoTracks();
+                audioTracks = stream.getAudioTracks();
+              }, 'Extracting video and audio tracks from stream').notThrow();
+
+              // Verify that we got a video track and that we can't create a
+              // MediaStreamTrackAudioSourceNode from a video track.
+              should(videoTracks.length, 'Number of video tracks')
+                  .beGreaterThanOrEqualTo(1);
+              should(videoTracks[0].kind, 'Video track 0 kind')
+                  .beEqualTo('video');
+              should(
+                  () => {
+                    new MediaStreamTrackAudioSourceNode(
+                        context, {mediaStreamTrack: videoTracks[0]});
+                  },
+                  'new MediaStreamTrackAudioSourceNode() with video track')
+                  .throw(DOMException, 'InvalidStateError');
+              should(
+                  () => context.createMediaStreamTrackSource(videoTracks[0]),
+                  'context.createMediaStreamTrackSource(<videoTrack>)')
+                  .throw(DOMException, 'InvalidStateError');
+
+
+              // Verify that we got a audio track and that we can create a
+              // MediaStreamTrackAudioSourceNode from a audio track.
+              should(audioTracks.length, 'Number of audio tracks')
+                  .beGreaterThanOrEqualTo(1);
+              should(audioTracks[0].kind, 'Audio track 0 kind')
+                  .beEqualTo('audio');
+              should(
+                  () => {
+                    // Remember this node because we'll use it for testing in
+                    // the next test.
+                    node = new MediaStreamTrackAudioSourceNode(
+                        context, {mediaStreamTrack: audioTracks[0]});
+                  },
+                  'new MediaStreamTrackAudioSourceNode() with audio track')
+                  .notThrow();
+              should(
+                  () => context.createMediaStreamTrackSource(audioTracks[0]),
+                  'context.createMediaStreamTrackSource(<audioTrack>)')
+                  .notThrow();
+            })
+            .then(() => {
+              video.pause();
+              task.done();
+            });
+      });
+
+      audit.define('Basic Output Test', (task, should) => {
+        // Use ScriptProcessor to test if there's any audio output from the
+        // MediaStreamTrackAudioSource.  
+        const tester = context.createScriptProcessor();
+        tester.onaudioprocess = (event) => {
+          // Don't let the test run for more than 2 sec.  Something bad has
+          // probably happened by then.
+          if (context.currentTime > 2) {
+            should(context.currentTime, 'Test run time').beLessThanOrEqualTo(2);
+            video.pause();
+            tester.onaudioprocess = null;
+            task.done();
+          } else {
+            // Test to see if we have some non-silent audio. If so, declare
+            // success and end the test.
+            let nonZero = event.inputBuffer.getChannelData(0).find(x => x != 0)
+            if (nonZero) {
+              should(true, 'Non-zero output').beTrue();
+              video.pause();
+              tester.onaudioprocess = null;
+              task.done();
+            }
+          }
+        };
+
+        node.connect(tester).connect(context.destination);
+        video.play();
+      });
+
+    audit.run();
+    </script>
+  </body>
+</html>

@@ -45,6 +45,8 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     executor_kwargs = chrome_executor_kwargs(test_type, server_config,
                                              cache_manager, run_info_data,
                                              **kwargs)
+    del executor_kwargs["capabilities"]["goog:chromeOptions"]["prefs"]
+    del executor_kwargs["capabilities"]["goog:chromeOptions"]["useAutomationExtension"]
 
     # TODO(Hexcles): browser_channel should be properly supported.
     package_name = "com.android.chrome"  # stable channel

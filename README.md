@@ -178,18 +178,11 @@ line endings, as it will cause lint errors. For git, please set
 <span id="chromium-notes">Chromium Notes</span>
 =============================================
 
-Web Platform Tests tooling DOES NOT support tests performed at Chromium browser.
+WPT supports Chromium insofar as we support other browsers: we provide the ability to run tests against the browser.
 
-> You must use the official Google Chrome build. We don't provide support for Chromium. If the crash doesn't reproduce in Chrome you're on your own unfortunately.[Issue 943484](https://bugs.chromium.org/p/chromium/issues/detail?id=943484#c11)
+That the Chromium project may choose not to fix bugs (crash bugs or otherwise) that WPT tests find is a decision for the Chromium project and not one we should pass judgement on (it is possible that all browsers have some won't-fix bugs for some WPT failures).
 
-> This means that packaging issues will be looked at, but issues with the
-browser's behaviour should be reported upstream (and yes upstream as a
-vendor doesn't officially support Chromium, only Chrome, so it's likely
-that the first thing that they will ask is whether the issue is
-reproducible with Chrome).
-> https://launchpad.net/~chromium-team mostly handles Ubuntu-specific packaging, and bug triaging and forwarding to upstream, on a best-effort basis, because of limited manpower. [bug 1837292](https://bugs.launchpad.net/ubuntu/+source/chromium-browser/+bug/1837292/comments/6)
-
-At no point have we claimed that Chromium is an officially supported "product" by the wpt tooling (although some Chromium developers do run wpt against Chromium occasionally with elaborate non-default CLI flags with good understanding of what they are doing). If you see any publicly discoverable docs (e.g. the top-level README or web-platform-tests.org, not code comments) that suggest you to use Chromium, you can send a PR to remove that ([#17960](https://github.com/web-platform-tests/wpt/issues/17960#issuecomment-514807491)).
+Perhaps the Chromium project should clarify their documentation that they won't fix issues that don't reproduce in Chrome builds, but that's a matter for that project, not this one.
 
 Certificates
 ============

@@ -1035,7 +1035,7 @@ a different set of command-line arguments.</p>
                         <span class="p">[</span><span class="o">--</span><span class="n">tests</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manifest</span> <span class="n">MANIFEST_PATH</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">sync</span><span class="o">-</span><span class="n">path</span> <span class="n">SYNC_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">remote_url</span> <span class="n">REMOTE_URL</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">branch</span> <span class="n">BRANCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rev</span> <span class="n">REV</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">patch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">patch</span><span class="p">]</span>
-                        <span class="p">[</span><span class="o">--</span><span class="n">sync</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">existing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">stability</span> <span class="p">[</span><span class="n">STABILITY</span><span class="p">]]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">sync</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">full</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">stability</span> <span class="p">[</span><span class="n">STABILITY</span><span class="p">]]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">remove</span><span class="o">-</span><span class="n">obsolete</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">store</span><span class="o">-</span><span class="n">state</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">continue</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">abort</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="p">[</span><span class="n">EXCLUDE</span> <span class="p">[</span><span class="n">EXCLUDE</span> <span class="o">...</span><span class="p">]]]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="p">[</span><span class="n">INCLUDE</span> <span class="p">[</span><span class="n">INCLUDE</span> <span class="o">...</span><span class="p">]]]</span>
@@ -1117,10 +1117,9 @@ a different set of command-line arguments.</p>
 <td><p class="first">Sync the tests with the latest from upstream (implies –patch)</p>
 <p class="last">Default: False</p>
 </td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd>--ignore-existing</kbd></td>
-</tr>
-<tr><td>&#160;</td><td><p class="first">When updating test results only consider results from the logfiles provided, not existing expectations.</p>
+<tr><td class="option-group">
+<kbd>--full</kbd></td>
+<td><p class="first">For all tests that are updated, remove any existing conditions and missing subtests</p>
 <p class="last">Default: False</p>
 </td></tr>
 <tr><td class="option-group">

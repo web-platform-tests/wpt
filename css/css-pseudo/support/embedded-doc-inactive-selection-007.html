@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>Embedded document for inactive selection tests</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+
+  <style>
+  div
+    {
+      color: red;
+      font-size: 48px;
+    }
+
+  div::selection
+    {
+      color: orange;
+    }
+
+  div::inactive-selection
+    {
+      color: green;
+    }
+  </style>
+
+  <div contenteditable="true">Text sample</div>

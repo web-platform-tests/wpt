@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: inactive selection with &lt;div contenteditable="true"&gt; in an &lt;iframe&gt;</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-styling">
+
+  <meta content="interact" name="flags">
+
+  <style>
+  iframe
+    {
+      border: black solid medium;
+      padding: 20px;
+      width: 500px;
+    }
+  </style>
+
+  <p>Test passes if the red glyphs of "Text sample" become orange when selecting (with mouse dragging) them or text-highlighting (with keyboard arrows when keyboard navigation <kbd>F7</kbd> is enabled) them and then if such selected orange <strong>glyphs become green</strong> when the focus switches outside the black-bordered rectangle.
+
+  <p>Reminder: you can select a whole word by double-clicking on it. You can select a whole line by triple-clicking anywhere inside it.
+
+  <div><iframe src="support/embedded-doc-inactive-selection-007.html" type="text/html">This test requires a browser with capability to embed an HTML document thanks to the HTML &lt;iframe&gt; element.</iframe></div>

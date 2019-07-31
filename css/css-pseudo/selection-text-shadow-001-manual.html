@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: selection and text-shadow</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-styling">
+
+  <meta content="interact" name="flags">
+
+  <style>
+  div
+    {
+      color: blue;
+      font-size: 300%;
+      text-shadow: red 7em 0em 0em;  /* horizontal offset to the right-hand side */
+    }
+
+  div::selection
+    {
+      background-color: yellow;
+      color: green;
+      text-shadow: none;
+    }
+  </style>
+
+  <p>Test passes if the red glyphs of "Text sample" disappear when selecting (with mouse dragging) or text-highlighting (with <kbd>Shift</kbd> and keyboard arrows when keyboard navigation <kbd>F7</kbd> is enabled) its blue counterparts.
+
+  <p>Reminder: you can select a whole word by double-clicking on it. You can select a whole line by triple-clicking anywhere inside it.
+
+  <div>Text sample</div>

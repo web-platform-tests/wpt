@@ -407,6 +407,13 @@ class PropertyUpdate(object):
                     msg += ": %s" % serialize(e.cond).strip()
                 print(msg)
 
+        # If all the values match remove all conditionals
+        # This handles the case where we update a number of existing conditions and they
+        # all end up looking like the post-update default.
+        new_default = conditions[-1][1] if conditions[-1][0] is None else self.default_value
+        if all(condition[1] == new_default for condition in conditions):
+            conditions = [(None, new_default)]
+
         # Don't set the default to the class default
         if (conditions and
             conditions[-1][0] is None and

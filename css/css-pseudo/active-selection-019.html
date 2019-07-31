@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and color</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-styling">
+  <link rel="match" href="active-selection-019-ref.html">
+
+  <meta content="" name="flags">
+
+  <style>
+  div
+    {
+      color: black;
+      font-size: 300%;
+    }
+
+  div::selection
+    {
+      color: white;
+    }
+  </style>
+
+  <script>
+  function startTest()
+  {
+  var targetRange = document.createRange();
+  /* We first create an empty range */
+  targetRange.setStart(document.getElementById("test").childNodes[0], 11);
+  /*
+  Then we set the start boundary of the range inside div#test to 1 blank
+  space before "F"
+  */
+  targetRange.setEnd(document.getElementById("test").childNodes[0], 16);
+  /* And we set the end boundary of the range inside div#test right after "L" */
+  window.getSelection().addRange(targetRange);
+  /* Finally, we now select such range of content */
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>Test passes if the word "FAIL" is absent.
+
+  <div id="test">Text sample FAIL</div>

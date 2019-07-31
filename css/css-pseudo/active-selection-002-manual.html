@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and background-color (basic)</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-styling">
+
+  <meta content="interact" name="flags">
+
+  <style>
+  div
+    {
+      background-color: red;
+      display: inline;
+      font-size: 300%;
+    }
+
+  div::selection
+    {
+      background-color: green;
+    }
+
+  /*
+  Chromium 77.0.3855.0 creates a background-color #334C00 or rgb(51, 76, 0)
+  and not a green (#008800 or rgb(0, 136, 0)) background color.
+  */
+  </style>
+
+  <p>Test passes if background color of glyphs of "Text sample" becomes green when selecting (with mouse dragging) them or when text-highlighting (with <kbd>Shift</kbd> and keyboard arrows when keyboard navigation <kbd>F7</kbd> is enabled) them.
+
+  <p>Reminder: you can select a whole word by double-clicking on it. You can select a whole line by triple-clicking anywhere inside it.
+
+  <div>Text sample</div>

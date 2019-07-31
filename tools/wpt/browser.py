@@ -545,6 +545,8 @@ class Chrome(Browser):
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         if dest is None:
             dest = os.pwd
+        if browser_binary is None:
+            browser_binary = self.find_binary(channel)
         url = self._latest_chromedriver_url(browser_binary)
         self.logger.info("Downloading ChromeDriver from %s" % url)
         unzip(get(url).raw, dest)

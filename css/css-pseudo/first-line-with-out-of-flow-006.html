@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#first-line-pseudo">
-<link rel="match" href="first-line-with-out-of-flow-ref.html">
+<link rel="match" href="first-line-with-out-of-flow-006-ref.html">
+<title>First Line out of flow, with out of flow text. Test that it does not match the first line when the first line is out of flow.</title>
 <style>
-  #block::first-line { color: green; }
+  #block::first-line { color: red; }
 </style>
 <div id="block">
   <div style="position: absolute"><br></div>
@@ -10,10 +11,10 @@
   <div>
     <div style="position: absolute"><br></div>
     <div style="float: right"><br></div>
-    <div style="color: blue">
+    <div style="position: absolute; color: green">
       <div>
         <span><span>This text should be green.</span></span><br>
-        This text should be blue.
+        This text should be green.
       </div>
     </div>
   </div>

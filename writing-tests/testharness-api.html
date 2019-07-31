@@ -183,7 +183,12 @@ a resolve reaction that verifies the returned value.</p>
 <p>Note that in the promise chain constructed in <code class="docutils literal notranslate"><span class="pre">test_function</span></code> assertions don’t
 need to be wrapped in <code class="docutils literal notranslate"><span class="pre">step</span></code> or <code class="docutils literal notranslate"><span class="pre">step_func</span></code> calls.</p>
 <p>Unlike Asynchronous Tests, Promise Tests don’t start running until after the
-previous Promise Test finishes.</p>
+previous Promise Test finishes. <a class="reference external" href="https://github.com/web-platform-tests/wpt/pull/17924">Under rare
+circumstances</a>, the next
+test may begin to execute before the returned promise has settled. Use
+<a class="reference external" href="#cleanup">add_cleanup</a> to register any necessary cleanup actions such as
+resetting global state that need to happen consistently before the next test
+starts.</p>
 <p><code class="docutils literal notranslate"><span class="pre">promise_rejects</span></code> can be used to test Promises that need to reject:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_rejects</span><span class="p">(</span><span class="nx">test_object</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span>
 </pre></div>

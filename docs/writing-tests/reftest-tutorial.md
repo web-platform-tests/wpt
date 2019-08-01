@@ -67,7 +67,6 @@ Here's one way to demonstrate the feature:
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>BDO element dir=rtl</title>
-<link rel="author" title="Sam Smith" href="mailto:sam@example.com">
 <link rel="help" href="https://html.spec.whatwg.org/#the-bdo-element">
 <meta name="assert" content="BDO element's DIR content attribute renders corrently given value of 'rtl'.">
 
@@ -91,15 +90,6 @@ That's pretty dense! Let's break it down:
   <title>BDO element dir=rtl</title>
   ```
   The document's title should succinctly describe the feature under test.
-
-- ```html
-  <link rel="author" title="Sam Smith" href="mailto:sam@example.com">
-  ```
-
-  You should replace the value of the `title` and `href` attributes with your
-  name and e-mail, respectively. This can help others learn who to contact with
-  questions about this test. The git history will do the
-  same thing, so you can leave this out if you prefer.
 
 - ```html
   <link rel="help" href="https://html.spec.whatwg.org/#the-bdo-element">

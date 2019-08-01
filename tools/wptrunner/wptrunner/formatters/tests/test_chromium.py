@@ -182,9 +182,10 @@ def test_subtest_failure(capfd):
                        message="t1_b_message")
     logger.test_status("t1", status="TIMEOUT", subtest="t1_c",
                        message="t1_c_message")
-    # Here we just check that the test was only inserted into memory once even
-    # though there were multiple subtest failures.
-    assert formatter.tests_with_subtest_fails.count("t1") == 1
+
+    # Make sure the test name was added to the set of tests with subtest fails
+    assert "t1" in formatter.tests_with_subtest_fails
+
     # The test status is reported as a pass here because the harness was able to
     # run the test to completion.
     logger.test_end("t1", status="PASS", expected="PASS")
@@ -209,4 +210,4 @@ def test_subtest_failure(capfd):
     # despite the harness reporting that the test passed.
     assert test_obj["actual"] == "FAIL"
     # Also ensure that the formatter cleaned up its internal state
-    assert formatter.tests_with_subtest_fails.count("t1") == 0
+    assert "t1" not in formatter.tests_with_subtest_fails

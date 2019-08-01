@@ -29,7 +29,7 @@ class ChromiumFormatter(base.BaseFormatter):
         self.messages = defaultdict(str)
 
         # List of tests that have failing subtests.
-        self.tests_with_subtest_fails = []
+        self.tests_with_subtest_fails = set()
 
     def _append_test_message(self, test, subtest, status, message):
         """
@@ -113,7 +113,7 @@ class ChromiumFormatter(base.BaseFormatter):
     def test_status(self, data):
         test_name = data["test"]
         if data["status"] != "PASS" and test_name not in self.tests_with_subtest_fails:
-            self.tests_with_subtest_fails.append(test_name)
+            self.tests_with_subtest_fails.add(test_name)
         if "message" in data:
             self._append_test_message(test_name, data["subtest"],
                                       data["status"], data["message"])

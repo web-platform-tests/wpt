@@ -162,7 +162,7 @@ Test is finished.</p>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">test_function</span></code> is a function that receives a test as an argument. It must
-return a promise. The test completes when the returned promise resolves. The
+return a promise. The test completes when the returned promise settles. The
 test fails if the returned promise rejects.</p>
 <p>E.g.:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>

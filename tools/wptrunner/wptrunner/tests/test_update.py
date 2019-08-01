@@ -218,6 +218,8 @@ def test_update_known_intermittent_1():
         "expected", default_run_info) == ["PASS", "FAIL"]
 
 
+@pytest.mark.xfail(sys.version[0] == "3",
+                   reason="metadata doesn't support py3")
 def test_update_known_intermittent_2():
     tests = [("path/to/test.htm", [test_id], "testharness",
               """[test.htm]
@@ -241,6 +243,8 @@ def test_update_known_intermittent_2():
         "expected", default_run_info) == "FAIL"
 
 
+@pytest.mark.xfail(sys.version[0] == "3",
+                   reason="metadata doesn't support py3")
 def test_update_existing_known_intermittent():
     tests = [("path/to/test.htm", [test_id], "testharness",
               """[test.htm]
@@ -282,6 +286,8 @@ def test_update_existing_known_intermittent():
         "expected", default_run_info) == ["PASS", "ERROR", "FAIL"]
 
 
+@pytest.mark.xfail(sys.version[0] == "3",
+                   reason="metadata doesn't support py3")
 def test_update_remove_previous_intermittent():
     tests = [("path/to/test.htm", [test_id], "testharness",
               """[test.htm]
@@ -482,6 +488,8 @@ def test_update_and_preserve_unchanged_expected_intermittent():
         "expected", default_run_info) == "PASS"
 
 
+@pytest.mark.xfail(sys.version[0] == "3",
+                   reason="metadata doesn't support py3")
 def test_update_test_with_intermittent_to_one_expected_status():
     tests = [("path/to/test.htm", [test_id], "testharness",
               """[test.htm]

@@ -597,17 +597,26 @@ class ChromeAndroid(Browser):
         raise NotImplementedError
 
     def find_binary(self, venv_path=None, channel=None):
-        raise NotImplementedError
+        if channel in ("beta", "dev", "canary"):
+            return "com.chrome." + channel
+        return "com.android.chrome"
 
     def find_webdriver(self, channel=None):
         return find_executable("chromedriver")
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
+        if browser_binary is None:
+            browser_binary = self.find_binary(channel)
         chrome = Chrome(self.logger)
-        return chrome.install_webdriver_by_version(self.version(), dest)
+        return chrome.install_webdriver_by_version(
+            self.version(browser_binary), dest)
 
     def version(self, binary=None, webdriver_binary=None):
-        command = ['adb', 'shell', 'dumpsys', 'package', 'com.android.chrome']
+        if not binary:
+            self.logger.warning("No package name provided.")
+            return None
+
+        command = ['adb', 'shell', 'dumpsys', 'package', binary]
         try:
             output = call(*command)
         except (subprocess.CalledProcessError, OSError):

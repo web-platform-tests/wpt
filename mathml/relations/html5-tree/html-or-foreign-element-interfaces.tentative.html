@@ -21,9 +21,7 @@
     <span tabindex="-1">This tests the presence and functionality of features of `HTMLOrForeignElement` (currently `HTMLOrSVGElement`)</span>
     <math
       tabindex="-1"
-      xmlns="http://www.w3.org/1998/Math/MathML"
-      display="block"
-    >
+     >
       <mi>E</mi>
     </math>
   </body>
@@ -58,12 +56,12 @@
       assert_equals(
         el.dataset.one,
         "x",
-        '.one should be "x" after setting the data-x attribute'
+        '.one should be "x" after setting the data-one attribute'
       );
       assert_equals(
         el.dataset.two,
         "y",
-        '.one should be "y" after setting the data-y attribute'
+        '.one should be "y" after setting the data-two attribute'
       );
 
       el.dataset.one = "o";
@@ -82,25 +80,9 @@
       );
     }, "MathML elements should have a tabIndex property");
 
-
-    // this will be resolved after the focus test completes
-    // in order to then observe blur
-    let focusCompleted
-    let focusFailed
-    let focusCompletedPromise = new Promise((resolve, reject) => {
-      focusCompleted = resolve
-      focusFailed = reject
-    })
-
-
     promise_test(function() {
       function focus() {
-        try {
-          mathEl.focus();  
-        } catch (e) {
-          focusFailed()
-          return Promise.reject()
-        }
+        mathEl.focus();  
         return Promise.resolve();
       }
 
@@ -108,12 +90,11 @@
         assert_equals(
           getComputedStyle(mathEl).backgroundColor,
           "rgb(0, 255, 0)",
-          "MathML elements with tabindex=-1 should be programatically focusable and apply :focus"
+          "MathML elements with tabindex=-1 should be programmatically focusable and apply :focus"
         )
-        focusCompleted()
       })
 
-    }, "MathML elements with tabindex=-1 should have a .focus() method, and support :focus styling");
+    }, "MathML elements should work with focus predictably");
 
 
     promise_test(function() {
@@ -122,16 +103,14 @@
         return Promise.resolve();
       }
 
-      return focusCompletedPromise.finally(() => {
-          blur().then(() => {
-            assert_equals(
-              getComputedStyle(mathEl).backgroundColor,
-              "rgba(0, 0, 0, 0)",
-              "MathML elements with tabindex=-1 be programatically blur() able"
-            )
-        });
-      })
-    }, "MathML elements with tabindex=-1 should have a .blur() method that is fired and updates the display");
+      return blur().then(() => {
+        assert_equals(
+          getComputedStyle(mathEl).backgroundColor,
+          "rgba(0, 0, 0, 0)",
+          "MathML elements with tabindex=-1 be programmatically blur() able"
+        )
+      });
+    }, "MathML elements should work with blur predictably");
 
 
 

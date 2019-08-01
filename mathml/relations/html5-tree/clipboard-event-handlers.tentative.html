@@ -17,17 +17,15 @@ href="https://html.spec.whatwg.org/multipage/webappapis.html#documentandelemente
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <math
-      tabindex="-1"
       oncopy="document.copyHappened = true"
       oncut="document.cutHappened = true"
-      onpaste="document.pasteHappened = true"
-    >
+      onpaste="document.pasteHappened = true">
       <mi>E</mi>
     </math>
 <script>
 const EVENTS = [ 'copy', 'cut', 'paste' ];
 const el = document.querySelector('math')
-// Assure that 
+
 
 function addEventListenerTest(name) {
     async_test((test) => {

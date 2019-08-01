@@ -8,40 +8,33 @@
       href="https://mathml-refresh.github.io/mathml-core/#dom-and-javascript"
     />
     <style>
-        mi { background-color: red;  }
+        mi { background-color: red; }
       }
     </style>
-    <meta name="assert" content="MathMLElements incorporate a functional ElementCSSInlineStyle interface " />
+    <meta name="assert" content="MathMLElements incorporate a functional ElementCSSInlineStyle interface" />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 
   </head>
-  <body tabindex="-1">
-    <span tabindex="-1">This tests the presence and functionality of features of the `ElementCSSInlineStyle` interface for MathMLElements</span>
-    <math
-      tabindex="-1"
-      xmlns="http://www.w3.org/1998/Math/MathML"
-      display="block"
-    >
+  <body>
+    <span>This tests the presence and functionality of features of the `ElementCSSInlineStyle` interface for MathMLElements</span>
+    <math>
       <mi>E</mi>
     </math>
   </body>
   <script>
 
-    // spot check the functionality of several interfaces
     let el = document.querySelector("mi");
     let mathEl = document.querySelector("math");
-
 
     test(function() {
       el.style.backgroundColor = "blue";
       assert_equals(
         getComputedStyle(el).backgroundColor,
         "rgb(0, 0, 255)",
-        "The style attribute should be present and be functional."
+        "The applied background should be blue."
       );
-    }, "The style attribute be present and be functional.");
-
+    }, "The style property should be present and be functional.");
 
   </script>
 </html>

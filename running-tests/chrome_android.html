@@ -37,31 +37,21 @@
   <div class="section" id="chrome-for-android">
 <h1>Chrome for Android<a class="headerlink" href="#chrome-for-android" title="Permalink to this headline">¶</a></h1>
 <p>To run WPT on Chrome on an Android device, some additional set up is required.</p>
-<p>First of all, as usual Android development, we need to have <code class="docutils literal notranslate"><span class="pre">adb</span></code> and be able to
-connect to the device.</p>
-<div class="section" id="hosts">
-<h2>Hosts<a class="headerlink" href="#hosts" title="Permalink to this headline">¶</a></h2>
-<p>Until we find a better way, we need to root the Android device and update the
-/etc/hosts file to include the entries printed by <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">make-hosts-file</span></code>.</p>
-</div>
-<div class="section" id="ca-certificate">
-<h2>CA certificate<a class="headerlink" href="#ca-certificate" title="Permalink to this headline">¶</a></h2>
-<p>In order to run HTTPS tests, we need to add
-<a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/certs/cacert.pem">WPT’s CA</a>
-to the phone. First, convert the certificate from PEM to CRT:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openssl</span> <span class="n">x509</span> <span class="o">-</span><span class="n">outform</span> <span class="n">der</span> <span class="o">-</span><span class="ow">in</span> <span class="n">tools</span><span class="o">/</span><span class="n">certs</span><span class="o">/</span><span class="n">cacert</span><span class="o">.</span><span class="n">pem</span> <span class="o">-</span><span class="n">out</span> <span class="n">cacert</span><span class="o">.</span><span class="n">crt</span>
+<p>As with usual Android development, you need to have <code class="docutils literal notranslate"><span class="pre">adb</span></code> and be able to
+connect to the device. Run <code class="docutils literal notranslate"><span class="pre">adb</span> <span class="pre">devices</span></code> to verify.</p>
+<p>Currently, Android support is a prototype with some known issues:</p>
+<ul class="simple">
+<li>We install ChromeDriver corresponding to the Chrome version on your <em>host</em>,
+so you will need a special flag to bypass ChromeDriver’s version check if the
+test device runs a different version of Chrome from your host.</li>
+<li>The package name is hard coded. If you are testing a custom build, you will
+need to search and replace <code class="docutils literal notranslate"><span class="pre">com.android.chrome</span></code> in <code class="docutils literal notranslate"><span class="pre">tools/</span></code>.</li>
+<li>We do not support reftests at the moment.</li>
+</ul>
+<p>Note: rooting the device or installing a root CA is no longer required.</p>
+<p>Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --webdriver-arg<span class="o">=</span>--disable-build-check --test-type<span class="o">=</span>testharness chrome_android TESTS
 </pre></div>
-</div>
-<p>Then copy <code class="docutils literal notranslate"><span class="pre">cacert.crt</span></code> to your phone’s external storage (preferably to
-Downloads/ as it’ll be easier to find). Open Settings -&gt; Security &amp; location -&gt;
-Encryption &amp; credentials -&gt; Install from storage. Find and install <code class="docutils literal notranslate"><span class="pre">cacert.crt</span></code>.
-(The setting entries might be slightly different based your Android version.)</p>
-<p>Note that having this CA installed on your device outside of a test
-environment represents a security risk.</p>
-<p>Finally, we may run wpt with the <code class="docutils literal notranslate"><span class="pre">chrome_android</span></code> product</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="n">chrome_android</span> <span class="p">[</span><span class="n">test_list</span><span class="p">]</span>
-</pre></div>
-</div>
 </div>
 </div>
 

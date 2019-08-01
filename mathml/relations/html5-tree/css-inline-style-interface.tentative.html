@@ -8,10 +8,11 @@
       href="https://mathml-refresh.github.io/mathml-core/#dom-and-javascript"
     />
     <style>
-        mi { background-color: red; }
+        math. math * { background-color: red; }
       }
     </style>
     <meta name="assert" content="MathMLElements incorporate a functional ElementCSSInlineStyle interface" />
+    <script src="/mathml/support/mathml-fragments.js"></script>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 
@@ -24,17 +25,22 @@
   </body>
   <script>
 
-    let el = document.querySelector("mi");
     let mathEl = document.querySelector("math");
 
-    test(function() {
-      el.style.backgroundColor = "blue";
-      assert_equals(
-        getComputedStyle(el).backgroundColor,
-        "rgb(0, 0, 255)",
-        "The applied background should be blue."
-      );
-    }, "The style property should be present and be functional.");
-
+    Object.keys(MathMLFragments).forEach((elName) => {
+      mathEl.innerHTML = MathMLFragments[elName]
+      mathEl.style.backgroundColor = "blue"
+      mathEl.style.display = "block"
+      test(function() {
+        let el = mathEl.firstElementChild
+        el.style.backgroundColor = "blue";
+        assert_equals(
+          getComputedStyle(el).backgroundColor,
+          "rgb(0, 0, 255)",
+          "The applied background should be blue."
+        );
+      }, `The ${elName}'s style property should be present and be functional.`);
+    })
+    
   </script>
 </html>

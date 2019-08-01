@@ -212,7 +212,7 @@ def test_update_known_intermittent_1():
     updated = update(tests, log_0, log_1, log_2, update_intermittent=True)
 
     new_manifest = updated[0][1]
-    
+
     assert not new_manifest.is_empty
     assert new_manifest.get_test(test_id).children[0].get(
         "expected", default_run_info) == ["PASS", "FAIL"]
@@ -235,7 +235,7 @@ def test_update_known_intermittent_2():
     updated = update(tests, log_0, update_intermittent=True)
 
     new_manifest = updated[0][1]
-    
+
     assert not new_manifest.is_empty
     assert new_manifest.get_test(test_id).children[0].get(
         "expected", default_run_info) == "FAIL"

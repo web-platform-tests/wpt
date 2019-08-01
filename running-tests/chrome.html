@@ -38,10 +38,15 @@
 <h1>Chrome<a class="headerlink" href="#chrome" title="Permalink to this headline">¶</a></h1>
 <p>When running Chrome, there are some useful command line arguments.</p>
 <p>You can inform <code class="docutils literal notranslate"><span class="pre">wpt</span></code> of the release channel of Chrome using <code class="docutils literal notranslate"><span class="pre">--channel</span></code>.
-However, <code class="docutils literal notranslate"><span class="pre">wpt</span></code> currently does not support installing Chrome or finding the
-Chrome binary of a specific channel, so you would also need to specify the path
-to the Chrome binary with <code class="docutils literal notranslate"><span class="pre">--binary</span></code>. For example, to run Chrome Dev on Linux:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>./wpt run --channel dev --binary `which google-chrome-unstable` chrome
+<code class="docutils literal notranslate"><span class="pre">wpt</span></code> is able to find the correct binary in the following cases:</p>
+<ul class="simple">
+<li>On Linux for stable, beta and dev channels if
+<code class="docutils literal notranslate"><span class="pre">google-chrome-{stable,beta,unstable}</span></code> are in <code class="docutils literal notranslate"><span class="pre">PATH</span></code>;</li>
+<li>On Mac for stable and canary channels if the official DMGs are installed.</li>
+</ul>
+<p>In other cases, you will need to specify the path to the Chrome binary with
+<code class="docutils literal notranslate"><span class="pre">--binary</span></code>. For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --channel dev --binary /path/to/non-default/google-chrome chrome
 </pre></div>
 </div>
 <p>Note: when the channel is “dev”, <code class="docutils literal notranslate"><span class="pre">wpt</span></code> will <em>automatically</em> enable all
@@ -50,7 +55,7 @@ to the Chrome binary with <code class="docutils literal notranslate"><span class
 <code class="docutils literal notranslate"><span class="pre">--enable-experimental-web-platform-features</span></code> to Chrome.</p>
 <p>If you want to enable a specific <a class="reference external" href="https://www.chromium.org/blink/runtime-enabled-features">runtime enabled feature</a>, use
 <code class="docutils literal notranslate"><span class="pre">--binary-arg</span></code> to specify the flag(s) that you want to pass to Chrome:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">binary</span><span class="o">-</span><span class="n">arg</span><span class="o">=--</span><span class="n">enable</span><span class="o">-</span><span class="n">blink</span><span class="o">-</span><span class="n">features</span><span class="o">=</span><span class="n">AsyncClipboard</span> <span class="n">chrome</span> <span class="n">clipboard</span><span class="o">-</span><span class="n">apis</span><span class="o">/</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --binary-arg<span class="o">=</span>--enable-blink-features<span class="o">=</span>AsyncClipboard chrome clipboard-apis/
 </pre></div>
 </div>
 </div>

@@ -41,16 +41,15 @@
 connect to the device. Run <code class="docutils literal notranslate"><span class="pre">adb</span> <span class="pre">devices</span></code> to verify.</p>
 <p>Currently, Android support is a prototype with some known issues:</p>
 <ul class="simple">
-<li>We install ChromeDriver corresponding to the Chrome version on your <em>host</em>,
-so you will need a special flag to bypass ChromeDriver’s version check if the
-test device runs a different version of Chrome from your host.</li>
-<li>The package name is hard coded. If you are testing a custom build, you will
-need to search and replace <code class="docutils literal notranslate"><span class="pre">com.android.chrome</span></code> in <code class="docutils literal notranslate"><span class="pre">tools/</span></code>.</li>
+<li>If you have previously run <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code> against Chrome, you might need to
+remove <code class="docutils literal notranslate"><span class="pre">_venv/bin/chromedriver</span></code> so that we can install the correct
+ChromeDriver corresponding to your Chrome for Android version.</li>
 <li>We do not support reftests at the moment.</li>
+<li>You will need to manually kill Chrome (all channels) before running tests.</li>
 </ul>
 <p>Note: rooting the device or installing a root CA is no longer required.</p>
-<p>Example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --webdriver-arg<span class="o">=</span>--disable-build-check --test-type<span class="o">=</span>testharness chrome_android TESTS
+<p>Example (assuming you have Chrome Canary installed on your phone):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --test-type<span class="o">=</span>testharness --channel<span class="o">=</span>canary chrome_android TESTS
 </pre></div>
 </div>
 </div>

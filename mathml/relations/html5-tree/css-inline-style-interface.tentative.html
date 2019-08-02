@@ -14,14 +14,11 @@
     <script src="/mathml/support/mathml-fragments.js"></script>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-
   </head>
   <body>
     <span>This tests the presence and functionality of features of the `ElementCSSInlineStyle` interface for MathMLElements</span>
     <math></math>
     <script>
-
-
     let mathEl = document.querySelector("math")
    
     test(function() {
@@ -32,8 +29,6 @@
           "The applied background should be green."
         );
       }, `The <math> element style property should be present and be functional.`)
-      
-      
     
     Object.keys(MathMLFragments).forEach((elName) => {
       mathEl.innerHTML = MathMLFragments[elName] 

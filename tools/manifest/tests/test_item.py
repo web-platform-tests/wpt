@@ -4,7 +4,7 @@ import json
 import pytest
 
 from ..manifest import Manifest
-# Prevent pytest from treating it as a test class.
+# Prevent pytest from treating TestharnessTest as a test class
 from ..item import TestharnessTest as HarnessTest
 from ..item import RefTest, item_types
 

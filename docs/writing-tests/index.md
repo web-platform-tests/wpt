@@ -27,6 +27,8 @@ There's also a load of [general guidelines](general-guidelines) that apply to al
    testharness
    visual
    wdspec
+   test-templates
+   github-intro
 ```
 
 ## Test Type

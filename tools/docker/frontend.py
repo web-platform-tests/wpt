@@ -14,7 +14,7 @@ def build(*args, **kwargs):
 
 def parser_run():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--rebuild", action="store_true", help="Force rebild of image")
+    parser.add_argument("--rebuild", action="store_true", help="Force rebuild of image")
     parser.add_argument("--checkout", action="store",
                         help="Revision to checkout in the image. "
                         "If this is not supplied we mount the wpt checkout on the host as "

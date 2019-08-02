@@ -19,38 +19,37 @@
   <body>
     <span>This tests the presence and functionality of features of the `ElementCSSInlineStyle` interface for MathMLElements</span>
     <math></math>
-  </body>
-  <script>
+    <script>
 
-    let mathEl = document.querySelector("math");
 
+    let mathEl = document.querySelector("math")
+   
     test(function() {
-      mathEl.style.backgroundColor = "green"
+      mathEl.style.backgroundColor = "lime"
         assert_equals(
           getComputedStyle(mathEl).backgroundColor,
           "rgb(0, 255, 0)",
           "The applied background should be green."
         );
-      }, `The <math> element style property should be present and be functional.`);
+      }, `The <math> element style property should be present and be functional.`)
       
       
-        
+    
     Object.keys(MathMLFragments).forEach((elName) => {
-      mathEl.innerHTML = MathMLFragments[elName]
-
+      mathEl.innerHTML = MathMLFragments[elName] 
+      
       test(function() {
-        let el = mathEl.firstElementChild
+        let el = FragmentHelper.element(mathEl)
         el.style.backgroundColor = "blue"
         
-        // guarantee that it isn't display: none somehow
-        el.style.display = "block"
         assert_equals(
           getComputedStyle(el).backgroundColor,
           "rgb(0, 0, 255)",
           "The applied background should be blue."
         );
-      }, `The ${elName}'s style property should be present and be functional.`);
+      }, `The ${elName}'s style property should be present and be functional.`)
     })
     
   </script>
+  </body>
 </html>

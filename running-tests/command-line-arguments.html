@@ -1036,7 +1036,8 @@ a different set of command-line arguments.</p>
                         <span class="p">[</span><span class="o">--</span><span class="n">sync</span><span class="o">-</span><span class="n">path</span> <span class="n">SYNC_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">remote_url</span> <span class="n">REMOTE_URL</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">branch</span> <span class="n">BRANCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rev</span> <span class="n">REV</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">patch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">patch</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">sync</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">full</span><span class="p">]</span>
-                        <span class="p">[</span><span class="o">--</span><span class="n">disable_intermittent</span> <span class="p">[</span><span class="n">DISABLE_INTERMITTENT</span><span class="p">]]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">intermittent</span> <span class="p">[</span><span class="n">DISABLE_INTERMITTENT</span><span class="p">]]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">update</span><span class="o">-</span><span class="n">intermittent</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">remove</span><span class="o">-</span><span class="n">intermittent</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">remove</span><span class="o">-</span><span class="n">obsolete</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">store</span><span class="o">-</span><span class="n">state</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">continue</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">abort</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="p">[</span><span class="n">EXCLUDE</span> <span class="p">[</span><span class="n">EXCLUDE</span> <span class="o">...</span><span class="p">]]]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="p">[</span><span class="n">INCLUDE</span> <span class="p">[</span><span class="n">INCLUDE</span> <span class="o">...</span><span class="p">]]]</span>
@@ -1124,9 +1125,21 @@ a different set of command-line arguments.</p>
 <p class="last">Default: False</p>
 </td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd>--disable_intermittent</kbd></td>
+<kbd>--disable-intermittent</kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Reason for disabling tests. When updating test results, disable tests that have inconsistent results across many runs with the given reason.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--update-intermittent</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Update test metadata with expected intermittent statuses.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--remove-intermittent</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Remove obsolete intermittent statuses from expected statuses.</p>
+<p class="last">Default: False</p>
+</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd>--no-remove-obsolete</kbd></td>
 </tr>

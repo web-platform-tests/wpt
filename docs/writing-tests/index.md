@@ -40,19 +40,19 @@ expectations:
   for tips on how to write great rendering tests. There are a few different
   ways to write rendering tests:
 
-  * [Reftests](reftests) should be used to test rendering and layout. They
+  * [Reftests](reftests) are great for testing rendering and layout. They
     consist of two or more pages with assertions as to whether they render
     identically or not.
 
-  * [Visual tests](visual) should be used for checking rendering where there is
-    a large number of conforming renderings such that reftests are impractical.
+  * [Visual tests](visual) are great for checking rendering where there is a
+    large number of conforming renderings such that reftests are impractical.
     They consist of a page that renders to final state at which point a
     screenshot can be taken and compared to an expected rendering for that user
     agent on that platform.
 
-* [testharness.js](testharness) tests should be used (where possible!) for
-  testing everything else. They are built with the testharness.js unit testing
-  framework, and consist of assertions written in JavaScript.
+* [testharness.js](testharness) tests can be used to test most everything else
+  (a few exceptions follow). They are built with the testharness.js unit
+  testing framework, and consist of assertions written in JavaScript.
 
 * [wdspec](wdspec) tests are written in Python using
   [pytest](https://docs.pytest.org/en/latest/) and test [the WebDriver browser

@@ -17,7 +17,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Rendering Test Guidelines" href="rendering.html" />
-    <link rel="prev" title="Manual Tests" href="manual.html" />
+    <link rel="prev" title="Writing a reftest" href="reftest-tutorial.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -39,7 +39,9 @@
 <p>Reftests are one of the primary tools for testing things relating to
 rendering; they are made up of the test and one or more other pages
 (“references”) with assertions as to whether they render identically
-or not.</p>
+or not. This page describes their aspects exhaustively; <a class="reference internal" href="reftest-tutorial.html"><span class="doc">the tutorial
+on writing a reftest</span></a> offers a more limited but
+grounded guide to the process.</p>
 <div class="section" id="how-to-run-reftests">
 <h2>How to Run Reftests<a class="headerlink" href="#how-to-run-reftests" title="Permalink to this headline">¶</a></h2>
 <p>Reftests can be run manually simply by opening the test and the
@@ -193,46 +195,6 @@ element works, it’s possible to construct a reftest for underlining
 a block element, by constructing a reference using underlines on a
 <code class="docutils literal notranslate"><span class="pre">&lt;span&gt;</span></code> that wraps all the content inside the block.</p>
 </div>
-<div class="section" id="example-reftests">
-<h2>Example Reftests<a class="headerlink" href="#example-reftests" title="Permalink to this headline">¶</a></h2>
-<p>This example follows the recommended approach in being a
-self-describing test as it has a simple statement on the page
-describing how it should render to pass the tests.</p>
-<div class="section" id="test-file">
-<h3>Test File<a class="headerlink" href="#test-file" title="Permalink to this headline">¶</a></h3>
-<p>This test verifies that a right-to-left rendering of <strong>SAW</strong> within a
-<code class="docutils literal notranslate"><span class="pre">&lt;bdo&gt;</span></code> element displays as <strong>WAS</strong>.</p>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>BDO element dir=rtl<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;help&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://html.spec.whatwg.org/#the-bdo-element&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;assert&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;BDO element&#39;s DIR content attribute renders corrently given value of &#39;rtl&#39;.&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;match&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;test-bdo-001.html&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Pass if you see WAS displayed below.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">bdo</span> <span class="na">dir</span><span class="o">=</span><span class="s">&quot;rtl&quot;</span><span class="p">&gt;</span>SAW<span class="p">&lt;/</span><span class="nt">bdo</span><span class="p">&gt;</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="reference-file">
-<h3>Reference File<a class="headerlink" href="#reference-file" title="Permalink to this headline">¶</a></h3>
-<p>The reference file must look exactly like the test file,
-except that the code behind it is different.</p>
-<ul class="simple">
-<li>All metadata is removed.</li>
-<li>The <code class="docutils literal notranslate"><span class="pre">title</span></code> need not match.</li>
-<li>The markup that created the actual test data is
-different: here, the same effect is created with
-very mundane, dependable technology.</li>
-</ul>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>HTML Reference File<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Pass if you see WAS displayed below.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>WAS<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
-</pre></div>
-</div>
-</div>
-</div>
 </div>
 
 
@@ -265,6 +227,7 @@ very mundane, dependable technology.</li>
 <li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
 <li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftest-tutorial.html">Writing a reftest</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Reftests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
@@ -288,7 +251,7 @@ very mundane, dependable technology.</li>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Writing Tests</a><ul>
-      <li>Previous: <a href="manual.html" title="previous chapter">Manual Tests</a></li>
+      <li>Previous: <a href="reftest-tutorial.html" title="previous chapter">Writing a reftest</a></li>
       <li>Next: <a href="rendering.html" title="next chapter">Rendering Test Guidelines</a></li>
   </ul></li>
   </ul></li>

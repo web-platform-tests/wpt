@@ -8,29 +8,35 @@
       href="https://mathml-refresh.github.io/mathml-core/#dom-and-javascript"
     />
     <style>
-        mi { background-color: red;  }
-        :focus { background-color: rgb(0, 255, 0); }
+      mi {
+        background-color: red;
+      }
+      :focus {
+        background-color: rgb(0, 255, 0);
+      }
     </style>
-    <meta name="assert" content="MathMLElements incorporate a functional HTMLOrForeignElement interface" />
+    <meta
+      name="assert"
+      content="MathMLElements incorporate a functional HTMLOrForeignElement interface"
+    />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-
   </head>
   <body tabindex="-1">
-    <span tabindex="-1">This tests the presence and functionality of features of `HTMLOrForeignElement` (currently `HTMLOrSVGElement`)</span>
-    <math
-      tabindex="-1"
-     >
+    <span tabindex="-1"
+      >This tests the presence and functionality of features of
+      `HTMLOrForeignElement` (currently `HTMLOrSVGElement`)</span
+    >
+    <math tabindex="-1">
       <mi>E</mi>
     </math>
   </body>
   <script>
-
     // spot check the functionality of several interfaces
     let el = document.querySelector("mi");
     let mathEl = document.querySelector("math");
 
-    // this really belongs in 
+    // this really belongs in
     // https://github.com/web-platform-tests/wpt/blob/master/html/dom/elements/global-attributes/dataset.html
     // it is here tentatively
     test(function() {
@@ -72,15 +78,12 @@
     }, "The dataset property should be present and be functional.");
 
     test(function() {
-      assert_equals(
-        mathEl.tabIndex,
-        -1
-      );
+      assert_equals(mathEl.tabIndex, -1);
     }, "MathML elements should have a tabIndex property");
 
     promise_test(function() {
       function focus() {
-        mathEl.focus();  
+        mathEl.focus();
         return Promise.resolve();
       }
 
@@ -89,11 +92,9 @@
           getComputedStyle(mathEl).backgroundColor,
           "rgb(0, 255, 0)",
           "MathML elements with tabindex=-1 should be programmatically focusable and apply :focus"
-        )
-      })
-
+        );
+      });
     }, "MathML elements should work with focus predictably");
-
 
     promise_test(function() {
       function blur() {
@@ -106,11 +107,8 @@
           getComputedStyle(mathEl).backgroundColor,
           "rgba(0, 0, 0, 0)",
           "MathML elements with tabindex=-1 be programmatically blur() able"
-        )
+        );
       });
     }, "MathML elements should work with blur predictably");
-
-
-
   </script>
 </html>

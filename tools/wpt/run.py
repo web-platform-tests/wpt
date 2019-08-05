@@ -251,9 +251,9 @@ Consider installing certutil via your OS package manager or directly.""")
         kwargs["extra_prefs"].append("media.navigator.streams.fake=true")
 
 
-class Fennec(BrowserSetup):
-    name = "fennec"
-    browser_cls = browser.Fennec
+class FirefoxAndroid(BrowserSetup):
+    name = "firefox_android"
+    browser_cls = browser.FirefoxAndroid
 
     def setup_kwargs(self, kwargs):
         pass
@@ -264,6 +264,13 @@ class Chrome(BrowserSetup):
     browser_cls = browser.Chrome
 
     def setup_kwargs(self, kwargs):
+        browser_channel = kwargs["browser_channel"]
+        if kwargs["binary"] is None:
+            binary = self.browser.find_binary(channel=browser_channel)
+            if binary:
+                kwargs["binary"] = binary
+            else:
+                raise WptrunError("Unable to locate Chrome binary")
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = self.browser.find_webdriver()
 
@@ -272,7 +279,10 @@ class Chrome(BrowserSetup):
 
                 if install:
                     logger.info("Downloading chromedriver")
-                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path, browser_binary=kwargs["binary"])
+                    webdriver_binary = self.browser.install_webdriver(
+                        dest=self.venv.bin_path,
+                        browser_binary=kwargs["binary"],
+                    )
             else:
                 logger.info("Using webdriver binary %s" % webdriver_binary)
 
@@ -280,8 +290,8 @@ class Chrome(BrowserSetup):
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
                 raise WptrunError("Unable to locate or install chromedriver binary")
-        if kwargs["browser_channel"] == "dev":
-            logger.info("Automatically turning on experimental features for Chrome Dev")
+        if browser_channel in ("dev", "canary"):
+            logger.info("Automatically turning on experimental features for Chrome Dev/Canary")
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
             # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
             kwargs["webdriver_args"].append("--disable-build-check")
@@ -292,6 +302,10 @@ class ChromeAndroid(BrowserSetup):
     browser_cls = browser.ChromeAndroid
 
     def setup_kwargs(self, kwargs):
+        browser_channel = kwargs["browser_channel"]
+        if kwargs["package_name"] is None:
+            kwargs["package_name"] = self.browser.find_binary(
+                channel=browser_channel)
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = self.browser.find_webdriver()
 
@@ -300,7 +314,10 @@ class ChromeAndroid(BrowserSetup):
 
                 if install:
                     logger.info("Downloading chromedriver")
-                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path)
+                    webdriver_binary = self.browser.install_webdriver(
+                        dest=self.venv.bin_path,
+                        browser_binary=kwargs["package_name"],
+                    )
             else:
                 logger.info("Using webdriver binary %s" % webdriver_binary)
 
@@ -308,6 +325,20 @@ class ChromeAndroid(BrowserSetup):
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
                 raise WptrunError("Unable to locate or install chromedriver binary")
+        if browser_channel in ("dev", "canary"):
+            logger.info("Automatically turning on experimental features for Chrome Dev/Canary")
+            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
+            # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
+            kwargs["webdriver_args"].append("--disable-build-check")
+
+
+class ChromeiOS(BrowserSetup):
+    name = "chrome_ios"
+    browser_cls = browser.ChromeiOS
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["webdriver_binary"] is None:
+            raise WptrunError("Unable to locate or install chromedriver binary")
 
 
 class Opera(BrowserSetup):
@@ -342,7 +373,7 @@ class EdgeChromium(BrowserSetup):
         if kwargs["binary"] is None:
             binary = self.browser.find_binary(channel=browser_channel)
             if binary:
-                kwargs["binary"] = self.browser.find_binary()
+                kwargs["binary"] = binary
             else:
                 raise WptrunError("Unable to locate Edge binary")
         if kwargs["webdriver_binary"] is None:
@@ -501,10 +532,11 @@ class Epiphany(BrowserSetup):
 
 
 product_setup = {
-    "fennec": Fennec,
     "firefox": Firefox,
+    "firefox_android": FirefoxAndroid,
     "chrome": Chrome,
     "chrome_android": ChromeAndroid,
+    "chrome_ios": ChromeiOS,
     "edgechromium": EdgeChromium,
     "edge": Edge,
     "edge_webdriver": EdgeWebDriver,
@@ -606,8 +638,10 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
     # Only update browser_version if it was not given as a command line
     # argument, so that it can be overridden on the command line.
     if not kwargs["browser_version"]:
-        kwargs["browser_version"] = setup_cls.browser.version(binary=kwargs.get("binary"),
-                                                              webdriver_binary=kwargs.get("webdriver_binary"))
+        kwargs["browser_version"] = setup_cls.browser.version(
+            binary=kwargs.get("binary") or kwargs.get("package_name"),
+            webdriver_binary=kwargs.get("webdriver_binary"),
+        )
 
     return kwargs
 
@@ -651,7 +685,7 @@ def main():
 
 if __name__ == "__main__":
     import pdb
-    from tools import localpaths  # noqa: flake8
+    from tools import localpaths  # noqa: F401
     try:
         main()
     except Exception:

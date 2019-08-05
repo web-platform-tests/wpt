@@ -24,11 +24,12 @@ module global scope.
 
 product_list = ["chrome",
                 "chrome_android",
+                "chrome_ios",
                 "edgechromium",
                 "edge",
                 "edge_webdriver",
-                "fennec",
                 "firefox",
+                "firefox_android",
                 "ie",
                 "safari",
                 "sauce",

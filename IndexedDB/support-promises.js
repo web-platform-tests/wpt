@@ -69,6 +69,7 @@ function migrateDatabase(testCase, newVersion, migrationCallback) {
 // versionchange transaction is aborted, the promise resolves to an error.
 function migrateNamedDatabase(
     testCase, databaseName, newVersion, migrationCallback) {
+    console.log("migrateNamedDatabase");
   // We cannot use eventWatcher.wait_for('upgradeneeded') here, because
   // the versionchange transaction auto-commits before the Promise's then
   // callback gets called.
@@ -79,6 +80,7 @@ function migrateNamedDatabase(
       const transaction = event.target.transaction;
       let shouldBeAborted = false;
       let requestEventPromise = null;
+      console.log("migrateNamedDatabase: upgrading");
 
       // We wrap IDBTransaction.abort so we can set up the correct event
       // listeners and expectations if the test chooses to abort the
@@ -104,6 +106,7 @@ function migrateNamedDatabase(
       // If migration callback returns a promise, we'll wait for it to resolve.
       // This simplifies some tests.
       const callbackResult = migrationCallback(database, transaction, request);
+      console.log("migrateNamedDatabase: got callback result from upgrade");
       if (!shouldBeAborted) {
         request.onerror = null;
         request.onsuccess = null;
@@ -150,8 +153,10 @@ function createDatabase(testCase, setupCallback) {
 // Returns a promise that resolves to an IndexedDB database. The caller should
 // close the database.
 function createNamedDatabase(testCase, databaseName, setupCallback) {
+  console.log("createNamedDatabase: about to delete database " + databaseName);
   const request = indexedDB.deleteDatabase(databaseName);
   return promiseForRequest(testCase, request).then(() => {
+    console.log("createNamedDatabase: deleted database");
     testCase.add_cleanup(() => { indexedDB.deleteDatabase(databaseName); });
     return migrateNamedDatabase(testCase, databaseName, 1, setupCallback)
   });

@@ -31,8 +31,9 @@ css/ directory, regardless of where they are in the directory structure.
 ### HTTPS
 
 By default, tests are served over plain HTTP. If a test requires HTTPS
-it must be given a filename containing `.serviceworker` or `.https` before the extension,
-e.g. `test-secure.https.html`. For more details see the documentation
+it must be given a filename containing `.https` before the extension,
+e.g., `test-secure.https.html`, or be the generated service worker test
+of a `.https`-less `.any` test. For more details see the documentation
 on [file names][file-name-flags].
 
 #### Support Files

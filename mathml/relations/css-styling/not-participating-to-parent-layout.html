@@ -7,8 +7,9 @@
 <meta name="assert" content="Verify that display: none and out-of-flow positioned elements do not participate to layout of their parent.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/mathml/support/mathml-fragments.js"></script>
+<script src="/mathml/support/feature-detection.js"></script>
 <script src="/mathml/support/layout-comparison.js"></script>
+<script src="/mathml/support/mathml-fragments.js"></script>
 <script>
   var epsilon = 1;
 
@@ -47,10 +48,14 @@
             var epsilon = 1;
 
             test(function() {
+                // FIXME(fwang): Feature detection should be done per-tag.
+                assert_true(MathMLFeatureDetection.has_mspace());
                 assert_approx_equals(elementContainerWidth, referenceContainerWidth, epsilon);
             }, `${tag} preferred width calculation is not affected by children with "${style}" style`);
 
             test(function() {
+                // FIXME(fwang): Feature detection should be done per-tag.
+                assert_true(MathMLFeatureDetection.has_mspace());
                 compareLayout(element, reference, epsilon);
             }, `${tag} layout is not affected by children with "${style}" style`);
 

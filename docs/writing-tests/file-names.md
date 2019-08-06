@@ -27,6 +27,7 @@ themselves precede any test type flag, but are otherwise unordered.
 
 
 `.https`
+`.serviceworker`
  : Indicates that a test is loaded over HTTPS.
 
 `.sub`

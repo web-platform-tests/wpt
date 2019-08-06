@@ -16,8 +16,8 @@ async_test(t => {
 
   const origins = get_host_info();
   const frame = document.createElement("iframe");
-  const nothingPath = new URL("resources/nothing.txt", window.location).pathname;
-  const nothingSameOriginPath = new URL("resources/nothing-same-origin-corp.txt", window.location).pathname;
+  const nothingCrossOriginCORP = new URL("resources/nothing-cross-origin-corp.txt", window.location).pathname;
+  const nothingSameOriginCORP = new URL("resources/nothing-same-origin-corp.txt", window.location).pathname;
   frame.sandbox = "allow-scripts";
   frame.srcdoc = `<script>
 let i = 0;
@@ -34,9 +34,9 @@ function report(token, success) {
   }
 }
 fetch("/common/blank.html", { mode: "no-cors" }).then(() => report("sameOriginWithoutCORP", false), () => report("sameOriginWithoutCORP", true));
-fetch("${nothingSameOriginPath}", { mode: "no-cors" }).then(() => report("sameOriginWithSameOriginCORP", false), () => report("sameOriginWithSameOriginCORP", true));
-fetch("${nothingPath}", { mode: "no-cors" }).then(() => report("sameOriginWithCrossOriginCORP", true), () => report("sameOriginWithCrossOriginCORP", false));
-fetch("${origins.HTTPS_NOTSAMESITE_ORIGIN}${nothingPath}", { mode: "no-cors" }).then(() => report("crossOriginWithCrossOriginCORP", true), () => report("crossOriginWithCrossOriginCORP", false));
+fetch("${nothingSameOriginCORP}", { mode: "no-cors" }).then(() => report("sameOriginWithSameOriginCORP", false), () => report("sameOriginWithSameOriginCORP", true));
+fetch("${nothingCrossOriginCORP}", { mode: "no-cors" }).then(() => report("sameOriginWithCrossOriginCORP", true), () => report("sameOriginWithCrossOriginCORP", false));
+fetch("${origins.HTTPS_NOTSAMESITE_ORIGIN}${nothingCrossOriginCORP}", { mode: "no-cors" }).then(() => report("crossOriginWithCrossOriginCORP", true), () => report("crossOriginWithCrossOriginCORP", false));
 <\/script>`;
   document.body.append(frame);
 }, "Cross-Origin-Embedder-Policy and sandbox");

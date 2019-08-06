@@ -116,6 +116,11 @@ async_test(t => {
     }
 
     const win = window.open(`resources/navigate-require-corp.sub.html?channelName=${bc.name}${clearOpener}&to=navigate-none.sub.html?channelName=${bc2.name}`, "_blank", noopener);
+    if (name === "noopener") {
+      assert_equals(win, null);
+    } else {
+      t.add_cleanup(() => win.close());
+    }
   }, `"require-corp" top-level (${title}): navigating to "none" should succeed`);
 });
 
@@ -125,6 +130,6 @@ promise_test(async t => {
 }, `"require-corp" top-level: fetch() to CORP: cross-origin response should succeed`);
 
 promise_test(t => {
-  promise_rejects(t, new TypeError(), fetch(get_host_info().HTTPS_REMOTE_ORIGIN+"/common/blank.html", {mode: "no-cors"}));
+  return promise_rejects(t, new TypeError(), fetch(get_host_info().HTTPS_REMOTE_ORIGIN+"/common/blank.html", {mode: "no-cors"}));
 }, `"require-corp" top-level: fetch() to response without CORP should fail`);
 </script>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>File Name Flags &#8212; web-platform-tests  documentation</title>
+    <title>Command-line utility scripts &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -16,8 +16,8 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Writing H2 Tests" href="h2tests.html" />
-    <link rel="prev" title="CSS User Stylesheets" href="css-user-styles.html" />
+    <link rel="next" title="Visual Tests" href="visual.html" />
+    <link rel="prev" title="testharness.js API" href="testharness-api.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -34,54 +34,28 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="file-name-flags">
-<h1>File Name Flags<a class="headerlink" href="#file-name-flags" title="Permalink to this headline">¶</a></h1>
-<p>The test filename is significant in determining the type of test it
-contains, and enabling specific optional features. This page documents
-the various flags available and their meaning.</p>
-<div class="section" id="test-type">
-<h2>Test Type<a class="headerlink" href="#test-type" title="Permalink to this headline">¶</a></h2>
-<p>These flags must be the last element in the filename before the
-extension e.g. <code class="docutils literal notranslate"><span class="pre">foo-manual.html</span></code> will indicate a manual test, but
-<code class="docutils literal notranslate"><span class="pre">foo-manual-other.html</span></code> will not. Unlike test features, test types
-are mutually exclusive.</p>
-<p><code class="docutils literal notranslate"><span class="pre">-manual</span></code>
-: Indicates that a test is a non-automated test.</p>
-<p><code class="docutils literal notranslate"><span class="pre">-visual</span></code>
-: Indicates that a file is a visual test.</p>
-</div>
-<div class="section" id="test-features">
-<h2>Test Features<a class="headerlink" href="#test-features" title="Permalink to this headline">¶</a></h2>
-<p>These flags are preceded by a <code class="docutils literal notranslate"><span class="pre">.</span></code> in the filename, and must
-themselves precede any test type flag, but are otherwise unordered.</p>
-<p><code class="docutils literal notranslate"><span class="pre">.https</span></code>
-: Indicates that a test is loaded over HTTPS.</p>
-<p><code class="docutils literal notranslate"><span class="pre">.sub</span></code>
-: Indicates that a test uses the <a class="reference external" href="https://wptserve.readthedocs.io/en/latest/pipes.html#sub">server-side substitution</a>
-feature.</p>
-<p><code class="docutils literal notranslate"><span class="pre">.window</span></code>
-: (js files only) Indicates that the file generates a test in which
-it is run in a Window environment.</p>
-<p><code class="docutils literal notranslate"><span class="pre">.worker</span></code>
-: (js files only) Indicates that the file generates a test in which
-it is run in a dedicated worker environment.</p>
-<p><code class="docutils literal notranslate"><span class="pre">.any</span></code>
-: (js files only) Indicates that the file generates tests in which it
-is <a class="reference internal" href="testharness.html"><span class="doc">run in multiple scopes</span></a>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">.optional</span></code>
-: Indicates that a test makes assertions about optional behavior in a
-specification, typically marked by the <a class="reference external" href="https://tools.ietf.org/html/rfc2119">RFC 2119</a> “MAY” or “OPTIONAL”
-keywords. This flag should not be used for “SHOULD”; such requirements
-can be tested with regular tests, like “MUST”.</p>
-<p><code class="docutils literal notranslate"><span class="pre">.tentative</span></code>
-: Indicates that a test makes assertions not yet required by any specification,
-or in contradiction to some specification. This is useful when implementation
-experience is needed to inform the specification. It should be apparent in
-context why the test is tentative and what needs to be resolved to make it
-non-tentative.</p>
-<p>It’s preferable that <code class="docutils literal notranslate"><span class="pre">.window</span></code>, <code class="docutils literal notranslate"><span class="pre">.worker</span></code>, and <code class="docutils literal notranslate"><span class="pre">.any</span></code> are immediately followed
-by their final <code class="docutils literal notranslate"><span class="pre">.js</span></code> extension.</p>
-</div>
+  <div class="section" id="command-line-utility-scripts">
+<h1>Command-line utility scripts<a class="headerlink" href="#command-line-utility-scripts" title="Permalink to this headline">¶</a></h1>
+<p>Sometimes you may want to add a script to the repository that’s meant to be
+used from the command line, not from a browser (e.g., a script for generating
+test files). If you want to ensure (e.g., for security reasons) that such
+scripts won’t be handled by the HTTP server, but will instead only be usable
+from the command line, then place them in either:</p>
+<ul class="simple">
+<li>the <code class="docutils literal notranslate"><span class="pre">tools</span></code> subdir at the root of the repository, or</li>
+<li>the <code class="docutils literal notranslate"><span class="pre">tools</span></code> subdir at the root of any top-level directory in the repository
+which contains the tests the script is meant to be used with</li>
+</ul>
+<p>Any files in those <code class="docutils literal notranslate"><span class="pre">tools</span></code> directories won’t be handled by the HTTP server;
+instead the server will return a 404 if a user navigates to the URL for a file
+within them.</p>
+<p>If you want to add a script for use with a particular set of tests but there
+isn’t yet any <code class="docutils literal notranslate"><span class="pre">tools</span></code> subdir at the root of a top-level directory in the
+repository containing those tests, you can create a <code class="docutils literal notranslate"><span class="pre">tools</span></code> subdir at the root
+of that top-level directory and place your scripts there.</p>
+<p>For example, if you wanted to add a script for use with tests in the
+<code class="docutils literal notranslate"><span class="pre">notifications</span></code> directory, create the <code class="docutils literal notranslate"><span class="pre">notifications/tools</span></code> subdir and put your
+script there.</p>
 </div>
 
 
@@ -110,7 +84,7 @@ by their final <code class="docutils literal notranslate"><span class="pre">.js<
 <li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
 <li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
@@ -122,7 +96,7 @@ by their final <code class="docutils literal notranslate"><span class="pre">.js<
 <li class="toctree-l2"><a class="reference internal" href="testdriver.html">testdriver.js Automation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testdriver-tutorial.html">testdriver.js Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tools.html">Command-line utility scripts</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Command-line utility scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
@@ -139,8 +113,8 @@ by their final <code class="docutils literal notranslate"><span class="pre">.js<
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Writing Tests</a><ul>
-      <li>Previous: <a href="css-user-styles.html" title="previous chapter">CSS User Stylesheets</a></li>
-      <li>Next: <a href="h2tests.html" title="next chapter">Writing H2 Tests</a></li>
+      <li>Previous: <a href="testharness-api.html" title="previous chapter">testharness.js API</a></li>
+      <li>Next: <a href="visual.html" title="next chapter">Visual Tests</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -177,7 +151,7 @@ by their final <code class="docutils literal notranslate"><span class="pre">.js<
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/writing-tests/file-names.md.txt"
+      <a href="../_sources/writing-tests/tools.md.txt"
           rel="nofollow">Page source</a>
     </div>
 

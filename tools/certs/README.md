@@ -20,12 +20,12 @@ outside of tests, since it may be used to generate fake
 certificates. For browsers that use the OS certificate store, tests
 should therefore not be run manually outside a dedicated OS instance
 (e.g. a VM). To avoid this problem when running tests in Chrome or
-Firefox use `wpt run`, which disables certificate checks and therefore
+Firefox, use `wpt run`, which disables certificate checks and therefore
 doesn't require the root CA to be trusted.
 
 ## Regenerating certificates
 
-If you wish to generate new certificates for any reason it's possible to use
+If you wish to generate new certificates for any reason, it's possible to use
 OpenSSL when starting the server, or starting a test run, by providing the
 `--ssl-type=openssl` argument to the `wpt serve` or `wpt run` commands.
 
@@ -54,7 +54,7 @@ If you forget to do this part, you will most likely see a 'File Not Found'
 error when you start wptserve.
 
 Finally, set the path value in the server configuration file to the
-default OpenSSL configuration file location. To do this create a file
+default OpenSSL configuration file location. To do this, create a file
 called `config.json`.  Then add the OpenSSL configuration below,
 ensuring that the key `ssl/openssl/base_conf_path` has a value that is
 the path to the OpenSSL config file (typically this will be

@@ -5,7 +5,9 @@
     <title>Blank Page</title>
     <script>
       window.onload = function(event) {
-        console.log("Loaded ", window.location.href);
+        // This is needed to ensure the onload event fires when this page is
+        // opened as a popup.
+        // See https://github.com/web-platform-tests/wpt/pull/18157
       };
     </script>
   </head>

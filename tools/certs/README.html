@@ -1,0 +1,187 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>WPT Test Certificates &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Writing Tests" href="../../writing-tests/index.html" />
+    <link rel="prev" title="Writing Your Own Runner" href="../../running-tests/custom-runner.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="wpt-test-certificates">
+<h1>WPT Test Certificates<a class="headerlink" href="#wpt-test-certificates" title="Permalink to this headline">¶</a></h1>
+<p>The web-platform-tests project maintains a set of SSL certificates to allow
+contributors to execute tests requiring HTTPS locally.</p>
+<div class="section" id="trusting-root-ca">
+<h2>Trusting Root CA<a class="headerlink" href="#trusting-root-ca" title="Permalink to this headline">¶</a></h2>
+<p>To prevent browser SSL warnings when running HTTPS tests locally, the
+web-platform-tests Root CA file <code class="docutils literal notranslate"><span class="pre">cacert.pem</span></code> in the <code class="docutils literal notranslate"><span class="pre">tools/certs/</span></code> directory
+must be added as a trusted certificate in your OS/browser.</p>
+<p>For Firefox, go to about:preferences and search for “certificates”.</p>
+<p>For browsers that use the Certificate Authorities of the underlying OS, such as
+Chrome and Safari, you need to adjust the OS. For macOS, go to Keychain Access
+and add the certificate under <strong>login</strong>.</p>
+<p><strong>NOTE</strong>: The CA should not be installed in any browser profile used
+outside of tests, since it may be used to generate fake
+certificates. For browsers that use the OS certificate store, tests
+should therefore not be run manually outside a dedicated OS instance
+(e.g. a VM). To avoid this problem when running tests in Chrome or
+Firefox, use <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">run</span></code>, which disables certificate checks and therefore
+doesn’t require the root CA to be trusted.</p>
+</div>
+<div class="section" id="regenerating-certificates">
+<h2>Regenerating certificates<a class="headerlink" href="#regenerating-certificates" title="Permalink to this headline">¶</a></h2>
+<p>If you wish to generate new certificates for any reason, it’s possible to use
+OpenSSL when starting the server, or starting a test run, by providing the
+<code class="docutils literal notranslate"><span class="pre">--ssl-type=openssl</span></code> argument to the <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">serve</span></code> or <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">run</span></code> commands.</p>
+<p>If you installed OpenSSL in such a way that running <code class="docutils literal notranslate"><span class="pre">openssl</span></code> at a
+command line doesn’t work, you also need to adjust the path to the
+OpenSSL binary. This can be done by adding a section to <code class="docutils literal notranslate"><span class="pre">config.json</span></code>
+like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;ssl&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;openssl&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;binary&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/openssl&quot;</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>On Windows using OpenSSL typically requires installing an OpenSSL distribution.
+<a class="reference external" href="https://slproweb.com/products/Win32OpenSSL.html">Shining Light</a>
+provide a convenient installer that is known to work, but requires a
+little extra setup, i.e.:</p>
+<p>Run the installer for Win32_OpenSSL_v1.1.0b (30MB). During installation,
+change the default location for where to Copy OpenSSL Dlls from the
+System directory to the /bin directory.</p>
+<p>After installation, ensure that the path to OpenSSL (typically,
+this will be <code class="docutils literal notranslate"><span class="pre">C:\OpenSSL-Win32\bin</span></code>) is in your <code class="docutils literal notranslate"><span class="pre">%Path%</span></code>
+<a class="reference external" href="http://www.computerhope.com/issues/ch000549.htm">Environment Variable</a>.
+If you forget to do this part, you will most likely see a ‘File Not Found’
+error when you start wptserve.</p>
+<p>Finally, set the path value in the server configuration file to the
+default OpenSSL configuration file location. To do this, create a file
+called <code class="docutils literal notranslate"><span class="pre">config.json</span></code>.  Then add the OpenSSL configuration below,
+ensuring that the key <code class="docutils literal notranslate"><span class="pre">ssl/openssl/base_conf_path</span></code> has a value that is
+the path to the OpenSSL config file (typically this will be
+<code class="docutils literal notranslate"><span class="pre">C:\\OpenSSL-Win32\\bin\\openssl.cfg</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;ssl&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;openssl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;encrypt_after_connect&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+    <span class="s2">&quot;openssl&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;openssl_binary&quot;</span><span class="p">:</span> <span class="s2">&quot;openssl&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;base_path: &quot;</span><span class="n">_certs</span><span class="s2">&quot;,</span>
+      <span class="s2">&quot;force_regenerate&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s2">&quot;base_conf_path&quot;</span><span class="p">:</span> <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">OpenSSL-Win32</span><span class="se">\\</span><span class="s2">bin</span><span class="se">\\</span><span class="s2">openssl.cfg&quot;</span>
+    <span class="p">},</span>
+  <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../test-suite-design.html">Test Suite Design</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../running-tests/index.html">Running Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../running-tests/from-web.html">Running Tests from the Web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../running-tests/from-local-system.html">Running Tests from the Local System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../running-tests/custom-runner.html">Writing Your Own Runner</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">WPT Test Certificates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../admin/index.html">Project Administration</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../running-tests/index.html">Running Tests</a><ul>
+      <li>Previous: <a href="../../running-tests/custom-runner.html" title="previous chapter">Writing Your Own Runner</a></li>
+      <li>Next: <a href="../../writing-tests/index.html" title="next chapter">Writing Tests</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/tools/certs/README.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

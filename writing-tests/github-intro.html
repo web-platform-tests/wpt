@@ -16,8 +16,8 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Reverting Changes" href="reverting.html" />
-    <link rel="prev" title="Appendices" href="index.html" />
+    <link rel="next" title="Reviewing Tests" href="../reviewing-tests/index.html" />
+    <link rel="prev" title="Test Templates" href="test-templates.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -142,9 +142,9 @@ local repository first fetch them:</p>
 </div>
 <div class="section" id="configure-your-environment">
 <h2>Configure your environment<a class="headerlink" href="#configure-your-environment" title="Permalink to this headline">¶</a></h2>
-<p>If all you intend to do is to load <a class="reference internal" href="../writing-tests/manual.html"><span class="doc">manual tests</span></a> or <a class="reference internal" href="../writing-tests/reftests.html"><span class="doc">ref tests</span></a> from your local file system,
+<p>If all you intend to do is to load <a class="reference internal" href="manual.html"><span class="doc">manual tests</span></a> or <a class="reference internal" href="reftests.html"><span class="doc">ref tests</span></a> from your local file system,
 the above setup should be sufficient.
-But many tests (and in particular, all <a class="reference internal" href="../writing-tests/testharness.html"><span class="doc">testharness.js tests</span></a>) require a local web server.</p>
+But many tests (and in particular, all <a class="reference internal" href="testharness.html"><span class="doc">testharness.js tests</span></a>) require a local web server.</p>
 <p>See <a class="reference internal" href="../running-tests/from-local-system.html"><span class="doc">Local Setup</span></a> for more information.</p>
 </div>
 <div class="section" id="branch">
@@ -223,7 +223,7 @@ of the repository is located.</li>
 <li>Run <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">lint</span></code></li>
 <li>Fix any mistake it reports and <a class="reference external" href="#commit">commit</a> again.</li>
 </ol>
-<p>For more details, see the <a class="reference internal" href="../writing-tests/lint-tool.html"><span class="doc">documentation about the lint tool</span></a>.</p>
+<p>For more details, see the <a class="reference internal" href="lint-tool.html"><span class="doc">documentation about the lint tool</span></a>.</p>
 </div>
 <div class="section" id="submit">
 <h2>Submit<a class="headerlink" href="#submit" title="Permalink to this headline">¶</a></h2>
@@ -352,24 +352,44 @@ is a free digital resource that can help you learn more.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../test-suite-design.html">Test Suite Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../writing-tests/index.html">Writing Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Appendices</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Introduction to GitHub</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reverting.html">Reverting Changes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftest-tutorial.html">Writing a reftest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testdriver.html">testdriver.js Automation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testdriver-tutorial.html">testdriver.js Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html">Command-line utility scripts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test-templates.html">Test Templates</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Introduction to GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submitting-tests">Submitting Tests</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Appendices</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Appendices</a></li>
-      <li>Next: <a href="reverting.html" title="next chapter">Reverting Changes</a></li>
+  <li><a href="index.html">Writing Tests</a><ul>
+      <li>Previous: <a href="test-templates.html" title="previous chapter">Test Templates</a></li>
+      <li>Next: <a href="../reviewing-tests/index.html" title="next chapter">Reviewing Tests</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -406,7 +426,7 @@ is a free digital resource that can help you learn more.</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/appendix/github-intro.md.txt"
+      <a href="../_sources/writing-tests/github-intro.md.txt"
           rel="nofollow">Page source</a>
     </div>
 

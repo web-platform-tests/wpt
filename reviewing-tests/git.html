@@ -16,7 +16,7 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Project Administration" href="../admin/index.html" />
+    <link rel="next" title="Reverting Changes" href="reverting.html" />
     <link rel="prev" title="Email Filters" href="email.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -73,8 +73,8 @@ and your only option would be to commit to a new branch, creating a new PR.</em>
 <div class="section" id="the-normal-way">
 <h2>The Normal Way<a class="headerlink" href="#the-normal-way" title="Permalink to this headline">¶</a></h2>
 <p>This is how to import the Pull Request’s branch into your existing local
-checkout of the repository. If you don’t have one, go <a class="reference external" href="../appendix/github-intro.html#fork-the-test-repository">fork</a>,
-<a class="reference external" href="../appendix/github-intro.html#clone">clone</a>, and <a class="reference external" href="../appendix/github-intro.html#configure-remote-upstream">configure</a> it.</p>
+checkout of the repository. If you don’t have one, go <a class="reference external" href="../writing-tests/github-intro.html#fork-the-test-repository">fork</a>,
+<a class="reference external" href="../writing-tests/github-intro.html#clone">clone</a>, and <a class="reference external" href="../writing-tests/github-intro.html#configure-remote-upstream">configure</a> it.</p>
 <ol>
 <li><p class="first">Move into your local clone: <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">wherever-you-put-your-repo</span></code></p>
 </li>
@@ -90,7 +90,7 @@ checkout of the repository. If you don’t have one, go <a class="reference exte
 <p>If all you meant to do was reviewing files locally, you’re all set.
 If you wish to make changes to the PR branch:</p>
 <ol>
-<li><p class="first">Make changes and <a class="reference external" href="../appendix/github-intro.html#commit">commit</a> normally</p>
+<li><p class="first">Make changes and <a class="reference external" href="../writing-tests/github-intro.html#commit">commit</a> normally</p>
 </li>
 <li><p class="first">Push your changes upstream: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">&lt;author-id&gt;</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code></p>
 <p><em>Note: If the PR predates the introduction of this feature by Github,
@@ -108,11 +108,11 @@ this will not work, and you will need to use the alternative described below.</e
 <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span> <span class="pre">&lt;your-new-branch&gt;</span> <span class="pre">master</span> <span class="pre">&amp;&amp;</span> <span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">&lt;your-new-branch&gt;</span> <span class="pre">&amp;&amp;</span> <span class="pre">git</span> <span class="pre">merge</span> <span class="pre">&lt;name-of-the-PR-branch&gt;</span></code></li>
 </ol>
 </li>
-<li><p class="first">Make changes and <a class="reference external" href="../appendix/github-intro.html#commit">commit</a> normally</p>
+<li><p class="first">Make changes and <a class="reference external" href="../writing-tests/github-intro.html#commit">commit</a> normally</p>
 </li>
 <li><p class="first">Push your changes to <strong>your</strong> repo: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">&lt;your-new-branch&gt;</span></code></p>
 </li>
-<li><p class="first">Go to the Github Web UI to <a class="reference external" href="../appendix/github-intro.html#submit">submit a new Pull Request</a>.</p>
+<li><p class="first">Go to the Github Web UI to <a class="reference external" href="../writing-tests/github-intro.html#submit">submit a new Pull Request</a>.</p>
 <p><em>Note: You should also close the original pull request.</em></p>
 </li>
 </ol>
@@ -150,11 +150,11 @@ you may also discard your connection to their repo:
 <li class="toctree-l2"><a class="reference internal" href="checklist.html">Review Checklist</a></li>
 <li class="toctree-l2"><a class="reference internal" href="email.html">Email Filters</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Working with Pull Requests as a reviewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reverting.html">Reverting Changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#test-review-policy">Test Review Policy</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendices</a></li>
 </ul>
 
 <div class="relations">
@@ -163,7 +163,7 @@ you may also discard your connection to their repo:
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Reviewing Tests</a><ul>
       <li>Previous: <a href="email.html" title="previous chapter">Email Filters</a></li>
-      <li>Next: <a href="../admin/index.html" title="next chapter">Project Administration</a></li>
+      <li>Next: <a href="reverting.html" title="next chapter">Reverting Changes</a></li>
   </ul></li>
   </ul></li>
 </ul>

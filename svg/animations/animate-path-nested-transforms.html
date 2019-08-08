@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<meta charset="utf-8">
+<title>test to determine whether auto-rotate animateMotion path animations pre-muliply or post-multiply animation transform matrix</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/SVGAnimationTestCase-testharness.js"></script>
+
+<svg>
+</svg>
+
+<script>
+var rootSVGElement = document.querySelector("svg");
+var epsilon = 1.0;
+
+rootSVGElement.setAttribute("width", 800)
+
+var g = createSVGElement("g")
+g.setAttribute("id", "g");
+g.setAttribute("transform", "translate(300, 30)")
+
+var rect = createSVGElement("rect")
+rect.setAttribute("id", "rect")
+rect.setAttribute("width", "40")
+rect.setAttribute("height", "40")
+rect.setAttribute("fill", "green")
+rect.setAttribute("onclick", "executeTest()")
+g.appendChild(rect)
+
+var animateMotion = createSVGElement("animateMotion")
+animateMotion.setAttribute("id", "animation")
+animateMotion.setAttribute("dur", "40s")
+animateMotion.setAttribute("repeatCount", "1")
+animateMotion.setAttribute("rotate", "auto")
+animateMotion.setAttribute("path", "M 100,250 C 100,50 400,50 400,250")
+animateMotion.setAttribute("begin", "0s")
+g.appendChild(animateMotion)
+rootSVGElement.appendChild(g)
+
+function startSample() {
+    assert_approx_equals(rootSVGElement.getBBox().x, 131, epsilon);
+    assert_approx_equals(rootSVGElement.getBBox().y, -90, epsilon);
+}
+
+function endSample() {
+    assert_approx_equals(rootSVGElement.getBBox().x, 331, epsilon);
+    assert_approx_equals(rootSVGElement.getBBox().y, 550, epsilon);
+}
+
+smil_async_test((t) => {
+    const expectedValues = [
+        ["animation", 0.001, startSample],
+        ["animation", 39.999, endSample]
+    ];
+
+    runAnimationTest(t, expectedValues);
+});
+
+window.clickX = 310;
+window.clickY = 40;
+
+</script>

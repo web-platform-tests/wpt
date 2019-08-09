@@ -52,9 +52,8 @@ requests.  If you are interested in receiving notifications of proposed
 changes to tests in a given directory, feel free to add yourself to the
 META.yml file. Anyone with expertise in the specification under test can
 approve a pull request.  In particular, if a test change has already
-been adequately reviewed "upstream" in another repository, it can be
-pushed here without any further review by supplying a link to the
-upstream review.
+been accepted in a trusted fork of WPT, it can be pushed here without any
+further review by supplying a link to the external review.
 
 ## Finding contributions to review
 

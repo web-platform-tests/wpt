@@ -29,7 +29,8 @@ the filesystem, and is preferred for larger specifications.
 For example, tests in HTML for "The History interface" are located in
 `html/browsers/history/the-history-interface/`.
 
-Various resources that tests depend on are in `common`, `images`, and `fonts`.
+Various resources that tests depend on are in `common`, `images`, `fonts`,
+`media`, and `resources`.
 
 ## Test Types
 

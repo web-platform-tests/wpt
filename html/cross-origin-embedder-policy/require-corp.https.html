@@ -9,8 +9,11 @@
 <script>
 async_test(t => {
   const frame = document.createElement("iframe");
+  t.add_cleanup(() => frame.remove());
   t.step_timeout(() => {
-    // Make sure the iframe didn't load.
+    // Make sure the iframe didn't load. See https://github.com/whatwg/html/issues/125 for why a
+    // timeout is used here. Long term all network error handling should be similar and have a
+    // reliable event.
     assert_equals(frame.contentDocument, null);
     t.done();
   }, 500);
@@ -21,6 +24,7 @@ async_test(t => {
 
 async_test(t => {
   const frame = document.createElement("iframe");
+  t.add_cleanup(() => frame.remove());
   const bc = new BroadcastChannel(token());
   bc.onmessage = t.step_func((event) => {
     assert_not_equals(frame.contentDocument, null);
@@ -31,7 +35,6 @@ async_test(t => {
       t.done();
     }, 500);
   });
-
   frame.src = `resources/navigate-require-corp.sub.html?channelName=${bc.name}&to=/common/blank.html`;
   document.body.append(frame);
   assert_equals(frame.contentDocument.body.localName, "body");
@@ -125,7 +128,7 @@ async_test(t => {
 });
 
 promise_test(async t => {
-  const response = await fetch(get_host_info().HTTPS_REMOTE_ORIGIN+"/html/cross-origin-embedder-policy/resources/nothing.txt", {mode: "no-cors"});
+  const response = await fetch(get_host_info().HTTPS_REMOTE_ORIGIN+"/html/cross-origin-embedder-policy/resources/nothing-cross-origin-corp.txt", {mode: "no-cors"});
   assert_equals(response.type, "opaque");
 }, `"require-corp" top-level: fetch() to CORP: cross-origin response should succeed`);
 

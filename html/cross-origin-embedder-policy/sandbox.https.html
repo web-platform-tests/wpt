@@ -20,23 +20,20 @@ async_test(t => {
   const nothingSameOriginCORP = new URL("resources/nothing-same-origin-corp.txt", window.location).pathname;
   frame.sandbox = "allow-scripts";
   frame.srcdoc = `<script>
-let i = 0;
 const data = { sameOriginWithoutCORP: false,
                sameOriginWithSameOriginCORP: false,
                sameOriginWithCrossOriginCORP: false,
                crossOriginWithCrossOriginCORP: false,
                origin: self.origin };
-function report(token, success) {
-  i++;
-  data[token] = success;
-  if (i == 4) {
-    parent.postMessage(data, "*");
-  }
+function record(promise, token, expectation) {
+  return promise.then(() => data[token] = expectation, () => data[token] = !expectation);
 }
-fetch("/common/blank.html", { mode: "no-cors" }).then(() => report("sameOriginWithoutCORP", false), () => report("sameOriginWithoutCORP", true));
-fetch("${nothingSameOriginCORP}", { mode: "no-cors" }).then(() => report("sameOriginWithSameOriginCORP", false), () => report("sameOriginWithSameOriginCORP", true));
-fetch("${nothingCrossOriginCORP}", { mode: "no-cors" }).then(() => report("sameOriginWithCrossOriginCORP", true), () => report("sameOriginWithCrossOriginCORP", false));
-fetch("${origins.HTTPS_NOTSAMESITE_ORIGIN}${nothingCrossOriginCORP}", { mode: "no-cors" }).then(() => report("crossOriginWithCrossOriginCORP", true), () => report("crossOriginWithCrossOriginCORP", false));
+Promise.all([
+  record(fetch("/common/blank.html", { mode: "no-cors" }), "sameOriginWithoutCORP", false),
+  record(fetch("${nothingSameOriginCORP}", { mode: "no-cors" }), "sameOriginWithSameOriginCORP", false),
+  record(fetch("${nothingCrossOriginCORP}", { mode: "no-cors" }), "sameOriginWithCrossOriginCORP", true),
+  record(fetch("${origins.HTTPS_NOTSAMESITE_ORIGIN}${nothingCrossOriginCORP}", { mode: "no-cors" }), "crossOriginWithCrossOriginCORP", true)
+]).then(() => parent.postMessage(data, "*"));
 <\/script>`;
   document.body.append(frame);
 }, "Cross-Origin-Embedder-Policy and sandbox");

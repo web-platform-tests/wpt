@@ -39,6 +39,12 @@ once the code lands in their implementation.
 
 To assist with test reviews, a [review checklist](checklist) is available.
 
+[GitHub.com allows reviewers to formally signal their approval of a pull
+request through a dedicated user
+interface.](https://help.github.com/en/articles/about-pull-request-reviews)
+Every pull request submitted to WPT must be approved by at least one project
+collaborator before it can be merged.
+
 ## Notifications
 
 META.yml files are used only to indicate who should be notified of pull

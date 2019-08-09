@@ -9,8 +9,13 @@
 <script>
 'use strict';
 
-function matchUnconditionalClamping(timestamp) {
-  return parseFloat((Math.floor(timestamp / .02) * .02).toPrecision(8), 10);
+function compareTimes(timestamp1, timestamp2) {
+  const TIME_PRECISION = 0.02; // 20 Microseconds
+  return 0 || // <- For line continuation
+    // Allow the second timestamp to be clamped to TIME_PRECISION and match the first precisely
+    timestamp1 == parseFloat((Math.floor(timestamp2 / TIME_PRECISION) * TIME_PRECISION).toPrecision(8), 10) ||
+    // Allow the timestamps to match precisely
+    timestamp1 == timestamp2;
 }
 
 async_test(t => {
@@ -32,8 +37,9 @@ async_test(t => {
   // so we use requestAnimationFrame instead.
   window.requestAnimationFrame(rafTime => {
     t.step(() => {
-      assert_equals(document.timeline.currentTime, matchUnconditionalClamping(rafTime),
-                    'The current time matches requestAnimationFrame time');
+      assert_true(compareTimes(document.timeline.currentTime, rafTime),
+                    'The current time (' + document.timeline.currentTime +
+                    ') matches requestAnimationFrame time (' + rafTime + ')');
     });
     t.done();
   });

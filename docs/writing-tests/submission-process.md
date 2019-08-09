@@ -33,6 +33,10 @@ on, e.g. `git checkout -b topic-name`
 For detailed guidelines on setup and each of these steps, please refer to the
 [Github Test Submission](../writing-tests/github-intro) documentation.
 
+We can sometimes take a little while to go through pull requests because we
+have to go through all the tests and ensure that they match the specification
+correctly. But we look at all of them, and take everything that we can.
+
 Hop on to the [mailing list][public-test-infra] or [IRC][]
 ([webclient][web irc], join channel `#testing`) if you have an issue.  There is
 no need to announce your review request, as soon as you make a Pull Request

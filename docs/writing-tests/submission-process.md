@@ -11,8 +11,8 @@ Submission](github-intro) documentation.
 * Make your changes.
 
 * Run the `lint` script in the root of your checkout to detect common
-  mistakes in test submissions. Usage of this tool is described in detail
-  [here](lint-tool).
+  mistakes in test submissions. There is [detailed documentation for the lint
+  tool](lint-tool).
 
 * Commit your changes.
 

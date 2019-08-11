@@ -1760,6 +1760,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _error_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(3);
 /* harmony import */ var _validators_interface_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(23);
 /* harmony import */ var _constructor_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(24);
+/* harmony import */ var _tokeniser_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(2);
+
 
 
 
@@ -1823,12 +1825,39 @@ for more information.`;
         autofix: Object(_helpers_js__WEBPACK_IMPORTED_MODULE_5__["autofixAddExposedWindow"])(this)
       });
     }
+    const constructors = this.extAttrs.filter(extAttr => extAttr.name === "Constructor");
+    for (const constructor of constructors) {
+      const message = `Constructors should now represented as constructor operations \
+instead of \`[Constructor]\`. Refer to the \
+[WebIDL spec section on constructor operations](https://heycam.github.io/webidl/#idl-constructors) \
+for more information.`;
+      yield Object(_error_js__WEBPACK_IMPORTED_MODULE_6__["validationError"])(this.source, constructor.tokens.name, this, message, {
+        autofix: autofixConstructor(this, constructor)
+      });
+    }
 
     yield* super.validate(defs);
     if (!this.partial) {
       yield* Object(_validators_interface_js__WEBPACK_IMPORTED_MODULE_7__["checkInterfaceMemberDuplication"])(defs, this);
     }
   }
+}
+
+function autofixConstructor(interfaceDef, constructorExtAttr) {
+  return () => {
+    const constructorOp = _constructor_js__WEBPACK_IMPORTED_MODULE_8__["Constructor"].parse(new _tokeniser_js__WEBPACK_IMPORTED_MODULE_9__["Tokeniser"]("\nconstructor();"));
+    constructorOp.extAttrs = [];
+    constructorOp.arguments = constructorExtAttr.arguments;
+    interfaceDef.members.push(constructorOp);
+    const { extAttrs } = interfaceDef;
+    const index = extAttrs.indexOf(constructorExtAttr);
+    extAttrs.splice(index, 1);
+    if (!extAttrs.length) {
+      extAttrs.tokens.open = extAttrs.tokens.close = undefined;
+    } else if (extAttrs.length === index) {
+      extAttrs[index - 1].tokens.separator = undefined;
+    }
+  };
 }
 
 
@@ -2111,6 +2140,15 @@ class Constructor extends _base_js__WEBPACK_IMPORTED_MODULE_0__["Base"] {
 
   get type() {
     return "constructor";
+  }
+
+  *validate(defs) {
+    if (this.idlType) {
+      yield* this.idlType.validate(defs);
+    }
+    for (const argument of this.arguments) {
+      yield* argument.validate(defs);
+    }
   }
 }
 

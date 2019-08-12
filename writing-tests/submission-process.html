@@ -36,30 +36,27 @@
             
   <div class="section" id="submitting-tests">
 <h1>Submitting Tests<a class="headerlink" href="#submitting-tests" title="Permalink to this headline">¶</a></h1>
-<p>Test submission is via the typical <a class="reference external" href="https://guides.github.com/introduction/flow/">GitHub workflow</a>:</p>
+<p>Test submission is via the typical <a class="reference external" href="https://guides.github.com/introduction/flow/">GitHub workflow</a>. For detailed
+guidelines on setup and each of these steps, please refer to the <a class="reference internal" href="github-intro.html"><span class="doc">Github Test
+Submission</span></a> documentation.</p>
 <ul class="simple">
-<li>Fork the <a class="reference external" href="https://github.com/web-platform-tests/wpt/">GitHub repository</a> (and make sure you’re still relatively in
-sync with it if you forked a while ago)</li>
-<li>Create a branch for your changes. Being a key of effective Git flow, it is
-strongly recommended that the <strong>topic branch</strong> tradition be followed here,
-i.e. the branch naming convention is based on the “topic” you will be working
-on, e.g. <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">-b</span> <span class="pre">topic-name</span></code></li>
-<li>Make your changes</li>
+<li>Fork the <a class="reference external" href="https://github.com/web-platform-tests/wpt/">GitHub repository</a>.</li>
+<li>Create a feature branch for your changes.</li>
+<li>Make your changes.</li>
 <li>Run the <code class="docutils literal notranslate"><span class="pre">lint</span></code> script in the root of your checkout to detect common
-mistakes in test submissions. This will also be run after submission
-and any errors will prevent your PR being accepted. If it detects an
-error that forms an essential part of your test, edit the list of
-exceptions stored in <code class="docutils literal notranslate"><span class="pre">tools/lint/lint.whitelist</span></code>.</li>
+mistakes in test submissions. There is <a class="reference internal" href="lint-tool.html"><span class="doc">detailed documentation for the lint
+tool</span></a>.</li>
 <li>Commit your changes.</li>
 <li>Push your local branch to your GitHub repository.</li>
-<li>Using the GitHub UI create a Pull Request for your branch.</li>
+<li>Using the GitHub UI, create a Pull Request for your branch.</li>
 <li>When you get review comments, make more commits to your branch to
 address the comments.</li>
 <li>Once everything is reviewed and all issues are addressed, your pull
 request will be automatically merged.</li>
 </ul>
-<p>For detailed guidelines on setup and each of these steps, please refer to the
-<a class="reference internal" href="github-intro.html"><span class="doc">Github Test Submission</span></a> documentation.</p>
+<p>We can sometimes take a little while to go through pull requests because we
+have to go through all the tests and ensure that they match the specification
+correctly. But we look at all of them, and take everything that we can.</p>
 <p>Hop on to the <a class="reference external" href="https://lists.w3.org/Archives/Public/public-test-infra/">mailing list</a> or <a class="reference external" href="irc://irc.w3.org:6667/testing">IRC</a>
 (<a class="reference external" href="http://irc.w3.org">webclient</a>, join channel <code class="docutils literal notranslate"><span class="pre">#testing</span></code>) if you have an issue.  There is
 no need to announce your review request, as soon as you make a Pull Request

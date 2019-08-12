@@ -67,6 +67,29 @@ from vendors it is frequently the case that the author has moved on to
 working on other things as tests frequently only get pushed upstream
 once the code lands in their implementation.</p>
 <p>To assist with test reviews, a <a class="reference internal" href="checklist.html"><span class="doc">review checklist</span></a> is available.</p>
+<p><a class="reference external" href="https://help.github.com/en/articles/about-pull-request-reviews">GitHub.com allows reviewers to formally signal their approval of a pull
+request through a dedicated user
+interface.</a>
+Every pull request submitted to WPT must be approved by at least one project
+collaborator before it can be merged.</p>
+</div>
+<div class="section" id="notifications">
+<h2>Notifications<a class="headerlink" href="#notifications" title="Permalink to this headline">¶</a></h2>
+<p>META.yml files are used only to indicate who should be notified of pull
+requests.  If you are interested in receiving notifications of proposed
+changes to tests in a given directory, feel free to add yourself to the
+META.yml file.</p>
+</div>
+<div class="section" id="finding-contributions-to-review">
+<h2>Finding contributions to review<a class="headerlink" href="#finding-contributions-to-review" title="Permalink to this headline">¶</a></h2>
+<p>Here are a few search filters to find things to review:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/web-platform-tests/wpt/pulls?utf8=%E2%9C%93&amp;q=is%3Apr+is%3Aopen+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22+-label%3Avendor-imports">Open PRs (excluding vendor exports)</a></li>
+<li><a class="reference external" href="https://github.com/web-platform-tests/wpt/pulls?utf8=%E2%9C%93&amp;q=is%3Apr+is%3Aopen+-label%3Amozilla%3Agecko-sync+-label%3Achromium-export+-label%3Awebkit-export+-label%3Aservo-export+-label%3Avendor-imports+review%3Aapproved+-label%3A%22do+not+merge+yet%22+-label%3A%22status%3Aneeds-spec-decision%22">Reviewed but still open PRs (excluding vendor exports)</a> (Merge? Something left to fix? Ping other reviewer?)</li>
+<li><a class="reference external" href="https://github.com/web-platform-tests/wpt/pulls?q=is%3Apr+is%3Aopen+label%3Astatus%3Aneeds-reviewers">Open PRs without reviewers</a></li>
+<li><a class="reference external" href="https://github.com/web-platform-tests/wpt/pulls?utf8=%E2%9C%93&amp;q=is%3Apr+is%3Aopen+label%3Ainfra+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22+-label%3Avendor-imports">Open PRs with label <code class="docutils literal notranslate"><span class="pre">infra</span></code> (excluding vendor exports)</a></li>
+<li><a class="reference external" href="https://github.com/web-platform-tests/wpt/pulls?utf8=%E2%9C%93&amp;q=is%3Apr+is%3Aopen+label%3Adocs+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22+-label%3Avendor-imports">Open PRs with label <code class="docutils literal notranslate"><span class="pre">docs</span></code> (excluding vendor exports)</a></li>
+</ul>
 </div>
 </div>
 
@@ -97,6 +120,8 @@ once the code lands in their implementation.</p>
 <li class="toctree-l2"><a class="reference internal" href="git.html">Working with Pull Requests as a reviewer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reverting.html">Reverting Changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#test-review-policy">Test Review Policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notifications">Notifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#finding-contributions-to-review">Finding contributions to review</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>

@@ -280,6 +280,10 @@ below. The general signature is:</p>
 only takes <code class="docutils literal notranslate"><span class="pre">actual</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code> as arguments.</p>
 <p>The description parameter is used to present more useful error messages when
 a test fails.</p>
+<p>When assertions are violated, they throw a runtime exception. This interrupts
+test execution, so subsequent statements are not evaluated. A given test can
+only fail due to one such violation, so if you would like to assert multiple
+behaviors independently, you should use multiple tests.</p>
 <p>NOTE: All asserts must be located in a <code class="docutils literal notranslate"><span class="pre">test()</span></code> or a step of an
 <code class="docutils literal notranslate"><span class="pre">async_test()</span></code>, unless the test is a single page test. Asserts outside
 these places won’t be detected correctly by the harness and may cause

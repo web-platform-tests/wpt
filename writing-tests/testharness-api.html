@@ -762,6 +762,22 @@ allows multiple behaviours. Test authors should not use this method simply to hi
 UA bugs.</p>
 </div>
 </div>
+<div class="section" id="formatting">
+<h2>Formatting<a class="headerlink" href="#formatting" title="Permalink to this headline">¶</a></h2>
+<p>When many JavaScript Object values are coerced to a String, the resulting value
+will be <code class="docutils literal notranslate"><span class="pre">&quot;[object</span> <span class="pre">Object]&quot;</span></code>. This obscures helpful information, making the
+coerced value unsuitable for use in assertion messages, test names, and
+debugging statements.</p>
+<p>testharness.js provides a global function named <code class="docutils literal notranslate"><span class="pre">format_value</span></code> which produces
+more distinctive string representations of many kinds of objects, including
+arrays and the more important DOM Node types. It also translates String values
+containing control characters to include human-readable representations.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">format_value</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span> <span class="c1">// &quot;Document node with 2 children&quot;</span>
+<span class="nx">format_value</span><span class="p">(</span><span class="s2">&quot;foo\uffffbar&quot;</span><span class="p">);</span> <span class="c1">// &quot;\&quot;foo\\uffffbar\&quot;&quot;</span>
+<span class="nx">format_value</span><span class="p">([</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="kc">Infinity</span><span class="p">]);</span> <span class="c1">// &quot;[-0, Infinity]&quot;</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="metadata">
 <h2>Metadata<a class="headerlink" href="#metadata" title="Permalink to this headline">¶</a></h2>
 <p>It is possible to add optional metadata to tests; this can be done in

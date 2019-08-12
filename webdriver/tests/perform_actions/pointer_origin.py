@@ -91,7 +91,8 @@ def test_element_center_point_with_offset(session, mouse_chain):
 
 def test_element_in_view_center_point_partly_visible(session, mouse_chain):
     session.url = origin_doc("""width: 100px; height: 50px; background: green;
-                                position: relative; left: -50px; top: -25px;""")
+                                position: relative; left: -50px; top: -25px;""",
+                             "position: absolute; left: 0px; top: 0px;")
     elem = session.find.css("#inner", all=False)
     center = get_inview_center(elem.rect, get_viewport_rect(session))
 
@@ -105,7 +106,8 @@ def test_element_in_view_center_point_partly_visible(session, mouse_chain):
 
 
 def test_element_larger_than_viewport(session, mouse_chain):
-    session.url = origin_doc("width: 300vw; height: 300vh; background: green;")
+    session.url = origin_doc("width: 300vw; height: 300vh; background: green;",
+                             "position: absolute;")
     elem = session.find.css("#inner", all=False)
     center = get_inview_center(elem.rect, get_viewport_rect(session))
 

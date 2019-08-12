@@ -1,0 +1,63 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Test: CSSOM View MediaQueryListEvent</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://drafts.csswg.org/cssom-view/#mediaquerylistevent">
+<div id="log"></div>
+<script>
+"use strict";
+
+test(t => {
+    assert_equals(MediaQueryListEvent.length, 1);
+    assert_throws(new TypeError(), () => {
+        new MediaQueryListEvent();
+    });
+}, "type argument is required");
+
+test(t => {
+    assert_equals(new MediaQueryListEvent("test").type, "test");
+}, "type can be different from 'change'");
+
+test(t => {
+    assert_equals(Object.getPrototypeOf(MediaQueryListEvent), Event);
+    assert_true(new MediaQueryListEvent("change") instanceof Event);
+}, "extends Event");
+
+test(t => {
+    const event = new MediaQueryListEvent("change");
+
+    assert_equals(event.media, "");
+    assert_equals(event.matches, false);
+    assert_equals(event.bubbles, false);
+    assert_equals(event.cancelable, false);
+}, "init dictionary default values");
+
+test(t => {
+    const event = new MediaQueryListEvent("change", {
+        media: "test",
+        matches: true,
+        bubbles: true,
+        cancelable: true,
+    });
+
+    assert_equals(event.media, "test");
+    assert_equals(event.matches, true);
+    assert_equals(event.bubbles, true);
+    assert_equals(event.cancelable, true);
+}, "init dictionary overrides");
+
+test(t => {
+    const event = new MediaQueryListEvent("change");
+    assert_throws(new TypeError(), () => {
+        event.media = "print";
+    });
+}, "media attribute is readonly");
+
+test(t => {
+    const event = new MediaQueryListEvent("change");
+    assert_throws(new TypeError(), () => {
+        event.matches = true;
+    });
+}, "matches attribute is readonly");
+</script>

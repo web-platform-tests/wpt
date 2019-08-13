@@ -43,15 +43,15 @@ provide a set of steps to run the test and obtain the result.</p>
 and should be easy to run in any browser.</p>
 <div class="section" id="test-layout">
 <h2>Test Layout<a class="headerlink" href="#test-layout" title="Permalink to this headline">¶</a></h2>
-<p>Each top level directory in the repository corresponds to tests for a
-single specification, with the exception of <code class="docutils literal notranslate"><span class="pre">css/</span></code> which contains
-test suites for CSS WG specifications. For W3C specs, these directories
-are typically named after the shortname of the spec (i.e. the name
-used for snapshot publications under <code class="docutils literal notranslate"><span class="pre">/TR/</span></code>); for WHATWG specs, they
-are typically named after the subdomain of the spec (i.e. trimming
-<code class="docutils literal notranslate"><span class="pre">.spec.whatwg.org</span></code> from the URL); for other specs, something deemed
-sensible is used. In any case, there are occasional exceptions for
-historic reasons.</p>
+<p>Most of the repository’s top-level directories hold tests for specific web
+standards. For <a class="reference external" href="https://www.w3.org/standards/">W3C specs</a>, these directories
+are typically named after the shortname of the spec (i.e. the name used for
+snapshot publications under <code class="docutils literal notranslate"><span class="pre">/TR/</span></code>); for <a class="reference external" href="https://spec.whatwg.org/">WHATWG
+specs</a>, they are typically named after the subdomain
+of the spec (i.e. trimming <code class="docutils literal notranslate"><span class="pre">.spec.whatwg.org</span></code> from the URL); for other specs,
+something deemed sensible is used. The <code class="docutils literal notranslate"><span class="pre">css/</span></code> directory contains test suites
+for <a class="reference external" href="https://www.w3.org/Style/CSS/current-work">the CSS Working Group
+specifications</a>.</p>
 <p>Within the specification-specific directory there are two common ways
 of laying out tests: the first is a flat structure which is sometimes
 adopted for very short specifications; the alternative is a nested
@@ -59,6 +59,11 @@ structure with each subdirectory corresponding to the id of a heading
 in the specification. The latter provides some implicit metadata about
 the part of a specification being tested according to its location in
 the filesystem, and is preferred for larger specifications.</p>
+<p>For example, tests in HTML for <a class="reference external" href="https://html.spec.whatwg.org/multipage/history.html#the-history-interface">“The History
+interface”</a>
+are located in <code class="docutils literal notranslate"><span class="pre">html/browsers/history/the-history-interface/</span></code>.</p>
+<p>Various resources that tests depend on are in <code class="docutils literal notranslate"><span class="pre">common</span></code>, <code class="docutils literal notranslate"><span class="pre">images</span></code>, <code class="docutils literal notranslate"><span class="pre">fonts</span></code>,
+<code class="docutils literal notranslate"><span class="pre">media</span></code>, and <code class="docutils literal notranslate"><span class="pre">resources</span></code>.</p>
 </div>
 <div class="section" id="test-types">
 <h2>Test Types<a class="headerlink" href="#test-types" title="Permalink to this headline">¶</a></h2>

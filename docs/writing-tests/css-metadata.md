@@ -1,50 +1,20 @@
 # CSS Metadata
 
-CSS tests have some additional requirements for metadata.
+CSS tests support the specification of metadata which may not be present in
+other tests. This information is expressed using `<meta>` elements in the test
+markup.
 
-### Specification Links
+## Requirement Flags
 
-Specification Links
+CSS tests that match certain criteria must specify the corresponding "flag."
+This metadata is **required where applicable**. It is expressed using a meta
+element named `flags`, e.g.
 
-``` html
-<link rel="help" href="RELEVANT_SPEC_SECTION" />
+```html
+<meta name="flags" content="asis HTMLonly may" />
 ```
 
-The specification link elements provide a way to align the test with
-information in the specification being tested.
-
-* Links should link to relevant sections within the specification
-* Use the anchors from the specification's Table of Contents
-* A test can have multiple specification links
-  * Always list the primary section that is being tested as the
-    first item in the list of specification links
-  * Order the list from the most used/specific to least used/specific
-  * There is no need to list common incidental features like the
-    color green if it is being used to validate the test unless the
-    case is specifically testing the color green
-* If the test is part of multiple test suites, link to the relevant
-  sections of each spec.
-
-Example 1:
-
-``` html
-<link rel="help"
-href="https://www.w3.org/TR/CSS21/text.html#alignment-prop" />
-```
-
-Example 2:
-
-``` html
-<link rel="help"
-href="https://www.w3.org/TR/CSS21/text.html#alignment-prop" />
-<link rel="help" href="https://www.w3.org/TR/CSS21/visudet.html#q7" />
-<link rel="help"
-href="https://www.w3.org/TR/CSS21/visudet.html#line-height" />
-<link rel="help"
-href="https://www.w3.org/TR/CSS21/colors.html#background-properties" />
-```
-
-### Requirement Flags
+A complete listing of the available flags and corresponding criteria follows.
 
 <table>
 <tr>
@@ -150,7 +120,58 @@ Example 3 (no tokens apply):
 <meta name="flags" content="" />
 ```
 
-### Test Assertions
+### Specification Links
+
+CSS tests which demonstrate behavior from multiple specifications should
+reference the relevant documents. It may also be used for tests which focus on
+a single section of one specification because it is more precise than [the
+test's location in the project directory structure](../test-suite-design). This
+metadata is **optional**. It is expressed using a meta element named `help`,
+e.g.
+
+``` html
+<link rel="help" href="RELEVANT_SPEC_SECTION" />
+```
+
+The specification link elements provide a way to align the test with
+information in the specification being tested.
+
+* Links should link to relevant sections within the specification
+* Use the anchors from the specification's Table of Contents
+* A test can have multiple specification links
+  * Always list the primary section that is being tested as the
+    first item in the list of specification links
+  * Order the list from the most used/specific to least used/specific
+  * There is no need to list common incidental features like the
+    color green if it is being used to validate the test unless the
+    case is specifically testing the color green
+* If the test is part of multiple test suites, link to the relevant
+  sections of each spec.
+
+Example 1:
+
+``` html
+<link rel="help"
+href="https://www.w3.org/TR/CSS21/text.html#alignment-prop" />
+```
+
+Example 2:
+
+``` html
+<link rel="help"
+href="https://www.w3.org/TR/CSS21/text.html#alignment-prop" />
+<link rel="help" href="https://www.w3.org/TR/CSS21/visudet.html#q7" />
+<link rel="help"
+href="https://www.w3.org/TR/CSS21/visudet.html#line-height" />
+<link rel="help"
+href="https://www.w3.org/TR/CSS21/colors.html#background-properties" />
+```
+
+## Test Assertions
+
+CSS tests whose intent is not clear from the title text and verification
+instructions should include a declarative assertion. This metadata is
+**optional**. It is expressed using a meta element named `assert`, e.g.
 
 ``` html
 <meta name="assert" content="TEST ASSERTION" />
@@ -169,7 +190,7 @@ The assertion should not be:
 * A line or reference from the CSS specification unless that line is
   a complete assertion when taken out of context.
 
-The test assertion is **optional**, but is is highly recommended to include one.
+We highly recommend including an assertion.
 It helps the reviewer understand
 the goal of the test so that he or she can make sure it is being
 tested correctly. Also, in case a problem is found with the test

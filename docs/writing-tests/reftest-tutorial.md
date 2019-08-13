@@ -67,7 +67,6 @@ Here's one way to demonstrate the feature:
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>BDO element dir=rtl</title>
-<link rel="help" href="https://html.spec.whatwg.org/#the-bdo-element">
 <meta name="assert" content="BDO element's DIR content attribute renders corrently given value of 'rtl'.">
 
 <p>Test passes if WAS is displayed below.</p>
@@ -90,15 +89,6 @@ That's pretty dense! Let's break it down:
   <title>BDO element dir=rtl</title>
   ```
   The document's title should succinctly describe the feature under test.
-
-- ```html
-  <link rel="help" href="https://html.spec.whatwg.org/#the-bdo-element">
-  ```
-
-  The "help" metadata should reference the specification under test so that
-  everyone understands the motivation. This is so helpful that [the CSS Working
-  Group requires it for CSS tests](css-metadata)! If you're writing a reftest
-  for a feature outside of CSS, feel free to omit this tag.
 
 - ```html
   <meta name="assert" content="BDO element's DIR content attribute renders corrently given value of 'rtl'.">
@@ -186,7 +176,6 @@ summary:
  <meta charset="utf-8">
  <title>BDO element dir=rtl</title>
  <link rel="author" title="Sam Smith" href="mailto:sam@example.com">
- <link rel="help" href="https://html.spec.whatwg.org/#the-bdo-element">
 +<link rel="match" href="rtl-ref.html">
  <meta name="assert" content="BDO element's DIR content attribute renders corrently given value of 'rtl'.">
 

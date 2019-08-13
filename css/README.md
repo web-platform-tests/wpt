@@ -13,11 +13,6 @@ this directory has a number of test requirements specific to it:
 
  * support files for a given test must live in an adjacent `support` directory;
 
- * tests must have a [`<link rel=help>`][spec-link] pointing to what they are
-   testing;
-
- * for each spec so linked, test filenames must be unique; and
-
  * support and reference files must have unique filenames within the entire
    `css` directory.
 

@@ -1,6 +1,6 @@
 <!doctype html>
 <meta name="timeout" content="long">
-<title>Cross-Origin-Opener-Policy requires HTTPS</title>
+<title>Cross-Origin-Opener-Policy requires secure contexts</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script>
@@ -14,5 +14,5 @@ async_test(t => {
     popup.close();
     t.done();
   }, 500);
-}, "Cross-Origin-Opener-Policy only works over HTTPS");
+}, "Cross-Origin-Opener-Policy only works over secure contexts");
 </script>

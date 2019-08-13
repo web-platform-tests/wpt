@@ -51,6 +51,10 @@
     const opener = site === "same-origin" ? variant.opener : false;
 
     async_test(t => {
+      // For each test we open a COOP: same-origin/COEP: require-corp document in a popup and then
+      // navigate that to either a same-origin or same-site document whose COOP and COEP are set as
+      // per the top-most array. We then verify that this document has the correct opener for its
+      // specific setup.
       url_test(t, `${SAME_ORIGIN.origin}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=same-origin&coep=require-corp&navigate=${encodeURIComponent(navigateURL)}`, channel, opener);
     }, title);
   });

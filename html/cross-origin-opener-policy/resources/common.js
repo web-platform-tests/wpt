@@ -25,12 +25,12 @@ function coop_test(t, host, coop, channelName, hasOpener) {
   coop_coep_test(t, host, coop, "", channelName, hasOpener);
 }
 
-function run_coop_tests(mainTest, testArray) {
+function run_coop_tests(documentCOOPValueTitle, testArray) {
   for (const test of tests) {
     async_test(t => {
       coop_test(t, test[0], test[1],
                 `${mainTest}_to_${test[0].name}_${test[1].replace(/ /g,"-")}`,
                 test[2]);
-    }, `${mainTest} document opening popup to ${test[0].origin} with COOP: "${test[1]}"`);
+    }, `${documentCOOPValueTitle} document opening popup to ${test[0].origin} with COOP: "${test[1]}"`);
   }
 }

@@ -11,6 +11,7 @@ addEventListener("load", () => {
       window.top.postMessage("FAIL - Wrong exception name: " + error.name, "*");
     }
   }
+  window.top.postMessage("FAIL - No exception thrown", "*");
 });
 
 </script>

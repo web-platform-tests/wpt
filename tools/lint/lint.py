@@ -410,16 +410,11 @@ def check_parsed(repo_root, path, f):
 
     errors = []  # type: List[rules.Error]
 
-    if path.startswith("css/"):
-        if (source_file.type == "support" and
-            not source_file.name_is_non_test and
-            not source_file.name_is_reference):
-            return [rules.SupportWrongDir.error(path)]
-
-        if (source_file.type != "support" and
-            not source_file.name_is_reference and
-            not source_file.spec_links):
-            return [rules.MissingLink.error(path)]
+    if (path.startswith("css/") and
+        source_file.type == "support" and
+        not source_file.name_is_non_test and
+        not source_file.name_is_reference):
+        return [rules.SupportWrongDir.error(path)]
 
     if source_file.name_is_non_test:
         return []

@@ -701,7 +701,7 @@ def test_css_support_file(filename, expect_error):
         assert errors == []
 
 
-def test_css_missing_file_in_css():
+def test_css_missing_file_in_css_allowed():
     code = b"""\
 <html xmlns="http://www.w3.org/1999/xhtml">
 <script src="/resources/testharness.js"></script>
@@ -711,24 +711,14 @@ def test_css_missing_file_in_css():
     errors = check_file_contents("", "css/foo/bar.html", six.BytesIO(code))
     check_errors(errors)
 
-    assert errors == [
-        ('MISSING-LINK',
-         'Testcase file must have a link to a spec',
-         "css/foo/bar.html",
-         None),
-    ]
+    assert errors == []
 
 
-def test_css_missing_file_manual():
+def test_css_missing_file_manual_allowed():
     errors = check_file_contents("", "css/foo/bar-manual.html", six.BytesIO(b""))
     check_errors(errors)
 
-    assert errors == [
-        ('MISSING-LINK',
-         'Testcase file must have a link to a spec',
-         "css/foo/bar-manual.html",
-         None),
-    ]
+    assert errors == []
 
 
 @pytest.mark.parametrize("filename", [

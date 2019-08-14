@@ -686,4 +686,4 @@ class GenerateTestReportAction(object):
     def __call__(self, payload):
         message = payload["message"]
         self.logger.debug("Generating test report: %s" % message)
-        self.protocol.generate_test_report.generate_test_report(message)
+        return self.protocol.generate_test_report.generate_test_report(message)

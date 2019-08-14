@@ -12,6 +12,8 @@ async_test(t => {
     .generate_test_report("Test message.")
     .then((result) => {
         result_html = document.getElementById("json").innerHTML = JSON.stringify(result, undefined, 2);
+        assert_equals(result.foo, "bar");
+        assert_equals(result.dict["k1"], 5678);
         t.done();
     })
     .catch(t.unreached_func("generate_test_report failed"));

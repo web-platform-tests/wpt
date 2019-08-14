@@ -4,7 +4,6 @@ jobs:
   update-pr-preview:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
     - name: update-pr-preview
       uses: ./tools/docker/github
       env:

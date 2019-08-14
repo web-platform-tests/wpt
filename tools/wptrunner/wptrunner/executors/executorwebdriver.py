@@ -200,6 +200,12 @@ class WebDriverGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):
     def generate_test_report(self, message):
         json_message = {"message": message}
         self.webdriver.send_session_command("POST", "reporting/generate_test_report", json_message)
+        retval = {}
+        retval['foo'] = 'bar'
+        retval['int'] = 1234
+        retval['list'] = ['l1','l2']
+        retval['dict'] = {'k1': 5678, 'k2': 'a string'}
+        return retval
 
 
 class WebDriverProtocol(Protocol):

@@ -8,7 +8,7 @@ markup.
 
 CSS tests that match certain criteria must specify the corresponding "flag."
 This metadata is **required where applicable**. It is expressed using a meta
-element named `flags`, e.g.
+element with a `name="flags"` attribute, e.g.
 
 ```html
 <meta name="flags" content="asis HTMLonly may" />
@@ -123,17 +123,18 @@ Example 3 (no tokens apply):
 ### Specification Links
 
 CSS tests which demonstrate behavior from multiple specifications should
-reference the relevant documents. It may also be used for tests which focus on
-a single section of one specification because it is more precise than [the
-test's location in the project directory structure](../test-suite-design). This
-metadata is **optional**. It is expressed using a meta element named `help`,
-e.g.
+reference the relevant documents. A reference to a relevant document may also
+be used for tests which focus on a single section of one specification because
+doing that is more precise than [the test's location in the project directory
+structure](../test-suite-design). This metadata is **optional**. References to
+relevant specifications are expressed using a link element with a `rel="help"`
+attribute, e.g.
 
 ``` html
 <link rel="help" href="RELEVANT_SPEC_SECTION" />
 ```
 
-The specification link elements provide a way to align the test with
+The `rel="help"` link elements provide a way to align the test with
 information in the specification being tested.
 
 * Links should link to relevant sections within the specification
@@ -171,7 +172,8 @@ href="https://www.w3.org/TR/CSS21/colors.html#background-properties" />
 
 CSS tests whose intent is not clear from the title text and verification
 instructions should include a declarative assertion. This metadata is
-**optional**. It is expressed using a meta element named `assert`, e.g.
+**optional**. It is expressed using a meta element with a `name="assert"`
+attribute, e.g.
 
 ``` html
 <meta name="assert" content="TEST ASSERTION" />

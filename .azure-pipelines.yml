@@ -351,6 +351,7 @@ jobs:
     inputs:
       pathtoPublish: /Users/vsts/Library/Logs/com.apple.WebDriver/
       artifactName: safaridriver-logs
+    condition: always()
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari
@@ -387,6 +388,7 @@ jobs:
     inputs:
       pathtoPublish: /Users/vsts/Library/Logs/com.apple.WebDriver/
       artifactName: safaridriver-preview-logs
+    condition: always()
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari_preview

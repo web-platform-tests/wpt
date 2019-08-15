@@ -82,6 +82,10 @@ jobs:
   pool:
     vmImage: 'macOS-10.13'
   steps:
+  - script: |
+      echo $HOME
+      ls $HOME
+    displayName: Show me home
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/pip_install.yml
     parameters:

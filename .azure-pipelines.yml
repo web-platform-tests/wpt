@@ -18,7 +18,7 @@
 #    https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/v2-windows
 
 schedules:
-- cron: "15 0,6,12,18 * * *"
+- cron: "15 */6 * * *"
   displayName: Every six hours
   branches:
     include:

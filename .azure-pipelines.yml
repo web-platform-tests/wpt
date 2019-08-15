@@ -102,7 +102,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish logs'
     inputs:
-      pathtoPublish: ~/Library/Logs/com.apple.WebDriver/
+      pathtoPublish: $(Agent.HomeDirectory)/Library/Logs/com.apple.WebDriver/
       artifactName: safaridriver-preview-logs
     condition: always()
 
@@ -349,7 +349,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish logs'
     inputs:
-      pathtoPublish: ~/Library/Logs/com.apple.WebDriver/
+      pathtoPublish: $(Agent.HomeDirectory)/Library/Logs/com.apple.WebDriver/
       artifactName: safaridriver-logs
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
@@ -385,7 +385,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish logs'
     inputs:
-      pathtoPublish: ~/Library/Logs/com.apple.WebDriver/
+      pathtoPublish: $(Agent.HomeDirectory)/Library/Logs/com.apple.WebDriver/
       artifactName: safaridriver-preview-logs
 - template: tools/ci/azure/fyi_hook.yml
   parameters:

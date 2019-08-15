@@ -1554,7 +1554,7 @@ policies and contribution forms [3].
         FAIL:1,
         TIMEOUT:2,
         NOTRUN:3,
-        SKIP:4
+        PRECONDITION_FAILED:4
     };
 
     Test.prototype = merge({}, Test.statuses);
@@ -1722,7 +1722,7 @@ policies and contribution forms [3].
 
     Test.prototype.skip = function(message)
     {
-        this.set_status(this.SKIP, message || 'Test skipped');
+        this.set_status(this.PRECONDITION_FAILED, message || 'Test skipped');
         this.phase = this.phases.HAS_RESULT;
         this.done();
     }
@@ -2762,7 +2762,7 @@ policies and contribution forms [3].
         status_text[Test.prototype.FAIL] = "Fail";
         status_text[Test.prototype.TIMEOUT] = "Timeout";
         status_text[Test.prototype.NOTRUN] = "Not Run";
-        status_text[Test.prototype.SKIP] = "Skip";
+        status_text[Test.prototype.PRECONDITION_FAILED] = "Precondition failed";
 
         var status_number = {};
         forEach(tests,

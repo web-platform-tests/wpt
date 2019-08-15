@@ -52,7 +52,7 @@ class TestharnessResult(Result):
 
 class TestharnessSubtestResult(SubtestResult):
     default_expected = "PASS"
-    statuses = {"PASS", "FAIL", "TIMEOUT", "NOTRUN", "SKIP"}
+    statuses = {"PASS", "FAIL", "TIMEOUT", "NOTRUN", "PRECONDITION_FAILED"}
 
 
 class ReftestResult(Result):

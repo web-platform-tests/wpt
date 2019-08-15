@@ -64,7 +64,7 @@ class TestharnessResultConverter(object):
                   1: "FAIL",
                   2: "TIMEOUT",
                   3: "NOTRUN",
-                  4: "SKIP"}
+                  4: "PRECONDITION_FAILED"}
 
     def __call__(self, test, result, extra=None):
         """Convert a JSON result into a (TestResult, [SubtestResult]) tuple"""

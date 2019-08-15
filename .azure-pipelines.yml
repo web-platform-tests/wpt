@@ -82,10 +82,6 @@ jobs:
   pool:
     vmImage: 'macOS-10.13'
   steps:
-  - script: |
-      echo $HOME
-      ls $HOME
-    displayName: Show me home
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/pip_install.yml
     parameters:
@@ -106,7 +102,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish logs'
     inputs:
-      pathtoPublish: $(Agent.HomeDirectory)/Library/Logs/com.apple.WebDriver/
+      pathtoPublish: /Users/vsts/Library/Logs/com.apple.WebDriver/
       artifactName: safaridriver-preview-logs
     condition: always()
 
@@ -353,7 +349,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish logs'
     inputs:
-      pathtoPublish: $(Agent.HomeDirectory)/Library/Logs/com.apple.WebDriver/
+      pathtoPublish: /Users/vsts/Library/Logs/com.apple.WebDriver/
       artifactName: safaridriver-logs
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
@@ -389,7 +385,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish logs'
     inputs:
-      pathtoPublish: $(Agent.HomeDirectory)/Library/Logs/com.apple.WebDriver/
+      pathtoPublish: /Users/vsts/Library/Logs/com.apple.WebDriver/
       artifactName: safaridriver-preview-logs
 - template: tools/ci/azure/fyi_hook.yml
   parameters:

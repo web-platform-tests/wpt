@@ -97,12 +97,13 @@ jobs:
     displayName: 'Run tests (Chrome Dev)'
   - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-tbpl - --log-tbpl-level info --channel nightly firefox infrastructure/
     displayName: 'Run tests (Firefox Nightly)'
-  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-tbpl - --log-tbpl-level info --channel preview safari infrastructure/
+  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-tbpl - --log-tbpl-level info --webdriver-arg=--diagnose --channel preview safari infrastructure/
     displayName: 'Run tests (Safari Technology Preview)'
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish results'
+    displayName: 'Publish logs'
     inputs:
-      artifactName: 'infrastructure'
+      pathtoPublish: ~/Library/Logs/com.apple.WebDriver/
+      artifactName: safaridriver-preview-logs
     condition: always()
 
 - job: tools_unittest_macOS
@@ -339,12 +340,17 @@ jobs:
   - script: |
       # TODO: drop this when `safaridriver --version` is supported.
       SAFARI_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Safari.app/Contents/Info.plist) ($(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' /Applications/Safari.app/Contents/Info.plist))"
-      no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-tbpl - --log-tbpl-level info --browser-version "$SAFARI_VERSION" safari
+      no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-tbpl - --log-tbpl-level info --webdriver-arg=--diagnose --browser-version "$SAFARI_VERSION" safari
     displayName: 'Run tests'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:
       artifactName: 'safari-results'
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish logs'
+    inputs:
+      pathtoPublish: ~/Library/Logs/com.apple.WebDriver/
+      artifactName: safaridriver-logs
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari
@@ -370,12 +376,17 @@ jobs:
   - template: tools/ci/azure/install_safari.yml
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
-  - script: no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-tbpl - --log-tbpl-level info --channel preview safari
+  - script: no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-tbpl - --log-tbpl-level info --webdriver-arg=--diagnose --channel preview safari
     displayName: 'Run tests'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:
       artifactName: 'safari-preview-results'
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish logs'
+    inputs:
+      pathtoPublish: ~/Library/Logs/com.apple.WebDriver/
+      artifactName: safaridriver-preview-logs
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari_preview

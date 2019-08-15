@@ -282,7 +282,7 @@ jobs:
   displayName: 'all tests: Edge Canary'
   condition: |
     or(eq(variables['Build.Reason'], 'Schedule'),
-       and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_edge']))
+       and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_edge_canary']))
   # There are 12 agents in the pool, but use more jobs so that each takes <1h.
   strategy:
     parallel: 20

@@ -141,6 +141,7 @@ tasks:
                     --log-wptreport=../artifacts/wpt_report.json
                     --log-wptscreenshot=../artifacts/wpt_screenshot.txt
                 - name: wpt-${browser.name}-${browser.channel}-results-without-changes
+                  job_name: affected_tests
                   checkout: base_head
                   diff_base: task_head
                   description: >-

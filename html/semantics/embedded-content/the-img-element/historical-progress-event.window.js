@@ -9,3 +9,8 @@ async_test(t => {
   img.src = "/images/rrgg-256x256.png";
   document.body.append(img);
 }, "<img> does not support ProgressEvent or loadstart/progress/loadend");
+
+test(t => {
+  assert_equals(document.body.onloadend, undefined);
+  assert_equals(window.onloadend, undefined);
+}, "onloadend is not exposed");

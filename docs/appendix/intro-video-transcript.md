@@ -57,8 +57,8 @@ browser window.
 A hand places a cutout representing a stack of papers on the top-center of the
 sheet and draws an arrow from that cutout to the cutout of the browser window.
 
-> To do verify their work, the browser maintainers rely on the third part of
-> the web platform: conformance tests.
+> To verify their work, the browser maintainers rely on the third part of the
+> web platform: conformance tests.
 
 A hand draws an arrow from the cutout of the scroll to the cutout of the tests.
 
@@ -118,12 +118,24 @@ source of the failing test.
 > instance has a custom JavaScript iterator method. That's a strange edge case,
 > but it's important for browsers to agree on every detail!
 
+`http://web-platform-tests.live/css/css-transforms/transform-transformed-tr-contains-fixed-position.html`
+is entered into the location bar, and the browser loads the page. The mouse
+opens a context menu, selects "View Source", and clicks on the `href` value for
+the matching reference.
+
+> Other types of tests include "reftests" (for verifying the visual rendering
+> of web platform features)...
+
+`http://web-platform-tests.live/css/css-animations/animation-fill-mode-002-manual.html`
+is entered into the location bar, and the browser loads the page.
+
+> ...and "manual tests" (for cases where a computer can't automatically verify
+> the expected behavior).
+
 `https://web-platform-tests.org` is entered into the location bar, and the
 browser loads the page.
 
-> Other types of tests include "reftests" (for verifying the visual rendering
-> of web platform features) and "manual tests" (for cases where a computer
-> can't automatically verify the expected behavior). You can read more about
+> You can read more about
 > all the test types in the project documentation at
 > [web-platform-tests.org](https://web-platform-tests.org).
 

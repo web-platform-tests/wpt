@@ -5,6 +5,7 @@ all_jobs = {
     "lint",
     "manifest_upload",
     "resources_unittest",
+    "affected_tests",
     "stability",
     "tools_unittest",
     "update_built",

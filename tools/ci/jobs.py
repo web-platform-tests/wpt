@@ -14,7 +14,7 @@ job_path_map = {
     "stability": [".*/.*",
                   "!tools/",
                   "!docs/",
-                  "!resources/*",
+                  "!resources/(?!idlharness.js)",
                   "!conformance-checkers/",
                   "!.*/OWNERS",
                   "!.*/META.yml",

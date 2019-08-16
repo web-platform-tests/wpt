@@ -59,6 +59,8 @@ def test_stability():
     assert jobs.get_jobs(["css/build-css-testsuite.sh",
                           "css/CSS21/test-001.html"],
                          includes=["stability"]) == {"stability"}
+    assert jobs.get_jobs(["resources/idlharness.js"],
+                         includes=["stability"]) == {"stability"}
 
 
 def test_tools_unittest():

@@ -27,13 +27,24 @@ async_test(t => {
   }));
 }, "BroadcastChannel'ing a tainted ImageBitmap to a COOP+COEP popup");
 
-async_test(t => {
-  const sw = new SharedWorker("resources/coop-coep-worker.js");
-  const imageReady = taintedImageBitmap(t);
-  imageReady.then(t.step_func(bitmap => {
-    sw.port.onmessage = t.step_func_done(e => {
-      assert_equals(e.data, "Got failure as expected.");
-    });
-    sw.port.postMessage(bitmap);
-  }));
-}, "Messaging a tainted ImageBitMap to a COEP shared worker");
+[
+  {
+    "type": "serialize/deserialize",
+    "message": (port, bitmap) => port.postMessage(bitmap)
+  },
+  {
+    "type": "transfer",
+    "message": (port, bitmap) => port.postMessage(bitmap, [bitmap])
+  }
+].forEach(({ type, message }) => {
+  async_test(t => {
+    const sw = new SharedWorker("resources/coop-coep-worker.js");
+    const imageReady = taintedImageBitmap(t);
+    imageReady.then(t.step_func(bitmap => {
+      sw.port.onmessage = t.step_func_done(e => {
+        assert_equals(e.data, "Got failure as expected.");
+      });
+      message(sw.port, bitmap);
+    }));
+  }, `Messaging a tainted ImageBitMap via ${type} to a COEP shared worker`);
+});

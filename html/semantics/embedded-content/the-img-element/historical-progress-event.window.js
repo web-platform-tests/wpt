@@ -1,7 +1,7 @@
 async_test(t => {
   const img = new Image();
   t.add_cleanup(() => img.remove());
-  img.onloadstart = img.onprogress = img.onloadend = t.unreached_func("no progress events supported");
+  img.onloadstart = img.onprogress = img.onloadend = t.unreached_func("progress event fired");
   img.onload = t.step_func_done(e => {
     assert_true(e instanceof Event);
     assert_false(e instanceof ProgressEvent);

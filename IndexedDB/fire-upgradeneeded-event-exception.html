@@ -43,6 +43,32 @@ fire_upgradeneeded_event_test((t, open) => {
 
 fire_upgradeneeded_event_test((t, open) => {
   let tx;
+  open.addEventListener('upgradeneeded', {
+    get handleEvent() {
+      tx = open.transaction;
+      throw new Error();
+    },
+  });
+  open.onerror = t.step_func_done(() => {
+    assert_equals(tx.error.name, 'AbortError');
+  });
+}, 'Exception in upgradeneeded "handleEvent" lookup');
+
+fire_upgradeneeded_event_test((t, open) => {
+  let tx;
+  open.addEventListener('upgradeneeded', {
+    get handleEvent() {
+      tx = open.transaction;
+      return 10;
+    },
+  });
+  open.onerror = t.step_func_done(() => {
+    assert_equals(tx.error.name, 'AbortError');
+  });
+}, 'Exception in upgradeneeded due to non-callable "handleEvent"');
+
+fire_upgradeneeded_event_test((t, open) => {
+  let tx;
   open.addEventListener('upgradeneeded', () => {
     // No-op.
   });

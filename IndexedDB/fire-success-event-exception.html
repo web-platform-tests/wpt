@@ -42,6 +42,26 @@ fire_success_event_test((t, db, tx, request) => {
 }, 'Exception in success event listener on request');
 
 fire_success_event_test((t, db, tx, request) => {
+  request.addEventListener('success', {
+    get handleEvent() {
+      throw new Error();
+    },
+  });
+  tx.onabort = t.step_func_done(() => {
+    assert_equals(tx.error.name, 'AbortError');
+  });
+}, 'Exception in success event listener ("handleEvent" lookup) on request');
+
+fire_success_event_test((t, db, tx, request) => {
+  request.addEventListener('success', {
+    handleEvent: null,
+  });
+  tx.onabort = t.step_func_done(() => {
+    assert_equals(tx.error.name, 'AbortError');
+  });
+}, 'Exception in success event listener (non-callable "handleEvent") on request');
+
+fire_success_event_test((t, db, tx, request) => {
   request.addEventListener('success', () => {
     // no-op
   });

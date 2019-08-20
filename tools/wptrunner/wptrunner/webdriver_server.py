@@ -226,6 +226,22 @@ class WebKitDriverServer(WebDriverServer):
         return [self.binary, "--port=%s" % str(self.port)] + self._args
 
 
+class WebKitDriverServerFlatpak(WebKitDriverServer):
+    def __init__(self, logger, binary=None, port=None, args=None, flatpak_app=None, flatpak_args=None):
+        WebKitDriverServer.__init__(self, logger, binary, port=port, args=args)
+        self._flatpak_args = flatpak_args
+        self._flatpak_app = flatpak_app
+
+    def make_command(self):
+        cmd = ["flatpak", "run"]
+        if self._flatpak_args:
+            cmd += self._flatpak_args
+        cmd += ["--command=%s" % self.binary,
+                 self._flatpak_app,
+                 "--port=%s" % str(self.port)]
+        return cmd + self._args
+
+
 def cmd_arg(name, value=None):
     prefix = "-" if platform.system() == "Windows" else "--"
     rv = prefix + name

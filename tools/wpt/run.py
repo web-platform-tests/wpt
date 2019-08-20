@@ -539,6 +539,10 @@ class Epiphany(BrowserSetup):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
+        if kwargs["flatpak"]:
+            self.browser.flatpak = kwargs["flatpak"]
+        if kwargs["flatpak_args"]:
+            self.browser.flatpak_args = kwargs["flatpak_args"]
         if kwargs["binary"] is None:
             binary = self.browser.find_binary()
 

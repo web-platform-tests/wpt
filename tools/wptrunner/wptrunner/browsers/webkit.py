@@ -4,7 +4,7 @@ from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
                                            WebDriverRefTestExecutor)  # noqa: F401
 from ..executors.executorwebkit import WebKitDriverWdspecExecutor  # noqa: F401
-from ..webdriver_server import WebKitDriverServer
+from ..webdriver_server import WebKitDriverServer, WebKitDriverServerFlatpak
 
 
 __wptrunner__ = {"product": "webkit",
@@ -30,7 +30,9 @@ def check_args(**kwargs):
 def browser_kwargs(test_type, run_info_data, config, **kwargs):
     return {"binary": kwargs["binary"],
             "webdriver_binary": kwargs["webdriver_binary"],
-            "webdriver_args": kwargs.get("webdriver_args")}
+            "webdriver_args": kwargs.get("webdriver_args"),
+            "flatpak": kwargs["flatpak"],
+            "flatpak_args": kwargs.get("flatpak_args")}
 
 
 def capabilities_for_port(server_config, **kwargs):
@@ -82,11 +84,19 @@ class WebKitBrowser(Browser):
     """
 
     def __init__(self, logger, binary, webdriver_binary=None,
-                 webdriver_args=None):
+                 webdriver_args=None, flatpak=None, flatpak_args=None):
         Browser.__init__(self, logger)
         self.binary = binary
-        self.server = WebKitDriverServer(self.logger, binary=webdriver_binary,
-                                         args=webdriver_args)
+        if flatpak:
+            self.server = WebKitDriverServerFlatpak(self.logger,
+                                                    binary=webdriver_binary,
+                                                    args=webdriver_args,
+                                                    flatpak_app=flatpak,
+                                                    flatpak_args=flatpak_args)
+        else:
+            self.server = WebKitDriverServer(self.logger, binary=webdriver_binary,
+                                             args=webdriver_args)
+
 
     def start(self, **kwargs):
         self.server.start(block=False)

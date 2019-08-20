@@ -1079,14 +1079,20 @@ class Epiphany(Browser):
 
     product = "epiphany"
     requirements = "requirements_epiphany.txt"
+    flatpak = None
+    flatpak_args = None
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
     def find_binary(self, venv_path=None, channel=None):
+        if self.flatpak:
+            return "epiphany"
         return find_executable("epiphany")
 
     def find_webdriver(self, channel=None):
+        if self.flatpak:
+            return "WebKitWebDriver"
         return find_executable("WebKitWebDriver")
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
@@ -1095,7 +1101,15 @@ class Epiphany(Browser):
     def version(self, binary=None, webdriver_binary=None):
         if binary is None:
             return None
-        output = call(binary, "--version")
+        if self.flatpak:
+            cmd = ["flatpak", "run"]
+            if self.flatpak_args:
+                cmd += self.flatpak_args
+            cmd += ["--command=%s" % binary,
+                    self.flatpak, "--version"]
+            output = call(*cmd)
+        else:
+            output = call(binary, "--version")
         if output:
             # Stable release output looks like: "Web 3.30.2"
             # Tech Preview output looks like "Web 3.31.3-88-g97db4f40f"

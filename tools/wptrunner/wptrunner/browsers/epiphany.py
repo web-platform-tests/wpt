@@ -26,7 +26,9 @@ def check_args(**kwargs):
 def browser_kwargs(test_type, run_info_data, config, **kwargs):
     return {"binary": kwargs["binary"],
             "webdriver_binary": kwargs["webdriver_binary"],
-            "webdriver_args": kwargs.get("webdriver_args")}
+            "webdriver_args": kwargs.get("webdriver_args"),
+            "flatpak": kwargs["flatpak"],
+            "flatpak_args": kwargs.get("flatpak_args")}
 
 
 def capabilities(server_config, **kwargs):
@@ -69,6 +71,6 @@ def run_info_extras(**kwargs):
 
 class EpiphanyBrowser(WebKitBrowser):
     def __init__(self, logger, binary=None, webdriver_binary=None,
-                 webdriver_args=None):
+                 webdriver_args=None, flatpak=None, flatpak_args=None):
         WebKitBrowser.__init__(self, logger, binary, webdriver_binary,
-                               webdriver_args)
+                               webdriver_args, flatpak, flatpak_args)

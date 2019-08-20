@@ -323,9 +323,14 @@ scheme host and port.""")
                              help="Command-line argument to forward to the "
                                   "Sauce Connect binary (repeatable)")
 
-    webkit_group = parser.add_argument_group("WebKit-specific")
+    webkit_group = parser.add_argument_group("Epiphany and WebKit-specific")
     webkit_group.add_argument("--webkit-port", dest="webkit_port",
                              help="WebKit port")
+    webkit_group.add_argument("--flatpak", dest="flatpak",
+                             help="Run the WebDriver and browser inside flatpak FLATPAK. Example: --flatpak=org.gnome.Epiphany.Devel")
+    webkit_group.add_argument('--flatpak-arg',
+                              default=[], action="append", dest="flatpak_args",
+                              help="Extra arguments to pass to the command \"flatpak run\"")
 
     parser.add_argument("test_list", nargs="*",
                         help="List of URLs for tests to run, or paths including tests to run. "
@@ -502,7 +507,7 @@ def check_args(kwargs):
     else:
         kwargs["debug_info"] = None
 
-    if kwargs["binary"] is not None:
+    if kwargs["binary"] is not None and kwargs["flatpak"] is None:
         if not os.path.exists(kwargs["binary"]):
             print("Binary path %s does not exist" % kwargs["binary"], file=sys.stderr)
             sys.exit(1)

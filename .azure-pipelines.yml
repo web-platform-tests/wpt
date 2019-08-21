@@ -318,7 +318,7 @@ jobs:
     or(eq(variables['Build.Reason'], 'Schedule'),
        and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_safari']))
   strategy:
-    parallel: 4 # chosen to make runtime ~2h
+    parallel: 5 # chosen to make runtime ~2h
   timeoutInMinutes: 360
   pool:
     vmImage: 'macOS-10.13'
@@ -351,7 +351,7 @@ jobs:
     or(eq(variables['Build.Reason'], 'Schedule'),
        and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_safari_preview']))
   strategy:
-    parallel: 4 # chosen to make runtime ~2h
+    parallel: 5 # chosen to make runtime ~2h
   timeoutInMinutes: 360
   pool:
     vmImage: 'macOS-10.13'

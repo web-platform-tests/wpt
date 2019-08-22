@@ -1,0 +1,98 @@
+<!doctype html>
+<title>default style resets</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+@namespace url(urn:not-html);
+
+input, select, button, textarea {
+  letter-spacing: initial;
+  word-spacing: initial;
+  line-height: initial;
+  text-transform: initial;
+
+  text-indent: initial;
+  text-shadow: initial;
+}
+input, select, textarea {
+  text-align: initial;
+
+}
+input[type=reset i], input[type=button i], input[type=submit i], input[type=color i], button {
+  display: inline-block;
+}
+input[type=radio i], input[type=checkbox i], input[type=reset i], input[type=button i],
+input[type=submit i], input[type=color i], input[type=search i], select, button {
+  box-sizing: border-box;
+}
+textarea
+{
+  white-space: pre-wrap;
+}
+marquee {
+  text-align: initial;
+}
+table {
+  box-sizing: border-box;
+  border-spacing: 2px;
+  border-collapse: separate;
+  text-indent: initial;
+}
+</style>
+
+<div id="tests">
+ <input type="hidden">
+ <input type="text">
+ <input type="search">
+ <input type="tel">
+ <input type="url">
+ <input type="email">
+ <input type="password">
+ <input type="date">
+ <input type="month">
+ <input type="week">
+ <input type="time">
+ <input type="datetime-local">
+ <input type="number">
+ <input type="range">
+ <input type="color">
+ <input type="checkbox">
+ <input type="radio">
+ <input type="file">
+ <input type="submit">
+ <input type="image">
+ <input type="reset">
+ <input type="button">
+ <select><optgroup><option></select>
+ <select multiple></select>
+ <button></button>
+ <textarea></textarea>
+ <table></table>
+ <marquee></marquee>
+</div>
+
+<div id="refs"></div>
+
+<script>
+  const props = ['letter-spacing', 'word-spacing', 'line-height', 'text-transform', 'text-indent', 'text-shadow ', 'box-sizing', 'border-spacing', 'border-collapse', 'white-space'];
+ const refs = document.getElementById('refs');
+ for (const el of document.querySelectorAll('#tests *')) {
+   const clone = fakeClone(el);
+   refs.append(clone);
+   const testStyle = getComputedStyle(el);
+   const refStyle = getComputedStyle(clone);
+   for (const prop of props) {
+     test(() => {
+       assert_equals(testStyle.getPropertyValue(prop), refStyle.getPropertyValue(prop));
+     }, `${el.outerHTML} - ${prop}`);
+   }
+ }
+
+ function fakeClone(el) {
+   const clone = document.createElementNS('urn:not-html', el.localName);
+   for (const att of el.attributes) {
+     clone.setAttributeNS(att.namespaceURI, att.name, att.value);
+   }
+   return clone;
+ }
+</script>

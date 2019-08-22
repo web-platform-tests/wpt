@@ -4,13 +4,11 @@ parameters:
 # Should match https://web-platform-tests.org/running-tests/safari.html
 steps:
 - ${{ if eq(parameters.channel, 'preview') }}:
-  - script: |
-      # Pinned to Safari Technology Preview version 90.
-      HOMEBREW_NO_AUTO_UPDATE=1 brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask-versions/5370c9240c4c88f0b81fb36c295ff34c6d205820/Casks/safari-technology-preview.rb
-      sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
-      defaults write com.apple.SafariTechnologyPreview WebKitJavaScriptCanOpenWindowsAutomatically 1
-      defaults write com.apple.SafariTechnologyPreview ExperimentalServerTimingEnabled 1
-    displayName: 'Install Safari Technology Preview'
+  # Pinned to Safari Technology Preview version 90.
+  - script: HOMEBREW_NO_AUTO_UPDATE=1 brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask-versions/5370c9240c4c88f0b81fb36c295ff34c6d205820/Casks/safari-technology-preview.rb
+  - script: sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
+  - script: defaults write com.apple.SafariTechnologyPreview WebKitJavaScriptCanOpenWindowsAutomatically 1
+  - script: defaults write com.apple.SafariTechnologyPreview ExperimentalServerTimingEnabled 1
 - ${{ if eq(parameters.channel, 'stable') }}:
   - script: |
       sudo safaridriver --enable

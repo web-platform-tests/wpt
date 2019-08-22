@@ -9,29 +9,29 @@
 promise_test(async t => {
   let w = window.open('/common/blank.html');
   await waitForLoad(w);
+  t.add_cleanup(() => { w.close(); });
   w.document.body.innerHTML = '<div contenteditable=true autofocus></div>';
   await waitUntilStableAutofocusState(t);
   assert_equals(w.document.activeElement.tagName, 'DIV');
-  w.close();
 }, 'Contenteditable element should support autofocus');
 
 promise_test(async t => {
   let w = window.open('/common/blank.html');
   await waitForLoad(w);
+  t.add_cleanup(() => { w.close(); });
   w.document.body.innerHTML = '<span tabindex=0></span>';
   await waitUntilStableAutofocusState(t);
   assert_equals(w.document.activeElement.tagName, 'SPAN');
-  w.close();
 }, 'Element with tabindex should support autofocus');
 
 promise_test(async t => {
   let w = window.open('/common/blank.html');
   await waitForLoad(w);
+  t.add_cleanup(() => { w.close(); });
   let element = w.document.createElementNS('uri1', 'prefix:local');
   element.setAttribute('autofocus', '');
   w.document.body.appendChild(element);
   await waitUntilStableAutofocusState(t);
   assert_equals(w.document.activeElement.tagName, 'BODY');
-  w.close();
 }, 'Non-HTMLElement should not support autofocus');
 </script>

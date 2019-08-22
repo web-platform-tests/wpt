@@ -354,7 +354,7 @@ jobs:
     parallel: 4 # chosen to make runtime ~2h
   timeoutInMinutes: 360
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
   steps:
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/pip_install.yml

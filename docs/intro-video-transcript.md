@@ -224,6 +224,6 @@ A hand places a paper cutout depicting a human silhouette on the sheet. It then
 draws arrows from the new cutout to each of the three previously-introduced
 cutouts.
 
-![](../assets/web-platform.png "The diagram drawn in the video")
+![](assets/web-platform.png "The diagram drawn in the video")
 
 > We're looking forward to working with you!

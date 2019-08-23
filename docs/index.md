@@ -21,7 +21,7 @@ specification editors and implementors.
   allow="autoplay; encrypted-media"
   allowfullscreen></iframe>
 
-[Video transcript](appendix/intro-video-transcript)
+[Video transcript](intro-video-transcript)
 
 ## Help!
 
@@ -55,6 +55,7 @@ free to add yourself to the META.yml file!
    :maxdepth: 2
 
    test-suite-design
+   intro-video-transcript
    running-tests/index
    writing-tests/index
    reviewing-tests/index

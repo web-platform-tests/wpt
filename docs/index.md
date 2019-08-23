@@ -16,7 +16,7 @@ specification editors and implementors.
 <iframe
   width="560"
   height="315"
-  src="TODO"
+  src="https://www.youtube.com/embed/SMdEIRcolSY"
   frameborder="0"
   allow="autoplay; encrypted-media"
   allowfullscreen></iframe>

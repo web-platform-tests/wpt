@@ -3,12 +3,16 @@
 <iframe
   width="560"
   height="315"
-  src="https://www.youtube.com/embed/SMdEIRcolSY"
+  src="https://www.youtube.com/embed/zuK1uyXPZS0"
   frameborder="0"
   allow="autoplay; encrypted-media"
   allowfullscreen></iframe>
 
-**Still image of the WPT logo**
+**Still image of the WPT logo. The song ["My
+Luck"](http://brokeforfree.bandcamp.com/track/my-luck) by [Broke for
+Free](http://brokeforfree.com/) (licensed under [Creative Commons Attribution
+3.0](https://creativecommons.org/licenses/by/3.0/))
+plays in the background.**
 
 > Hello, and welcome to the Web Platform Tests!
 >
@@ -93,11 +97,11 @@ the tests.
 
 **A screen recording of a web browser**
 
-`http://web-platform-tests.live` is entered into the location bar, and the
-browser loads the page.
+`http://wpt.live` is entered into the location bar, and the browser loads the
+page.
 
-> The latest version of the tests are publicly hosted in executable form on the
-> web at web-platform-tests.live.
+> The latest version of the tests is publicly hosted in executable form on the
+> web at wpt.live.
 
 The browser begins scrolling through the enormous list of directories.
 
@@ -169,8 +173,7 @@ described animated square.
 `https://web-platform-tests.org` is entered into the location bar, and the
 browser loads the page.
 
-> You can read more about
-> all the test types in the project documentation at
+> You can read more about all the test types in the project documentation at
 > [web-platform-tests.org](https://web-platform-tests.org).
 
 `https://wpt.fyi` is entered into the location bar, and the browser loads the

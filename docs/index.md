@@ -11,17 +11,15 @@ platform to deliver on the promise of working across browsers and devices
 without needing extra layers of abstraction to paper over the gaps left by
 specification editors and implementors.
 
-## Video Introduction
+## Video Introduction ([transcript](intro-video-transcript))
 
 <iframe
   width="560"
   height="315"
-  src="https://www.youtube.com/embed/SMdEIRcolSY"
+  src="https://www.youtube.com/embed/zuK1uyXPZS0"
   frameborder="0"
   allow="autoplay; encrypted-media"
   allowfullscreen></iframe>
-
-[Video transcript](intro-video-transcript)
 
 ## Help!
 

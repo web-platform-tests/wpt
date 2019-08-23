@@ -64,7 +64,7 @@ write:
 
 The file would then be included as:
 
-    <script src="xhr.js?pipe=sub"></script>
+    <script src="xhr.sub.js"></script>
 
 This pipe can also be enabled by using a filename `*.sub.ext`, e.g. the file above could be called `xhr.sub.js`.
 

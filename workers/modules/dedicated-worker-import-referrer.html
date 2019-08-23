@@ -73,7 +73,7 @@ function import_referrer_test(settings, description) {
       // See an issue on the WPT's repository:
       // https://github.com/web-platform-tests/wpt/issues/9345
       scriptURL +=
-          `?pipe=sub|header(Referrer-Policy, ${settings.workerReferrerPolicy})`;
+          `?pipe=header(Referrer-Policy, ${settings.workerReferrerPolicy})`;
     }
 
     const win = await openWindow(windowURL);

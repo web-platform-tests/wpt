@@ -1,5 +1,5 @@
 importScripts("/resources/testharness.js");
-importScripts('../constants.js?pipe=sub');
+importScripts('../constants.sub.js');
 importScripts('../websocket.sub.js');
 
 async_test(function(t) {

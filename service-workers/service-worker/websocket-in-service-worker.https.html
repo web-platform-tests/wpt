@@ -5,7 +5,7 @@
 <script src="resources/test-helpers.sub.js"></script>
 <script>
 promise_test(t => {
-    const SCRIPT = 'resources/websocket-worker.js?pipe=sub';
+    const SCRIPT = 'resources/websocket-worker.sub.js';
     const SCOPE = 'resources/blank.html';
     let registration;
     return service_worker_unregister_and_register(t, SCRIPT, SCOPE)

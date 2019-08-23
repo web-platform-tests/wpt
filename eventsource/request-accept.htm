@@ -10,7 +10,7 @@
     <script>
       var test = async_test()
       test.step(function() {
-        var source = new EventSource("resources/accept.event_stream?pipe=sub")
+        var source = new EventSource("resources/accept.sub.event_stream")
         source.onmessage = function(e) {
           test.step(function() {
             assert_equals(e.data, "text/event-stream")

@@ -1,4 +1,4 @@
-//This file requires server-side substitutions and must be included as constants.js?pipe=sub
+//This file requires server-side substitutions and must be included as constants.sub.js?pipe=
 
 var PORT = "{{ports[ws][0]}}";
 var PORT_SSL = "{{ports[wss][0]}}";

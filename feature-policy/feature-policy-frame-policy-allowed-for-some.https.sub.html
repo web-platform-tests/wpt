@@ -23,7 +23,7 @@
     {allow: "'self'", sameOriginTestExpect: true, crossOriginTestExpect: false, crossOrigin1TestExpect: false, dataOriginTestExpect: false},
     {allow: "'none'", sameOriginTestExpect: false, crossOriginTestExpect: false, crossOrigin1TestExpect: false, dataOriginTestExpect: false},
     {allow: "'self' " + cross_origin + " https://www.example.com", sameOriginTestExpect: true, crossOriginTestExpect: true, crossOrigin1TestExpect: false, dataOriginTestExpect: false}];
-  var pipe_front = '?pipe=sub|header(Feature-Policy,fullscreen ';
+  var pipe_front = '?pipe=header(Feature-Policy,fullscreen ';
   var pipe_end = ';)';
   var header_policies = ["*", "'self'", "'none'"];
 

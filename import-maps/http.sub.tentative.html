@@ -14,18 +14,18 @@
 const importMap = `
 {
   "imports": {
-    "bare": "./resources/log.js?pipe=sub&name=bare",
+    "bare": "./resources/log.sub.js?name=bare",
 
-    "./resources/log.js?pipe=sub&name=foo": "./resources/log.js?pipe=sub&name=bar",
-    "./resources/log.js?pipe=sub&name=cross-origin-foo": "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=cross-origin-bar",
-    "./resources/log.js?pipe=sub&name=to-data": "data:text/javascript,log.push('dataURL')",
+    "./resources/log.sub.js?name=foo": "./resources/log.sub.js?name=bar",
+    "./resources/log.sub.js?name=cross-origin-foo": "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=cross-origin-bar",
+    "./resources/log.sub.js?name=to-data": "data:text/javascript,log.push('dataURL')",
 
-    "./resources/log.js?pipe=sub&name=std-blank": "std:blank",
-    "./resources/log.js?pipe=sub&name=blank": "@std/blank",
-    "./resources/log.js?pipe=sub&name=std-none": "std:none",
-    "./resources/log.js?pipe=sub&name=none": "@std/none",
+    "./resources/log.sub.js?name=std-blank": "std:blank",
+    "./resources/log.sub.js?name=blank": "@std/blank",
+    "./resources/log.sub.js?name=std-none": "std:none",
+    "./resources/log.sub.js?name=none": "@std/none",
 
-    "./resources/log.js?pipe=sub&name=to-bare": "bare"
+    "./resources/log.sub.js?name=to-bare": "bare"
   }
 }
 `;
@@ -43,27 +43,27 @@ const tests = {
   // below. https://crbug.com/928435
 
   // HTTP(S) to HTTP(S).
-  "{{location[server]}}/import-maps/resources/log.js?pipe=sub&name=foo":
+  "{{location[server]}}/import-maps/resources/log.sub.js?name=foo":
     [Result.URL, Result.URL, "log:bar", "log:bar"],
-  "{{location[server]}}/import-maps/resources/log.js?pipe=sub&name=cross-origin-foo":
+  "{{location[server]}}/import-maps/resources/log.sub.js?name=cross-origin-foo":
     [Result.URL, Result.URL, "log:cross-origin-bar", "log:cross-origin-bar"],
 
   // HTTP(S) to data:
-  "{{location[server]}}/import-maps/resources/log.js?pipe=sub&name=to-data":
+  "{{location[server]}}/import-maps/resources/log.sub.js?name=to-data":
     [Result.URL, Result.URL, "dataURL", "dataURL"],
 
   // HTTP(S) to built-in.
-  "{{location[server]}}/import-maps/resources/log.js?pipe=sub&name=std-blank":
+  "{{location[server]}}/import-maps/resources/log.sub.js?name=std-blank":
     [Result.URL, Result.URL, Result.BUILTIN, Result.BUILTIN],
-  "{{location[server]}}/import-maps/resources/log.js?pipe=sub&name=blank":
+  "{{location[server]}}/import-maps/resources/log.sub.js?name=blank":
     [Result.URL, Result.URL, Result.BUILTIN, Result.BUILTIN],
-  "{{location[server]}}/import-maps/resources/log.js?pipe=sub&name=std-none":
+  "{{location[server]}}/import-maps/resources/log.sub.js?name=std-none":
     [Result.URL, Result.URL, Result.PARSE_ERROR, Result.PARSE_ERROR],
-  "{{location[server]}}/import-maps/resources/log.js?pipe=sub&name=none":
+  "{{location[server]}}/import-maps/resources/log.sub.js?name=none":
     [Result.URL, Result.URL, Result.PARSE_ERROR, Result.PARSE_ERROR],
 
   // HTTP(S) to bare mapping is disabled.
-  "{{location[server]}}/import-maps/resources/log.js?pipe=sub&name=to-bare":
+  "{{location[server]}}/import-maps/resources/log.sub.js?name=to-bare":
     [Result.URL, Result.URL, Result.PARSE_ERROR, Result.PARSE_ERROR],
 };
 

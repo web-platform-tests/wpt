@@ -16,38 +16,38 @@
 const importMap = `
 {
   "imports": {
-    "./resources/log.js?pipe=sub&name=blank": [
+    "./resources/log.sub.js?name=blank": [
       "@std/blank",
-      "./resources/log.js?pipe=sub&name=blank"
+      "./resources/log.sub.js?name=blank"
     ],
-    "./resources/log.js?pipe=sub&name=none": [
+    "./resources/log.sub.js?name=none": [
       "@std/none",
-      "./resources/log.js?pipe=sub&name=none"
+      "./resources/log.sub.js?name=none"
     ],
-    "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=cross-origin-blank": [
+    "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=cross-origin-blank": [
       "@std/blank",
-      "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=cross-origin-blank"
+      "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=cross-origin-blank"
     ],
-    "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=cross-origin-none": [
+    "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=cross-origin-none": [
       "@std/none",
-      "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=cross-origin-none"
+      "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=cross-origin-none"
     ],
 
-    "./resources/log.js?pipe=sub&name=std-blank": [
+    "./resources/log.sub.js?name=std-blank": [
       "std:blank",
-      "./resources/log.js?pipe=sub&name=std-blank"
+      "./resources/log.sub.js?name=std-blank"
     ],
-    "./resources/log.js?pipe=sub&name=std-none": [
+    "./resources/log.sub.js?name=std-none": [
       "std:none",
-      "./resources/log.js?pipe=sub&name=std-none"
+      "./resources/log.sub.js?name=std-none"
     ],
-    "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=std-cross-origin-blank": [
+    "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=std-cross-origin-blank": [
       "std:blank",
-      "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=std-cross-origin-blank"
+      "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=std-cross-origin-blank"
     ],
-    "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=std-cross-origin-none": [
+    "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=std-cross-origin-none": [
       "std:none",
-      "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=std-cross-origin-none"
+      "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=std-cross-origin-none"
     ]
 
   }
@@ -61,22 +61,22 @@ const tests = {
   // - dynamic import.
   // Result.URL indicates that the specifier was not re-mapped by import maps,
   // i.e. either considered as a relative path, or fallback occured.
-  "./resources/log.js?pipe=sub&name=blank":
+  "./resources/log.sub.js?name=blank":
     [Result.URL, Result.URL, Result.BUILTIN, Result.BUILTIN],
-  "./resources/log.js?pipe=sub&name=none":
+  "./resources/log.sub.js?name=none":
     [Result.URL, Result.URL, Result.URL, Result.URL],
-  "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=cross-origin-blank":
+  "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=cross-origin-blank":
     [Result.URL, Result.URL, Result.BUILTIN, Result.BUILTIN],
-  "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=cross-origin-none":
+  "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=cross-origin-none":
     [Result.URL, Result.URL, Result.URL, Result.URL],
 
-  "./resources/log.js?pipe=sub&name=std-blank":
+  "./resources/log.sub.js?name=std-blank":
     [Result.URL, Result.URL, Result.BUILTIN, Result.BUILTIN],
-  "./resources/log.js?pipe=sub&name=std-none":
+  "./resources/log.sub.js?name=std-none":
     [Result.URL, Result.URL, Result.URL, Result.URL],
-  "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=std-cross-origin-blank":
+  "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=std-cross-origin-blank":
     [Result.URL, Result.URL, Result.BUILTIN, Result.BUILTIN],
-  "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=std-cross-origin-none":
+  "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=std-cross-origin-none":
     [Result.URL, Result.URL, Result.URL, Result.URL],
 };
 

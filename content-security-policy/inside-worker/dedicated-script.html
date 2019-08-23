@@ -6,10 +6,10 @@
 <script nonce="a">
   // External URLs inherit policy: the header delivered with the script resource is ignored.
   fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js"));
-  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=sub|header(Content-Security-Policy,script-src 'none')"));
-  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=sub|header(Content-Security-Policy,script-src *)"));
-  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=sub|header(Content-Security-Policy,default-src 'none')"));
-  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=sub|header(Content-Security-Policy,default-src *)"));
+  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=header(Content-Security-Policy,script-src 'none')"));
+  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=header(Content-Security-Policy,script-src *)"));
+  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=header(Content-Security-Policy,default-src 'none')"));
+  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=header(Content-Security-Policy,default-src *)"));
 
   async_test(t => {
     fetch("./support/script-src-self.sub.js")

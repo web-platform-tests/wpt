@@ -14,8 +14,8 @@
 const importMap = `
 {
   "imports": {
-    "bare/bare": "./resources/log.js?pipe=sub&name=bare",
-    "bare/cross-origin-bare": "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=cross-origin-bare",
+    "bare/bare": "./resources/log.sub.js?name=bare",
+    "bare/cross-origin-bare": "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=cross-origin-bare",
     "bare/to-data": "data:text/javascript,log.push('dataURL')",
 
     "bare/std-blank": "std:blank",

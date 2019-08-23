@@ -1,4 +1,4 @@
-// META: script=support.js?pipe=sub
+// META: script=support.sub.js?pipe=
 // META: script=/common/utils.js
 
 // This is based on simple-requests.htm, with modifications to make the code more modern and test

@@ -48,7 +48,7 @@ ways:
 
 In order for the latter to work, a file must either have a name of the form
 `{name}.sub.{ext}` e.g. `example-test.sub.html` or be referenced through a URL
-containing `pipe=sub` in the query string e.g. `example-test.html?pipe=sub`.
+containing `pipe=sub` in the query string e.g. `example-test.sub.html?pipe=`.
 The substitution syntax uses `{{ }}` to delimit items for substitution. For
 example to substitute in the main host name, one would write: `{{host}}`.
 

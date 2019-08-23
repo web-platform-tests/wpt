@@ -6,6 +6,6 @@
 <script>
   // SharedWorkers do not inherit policy.
   fetch_tests_from_worker(new SharedWorker("./support/connect-src-allow.sub.js"));
-  fetch_tests_from_worker(new SharedWorker("./support/connect-src-self.sub.js?pipe=sub|header(Content-Security-Policy,connect-src 'self')"));
-  fetch_tests_from_worker(new SharedWorker("./support/connect-src-self.sub.js?pipe=sub|header(Content-Security-Policy,default-src 'self')"));
+  fetch_tests_from_worker(new SharedWorker("./support/connect-src-self.sub.js?pipe=header(Content-Security-Policy,connect-src 'self')"));
+  fetch_tests_from_worker(new SharedWorker("./support/connect-src-self.sub.js?pipe=header(Content-Security-Policy,default-src 'self')"));
 </script>

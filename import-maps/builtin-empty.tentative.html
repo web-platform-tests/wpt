@@ -7,10 +7,10 @@
 const importMap = `
 {
   "imports": {
-    "./resources/log.js?pipe=sub&name=empty": [ "@std/" ],
-    "./resources/log.js?pipe=sub&name=empty-fallback": [
+    "./resources/log.sub.js?name=empty": [ "@std/" ],
+    "./resources/log.sub.js?name=empty-fallback": [
       "@std/",
-      "./resources/log.js?pipe=sub&name=empty-fallback"
+      "./resources/log.sub.js?name=empty-fallback"
     ]
   }
 }
@@ -32,9 +32,9 @@ const tests = {
   "@std/":
     [Result.FETCH_ERROR, Result.PARSE_ERROR, Result.FETCH_ERROR, Result.FETCH_ERROR],
 
-  "./resources/log.js?pipe=sub&name=empty":
+  "./resources/log.sub.js?name=empty":
     [Result.URL, Result.URL, Result.PARSE_ERROR, Result.PARSE_ERROR],
-  "./resources/log.js?pipe=sub&name=empty-fallback":
+  "./resources/log.sub.js?name=empty-fallback":
     [Result.URL, Result.URL, Result.URL, Result.URL],
 };
 

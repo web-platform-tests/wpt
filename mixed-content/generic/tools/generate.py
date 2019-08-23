@@ -36,7 +36,7 @@ expectation: %(expectation)s
 
         self.test_page_title_template = 'Mixed-Content: %s'
 
-        self.helper_js = '/mixed-content/generic/mixed-content-test-case.js?pipe=sub'
+        self.helper_js = '/mixed-content/generic/mixed-content-test-case.sub.js'
 
         # For debug target only.
         self.sanity_checker_js = '/mixed-content/generic/sanity-checker.js'

@@ -342,7 +342,7 @@ function test_subframe_header_policy(
   let frame = document.createElement('iframe');
   promise_test(function() {
     assert_feature_policy_supported()
-    frame.src = src + '?pipe=sub|header(Feature-Policy,' + feature + ' '
+    frame.src = src + '?pipe=header(Feature-Policy,' + feature + ' '
         + frame_header_policy + ';)';
     return new Promise(function(resolve, reject) {
       let results = [];

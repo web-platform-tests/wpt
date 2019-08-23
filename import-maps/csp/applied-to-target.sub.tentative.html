@@ -7,13 +7,13 @@
 <script type="importmap">
 {
   "imports": {
-    "../resources/log.js?pipe=sub&name=A": "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=B",
-    "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=C": "../resources/log.js?pipe=sub&name=D"
+    "../resources/log.sub.js?name=A": "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=B",
+    "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=C": "../resources/log.sub.js?name=D"
   }
 }
 </script>
 <script type="module">
-import '../resources/log.js?pipe=sub&name=A';
+import '../resources/log.sub.js?name=A';
 </script>
 <script type="module">
 test(t => {
@@ -22,7 +22,7 @@ test(t => {
 </script>
 
 <script type="module">
-import 'https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=C';
+import 'https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.sub.js?name=C';
 </script>
 <script type="module">
 test(t => {

@@ -232,7 +232,7 @@ class WebDriverProtocol(Protocol):
     def teardown(self):
         self.logger.debug("Hanging up on WebDriver session")
         try:
-            self.webdriver.quit()
+            self.webdriver.end()
         except Exception:
             pass
         del self.webdriver

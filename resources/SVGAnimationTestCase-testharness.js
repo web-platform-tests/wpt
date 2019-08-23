@@ -84,18 +84,22 @@ function runAnimationTest(t, expected) {
 function smil_async_test(func) {
   async_test(t => {
     window.onload = t.step_func(function () {
-      // Pause animations, we'll drive them manually.
-      // This also ensures that the timeline is paused before
-      // it starts. This should make the instance time of the below
-      // 'click' (for instance) 0, and hence minimize rounding
-      // errors for the addition in moveAnimationTimelineAndSample.
-      rootSVGElement.pauseAnimations();
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          // Pause animations, we'll drive them manually.
+          // This also ensures that the timeline is paused before
+          // it starts. This should make the instance time of the below
+          // 'click' (for instance) 0, and hence minimize rounding
+          // errors for the addition in moveAnimationTimelineAndSample.
+          rootSVGElement.pauseAnimations();
 
-      // If eg. an animation is running with begin="0s", and
-      // we want to sample the first time, before the animation
-      // starts, then we can't delay the testing by using an
-      // onclick event, as the animation would be past start time.
-      func(t);
+          // If eg. an animation is running with begin="0s", and
+          // we want to sample the first time, before the animation
+          // starts, then we can't delay the testing by using an
+          // onclick event, as the animation would be past start time.
+          func(t);
+        });
+      });
     });
   });
 }

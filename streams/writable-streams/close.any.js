@@ -20,7 +20,7 @@ promise_test(() => {
 
   const closePromise = writer.close();
   return closePromise.then(value => assert_equals(value, undefined, 'fulfillment value must be undefined'));
-}, 'fulfillment value of ws.close() call must be undefined even if the underlying sink returns a non-undefined ' +
+}, 'fulfillment value of writer.close() call must be undefined even if the underlying sink returns a non-undefined ' +
     'value');
 
 promise_test(() => {

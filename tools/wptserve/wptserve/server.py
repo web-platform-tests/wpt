@@ -1,6 +1,7 @@
 from six.moves import BaseHTTPServer
 import errno
 import os
+import re
 import socket
 from six.moves.socketserver import ThreadingMixIn
 import ssl
@@ -107,6 +108,14 @@ class RequestRewriter(object):
                                 rewrite the request.
         """
         split_url = urlsplit(request_handler.path)
+
+        if re.search(r'\bsub\b', split_url.query):
+            with open('../artifacts/suspicious.txt', 'a') as handle:
+                handle.write('%s - %s\n' % (
+                    request_handler.path,
+                    request_handler.headers.getheader('Referer')
+                ))
+
         if split_url.path in self.rules:
             methods, destination = self.rules[split_url.path]
             if "*" in methods or request_handler.command in methods:

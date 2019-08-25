@@ -9,7 +9,7 @@ async_test(t => {
     t.step_timeout(() => {
       assert_equals(frameW.document, frameD);
       t.done();
-    }, 100);
+    }, 1000);
   });
   document.body.append(frame);
 }, "Window object's document IDL attribute and discarding the browsing context");

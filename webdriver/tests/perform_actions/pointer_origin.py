@@ -28,7 +28,7 @@ def test_viewport_inside(session, mouse_chain):
         .perform()
 
     click_coords = session.execute_script("return window.coords;")
-    assert click_coords["x"] == pytest.approx(point["x"], abs = 1.0)
+    assert click_coords["x"] == pytest.approx(100, abs = 1.0)
     assert click_coords["y"] == pytest.approx(point["y"], abs = 1.0)
 
 

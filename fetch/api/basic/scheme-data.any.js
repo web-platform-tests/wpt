@@ -16,7 +16,7 @@ function checkFetchResponse(url, data, mime, fetchMode, method) {
       assert_equals(resp.headers.get("Content-Type"), mime, "Content-Type is " + resp.headers.get("Content-Type"));
      return resp.text();
     }).then(function(body) {
-        assert_equals(body, data, "Response's body is correct");
+        assert_equals(body, data, method === "HEAD" ? "" : "Response's body is correct");
     });
   }, desc);
 }

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Running Tests &#8212; web-platform-tests  documentation</title>
+    <title>Android WebView &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -16,8 +16,8 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Running Tests from the Web" href="from-web.html" />
-    <link rel="prev" title="Test Suite Design" href="../test-suite-design.html" />
+    <link rel="next" title="Safari" href="safari.html" />
+    <link rel="prev" title="Chrome for Android" href="chrome_android.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -34,41 +34,42 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="running-tests">
-<h1>Running Tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="from-web.html">Running Tests from the Web</a></li>
-<li class="toctree-l1"><a class="reference internal" href="from-local-system.html">Running Tests from the Local System</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="from-local-system.html#system-setup">System Setup</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="from-local-system.html#windows-notes">Windows Notes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="from-local-system.html#via-the-browser">Via the browser</a></li>
-<li class="toctree-l2"><a class="reference internal" href="from-local-system.html#via-the-command-line">Via the command line</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="chrome.html">Chrome</a></li>
-<li class="toctree-l3"><a class="reference internal" href="chrome_android.html">Chrome for Android</a></li>
-<li class="toctree-l3"><a class="reference internal" href="android_webview.html">Android WebView</a></li>
-<li class="toctree-l3"><a class="reference internal" href="safari.html">Safari</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="custom-runner.html">Writing Your Own Runner</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tools/certs/README.html">WPT Test Certificates</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tools/certs/README.html#trusting-root-ca">Trusting Root CA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tools/certs/README.html#regenerating-certificates">Regenerating certificates</a></li>
+  <div class="section" id="android-webview">
+<h1>Android WebView<a class="headerlink" href="#android-webview" title="Permalink to this headline">¶</a></h1>
+<p>To run WPT on WebView on an Android device, some additional set-up is required.</p>
+<p>Currently, Android WebView support is experimental.</p>
+<ul class="simple">
+<li>Please check <a class="reference internal" href="chrome_android.html"><span class="doc">Chrome for Android</span></a> for the common
+instructions for Android support first.</li>
+<li>Install an up-to-date version of system webview shell:<ul>
+<li>Go to
+<a class="reference external" href="https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Android/">chromium-browser-snapshots</a></li>
+<li>Find the subdirectory with the highest number and click it.</li>
+<li>Download <code class="docutils literal notranslate"><span class="pre">chrome-android.zip</span></code> file and unzip it.</li>
+<li>Install <code class="docutils literal notranslate"><span class="pre">SystemWebViewShell.apk</span></code>.</li>
+<li>On emulator, system webview shell may already be installed by default. Then
+you may need to remove the existing apk:<ul>
+<li>Choose a userdebug build.</li>
+<li>Run an emulator with
+<a class="reference external" href="https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_emulator.md/">writable system partition from command line</a></li>
 </ul>
 </li>
 </ul>
+</li>
+<li>If you have an issue with ChromeDriver version, try removing
+<code class="docutils literal notranslate"><span class="pre">_venv/bin/chromedriver</span></code> such that wpt runner can install a matching version
+automatically. Failing that, please check your environment path and make
+sure that no other ChromeDriver is used.</li>
+</ul>
+<p>Example command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --test-type<span class="o">=</span>testharness android_webview &lt;TESTS&gt;
+</pre></div>
 </div>
-<p>The simplest way to run the tests is via the public website. More detail on
-that approach is available in <a class="reference internal" href="from-web.html"><span class="doc">Running tests from the Web</span></a>.</p>
-<p>Contributors who are interested in modifying and creating tests should refer to
-<a class="reference internal" href="from-local-system.html"><span class="doc">Running Tests from the Local System</span></a>.</p>
-<p>Advanced use cases may call for a customized method of executing the tests.
-Guidelines for writing a custom “runner” are available at <a class="reference internal" href="custom-runner.html"><span class="doc">Writing Your Own
-Runner</span></a>.</p>
+<ul class="simple">
+<li>Note that there is no support for channel or automatic installation. The test
+will be run against the current WebView version installed on the device.</li>
+<li>Reftests are not supported at the moment.</li>
+</ul>
 </div>
 
 
@@ -90,9 +91,9 @@ Runner</span></a>.</p>
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../test-suite-design.html">Test Suite Design</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Running Tests</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Running Tests</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="from-web.html">Running Tests from the Web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="from-local-system.html">Running Tests from the Local System</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="from-local-system.html">Running Tests from the Local System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="custom-runner.html">Writing Your Own Runner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tools/certs/README.html">WPT Test Certificates</a></li>
 </ul>
@@ -106,8 +107,12 @@ Runner</span></a>.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../test-suite-design.html" title="previous chapter">Test Suite Design</a></li>
-      <li>Next: <a href="from-web.html" title="next chapter">Running Tests from the Web</a></li>
+  <li><a href="index.html">Running Tests</a><ul>
+  <li><a href="from-local-system.html">Running Tests from the Local System</a><ul>
+      <li>Previous: <a href="chrome_android.html" title="previous chapter">Chrome for Android</a></li>
+      <li>Next: <a href="safari.html" title="next chapter">Safari</a></li>
+  </ul></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -143,7 +148,7 @@ Runner</span></a>.</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/running-tests/index.md.txt"
+      <a href="../_sources/running-tests/android_webview.md.txt"
           rel="nofollow">Page source</a>
     </div>
 

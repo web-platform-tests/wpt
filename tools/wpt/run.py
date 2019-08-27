@@ -92,7 +92,7 @@ def args_general(kwargs):
     elif kwargs["ssl_type"] == "openssl":
         if not find_executable(kwargs["openssl_binary"]):
             if os.uname()[0] == "Windows":
-                raise WptrunError("""OpenSSL binary not found. If you need HTTPS tests, install OpenSSL from
+                raise WptrunError("""OpenSSL binary not found. If you need HTTPS tests, Install OpenSSL from
 
 https://slproweb.com/products/Win32OpenSSL.html
 

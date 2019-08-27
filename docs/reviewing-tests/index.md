@@ -49,7 +49,7 @@ collaborator before it can be merged.
 META.yml files are used to indicate who should be notified of pull
 requests.  If you are interested in receiving notifications of proposed
 changes to tests in a given directory, feel free to add your GitHub account
-name to the `suggested_reviewers` list in the META.yml file.
+username to the `suggested_reviewers` list in the META.yml file.
 
 ## Finding contributions to review
 

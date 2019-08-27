@@ -448,7 +448,7 @@ dictionary StaticRangeInit {
   required unsigned long endOffset;
 };
 
-[Constructor(StaticRangeInit staticRangeInitDict),
+[Constructor(StaticRangeInit init),
  Exposed=Window]
 interface StaticRange : AbstractRange {
 };

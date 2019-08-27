@@ -412,7 +412,7 @@ promise_test(() => {
   });
 }, 'ready promise should be initialised as fulfilled for a writer on a closed stream');
 
-promise_test(t => {
+promise_test(() => {
   const ws = new WritableStream();
   ws.close();
   const writer = ws.getWriter();

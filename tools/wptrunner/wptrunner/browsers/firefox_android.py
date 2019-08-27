@@ -56,7 +56,7 @@ def browser_kwargs(test_type, run_info_data, config, **kwargs):
             "stylo_threads": kwargs["stylo_threads"],
             "chaos_mode_flags": kwargs["chaos_mode_flags"],
             "config": config,
-            "install_fonts": kwargs["install_fonts"],
+            # "install_fonts": kwargs["install_fonts"],
             "tests_root": config.doc_root}
 
 
@@ -91,7 +91,7 @@ class FirefoxAndroidBrowser(FirefoxBrowser):
         self.package_name = package_name
         self.device_serial = device_serial
         self.tests_root = kwargs["tests_root"]
-        self.install_fonts = kwargs["install_fonts"]
+        # self.install_fonts = kwargs["install_fonts"]
         self.stackwalk_binary = kwargs["stackwalk_binary"]
 
     def start(self, **kwargs):
@@ -136,14 +136,14 @@ class FirefoxAndroidBrowser(FirefoxBrowser):
                 "layout.testing.overlay-scrollbars.always-visible": True,
             })
 
-        if self.install_fonts:
-            self.logger.debug("Copying Ahem font to profile")
-            font_dir = os.path.join(self.profile.profile, "fonts")
-            if not os.path.exists(font_dir):
-                os.makedirs(font_dir)
-            with open(os.path.join(self.tests_root, "fonts", "Ahem.ttf"), "rb") as src:
-                with open(os.path.join(font_dir, "Ahem.ttf"), "wb") as dest:
-                    dest.write(src.read())
+        # if self.install_fonts:
+        #     self.logger.debug("Copying Ahem font to profile")
+        #     font_dir = os.path.join(self.profile.profile, "fonts")
+        #     if not os.path.exists(font_dir):
+        #         os.makedirs(font_dir)
+        #     with open(os.path.join(self.tests_root, "fonts", "Ahem.ttf"), "rb") as src:
+        #         with open(os.path.join(font_dir, "Ahem.ttf"), "wb") as dest:
+        #             dest.write(src.read())
 
         self.leak_report_file = None
 

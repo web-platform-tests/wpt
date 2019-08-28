@@ -29,6 +29,9 @@ input, select, button, textarea {
 input, select, textarea {
   text-align: initial;
 }
+input[type=reset i], input[type=button i], input[type=submit i], button {
+  text-align: center;
+}
 marquee {
   text-align: initial;
 }
@@ -73,7 +76,13 @@ table {
 <div id="refs"></div>
 
 <script>
- const props = ['letter-spacing', 'word-spacing', 'line-height', 'text-transform', 'text-indent', 'text-shadow'];
+ const props = ['letter-spacing',
+                'word-spacing',
+                'line-height',
+                'text-transform',
+                'text-indent',
+                'text-shadow',
+                'text-align'];
  const refs = document.getElementById('refs');
  for (const el of document.querySelectorAll('#tests > *')) {
    const clone = fakeClone(el);

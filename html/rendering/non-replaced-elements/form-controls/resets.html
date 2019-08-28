@@ -3,6 +3,19 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
+/* Have some non-initial values on the parent so we can tell the difference whether the UA stylesheet uses 'initial' keyword. */
+#tests, #refs {
+  letter-spacing: 5px;
+  word-spacing: 5px;
+  line-height: 5px;
+  text-transform: uppercase;
+  text-indent: 5px;
+  text-shadow: 0 0 5px transparent;
+  text-align: right;
+}
+</style>
+<style>
+/* Specify this bogus namespace, so the rules in this stylesheet only apply to the `fakeClone`d elements in #refs, not the HTML elements in #tests. */
 @namespace url(urn:not-html);
 
 input, select, button, textarea {
@@ -10,32 +23,16 @@ input, select, button, textarea {
   word-spacing: initial;
   line-height: initial;
   text-transform: initial;
-
   text-indent: initial;
   text-shadow: initial;
 }
 input, select, textarea {
   text-align: initial;
-
-}
-input[type=reset i], input[type=button i], input[type=submit i], input[type=color i], button {
-  display: inline-block;
-}
-input[type=radio i], input[type=checkbox i], input[type=reset i], input[type=button i],
-input[type=submit i], input[type=color i], input[type=search i], select, button {
-  box-sizing: border-box;
-}
-textarea
-{
-  white-space: pre-wrap;
 }
 marquee {
   text-align: initial;
 }
 table {
-  box-sizing: border-box;
-  border-spacing: 2px;
-  border-collapse: separate;
   text-indent: initial;
 }
 </style>
@@ -65,26 +62,35 @@ table {
  <input type="button">
  <select><optgroup><option></select>
  <select multiple></select>
+ <optgroup></optgroup>
+ <option></option>
  <button></button>
  <textarea></textarea>
- <table></table>
+ <table><tbody><tr><td></table>
  <marquee></marquee>
 </div>
 
 <div id="refs"></div>
 
 <script>
-  const props = ['letter-spacing', 'word-spacing', 'line-height', 'text-transform', 'text-indent', 'text-shadow ', 'box-sizing', 'border-spacing', 'border-collapse', 'white-space'];
+ const props = ['letter-spacing', 'word-spacing', 'line-height', 'text-transform', 'text-indent', 'text-shadow'];
  const refs = document.getElementById('refs');
- for (const el of document.querySelectorAll('#tests *')) {
+ for (const el of document.querySelectorAll('#tests > *')) {
    const clone = fakeClone(el);
    refs.append(clone);
-   const testStyle = getComputedStyle(el);
-   const refStyle = getComputedStyle(clone);
+ }
+ const testsContainer = document.getElementById('tests');
+ const testEls = document.querySelectorAll('#tests *');
+ const refEls = document.querySelectorAll('#refs *');
+ for (let i = 0; i < testEls.length; ++i) {
+   const testEl = testEls[i];
+   const refEl = refEls[i];
+   const testStyle = getComputedStyle(testEl);
+   const refStyle = getComputedStyle(refEl);
    for (const prop of props) {
      test(() => {
        assert_equals(testStyle.getPropertyValue(prop), refStyle.getPropertyValue(prop));
-     }, `${el.outerHTML} - ${prop}`);
+     }, `${testNameContext(testEl)} - ${prop}`);
    }
  }
 
@@ -93,6 +99,23 @@ table {
    for (const att of el.attributes) {
      clone.setAttributeNS(att.namespaceURI, att.name, att.value);
    }
+   // deep clone
+   for (const child of el.children) {
+     clone.append(fakeClone(child));
+   }
    return clone;
+ }
+
+ function testNameContext(el) {
+   const outerHTML = el.outerHTML;
+   const startTags = outerHTML.substring(0, outerHTML.indexOf('</')) || outerHTML;
+
+   let ancestors = [];
+   let current = el.parentNode;
+   while (current != testsContainer) {
+     ancestors.unshift(current.localName);
+     current = current.parentNode;
+   }
+   return startTags + (ancestors.length ? ` (in ${ancestors.join(' > ')})` : '');
  }
 </script>

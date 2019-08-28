@@ -60,7 +60,7 @@ def update_expected(test_paths, serve_root, log_file_names,
     test jobs, disable tests that don't behave as expected on all runs
 
     If `update_intermittent` is True, intermittent statuses will be recorded as `expected` in
-    the metadata. 
+    the metadata.
 
     If `remove_intermittent` is True and used in conjunction with `update_intermittent`, any
     intermittent statuses which are not present in the current run will be removed from the
@@ -554,7 +554,7 @@ class PackedResultList(object):
     def append(self, prop, run_info, value):
         out_val = (prop << 12) + run_info
         if prop == prop_intern.store("status") and isinstance(value, int):
-             out_val += value << 8
+            out_val += value << 8
         else:
             if not hasattr(self, "raw_data"):
                 self.raw_data = {}
@@ -692,8 +692,7 @@ class TestFileData(object):
                         value = Result(status,
                                        known_intermittent,
                                        default_expected_by_type[self.item_type,
-                                                                subtest_id is not None],
-                        )
+                                                                subtest_id is not None])
 
                     test_expected = expected_by_test[test_id]
                     if subtest_id is None:
@@ -722,7 +721,7 @@ class TestFileData(object):
 Result = namedtuple("Result", ["status", "known_intermittent", "default_expected"])
 
 
-def create_expected(url_base, test_path,  run_info_properties, update_intermittent, remove_intermittent):
+def create_expected(url_base, test_path, run_info_properties, update_intermittent, remove_intermittent):
     expected = manifestupdate.ExpectedManifest(None,
                                                test_path,
                                                url_base,

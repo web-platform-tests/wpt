@@ -2,27 +2,27 @@
 <html>
 <head>
 <meta name="variant" content="?keep-promise">
-<title>Test#skip</title>
+<title>assert_precondition</title>
 <script src="../../variants.js"></script>
 </head>
 <body>
-<h1>Test#skip</h1>
+<h1>assert_precondition</h1>
 <div id="log"></div>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-test(function(t) {
-    t.skip("custom message");
+  test(function(t) {
+    assert_precondition(false, "custom message");
   }, 'test (synchronous)');
 
-async_test(function(t) {
+  async_test(function(t) {
     t.step_timeout(function() {
-        t.skip();
-      }, 0);
+      assert_precondition(false);
+    }, 0);
   }, 'async_test');
 
-promise_test(function(t) {
-    t.skip();
+  promise_test(function(t) {
+    assert_precondition(false);
 
     return new Promise(function() {});
   }, 'promise_test');

@@ -1509,6 +1509,23 @@ policies and contribution forms [3].
     }
     expose(assert_any, "assert_any");
 
+    function assert_precondition(precondition, description) {
+        if (!precondition) {
+            throw new PreconditionFailedError(description);
+        }
+    }
+    expose(assert_precondition, "assert_precondition");
+
+
+    function PreconditionFailedError(message)
+    {
+        AssertionError.call(this, message);
+    }
+    expose(PreconditionFailedError, "PreconditionFailedError");
+
+    PreconditionFailedError.prototype = Object.create(AssertionError.prototype);
+    PreconditionFailedError.prototype.constructor = PreconditionFailedError;
+
     function Test(name, properties)
     {
         if (tests.file_is_test && tests.tests.length) {
@@ -1614,10 +1631,16 @@ policies and contribution forms [3].
             if (this.phase >= this.phases.HAS_RESULT) {
                 return;
             }
-            var message = String((typeof e === "object" && e !== null) ? e.message : e);
-            var stack = e.stack ? e.stack : null;
+            if (e instanceof PreconditionFailedError) {
+                this.set_status(
+                    this.PRECONDITION_FAILED,
+                    ((typeof e === "object" && e !== null) ? e.message : e) || 'Test skipped');
+            } else {
+                var message = String((typeof e === "object" && e !== null) ? e.message : e);
+                var stack = e.stack ? e.stack : null;
+                this.set_status(this.FAIL, message, stack);
+            }
 
-            this.set_status(this.FAIL, message, stack);
             this.phase = this.phases.HAS_RESULT;
             this.done();
         }
@@ -1719,13 +1742,6 @@ policies and contribution forms [3].
     };
 
     Test.prototype.force_timeout = Test.prototype.timeout;
-
-    Test.prototype.skip = function(message)
-    {
-        this.set_status(this.PRECONDITION_FAILED, message || 'Test skipped');
-        this.phase = this.phases.HAS_RESULT;
-        this.done();
-    }
 
     /**
      * Update the test status, initiate "cleanup" functions, and signal test
@@ -3095,7 +3111,7 @@ policies and contribution forms [3].
     function AssertionError(message)
     {
         this.message = message;
-        this.stack = this.get_stack();
+        this.stack = AssertionError.prototype.get_stack.call(this);
     }
     expose(AssertionError, "AssertionError");
 

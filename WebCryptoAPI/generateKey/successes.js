@@ -66,7 +66,7 @@ function run_test(algorithmNames, slowTest) {
                 }
             }, function(err) {
                 if (err.toString().includes('not supported')) {
-                    test.skip(algorithm.name + ' not implemented');
+                    assert_precondition(false, algorithm.name + ' not implemented');
                 } else {
                     assert_unreached("Threw an unexpected error: " + err.toString());
                 }

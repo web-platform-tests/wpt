@@ -19,7 +19,7 @@
 
 test(() => {
   if (!window.SpeechRecognition) {
-    // TODO(foolip): use `t.skip()` after
+    // TODO(foolip): use `assert_precondition` after
     // https://github.com/web-platform-tests/rfcs/pull/16 is done.
     return;
   }
@@ -32,7 +32,7 @@ test(() => {
 ].forEach(name => {
   test(() => {
     if (!window.SpeechRecognitionEvent) {
-      // TODO(foolip): use `t.skip()` after
+      // TODO(foolip): use `assert_precondition` after
       // https://github.com/web-platform-tests/rfcs/pull/16 is done.
       return;
     }

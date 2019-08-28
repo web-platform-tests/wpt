@@ -614,7 +614,7 @@ def test_update_intermittent_full():
     updated = update(tests, log_0, log_1, update_intermittent=True, full_update=True)
 
     new_manifest = updated[0][1]
-    
+
     assert not new_manifest.is_empty
     run_info_1 = default_run_info.copy()
     run_info_1.update({"os": "mac"})
@@ -663,7 +663,7 @@ def test_update_intermittent_full_remove():
                      full_update=True, remove_intermittent=True)
 
     new_manifest = updated[0][1]
-    
+
     assert not new_manifest.is_empty
     run_info_1 = default_run_info.copy()
     run_info_1.update({"os": "mac"})
@@ -703,7 +703,7 @@ def test_full_update():
     updated = update(tests, log_0, log_1, full_update=True)
 
     new_manifest = updated[0][1]
-    
+
     assert not new_manifest.is_empty
     run_info_1 = default_run_info.copy()
     run_info_1.update({"os": "mac"})
@@ -762,7 +762,7 @@ def test_update_reorder_expected_full_conditions():
     updated = update(tests, log_0, log_1, log_2, log_3, update_intermittent=True, full_update=True)
 
     new_manifest = updated[0][1]
-    
+
     assert not new_manifest.is_empty
     run_info_1 = default_run_info.copy()
     run_info_1.update({"os": "mac"})

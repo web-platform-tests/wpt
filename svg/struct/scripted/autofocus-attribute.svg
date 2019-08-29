@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:h="http://www.w3.org/1999/xhtml">
+    <title>Autofocus attribute</title>
+    <metadata>
+        <h:link rel="help" href="https://svgwg.org/svg2-draft/struct.html#autofocusattribute"/>
+    </metadata>
+    <a id="a1" href="#"></a>
+    <a id="a2" href="#"></a>
+    <h:script src="/resources/testharness.js"/>
+    <h:script src="/resources/testharnessreport.js"/>
+    <h:script src="/html/semantics/forms/autofocus/resources/utils.js"/>
+    <script><![CDATA[
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+promise_test(async t => {
+  let w = window.open('/common/blank.html');
+  await waitForLoad(w);
+  t.add_cleanup(() => { w.close(); });
+  const svg_a = w.document.createElementNS(SVG_NS, 'a');
+  svg_a.setAttribute('href', '#');
+  svg_a.setAttribute('autofocus', 'autofocus');
+  w.document.body.appendChild(svg_a);
+  await waitUntilStableAutofocusState(t);
+  assert_equals(w.document.activeElement, svg_a);
+}, '<a> should support autofocus');
+
+promise_test(async t => {
+  let w = window.open('/common/blank.html');
+  await waitForLoad(w);
+  t.add_cleanup(() => { w.close(); });
+  const path = w.document.createElementNS(SVG_NS, 'path');
+  path.setAttribute('tabindex', '0');
+  path.setAttribute('autofocus', 'autofocus');
+  w.document.body.appendChild(path);
+  await waitUntilStableAutofocusState(t);
+  assert_equals(w.document.activeElement, path);
+}, 'Renderable element with tabindex should support autofocus');
+
+promise_test(async t => {
+  let w = window.open('/common/blank.html');
+  await waitForLoad(w);
+  t.add_cleanup(() => { w.close(); });
+  let element = w.document.createElementNS(SVG_NS, 'metadata');
+  element.setAttribute('tabindex', '0');
+  element.setAttribute('autofocus', 'autofocus');
+  w.document.body.appendChild(element);
+  await waitUntilStableAutofocusState(t);
+  assert_equals(w.document.activeElement.tagName, 'BODY');
+}, 'Never-rendered element with tabindex should not support autofocus');
+]]></script>
+</svg>

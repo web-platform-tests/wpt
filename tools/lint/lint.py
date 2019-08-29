@@ -680,8 +680,8 @@ def check_script_metadata(repo_root, path, f):
     return errors
 
 
-ahem_font_re = re.compile(r"font.*:.*ahem", flags=re.IGNORECASE)
-ahem_stylesheet_re = re.compile(r"\/fonts\/ahem\.css", flags=re.IGNORECASE)
+ahem_font_re = re.compile(b"font.*:.*ahem", flags=re.IGNORECASE)
+ahem_stylesheet_re = re.compile(b"\/fonts\/ahem\.css", flags=re.IGNORECASE)
 
 
 def check_ahem_system_font(repo_root, path, f):

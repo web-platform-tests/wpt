@@ -18,6 +18,7 @@ var GenericSensorTest = (() => {
       this.binding_.setConnectionErrorHandler(() => {
         this.reset();
       });
+      this.readingsProducerFunction_ = null;
     }
 
     getDefaultConfiguration() {
@@ -64,6 +65,7 @@ var GenericSensorTest = (() => {
       this.requestedFrequencies_ = [];
       this.buffer_.fill(0);
       this.binding_.close();
+      this.readingsProducerFunction_ = null;
     }
 
     startReading() {
@@ -81,6 +83,17 @@ var GenericSensorTest = (() => {
       const maxFrequencyHz = this.requestedFrequencies_[0];
       const timeoutMs = (1 / maxFrequencyHz) * 1000;
       this.sensorReadingTimerId_ = window.setInterval(() => {
+        // By default, each reading will contain the same value (0), unless
+        // |readingsProducerFunction_| is defined, in which case its return
+        // value is used instead.
+        if (this.readingsProducerFunction_) {
+          const readings = this.readingsProducerFunction_();
+          if (!Array.isArray(readings)) {
+            throw new TypeError("The readings generator function must return " +
+                                "an array");
+          }
+          this.buffer_.set(readings, 2);
+        }
         // For all tests sensor reading should have monotonically
         // increasing timestamp in seconds.
         this.buffer_[1] = window.performance.now() * 0.001;
@@ -100,6 +113,13 @@ var GenericSensorTest = (() => {
      get isReading() {
        this.sensorReadingTimerId_ !== null;
      }
+
+     // Can be used to make each reading produced by this sensor to come from
+     // |readingsProducer|, a function that returns an array that is passed to
+     // this.buffer_ and which represents a raw reading.
+     setReadingsProducerFunction(readingsProducerFunction) {
+      this.readingsProducerFunction_ = readingsProducerFunction;
+    }
   }
 
   // Class that mocks SensorProvider interface defined in
@@ -149,6 +169,17 @@ var GenericSensorTest = (() => {
       if (type == device.mojom.SensorType.AMBIENT_LIGHT ||
           type == device.mojom.SensorType.MAGNETOMETER) {
         maxAllowedFrequencyHz = 10;
+      }
+
+      // Chromium applies some rounding and other privacy-related measures that
+      // can cause ALS not to report a reading when it has not changed beyond a
+      // certain threshold compared to the previous illuminance value. Make
+      // each reading return a different value that is significantly different
+      // from the previous one.
+      if (type == device.mojom.SensorType.AMBIENT_LIGHT) {
+        this.activeSensor_.setReadingsProducerFunction(() => {
+          return [window.performance.now() * 100];
+        })
       }
 
       let initParams = new device.mojom.SensorInitParams({

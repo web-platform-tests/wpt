@@ -5,7 +5,7 @@ from collections import MutableMapping, defaultdict
 from six import iteritems, iterkeys, itervalues, string_types, binary_type, text_type
 
 from . import vcs
-from .item import (ConformanceCheckerTest, ManifestItem, ManualTest, RefTest, RefTestNode, Stub,
+from .item import (ConformanceCheckerTest, ManifestItem, ManualTest, RefTest, RefTestNode,
                    SupportFile, TestharnessTest, VisualTest, WebDriverSpecTest)
 from .log import get_logger
 from .sourcefile import SourceFile
@@ -51,7 +51,6 @@ item_classes = {"testharness": TestharnessTest,
                 "reftest": RefTest,
                 "reftest_node": RefTestNode,
                 "manual": ManualTest,
-                "stub": Stub,
                 "wdspec": WebDriverSpecTest,
                 "conformancechecker": ConformanceCheckerTest,
                 "visual": VisualTest,

@@ -48,6 +48,7 @@
             var allowInvalid = true;
             var child = FragmentHelper.appendChild(element, allowInvalid);
             child.setAttribute("style", style);
+
             var referenceContainer = div.lastElementChild;
             var referenceContainerWidth = referenceContainer.getBoundingClientRect().width;
             var reference = FragmentHelper.element(referenceContainer);

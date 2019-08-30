@@ -204,7 +204,7 @@ class GitHub(object):
         url = url + '/{}/statuses'
         data = {
             'state': 'success',
-            'environment_url': 'https://wpt.reviews/{}/'.format(
+            'environment_url': 'http://w3c-test.org/submissions/{}'.format(
                 pr_number
             ),
             'auto_inactive': True

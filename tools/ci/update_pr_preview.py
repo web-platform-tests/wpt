@@ -50,7 +50,8 @@ def request(url, method_name, data=None, json_data=None, ignore_body=False):
     kwargs = {
         'headers': {
             'Authorization': 'token {}'.format(github_token),
-            'Accept': 'application/vnd.github.machine-man-preview+json'
+            'Accept': 'application/vnd.github.machine-man-preview+json',
+            'Accept': 'application/vnd.github.ant-man-preview+json'
         }
     }
     method = getattr(requests, method_name)
@@ -177,6 +178,69 @@ class GitHub(object):
                 'Attempted to remove non-existent label: {}'.format(label_name)
             )
 
+    def create_deployment(self, ref, pr_number):
+        url = '{}/repos/{}/{}/deployments'.format(
+            self.api_root, self.owner, self.repo
+        )
+        data = {
+            'ref': ref,
+            'task': 'deploy',
+            'auto_merge': False,
+            'environment': 'preview',
+            'transient_environment': True
+        }
+
+        logger.info('creating deployment')
+
+        deployment = request(url, 'post', json_data=data)
+
+        if not deployment.id:
+            logger.error('Failed to created deployment')
+            return
+
+        logger.info('Creating status for deployment {}'.format(
+            deployment.id
+        ))
+        url = url + '/{}/statuses'
+        data = {
+            'state': 'success',
+            'environment_url': 'https://wpt.reviews/{}/'.format(
+                pr_number
+            ),
+            'auto_inactive': True
+        }
+        request(url, 'post', json_data=data)
+
+    def remove_deployments(self, ref, pr_number):
+        url = '{}/repos/{}/{}/deployments?ref={}&environment=preview'.format(
+            self.api_root, self.owner, self.repo, ref
+        )
+
+        logger.info('fetching deployments for {}'.format(ref))
+
+        try:
+            deployments = request(url, 'get')
+        except requests.HTTPError as exception:
+            if exception.response.status_code != 404:
+                raise
+
+            logger.info(
+                'No deployments found for {}'.format(ref)
+            )
+            return
+
+        for deployment in deployments:
+            logger.info('Creating inactive status for deployment {}'.format(
+                deployment.id
+            ))
+            url = '{}/repos/{}/{}/deployments/{}/statuses'.format(
+                self.api_root, self.owner, self.repo, deployment.id
+            )
+            data = {
+                'state': 'inactive'
+            }
+            request(url, 'post', json_data=data)
+
 
 def main(api_root):
     with open(os.environ['GITHUB_EVENT_PATH']) as handle:
@@ -194,6 +258,7 @@ def main(api_root):
     ref_open = 'prs-open/gh-{}'.format(pr_number)
     ref_labeled = 'prs-labeled-for-preview/gh-{}'.format(pr_number)
     sha = event['pull_request']['head']['sha']
+    ref = event['pull_request']['head']['ref']
     login = event['pull_request']['user']['login']
     has_label = any([
         label['name'] == active_label
@@ -238,8 +303,10 @@ def main(api_root):
         github.set_ref(ref_labeled, sha)
     elif action == 'labeled' and target_label == active_label:
         github.set_ref(ref_labeled, sha)
+        github.create_deployment(ref, pr_number)
     elif action == 'unlabeled' and target_label == active_label:
         github.delete_ref(ref_labeled)
+        github.remove_deployments(ref, pr_number)
     elif action == 'synchronize' and has_label:
         github.set_ref(ref_open, sha)
         github.set_ref(ref_labeled, sha)

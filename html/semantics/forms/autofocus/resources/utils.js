@@ -23,6 +23,12 @@ function waitForLoad(target) {
   return waitForEvent(target, 'load');
 }
 
+function timeOut(test, ms) {
+  return new Promise((resolve, reject) => {
+    test.step_timeout(resolve, ms);
+  });
+}
+
 // If an element with autofocus is connected to a document and this function
 // is called, the autofocus result is deterministic after returning from the
 // function.
@@ -33,10 +39,4 @@ async function waitUntilStableAutofocusState(w) {
   // Awaiting two animation frames is an easy way to determine autofocus state.
   await waitForAnimationFrame(targetWindow);
   await waitForAnimationFrame(targetWindow);
-}
-
-function timeOut(test, ms) {
-  return new Promise((resolve, reject) => {
-    test.step_timeout(resolve, ms);
-  });
 }

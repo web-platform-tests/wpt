@@ -114,17 +114,17 @@ class ActionSequence(object):
         """Perform all queued actions."""
         self.session.actions.perform([self.dict])
 
-    def _key_action(self, subtype, value):
-        self._actions.append({"type": subtype, "value": value})
+    def _key_action(self, subtype, value, asyncDispatch=False):
+        self._actions.append({"type": subtype, "value": value, "asyncDispatch": asyncDispatch})
 
-    def _pointer_action(self, subtype, button):
-        self._actions.append({"type": subtype, "button": button})
+    def _pointer_action(self, subtype, button, asyncDispatch=False):
+        self._actions.append({"type": subtype, "button": button, "asyncDispatch": asyncDispatch})
 
     def pause(self, duration):
         self._actions.append({"type": "pause", "duration": duration})
         return self
 
-    def pointer_move(self, x, y, duration=None, origin=None):
+    def pointer_move(self, x, y, duration=None, origin=None, asyncDispatch=False):
         """Queue a pointerMove action.
 
         :param x: Destination x-axis coordinate of pointer in CSS pixels.
@@ -143,28 +143,29 @@ class ActionSequence(object):
             action["duration"] = duration
         if origin is not None:
             action["origin"] = origin
+        action["asyncDispatch"] = asyncDispatch    
         self._actions.append(action)
         return self
 
-    def pointer_up(self, button=0):
+    def pointer_up(self, button=0, asyncDispatch=False):
         """Queue a pointerUp action for `button`.
 
         :param button: Pointer button to perform action with.
                        Default: 0, which represents main device button.
         """
-        self._pointer_action("pointerUp", button)
+        self._pointer_action("pointerUp", button, asyncDispatch)
         return self
 
-    def pointer_down(self, button=0):
+    def pointer_down(self, button=0, asyncDispatch=False):
         """Queue a pointerDown action for `button`.
 
         :param button: Pointer button to perform action with.
                        Default: 0, which represents main device button.
         """
-        self._pointer_action("pointerDown", button)
+        self._pointer_action("pointerDown", button, asyncDispatch)
         return self
 
-    def click(self, element=None, button=0):
+    def click(self, element=None, button=0, asyncDispatch=False):
         """Queue a click with the specified button.
 
         If an element is given, move the pointer to that element first,
@@ -175,33 +176,33 @@ class ActionSequence(object):
                        with. Default: 0, which represents main device button.
         """
         if element:
-            self.pointer_move(0, 0, origin=element)
-        return self.pointer_down(button).pointer_up(button)
+            self.pointer_move(0, 0, origin=element, asyncDispatch=asyncDispatch)
+        return self.pointer_down(button, asyncDispatch).pointer_up(button, asyncDispatch)
 
-    def key_up(self, value):
+    def key_up(self, value, asyncDispatch=False):
         """Queue a keyUp action for `value`.
 
         :param value: Character to perform key action with.
         """
-        self._key_action("keyUp", value)
+        self._key_action("keyUp", value, asyncDispatch)
         return self
 
-    def key_down(self, value):
+    def key_down(self, value, asyncDispatch=False):
         """Queue a keyDown action for `value`.
 
         :param value: Character to perform key action with.
         """
-        self._key_action("keyDown", value)
+        self._key_action("keyDown", value, asyncDispatch)
         return self
 
-    def send_keys(self, keys):
+    def send_keys(self, keys, asyncDispatch=False):
         """Queue a keyDown and keyUp action for each character in `keys`.
 
         :param keys: String of keys to perform key actions with.
         """
         for c in keys:
-            self.key_down(c)
-            self.key_up(c)
+            self.key_down(c, asyncDispatch)
+            self.key_up(c, asyncDispatch)
         return self
 
 

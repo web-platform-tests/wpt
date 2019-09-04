@@ -581,17 +581,16 @@ def setup_logging(kwargs, default_config=None):
 
     global logger
 
-    class HasLogHandler(mozlog.handlers.BaseHandler):
-        def __init__(self):
-            self.inner = None
-            mozlog.handlers.BaseHandler.__init__(self, self.inner)
+    class LoggedAboveLevelHandler(object):
+        def __init__(self, min_level):
+            self.min_level = mozlog.structuredlog.log_levels[min_level.upper()]
             self.has_log = False
 
-            # XXX: I have no idea what this second arg does but it's required
-            self.register_message_handlers("wptrunner-test", {})
-
         def __call__(self, data):
-            self.has_log = True
+            if (data["action"] == "log" and
+                not self.has_log and
+                mozlog.structuredlog.log_levels[data["level"]] <= self.min_level):
+                self.has_log = True
 
     # Use the grouped formatter by default where mozlog 3.9+ is installed
     if default_config is None:
@@ -602,7 +601,7 @@ def setup_logging(kwargs, default_config=None):
         default_config = {default_formatter: sys.stdout}
     wptrunner.setup_logging(kwargs, default_config)
     logger = wptrunner.logger
-    has_log = HasLogHandler()
+    has_log = LoggedAboveLevelHandler("CRITICAL")
     logger.add_handler(mozlog.handlers.LogLevelFilter(has_log, "CRITICAL"))
     return logger, has_log
 

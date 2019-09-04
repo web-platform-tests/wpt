@@ -12,7 +12,7 @@ import testloader
 import wptcommandline
 import wptlogging
 import wpttest
-from mozlog import capture
+from mozlog import capture, handlers
 from font import FontInstaller
 from testrunner import ManagerGroup
 from browsers.base import NullBrowser
@@ -332,16 +332,24 @@ def check_stability(**kwargs):
 
 
 def start(**kwargs):
-    if kwargs["list_test_groups"]:
-        list_test_groups(**kwargs)
-    elif kwargs["list_disabled"]:
-        list_disabled(**kwargs)
-    elif kwargs["list_tests"]:
-        list_tests(**kwargs)
-    elif kwargs["verify"] or kwargs["stability"]:
-        return check_stability(**kwargs)
-    else:
-        return not run_tests(**kwargs)
+    assert logger is not None
+
+    logged_above = LoggedAboveLevelHandler("CRITICAL")
+    logger.add_handler(handlers.LogLevelFilter(logged_above, "CRITICAL"))
+
+    try:
+        if kwargs["list_test_groups"]:
+            list_test_groups(**kwargs)
+        elif kwargs["list_disabled"]:
+            list_disabled(**kwargs)
+        elif kwargs["list_tests"]:
+            list_tests(**kwargs)
+        elif kwargs["verify"] or kwargs["stability"]:
+            return check_stability(**kwargs) and not logger_above.has_log
+        else:
+            return not run_tests(**kwargs) and not logger_above.has_log
+    finally:
+        logger.remove_handler(logged_above)
 
 
 def main():

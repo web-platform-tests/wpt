@@ -36,17 +36,24 @@ function entryToJson(entry) {
 // Note that we never use RAF in this code, because this frame might get render-throttled.
 // Instead of RAF-ing, we just post an empty message to the parent window, which will
 // RAF when it is received, and then send us a message to cause the next step to run.
+var observer;
 
-// Use a rootMargin here, and verify it does NOT get applied for the cross-origin case.
-var observer = new IntersectionObserver(function(changes) {
-    entries = entries.concat(changes)
-}, { rootMargin: "7px" });
-observer.observe(target);
-observer.observe(emptyTarget);
-
+// Dummy step to wait for a rAF before installing the IntersectionObserver to ensure a
+// layout has occurred.
 function step0() {
-  entries = entries.concat(observer.takeRecords());
+  // Use a rootMargin here, and verify it does NOT get applied for the cross-origin case.
+  observer = new IntersectionObserver(function(changes) {
+      entries = entries.concat(changes)
+  }, { rootMargin: "7px" });
+  observer.observe(target);
+  observer.observe(emptyTarget);
   nextStep = step1;
+  port.postMessage({}, "*");
+}
+
+function step1() {
+  nextStep = step2;
+  entries = entries.concat(observer.takeRecords());
   var expected = [{
     boundingClientRect: [8, 108, 208, 308],
     intersectionRect: [0, 0, 0, 0],
@@ -69,7 +76,7 @@ function step0() {
   port.postMessage({scrollTo: 200}, "*");
 }
 
-function step1() {
+function step2() {
   entries = entries.concat(observer.takeRecords());
   port.postMessage({
     actual: entries.map(entryToJson),
@@ -78,11 +85,11 @@ function step1() {
   }, "*");
   entries = [];
   scroller.scrollTop = 250;
-  nextStep = step2;
+  nextStep = step3;
   port.postMessage({}, "*");
 }
 
-function step2() {
+function step3() {
   entries = entries.concat(observer.takeRecords());
   var expected = [{
     boundingClientRect: [8, 108, -42, 58],
@@ -103,11 +110,11 @@ function step2() {
     description: "iframeDocument.scrollingElement.scrollTop = 250"
   }, "*");
   entries = [];
-  nextStep = step3;
+  nextStep = step4;
   port.postMessage({scrollTo: 100}, "*");
 }
 
-function step3() {
+function step4() {
   entries = entries.concat(observer.takeRecords());
   var expected = [{
     boundingClientRect: [8, 108, -42, 58],

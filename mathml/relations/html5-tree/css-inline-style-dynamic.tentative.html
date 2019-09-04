@@ -7,7 +7,7 @@
     <link rel="match" href="css-inline-style-dynamic.tentative-ref.html"/>
     <style>
       #hidden  {
-        display: none;
+        visibility: hidden;
         background-color: green;
       }
       #red  {
@@ -21,7 +21,8 @@
     <script type="text/javascript">
       function test()
       {
-        document.getElementById("hidden").style.display = "block";
+        document.body.offsetTop; // Update layout
+        document.getElementById("hidden").style.visibility = "visible";
         document.getElementById("red").style.backgroundColor = "green";
         document.documentElement.className = "";
       }

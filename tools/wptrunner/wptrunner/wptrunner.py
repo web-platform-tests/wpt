@@ -334,8 +334,9 @@ def check_stability(**kwargs):
 def start(**kwargs):
     assert logger is not None
 
-    logged_above = LoggedAboveLevelHandler("CRITICAL")
-    logger.add_handler(handlers.LogLevelFilter(logged_above, "CRITICAL"))
+    logged_above = wptlogging.LoggedAboveLevelHandler("CRITICAL")
+    handler = handlers.LogLevelFilter(logged_above, "CRITICAL")
+    logger.add_handler(handler)
 
     try:
         if kwargs["list_test_groups"]:
@@ -349,7 +350,7 @@ def start(**kwargs):
         else:
             return not run_tests(**kwargs) and not logger_above.has_log
     finally:
-        logger.remove_handler(logged_above)
+        logger.remove_handler(handler)
 
 
 def main():

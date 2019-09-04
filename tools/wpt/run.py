@@ -581,17 +581,6 @@ def setup_logging(kwargs, default_config=None):
 
     global logger
 
-    class LoggedAboveLevelHandler(object):
-        def __init__(self, min_level):
-            self.min_level = mozlog.structuredlog.log_levels[min_level.upper()]
-            self.has_log = False
-
-        def __call__(self, data):
-            if (data["action"] == "log" and
-                not self.has_log and
-                mozlog.structuredlog.log_levels[data["level"]] <= self.min_level):
-                self.has_log = True
-
     # Use the grouped formatter by default where mozlog 3.9+ is installed
     if default_config is None:
         if hasattr(mozlog.formatters, "GroupingFormatter"):
@@ -601,9 +590,7 @@ def setup_logging(kwargs, default_config=None):
         default_config = {default_formatter: sys.stdout}
     wptrunner.setup_logging(kwargs, default_config)
     logger = wptrunner.logger
-    has_log = LoggedAboveLevelHandler("CRITICAL")
-    logger.add_handler(mozlog.handlers.LogLevelFilter(has_log, "CRITICAL"))
-    return logger, has_log
+    return logger
 
 
 def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
@@ -684,7 +671,7 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
 
 
 def run(venv, **kwargs):
-    logger, has_log = setup_logging(kwargs)
+    setup_logging(kwargs)
 
     # Remove arguments that aren't passed to wptrunner
     prompt = kwargs.pop("prompt", True)
@@ -695,7 +682,7 @@ def run(venv, **kwargs):
                              install_browser=install_browser,
                              **kwargs)
 
-    rv = run_single(venv, **kwargs) > 0 or has_log.has_log
+    rv = run_single(venv, **kwargs) > 0
 
     return rv
 

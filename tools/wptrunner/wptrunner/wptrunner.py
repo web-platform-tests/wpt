@@ -346,9 +346,9 @@ def start(**kwargs):
         elif kwargs["list_tests"]:
             list_tests(**kwargs)
         elif kwargs["verify"] or kwargs["stability"]:
-            return check_stability(**kwargs) and not logger_above.has_log
+            return check_stability(**kwargs) and not logged_above.has_log
         else:
-            return not run_tests(**kwargs) and not logger_above.has_log
+            return not run_tests(**kwargs) and not logged_above.has_log
     finally:
         logger.remove_handler(handler)
 

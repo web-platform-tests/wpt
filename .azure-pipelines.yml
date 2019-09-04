@@ -78,7 +78,7 @@ jobs:
   - template: tools/ci/azure/pip_install.yml
     parameters:
       packages: virtualenv
-  - template: tools/ci/azure/install_fonts.yml
+#  - template: tools/ci/azure/install_fonts.yml
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/install_chrome.yml
   - template: tools/ci/azure/install_firefox.yml
@@ -317,7 +317,7 @@ jobs:
   - template: tools/ci/azure/pip_install.yml
     parameters:
       packages: virtualenv
-  - template: tools/ci/azure/install_fonts.yml
+#  - template: tools/ci/azure/install_fonts.yml
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/install_safari.yml
     parameters:
@@ -351,7 +351,7 @@ jobs:
   - template: tools/ci/azure/pip_install.yml
     parameters:
       packages: virtualenv
-  - template: tools/ci/azure/install_fonts.yml
+#  - template: tools/ci/azure/install_fonts.yml
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/install_safari.yml
   - template: tools/ci/azure/update_hosts.yml

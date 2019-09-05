@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Android WebView &#8212; web-platform-tests  documentation</title>
+    <title>Running Tests on CI &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -16,8 +16,8 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Safari" href="safari.html" />
-    <link rel="prev" title="Chrome for Android" href="chrome_android.html" />
+    <link rel="next" title="Writing Your Own Runner" href="custom-runner.html" />
+    <link rel="prev" title="Safari" href="safari.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -34,42 +34,33 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="android-webview">
-<h1>Android WebView<a class="headerlink" href="#android-webview" title="Permalink to this headline">¶</a></h1>
-<p>To run WPT on WebView on an Android device, some additional set-up is required.</p>
-<p>Currently, Android WebView support is experimental.</p>
+  <div class="section" id="running-tests-on-ci">
+<h1>Running Tests on CI<a class="headerlink" href="#running-tests-on-ci" title="Permalink to this headline">¶</a></h1>
+<p>Contributors with write access to the repository can trigger full runs in the
+same CI systems used to produce results for <a class="reference external" href="https://wpt.fyi">wpt.fyi</a>. The runs
+are triggered by pushing to branch names on the form <code class="docutils literal notranslate"><span class="pre">triggers/$browser_$channel</span></code>
+and the results will be automatically submitted to wpt.fyi.</p>
+<p>This is useful when making infrastructure changes that could affect very many
+tests, in order to avoid regressions.</p>
+<p>Note: Full runs use a lot of CI resources, so please take care to not trigger
+them more than necessary.</p>
+<p>Instructions:</p>
 <ul class="simple">
-<li>Please check <a class="reference internal" href="chrome_android.html"><span class="doc">Chrome for Android</span></a> for the common
-instructions for Android support first.</li>
-<li>Install an up-to-date version of system webview shell:<ul>
-<li>Go to
-<a class="reference external" href="https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Android/">chromium-browser-snapshots</a></li>
-<li>Find the subdirectory with the highest number and click it.</li>
-<li>Download <code class="docutils literal notranslate"><span class="pre">chrome-android.zip</span></code> file and unzip it.</li>
-<li>Install <code class="docutils literal notranslate"><span class="pre">SystemWebViewShell.apk</span></code>.</li>
-<li>On emulator, system webview shell may already be installed by default. Then
-you may need to remove the existing apk:<ul>
-<li>Choose a userdebug build.</li>
-<li>Run an emulator with
-<a class="reference external" href="https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_emulator.md/">writable system partition from command line</a></li>
+<li>Base your changes on a commit for which there are already results in wpt.fyi.</li>
+<li>Determine which branch name to push to by looking for <code class="docutils literal notranslate"><span class="pre">refs/heads/triggers/</span></code>
+in <code class="docutils literal notranslate"><span class="pre">.azure-pipelines.yml</span></code> and <code class="docutils literal notranslate"><span class="pre">.taskcluster.yml</span></code>. For example, to trigger a
+full run of Safari Technology Preview, the branch name is
+<code class="docutils literal notranslate"><span class="pre">triggers/safari_preview</span></code>.</li>
+<li>Force push to the branch, for example:
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">--force-with-lease</span> <span class="pre">origin</span> <span class="pre">HEAD:triggers/safari_preview</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">--force-with-lease</span></code> argument is to detect if someone else has just
+pushed. When this happens wait for the checkout step of their triggered run
+to finish before you force push again.</li>
 </ul>
-</li>
-</ul>
-</li>
-<li>If you have an issue with ChromeDriver version, try removing
-<code class="docutils literal notranslate"><span class="pre">_venv/bin/chromedriver</span></code> such that wpt runner can install a matching version
-automatically. Failing that, please check your environment path and make
-sure that no other ChromeDriver is used.</li>
-</ul>
-<p>Example command line:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --test-type<span class="o">=</span>testharness android_webview &lt;TESTS&gt;
-</pre></div>
-</div>
-<ul class="simple">
-<li>Note that there is no support for channel or automatic installation. The test
-will be run against the current WebView version installed on the device.</li>
-<li>Reftests are not supported at the moment.</li>
-</ul>
+<p>You can see if the run started from the commit status on GitHub’s commits listing
+(<a class="reference external" href="https://github.com/web-platform-tests/wpt/commits/triggers/safari_preview">example</a>)
+and if successful the results will show up on wpt.fyi within 10 minutes
+(<a class="reference external" href="https://wpt.fyi/runs?product=safari">example</a>).</p>
 </div>
 
 
@@ -93,8 +84,8 @@ will be run against the current WebView version installed on the device.</li>
 <li class="toctree-l1"><a class="reference internal" href="../test-suite-design.html">Test Suite Design</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Running Tests</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="from-web.html">Running Tests from the Web</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="from-local-system.html">Running Tests from the Local System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="from-ci.html">Running Tests on CI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="from-local-system.html">Running Tests from the Local System</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Running Tests on CI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="custom-runner.html">Writing Your Own Runner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tools/certs/README.html">WPT Test Certificates</a></li>
 </ul>
@@ -109,10 +100,8 @@ will be run against the current WebView version installed on the device.</li>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Running Tests</a><ul>
-  <li><a href="from-local-system.html">Running Tests from the Local System</a><ul>
-      <li>Previous: <a href="chrome_android.html" title="previous chapter">Chrome for Android</a></li>
-      <li>Next: <a href="safari.html" title="next chapter">Safari</a></li>
-  </ul></li>
+      <li>Previous: <a href="safari.html" title="previous chapter">Safari</a></li>
+      <li>Next: <a href="custom-runner.html" title="next chapter">Writing Your Own Runner</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -149,7 +138,7 @@ will be run against the current WebView version installed on the device.</li>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/running-tests/android_webview.md.txt"
+      <a href="../_sources/running-tests/from-ci.md.txt"
           rel="nofollow">Page source</a>
     </div>
 

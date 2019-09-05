@@ -45,8 +45,12 @@ Next, install `virtualenv` using the following command:
 pip install virtualenv
 ```
 
-To get the tests running, you need to set up the test domains in your
-[`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system).
+To get the tests running, you need to set up the test domains in your [`hosts`
+file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system).
+The necessary content can be generated with `./wpt make-hosts-file`. (You may
+skip this step if you do *not* expect to [run the tests by visiting them in
+your browser]([use `wpt serve` directly](#via-the-browser)) and if you only
+intend to test Firefox or Chrome.)
 
 <section class="platform">
 

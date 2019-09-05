@@ -2,7 +2,7 @@
 
 Contributors with write access to the repository can trigger full runs in the
 same CI systems used to produce results for [wpt.fyi](https://wpt.fyi). The runs
-are triggered by pushing to branch names on the form `triggers/$browser/$channel`
+are triggered by pushing to branch names on the form `triggers/$browser_$channel`
 and the results will be automatically submitted to wpt.fyi.
 
 This is useful when making infrastructure changes that could affect very many

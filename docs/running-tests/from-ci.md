@@ -1,7 +1,7 @@
 # Running Tests on CI
 
 Contributors with write access to the repository can trigger full runs in the
-same CI systems used to produce results for [wpt.fyi][https://wpt.fyi]. The runs
+same CI systems used to produce results for [wpt.fyi](https://wpt.fyi). The runs
 are triggered by pushing to branch names on the form `triggers/$browser/$channel`
 and the results will be automatically submitted to wpt.fyi.
 

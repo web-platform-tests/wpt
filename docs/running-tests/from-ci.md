@@ -21,7 +21,7 @@ Instructions:
    `triggers/safari_preview`.
 
  * Force push to the branch, for example:
-   `git push --force-with-lease origin HEAD:refs/heads/triggers/safari_preview`.
+   `git push --force-with-lease origin HEAD:triggers/safari_preview`.
    The `--force-with-lease` argument is to detect if someone else has just
    pushed. When this happens wait for the checkout step of their triggered run
    to finish before you force push again.

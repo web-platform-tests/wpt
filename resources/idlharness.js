@@ -3313,7 +3313,7 @@ function idl_test(srcs, deps, idl_setup_func) {
                         const message = validations.map(v => v.message).join("\n\n");
                         throw new Error(message);
                     }
-                }, "IDL validation");
+                }, "idl_test validation");
                 for (var i = 0; i < srcs.length; i++) {
                     idl_array.internal_add_idls(astArray[i]);
                 }

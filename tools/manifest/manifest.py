@@ -473,6 +473,8 @@ class Manifest(object):
             # Drop "stub" items, which are no longer supported but may be
             # present when doing an incremental manifest update.
             # See https://github.com/web-platform-tests/rfcs/pull/27 for background.
+            #
+            # TODO(MANIFESTv7): remove this condition
             if test_type == "stub":
                 continue
 

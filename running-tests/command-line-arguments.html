@@ -41,7 +41,7 @@ with WPT. The functionality is organized into “sub-commands”, and each accep
 a different set of command-line arguments.</p>
 <p>This page documents all of the available sub-commands and associated arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">wpt</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-           <span class="p">{</span><span class="n">tc</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">run</span><span class="p">,</span><span class="n">install</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">jobs</span><span class="p">,</span><span class="n">create</span><span class="p">,</span><span class="n">lint</span><span class="p">,</span><span class="n">serve</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">expectations</span><span class="p">,</span><span class="n">manifest</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">verify</span><span class="p">,</span><span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span><span class="p">,</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">files</span><span class="o">-</span><span class="n">changed</span><span class="p">,</span><span class="n">tests</span><span class="o">-</span><span class="n">affected</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">run</span><span class="p">}</span>
+           <span class="p">{</span><span class="n">tc</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">run</span><span class="p">,</span><span class="n">install</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">jobs</span><span class="p">,</span><span class="n">create</span><span class="p">,</span><span class="n">lint</span><span class="p">,</span><span class="n">serve</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">expectations</span><span class="p">,</span><span class="n">manifest</span><span class="p">,</span><span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">verify</span><span class="p">,</span><span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span><span class="p">,</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">files</span><span class="o">-</span><span class="n">changed</span><span class="p">,</span><span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">tests</span><span class="o">-</span><span class="n">affected</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">run</span><span class="p">}</span>
            <span class="o">...</span>
 </pre></div>
 </div>
@@ -1304,6 +1304,26 @@ a different set of command-line arguments.</p>
 </table>
 </div>
 </div>
+<div class="section" id="install-android-emulator">
+<h3>install-android-emulator<a class="headerlink" href="#install-android-emulator" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments_repeat9">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--reinstall</kbd></td>
+<td><p class="first">Force reinstall even if the emulator already exists</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section" id="tc-verify">
 <h3>tc-verify<a class="headerlink" href="#tc-verify" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tc</span><span class="o">-</span><span class="n">verify</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
@@ -1335,8 +1355,8 @@ a different set of command-line arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">manifest</span><span class="o">-</span><span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat9">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat10">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1377,8 +1397,8 @@ a different set of command-line arguments.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat10">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat11">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1412,6 +1432,26 @@ a different set of command-line arguments.</p>
 </table>
 </div>
 </div>
+<div class="section" id="start-android-emulator">
+<h3>start-android-emulator<a class="headerlink" href="#start-android-emulator" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments_repeat12">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--reinstall</kbd></td>
+<td><p class="first">Force reinstall even if the emulator already exists</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section" id="tests-affected">
 <h3>tests-affected<a class="headerlink" href="#tests-affected" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tests</span><span class="o">-</span><span class="n">affected</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">rules</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="o">...</span><span class="p">]]]</span>
@@ -1432,8 +1472,8 @@ a different set of command-line arguments.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat11">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat13">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1477,8 +1517,8 @@ a different set of command-line arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">docker</span><span class="o">-</span><span class="n">run</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rebuild</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">checkout</span> <span class="n">CHECKOUT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">privileged</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat12">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat14">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />

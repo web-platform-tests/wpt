@@ -143,7 +143,7 @@ class ActionSequence(object):
             action["duration"] = duration
         if origin is not None:
             action["origin"] = origin
-        action["asyncDispatch"] = async_dispatch    
+        action["asyncDispatch"] = async_dispatch
         self._actions.append(action)
         return self
 
@@ -176,8 +176,8 @@ class ActionSequence(object):
                        with. Default: 0, which represents main device button.
         """
         if element:
-            self.pointer_move(0, 0, origin=element, async_dispatch=asyncDispatch)
-        return self.pointer_down(button, asyncDispatch).pointer_up(button, async_dispatch)
+            self.pointer_move(0, 0, origin=element, async_dispatch=async_dispatch)
+        return self.pointer_down(button, async_dispatch).pointer_up(button, async_dispatch)
 
     def key_up(self, value, async_dispatch=False):
         """Queue a keyUp action for `value`.

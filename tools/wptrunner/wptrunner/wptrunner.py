@@ -13,7 +13,7 @@ import wptcommandline
 import wptlogging
 import wpttest
 from mozlog import capture, handlers
-from font import FontInstaller
+#from font import FontInstaller
 from testrunner import ManagerGroup
 from browsers.base import NullBrowser
 
@@ -143,11 +143,11 @@ def run_tests(config, test_paths, product, **kwargs):
 
         product.check_args(**kwargs)
 
-        if kwargs["install_fonts"]:
-            env_extras.append(FontInstaller(
-                font_dir=kwargs["font_dir"],
-                ahem=os.path.join(test_paths["/"]["tests_path"], "fonts/Ahem.ttf")
-            ))
+        # if kwargs["install_fonts"]:
+        #     env_extras.append(FontInstaller(
+        #         font_dir=kwargs["font_dir"],
+        #         ahem=os.path.join(test_paths["/"]["tests_path"], "fonts/Ahem.ttf")
+        #     ))
 
         run_info, test_loader = get_loader(test_paths,
                                            product.name,

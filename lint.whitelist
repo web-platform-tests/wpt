@@ -842,4 +842,3 @@ AHEM SYSTEM FONT: css/vendor-imports/mozilla/mozilla-central-reftests/*
 # PR (https://github.com/web-platform-tests/wpt/pull/18702)
 AHEM SYSTEM FONT: infrastructure/assumptions/ahem-ref.html
 AHEM SYSTEM FONT: infrastructure/assumptions/ahem.html
-

@@ -6,15 +6,15 @@
 <link rel="help" href="https://www.w3.org/TR/css-fonts-3/#length-percentage-size-value">
 <link rel="match" href="../reference/ref-filled-green-100px-square-only.html">
 <link rel="mismatch" href="percentage-rem-low-ref.html">
-<meta name="assert" content="When :root font-size is 30%, a 6.25rem length must be 30px, if the browser default for :root font-size is 16px.">
+<meta name="assert" content="When :root font-size is 20%, a 31.25rem length must be 100px, if the browser default for :root font-size is 16px.">
 <style>
   :root {
-    font-size: 30%; /* default is 16px in all desktop browsers */
+    font-size: 20%; /* default is 16px in all desktop browsers */
   }
   .rem {
     box-sizing: border-box;
-    width: 6.25rem;
-    height: 6.25rem;
+    width: 31.25rem;
+    height: 31.25rem;
     background-color: green;
   }
 </style>

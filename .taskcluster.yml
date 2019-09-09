@@ -13,7 +13,13 @@ tasks:
               $match: {
                 event.ref == "refs/heads/master": [{name: firefox, channel: nightly}, {name: chrome, channel: dev}],
                 event.ref == "refs/heads/epochs/daily": [{name: firefox, channel: stable}, {name: chrome, channel: stable}],
-                event.ref == "refs/heads/epochs/weekly": [{name: firefox, channel: beta}, {name: chrome, channel: beta}]
+                event.ref == "refs/heads/epochs/weekly": [{name: firefox, channel: beta}, {name: chrome, channel: beta}],
+                event.ref == "refs/heads/triggers/chrome_stable": [{name: chrome, channel: stable}],
+                event.ref == "refs/heads/triggers/chrome_beta": [{name: chrome, channel: beta}],
+                event.ref == "refs/heads/triggers/chrome_dev": [{name: chrome, channel: dev}],
+                event.ref == "refs/heads/triggers/firefox_stable": [{name: firefox, channel: stable}],
+                event.ref == "refs/heads/triggers/firefox_beta": [{name: firefox, channel: beta}],
+                event.ref == "refs/heads/triggers/firefox_nightly": [{name: firefox, channel: nightly}]
                 }
           each(browser):
             $map:
@@ -64,14 +70,12 @@ tasks:
                 owner: ${event.pusher.email}
                 source: ${event.repository.url}
               payload:
-                image: harjgam/web-platform-tests:0.32
+                image: harjgam/web-platform-tests:0.33
                 maxRunTime: 7200
                 artifacts:
                   public/results:
                     path: /home/test/artifacts
                     type: directory
-                env:
-                    TASK_EVENT: "${event_str}"
                 command:
                   - /bin/bash
                   - --login
@@ -100,6 +104,9 @@ tasks:
                         --test-type=${chunk[0]}
                         --this-chunk=${chunk[1]}
                         --total-chunks=${chunk[2]};
+              extra:
+                github_event: "${event_str}"
+
       - $if: tasks_for == "github-pull-request"
         # PR tasks that run the tests in various configurations
         then:
@@ -156,14 +163,12 @@ tasks:
                   owner: ${event.pull_request.user.login}@users.noreply.github.com
                   source: ${event.repository.url}
                 payload:
-                  image: harjgam/web-platform-tests:0.32
+                  image: harjgam/web-platform-tests:0.33
                   maxRunTime: 7200
                   artifacts:
                     public/results:
                       path: /home/test/artifacts
                       type: directory
-                  env:
-                    TASK_EVENT: "${event_str}"
                   # Fetch the GitHub-provided merge commit (rather than the pull
                   # request branch) so that the tasks simulate the behavior of the
                   # submitted patch after it is merged. Using the merge commit also
@@ -193,6 +198,9 @@ tasks:
                           --
                           --channel=${browser.channel}
                           ${operation.extra_args};
+                extra:
+                  github_event: "${event_str}"
+
       - $map:
           # This is the main point to define new CI checks other than stability checks
         - name: lint
@@ -322,14 +330,12 @@ tasks:
                   owner: ${event.sender.login}@users.noreply.github.com
                   source: ${event.repository.url}
                 payload:
-                  image: harjgam/web-platform-tests:0.32
+                  image: harjgam/web-platform-tests:0.33
                   maxRunTime: 7200
                   artifacts:
                     public/results:
                       path: /home/test/artifacts
                       type: directory
-                  env:
-                    TASK_EVENT: "${event_str}"
                   command:
                     - /bin/bash
                     - --login
@@ -341,3 +347,5 @@ tasks:
                         ${checkout_ref};
                       cd ~/web-platform-tests;
                       ${operation.script};
+                extra:
+                  github_event: "${event_str}"

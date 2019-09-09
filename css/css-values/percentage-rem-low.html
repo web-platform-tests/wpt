@@ -4,7 +4,8 @@
 <link rel="author" title="Jon Ege Ronnenberg" href="mailto:jon.ronnenberg+wpt@gmail.com">
 <link rel="help" href="https://www.w3.org/TR/css-values-3/#rem">
 <link rel="help" href="https://www.w3.org/TR/css-fonts-3/#length-percentage-size-value">
-<link rel="match" href="percentage-rem-low-ref.html">
+<link rel="match" href="../reference/ref-filled-green-100px-square-only.html">
+<link rel="mismatch" href="percentage-rem-low-ref.html">
 <meta name="assert" content="When :root font-size is 30%, a 6.25rem length must be 30px, if the browser default for :root font-size is 16px.">
 <style>
   :root {
@@ -18,5 +19,4 @@
   }
 </style>
 
-<p style="font-size: initial">Test passes if the square below is a 30px * 30px square.</p>
 <div class="rem"></div>

@@ -24,7 +24,7 @@ idl_test(
       NFCWriter: ['new NFCWriter();'],
       NFCReader: ['new NFCReader();'],
       NDEFRecord: [`new NDEFRecord(${JSON.stringify(record)});`],
-      NDEFMessage: [`new NDEFMessage([${JSON.stringify(message)}]);`],
+      NDEFMessage: [`new NDEFMessage(${JSON.stringify(message)});`],
       NFCReadingEvent: [`new NFCReadingEvent("reading", { message: ${JSON.stringify(message)} })`],
       NFCErrorEvent: ['new NFCErrorEvent("error", { error: new DOMException() });'],
     });

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Transform Module Level 2: parsing perspective with valid values</title>
+<link rel="help" href="https://drafts.csswg.org/css-transforms-2/#perspective-property">
+<meta name="assert" content="perspective supports the full 'none | <length>' grammar.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("perspective", "none");
+
+test_valid_value("perspective", "10px");
+test_valid_value("perspective", "0", "0px");
+test_valid_value("perspective", "calc(2em + 3ex)");
+</script>
+</body>
+</html>

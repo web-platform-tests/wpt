@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Transform Module Level 2: getComputedStyle().transform</title>
+<link rel="help" href="https://drafts.csswg.org/css-transforms-2/#transform-property">
+<meta name="assert" content="transform resolved value is the keyword none or a matrix() or matrix3d() function.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+</head>
+<body>
+<div id="target"></div>
+<script>
+test_computed_value("transform", "none");
+
+test_computed_value("transform", "translateX(10px)", "matrix(1, 0, 0, 1, 10, 0)");
+test_computed_value("transform", "translateY(10px)", "matrix(1, 0, 0, 1, 0, 10)");
+test_computed_value("transform", "translateZ(10px)", "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 10, 1)");
+test_computed_value("transform", "translateZ(0px)", "matrix(1, 0, 0, 1, 0, 0)");
+
+test_computed_value("transform", "scale(2, 3)", "matrix(2, 0, 0, 3, 0, 0)");
+
+test_computed_value("transform", "rotate(0deg)", "matrix(1, 0, 0, 1, 0, 0)");
+
+test_computed_value("transform", "perspective(0.25px)", "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -4, 0, 0, 0, 1)");
+test_computed_value("transform", "perspective(0px)", "matrix(1, 0, 0, 1, 0, 0)");
+
+// TO DO: Test additional values, test remaining functions, test lists of functions.
+</script>
+</body>
+</html>

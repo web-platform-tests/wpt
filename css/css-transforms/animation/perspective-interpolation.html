@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>perspective interpolation</title>
+    <link rel="help" href="https://drafts.csswg.org/css-transforms-2/#propdef-perspective">
+    <meta name="assert" content="perspective supports <length> animation.">
+    <meta name="assert" content="Negative values are clamped.">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/css/support/interpolation-testcommon.js"></script>
+    <style>
+      body {
+        width: 500px;
+        height: 500px;
+      }
+      div {
+        width: 10px;
+        height: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      test_interpolation({
+        property: 'perspective',
+        from: '20px',
+        to: '100px',
+      }, [
+        {at: -1, expect: '0px'}, // clamped
+        {at: 0, expect: '20px'},
+        {at: 0.125, expect: '30px'},
+        {at: 0.875, expect: '90px'},
+        {at: 1, expect: '100px'},
+        {at: 2, expect: '180px'}
+      ]);
+
+      test_no_interpolation({
+        property: 'perspective',
+        from: 'none',
+        to: '100px',
+      });
+    </script>
+  </body>
+</html>

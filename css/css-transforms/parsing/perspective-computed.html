@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Transform Module Level 2: getComputedStyle().perspective</title>
+<link rel="help" href="https://drafts.csswg.org/css-transforms-2/#perspective-property">
+<meta name="assert" content="perspective computed value is the keyword none or an absolute length.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<style>
+  #target {
+    font-size: 40px;
+  }
+</style>
+</head>
+<body>
+<div id="target"></div>
+<script>
+test_computed_value("perspective", "none");
+
+test_computed_value("perspective", "10px");
+test_computed_value("perspective", "calc(10px - 0.5em)", "0px");
+test_computed_value("perspective", "calc(10px + 0.5em)", "30px");
+</script>
+</body>
+</html>

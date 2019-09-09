@@ -207,9 +207,6 @@ scheme host and port.""")
                               "release channel. This is included in the run_info data.")
     config_group.add_argument("--config", action="store", type=abs_path, dest="config",
                               help="Path to config file")
-    config_group.add_argument("--install-fonts", action="store_true",
-                              default=None,
-                              help="Allow the wptrunner to install fonts on your system")
     config_group.add_argument("--font-dir", action="store", type=abs_path, dest="font_dir",
                               help="Path to local font installation directory", default=None)
     config_group.add_argument("--headless", action="store_true",

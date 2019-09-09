@@ -837,8 +837,3 @@ AHEM SYSTEM FONT: resource-timing/resources/iframe-reload-TAO.sub.html
 # They do load Ahem as a web font, but they use their own copy which trips the
 # lint rule. Basically false positives.
 AHEM SYSTEM FONT: css/vendor-imports/mozilla/mozilla-central-reftests/*
-
-# TODO: The following should be deleted along with the Ahem web font cleanup
-# PR (https://github.com/web-platform-tests/wpt/pull/18702)
-AHEM SYSTEM FONT: infrastructure/assumptions/ahem-ref.html
-AHEM SYSTEM FONT: infrastructure/assumptions/ahem.html

@@ -61,7 +61,6 @@ def main(product, commit_range, wpt_args):
         "-y",
         "--no-pause",
         "--no-restart-on-unexpected",
-        "--install-fonts",
         "--no-headless",
         "--verify-log-full"
     ]

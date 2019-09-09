@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>REM value with :root set to low percentage</title>
+<link rel="author" title="Jon Ege Ronnenberg" href="mailto:jon.ronnenberg+wpt@gmail.com">
+<link rel="help" href="https://www.w3.org/TR/css-values-3/#rem">
+<link rel="help" href="https://www.w3.org/TR/css-fonts-3/#length-percentage-size-value">
+<link rel="match" href="percentage-rem-low-ref.html">
+<meta name="assert" content="When :root font-size is 30%, a 6.25rem length must be 30px, if the browser default for :root font-size is 16px.">
+<style>
+  :root {
+    font-size: 30%; /* default is 16px in all desktop browsers */
+  }
+  .rem {
+    box-sizing: border-box;
+    width: 6.25rem;
+    height: 6.25rem;
+    background-color: green;
+  }
+</style>
+
+<p style="font-size: initial">Test passes if the square below is a 30px * 30px square.</p>
+<div class="rem"></div>

@@ -3,6 +3,7 @@
 <link rel="author" href="mailto:kojii@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
 section.test {
   display: inline-block;
@@ -71,9 +72,11 @@ for (let target of document.getElementsByClassName('target')) {
   let section = container.parentElement;
   let pass = false;
   test(() => {
-    let y = target.offsetTop - container.offsetTop;
-    assert_approx_equals(y, target.dataset.y, 0);
-    pass = true;
+    document.fonts.ready.then(()=> {
+      let y = target.offsetTop - container.offsetTop;
+      assert_approx_equals(y, target.dataset.y, 0);
+      pass = true;
+    });
   }, `${section.className.substr(5)}+${filler.className.substr(7)}`);
   if (!pass)
     container.classList.add('fail');

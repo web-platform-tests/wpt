@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+  <meta name="viewport" content="width=device-width">
+  <title>rem height bug</title>
+    <script>
+      /* font size */
+      function setFontSize() {
+        html.style.fontSize = calcFontSize() + '%';
+      }
+      function calcFontSize(context) {
+        return Math.round(0.625 * html.clientWidth/1024 * 100);
+      }
+      var html = document.documentElement;
+      window.addEventListener("resize", setFontSize);
+      setFontSize();
+    </script>
+  <style>
+    html {
+      /* most common font normalization on the web today */
+      /*font-size: 62.5%;*/
+    }
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    article {
+      background-color: lightblue;
+      opacity: .5;
+      height:50rem;
+      width:100rem;
+    }
+    section {
+      background-color: darkgreen;
+      opacity: .7;
+      height: 40rem;
+      width: 74rem;
+    }
+    h1,p {
+      font-size: 3.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>webkit fails with font-size &lt;= 56% on html element</h1>
+  <p>See <a href="rem-height-workaround.html">rem-height-workaround.html</a> for a work-around.</p>
+  <article>
+    <p>In a 1024px wide view port this should be exactly <strong>500px</strong> high.</p>
+    <p>The view port is <span class="viewport"></span>px wide. And this element should be <span id="artCalcHeight"></span> high
+    but is <span id="artRealHeight"></span> high.</p>
+    <section>
+      <p>In a 1024px wide view port this should be exactly <strong>400px</strong> high.</p>
+      <p>The view port is <span class="viewport"></span>px wide. And this element should be <span id="secCalcHeight"></span> high
+      but is <span id="secRealHeight"></span> high.</p>
+    </section>
+  </article>
+  <script>
+    var vp = document.getElementsByClassName("viewport"),
+        artCH = document.getElementById("artCalcHeight"),
+        artRH = document.getElementById("artRealHeight"),
+        art = document.querySelector("article"),
+        secCH = document.getElementById("secCalcHeight"),
+        secRH = document.getElementById("secRealHeight"),
+        sec = document.querySelector("section");
+
+    window.addEventListener("resize", updateText);
+    updateText();
+    function updateText() {
+      var factor = (calcFontSize()/100)/0.625;
+      [].forEach.call(vp, write(document.documentElement.clientWidth));
+      // article originale 1000px*500px
+      artCH.innerHTML = Math.round(factor * 500) + "px";
+      artRH.innerHTML = art.clientHeight + "px";
+      // section originale 740px*400px
+      secCH.innerHTML = Math.round(factor * 400) + "px";
+      secRH.innerHTML = sec.clientHeight + "px";
+      //console.log("factor:" + factor);
+    }
+    function write(msg) {
+      return function(el) {
+        el.innerHTML = msg;
+      }
+    }
+  </script>
+</body>
+</html>

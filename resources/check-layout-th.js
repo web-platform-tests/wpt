@@ -174,16 +174,18 @@ window.checkLayout = function(selectorList, callDone = true)
     var checkedLayout = false;
     Array.prototype.forEach.call(nodes, function(node) {
         test(function(t) {
-            var container = node.parentNode.className == 'container' ? node.parentNode : node;
-            var prefix = "\n" + container.outerHTML + "\n";
-            var passed = false;
-            try {
-                checkedLayout |= checkExpectedValues(t, node.parentNode, prefix);
-                checkedLayout |= checkSubtreeExpectedValues(t, node, prefix);
-                passed = true;
-            } finally {
-                checkedLayout |= !passed;
-            }
+            document.fonts.ready.then(()=> {
+                var container = node.parentNode.className == 'container' ? node.parentNode : node;
+                var prefix = "\n" + container.outerHTML + "\n";
+                var passed = false;
+                try {
+                    checkedLayout |= checkExpectedValues(t, node.parentNode, prefix);
+                    checkedLayout |= checkSubtreeExpectedValues(t, node, prefix);
+                    passed = true;
+                } finally {
+                    checkedLayout |= !passed;
+                }
+            });
         }, selectorList + ' ' + String(++testNumber));
     });
     if (!checkedLayout) {

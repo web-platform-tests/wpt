@@ -5,6 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/check-layout-th.js"></script>
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
 .tests, .no-tests {
   margin-bottom: 1em;
@@ -42,6 +43,8 @@
     <div>123456789012&nbsp;<span class="abs">span</span>&nbsp;543210987654321</div>
   </section>
 <script>
-checkLayout('.tests .abs');
+document.fonts.ready.then(()=> {
+  checkLayout('.tests .abs');
+});
 </script>
 </body>

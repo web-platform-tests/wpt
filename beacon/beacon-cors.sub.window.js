@@ -1,3 +1,4 @@
+// META: timeout=long
 // META: script=/common/utils.js
 // META: script=beacon-common.sub.js
 
@@ -7,12 +8,6 @@
 // the beacon handler will return CORS headers. This test ensures that the
 // sendBeacon() succeeds in either case.
 [true, false].forEach(function(allowCors) {
-    // Implement the self.buildId extension to identify the parameterized
-    // test in the report.
-    self.buildId = function(baseId) {
-        return `${baseId}-${allowCors ? "CORS-ALLOW" : "CORS-FORBID"}`;
-    };
-
     // Implement the self.buildBaseUrl and self.buildTargetUrl extensions
     // to change the target URL to use a cross-origin domain name.
     self.buildBaseUrl = function(baseUrl) {
@@ -35,7 +30,38 @@
         return allowCors ? `${targetUrl}&origin=http://{{host}}:{{ports[http][0]}}&credentials=true` : targetUrl;
     }
 
-    runTests(sampleTests);
+    const tests = [];
+    for (const test of sampleTests) {
+        const copy = Object.assign({}, test);
+        copy.id = `${test.id}-${allowCors ? "CORS-ALLOW" : "CORS-FORBID"}`;
+        tests.push(copy);
+    }
+    runTests(tests);
 });
+
+// Now test a cross-origin request that doesn't use a safelisted Content-Type and ensure
+// we are applying the proper restrictions. Since a non-safelisted Content-Type request
+// header is used there should be a preflight/options request and we should only succeed
+// send the payload if the proper CORS headers are used.
+{
+    // Implement the self.buildBaseUrl and self.buildTargetUrl extensions
+    // to change the target URL to use a cross-origin domain name.
+    self.buildBaseUrl = function (baseUrl) {
+        return "http://{{domains[www]}}:{{ports[http][0]}}";
+    };
+
+    // Implement the self.buildTargetUrl extension to append a directive
+    // to the handler, that it should return CORS headers for the preflight we expect.
+    self.buildTargetUrl = function (targetUrl) {
+        return `${targetUrl}&origin=http://{{host}}:{{ports[http][0]}}&credentials=true&preflightExpected=true`;
+    }
+    const tests = [];
+    for (const test of preflightTests) {
+        const copy = Object.assign({}, test);
+        copy.id = `${test.id}-PREFLIGHT-ALLOW`;
+        tests.push(copy);
+    }
+    runTests(tests);
+}
 
 done();

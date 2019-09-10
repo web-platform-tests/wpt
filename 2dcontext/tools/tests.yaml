@@ -198,7 +198,7 @@
         ("empty", "", None),
         ("onlyspace", "  ", None),
         ("space", "  100", 100),
-        ("whitespace", "\n\t\f100", 100),
+        ("whitespace", "\r\n\t\f100", 100),
         ("plus", "+100", 100),
         ("minus", "-100", None),
         ("octal", "0100", 100),
@@ -235,11 +235,13 @@
     for name, string, exp in cases:
         code = ""
         code, testing, expected = gen(name, string, exp, code)
+        # We need to replace \r with &#xD; because \r\n gets converted to \n in the HTML parser.
+        htmlString = string.replace('\r', '&#xD;')
         tests.append( {
             "name": "size.attributes.parse.%s" % name,
             "desc": "Parsing of non-negative integers",
             "testing": testing,
-            "canvas": 'width="%s" height="%s"' % (string, string),
+            "canvas": 'width="%s" height="%s"' % (htmlString, htmlString),
             "code": code,
             "expected": expected
         } )
@@ -1057,7 +1059,7 @@
   expected: green
 
 - name: security.reset
-  desc: Resetting the canvas state does not reset the origin-clean flag
+  desc: Resetting the canvas state resets the origin-clean flag
   mozilla: { disabled } # relies on external resources
   testing:
     - initial.reset
@@ -1071,4 +1073,6 @@
     ctx.drawImage(document.getElementById('yellow.png'), 0, 0);
     @assert throws SECURITY_ERR canvas.toDataURL();
     canvas.width = 100;
-    @assert throws SECURITY_ERR canvas.toDataURL();
+    canvas.toDataURL();
+    ctx.getImageData(0, 0, 1, 1);
+    @assert true; // okay if there was no exception

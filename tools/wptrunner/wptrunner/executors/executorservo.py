@@ -1,47 +1,35 @@
+from __future__ import print_function
 import base64
-import hashlib
-import httplib
 import json
 import os
 import subprocess
 import tempfile
 import threading
-import traceback
-import urlparse
 import uuid
-from collections import defaultdict
 
 from mozprocess import ProcessHandler
 
-from .base import (ExecutorException,
-                   Protocol,
+from tools.serve.serve import make_hosts_file
+
+from .base import (ConnectionlessProtocol,
                    RefTestImplementation,
                    testharness_result_converter,
                    reftest_result_converter,
-                   WdspecExecutor)
+                   WdspecExecutor,
+                   WebDriverProtocol)
 from .process import ProcessTestExecutor
 from ..browsers.base import browser_command
-from ..wpttest import WdspecResult, WdspecSubtestResult
 from ..webdriver_server import ServoDriverServer
-from .executormarionette import WdspecRun
 
 pytestrunner = None
 webdriver = None
 
-extra_timeout = 5 # seconds
+extra_timeout = 5  # seconds
 
-hosts_text = """127.0.0.1 web-platform.test
-127.0.0.1 www.web-platform.test
-127.0.0.1 www1.web-platform.test
-127.0.0.1 www2.web-platform.test
-127.0.0.1 xn--n8j6ds53lwwkrqhv28a.web-platform.test
-127.0.0.1 xn--lve-6lad.web-platform.test
-"""
-
-def make_hosts_file():
+def write_hosts_file(config):
     hosts_fd, hosts_path = tempfile.mkstemp()
     with os.fdopen(hosts_fd, "w") as f:
-        f.write(hosts_text)
+        f.write(make_hosts_file(config, "127.0.0.1"))
     return hosts_path
 
 
@@ -56,8 +44,8 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
         self.pause_after_test = pause_after_test
         self.result_data = None
         self.result_flag = None
-        self.protocol = Protocol(self, browser)
-        self.hosts_path = make_hosts_file()
+        self.protocol = ConnectionlessProtocol(self, browser)
+        self.hosts_path = write_hosts_file(server_config)
 
     def teardown(self):
         try:
@@ -135,7 +123,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
                     self.proc.wait()
                 else:
                     self.proc.kill()
-        except KeyboardInterrupt:
+        except:  # noqa
             self.proc.kill()
             raise
 
@@ -149,7 +137,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
             self.result_flag.set()
         else:
             if self.interactive:
-                print line
+                print(line)
             else:
                 self.logger.process_output(self.proc.pid,
                                            line,
@@ -181,18 +169,20 @@ class ServoRefTestExecutor(ProcessTestExecutor):
     def __init__(self, browser, server_config, binary=None, timeout_multiplier=1,
                  screenshot_cache=None, debug_info=None, pause_after_test=False,
                  **kwargs):
-        do_delayed_imports()
         ProcessTestExecutor.__init__(self,
                                      browser,
                                      server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
 
-        self.protocol = Protocol(self, browser)
+        self.protocol = ConnectionlessProtocol(self, browser)
         self.screenshot_cache = screenshot_cache
         self.implementation = RefTestImplementation(self)
         self.tempdir = tempfile.mkdtemp()
-        self.hosts_path = make_hosts_file()
+        self.hosts_path = write_hosts_file(server_config)
+
+    def reset(self):
+        self.implementation.reset()
 
     def teardown(self):
         try:
@@ -281,88 +271,16 @@ class ServoRefTestExecutor(ProcessTestExecutor):
     def on_output(self, line):
         line = line.decode("utf8", "replace")
         if self.interactive:
-            print line
+            print(line)
         else:
             self.logger.process_output(self.proc.pid,
                                        line,
                                        " ".join(self.command))
 
-class ServoWdspecProtocol(Protocol):
-    def __init__(self, executor, browser):
-        self.do_delayed_imports()
-        Protocol.__init__(self, executor, browser)
-        self.session = None
-        self.server = None
 
-    def setup(self, runner):
-        try:
-            self.server = ServoDriverServer(self.logger, binary=self.browser.binary, binary_args=self.browser.binary_args)
-            self.server.start(block=False)
-            self.logger.info(
-                "WebDriver HTTP server listening at %s" % self.server.url)
-
-            self.logger.info(
-                "Establishing new WebDriver session with %s" % self.server.url)
-            self.session = webdriver.Session(
-                self.server.host, self.server.port, self.server.base_path)
-        except Exception:
-            self.logger.error(traceback.format_exc())
-            self.executor.runner.send_message("init_failed")
-        else:
-            self.executor.runner.send_message("init_succeeded")
-
-    def teardown(self):
-        if self.server is not None:
-            try:
-                if self.session.session_id is not None:
-                    self.session.end()
-            except Exception:
-                pass
-            if self.server.is_alive:
-                self.server.stop()
-
-    @property
-    def is_alive(self):
-        conn = httplib.HTTPConnection(self.server.host, self.server.port)
-        conn.request("HEAD", self.server.base_path + "invalid")
-        res = conn.getresponse()
-        return res.status == 404
-
-    def do_delayed_imports(self):
-        global pytestrunner, webdriver
-        from . import pytestrunner
-        import webdriver
+class ServoDriverProtocol(WebDriverProtocol):
+    server_cls = ServoDriverServer
 
 
 class ServoWdspecExecutor(WdspecExecutor):
-    def __init__(self, browser, server_config,
-                 timeout_multiplier=1, close_after_done=True, debug_info=None,
-                 **kwargs):
-        WdspecExecutor.__init__(self, browser, server_config,
-                                timeout_multiplier=timeout_multiplier,
-                                debug_info=debug_info)
-        self.protocol = ServoWdspecProtocol(self, browser)
-
-    def is_alive(self):
-        return self.protocol.is_alive
-
-    def on_environment_change(self, new_environment):
-        pass
-
-    def do_test(self, test):
-        timeout = test.timeout * self.timeout_multiplier + extra_timeout
-
-        success, data = WdspecRun(self.do_wdspec,
-                                  self.protocol.session,
-                                  test.path,
-                                  timeout).run()
-
-        if success:
-            return self.convert_result(test, data)
-
-        return (test.result_cls(*data), [])
-
-    def do_wdspec(self, session, path, timeout):
-        harness_result = ("OK", None)
-        subtest_results = pytestrunner.run(path, session, timeout=timeout)
-        return (harness_result, subtest_results)
+    protocol_cls = ServoDriverProtocol

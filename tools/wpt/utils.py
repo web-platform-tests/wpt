@@ -1,27 +1,38 @@
 import logging
 import os
 import subprocess
-import sys
 import tarfile
 import zipfile
 from io import BytesIO
+
+try:
+    from typing import Any, Callable
+except ImportError:
+    pass
 
 logger = logging.getLogger(__name__)
 
 
 class Kwargs(dict):
-    def set_if_none(self, name, value, err_fn=None, desc=None, extra_cond=None):
+    def set_if_none(self,
+                    name,            # type: str
+                    value,           # type: Any
+                    err_fn=None,     # type: Callable[[Kwargs, str], Any]
+                    desc=None,       # type: str
+                    extra_cond=None  # type: Callable[[Kwargs], Any]
+                    ):
+        # type: (...) -> Any
         if desc is None:
             desc = name
 
-        if self[name] is None:
+        if name not in self or self[name] is None:
             if extra_cond is not None and not extra_cond(self):
                 return
             if callable(value):
                 value = value()
             if not value:
                 if err_fn is not None:
-                    return err_fn(kwargs, "Failed to find %s" % desc)
+                    return err_fn(self, "Failed to find %s" % desc)
                 else:
                     return
             self[name] = value
@@ -33,7 +44,7 @@ def call(*args):
 
     Returns a bytestring of the subprocess output if no error.
     """
-    logger.debug("%s" % " ".join(args))
+    logger.debug(" ".join(args))
     try:
         return subprocess.check_output(args)
     except subprocess.CalledProcessError as e:
@@ -41,20 +52,6 @@ def call(*args):
                         (e.cmd, e.returncode))
         logger.critical(e.output)
         raise
-
-
-def get_git_cmd(repo_path):
-    """Create a function for invoking git commands as a subprocess."""
-    def git(cmd, *args):
-        full_cmd = ["git", cmd] + list(args)
-        try:
-            logger.debug(" ".join(full_cmd))
-            return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT).strip()
-        except subprocess.CalledProcessError as e:
-            logger.error("Git command exited with status %i" % e.returncode)
-            logger.error(e.output)
-            sys.exit(1)
-    return git
 
 
 def seekable(fileobj):
@@ -86,21 +83,6 @@ def unzip(fileobj, dest=None, limit=None):
             zip_data.extract(info, path=dest)
             perm = info.external_attr >> 16 & 0x1FF
             os.chmod(os.path.join(dest, info.filename), perm)
-
-
-class pwd(object):
-    """Create context for temporarily changing present working directory."""
-    def __init__(self, dir):
-        self.dir = dir
-        self.old_dir = None
-
-    def __enter__(self):
-        self.old_dir = os.path.abspath(os.curdir)
-        os.chdir(self.dir)
-
-    def __exit__(self, *args, **kwargs):
-        os.chdir(self.old_dir)
-        self.old_dir = None
 
 
 def get(url):

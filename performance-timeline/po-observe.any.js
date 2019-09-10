@@ -2,28 +2,30 @@
 
   test(function () {
     var obs = new PerformanceObserver(function () { return true; });
-    assert_throws(new TypeError(), function () {
+    assert_throws(new SyntaxError(), function () {
       obs.observe({});
     });
-    assert_throws(new TypeError(), function () {
+    assert_throws(new SyntaxError(), function () {
       obs.observe({entryType: []});
     });
-  }, "no entryTypes throws a TypeError");
+  }, "no 'type' or 'entryTypes' throws a SyntaxError");
   test(function () {
     var obs = new PerformanceObserver(function () { return true; });
     assert_throws(new TypeError(), function () {
       obs.observe({entryTypes: "mark"});
     });
-    assert_throws(new TypeError(), function () {
-      obs.observe({entryTypes: []});
-    });
-    assert_throws(new TypeError(), function () {
-      obs.observe({entryTypes: ["this-cannot-match-an-entryType"]});
-    });
-    assert_throws(new TypeError(), function () {
-      obs.observe({entryTypes: ["marks","navigate", "resources"]});
-    });
-  }, "Empty sequence entryTypes throws a TypeError");
+  }, "entryTypes must be a sequence or throw a TypeError");
+
+  test(function () {
+    var obs = new PerformanceObserver(function () { return true; });
+    obs.observe({entryTypes: []});
+  }, "Empty sequence entryTypes does not throw an exception.");
+
+  test(function () {
+    var obs = new PerformanceObserver(function () { return true; });
+    obs.observe({entryTypes: ["this-cannot-match-an-entryType"]});
+    obs.observe({entryTypes: ["marks","navigate", "resources"]});
+  }, "Unknown entryTypes do not throw an exception.");
 
   test(function () {
     var obs = new PerformanceObserver(function () { return true; });

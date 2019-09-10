@@ -5,12 +5,15 @@
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/makelongtask.js"></script>
 
 <h1>Long Task: External Script</h1>
 <div id="log"></div>
 <script>
   async_test(function (t) {
+    if (typeof PerformanceLongTaskTiming === 'undefined') {
+        assert_unreached("Longtasks are not supported.");
+        t.done();
+    }
     const observer = new PerformanceObserver(
         t.step_func(function (entryList) {
             const entries = entryList.getEntries();
@@ -26,7 +29,7 @@
                 'Exactly one attribution entry is expected');
             const attribution = longtask.attribution[0];
             assert_equals(attribution.entryType, 'taskattribution');
-            assert_equals(attribution.name, 'script');
+            assert_equals(attribution.name, 'unknown');
             assert_equals(attribution.duration, 0);
             assert_equals(attribution.startTime, 0);
             assert_equals(attribution.containerId, '');
@@ -37,7 +40,11 @@
         })
     );
     observer.observe({entryTypes: ['longtask']});
+    window.onload = () => {
+        const script = document.createElement('script');
+        script.src = 'resources/makelongtask.js';
+        document.body.appendChild(script);
+    }
 }, 'Performance longtask entries are observable.');
 </script>
-
 </body>

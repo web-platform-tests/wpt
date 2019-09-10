@@ -28,6 +28,17 @@
 "use strict";
 const ABUSIVE_AMOUNT = 100000;
 
+const applePay = {
+  supportedMethods: "https://apple.com/apple-pay",
+  data: {
+    version: 3,
+    merchantIdentifier: "merchant.com.example",
+    countryCode: "US",
+    merchantCapabilities: ["supports3DS"],
+    supportedNetworks: ["visa"],
+  }
+};
+
 const basicCard = Object.freeze({
   supportedMethods: "basic-card",
 });
@@ -42,7 +53,7 @@ const evilAmount = Object.freeze({
   value: "1".repeat(ABUSIVE_AMOUNT),
 });
 
-const defaultMethods = Object.freeze([basicCard]);
+const defaultMethods = Object.freeze([basicCard, applePay]);
 
 const defaultTotal = Object.freeze({
   label: "label",
@@ -81,7 +92,7 @@ test(() => {
   try {
     new PaymentRequest(evilMethods, defaultDetails);
   } catch (err) {
-    assert_true(false, "failed smoke test: " + err.stack);
+    assert_unreached("failed smoke test: " + err.stack);
   }
   // Now, let's add an abusive amount of methods.
   while (evilMethods.length < ABUSIVE_AMOUNT) {
@@ -92,7 +103,6 @@ test(() => {
   } catch (err) {
     assert_equals(err.name, "TypeError", "must be a TypeError");
   }
-  assert_true(true, "Didn't crash");
 }, "Don't crash if there is an abusive number of payment methods in the methodData sequence");
 
 // PaymentMethodData.supportedMethods
@@ -102,18 +112,19 @@ test(() => {
   try {
     new PaymentRequest([{ supportedMethods }], defaultDetails);
   } catch (err) {
-    assert_true(false, "failed smoke test: " + err.stack);
+    assert_unreached("failed smoke test: " + err.stack);
   }
   // Now, we make supportedMethods super large
-  const evilMethodData = [{
-    supportedMethods: supportedMethods.repeat(ABUSIVE_AMOUNT),
-  }];
+  const evilMethodData = [
+    {
+      supportedMethods: supportedMethods.repeat(ABUSIVE_AMOUNT),
+    },
+  ];
   try {
     new PaymentRequest(evilMethodData, defaultDetails);
   } catch (err) {
     assert_equals(err.name, "TypeError", "must be a TypeError");
   }
-  assert_true(true, "Didn't crash");
 }, "Don't crash if PaymentMethodData.supportedMethods is an abusive length");
 
 // PaymentDetailsInit.id
@@ -126,7 +137,7 @@ test(() => {
       Object.assign({}, defaultDetails, { id })
     );
   } catch (err) {
-    assert_true(false, "failed smoke test: " + err.stack);
+    assert_unreached("failed smoke test: " + err.stack);
   }
   // Now, we make the id super large;
   const evilDetails = Object.assign({}, defaultDetails, {
@@ -137,7 +148,6 @@ test(() => {
   } catch (err) {
     assert_equals(err.name, "TypeError", "must be a TypeError");
   }
-  assert_true(true, "Didn't crash");
 }, "Don't crash if the request id has an abusive length");
 
 // PaymentDetailsInit.total.label
@@ -147,7 +157,7 @@ test(() => {
   try {
     new PaymentRequest(defaultMethods, evilDetails);
   } catch (err) {
-    assert_true(false, "failed smoke test: " + err.stack);
+    assert_unreached("failed smoke test: " + err.stack);
   }
   // Now, we make the label super large;
   evilDetails.total = {
@@ -159,7 +169,6 @@ test(() => {
   } catch (err) {
     assert_equals(err.name, "TypeError", "must be a TypeError");
   }
-  assert_true(true, "Didn't crash");
 }, "Don't crash if PaymentDetailsInit.total.label is an abusive length");
 
 test(() => {
@@ -168,7 +177,7 @@ test(() => {
   try {
     new PaymentRequest(defaultMethods, evilDetails);
   } catch (err) {
-    assert_true(false, "failed smoke test: " + err.stack);
+    assert_unreached("failed smoke test: " + err.stack);
   }
   // Now, we can use evilAmount
   evilDetails.total = evilAmount;
@@ -177,7 +186,6 @@ test(() => {
   } catch (err) {
     assert_equals(err.name, "TypeError", "must be a TypeError");
   }
-  assert_true(true, "Didn't crash");
 }, "Don't crash if total.amount.value is an abusive length");
 
 for (const [prop, defaultValue] of [
@@ -191,7 +199,7 @@ for (const [prop, defaultValue] of [
     try {
       new PaymentRequest(defaultMethods, evilDetails);
     } catch (err) {
-      assert_true(false, "failed smoke test: " + err.stack);
+      assert_unreached("failed smoke test: " + err.stack);
     }
     while (evilDetails[prop].length < ABUSIVE_AMOUNT) {
       evilDetails[prop] = evilDetails[prop].concat(evilDetails[prop]);
@@ -202,7 +210,6 @@ for (const [prop, defaultValue] of [
     } catch (err) {
       assert_equals(err.name, "TypeError", "must be a TypeError");
     }
-    assert_true(true, "Didn't crash");
   }, `Don't crash if details.${prop} has an abusive number of items`);
 }
 
@@ -214,7 +221,7 @@ test(() => {
   try {
     new PaymentRequest(defaultMethods, evilDetails);
   } catch (err) {
-    assert_true(false, "failed smoke test: " + err.stack);
+    assert_unreached("failed smoke test: " + err.stack);
   }
   // Now, we make the label super large;
   evilShippingOption.label = "l".repeat(ABUSIVE_AMOUNT);
@@ -223,7 +230,6 @@ test(() => {
   } catch (err) {
     assert_equals(err.name, "TypeError", "must be a TypeError");
   }
-  assert_true(true, "Didn't crash");
 }, "Don't crash if PaymentShippingOptions.label is an abusive length");
 
 test(() => {
@@ -234,7 +240,7 @@ test(() => {
   try {
     new PaymentRequest(defaultMethods, evilDetails);
   } catch (err) {
-    assert_true(false, "failed smoke test: " + err.stack);
+    assert_unreached("failed smoke test: " + err.stack);
   }
   // Now, we make use of evilAmount;
   evilShippingOption.amount = evilAmount;
@@ -243,7 +249,6 @@ test(() => {
   } catch (err) {
     assert_equals(err.name, "TypeError", "must be a TypeError");
   }
-  assert_true(true, "Didn't crash");
 }, "Don't crash if the PaymentShippingOptions.amount.value is an abusive length");
 
 test(() => {
@@ -254,7 +259,7 @@ test(() => {
   try {
     new PaymentRequest(defaultMethods, evilDetails);
   } catch (err) {
-    assert_true(false, "failed smoke test: " + err.stack);
+    assert_unreached("failed smoke test: " + err.stack);
   }
   // Now, we make the label super large;
   evilDisplayItem.label = "l".repeat(ABUSIVE_AMOUNT);
@@ -263,8 +268,5 @@ test(() => {
   } catch (err) {
     assert_equals(err.name, "TypeError", "must be a TypeError");
   }
-  assert_true(true, "Didn't crash");
 }, "Don't crash if PaymentItem.label is an abusive length");
-
-
 </script>

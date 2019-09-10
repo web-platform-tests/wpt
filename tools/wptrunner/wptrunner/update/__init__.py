@@ -1,11 +1,10 @@
-import os
 import sys
 
 from mozlog.structured import structuredlog, commandline
 
 from .. import wptcommandline
 
-from update import WPTUpdate
+from .update import WPTUpdate
 
 def remove_logging_args(args):
     """Take logging args out of the dictionary of command line arguments so
@@ -44,4 +43,3 @@ def main():
     assert structuredlog.get_default_logger() is not None
     success = run_update(logger, **args)
     sys.exit(0 if success else 1)
-

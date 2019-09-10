@@ -16,11 +16,10 @@ MediaStream is rendered as blackness.</p>
 <div id='log'></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src="/common/vendor-prefix.js" data-prefixed-prototypes='[{"ancestors":["HTMLMediaElement"],"name":"srcObject"}]'></script>
 <script>
 var vid = document.getElementById("vid");
 var cv = document.createElement("canvas");
-var t = async_test("Tests that a disabled video track in a MediaStream is rendered as blackness", {timeout: 10000});
+var t = async_test("Tests that a disabled video track in a MediaStream is rendered as blackness");
 t.step(function() {
   navigator.mediaDevices.getUserMedia({video: true})
     .then(t.step_func(function (stream) {
@@ -47,7 +46,7 @@ t.step(function() {
       vid.srcObject = stream;
       vid.play();
       vid.addEventListener("loadeddata", testOnceLoadeddata, false);
-    })));
+    }));
 });
 </script>
 </body>

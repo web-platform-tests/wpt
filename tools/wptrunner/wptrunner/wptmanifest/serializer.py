@@ -1,11 +1,12 @@
-from node import NodeVisitor, ValueNode, ListNode, BinaryExpressionNode
-from parser import atoms, precedence
+from .node import NodeVisitor, ValueNode, ListNode, BinaryExpressionNode
+from .parser import atoms, precedence
 
-atom_names = {v:"@%s" % k for (k,v) in atoms.iteritems()}
+atom_names = {v:"@%s" % k for (k,v) in atoms.items()}
 
-named_escapes = set(["\a", "\b", "\f", "\n", "\r", "\t", "\v"])
+named_escapes = {"\a", "\b", "\f", "\n", "\r", "\t", "\v"}
 
 def escape(string, extras=""):
+    # Assumes input bytes are either UTF8 bytes or unicode.
     rv = ""
     for c in string:
         if c in named_escapes:
@@ -18,7 +19,10 @@ def escape(string, extras=""):
             rv += "\\" + c
         else:
             rv += c
-    return rv.encode("utf8")
+    if isinstance(rv, unicode):
+        return rv.encode("utf8")
+    else:
+        return rv
 
 
 class ManifestSerializer(NodeVisitor):
@@ -28,6 +32,8 @@ class ManifestSerializer(NodeVisitor):
     def serialize(self, root):
         self.indent = 2
         rv = "\n".join(self.visit(root))
+        if not rv:
+            return rv
         if rv[-1] != "\n":
             rv = rv + "\n"
         return rv
@@ -68,15 +74,21 @@ class ManifestSerializer(NodeVisitor):
         return ["".join(rv)]
 
     def visit_ValueNode(self, node):
-        if "#" in node.data or (isinstance(node.parent, ListNode) and
-                                ("," in node.data or "]" in node.data)):
-            if "\"" in node.data:
+        if not isinstance(node.data, (str, unicode)):
+            data = unicode(node.data)
+        else:
+            data = node.data
+        if ("#" in data or
+            data.startswith("if ") or
+            (isinstance(node.parent, ListNode) and
+             ("," in data or "]" in data))):
+            if "\"" in data:
                 quote = "'"
             else:
                 quote = "\""
         else:
             quote = ""
-        return [quote + escape(node.data, extras=quote) + quote]
+        return [quote + escape(data, extras=quote) + quote]
 
     def visit_AtomNode(self, node):
         return [atom_names[node.data]]

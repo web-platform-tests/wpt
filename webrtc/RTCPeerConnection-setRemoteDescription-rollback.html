@@ -11,9 +11,9 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  //   generateOffer
-  //   assert_session_desc_equals
-  //   test_state_change_event
+  //   assert_session_desc_similar
+  //   generateAudioReceiveOnlyOffer
+  //   generateDataChannelOffer
 
   /*
     4.3.2.  Interface Definition
@@ -59,10 +59,12 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
-    test_state_change_event(t, pc, ['have-remote-offer', 'stable']);
+    const states = [];
+    pc.addEventListener('signalingstatechange', () => states.push(pc.signalingState));
 
-    return generateOffer({ data: true })
+    return generateDataChannelOffer(pc)
     .then(offer => pc.setRemoteDescription(offer))
     .then(() => {
       assert_equals(pc.signalingState, 'have-remote-offer');
@@ -77,6 +79,8 @@
       assert_equals(pc.remoteDescription, null);
       assert_equals(pc.pendingRemoteDescription, null);
       assert_equals(pc.currentRemoteDescription, null);
+
+      assert_array_equals(states, ['have-remote-offer', 'stable']);
     });
   }, 'setRemoteDescription(rollback) in have-remote-offer state should revert to stable state');
 
@@ -94,18 +98,65 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     return promise_rejects(t, 'InvalidStateError',
       pc.setRemoteDescription({ type: 'rollback' }));
   }, `setRemoteDescription(rollback) from stable state should reject with InvalidStateError`);
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
-    return pc.createOffer({ offerToReceiveAudio: true })
+    t.add_cleanup(() => pc.close());
+    return generateAudioReceiveOnlyOffer(pc)
     .then(offer => pc.setRemoteDescription(offer))
     .then(() => pc.setRemoteDescription({
       type: 'rollback',
       sdp: '!<Invalid SDP Content>;'
     }));
   }, `setRemoteDescription(rollback) should ignore invalid sdp content and succeed`);
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    // We don't use this right away
+    const offer1 = await pc1.createOffer({offerToReceiveAudio: true});
+
+    // Create offer from pc2, apply and rollback on pc1
+    const offer2 = await pc2.createOffer({offerToReceiveAudio: true});
+    await pc1.setRemoteDescription(offer2);
+    await pc1.setRemoteDescription({type: "rollback"});
+
+    // Then try applying pc1's old offer
+    await pc1.setLocalDescription(offer1);
+  }, `local offer created before setRemoteDescription(remote offer) then rollback should still be usable`);
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    const stream = await getNoiseStream({ video: true });
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    pc1.addTrack(stream.getTracks()[0], stream);
+
+    // We don't use this right away. pc1 has provisionally decided that the
+    // (only) transceiver is bound to level 0.
+    const offer1 = await pc1.createOffer();
+
+    // Create offer from pc2, apply and rollback on pc1
+    const offer2 = await pc2.createOffer({offerToReceiveAudio: true, offerToReceiveVideo: true});
+    // pc1 now should change its mind about what level its video transceiver is
+    // bound to. It was 0, now it is 1.
+    await pc1.setRemoteDescription(offer2);
+
+    // Rolling back should put things back the way they were.
+    await pc1.setRemoteDescription({type: "rollback"});
+
+    // Then try applying pc1's old offer
+    await pc1.setLocalDescription(offer1);
+  }, "local offer created before setRemoteDescription(remote offer) with different transceiver level assignments then rollback should still be usable");
 
 </script>

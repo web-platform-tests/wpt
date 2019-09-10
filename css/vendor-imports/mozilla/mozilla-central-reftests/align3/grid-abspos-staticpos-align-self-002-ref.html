@@ -11,6 +11,7 @@
   <style>
     .container {
       display: block;
+      padding: 1px 2px;
       border: 1px solid black;
       background: yellow;
       margin-bottom: 5px;
@@ -20,12 +21,12 @@
     br { clear: both }
 
     .big > .container {
-      height: 32px;
-      width: 26px;
+      height: 30px;
+      width: 22px;
     }
     .small > .container {
-      height: 4px;
-      width: 8px;
+      height: 2px;
+      width: 4px;
     }
 
     .container > * {
@@ -64,8 +65,6 @@
     <!-- <self-position>, part 2: -->
     <div class="container"><div class="alignStart"><!--flex-start--></div></div>
     <div class="container"><div class="alignEnd"><!--flex-end--></div></div>
-    <div class="container"><div class="alignStart"><!--left--></div></div>
-    <div class="container"><div class="alignStart"><!--right--></div></div>
     <br>
   </div>
   <div class="small">
@@ -90,8 +89,6 @@
     <!-- <self-position>, part 2: -->
     <div class="container"><div class="alignStart"><!--flex-start--></div></div>
     <div class="container"><div class="alignEnd"><!--flex-end--></div></div>
-    <div class="container"><div class="alignStart"><!--left--></div></div>
-    <div class="container"><div class="alignStart"><!--right--></div></div>
     <br>
   </div>
 </body>

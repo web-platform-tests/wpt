@@ -2,10 +2,30 @@ import os
 import platform
 import socket
 from abc import ABCMeta, abstractmethod
+from copy import deepcopy
 
-from ..wptcommandline import require_arg
+from ..wptcommandline import require_arg  # noqa: F401
 
 here = os.path.split(__file__)[0]
+
+
+def inherit(super_module, child_globals, product_name):
+    super_wptrunner = super_module.__wptrunner__
+    child_globals["__wptrunner__"] = child_wptrunner = deepcopy(super_wptrunner)
+
+    child_wptrunner["product"] = product_name
+
+    for k in ("check_args", "browser", "browser_kwargs", "executor_kwargs",
+              "env_extras", "env_options", "timeout_multiplier"):
+        attr = super_wptrunner[k]
+        child_globals[attr] = getattr(super_module, attr)
+
+    for v in super_module.__wptrunner__["executor"].values():
+        child_globals[v] = getattr(super_module, v)
+
+    if "run_info_extras" in super_wptrunner:
+        attr = super_wptrunner["run_info_extras"]
+        child_globals[attr] = getattr(super_module, attr)
 
 
 def cmd_arg(name, value=None):
@@ -16,26 +36,25 @@ def cmd_arg(name, value=None):
     return rv
 
 
-def get_free_port(start_port, exclude=None):
-    """Get the first port number after start_port (inclusive) that is
-    not currently bound.
-
-    :param start_port: Integer port number at which to start testing.
-    :param exclude: Set of port numbers to skip"""
-    port = start_port
+def get_free_port():
+    """Get a random unbound port"""
     while True:
-        if exclude and port in exclude:
-            port += 1
-            continue
         s = socket.socket()
         try:
-            s.bind(("127.0.0.1", port))
+            s.bind(("127.0.0.1", 0))
         except socket.error:
-            port += 1
+            continue
         else:
-            return port
+            return s.getsockname()[1]
         finally:
             s.close()
+
+
+def get_timeout_multiplier(test_type, run_info_data, **kwargs):
+    if kwargs["timeout_multiplier"] is not None:
+        return kwargs["timeout_multiplier"]
+    return 1
+
 
 def browser_command(binary, args, debug_info):
     if debug_info:
@@ -87,7 +106,7 @@ class Browser(object):
         return {}
 
     @abstractmethod
-    def start(self, **kwargs):
+    def start(self, group_metadata, **kwargs):
         """Launch the browser object and get it into a state where is is ready to run tests"""
         pass
 
@@ -119,14 +138,10 @@ class Browser(object):
         with which it should be instantiated"""
         return ExecutorBrowser, {}
 
-    def check_for_crashes(self):
-        """Check for crashes that didn't cause the browser process to terminate"""
+    def check_crash(self, process, test):
+        """Check if a crash occured and output any useful information to the
+        log. Returns a boolean indicating whether a crash occured."""
         return False
-
-    def log_crash(self, process, test):
-        """Return a list of dictionaries containing information about crashes that happend
-        in the browser, or an empty list if no crashes occurred"""
-        self.logger.crash(process, test)
 
 
 class NullBrowser(Browser):

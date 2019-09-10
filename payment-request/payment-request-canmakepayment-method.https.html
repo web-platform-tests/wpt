@@ -1,13 +1,25 @@
 <!DOCTYPE html>
-<!-- Copyright © 2017 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
 <meta charset="utf-8">
 <title>Tests for PaymentRequest.canMakePayment() method</title>
-<link rel="help" href="https://w3c.github.io/browser-payment-api/#show-method">
+<link rel="help" href="https://w3c.github.io/payment-request/#canmakepayment-method">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src='/resources/testdriver-vendor.js'></script>
 <script>
+"use strict";
 const basicCard = Object.freeze({ supportedMethods: "basic-card" });
-const defaultMethods = Object.freeze([basicCard]);
+const applePay = Object.freeze({
+  supportedMethods: "https://apple.com/apple-pay",
+  data: {
+    version: 3,
+    merchantIdentifier: "merchant.com.example",
+    countryCode: "US",
+    merchantCapabilities: ["supports3DS"],
+    supportedNetworks: ["visa"],
+  }
+});
+const defaultMethods = Object.freeze([basicCard, applePay]);
 const defaultDetails = Object.freeze({
   total: {
     label: "Total",
@@ -17,6 +29,19 @@ const defaultDetails = Object.freeze({
     },
   },
 });
+
+const unsupportedMethods = [
+  { supportedMethods: "this-is-not-supported" },
+  { supportedMethods: "https://not.supported" },
+];
+
+promise_test(async t => {
+  const request = new PaymentRequest(defaultMethods, defaultDetails);
+  assert_true(
+    await request.canMakePayment(),
+    "one of the methods should be supported"
+  );
+}, `If payment method identifier are supported, resolve promise with true.`);
 
 promise_test(async t => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
@@ -39,110 +64,57 @@ promise_test(async t => {
 }, `If request.[[state]] is "created", then return a promise that resolves to true for known method.`);
 
 promise_test(async t => {
+  const noneSupported = new PaymentRequest(
+    unsupportedMethods,
+    defaultDetails
+  ).canMakePayment();
+  assert_false(await noneSupported, `methods must not be supported`);
+}, "All methods are unsupported");
+
+promise_test(async t => {
+  const someSupported = new PaymentRequest(
+    [...unsupportedMethods, ...defaultMethods],
+    defaultDetails
+  ).canMakePayment();
+  assert_true(await someSupported, `At least one method is expected to be supported.`);
+}, `Mix of supported and unsupported methods, at least one method is supported.`);
+
+promise_test(async t => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
-  const acceptPromise = request.show(); // Sets state to "interactive"
-  const canMakePaymentPromise = request.canMakePayment();
-  try {
-    const result = await canMakePaymentPromise;
-    assert_true(
-      false,
-      `canMakePaymentPromise should have thrown InvalidStateError`
-    );
-  } catch (err) {
-    await promise_rejects(t, "InvalidStateError", canMakePaymentPromise);
-  } finally {
-    await request.abort();
-    await promise_rejects(t, "AbortError", acceptPromise);
-  }
+  const [acceptPromise, canMakePaymentPromise] = await test_driver.bless(
+    "show payment request",
+    () => {
+      const acceptPromise = request.show(); // Sets state to "interactive"
+      const canMakePaymentPromise = request.canMakePayment();
+      return [acceptPromise, canMakePaymentPromise];
+    });
+
+  await promise_rejects(t, "InvalidStateError", canMakePaymentPromise);
+  request.abort();
+  await promise_rejects(t, "AbortError", acceptPromise);
+
   // The state should be "closed"
   await promise_rejects(t, "InvalidStateError", request.canMakePayment());
-}, `If request.[[state]] is "interactive", then return a promise rejected with an "InvalidStateError" DOMException.`);
+}, 'If request.[[state]] is "interactive", then return a promise rejected with an "InvalidStateError" DOMException.');
 
 promise_test(async t => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
-  const acceptPromise = request.show(); // The state is now "interactive"
-  acceptPromise.catch(() => {}); // no-op, just to silence unhandled rejection in devtools.
-  await request.abort(); // The state is now "closed"
+  const [abortPromise, acceptPromise] = await test_driver.bless(
+    "show payment request",
+    () => {
+      const acceptPromise = request.show(); // Sets state to "interactive"
+      acceptPromise.catch(() => {}); // no-op, just to silence unhandled rejection in devtools.
+      const abortPromise = request.abort();  // Sets state to "closed"
+      return [abortPromise, acceptPromise];
+    });
+
+  await abortPromise;
+  await promise_rejects(t, "AbortError", acceptPromise);
   await promise_rejects(t, "InvalidStateError", request.canMakePayment());
-  try {
-    const result = await request.canMakePayment();
-    assert_true(
-      false,
-      `should have thrown InvalidStateError, but instead returned "${result}"`
-    );
-  } catch (err) {
-    assert_equals(
-      err.name,
-      "InvalidStateError",
-      "must be an InvalidStateError."
-    );
-  }
-}, `If request.[[state]] is "closed", then return a promise rejected with an "InvalidStateError" DOMException.`);
-
-promise_test(async t => {
-  const request = new PaymentRequest(defaultMethods, defaultDetails);
-  assert_true(await request.canMakePayment(), "basic-card should be supported");
-}, `If payment method identifier and serialized parts are supported, resolve promise with true.`);
-
-promise_test(async t => {
-  const unsupportedMethods = [
-    "this-is-not-supported",
-    "https://not.supported",
-    "basic-card?not-really",
-    "basic-card://not-ok",
-    "basic card",
-    "/basic card/",
-    "BaSicCarD",
-    "BASIC-CARD",
-    " basic-card ",
-    "this is not supported",
-    " ",
-  ];
-  for (const method of unsupportedMethods) {
-    try {
-      const request = new PaymentRequest(
-        [{ supportedMethods: method }],
-        defaultDetails
-      );
-      assert_false(
-        await request.canMakePayment(),
-        `method "${method}" must not be supported`
-      );
-    } catch (err) {
-      assert_true(
-        false,
-        `Unexpected exception testing method ${method}, expected false. See error console.`
-      );
-    }
-  }
-}, `If payment method identifier is unknown, resolve promise with false.`);
-
-promise_test(async t => {
-  // This test might never actually hit its assertion, but that's allowed.
-  const request = new PaymentRequest(defaultMethods, defaultDetails);
-  for (let i = 0; i < 1000; i++) {
-    try {
-      await request.canMakePayment();
-    } catch (err) {
-      assert_equals(
-        err.name,
-        "NotAllowedError",
-        "if it throws, then it must be a NotAllowedError."
-      );
-      break;
-    }
-  }
-  for (let i = 0; i < 1000; i++) {
-    try {
-      await new PaymentRequest(defaultMethods, defaultDetails).canMakePayment();
-    } catch (err) {
-      assert_equals(
-        err.name,
-        "NotAllowedError",
-        "if it throws, then it must be a NotAllowedError."
-      );
-      break;
-    }
-  }
-}, `Optionally, at the user agent's discretion, return a promise rejected with a "NotAllowedError" DOMException.`);
+}, 'If request.[[state]] is "closed", then return a promise rejected with an "InvalidStateError" DOMException.');
 </script>
+
+<small>
+  If you find a buggy test, please <a href="https://github.com/web-platform-tests/wpt/issues">file a bug</a>
+  and tag one of the <a href="https://github.com/web-platform-tests/wpt/blob/master/payment-request/META.yml">suggested reviewers</a>.
+</small>

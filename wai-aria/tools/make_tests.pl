@@ -30,6 +30,7 @@ my %specs = (
 );
 
 my @apiNames = qw(UIA MSAA ATK IAccessible2 AXAPI);
+my $apiNamesRegex = "(" . join("|", @apiNames) . ")";
 
 # the suffix to attach to the automatically generated test case names
 my $theSuffix = "-manual.html";
@@ -229,6 +230,9 @@ while (<$io>) {
         $theCode =~ s/ +$//;
         $theCode =~ s/\t/ /g;
         $theCode .= $_;
+        # In MediaWiki, to display & symbol escapes as literal text, one
+        # must use "&amp;&" for the "&" character. We need to undo that.
+        $theCode =~ s/&amp;(\S)/&$1/g;
       }
     }
   } elsif ($state == 3) {
@@ -302,13 +306,16 @@ while (<$io>) {
       } else {
         print STDERR "Unknown operation type: $type at line " . $lineCounter . "; skipping.\n";
       }
-    } elsif (m/^\|rowspan="*([0-9])"*\|(.*)$/) {
-      my $rows = $1;
-      my $theString = $2;
+    } elsif (m/($apiNamesRegex)$/) {
+      my $theString = $1;
       $theString =~ s/ +$//;
       $theString =~ s/^ +//;
       if ($theString eq "IA2") {
         $theString = "IAccessible2" ;
+      }
+      my $rows = 1;
+      if (m/^\|rowspan="*([0-9])"*\|(.*)$/) {
+        $rows = $1
       }
       if (grep { $_ eq $theString } @apiNames) {
         # we found an API name - were we already processing assertions?
@@ -486,7 +493,6 @@ sub build_test() {
   <head>
     <title>$title</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>

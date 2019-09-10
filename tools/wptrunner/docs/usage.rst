@@ -32,7 +32,7 @@ a copy of the web-platform-tests repository. This can be located
 anywhere on the filesystem, but the easiest option is to put it
 under the same parent directory as the wptrunner checkout::
 
-  git clone https://github.com/w3c/web-platform-tests.git
+  git clone https://github.com/web-platform-tests/wpt.git
 
 It is also necessary to generate a web-platform-tests ``MANIFEST.json``
 file. It's recommended to also put that under the same parent directory as
@@ -54,7 +54,7 @@ A test run is started using the ``wptrunner`` command.  The command
 takes multiple options, of which the following are most significant:
 
 ``--product`` (defaults to `firefox`)
-  The product to test against: `b2g`, `chrome`, `firefox`, or `servo`.
+  The product to test against: `chrome`, `firefox`, or `servo`.
 
 ``--binary`` (required if product is `firefox` or `servo`)
   The path to a binary file for the product (browser) to test against.
@@ -220,7 +220,7 @@ url to pull from; ``branch`` the branch to sync against and
 use when checking out the tests e.g.::
 
   [web-platform-tests]
-  remote_url = https://github.com/w3c/web-platform-tests.git
+  remote_url = https://github.com/web-platform-tests/wpt.git
   branch = master
   sync_path = sync
 

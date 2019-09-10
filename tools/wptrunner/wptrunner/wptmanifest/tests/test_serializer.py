@@ -1,13 +1,13 @@
 import sys
 import unittest
 
-from cStringIO import StringIO
-
 import pytest
 
 from .. import parser, serializer
 
 
+@pytest.mark.xfail(sys.version[0] == "3",
+                   reason="wptmanifest.parser doesn't support py3")
 class TokenizerTest(unittest.TestCase):
     def setUp(self):
         self.serializer = serializer.ManifestSerializer()
@@ -146,7 +146,7 @@ class TokenizerTest(unittest.TestCase):
 """)
 
     def test_18(self):
-        self.compare("""key: \]
+        self.compare(r"""key: \]
         """, """key: ]
 """)
 
@@ -211,17 +211,26 @@ class TokenizerTest(unittest.TestCase):
 """)
 
     def test_atom_1(self):
-            self.compare(r"""key: @True
+        self.compare(r"""key: @True
 """)
 
     def test_atom_2(self):
-            self.compare(r"""key: @False
+        self.compare(r"""key: @False
 """)
 
     def test_atom_3(self):
-            self.compare(r"""key: @Reset
+        self.compare(r"""key: @Reset
 """)
 
     def test_atom_4(self):
         self.compare(r"""key: [a, @Reset, b]
+""")
+
+    def test_conditional_1(self):
+        self.compare("""foo:
+  if a or b: [1, 2]
+""")
+
+    def test_if_string_0(self):
+        self.compare("""foo: "if bar"
 """)

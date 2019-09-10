@@ -1,10 +1,21 @@
 setup({ explicit_done: true, explicit_timeout: true });
 
+const applePay = Object.freeze({
+  supportedMethods: "https://apple.com/apple-pay",
+  data: {
+    version: 3,
+    merchantIdentifier: "merchant.com.example",
+    countryCode: "US",
+    merchantCapabilities: ["supports3DS"],
+    supportedNetworks: ["visa"],
+  }
+});
+
 const validMethod = Object.freeze({
   supportedMethods: "basic-card",
 });
 
-const validMethods = Object.freeze([validMethod]);
+const validMethods = Object.freeze([validMethod, applePay]);
 
 const validAmount = Object.freeze({
   currency: "USD",
@@ -35,7 +46,7 @@ test(() => {
  * @param PaymentOptions options
  */
 async function getPaymentResponse(options, id) {
-  const { response } = getPaymentRequestResponse(options, id);
+  const { response } = await getPaymentRequestResponse(options, id);
   return response;
 }
 
@@ -115,11 +126,8 @@ async function runManualTest(button, options, expected = {}, id = undefined) {
     }
     assert_idl_attribute(response, "details");
     assert_equals(typeof response.details, "object", "Expected an object");
-    try {
-      response.toJSON();
-    } catch (err) {
-      assertion_unreached("Unexpected error calling response.toJSON()");
-    }
+    // Testing that this does not throw:
+    response.toJSON();
     if (options && options.requestShipping) {
       assert_equals(
         response.shippingOption,

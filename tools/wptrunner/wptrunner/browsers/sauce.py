@@ -14,11 +14,15 @@ from cStringIO import StringIO as CStringIO
 import requests
 
 from .base import Browser, ExecutorBrowser, require_arg
+from .base import get_timeout_multiplier   # noqa: F401
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorselenium import (SeleniumTestharnessExecutor,
-                                          SeleniumRefTestExecutor)
+from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: F401
+                                          SeleniumRefTestExecutor)  # noqa: F401
 
 here = os.path.split(__file__)[0]
+# Number of seconds to wait between polling operations when detecting status of
+# Sauce Connect sub-process.
+sc_poll_period = 1
 
 
 __wptrunner__ = {"product": "sauce",
@@ -29,7 +33,8 @@ __wptrunner__ = {"product": "sauce",
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
-                 "env_options": "env_options"}
+                 "env_options": "env_options",
+                 "timeout_multiplier": "get_timeout_multiplier"}
 
 
 def get_capabilities(**kwargs):
@@ -92,7 +97,7 @@ def check_args(**kwargs):
     require_arg(kwargs, "sauce_key")
 
 
-def browser_kwargs(test_type, run_info_data, **kwargs):
+def browser_kwargs(test_type, run_info_data, config, **kwargs):
     sauce_config = get_sauce_config(**kwargs)
 
     return {"sauce_config": sauce_config}
@@ -101,7 +106,7 @@ def browser_kwargs(test_type, run_info_data, **kwargs):
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
     executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, **kwargs)
+                                           cache_manager, run_info_data, **kwargs)
 
     executor_kwargs["capabilities"] = get_capabilities(**kwargs)
 
@@ -113,9 +118,7 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {"host": "web-platform.test",
-            "bind_hostname": "true",
-            "supports_debugger": False}
+    return {"supports_debugger": False}
 
 
 def get_tar(url, dest):
@@ -132,13 +135,30 @@ class SauceConnect():
         self.sauce_key = kwargs["sauce_key"]
         self.sauce_tunnel_id = kwargs["sauce_tunnel_id"]
         self.sauce_connect_binary = kwargs.get("sauce_connect_binary")
+        self.sauce_connect_args = kwargs.get("sauce_connect_args")
+        self.sauce_init_timeout = kwargs.get("sauce_init_timeout")
         self.sc_process = None
         self.temp_dir = None
+        self.env_config = None
 
-    def __enter__(self, options):
+    def __call__(self, env_options, env_config):
+        self.env_config = env_config
+
+        return self
+
+    def __enter__(self):
+        # Because this class implements the context manager protocol, it is
+        # possible for instances to be provided to the `with` statement
+        # directly. This class implements the callable protocol so that data
+        # which is not available during object initialization can be provided
+        # prior to this moment. Instances must be invoked in preparation for
+        # the context manager protocol, but this additional constraint is not
+        # itself part of the protocol.
+        assert self.env_config is not None, 'The instance has been invoked.'
+
         if not self.sauce_connect_binary:
             self.temp_dir = tempfile.mkdtemp()
-            get_tar("https://saucelabs.com/downloads/sc-latest-linux.tar.gz", self.temp_dir)
+            get_tar("https://saucelabs.com/downloads/sc-4.4.9-linux.tar.gz", self.temp_dir)
             self.sauce_connect_binary = glob.glob(os.path.join(self.temp_dir, "sc-*-linux/bin/sc"))[0]
 
         self.upload_prerun_exec('edge-prerun.bat')
@@ -150,20 +170,29 @@ class SauceConnect():
             "--api-key=%s" % self.sauce_key,
             "--no-remove-colliding-tunnels",
             "--tunnel-identifier=%s" % self.sauce_tunnel_id,
+            "--metrics-address=0.0.0.0:9876",
             "--readyfile=./sauce_is_ready",
             "--tunnel-domains",
-            "web-platform.test",
-            "*.web-platform.test"
-        ])
-        while not os.path.exists('./sauce_is_ready') and not self.sc_process.poll():
-            time.sleep(5)
+            ",".join(self.env_config.domains_set)
+        ] + self.sauce_connect_args)
 
-        if self.sc_process.returncode is not None and self.sc_process.returncode > 0:
+        tot_wait = 0
+        while not os.path.exists('./sauce_is_ready') and self.sc_process.poll() is None:
+            if tot_wait >= self.sauce_init_timeout:
+                self.quit()
+
+                raise SauceException("Sauce Connect Proxy was not ready after %d seconds" % tot_wait)
+
+            time.sleep(sc_poll_period)
+            tot_wait += sc_poll_period
+
+        if self.sc_process.returncode is not None:
             raise SauceException("Unable to start Sauce Connect Proxy. Process exited with code %s", self.sc_process.returncode)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.sc_process.terminate()
-        if os.path.exists(self.temp_dir):
+        self.env_config = None
+        self.quit()
+        if self.temp_dir and os.path.exists(self.temp_dir):
             try:
                 shutil.rmtree(self.temp_dir)
             except OSError:
@@ -175,6 +204,23 @@ class SauceConnect():
 
         with open(os.path.join(here, 'sauce_setup', file_name), 'rb') as f:
             requests.post(url, data=f, auth=auth)
+
+    def quit(self):
+        """The Sauce Connect process may be managing an active "tunnel" to the
+        Sauce Labs service. Issue a request to the process to close any tunnels
+        and exit. If this does not occur within 5 seconds, force the process to
+        close."""
+        kill_wait = 5
+        tot_wait = 0
+        self.sc_process.terminate()
+
+        while self.sc_process.poll() is None:
+            time.sleep(sc_poll_period)
+            tot_wait += sc_poll_period
+
+            if tot_wait >= kill_wait:
+                self.sc_process.kill()
+                break
 
 
 class SauceException(Exception):
@@ -188,7 +234,7 @@ class SauceBrowser(Browser):
         Browser.__init__(self, logger)
         self.sauce_config = sauce_config
 
-    def start(self):
+    def start(self, **kwargs):
         pass
 
     def stop(self, force=False):

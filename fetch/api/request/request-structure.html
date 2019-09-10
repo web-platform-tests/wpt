@@ -22,7 +22,6 @@
       var attributes = ["method",
                         "url",
                         "headers",
-                        "type",
                         "destination",
                         "referrer",
                         "referrerPolicy",
@@ -31,6 +30,8 @@
                         "cache",
                         "redirect",
                         "integrity",
+                        "isReloadNavigation",
+                        "isHistoryNavigation",
                         //Request implements Body
                         "bodyUsed"
                        ];
@@ -46,7 +47,7 @@
 
           case "url":
             //default value is base url
-            //i.e http://web-platform.test:8000/fetch/api/request-structure.html
+            //i.e http://example.com/fetch/api/request-structure.html
             newValue = "http://url.test";
             break;
 
@@ -54,11 +55,6 @@
             request.headers = new Headers ({"name":"value"});
             assert_false(request.headers.has("name"), "Headers attribute is read only");
             return;
-            break;
-
-          case "type":
-            defaultValue = "";
-            newValue = "style";
             break;
 
           case "destination":
@@ -82,7 +78,7 @@
             break;
 
           case "credentials":
-            defaultValue = "omit";
+            defaultValue = "same-origin";
             newValue = "cors";
             break;
 
@@ -101,6 +97,16 @@
             break;
 
           case "bodyUsed":
+            defaultValue = false;
+            newValue = true;
+            break;
+
+          case "isReloadNavigation":
+            defaultValue = false;
+            newValue = true;
+            break;
+
+          case "isHistoryNavigation":
             defaultValue = false;
             newValue = true;
             break;

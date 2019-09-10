@@ -3,6 +3,7 @@ import os
 import pytest
 
 from six import BytesIO
+from ...lint.lint import check_global_metadata
 from ..sourcefile import SourceFile, read_script_metadata, js_meta_re, python_meta_re
 
 def create(filename, contents=b""):
@@ -27,7 +28,6 @@ def items(s):
     "common/test.html",
     "support/test.html",
     "css21/archive/test.html",
-    "work-in-progress/test.html",
     "conformance-checkers/test.html",
     "conformance-checkers/README.md",
     "conformance-checkers/html/Makefile",
@@ -35,10 +35,9 @@ def items(s):
     "foo/tools/test.html",
     "foo/resources/test.html",
     "foo/support/test.html",
-    "foo/test-support.html",
+    "foo/foo-manual.html.headers",
     "css/common/test.html",
     "css/CSS2/archive/test.html",
-    "css/work-in-progress/test.html",
 ])
 def test_name_is_non_test(rel_path):
     s = create(rel_path)
@@ -54,9 +53,9 @@ def test_name_is_non_test(rel_path):
     "foo/conformance-checkers/test.html",
     "foo/_certs/test.html",
     "foo/css21/archive/test.html",
-    "foo/work-in-progress/test.html",
     "foo/CSS2/archive/test.html",
     "css/css21/archive/test.html",
+    "foo/test-support.html",
 ])
 def test_not_name_is_non_test(rel_path):
     s = create(rel_path)
@@ -66,6 +65,7 @@ def test_not_name_is_non_test(rel_path):
 
 
 @pytest.mark.parametrize("rel_path", [
+    "foo/foo-manual.html",
     "html/test-manual.html",
     "html/test-manual.xhtml",
     "html/test-manual.https.html",
@@ -204,6 +204,66 @@ test()"""
         assert item.timeout == "long"
 
 
+def test_worker_with_variants():
+    contents = b"""// META: variant=
+// META: variant=?wss
+test()"""
+
+    s = create("html/test.worker.js", contents=contents)
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_visual
+    assert not s.name_is_multi_global
+    assert s.name_is_worker
+    assert not s.name_is_window
+    assert not s.name_is_reference
+
+    assert not s.content_is_testharness
+
+    item_type, items = s.manifest_items()
+    assert item_type == "testharness"
+
+    expected_urls = [
+        "/html/test.worker.html" + suffix
+        for suffix in ["", "?wss"]
+    ]
+    assert len(items) == len(expected_urls)
+
+    for item, url in zip(items, expected_urls):
+        assert item.url == url
+        assert item.timeout is None
+
+
+def test_window_with_variants():
+    contents = b"""// META: variant=
+// META: variant=?wss
+test()"""
+
+    s = create("html/test.window.js", contents=contents)
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_visual
+    assert not s.name_is_multi_global
+    assert not s.name_is_worker
+    assert s.name_is_window
+    assert not s.name_is_reference
+
+    assert not s.content_is_testharness
+
+    item_type, items = s.manifest_items()
+    assert item_type == "testharness"
+
+    expected_urls = [
+        "/html/test.window.html" + suffix
+        for suffix in ["", "?wss"]
+    ]
+    assert len(items) == len(expected_urls)
+
+    for item, url in zip(items, expected_urls):
+        assert item.url == url
+        assert item.timeout is None
+
+
 def test_python_long_timeout():
     contents = b"""# META: timeout=long
 
@@ -264,6 +324,130 @@ test()"""
 
     for item in items:
         assert item.timeout == "long"
+
+
+@pytest.mark.parametrize("input,expected", [
+    (b"", {"dedicatedworker", "window"}),
+    (b"default", {"dedicatedworker", "window"}),
+    (b"!default", {}),
+    (b"!default,window", {"window"}),
+    (b"window,!default", {}),
+    (b"!default,dedicatedworker", {"dedicatedworker"}),
+    (b"dedicatedworker,!default", {}),
+    (b"!default,worker", {"dedicatedworker", "serviceworker", "sharedworker"}),
+    (b"worker,!default", {"serviceworker", "sharedworker"}),
+    (b"!dedicatedworker", {"window"}),
+    (b"!worker", {"window"}),
+    (b"!window", {"dedicatedworker"}),
+    (b"!window,worker", {"dedicatedworker", "serviceworker", "sharedworker"}),
+    (b"worker,!dedicatedworker", {"serviceworker", "sharedworker", "window"}),
+    (b"!dedicatedworker,worker", {"dedicatedworker", "serviceworker", "sharedworker", "window"}),
+    (b"worker,!sharedworker", {"dedicatedworker", "serviceworker", "window"}),
+    (b"!sharedworker,worker", {"dedicatedworker", "serviceworker", "sharedworker", "window"}),
+    (b"sharedworker", {"dedicatedworker", "sharedworker", "window"}),
+    (b"sharedworker,serviceworker", {"dedicatedworker", "serviceworker", "sharedworker", "window"}),
+])
+def test_multi_global_with_custom_globals(input, expected):
+    contents = b"""// META: global=%s
+test()""" % input
+
+    assert list(check_global_metadata(input)) == []
+
+    s = create("html/test.any.js", contents=contents)
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_visual
+    assert s.name_is_multi_global
+    assert not s.name_is_worker
+    assert not s.name_is_reference
+
+    assert not s.content_is_testharness
+
+    item_type, items = s.manifest_items()
+    assert item_type == "testharness"
+
+    urls = {
+        "dedicatedworker": "/html/test.any.worker.html",
+        "serviceworker": "/html/test.any.serviceworker.html",
+        "sharedworker": "/html/test.any.sharedworker.html",
+        "window": "/html/test.any.html",
+    }
+
+    expected_urls = sorted(urls[ty] for ty in expected)
+    assert len(items) == len(expected_urls)
+
+    for item, url in zip(items, expected_urls):
+        assert item.url == url
+        assert item.jsshell is False
+        assert item.timeout is None
+
+
+def test_multi_global_with_jsshell_globals():
+    contents = b"""// META: global=jsshell
+test()"""
+
+    s = create("html/test.any.js", contents=contents)
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_visual
+    assert s.name_is_multi_global
+    assert not s.name_is_worker
+    assert not s.name_is_reference
+
+    assert not s.content_is_testharness
+
+    item_type, items = s.manifest_items()
+    assert item_type == "testharness"
+
+    expected = [
+        ("/html/test.any.html", False),
+        ("/html/test.any.js", True),
+        ("/html/test.any.worker.html", False),
+    ]
+    assert len(items) == len(expected)
+
+    for item, (url, jsshell) in zip(items, expected):
+        assert item.url == url
+        assert item.jsshell == jsshell
+        assert item.timeout is None
+
+
+def test_multi_global_with_variants():
+    contents = b"""// META: global=window,worker
+// META: variant=
+// META: variant=?wss
+test()"""
+
+    s = create("html/test.any.js", contents=contents)
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_visual
+    assert s.name_is_multi_global
+    assert not s.name_is_worker
+    assert not s.name_is_reference
+
+    assert not s.content_is_testharness
+
+    item_type, items = s.manifest_items()
+    assert item_type == "testharness"
+
+    urls = {
+        "dedicatedworker": "/html/test.any.worker.html",
+        "serviceworker": "/html/test.any.serviceworker.html",
+        "sharedworker": "/html/test.any.sharedworker.html",
+        "window": "/html/test.any.html",
+    }
+
+    expected_urls = sorted(
+        urls[ty] + suffix
+        for ty in ["dedicatedworker", "serviceworker", "sharedworker", "window"]
+        for suffix in ["", "?wss"]
+    )
+    assert len(items) == len(expected_urls)
+
+    for item, url in zip(items, expected_urls):
+        assert item.url == url
+        assert item.timeout is None
 
 
 @pytest.mark.parametrize("input,expected", [
@@ -398,7 +582,7 @@ def test_testharness_svg():
     assert not s.name_is_worker
     assert not s.name_is_reference
 
-    assert s.root
+    assert s.root is not None
     assert s.content_is_testharness
 
     assert items(s) == [("testharness", "/" + filename)]
@@ -427,7 +611,7 @@ def test_relative_testharness_svg():
     assert not s.name_is_worker
     assert not s.name_is_reference
 
-    assert s.root
+    assert s.root is not None
     assert not s.content_is_testharness
 
     assert items(s) == []
@@ -450,6 +634,26 @@ def test_testharness_ext(filename):
     assert not s.content_is_testharness
 
     assert items(s) == []
+
+
+@pytest.mark.parametrize("ext", ["htm", "html"])
+def test_testdriver(ext):
+    content = b"<script src=/resources/testdriver.js></script>"
+
+    filename = "html/test." + ext
+    s = create(filename, content)
+
+    assert s.has_testdriver
+
+
+@pytest.mark.parametrize("ext", ["htm", "html"])
+def test_relative_testdriver(ext):
+    content = b"<script src=../resources/testdriver.js></script>"
+
+    filename = "html/test." + ext
+    s = create(filename, content)
+
+    assert not s.has_testdriver
 
 
 @pytest.mark.parametrize("ext", ["htm", "html"])
@@ -542,3 +746,89 @@ def test_no_parse():
 def test_relpath_normalized(input, expected):
     s = create(input, b"")
     assert s.rel_path == expected
+
+
+@pytest.mark.parametrize("url", [b"ref.html",
+                                 b"\x20ref.html",
+                                 b"ref.html\x20",
+                                 b"\x09\x0a\x0c\x0d\x20ref.html\x09\x0a\x0c\x0d\x20"])
+def test_reftest_url_whitespace(url):
+    content = b"<link rel=match href='%s'>" % url
+    s = create("foo/test.html", content)
+    assert s.references == [("/foo/ref.html", "==")]
+
+
+@pytest.mark.parametrize("url", [b"http://example.com/",
+                                 b"\x20http://example.com/",
+                                 b"http://example.com/\x20",
+                                 b"\x09\x0a\x0c\x0d\x20http://example.com/\x09\x0a\x0c\x0d\x20"])
+def test_spec_links_whitespace(url):
+    content = b"<link rel=help href='%s'>" % url
+    s = create("foo/test.html", content)
+    assert s.spec_links == {"http://example.com/"}
+
+
+def test_url_base():
+    contents = b"""// META: global=window,worker
+// META: variant=
+// META: variant=?wss
+test()"""
+
+    s = SourceFile("/", "html/test.any.js", "/_fake_base/", contents=contents)
+    item_type, items = s.manifest_items()
+
+    assert item_type == "testharness"
+
+    assert [item.url for item in items] == [u'/_fake_base/html/test.any.html',
+                                            u'/_fake_base/html/test.any.html?wss',
+                                            u'/_fake_base/html/test.any.serviceworker.html',
+                                            u'/_fake_base/html/test.any.serviceworker.html?wss',
+                                            u'/_fake_base/html/test.any.sharedworker.html',
+                                            u'/_fake_base/html/test.any.sharedworker.html?wss',
+                                            u'/_fake_base/html/test.any.worker.html',
+                                            u'/_fake_base/html/test.any.worker.html?wss']
+
+    assert items[0].url_base == "/_fake_base/"
+
+
+@pytest.mark.parametrize("fuzzy, expected", [
+    (b"ref.html:1;200", {("/foo/test.html", "/foo/ref.html", "=="): [[1, 1], [200, 200]]}),
+    (b"ref.html:0-1;100-200", {("/foo/test.html", "/foo/ref.html", "=="): [[0, 1], [100, 200]]}),
+    (b"0-1;100-200", {None: [[0,1], [100, 200]]}),
+    (b"maxDifference=1;totalPixels=200", {None: [[1, 1], [200, 200]]}),
+    (b"totalPixels=200;maxDifference=1", {None: [[1, 1], [200, 200]]}),
+    (b"totalPixels=200;1", {None: [[1, 1], [200, 200]]}),
+    (b"maxDifference=1;200", {None: [[1, 1], [200, 200]]}),])
+def test_reftest_fuzzy(fuzzy, expected):
+    content = b"""<link rel=match href=ref.html>
+<meta name=fuzzy content="%s">
+""" % fuzzy
+
+    s = create("foo/test.html", content)
+
+    assert s.content_is_ref_node
+    assert s.fuzzy == expected
+
+
+@pytest.mark.parametrize("fuzzy, expected", [
+    ([b"1;200"], {None: [[1, 1], [200, 200]]}),
+    ([b"ref-2.html:0-1;100-200"], {("/foo/test.html", "/foo/ref-2.html", "=="): [[0, 1], [100, 200]]}),
+    ([b"1;200", b"ref-2.html:0-1;100-200"],
+     {None: [[1, 1], [200, 200]],
+      ("/foo/test.html", "/foo/ref-2.html", "=="): [[0,1], [100, 200]]})])
+def test_reftest_fuzzy_multi(fuzzy, expected):
+    content = b"""<link rel=match href=ref-1.html>
+<link rel=match href=ref-2.html>
+"""
+    for item in fuzzy:
+        content += b'\n<meta name=fuzzy content="%s">' % item
+
+    s = create("foo/test.html", content)
+
+    assert s.content_is_ref_node
+    assert s.fuzzy == expected
+
+
+def test_hash():
+    s = SourceFile("/", "foo", "/", contents=b"Hello, World!")
+    assert b"b45ef6fec89518d314f546fd6c3025367b721684" == s.hash

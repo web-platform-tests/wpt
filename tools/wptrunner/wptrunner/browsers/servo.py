@@ -1,8 +1,9 @@
 import os
 
 from .base import NullBrowser, ExecutorBrowser, require_arg
+from .base import get_timeout_multiplier   # noqa: F401
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorservo import ServoTestharnessExecutor, ServoRefTestExecutor, ServoWdspecExecutor
+from ..executors.executorservo import ServoTestharnessExecutor, ServoRefTestExecutor, ServoWdspecExecutor  # noqa: F401
 
 here = os.path.join(os.path.split(__file__)[0])
 
@@ -19,6 +20,7 @@ __wptrunner__ = {
     "executor_kwargs": "executor_kwargs",
     "env_extras": "env_extras",
     "env_options": "env_options",
+    "timeout_multiplier": "get_timeout_multiplier",
     "update_properties": "update_properties",
 }
 
@@ -27,21 +29,23 @@ def check_args(**kwargs):
     require_arg(kwargs, "binary")
 
 
-def browser_kwargs(test_type, run_info_data, **kwargs):
+def browser_kwargs(test_type, run_info_data, config, **kwargs):
     return {
         "binary": kwargs["binary"],
         "debug_info": kwargs["debug_info"],
         "binary_args": kwargs["binary_args"],
         "user_stylesheets": kwargs.get("user_stylesheets"),
-        "ca_certificate_path": kwargs["ssl_env"].ca_cert_path(),
+        "ca_certificate_path": config.ssl_config["ca_cert_path"],
     }
 
 
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
     rv = base_executor_kwargs(test_type, server_config,
-                              cache_manager, **kwargs)
+                              cache_manager, run_info_data, **kwargs)
     rv["pause_after_test"] = kwargs["pause_after_test"]
+    if test_type == "wdspec":
+        rv["capabilities"] = {}
     return rv
 
 
@@ -50,15 +54,14 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {"host": "127.0.0.1",
-            "external_host": "web-platform.test",
-            "bind_hostname": "true",
+    return {"server_host": "127.0.0.1",
+            "bind_address": False,
             "testharnessreport": "testharnessreport-servo.js",
             "supports_debugger": True}
 
 
 def update_properties():
-    return ["debug", "os", "version", "processor", "bits"], None
+    return ["debug", "os", "processor"], {"os": ["version"], "processor": ["bits"]}
 
 
 class ServoBrowser(NullBrowser):

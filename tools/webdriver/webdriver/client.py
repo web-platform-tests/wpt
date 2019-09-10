@@ -1,14 +1,10 @@
-import json
 import urlparse
 
 import error
+import protocol
 import transport
 
-from mozlog import get_default_logger
-
-logger = get_default_logger()
-
-element_key = "element-6066-11e4-a52e-4f735466cecf"
+from six import string_types
 
 
 def command(func):
@@ -20,7 +16,6 @@ def command(func):
 
         if session.session_id is None:
             session.start()
-        assert session.session_id is not None
 
         return func(self, *args, **kwargs)
 
@@ -43,8 +38,8 @@ class Timeouts(object):
 
     def _set(self, key, secs):
         body = {key: secs * 1000}
-        timeouts = self.session.send_session_command("POST", "timeouts", body)
-        return timeouts[key]
+        self.session.send_session_command("POST", "timeouts", body)
+        return None
 
     @property
     def script(self):
@@ -119,17 +114,17 @@ class ActionSequence(object):
         """Perform all queued actions."""
         self.session.actions.perform([self.dict])
 
-    def _key_action(self, subtype, value):
-        self._actions.append({"type": subtype, "value": value})
+    def _key_action(self, subtype, value, async_dispatch=False):
+        self._actions.append({"type": subtype, "value": value, "asyncDispatch": async_dispatch})
 
-    def _pointer_action(self, subtype, button):
-        self._actions.append({"type": subtype, "button": button})
+    def _pointer_action(self, subtype, button, async_dispatch=False):
+        self._actions.append({"type": subtype, "button": button, "asyncDispatch": async_dispatch})
 
     def pause(self, duration):
         self._actions.append({"type": "pause", "duration": duration})
         return self
 
-    def pointer_move(self, x, y, duration=None, origin=None):
+    def pointer_move(self, x, y, duration=None, origin=None, async_dispatch=False):
         """Queue a pointerMove action.
 
         :param x: Destination x-axis coordinate of pointer in CSS pixels.
@@ -147,29 +142,30 @@ class ActionSequence(object):
         if duration is not None:
             action["duration"] = duration
         if origin is not None:
-            action["origin"] = origin if isinstance(origin, basestring) else origin.json()
+            action["origin"] = origin
+        action["asyncDispatch"] = async_dispatch
         self._actions.append(action)
         return self
 
-    def pointer_up(self, button=0):
+    def pointer_up(self, button=0, async_dispatch=False):
         """Queue a pointerUp action for `button`.
 
         :param button: Pointer button to perform action with.
                        Default: 0, which represents main device button.
         """
-        self._pointer_action("pointerUp", button)
+        self._pointer_action("pointerUp", button, async_dispatch)
         return self
 
-    def pointer_down(self, button=0):
+    def pointer_down(self, button=0, async_dispatch=False):
         """Queue a pointerDown action for `button`.
 
         :param button: Pointer button to perform action with.
                        Default: 0, which represents main device button.
         """
-        self._pointer_action("pointerDown", button)
+        self._pointer_action("pointerDown", button, async_dispatch)
         return self
 
-    def click(self, element=None, button=0):
+    def click(self, element=None, button=0, async_dispatch=False):
         """Queue a click with the specified button.
 
         If an element is given, move the pointer to that element first,
@@ -180,33 +176,33 @@ class ActionSequence(object):
                        with. Default: 0, which represents main device button.
         """
         if element:
-            self.pointer_move(0, 0, origin=element)
-        return self.pointer_down(button).pointer_up(button)
+            self.pointer_move(0, 0, origin=element, async_dispatch=async_dispatch)
+        return self.pointer_down(button, async_dispatch).pointer_up(button, async_dispatch)
 
-    def key_up(self, value):
+    def key_up(self, value, async_dispatch=False):
         """Queue a keyUp action for `value`.
 
         :param value: Character to perform key action with.
         """
-        self._key_action("keyUp", value)
+        self._key_action("keyUp", value, async_dispatch)
         return self
 
-    def key_down(self, value):
+    def key_down(self, value, async_dispatch=False):
         """Queue a keyDown action for `value`.
 
         :param value: Character to perform key action with.
         """
-        self._key_action("keyDown", value)
+        self._key_action("keyDown", value, async_dispatch)
         return self
 
-    def send_keys(self, keys):
+    def send_keys(self, keys, async_dispatch=False):
         """Queue a keyDown and keyUp action for each character in `keys`.
 
         :param keys: String of keys to perform key actions with.
         """
         for c in keys:
-            self.key_down(c)
-            self.key_up(c)
+            self.key_down(c, async_dispatch)
+            self.key_up(c, async_dispatch)
         return self
 
 
@@ -223,7 +219,12 @@ class Actions(object):
                         ``ActionSequence.dict``.
         """
         body = {"actions": [] if actions is None else actions}
-        return self.session.send_session_command("POST", "actions", body)
+        actions = self.session.send_session_command("POST", "actions", body)
+        """WebDriver window should be set to the top level window when wptrunner
+        processes the next event.
+        """
+        self.session.switch_frame(None)
+        return actions
 
     @command
     def release(self):
@@ -238,6 +239,8 @@ class Actions(object):
 
 
 class Window(object):
+    identifier = "window-fcc6-11e5-b4f8-330a88ab9d7f"
+
     def __init__(self, session):
         self.session = session
 
@@ -288,29 +291,40 @@ class Window(object):
     def fullscreen(self):
         return self.session.send_session_command("POST", "window/fullscreen")
 
+    @classmethod
+    def from_json(cls, json, session):
+        uuid = json[Window.identifier]
+        return cls(uuid, session)
+
+
+class Frame(object):
+    identifier = "frame-075b-4da1-b6ba-e579c2d3230a"
+
+    def __init__(self, session):
+        self.session = session
+
+    @classmethod
+    def from_json(cls, json, session):
+        uuid = json[Frame.identifier]
+        return cls(uuid, session)
+
 
 class Find(object):
     def __init__(self, session):
         self.session = session
 
     @command
-    def css(self, selector, all=True):
-        return self._find_element("css selector", selector, all)
+    def css(self, element_selector, all=True, frame="window"):
+        if (frame != "window"):
+            self.session.switch_frame(frame)
+        elements = self._find_element("css selector", element_selector, all)
+        return elements
 
     def _find_element(self, strategy, selector, all):
         route = "elements" if all else "element"
-
         body = {"using": strategy,
                 "value": selector}
-
-        data = self.session.send_session_command("POST", route, body)
-
-        if all:
-            rv = [self.session._element(item) for item in data]
-        else:
-            rv = self.session._element(data)
-
-        return rv
+        return self.session.send_session_command("POST", route, body)
 
 
 class Cookies(object):
@@ -324,7 +338,7 @@ class Cookies(object):
         cookie = {"name": name,
                   "value": None}
 
-        if isinstance(name, (str, unicode)):
+        if isinstance(name, string_types):
             cookie["value"] = value
         elif hasattr(value, "value"):
             cookie["value"] = value.value
@@ -351,21 +365,26 @@ class UserPrompt(object):
     @text.setter
     @command
     def text(self, value):
-        body = {"value": list(value)}
+        body = {"text": value}
         self.session.send_session_command("POST", "alert/text", body=body)
 
 
 class Session(object):
-    def __init__(self, host, port, url_prefix="/", capabilities=None,
-                 timeout=None, extension=None):
+    def __init__(self,
+                 host,
+                 port,
+                 url_prefix="/",
+                 capabilities=None,
+                 timeout=None,
+                 extension=None):
         self.transport = transport.HTTPWireProtocol(
             host, port, url_prefix, timeout=timeout)
-        self.capabilities = capabilities
+        self.requested_capabilities = capabilities
+        self.capabilities = None
         self.session_id = None
         self.timeouts = None
         self.window = None
         self.find = None
-        self._element_cache = {}
         self.extension = None
         self.extension_cls = extension
 
@@ -374,6 +393,13 @@ class Session(object):
         self.find = Find(self)
         self.alert = UserPrompt(self)
         self.actions = Actions(self)
+
+    def __repr__(self):
+        return "<%s %s>" % (self.__class__.__name__, self.session_id or "(disconnected)")
+
+    def __eq__(self, other):
+        return (self.session_id is not None and isinstance(other, Session) and
+                self.session_id == other.session_id)
 
     def __enter__(self):
         self.start()
@@ -386,13 +412,20 @@ class Session(object):
         self.end()
 
     def start(self):
+        """Start a new WebDriver session.
+
+        :return: Dictionary with `capabilities` and `sessionId`.
+
+        :raises error.WebDriverException: If the remote end returns
+            an error.
+        """
         if self.session_id is not None:
             return
 
-        body = {}
+        body = {"capabilities": {}}
 
-        if self.capabilities is not None:
-            body["capabilities"] = self.capabilities
+        if self.requested_capabilities is not None:
+            body["capabilities"] = self.requested_capabilities
 
         value = self.send_command("POST", "session", body=body)
         self.session_id = value["sessionId"]
@@ -404,13 +437,16 @@ class Session(object):
         return value
 
     def end(self):
+        """Try to close the active session."""
         if self.session_id is None:
             return
 
-        url = "session/%s" % self.session_id
-        self.send_command("DELETE", url)
-
-        self.session_id = None
+        try:
+            self.send_command("DELETE", "session/%s" % self.session_id)
+        except error.InvalidSessionIdException:
+            pass
+        finally:
+            self.session_id = None
 
     def send_command(self, method, url, body=None):
         """
@@ -422,22 +458,42 @@ class Session(object):
         :param body: Optional body of the HTTP request.
 
         :return: `None` if the HTTP response body was empty, otherwise
-            the result of parsing the body as JSON.
+            the `value` field returned after parsing the response
+            body as JSON.
 
         :raises error.WebDriverException: If the remote end returns
             an error.
+        :raises ValueError: If the response body does not contain a
+            `value` key.
         """
-        response = self.transport.send(method, url, body)
+        response = self.transport.send(
+            method, url, body,
+            encoder=protocol.Encoder, decoder=protocol.Decoder,
+            session=self)
+
+        if response.status != 200:
+            err = error.from_response(response)
+
+            if isinstance(err, error.InvalidSessionIdException):
+                # The driver could have already been deleted the session.
+                self.session_id = None
+
+            raise err
 
         if "value" in response.body:
             value = response.body["value"]
+            """
+            Edge does not yet return the w3c session ID.
+            We want the tests to run in Edge anyway to help with REC.
+            In order to run the tests in Edge, we need to hack around
+            bug:
+            https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/14641972
+            """
+            if url == "session" and method == "POST" and "sessionId" in response.body and "sessionId" not in value:
+                value["sessionId"] = response.body["sessionId"]
         else:
-            raise error.UnknownErrorException("No 'value' key in response body:\n%s" %
-                                              json.dumps(response.body))
-
-        if response.status != 200:
-            cls = error.get(value.get("error"))
-            raise cls(value.get("message"))
+            raise ValueError("Expected 'value' key in response body:\n"
+                "%s" % response)
 
         return value
 
@@ -454,14 +510,9 @@ class Session(object):
         :return: `None` if the HTTP response body was empty, otherwise
             the result of parsing the body as JSON.
 
-        :raises error.SessionNotCreatedException: If there is no active
-            session.
         :raises error.WebDriverException: If the remote end returns
             an error.
         """
-        if self.session_id is None:
-            raise error.SessionNotCreatedException()
-
         url = urlparse.urljoin("session/%s/" % self.session_id, uri)
         return self.send_command(method, url, body)
 
@@ -497,6 +548,11 @@ class Session(object):
 
     @property
     @command
+    def source(self):
+        return self.send_session_command("GET", "source")
+
+    @property
+    @command
     def window_handle(self):
         return self.send_session_command("GET", "window")
 
@@ -512,16 +568,18 @@ class Session(object):
             body = None
         else:
             url = "frame"
-            if isinstance(frame, Element):
-                body = {"id": frame.json()}
-            else:
-                body = {"id": frame}
+            body = {"id": frame}
 
         return self.send_session_command("POST", url, body)
 
     @command
     def close(self):
-        return self.send_session_command("DELETE", "window")
+        handles = self.send_session_command("DELETE", "window")
+        if handles is not None and len(handles) == 0:
+            # With no more open top-level browsing contexts, the session is closed.
+            self.session_id = None
+
+        return handles
 
     @property
     @command
@@ -531,16 +589,7 @@ class Session(object):
     @property
     @command
     def active_element(self):
-        data = self.send_session_command("GET", "element/active")
-        if data is not None:
-            return self._element(data)
-
-    def _element(self, data):
-        elem_id = data[element_key]
-        assert elem_id
-        if elem_id in self._element_cache:
-            return self._element_cache[elem_id]
-        return Element(self, elem_id)
+        return self.send_session_command("GET", "element/active")
 
     @command
     def cookies(self, name=None):
@@ -551,17 +600,23 @@ class Session(object):
         return self.send_session_command("GET", url, {})
 
     @command
-    def set_cookie(self, name, value, path=None, domain=None, secure=None, expiry=None):
-        body = {"name": name,
-                "value": value}
-        if path is not None:
-            body["path"] = path
+    def set_cookie(self, name, value, path=None, domain=None,
+            secure=None, expiry=None, http_only=None):
+        body = {
+            "name": name,
+            "value": value,
+        }
+
         if domain is not None:
             body["domain"] = domain
-        if secure is not None:
-            body["secure"] = secure
         if expiry is not None:
             body["expiry"] = expiry
+        if http_only is not None:
+            body["httpOnly"] = http_only
+        if path is not None:
+            body["path"] = path
+        if secure is not None:
+            body["secure"] = secure
         self.send_session_command("POST", "cookie", {"cookie": body})
 
     def delete_cookie(self, name=None):
@@ -603,26 +658,46 @@ class Session(object):
 
 
 class Element(object):
-    def __init__(self, session, id):
-        self.session = session
+    """
+    Representation of a web element.
+
+    A web element is an abstraction used to identify an element when
+    it is transported via the protocol, between remote- and local ends.
+    """
+    identifier = "element-6066-11e4-a52e-4f735466cecf"
+
+    def __init__(self, id, session):
+        """
+        Construct a new web element representation.
+
+        :param id: Web element UUID which must be unique across
+            all browsing contexts.
+        :param session: Current ``webdriver.Session``.
+        """
         self.id = id
-        assert id not in self.session._element_cache
-        self.session._element_cache[self.id] = self
+        self.session = session
+
+    def __repr__(self):
+        return "<%s %s>" % (self.__class__.__name__, self.id)
+
+    def __eq__(self, other):
+        return (isinstance(other, Element) and self.id == other.id and
+                self.session == other.session)
+
+    @classmethod
+    def from_json(cls, json, session):
+        uuid = json[Element.identifier]
+        return cls(uuid, session)
 
     def send_element_command(self, method, uri, body=None):
         url = "element/%s/%s" % (self.id, uri)
         return self.session.send_session_command(method, url, body)
 
-    def json(self):
-        return {element_key: self.id}
-
     @command
     def find_element(self, strategy, selector):
         body = {"using": strategy,
                 "value": selector}
-
-        elem = self.send_element_command("POST", "element", body)
-        return self.session._element(elem)
+        return self.send_element_command("POST", "element", body)
 
     @command
     def click(self):
@@ -634,7 +709,7 @@ class Element(object):
 
     @command
     def clear(self):
-        self.send_element_command("POST", self.url("clear"), {})
+        self.send_element_command("POST", "clear", {})
 
     @command
     def send_keys(self, text):

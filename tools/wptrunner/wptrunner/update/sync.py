@@ -5,10 +5,8 @@ import shutil
 import sys
 import uuid
 
-from .. import testloader
-
-from base import Step, StepRunner
-from tree import Commit
+from .base import Step, StepRunner
+from .tree import Commit
 
 here = os.path.abspath(os.path.split(__file__)[0])
 
@@ -81,7 +79,7 @@ def copy_wpt_tree(tree, dest, excludes=None, includes=None):
             shutil.copy2(source_path, dest_path)
 
     for source, destination in [("testharness_runner.html", ""),
-                                ("testharnessreport.js", "resources/")]:
+                                ("testdriver-vendor.js", "resources/")]:
         source_path = os.path.join(here, os.pardir, source)
         dest_path = os.path.join(dest, destination, os.path.split(source)[1])
         shutil.copy2(source_path, dest_path)
@@ -109,7 +107,7 @@ class UpdateCheckout(Step):
                          state.sync["branch"],
                          state.local_branch)
         sync_path = os.path.abspath(sync_tree.root)
-        if not sync_path in sys.path:
+        if sync_path not in sys.path:
             from update import setup_paths
             setup_paths(sync_path)
 
@@ -177,8 +175,9 @@ class CreateSyncPatch(Step):
 
         local_tree.create_patch("web-platform-tests_update_%s" % sync_tree.rev,
                                 "Update %s to revision %s" % (state.suite_name, sync_tree.rev))
-        local_tree.add_new(os.path.relpath(state.tests_path,
-                                           local_tree.root))
+        test_prefix = os.path.relpath(state.tests_path, local_tree.root)
+        local_tree.add_new(test_prefix)
+        local_tree.add_ignored(sync_tree, test_prefix)
         updated = local_tree.update_patch(include=[state.tests_path,
                                                    state.metadata_path])
         local_tree.commit_patch()

@@ -38,7 +38,9 @@
    */
   async_test(t => {
     const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
 
     pc1.createDataChannel('test');
     exchangeIceCandidates(pc1, pc2);
@@ -76,7 +78,7 @@
         testedTransports.add(dtlsTransport);
 
         // End the test if both dtlsTransports are tested.
-        if(testedTransports.has(dtlsTransport1) && testedTransports.has(dtslTransport2)) {
+        if(testedTransports.has(dtlsTransport1) && testedTransports.has(dtlsTransport2)) {
           t.done();
         }
       })
@@ -85,7 +87,7 @@
         if(dtlsTransport.state === 'connected') {
           onConnected(dtlsTransport);
         } else {
-          assert_array_equals(dtlsTransport.getCertificates(), [],
+          assert_array_equals(dtlsTransport.getRemoteCertificates(), [],
             'Expect DTLS certificates be initially empty until become connected');
 
           dtlsTransport.addEventListener('statechange', t.step_func(() => {

@@ -16,6 +16,9 @@ include css21/reftest.list
 # Backgrounds and Borders
 include background/reftest.list
 
+# Fragmentation
+include break3/reftest.list
+
 # Color Level 4
 include color4/reftest.list
 
@@ -25,6 +28,9 @@ include conditional3/reftest.list
 # Containment
 include contain/reftest.list
 
+# Counter Styles Level 3
+include counter-styles-3/reftest.list
+
 # Filter Effects Module
 include filters/reftest.list
 
@@ -33,6 +39,9 @@ include flexbox/reftest.list
 
 # Fonts Level 3
 include fonts3/reftest.list
+
+# block-inside-inline splits
+include ib-split/reftest.list
 
 # Image Values and Replaced Content Level 3
 include images3/reftest.list
@@ -54,6 +63,9 @@ include selectors4/reftest.list
 
 # Shapes Level 1
 include shapes1/reftest.list
+
+# CSS Intrinsic & Extrinsic Sizing Module Level 3
+include sizing/reftest.list
 
 # Text Level 3
 include text3/reftest.list

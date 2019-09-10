@@ -1,0 +1,1 @@
+Feature-Policy-Report-Only: ambient-light-sensor 'none'; accelerometer 'none'; gyroscope 'none'; magnetometer 'none'

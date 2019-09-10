@@ -8,6 +8,21 @@
 // This file depends on dictionary-helper.js which should
 // be loaded from the main HTML file.
 
+// An offer/answer exchange is necessary for getParameters() to have any
+// negotiated parameters to return.
+async function doOfferAnswerExchange(t, caller) {
+  const callee = new RTCPeerConnection();
+  t.add_cleanup(() => callee.close());
+  const offer = await caller.createOffer();
+  await caller.setLocalDescription(offer);
+  await callee.setRemoteDescription(offer);
+  const answer = await callee.createAnswer();
+  await callee.setLocalDescription(answer);
+  await caller.setRemoteDescription(answer);
+
+  return callee;
+}
+
 /*
   Validates the RTCRtpParameters returned from RTCRtpSender.prototype.getParameters
 
@@ -55,11 +70,6 @@ function validateSenderRtpParameters(param) {
     getParameters
       When getParameters is called, the RTCRtpParameters dictionary is constructed
       as follows:
-
-      - encodings is populated based on SSRCs and RIDs present in the current remote
-        description, including SSRCs used for RTX and FEC, if signaled. Every member
-        of the RTCRtpEncodingParameters dictionaries other than the SSRC and RID fields
-        is left undefined.
 
       - The headerExtensions sequence is populated based on the header extensions that
         the receiver is currently prepared to receive.
@@ -131,18 +141,10 @@ function validateRtpParameters(param) {
 
 /*
   dictionary RTCRtpEncodingParameters {
-    [readonly]
-    unsigned long       ssrc;
-
-    [readonly]
-    RTCRtpRtxParameters rtx;
-
-    [readonly]
-    RTCRtpFecParameters fec;
-
     RTCDtxStatus        dtx;
     boolean             active;
     RTCPriorityType     priority;
+    RTCPriorityType     networkPriority;
     unsigned long       ptime;
     unsigned long       maxBitrate;
     double              maxFramerate;
@@ -151,16 +153,6 @@ function validateRtpParameters(param) {
     DOMString           rid;
 
     double              scaleResolutionDownBy;
-  };
-
-  dictionary RTCRtpRtxParameters {
-    [readonly]
-    unsigned long ssrc;
-  };
-
-  dictionary RTCRtpFecParameters {
-    [readonly]
-    unsigned long ssrc;
   };
 
   enum RTCDtxStatus {
@@ -176,23 +168,13 @@ function validateRtpParameters(param) {
   };
  */
 function validateEncodingParameters(encoding) {
-  assert_optional_unsigned_int_field(encoding, 'ssrc');
-
-  assert_optional_dict_field(encoding, 'rtx');
-  if(encoding.rtx) {
-    assert_unsigned_int_field(encoding.rtx, 'ssrc');
-  }
-
-  assert_optional_dict_field(encoding, 'fec');
-  if(encoding.fec) {
-    assert_unsigned_int_field(encoding.fec, 'ssrc');
-  }
-
   assert_optional_enum_field(encoding, 'dtx',
     ['disabled', 'enabled']);
 
   assert_optional_boolean_field(encoding, 'active');
   assert_optional_enum_field(encoding, 'priority',
+    ['very-low', 'low', 'medium', 'high']);
+  assert_optional_enum_field(encoding, 'networkPriority',
     ['very-low', 'low', 'medium', 'high']);
 
   assert_optional_unsigned_int_field(encoding, 'ptime');

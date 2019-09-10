@@ -46,9 +46,14 @@ function unreached_rejection(test, prefix) {
     });
 }
 
-// Adds an iframe to the document and returns a promise that resolves to the
-// iframe when it finishes loading. The caller is responsible for removing the
-// iframe later if needed.
+/**
+ * Adds an iframe to the document and returns a promise that resolves to the
+ * iframe when it finishes loading. The caller is responsible for removing the
+ * iframe later if needed.
+ *
+ * @param {string} url
+ * @returns {HTMLIFrameElement}
+ */
 function with_iframe(url) {
   return new Promise(function(resolve) {
       var frame = document.createElement('iframe');
@@ -70,9 +75,11 @@ function wait_for_update(test, registration) {
   }
 
   return new Promise(test.step_func(function(resolve) {
-      registration.addEventListener('updatefound', test.step_func(function() {
-          resolve(registration.installing);
-        }));
+      var handler = test.step_func(function() {
+        registration.removeEventListener('updatefound', handler);
+        resolve(registration.installing);
+      });
+      registration.addEventListener('updatefound', handler);
     }));
 }
 
@@ -201,20 +208,12 @@ function test_websocket(test, frame, url) {
     });
 }
 
-function login(test) {
-  return test_login(test, 'http://{{domains[www1]}}:{{ports[http][0]}}',
-                    'username1', 'password1', 'cookie1')
-    .then(function() {
-        return test_login(test, 'http://{{host}}:{{ports[http][0]}}',
-                          'username2', 'password2', 'cookie2');
-      });
-}
-
 function login_https(test) {
-  return test_login(test, 'https://{{domains[www1]}}:{{ports[https][0]}}',
+  var host_info = get_host_info();
+  return test_login(test, host_info.HTTPS_REMOTE_ORIGIN,
                     'username1s', 'password1s', 'cookie1')
     .then(function() {
-        return test_login(test, 'https://{{host}}:{{ports[https][0]}}',
+        return test_login(test, host_info.HTTPS_ORIGIN,
                           'username2s', 'password2s', 'cookie2');
       });
 }
@@ -255,3 +254,57 @@ function register_using_link(script, options) {
       })
     .then(() => navigator.serviceWorker.getRegistration(scope));
 }
+
+function with_sandboxed_iframe(url, sandbox) {
+  return new Promise(function(resolve) {
+      var frame = document.createElement('iframe');
+      frame.sandbox = sandbox;
+      frame.src = url;
+      frame.onload = function() { resolve(frame); };
+      document.body.appendChild(frame);
+    });
+}
+
+// Registers, waits for activation, then unregisters on a dummy scope.
+//
+// This can be used to wait for a period of time needed to register,
+// activate, and then unregister a service worker.  When checking that
+// certain behavior does *NOT* happen, this is preferable to using an
+// arbitrary delay.
+async function wait_for_activation_on_dummy_scope(t, window_or_workerglobalscope) {
+  const script = '/service-workers/service-worker/resources/empty-worker.js';
+  const scope = 'resources/there/is/no/there/there?' + Date.now();
+  let registration = await window_or_workerglobalscope.navigator.serviceWorker.register(script, { scope });
+  await wait_for_state(t, registration.installing, 'activated');
+  await registration.unregister();
+}
+
+// This installs resources/appcache-ordering.manifest.
+function install_appcache_ordering_manifest() {
+  let resolve_install_appcache;
+  let reject_install_appcache;
+
+  // This is notified by the child iframe, i.e. appcache-ordering.install.html,
+  // that's to be created below.
+  window.notify_appcache_installed = success => {
+    if (success)
+      resolve_install_appcache();
+    else
+      reject_install_appcache();
+  };
+
+  return new Promise((resolve, reject) => {
+      const frame = document.createElement('iframe');
+      frame.src = 'resources/appcache-ordering.install.html';
+      document.body.appendChild(frame);
+      resolve_install_appcache = function() {
+          document.body.removeChild(frame);
+          resolve();
+        };
+      reject_install_appcache = function() {
+          document.body.removeChild(frame);
+          reject();
+        };
+  });
+}
+

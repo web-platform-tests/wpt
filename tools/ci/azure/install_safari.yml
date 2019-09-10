@@ -7,7 +7,7 @@ steps:
   - script: |
       # Pinned to Safari Technology Preview version 91.
       HOMEBREW_NO_AUTO_UPDATE=1 brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask-versions/d42a0fa4b46a0404350a306a4811f69a66b70873/Casks/safari-technology-preview.rb
-      sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
+      expect tools/ci/azure/enable_safaridriver_preview.exp
       defaults write com.apple.SafariTechnologyPreview WebKitJavaScriptCanOpenWindowsAutomatically 1
       defaults write com.apple.SafariTechnologyPreview ExperimentalServerTimingEnabled 1
     displayName: 'Install Safari Technology Preview'

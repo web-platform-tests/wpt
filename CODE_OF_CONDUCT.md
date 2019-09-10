@@ -41,6 +41,7 @@ The enforcement policies listed above apply to all official WPT venues; includin
 
 This section lists the current moderators for WPT and how to reach them.
 
-* None yet
+* Boaz Sender - boaz@bocoup.com
+* Jory Burson - jory@bocoup.education
 
 *Adapted from [The Rust Code of Conduct](https://www.rust-lang.org/conduct.html).*

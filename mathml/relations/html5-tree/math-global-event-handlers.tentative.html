@@ -68,7 +68,7 @@
           );
           compiledHandler();
           assert_true(
-            window[`${name}Happened1"],
+            window[`${name}Happened1`],
             "Calling the handler must run the code"
           );
         }, `${name}: the content attribute must be compiled into a function as the corresponding property`);

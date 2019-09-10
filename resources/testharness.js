@@ -771,7 +771,7 @@ policies and contribution forms [3].
 
     function done() {
         if (tests.tests.length === 0) {
-            tests.set_file_is_test();
+            tests.set_file_is_test("done");
         }
         if (tests.file_is_test) {
             // file is test files never have asynchronous cleanup logic,
@@ -2199,14 +2199,8 @@ policies and contribution forms [3].
         this.set_timeout();
     };
 
-    Tests.prototype.set_file_is_test = function() {
-        if (this.tests.length > 0) {
-            throw new Error("Tried to set file as test after creating a test");
-        }
-        this.wait_for_finish = true;
-        this.file_is_test = true;
-        // Create the test, which will add it to the list of tests
-        async_test();
+    Tests.prototype.set_file_is_test = function(context) {
+        throw new Error(`set_file_is_test called from ${context}`);
     };
 
     Tests.prototype.set_status = function(status, message, stack)
@@ -3074,7 +3068,7 @@ policies and contribution forms [3].
     function assert(expected_true, function_name, description, error, substitutions)
     {
         if (tests.tests.length === 0) {
-            tests.set_file_is_test();
+            tests.set_file_is_test("assert");
         }
         if (expected_true !== true) {
             var msg = make_message(function_name, description,
@@ -3367,7 +3361,7 @@ policies and contribution forms [3].
     if (global_scope.addEventListener) {
         var error_handler = function(e) {
             if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
-                tests.set_file_is_test();
+                tests.set_file_is_test("error_handler");
             }
 
             var stack;

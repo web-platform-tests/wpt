@@ -1,4 +1,0 @@
-spawn "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
-expect "Password:*"
-send -- "P@ssw0rd1\r"
-expect eof

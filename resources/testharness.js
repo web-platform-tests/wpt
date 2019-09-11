@@ -772,6 +772,7 @@ policies and contribution forms [3].
     function done() {
         if (tests.tests.length === 0) {
             tests.set_file_is_test("done");
+            return;
         }
         if (tests.file_is_test) {
             // file is test files never have asynchronous cleanup logic,
@@ -2200,7 +2201,11 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.set_file_is_test = function(context) {
-        throw new Error(`set_file_is_test called from ${context}`);
+        this.abort();
+        this.set_status(this.status.ERROR, `set_file_is_test called from ${context}`);
+        this.end_wait();
+        this.timeout_length = 0;
+        this.set_timeout();
     };
 
     Tests.prototype.set_status = function(status, message, stack)
@@ -3069,6 +3074,7 @@ policies and contribution forms [3].
     {
         if (tests.tests.length === 0) {
             tests.set_file_is_test("assert");
+            return;
         }
         if (expected_true !== true) {
             var msg = make_message(function_name, description,
@@ -3362,6 +3368,7 @@ policies and contribution forms [3].
         var error_handler = function(e) {
             if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
                 tests.set_file_is_test("error_handler");
+                return;
             }
 
             var stack;

@@ -7,14 +7,13 @@
 // Helper functions
 const xlinkNS = "http://www.w3.org/1999/xlink"
 
-function expectFillColor(element, red, green, blue, message) {
+function expectFillColor(element, red, green, blue) {
     let color = window.getComputedStyle(element, null).fill;
     var re = new RegExp("rgba?\\(([^, ]*), ([^, ]*), ([^, ]*)(?:, )?([^, ]*)\\)");
     rgb = re.exec(color);
-
-    assert_approx_equals(Number(rgb[1]), red, 2.0, message);
-    assert_approx_equals(Number(rgb[2]), green, 2.0, message);
-    assert_approx_equals(Number(rgb[3]), blue, 2.0, message);
+    assert_approx_equals(Number(rgb[1]), red, 2.0);
+    assert_approx_equals(Number(rgb[2]), green, 2.0);
+    assert_approx_equals(Number(rgb[3]), blue, 2.0);
 }
 
 function expectColor(element, red, green, blue, property) {

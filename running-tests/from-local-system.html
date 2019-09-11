@@ -69,15 +69,11 @@ the path to the Python binary (<code class="docutils literal notranslate"><span 
 <p>If you are behind a proxy, you also need to make sure the domains above are
 excluded from your proxy lookups.</p>
 <p><a class="reference internal" href="../writing-tests/ahem.html"><span class="doc">The Ahem font</span></a> is used to test precise rendering
-behavior. <a class="reference external" href="https://github.com/web-platform-tests/wpt/raw/master/fonts/Ahem.ttf">Download the font</a> and install it using the
-appropriate steps for your platform:</p>
-<ul class="simple">
-<li>On Windows, right-click the downloaded file in File Explorer/Windows Explorer
-(depending on Windows version) and select “Install” from the menu.</li>
-<li>On macOS, open the downloaded file in Font Book (the default application for
-font files) and then click install.</li>
-<li>On Linux, copy the file to <code class="docutils literal notranslate"><span class="pre">~/.local/share/fonts</span></code> and then run <code class="docutils literal notranslate"><span class="pre">fc-cache</span></code>.</li>
-</ul>
+behavior. This font should be loaded as a web font in tests, using the
+<code class="docutils literal notranslate"><span class="pre">/fonts/ahem.css</span></code> stylesheet, as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">link</span> <span class="n">rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/css&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;/fonts/ahem.css&quot;</span> <span class="o">/&gt;</span>
+</pre></div>
+</div>
 <div class="section" id="windows-notes">
 <h3>Windows Notes<a class="headerlink" href="#windows-notes" title="Permalink to this headline">¶</a></h3>
 <p>Generally Windows Subsystem for Linux will provide the smoothest user

@@ -122,7 +122,7 @@ tests that rely on anything else should be manual tests that document
 their assumptions.
 
 Fonts cannot be relied on to be either installed or to have specific
-metrics. As such, in most cases when a known font is needed [Ahem][ahem]
+metrics. As such, in most cases when a known font is needed, [Ahem][ahem]
 should be used and loaded as a web font. In other cases, `@font-face`
 should be used.
 

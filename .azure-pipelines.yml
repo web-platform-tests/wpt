@@ -89,7 +89,7 @@ jobs:
     displayName: 'Run tests (Chrome Dev)'
   - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-tbpl - --log-tbpl-level info --channel nightly firefox infrastructure/
     displayName: 'Run tests (Firefox Nightly)'
-  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-tbpl - --log-tbpl-level info --channel preview safari infrastructure/
+  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level debug --channel preview safari infrastructure/
     displayName: 'Run tests (Safari Technology Preview)'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'

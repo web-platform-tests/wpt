@@ -66,20 +66,22 @@ div.bottom, section.bottom .target { vertical-align: bottom; }
   <div><div class="filler text-bottom"></div><div class="target" data-y="45"></div></div>
 </section>
 <script>
-for (let target of document.getElementsByClassName('target')) {
-  let container = target.parentElement;
-  let filler = container.firstElementChild;
-  let section = container.parentElement;
-  let pass = false;
-  test(() => {
-    document.fonts.ready.then(()=> {
-      let y = target.offsetTop - container.offsetTop;
-      assert_approx_equals(y, target.dataset.y, 0);
-      pass = true;
-    });
-  }, `${section.className.substr(5)}+${filler.className.substr(7)}`);
-  if (!pass)
-    container.classList.add('fail');
-}
+setup({explicit_done: true});
+document.fonts.ready.then(()=> {
+  for (let target of document.getElementsByClassName('target')) {
+    let container = target.parentElement;
+    let filler = container.firstElementChild;
+    let section = container.parentElement;
+    let pass = false;
+    test(() => {
+        let y = target.offsetTop - container.offsetTop;
+        assert_approx_equals(y, target.dataset.y, 0);
+        pass = true;
+    }, `${section.className.substr(5)}+${filler.className.substr(7)}`);
+    if (!pass)
+      container.classList.add('fail');
+  }
+  done();
+});
 </script>
 </body>

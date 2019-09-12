@@ -42,7 +42,9 @@
                       var space1 = cells1[i].firstElementChild.getBoundingClientRect();
                       var space2 = cells2[i].firstElementChild.getBoundingClientRect();
                       assert_equals(space1.left, space2.left,
-                                    `Left of cells (${i},${j}) and (${i},${j + 1})`);
+                                    `Cells (${i},${j}) and (${i},${j + 1}) should have same horizontal position`);
+                      assert_less_than(space1.bottom, space2.top,
+                                       `Cell (${i},${j}) should be above (${i},${j + 1})`);
                   }
               }
           }, `Layout of ${id}`);

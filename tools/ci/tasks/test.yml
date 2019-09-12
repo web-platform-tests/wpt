@@ -1,0 +1,159 @@
+templates:
+  wpt-base:
+    image: harjgam/web-platform-tests:0.33
+    maxRunTime: 7200,
+    artifacts:
+      public/results:
+        path: /home/test/artifacts
+        type: directory
+
+  wpt-testharness:
+    chunks: 12
+    vars:
+      test-type: testharness
+
+  wpt-reftest:
+    chunks: 6
+    vars:
+      test-type: reftest
+
+  wpt-wdspec:
+    chunks: 1
+    vars:
+      test-type: wdspec
+
+  wpt-run:
+    name: wpt-${vars.browser}-${vars.channel}-${vars.suite}-chunk-${chunks.id}
+    options:
+      xvfb: true
+      oom-killer: true
+      hosts: true
+      browser: ${vars.browser}
+      channel: ${vars.channel}
+    command: >-
+      ./tools/ci/taskcluster-run.py
+      ${vars.browser}
+      --
+      --channel=${vars.channel}
+      --log-wptreport=../artifacts/wpt_report.json
+      --log-wptscreenshot=../artifacts/wpt_screenshot.txt
+      --no-fail-on-unexpected
+      --this-chunk=${chunks.id}
+      --total-chunks=${chunks.total}
+
+  trigger-master:
+    trigger:
+      branch:
+        - master
+
+  trigger-push:
+    trigger:
+      branch:
+        - triggers/${vars.browser}_${vars.channel}
+
+  trigger-daily:
+    trigger:
+      branch:
+        - epochs/daily
+
+  trigger-weekly:
+    trigger:
+      branch:
+        - epochs/weekly
+
+  trigger-pr:
+    trigger:
+      pull-request:
+
+  browser-firefox:
+    require:
+      - download-firefox-${vars.channel}
+
+  browser-chrome: {}
+
+
+tasks:
+  - $map:
+      for:
+        - vars:
+            suite: testharness
+        - vars:
+            suite: reftest
+        - vars:
+            suite: wdspec
+      do:
+        $map:
+          for:
+            - vars:
+                browser: firefox
+                channel: nightly
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: firefox
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: firefox
+                channel: stable
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: dev
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: stable
+              use:
+                - trigger-daily
+                - trigger-push
+          do:
+            ${vars.browser}-${vars.channel}-${vars.suite}:
+              use:
+                - wpt-base
+                - wpt-run
+                - browser-${vars.browser}
+                - wpt-${vars.suite}
+
+  - $map:
+      for:
+        - vars:
+            channel: nightly
+        - vars:
+            channel: beta
+        - vars:
+            channel: stable
+      do:
+        download-firefox-${vars.channel}:
+          use:
+            - wpt-base
+          command: "./wpt download --channel=${vars.channel} firefox browser"
+
+  - lint:
+      use:
+        - wpt-base
+        - trigger-master
+        - trigger-pr
+      command: "wpt-lint --all"
+
+  - update-built:
+      use:
+        - wpt-base
+        - trigger-pr
+      schedule-if:
+        run-job: update_built
+      command: "tools/ci/ci_built_diff.sh"
+

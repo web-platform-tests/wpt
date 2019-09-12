@@ -24,5 +24,15 @@
       "requests",
       "pygithub"
     ]
+  },
+  "taskgraph": {
+    "path": "taskgraph.py",
+    "script": "run",
+    "help": "Build the taskgraph",
+    "virtualenv": true,
+    "install": [
+      "requests",
+      "pyyaml"
+    ]
   }
 }

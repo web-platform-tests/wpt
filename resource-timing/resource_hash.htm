@@ -14,38 +14,31 @@ setup({explicit_done: true});
 // explicitly test the namespace before we start testing
 test_namespace("getEntriesByType");
 
-var d;
-var iframe;
-var iframeBody;
-var image;
-var random = Math.random();
-
-function setup_iframe() {
-    iframe = document.getElementById('frameContext');
-    d = iframe.contentWindow.document;
-    iframeBody = d.body;
-    iframe.addEventListener('load', onload_test, false);
-}
 function onload_test() {
-    if (window.performance.getEntriesByType === undefined) {
-      done();
-      return;
-    }
-    var context = new PerformanceContext(iframe.contentWindow.performance);
-    var entries = context.getEntriesByType('resource');
+  if (window.performance.getEntriesByType === undefined) {
+    done();
+    return;
+  }
+  
+  const url = "resources/fake_responses.py?tag=" + Math.random() + '#hash=1';
+  const image = new Image();
+  image.onload = image.onerror = () => {
+    const entries = window.performance.getEntriesByType('resource').filter(r => r.initiatorType === 'img');
     test_equals(entries.length, 1, "There should be one entry");
     if (entries.length === 1) {
         test_true(entries[0].name.indexOf('#hash=1') > -1, "There should be a hash in the resource name");
     }
     done();
+    
+  }
+  image.src = url;  
 }
-window.setup_iframe = setup_iframe;
+window.onload = onload_test;
 </script>
 </head>
 <body>
 <h1>Description</h1>
-<p>This test validates that a 304 Not Modified resource appears in the buffer.</p>
+<p>This test validates that a hash in an image URL is preserved in resource timing API results.</p>
 <div id="log"></div>
-<iframe id="frameContext" src="resources/hash_responses.html"></iframe>
 </body>
 </html>

@@ -52,12 +52,12 @@ function makePromiseTest(name, c) {
       // this beahvior in the specs. TODO: remove this try/catch block.
     }
     const constraintsOut = videoTrack.getConstraints();
-    assert_object_equals(constraintsOut, constraintsIn, "constraints");
+    assert_object_equals(constraintsOut, constraintsIn, "constraints after applying");
 
     // Clear constraints by sending an empty constraint set.
     await videoTrack.applyConstraints({});
     const constraintsOut2 = videoTrack.getConstraints();
-    assert_object_equals(constraintsOut2, {}, "constraints");
+    assert_object_equals(constraintsOut2, {}, "constraints after applying empty constraint set");
   }, name);
 }
 

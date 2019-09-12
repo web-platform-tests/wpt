@@ -13,8 +13,12 @@ function makeAsyncTest(filename) {
   promise_test(async test => {
     const video = document.createElement('video');
     video.src = "/media/" + filename;
-    video.onerror = this.unreached_func("<video> error");
-    video.play();
+    video.onerror = this.unreached_func("video error");
+    const playPromise = video.play();
+    assert_false(video.paused, "video paused");
+    if (playPromise) {
+      playPromise.catch(this.unreached_func("video.play() error"));
+    }
 
     const stream = video.captureStream();
 

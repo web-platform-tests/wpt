@@ -3366,10 +3366,6 @@ policies and contribution forms [3].
 
     if (global_scope.addEventListener) {
         var error_handler = function(e) {
-            if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
-                tests.set_file_is_test();
-            }
-
             var stack;
             if (e.error && e.error.stack) {
                 stack = e.error.stack;

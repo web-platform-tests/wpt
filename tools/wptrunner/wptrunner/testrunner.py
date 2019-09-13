@@ -394,8 +394,8 @@ class TestRunnerManager(threading.Thread):
             finally:
                 self.logger.debug("TestRunnerManager main loop terminating, starting cleanup")
                 clean = isinstance(self.state, RunnerManagerState.stop)
-                self.stop_runner(force=not clean)
                 self.teardown()
+                self.stop_runner(force=not clean)
         self.logger.debug("TestRunnerManager main loop terminated")
 
     def wait_event(self):
@@ -696,6 +696,7 @@ class TestRunnerManager(threading.Thread):
 
     def teardown(self):
         self.logger.debug("TestRunnerManager teardown")
+        self.test_runner_proc.terminate()
         self.test_runner_proc = None
         self.command_queue.close()
         self.remote_queue.close()

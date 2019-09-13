@@ -19,7 +19,7 @@ function onload_test() {
     done();
     return;
   }
-  
+
   const url = "resources/fake_responses.py?tag=" + Math.random() + '#hash=1';
   const image = new Image();
   image.onload = image.onerror = () => {
@@ -29,9 +29,9 @@ function onload_test() {
         test_true(entries[0].name.indexOf('#hash=1') > -1, "There should be a hash in the resource name");
     }
     done();
-    
+
   }
-  image.src = url;  
+  image.src = url;
 }
 window.onload = onload_test;
 </script>

@@ -450,6 +450,7 @@ function setupFonts(func) {
     return function () {
         var fontProperties = {
             'font-family': 'Ahem',
+            'src': 'url(/fonts/Ahem.ttf)',
             'font-size': '16px',
             'line-height': '1'
         };
@@ -459,7 +460,9 @@ function setupFonts(func) {
             document.body.style.setProperty(key, value);
         });
         try {
-            func.apply(this, arguments);
+            document.fonts.ready.then(() => {
+                func.apply(this, arguments);
+            });
         } finally {
             each(savedValues, function (key, value) {
                 if (value) {

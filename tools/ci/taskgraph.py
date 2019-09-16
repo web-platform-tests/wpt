@@ -74,7 +74,7 @@ def replace_vars(input_string, variables):
         for part in var:
             try:
                 repl = repl[part]
-            except KeyError:
+            except Exception:
                 import pdb
                 pdb.set_trace()
         return str(repl)
@@ -138,9 +138,13 @@ def load_tasks(tasks_data):
         task = resolve_name(task, task_default_name)
         tasks.extend(resolve_chunks(task))
 
-    return [substitute_variables(task) for task in tasks]
+    tasks = [substitute_variables(task_data) for task_data in tasks]
+    return {task["name"]: task for task in tasks}
+
+
+def load_tasks_from_path(path):
+    return load_tasks(load_task_file(path))
 
 
 def run(venv, **kwargs):
-    tasks_data = load_task_file(os.path.join(here, "tasks/test.yml"))
-    print(json.dumps(load_tasks(tasks_data), indent=2))
+    print(json.dumps(load_tasks_from_path(os.path.join(here, "tasks/test.yml")), indent=2))

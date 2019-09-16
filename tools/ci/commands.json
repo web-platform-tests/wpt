@@ -34,5 +34,16 @@
       "requests",
       "pyyaml"
     ]
+  },
+  "decision": {
+    "path": "decision.py",
+    "script": "run",
+    "help": "Run the decision task",
+    "virtualenv": true,
+    "install": [
+        "requests",
+        "pyyaml",
+        "taskcluster"
+    ]
   }
 }

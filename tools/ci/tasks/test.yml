@@ -154,6 +154,7 @@ tasks:
         - wpt-base
         - trigger-pr
       schedule-if:
-        run-job: update_built
+        run-job:
+          - update_built
       command: "tools/ci/ci_built_diff.sh"
 

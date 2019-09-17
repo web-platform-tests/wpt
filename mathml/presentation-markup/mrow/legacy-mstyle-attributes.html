@@ -23,6 +23,7 @@
       Array.from(document.getElementsByClassName("TestContainer")).forEach(container => {
           const tag = container.id;
           test(function() {
+              assert_true(MathMLFeatureDetection[`has_${tag}`](), `${tag} is supported`);
               const epsilon = 1;
               const math = container.getElementsByTagName("math");
               compareLayout(math[0], math[1], epsilon);

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<title>Service Worker: Fetch event should not be handled when listener is added after script initial evaluation.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+<body>
+<script>
+
+promise_test(async function (t) {
+  var scope = 'resources/simple.html?fetch-event-async-add';
+  var script_url = 'resources/fetch-event-async-add-test-worker.js';
+
+  const registration =
+    await service_worker_unregister_and_register(t, script_url, scope);
+  worker = registration.installing;
+  worker.postMessage("addFetchEventListener");
+
+  await wait_for_state(t, worker, 'activated');
+  frame = await with_iframe(scope);
+
+  let nonexpected =
+    frame.contentDocument.body.textContent == 'codeSupposedUnreachable' &&
+    frame.contentDocument.contentType === 'text/plain';
+
+  frame.remove();
+
+  assert_false(nonexpected);
+}, 'Service worker does not handle fetch event added after initial evaluation of worker script');
+
+</script>
+</body>

@@ -7,10 +7,6 @@ steps:
   - script: |
       # Pinned to Safari Technology Preview version 92.
       HOMEBREW_NO_AUTO_UPDATE=1 brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask-versions/9498dd1c9b28154c0646f6101cdcee0e4e288b06/Casks/safari-technology-preview.rb
-      # Workaround for `safardriver --enable` requiring password:
-      # https://github.com/web-platform-tests/wpt/issues/17186#issuecomment-529862851
-      mkdir -p ~/Library/WebDriver/
-      cp tools/ci/azure/com.apple.SafariTechnologyPreview.plist ~/Library/WebDriver/
       defaults write com.apple.SafariTechnologyPreview WebKitJavaScriptCanOpenWindowsAutomatically 1
       defaults write com.apple.SafariTechnologyPreview ExperimentalServerTimingEnabled 1
     displayName: 'Install Safari Technology Preview'

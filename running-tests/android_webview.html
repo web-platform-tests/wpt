@@ -38,30 +38,58 @@
 <h1>Android WebView<a class="headerlink" href="#android-webview" title="Permalink to this headline">¶</a></h1>
 <p>To run WPT on WebView on an Android device, some additional set-up is required.</p>
 <p>Currently, Android WebView support is experimental.</p>
-<ul class="simple">
-<li>Please check <a class="reference internal" href="chrome_android.html"><span class="doc">Chrome for Android</span></a> for the common
-instructions for Android support first.</li>
-<li>Install an up-to-date version of system webview shell:<ul>
-<li>Go to
-<a class="reference external" href="https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Android/">chromium-browser-snapshots</a></li>
-<li>Find the subdirectory with the highest number and click it.</li>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="please-check-chrome-for-android-for-the-common-instructions-for-android-support-first">
+<h3>Please check <a class="reference internal" href="chrome_android.html"><span class="doc">Chrome for Android</span></a> for the common instructions for Android support first.<a class="headerlink" href="#please-check-chrome-for-android-for-the-common-instructions-for-android-support-first" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="ensure-you-have-a-userdebug-or-eng-android-build-installed-on-the-device">
+<h3>Ensure you have a userdebug or eng Android build installed on the device.<a class="headerlink" href="#ensure-you-have-a-userdebug-or-eng-android-build-installed-on-the-device" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="install-an-up-to-date-version-of-system-webview-shell">
+<h3>Install an up-to-date version of system webview shell.<a class="headerlink" href="#install-an-up-to-date-version-of-system-webview-shell" title="Permalink to this headline">¶</a></h3>
+<ol class="simple">
+<li>Go to <a class="reference external" href="https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Android/">chromium-browser-snapshots</a></li>
+<li>Find the subdirectory with the highest number and click it, this number can be found
+in the “Commit Position” column of row “LAST_CHANGE” (at bottom of page).</li>
 <li>Download <code class="docutils literal notranslate"><span class="pre">chrome-android.zip</span></code> file and unzip it.</li>
 <li>Install <code class="docutils literal notranslate"><span class="pre">SystemWebViewShell.apk</span></code>.</li>
-<li>On emulator, system webview shell may already be installed by default. Then
-you may need to remove the existing apk:<ul>
+<li>On emulator, system webview shell may already be installed by default. Then you may need to remove the existing apk:<ul>
 <li>Choose a userdebug build.</li>
 <li>Run an emulator with
 <a class="reference external" href="https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_emulator.md/">writable system partition from command line</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li>If you have an issue with ChromeDriver version, try removing
-<code class="docutils literal notranslate"><span class="pre">_venv/bin/chromedriver</span></code> such that wpt runner can install a matching version
+</ol>
+</div>
+<div class="section" id="if-you-have-an-issue-with-chromedriver-version-mismatch-try-one-of-the-following">
+<h3>If you have an issue with ChromeDriver version mismatch, try one of the following.<a class="headerlink" href="#if-you-have-an-issue-with-chromedriver-version-mismatch-try-one-of-the-following" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first">Try removing <code class="docutils literal notranslate"><span class="pre">_venv/bin/chromedriver</span></code> such that wpt runner can install a matching version
 automatically. Failing that, please check your environment path and make
-sure that no other ChromeDriver is used.</li>
+sure that no other ChromeDriver is used.</p>
+</li>
+<li><p class="first">Download the <a class="reference external" href="https://chromedriver.chromium.org/">ChromeDriver binary</a> matching your WebView’s major version and specify it on the command line</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">binary</span> <span class="o">&lt;</span><span class="n">binary</span> <span class="n">path</span><span class="o">&gt;</span> <span class="o">...</span>
+</pre></div>
+</div>
+</li>
 </ul>
-<p>Example command line:</p>
+</div>
+<div class="section" id="configure-host-remap-rules-in-the-webview-commandline-file">
+<h3>Configure host remap rules in the <a class="reference external" href="https://cs.chromium.org/chromium/src/android_webview/docs/commandline-flags.md?l=57">webview commandline file</a>.<a class="headerlink" href="#configure-host-remap-rules-in-the-webview-commandline-file" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">adb</span> <span class="n">shell</span> <span class="s2">&quot;echo &#39;_ --host-resolver-rules=</span><span class="se">\&quot;</span><span class="s2">MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1</span><span class="se">\&quot;</span><span class="s2">&#39; &gt; /data/local/tmp/webview-command-line&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ensure-that-adb-can-be-found-on-your-system-s-path">
+<h3>Ensure that <code class="docutils literal notranslate"><span class="pre">adb</span></code> can be found on your system’s PATH.<a class="headerlink" href="#ensure-that-adb-can-be-found-on-your-system-s-path" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="running-tests">
+<h2>Running Tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example-command-line">
+<h3>Example command line:<a class="headerlink" href="#example-command-line" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --test-type<span class="o">=</span>testharness android_webview &lt;TESTS&gt;
 </pre></div>
 </div>
@@ -70,6 +98,8 @@ sure that no other ChromeDriver is used.</li>
 will be run against the current WebView version installed on the device.</li>
 <li>Reftests are not supported at the moment.</li>
 </ul>
+</div>
+</div>
 </div>
 
 

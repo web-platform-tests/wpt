@@ -624,6 +624,8 @@ def test_update_intermittent_full():
         "expected", default_run_info) == "FAIL"
 
 
+@pytest.mark.xfail(sys.version[0] == "3",
+                   reason="metadata doesn't support py3")
 def test_update_intermittent_full_remove():
     tests = [("path/to/test.htm", [test_id], "testharness",
               """[test.htm]
@@ -713,6 +715,8 @@ def test_full_update():
         "expected", default_run_info) == "FAIL"
 
 
+@pytest.mark.xfail(sys.version[0] == "3",
+                   reason="metadata doesn't support py3")
 def test_update_reorder_expected_full_conditions():
     tests = [("path/to/test.htm", [test_id], "testharness",
               """[test.htm]

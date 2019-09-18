@@ -4,6 +4,7 @@ import os
 from collections import defaultdict, namedtuple
 
 from mozlog import structuredlog
+from six.moves import intern
 
 from . import manifestupdate
 from . import testloader

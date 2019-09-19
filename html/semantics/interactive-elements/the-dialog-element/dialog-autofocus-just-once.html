@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/semantics/forms/autofocus/resources/utils.js"></script>
+<body>
+<dialog>
+<input>
+<input autofocus>
+</dialog>
+<script>
+// https://github.com/whatwg/html/issues/4788
+promise_test(async () => {
+  const dialog = document.querySelector('dialog');
+  dialog.show();
+  assert_equals(document.activeElement, dialog.querySelector('[autofocus]'));
+  document.activeElement.blur();
+  await waitUntilStableAutofocusState();
+  assert_equals(document.activeElement, document.body);
+}, 'An autofocus element in a dialog element should not try to get focus twice.');
+</script>

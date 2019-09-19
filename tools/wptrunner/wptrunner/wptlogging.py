@@ -5,6 +5,7 @@ from mozlog.structuredlog import StructuredLogger, log_levels
 
 
 def setup(args, defaults):
+    set_default_log_formatter(args)
     logger = args.pop('log', None)
     if logger:
         set_default_logger(logger)
@@ -23,6 +24,19 @@ def setup(args, defaults):
 def setup_stdlib_logger():
     logging.root.handlers = []
     logging.root = stdadapter.std_logging_adapter(logging.root)
+
+
+def set_default_log_formatter(kwargs):
+    """When --verify is set and no default log formatter was set,
+    set a default log formatter to mach and its value is sys.stdout.
+    This is useful for ./wpt run --verify."""
+    is_formatter_set = False
+    if kwargs.get("verify"):
+        for log_formatter in commandline.log_formatters:
+            if kwargs.get("log_" + log_formatter):
+                return
+        if not is_formatter_set:
+            kwargs["log_mach"] = "-"
 
 
 class LogLevelRewriter(object):

@@ -15,7 +15,7 @@ t.step(function() {
 });
 onload = t.step_func(function() {
   // javascript: executions are async.
-  assert_array_equals(events, ['after script', 'submit']);
+  assert_array_equals(events, ['after script']);
   t.done();
 });
 </script>

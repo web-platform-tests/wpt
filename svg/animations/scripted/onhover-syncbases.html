@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Check if onhover events reset correctly when triggred multiple times</title>
+    <title>Check if onhover events reset correctly when triggered multiple times</title>
     <link rel="help" href="https://svgwg.org/svg2-draft/single-page.html#interact-EventAttributes">
     <link rel="author" title="Edvard Thörnros" href="mailto:edvardt@opera.com">
     <script src="/resources/testharness.js"></script>
@@ -29,15 +29,15 @@ async_test(t => {
     }
 
     circle.dispatchEvent(new Event("mouseover"));
-    step_timeout(function() {
+    step_timeout(t.step_func(function() {
         assert_equals(window.getComputedStyle(circle, null).fill,
           "rgb(0, 255, 0)")
         circle.dispatchEvent(new Event("mouseout"))
         t.step_timeout(f, delay);
-      }, delay);
-    });
-    step_timeout(function() { f(); }, 0);
+    }), delay);
   });
+  step_timeout(f, 0);
+});
     </script>
   </body>
 </html>

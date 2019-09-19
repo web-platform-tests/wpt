@@ -350,8 +350,7 @@ nfc_test(async (t, mockNFC) => {
     mockNFC.setPendingPushCompleted(false);
     let err = "";
     p1.then(() => {
-      t.unreached_func("pending push should not be fulfilled");
-      reject();
+      reject("pending push should not be fulfilled");
     }).catch(e => {
       err = e.name;
     });

@@ -344,6 +344,9 @@ scheme host and port.""")
     commandline.log_formatters["wptscreenshot"] = (wptscreenshot.WptscreenshotFormatter, "wpt.fyi screenshots")
 
     commandline.add_logging_group(parser)
+    # Add --verbose option as the an alias of --log-mach-level debug
+    parser.add_argument("--verbose", action="store_true",
+                        help="An alias of --log-*-level debug")
     return parser
 
 
@@ -559,6 +562,12 @@ def check_args(kwargs):
 
     return kwargs
 
+def check_log_verbose(kwargs):
+    if kwargs.get("verbose"):
+        for key, value in kwargs.items():
+            if key.startswith("log_") and not key.endswith("_level"):
+                if kwargs.get(key) and not kwargs.get(key + '_level'):
+                    kwargs[key + "_level"] = "debug"
 
 def check_args_update(kwargs):
     set_from_config(kwargs)

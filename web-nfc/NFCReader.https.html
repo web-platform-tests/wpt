@@ -131,4 +131,47 @@ nfc_test(async (t, mockNFC) => {
   await promise;
 }, "Test that NFCReader.scan succeeds if NFCScanOptions.url is empty.");
 
+nfc_test(async (t, mockNFC) => {
+  const reader = new NFCReader();
+  const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
+  mockNFC.setReadingMessage(createMessage([createTextRecord(test_text_data)]));
+
+  const controller = new AbortController();
+  controller.abort();
+  reader.scan({signal: controller.signal});
+
+  await new Promise((resolve, reject) => {
+    readerWatcher.wait_for("reading").then(event => {
+      reject("reading event should not be fired.");
+    });
+    t.step_timeout(resolve, 100);
+  });
+
+}, "Test that NFCReader.onreading should not be fired if NFCScanOptions.signal \
+is abort.");
+
+nfc_test(async (t, mockNFC) => {
+  const reader = new NFCReader();
+  const controller = new AbortController();
+  const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
+  const message = createMessage([createTextRecord(test_text_data)]);
+
+  mockNFC.setReadingMessage(message);
+
+  reader.scan({signal: controller.signal});
+  const event = await readerWatcher.wait_for("reading");
+  assert_true(event instanceof NFCReadingEvent);
+  mockNFC.setReadingMessage(message);
+  controller.abort();
+
+  await new Promise((resolve, reject) => {
+    readerWatcher.wait_for("reading").then(event => {
+      reject("reading event should not be fired.");
+    });
+    t.step_timeout(resolve, 100);
+  });
+
+}, "Test that NFCReader.onreading should be fired if NFCScanOptions.signal is \
+not abort.");
+
 </script>

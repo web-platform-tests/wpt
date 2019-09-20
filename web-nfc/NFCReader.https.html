@@ -10,6 +10,16 @@
 
 "use strict";
 
+const invalid_signals = [
+  "string",
+  123,
+  {},
+  true,
+  Symbol(),
+  () => {},
+  self
+];
+
 function waitSyntaxErrorPromise(t, scan_options) {
   const reader = new NFCReader();
   const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
@@ -148,7 +158,7 @@ nfc_test(async (t, mockNFC) => {
   });
 
 }, "Test that NFCReader.onreading should not be fired if NFCScanOptions.signal \
-is abort.");
+is aborted.");
 
 nfc_test(async (t, mockNFC) => {
   const reader = new NFCReader();
@@ -171,7 +181,14 @@ nfc_test(async (t, mockNFC) => {
     t.step_timeout(resolve, 100);
   });
 
-}, "Test that NFCReader.onreading should be fired if NFCScanOptions.signal is \
-not abort.");
+}, "Synchronously signaled abort.");
+
+test(() => {
+  const reader = new NFCReader();
+  invalid_signals.forEach(invalid_signal => {
+    assert_throws(new TypeError(),
+        () => { reader.scan({ signal: invalid_signal }); });
+  });
+}, "NFCReader.scan should fail if signal is not an AbortSignal.");
 
 </script>

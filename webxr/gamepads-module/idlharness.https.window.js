@@ -3,7 +3,7 @@
 
 'use strict';
 
-// https://immersive-web.github.io/webxr/
+// https://immersive-web.github.io/webxr-gamepads-module/
 
 idl_test(
   ['webxr-gamepads-module'],

@@ -3384,9 +3384,6 @@ policies and contribution forms [3].
                 }
                 test.set_status(test.FAIL, e.message, stack);
                 test.phase = test.phases.HAS_RESULT;
-                // The following function invocation is superfluous.
-                // TODO: Remove.
-                test.done();
             } else if (!tests.allow_uncaught_exception) {
                 tests.status.status = tests.status.ERROR;
                 tests.status.message = e.message;

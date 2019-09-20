@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Containment Test: Reference file</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<style>
+  div {
+    font-size: 100px;
+  }
+  .wrapper {
+    width: 200px;
+    height: 200px;
+    border: solid thick black;
+    overflow: auto;
+  }
+  .contain {
+    width: 200px;
+    height: 200px;
+  }
+  .strict {
+    contain: strict;
+  }
+</style>
+<p>The test passes if it has the same output than the reference.</p>
+<div class="wrapper">
+  <div class="contain">
+    <div>Hello World! Welcome back.</div>
+  </div>
+  Bar
+</div>
+<br>
+<div class="wrapper">
+  <div class="contain strict">
+    <div>Hello World! Welcome back.</div>
+  </div>
+  Bar
+</div>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Containment Test: Strict containment overflow</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-contain-1/#valdef-contain-strict">
+<link rel="match" href="reference/contain-strict-overflow-001-ref.html">
+<meta name=assert content="Checks that overflow is recomputed properly after some changes in the DOM idependently of having strict containment or not.">
+<style>
+  div {
+    font-size: 100px;
+  }
+  .wrapper {
+    width: 200px;
+    height: 200px;
+    border: solid thick black;
+    overflow: auto;
+  }
+  .contain {
+    width: 200px;
+    height: 200px;
+  }
+  .strict {
+    contain: strict;
+  }
+</style>
+<p>The test passes if it has the same output than the reference.</p>
+<div class="wrapper">
+  <div class="contain">
+    <div id="target1">Foo</div>
+  </div>
+  Bar
+</div>
+<br>
+<div class="wrapper">
+  <div class="contain strict">
+    <div id="target2">Foo</div>
+  </div>
+  Bar
+</div>
+
+<script>
+  document.body.offestLeft;
+  target1.innerHTML = "Hello World! Welcome back.";
+  target2.innerHTML = "Hello World! Welcome back.";
+  document.body.offestLeft;
+</script>

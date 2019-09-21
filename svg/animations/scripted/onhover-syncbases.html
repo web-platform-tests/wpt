@@ -20,7 +20,7 @@ async_test(t => {
   let rounds = 5; // How many times the cursor is moved in and out
   let circle = document.querySelector("#circle");
   let delay = 20;
-  let f = t.step_func(function() {
+  function f() {
     assert_equals(window.getComputedStyle(circle, null).fill,
       "rgb(255, 0, 0)")
     if (rounds-- == 0) {
@@ -29,14 +29,14 @@ async_test(t => {
     }
 
     circle.dispatchEvent(new Event("mouseover"));
-    step_timeout(t.step_func(function() {
+    t.step_timeout(function() {
         assert_equals(window.getComputedStyle(circle, null).fill,
           "rgb(0, 255, 0)")
         circle.dispatchEvent(new Event("mouseout"))
         t.step_timeout(f, delay);
-    }), delay);
-  });
-  step_timeout(f, 0);
+    }, delay);
+  }
+  t.step_timeout(f, 0);
 });
     </script>
   </body>

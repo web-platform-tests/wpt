@@ -28,9 +28,9 @@
 
       for (const name of names) {
         const withoutOn = name.substring(2);
-        const location = MathMLElement.prototype;
 
         test(() => {
+          const location = MathMLElement.prototype;
           assert_true(
             location.hasOwnProperty(name),
             `${location.constructor.name} has an own property named "${name}"`
@@ -42,7 +42,7 @@
           );
         }, `${name}: must be on the appropriate locations for GlobalEventHandlers`);
 
-        if (!location.hasOwnProperty(name))
+        if (!MathMLElement.prototype.hasOwnProperty(name))
             continue;
 
         test(() => {

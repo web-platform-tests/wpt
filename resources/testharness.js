@@ -3400,7 +3400,7 @@ policies and contribution forms [3].
         }, false);
 
         addEventListener("unhandledrejection", function(e) {
-            var message = message = "Unhandled rejection: " + e.reason.message;
+            var message = "Unhandled rejection: " + e.reason.message;
             // There's no stack for unhandled rejections.
             error_handler(message);
         }, false);

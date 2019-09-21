@@ -11,9 +11,9 @@
 </head>
 <body>
 <script>
-test_shorthand_value('list-style', 'square url("https://example.com/") inside', {
+test_shorthand_value('list-style', 'square url("https://{{host}}/") inside', {
   'list-style-position': 'inside',
-  'list-style-image': 'url("https://example.com/")',
+  'list-style-image': 'url("https://{{host}}/")',
   'list-style-type': 'square'
 });
 </script>

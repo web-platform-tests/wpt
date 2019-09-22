@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<title>Example with single_test() and test()</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  single_test();
+  test();
+  done();
+</script>
+<script type="text/json" id="expected">
+{
+  "summarized_status": {
+    "status_string": "ERROR",
+    "message": "Tried to create a test after calling single_test()"
+  },
+  "summarized_tests": [
+    {
+      "status_string": "FAIL",
+      "name": "Example with single_test() and test()",
+      "properties": {},
+      "message": "Tried to create a test after calling single_test()"
+    }
+  ],
+  "type": "complete"
+}
+</script>

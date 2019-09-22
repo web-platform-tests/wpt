@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<title>Example with single_test() inside test()</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(() => {
+    single_test();
+  });
+  done();
+</script>
+<script type="text/json" id="expected">
+{
+  "summarized_status": {
+    "status_string": "ERROR",
+    "message": "Called single_test() after creating a test"
+  },
+  "summarized_tests": [
+    {
+      "status_string": "FAIL",
+      "name": "Example with single_test() inside test()",
+      "properties": {},
+      "message": "Called single_test() after creating a test"
+    }
+  ],
+  "type": "complete"
+}
+</script>

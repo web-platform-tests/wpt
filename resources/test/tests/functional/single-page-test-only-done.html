@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<title>Example with done() without test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  done();
+</script>
+<script type="text/json" id="expected">
+{
+  "summarized_status": {
+    "status_string": "ERROR",
+    "message": "Called assert_true() without creating a test or calling single_test()"
+  },
+  "summarized_tests": [
+    {
+    }
+  ],
+  "type": "complete"
+}
+</script>

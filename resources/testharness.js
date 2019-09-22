@@ -769,9 +769,14 @@ policies and contribution forms [3].
         test_environment.on_new_harness_properties(properties);
     }
 
+    function single_test(name) {
+        tests.set_file_is_test(name);
+    }
+    expose(single_test, "single_test");
+
     function done() {
-        if (tests.tests.length === 0) {
-            tests.set_file_is_test();
+        if (tests.tests.length === 0 && !tests.file_is_test) {
+            throw new Error("Called done() without creating any tests or calling single_test()");
         }
         if (tests.file_is_test) {
             // file is test files never have asynchronous cleanup logic,
@@ -1512,7 +1517,10 @@ policies and contribution forms [3].
     function Test(name, properties)
     {
         if (tests.file_is_test && tests.tests.length) {
-            throw new Error("Tried to create a test with file_is_test");
+            var message = "Tried to create a test after calling single_test()";
+            tests.status.status = tests.status.ERROR;
+            tests.status.message = message;
+            throw new Error(message);
         }
         this.name = name;
 
@@ -2201,14 +2209,17 @@ policies and contribution forms [3].
         this.set_timeout();
     };
 
-    Tests.prototype.set_file_is_test = function() {
+    Tests.prototype.set_file_is_test = function(name) {
         if (this.tests.length > 0) {
-            throw new Error("Tried to set file as test after creating a test");
+            var message = "Called single_test() after creating a test";
+            tests.status.status = tests.status.ERROR;
+            tests.status.message = message;
+            throw new Error(message);
         }
         this.wait_for_finish = true;
         this.file_is_test = true;
         // Create the test, which will add it to the list of tests
-        async_test();
+        async_test(name);
     };
 
     Tests.prototype.set_status = function(status, message, stack)
@@ -3076,7 +3087,7 @@ policies and contribution forms [3].
     function assert(expected_true, function_name, description, error, substitutions)
     {
         if (tests.tests.length === 0) {
-            tests.set_file_is_test();
+            throw new Error("Called " + function_name + "() without creating a test or calling single_test()");
         }
         if (expected_true !== true) {
             var msg = make_message(function_name, description,
@@ -3368,10 +3379,6 @@ policies and contribution forms [3].
 
     if (global_scope.addEventListener) {
         var error_handler = function(e) {
-            if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
-                tests.set_file_is_test();
-            }
-
             var stack;
             if (e.error && e.error.stack) {
                 stack = e.error.stack;
@@ -3390,6 +3397,9 @@ policies and contribution forms [3].
                 tests.status.status = tests.status.ERROR;
                 tests.status.message = e.message;
                 tests.status.stack = stack;
+                if (!tests.length) {
+                    tests.phase = tests.phases.ABORTED;
+                }
             }
             done();
         };

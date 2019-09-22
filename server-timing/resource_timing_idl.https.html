@@ -6,6 +6,7 @@
     <script src="/common/performance-timeline-utils.js"></script>
     <script>
       setup({explicit_done: true})
+      single_test();
       delayedLoadListener(function(){
         assert_not_equals(typeof performance.getEntriesByType('resource')[0].serverTiming, 'undefined',
           'An instance of `PerformanceResourceTiming` should have a `serverTiming` attribute.')

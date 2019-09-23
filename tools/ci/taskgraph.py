@@ -75,8 +75,8 @@ def replace_vars(input_string, variables):
             try:
                 repl = repl[part]
             except Exception:
-                import pdb
-                pdb.set_trace()
+                # Don't substitute
+                return m.group(0)
         return str(repl)
 
     return variable_re.sub(replacer, input_string)
@@ -130,11 +130,12 @@ def load_tasks(tasks_data):
             name = task.keys()[0]
             data = task[name]
             new_name = sub_variables(name, {"vars": data.get("vars", {})})
-            assert new_name not in map_resolved_tasks
+            if new_name in map_resolved_tasks:
+                raise ValueError("Got duplicate task name %s" % new_name)
             map_resolved_tasks[new_name] = substitute_variables(data)
 
     for task_default_name, data in iteritems(map_resolved_tasks):
-        task = resolve_use(data, tasks_data["templates"])
+        task = resolve_use(data, tasks_data["components"])
         task = resolve_name(task, task_default_name)
         tasks.extend(resolve_chunks(task))
 

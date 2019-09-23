@@ -1,9 +1,11 @@
 import json
 import os
-import taskgraph
+
+import taskcluster
 from six import iteritems
 from six.moves.urllib import request
 
+from . import taskgraph
 
 QUEUE_BASE = "https://queue.taskcluster.net/v1/task"
 
@@ -76,15 +78,87 @@ def filter_schedule_if(tasks):
     return scheduled
 
 
-class TaskNode(object):
-    def __init__(self, data):
-        self.data = data
-        self.children = []
+def get_fetch_rev(event):
+    is_pr, _ = get_triggers(event)
+    if is_pr:
+        return event["pull_request"]["merge_commit_sha"]
+    else:
+        return event["after"]
 
-    def append(self, other):
-        self.children.append(other)
 
-def build_task_graph(tasks, all_task):
+def build_full_command(event, task):
+    cmd_args = {
+        "task_name": task["name"],
+        "repo_url": event["repository"]["url"],
+        "fetch_rev": get_fetch_rev(event),
+        "task_cmd": task["command"]
+    }
+
+    options = task.get("options", {})
+    options_args = []
+    if options.get("oom-killer"):
+        options_args.append("--oom-killer")
+    if options.get("xvfb"):
+        options_args.append("--xvfb")
+    if not options.get("hosts"):
+        options_args.append("--no-hosts")
+    if not options.get("hosts"):
+        options_args.append("--no-hosts")
+    if options.get("checkout"):
+        options_args.append("--checkout=%s" % options["checkout"])
+
+    cmd_args["options_str"] = "\n".join("  %s" % item for item in options_args)
+
+    return ["/bin/bash",
+            "--login",
+            "-c",
+            """
+~/start.sh
+  %(repo_url)s
+  %(fetch_rev)s;
+cd web-platform-tests;
+./tools/ci/run_tc.py
+  %(options_str)s
+  %(task_cmd)s;
+""" % cmd_args]
+
+
+def create_tc_task(event, task, required_task_ids):
+    command = build_full_command(event, task)
+    worker_type = ("wpt-docker-worker"
+                   if event["repository"]["full_name"] == 'web-platform-tests/wpt'
+                   else "github-worker")
+    task_id = taskcluster.slugId()
+    task_data = {
+        "taskGroupId": "", # TODO
+        "created": taskcluster.fromNowJSON(""),
+        "deadline": taskcluster.fromNowJSON(task["deadline"]),
+        "provisionerId": task["provisionerId"],
+        "workerType": worker_type,
+        "metadata": {
+            "name": task["name"],
+            "description": task.get("description", ""),
+            "owner": "%s@users.noreply.github.com" % event["sender"]["login"],
+            "source": event["repository"]["url"]
+        },
+        "payload": {
+            "artifacts": task.get("artifacts"),
+            "command": command,
+            "image": task.get("image"),
+            "maxRunTime": task.get("maxRunTime"),
+            "env": task.get("env", []),
+        },
+        "extras": {
+            "github_event": json.dumps(event)
+        }
+    }
+    if required_task_ids:
+        task_data["dependencies"] = required_task_ids
+        task_data["requires"] = "all-completed"
+    return task_id, task_data
+
+
+def build_task_graph(event, all_tasks, tasks):
     task_id_map = {}
 
     def add_task(task_name, task):
@@ -92,13 +166,16 @@ def build_task_graph(tasks, all_task):
         if "require" in task:
             for required_name in task["require"]:
                 if required_name not in task_id_map:
-                    required_id = add_task(required_name,
-                                           all_tasks.get(required_name))
-                    
+                    add_task(required_name,
+                             all_tasks[required_name])
+                required_ids.append(task_id_map[required_name][0])
+        task_id, task_data = create_tc_task(event, task, required_ids)
+        task_id_map[task_name] = (task_id, task_data)
 
-    for task_name in tasks:
-        add_task(task)
+    for task_name, task in iteritems(tasks):
+        add_task(task_name, task)
 
+    return task_id_map
 
 def run(venv, **kwargs):
     if "TASK_EVENT" in os.environ:
@@ -108,11 +185,11 @@ def run(venv, **kwargs):
 
     all_tasks = taskgraph.load_tasks_from_path(os.path.join(here, "tasks/test.yml"))
 
-    print(all_tasks)
+    print(json.dumps(all_tasks, indent=2))
 
     triggered_tasks = filter_triggers(event, all_tasks)
     scheduled_tasks = filter_schedule_if(triggered_tasks)
 
-    task_graph = build_task_graph(all_tasks, triggered_tasks)
+    task_id_map = build_task_graph(event, all_tasks, triggered_tasks)
 
-
+    print(json.dumps(task_id_map, indent=2))

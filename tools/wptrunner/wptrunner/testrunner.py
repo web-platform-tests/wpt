@@ -13,6 +13,17 @@ from mozlog import structuredlog, capture
 Stop = object()
 
 
+def release_mozlog_lock():
+    try:
+        from mozlog.structuredlog import StructuredLogger
+        try:
+            StructuredLogger._lock.release()
+        except threading.ThreadError:
+            pass
+    except ImportError:
+        pass
+
+
 class MessageLogger(object):
     def __init__(self, message_func):
         self.send_message = message_func
@@ -137,6 +148,10 @@ def start_runner(runner_command_queue, runner_result_queue,
     def handle_error(e):
         logger.critical(traceback.format_exc())
         stop_flag.set()
+
+    # Ensure that when we start this in a new process we have the global lock
+    # in the logging module unlocked
+    release_mozlog_lock()
 
     logger = MessageLogger(send_message)
 
@@ -458,7 +473,7 @@ class TestRunnerManager(threading.Thread):
     def init(self):
         assert isinstance(self.state, RunnerManagerState.initializing)
         if self.state.failure_count > self.max_restarts:
-            self.logger.error("Max restarts exceeded")
+            self.logger.critical("Max restarts exceeded")
             return RunnerManagerState.error()
 
         self.browser.update_settings(self.state.test)
@@ -561,7 +576,8 @@ class TestRunnerManager(threading.Thread):
             if test.disabled(result.name):
                 continue
             expected = test.expected(result.name)
-            is_unexpected = expected != result.status
+            known_intermittent = test.known_intermittent(result.name)
+            is_unexpected = expected != result.status and result.status not in known_intermittent
 
             if is_unexpected:
                 self.unexpected_count += 1
@@ -572,6 +588,7 @@ class TestRunnerManager(threading.Thread):
                                     result.status,
                                     message=result.message,
                                     expected=expected,
+                                    known_intermittent=known_intermittent,
                                     stack=result.stack)
 
         # We have a couple of status codes that are used internally, but not exposed to the
@@ -583,13 +600,14 @@ class TestRunnerManager(threading.Thread):
         status_subns = {"INTERNAL-ERROR": "ERROR",
                         "EXTERNAL-TIMEOUT": "TIMEOUT"}
         expected = test.expected()
+        known_intermittent = test.known_intermittent()
         status = status_subns.get(file_result.status, file_result.status)
 
         if self.browser.check_crash(test.id):
             status = "CRASH"
 
         self.test_count += 1
-        is_unexpected = expected != status
+        is_unexpected = expected != status and status not in known_intermittent
         if is_unexpected:
             self.unexpected_count += 1
             self.logger.debug("Unexpected count in this thread %i" % self.unexpected_count)
@@ -608,6 +626,7 @@ class TestRunnerManager(threading.Thread):
                              status,
                              message=file_result.message,
                              expected=expected,
+                             known_intermittent=known_intermittent,
                              extra=file_result.extra,
                              stack=file_result.stack)
 

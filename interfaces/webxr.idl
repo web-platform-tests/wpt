@@ -10,7 +10,7 @@ partial interface Navigator {
 [SecureContext, Exposed=Window] interface XR : EventTarget {
   // Methods
   Promise<void> supportsSession(XRSessionMode mode);
-  Promise<XRSession> requestSession(XRSessionMode mode);
+  [NewObject] Promise<XRSession> requestSession(XRSessionMode mode, optional XRSessionInit options = {});
 
   // Events
   attribute EventHandler ondevicechange;
@@ -18,14 +18,12 @@ partial interface Navigator {
 
 enum XRSessionMode {
   "inline",
-  "immersive-vr",
-  "immersive-ar"
+  "immersive-vr"
 };
 
-enum XREnvironmentBlendMode {
-  "opaque",
-  "additive",
-  "alpha-blend",
+dictionary XRSessionInit {
+  sequence<any> requiredFeatures;
+  sequence<any> optionalFeatures;
 };
 
 enum XRVisibilityState {
@@ -36,14 +34,13 @@ enum XRVisibilityState {
 
 [SecureContext, Exposed=Window] interface XRSession : EventTarget {
   // Attributes
-  readonly attribute XREnvironmentBlendMode environmentBlendMode;
   readonly attribute XRVisibilityState visibilityState;
   [SameObject] readonly attribute XRRenderState renderState;
   [SameObject] readonly attribute XRInputSourceArray inputSources;
 
   // Methods
-  void updateRenderState(optional XRRenderStateInit state);
-  Promise<XRReferenceSpace> requestReferenceSpace(XRReferenceSpaceType type);
+  void updateRenderState(optional XRRenderStateInit state = {});
+  [NewObject] Promise<XRReferenceSpace> requestReferenceSpace(XRReferenceSpaceType type);
 
   long requestAnimationFrame(XRFrameRequestCallback callback);
   void cancelAnimationFrame(long handle);
@@ -96,7 +93,7 @@ enum XRReferenceSpaceType {
 
 [SecureContext, Exposed=Window]
 interface XRReferenceSpace : XRSpace {
-  XRReferenceSpace getOffsetReferenceSpace(XRRigidTransform originOffset);
+  [NewObject] XRReferenceSpace getOffsetReferenceSpace(XRRigidTransform originOffset);
 
   attribute EventHandler onreset;
 };
@@ -114,7 +111,7 @@ enum XREye {
 
 [SecureContext, Exposed=Window] interface XRView {
   readonly attribute XREye eye;
-  [SameObject] readonly attribute Float32Array projectionMatrix;
+  readonly attribute Float32Array projectionMatrix;
   [SameObject] readonly attribute XRRigidTransform transform;
 };
 
@@ -126,21 +123,12 @@ enum XREye {
 };
 
 [SecureContext, Exposed=Window,
- Constructor(optional DOMPointInit position, optional DOMPointInit orientation)]
+ Constructor(optional DOMPointInit position = {}, optional DOMPointInit orientation = {})]
 interface XRRigidTransform {
   [SameObject] readonly attribute DOMPointReadOnly position;
   [SameObject] readonly attribute DOMPointReadOnly orientation;
   readonly attribute Float32Array matrix;
   [SameObject] readonly attribute XRRigidTransform inverse;
-};
-
-[SecureContext, Exposed=Window,
- Constructor(optional DOMPointInit origin, optional DOMPointInit direction),
- Constructor(XRRigidTransform transform)]
-interface XRRay {
-  [SameObject] readonly attribute DOMPointReadOnly origin;
-  [SameObject] readonly attribute DOMPointReadOnly direction;
-  readonly attribute Float32Array matrix;
 };
 
 [SecureContext, Exposed=Window] interface XRPose {
@@ -170,7 +158,6 @@ interface XRInputSource {
   readonly attribute XRTargetRayMode targetRayMode;
   [SameObject] readonly attribute XRSpace targetRaySpace;
   [SameObject] readonly attribute XRSpace? gripSpace;
-  [SameObject] readonly attribute Gamepad? gamepad;
   [SameObject] readonly attribute FrozenArray<DOMString> profiles;
 };
 
@@ -179,12 +166,6 @@ interface XRInputSourceArray {
   iterable<XRInputSource>;
   readonly attribute unsigned long length;
   getter XRInputSource(unsigned long index);
-};
-
-enum GamepadMappingType {
-  "",            // Defined in the Gamepad API
-  "standard",    // Defined in the Gamepad API
-  "xr-standard",
 };
 
 typedef (WebGLRenderingContext or
@@ -201,7 +182,7 @@ dictionary XRWebGLLayerInit {
 
 [SecureContext, Exposed=Window, Constructor(XRSession session,
              XRWebGLRenderingContext context,
-             optional XRWebGLLayerInit layerInit)]
+             optional XRWebGLLayerInit layerInit = {})]
 interface XRWebGLLayer {
   // Attributes
   readonly attribute boolean antialias;
@@ -239,13 +220,11 @@ dictionary XRSessionEventInit : EventInit {
 interface XRInputSourceEvent : Event {
   [SameObject] readonly attribute XRFrame frame;
   [SameObject] readonly attribute XRInputSource inputSource;
-  [SameObject] readonly attribute long? buttonIndex;
 };
 
 dictionary XRInputSourceEventInit : EventInit {
   required XRFrame frame;
   required XRInputSource inputSource;
-  long? buttonIndex = null;
 };
 
 [SecureContext, Exposed=Window, Constructor(DOMString type, XRInputSourcesChangeEventInit eventInitDict)]

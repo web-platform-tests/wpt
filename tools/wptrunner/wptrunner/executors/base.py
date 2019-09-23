@@ -2,6 +2,7 @@ import base64
 import hashlib
 from six.moves.http_client import HTTPConnection
 import io
+import json
 import os
 import threading
 import traceback
@@ -497,7 +498,7 @@ class WdspecRun(object):
 
 
 class ConnectionlessBaseProtocolPart(BaseProtocolPart):
-    def execute_script(self, script, async=False):
+    def execute_script(self, script, asynchronous=False):
         pass
 
     def set_timeout(self, timeout):
@@ -615,15 +616,16 @@ class CallbackHandler(object):
         except KeyError:
             raise ValueError("Unknown action %s" % action)
         try:
-            action_handler(payload)
+            result = action_handler(payload)
         except Exception:
             self.logger.warning("Action %s failed" % action)
             self.logger.warning(traceback.format_exc())
             self._send_message("complete", "error")
             raise
         else:
-            self.logger.debug("Action %s completed" % action)
-            self._send_message("complete", "success")
+            self.logger.debug("Action %s completed with result %s" % (action, result))
+            return_message = {"result": result}
+            self._send_message("complete", "success", json.dumps(return_message))
 
         return False, None
 
@@ -669,11 +671,11 @@ class ActionSequenceAction(object):
                 for action in actionSequence["actions"]:
                     if (action["type"] == "pointerMove" and
                         isinstance(action["origin"], dict)):
-                        action["origin"] = self.get_element(action["origin"]["selector"])
+                        action["origin"] = self.get_element(action["origin"]["selector"], action["frame"]["frame"])
         self.protocol.action_sequence.send_actions({"actions": actions})
 
-    def get_element(self, selector):
-        element = self.protocol.select.element_by_selector(selector)
+    def get_element(self, element_selector, frame):
+        element = self.protocol.select.element_by_selector(element_selector, frame)
         return element
 
 class GenerateTestReportAction(object):

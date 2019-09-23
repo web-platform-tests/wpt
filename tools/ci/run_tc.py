@@ -48,6 +48,9 @@ except ImportError:
     from urllib.request import urlopen
 
 
+QUEUE_BASE = "https://queue.taskcluster.net/v1/task"
+
+
 root = os.path.abspath(
     os.path.join(os.path.dirname(__file__),
                  os.pardir,
@@ -109,7 +112,7 @@ def get_parser():
 def start_userspace_oom_killer():
     # Start userspace OOM killer: https://github.com/rfjakob/earlyoom
     # It will report memory usage every minute and prefer to kill browsers.
-    start(["sudo", "earlyoom", "-p", "-r", "60" "--prefer=(chrome|firefox)", "--avoid=python"])
+    start(["sudo", "earlyoom", "-p", "-r", "60", "--prefer=(chrome|firefox)", "--avoid=python"])
 
 
 def make_hosts_file():
@@ -150,7 +153,7 @@ def start_xvfb():
 def get_extra_jobs(event):
     body = None
     jobs = set()
-    if "commits" in event:
+    if "commits" in event and event["commits"]:
         body = event["commits"][0]["message"]
     elif "pull_request" in event:
         body = event["pull_request"]["body"]
@@ -245,14 +248,29 @@ def setup_repository():
         run(["git", "fetch", "--quiet", "origin", "%s:%s" % (branch, branch)])
 
 
+def fetch_event_data():
+    try:
+        task_id = os.environ["TASK_ID"]
+    except KeyError:
+        print("WARNING: Missing TASK_ID environment variable")
+        # For example under local testing
+        return None
+
+    resp = urlopen("%s/%s" % (QUEUE_BASE, task_id))
+
+    task_data = json.load(resp)
+    event_data = task_data.get("extra", {}).get("github_event")
+    if event_data is not None:
+        return json.loads(event_data)
+
+
 def main():
     args = get_parser().parse_args()
-    try:
+
+    if "TASK_EVENT" in os.environ:
         event = json.loads(os.environ["TASK_EVENT"])
-    except KeyError:
-        print("WARNING: Missing TASK_EVENT environment variable")
-        # For example under local testing
-        event = {}
+    else:
+        event = fetch_event_data()
 
     if event:
         set_variables(event)

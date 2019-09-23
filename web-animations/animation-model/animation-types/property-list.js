@@ -190,7 +190,6 @@ const gCSSProperties = {
   'border-image-outset': {
     // https://drafts.csswg.org/css-backgrounds-3/#border-image-outset
     types: [
-      { type: 'discrete', options: [ [ '1 2 3 4', '5 6 7 8' ] ] }
     ]
   },
   'border-image-repeat': {
@@ -202,7 +201,6 @@ const gCSSProperties = {
   'border-image-slice': {
     // https://drafts.csswg.org/css-backgrounds-3/#border-image-slice
     types: [
-      { type: 'discrete', options: [ [ '1 2 3 4', '5 6 7 8' ] ] }
     ]
   },
   'border-image-source': {
@@ -216,7 +214,6 @@ const gCSSProperties = {
   'border-image-width': {
     // https://drafts.csswg.org/css-backgrounds-3/#border-image-width
     types: [
-      { type: 'discrete', options: [ [ '1 2 3 4', '5 6 7 8' ] ] }
     ]
   },
   'border-left-color': {
@@ -1305,7 +1302,7 @@ const gCSSProperties = {
   'text-emphasis-style': {
     // http://dev.w3.org/csswg/css-text-decor-3/#propdef-text-emphasis-style
     types: [
-      { type: 'discrete', options: [ [ 'filled circle', 'open dot' ] ] }
+      { type: 'discrete', options: [ [ 'circle', 'open dot' ] ] }
     ]
   },
   'text-indent': {

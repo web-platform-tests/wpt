@@ -40,12 +40,13 @@ partial interface ServiceWorkerGlobalScope {
   attribute EventHandler oncanmakepayment;
 };
 
-[Constructor(DOMString type, CanMakePaymentEventInit eventInitDict), Exposed=ServiceWorker]
+[Exposed=ServiceWorker]
 interface CanMakePaymentEvent : ExtendableEvent {
+  constructor(DOMString type, CanMakePaymentEventInit eventInitDict);
   readonly attribute USVString topOrigin;
   readonly attribute USVString paymentRequestOrigin;
   readonly attribute FrozenArray<PaymentMethodData> methodData;
-  void respondWith(Promise<boolean> canMakePaymentResponse);
+  void respondWith(Promise<boolean>canMakePaymentResponse);
 };
 
 dictionary CanMakePaymentEventInit : ExtendableEventInit {
@@ -65,8 +66,9 @@ dictionary PaymentMethodChangeResponse {
   object paymentMethodErrors;
 };
 
-[Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
+[Exposed=ServiceWorker]
 interface PaymentRequestEvent : ExtendableEvent {
+  constructor(DOMString type, PaymentRequestEventInit eventInitDict);
   readonly attribute USVString topOrigin;
   readonly attribute USVString paymentRequestOrigin;
   readonly attribute DOMString paymentRequestId;
@@ -77,7 +79,7 @@ interface PaymentRequestEvent : ExtendableEvent {
   readonly attribute boolean requestBillingAddress;
   Promise<WindowClient?> openWindow(USVString url);
   Promise<PaymentMethodChangeResponse?> changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
-  void respondWith(Promise<PaymentHandlerResponse> handlerResponsePromise);
+  void respondWith(Promise<PaymentHandlerResponse>handlerResponsePromise);
 };
 
 dictionary PaymentRequestEventInit : ExtendableEventInit {

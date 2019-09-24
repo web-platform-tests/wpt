@@ -62,8 +62,8 @@ function sensor_test(func, name, properties) {
 
 function verifySensorReading(pattern, values, timestamp, isNull) {
   function round(val) {
-    if (typeof(val) === "boolean") return val;
-    return Number.parseFloat(val).toPrecision(6);
+    const res = Number.parseFloat(val).toPrecision(6);
+    return res === "NaN" ? val : res;
   }
 
   if (isNull) {
@@ -93,8 +93,7 @@ function verifyGeoSensorReading(pattern, {latitude, longitude, altitude,
     accuracy, altitudeAccuracy, heading, speed], timestamp, isNull);
 }
 
-function verifyProSensorReading(pattern, {distance, max, near, timestamp},
-  isNull) {
+function verifyProximitySensorReading(pattern, {distance, max, near, timestamp}, isNull) {
   return verifySensorReading(pattern, [distance, max, near], timestamp, isNull);
 }
 

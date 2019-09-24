@@ -12,19 +12,21 @@
 
 'use strict';
 
+// near: 0 stands for false, 1 stands for true, which will be convert to boolean
+// in mock sensor
 const kReadings = {
     readings: [
-        [1.12345, 2.12345, true]
+        [1.12345, 2.12345, 1]
     ],
     expectedReadings: [
-        [1.12345, 2.12345, true]
+        [1.12345, 2.12345, 1]
     ]
 };
 
 runGenericSensorTests(
     'ProximitySensor',
     kReadings,
-    verifyProSensorReading,
+    verifyProximitySensorReading,
     ['proximity']);
 
 </script>

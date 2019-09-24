@@ -25,7 +25,7 @@ if MYPY:
     from typing import Any
     from typing import Callable
     from typing import List
-    from typing import Optional`
+    from typing import Optional
 
 here = os.path.dirname(__file__)
 

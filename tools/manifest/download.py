@@ -25,7 +25,7 @@ if MYPY:
     from typing import Any
     from typing import Callable
     from typing import List
-    from typing import Optional
+    from typing import Optional`
 
 here = os.path.dirname(__file__)
 
@@ -66,7 +66,7 @@ def score_name(name):
     # type: (str) -> Optional[int]
     """Score how much we like each filename, lower wins, None rejects"""
 
-    # Accept both ways of naming the manfest asset, even though
+    # Accept both ways of naming the manifest asset, even though
     # there's no longer a reason to include the commit sha.
     if name.startswith("MANIFEST-") or name.startswith("MANIFEST."):
         if zstandard and name.endswith("json.zst"):

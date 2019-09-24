@@ -109,6 +109,16 @@ def build_full_command(event, task):
 
     cmd_args["options_str"] = "\n".join("  %s" % item for item in options_args)
 
+    install_str = "";
+    install_packages = task.get("install")
+    if install_packages:
+        install_items = ["apt update -qqy"]
+        install_items.extend("apt install -qqy %s" % item
+                             for item in install_packages)
+        install_str = "\n".join("sudo %s;" % item for item in install_items)
+
+    cmd_args["install_cmd"] = install_str
+
     return ["/bin/bash",
             "--login",
             "-c",
@@ -116,6 +126,7 @@ def build_full_command(event, task):
 ~/start.sh
   %(repo_url)s
   %(fetch_rev)s;
+%(install_str)s
 cd web-platform-tests;
 ./tools/ci/run_tc.py
   %(options_str)s

@@ -218,3 +218,22 @@ tasks:
           - update_built
       command: "tools/ci/ci_built_diff.sh"
 
+  - tools/unittests (Python 2):
+      description: >-
+        Unit tests for tools running under Python 2.7, excluding wptrunner
+      command: tools/ci/ci_tools_unittest.sh
+      env:
+        - TOXENV=py27;
+        - HYPOTHESIS_PROFILE=ci;
+        - PY_COLORS=0;
+
+  - tools/unittests (Python 3):
+      description: >-
+        Unit tests for tools running under Python 3, excluding wptrunner
+      command: tools/ci/ci_tools_unittest.sh
+      env:
+        - TOXENV=py36;
+        - HYPOTHESIS_PROFILE=ci;
+        - PY_COLORS=0;
+      install:
+        - python3-pip

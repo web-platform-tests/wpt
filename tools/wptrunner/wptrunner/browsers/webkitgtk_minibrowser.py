@@ -36,8 +36,6 @@ def capabilities(server_config, **kwargs):
 
     return {
         "browserName": "MiniBrowser",
-        "browserVersion": "2.20",
-        "platformName": "ANY",
         "webkitgtk:browserOptions": {
             "binary": kwargs["binary"],
             "args": args,

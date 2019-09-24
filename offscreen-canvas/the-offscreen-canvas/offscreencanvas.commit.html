@@ -14,19 +14,20 @@ function verifyPlaceholder(placeholder, expectedR, expectedG, expectedB, expecte
     _assertPixel(canvas, 5,5, expectedR, expectedG, expectedB, expectedA, "5,5", expectedClrStr);
 }
 
-test(function() {
+async_test(function(t) {
     var placeholder = document.createElement('canvas');
     placeholder.width = placeholder.height = 10;
     var offscreenCanvas = placeholder.transferControlToOffscreen();
     var ctx = offscreenCanvas.getContext('2d');
     ctx.fillStyle = "#0f0";
     ctx.fillRect(0, 0, 10, 10);
-    // commit() propagation is taken care of by an async task, which means the
     // place holder contents should still be transparent black at this moment.
     verifyPlaceholder(placeholder, 0,0,0,0, "0,0,0,0");
-    // Set timeout acts as a sync barrier to allow commit to propagate
-    setTimeout(function() {
+    ctx.commit();
+    t.step_timeout(function() {
+        // after commiting, an async task should have updated the placeholder's contents.
         verifyPlaceholder(placeholder, 0,255,0,255, "0,255,0,255");
+        t.done();
     }, 0);
 }, "Test that calling OffscreenCanvas's commit pushes its contents to its placeholder.");
 

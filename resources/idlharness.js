@@ -3301,6 +3301,11 @@ function idl_test(srcs, deps, idl_setup_func) {
         srcs = (srcs instanceof Array) ? srcs : [srcs] || [];
         deps = (deps instanceof Array) ? deps : [deps] || [];
         var setup_error = null;
+        const validationIgnored = [
+            "constructor-member",
+            "dict-arg-default",
+            "require-exposed"
+        ];
         return Promise.all(
             srcs.concat(deps).map(fetch_spec))
             .then(function(results) {
@@ -3308,7 +3313,8 @@ function idl_test(srcs, deps, idl_setup_func) {
                     WebIDL2.parse(result.idl, { sourceName: result.spec })
                 );
                 test(() => {
-                    const validations = WebIDL2.validate(astArray);
+                    const validations = WebIDL2.validate(astArray)
+                        .filter(v => !validationIgnored.includes(v.ruleName));
                     if (validations.length) {
                         const message = validations.map(v => v.message).join("\n\n");
                         throw new Error(message);

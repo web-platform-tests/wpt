@@ -98,8 +98,9 @@ def get_pr(owner, repo, sha):
     if len(items) == 0:
         logger.error("No PR found for %s" % sha)
         return None
-    if len(items) > 1:
-        logger.warning("Found multiple PRs for %s" % sha)
+    if len(items) != 1:
+        logger.error("Found multiple PRs for %s" % sha)
+        return None
 
     pr = items[0]
 

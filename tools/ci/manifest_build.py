@@ -140,9 +140,8 @@ def create_release(manifest_path, owner, repo, sha, tag, summary, body):
 
     upload_exts = [".gz", ".bz2", ".zst"]
     for upload_ext in upload_exts:
-        upload_filename = "MANIFEST-%s.json%s" % (sha, upload_ext)
-        params = {"name": upload_filename,
-                  "label": "MANIFEST.json%s" % upload_ext}
+        upload_name = "MANIFEST.json%s" % upload_ext
+        params = {"name": upload_name}
 
         with open("%s%s" % (manifest_path, upload_ext), "rb") as f:
             upload_data = f.read()

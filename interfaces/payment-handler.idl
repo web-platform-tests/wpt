@@ -46,7 +46,7 @@ interface CanMakePaymentEvent : ExtendableEvent {
   readonly attribute USVString topOrigin;
   readonly attribute USVString paymentRequestOrigin;
   readonly attribute FrozenArray<PaymentMethodData> methodData;
-  void respondWith(Promise<boolean>canMakePaymentResponse);
+  void respondWith(Promise<boolean> canMakePaymentResponse);
 };
 
 dictionary CanMakePaymentEventInit : ExtendableEventInit {
@@ -79,7 +79,7 @@ interface PaymentRequestEvent : ExtendableEvent {
   readonly attribute boolean requestBillingAddress;
   Promise<WindowClient?> openWindow(USVString url);
   Promise<PaymentMethodChangeResponse?> changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
-  void respondWith(Promise<PaymentHandlerResponse>handlerResponsePromise);
+  void respondWith(Promise<PaymentHandlerResponse> handlerResponsePromise);
 };
 
 dictionary PaymentRequestEventInit : ExtendableEventInit {

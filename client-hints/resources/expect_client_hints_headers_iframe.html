@@ -1,0 +1,20 @@
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+// This test checks if browser attaches the device-memory client hint in the
+// HTTP request headers.
+// echo_client_hints_received.py sets the response headers depending on the set
+// of client hints it receives in the request headers.
+fetch("../echo_client_hints_received.py").then(r => {
+  if(r.ok && r.headers.has("device-memory-received")) {
+    window.parent.postMessage('PASS', '*');
+  }
+  else {
+    window.parent.postMessage('FAIL', '*');
+  }
+});
+</script>
+</body>
+</html>

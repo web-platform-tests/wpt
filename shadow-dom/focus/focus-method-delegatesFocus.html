@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: focus on shadow host with delegatesFocus</title>
+<title>HTML Test: focus() on shadow host with delegatesFocus</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/shadow-utils.js"></script>
 
 <body>
 <div id="host">
@@ -48,32 +49,23 @@ const elementsInFlatTreeOrder = [host, aboveSlots, firstSlot,
 //      <div #belowSlots>
 // <div #outside>
 
-function setTabIndex(elements, value) {
-  for (const el of elements) {
-    el.tabIndex = value;
-  }
-}
 
 function setAllTabIndex(value) {
   setTabIndex(elementsInFlatTreeOrder, value);
 }
 
 function removeAllTabIndex() {
-  for (const el of elementsInFlatTreeOrder) {
-    el.removeAttribute("tabindex");
-  }
+  removeTabIndex(elementsInFlatTreeOrder);
 }
 
-function resetFocus() {
+function resetTabIndexAndFocus() {
   removeAllTabIndex();
-  if (shadowRoot.activeElement)
-    shadowRoot.activeElement.blur();
-  if (document.activeElement)
-    document.activeElement.blur();
+  resetFocus(document);
+  resetFocus(shadowRoot);
 }
 
 test(() => {
-  resetFocus();
+  resetTabIndexAndFocus();
   setAllTabIndex(0);
   // Structure:
   // <div #host> (delegatesFocus=true) tabindex=0
@@ -85,65 +77,62 @@ test(() => {
   //        (slotted) <div #slottedToSecondSlot> tabindex=0
   //      <div #belowSlots> tabindex=0
   // <div #outside> tabindex=0
-  // flattened tabindex-ordered focus navigation scope of #host:
-  // [aboveSlots, slottedToFirstSlot, slottedToSecondSlot, belowSlots]
+  // First focusable = #aboveSlots
   host.focus();
   assert_equals(shadowRoot.activeElement, aboveSlots);
   assert_equals(document.activeElement, host);
 }, "focus() on host with delegatesFocus, all tabindex=0");
 
 test(() => {
-  resetFocus();
+  resetTabIndexAndFocus();
   setAllTabIndex(0);
   setTabIndex([host], -1);
-  // flattened tabindex-ordered focus navigation scope of #host:
-  // [aboveSlots, slottedToFirstSlot, slottedToSecondSlot, belowSlots]
+  // First focusable = #aboveSlots
   host.focus();
   assert_equals(shadowRoot.activeElement, aboveSlots);
   assert_equals(document.activeElement, host);
 }, "focus() on host with delegatesFocus & tabindex =-1, all other tabindex=0");
 
 test(() => {
-  resetFocus();
+  resetTabIndexAndFocus();
   setTabIndex([aboveSlots, slottedToFirstSlot, slottedToSecondSlot, belowSlots], 0);
-  // flattened tabindex-ordered focus navigation scope of #host:
-  // [aboveSlots, slottedToFirstSlot, slottedToSecondSlot, belowSlots]
+  // First focusable = #aboveSlots
   host.focus();
   assert_equals(shadowRoot.activeElement, aboveSlots);
   assert_equals(document.activeElement, host);
 }, "focus() on host with delegatesFocus & no tabindex, all other tabindex=0");
 
 test(() => {
-  resetFocus();
+  resetTabIndexAndFocus();
   setAllTabIndex(-1);
   setTabIndex([host], 0);
-  // flattened tabindex-ordered focus navigation scope of #host: []
+  // First focusable = #aboveSlots
   host.focus();
-  assert_equals(shadowRoot.activeElement, null);
-  assert_equals(document.activeElement, null);
+  assert_equals(shadowRoot.activeElement, aboveSlots);
+  assert_equals(document.activeElement, host);
 }, "focus() on host with delegatesFocus & tabindex = 0, all other tabindex=-1");
 
 test(() => {
-  resetFocus();
+  resetTabIndexAndFocus();
   removeAllTabIndex();
-  // flattened tabindex-ordered focus navigation scope of #host: []
+  // No focusable element under #host in the flat tree.
   host.focus();
   assert_equals(shadowRoot.activeElement, null);
   assert_equals(document.activeElement, null);
 }, "focus() on host with delegatesFocus, all without tabindex");
 
 test(() => {
-  resetFocus();
-  // flattened tabindex-ordered focus navigation scope of #host: []
+  resetTabIndexAndFocus();
+  // First focusable = #aboveSlots
   setAllTabIndex(-1);
   host.focus();
-  assert_equals(shadowRoot.activeElement, null);
-  assert_equals(document.activeElement, null);
+  assert_equals(shadowRoot.activeElement, aboveSlots);
+  assert_equals(document.activeElement, host);
 }, "focus() on host with delegatesFocus, all tabindex=-1");
 
 test(() => {
-  resetFocus();
-  setAllTabIndex(-1);
+  resetTabIndexAndFocus();
+  removeAllTabIndex();
   setTabIndex([host, belowSlots], 0);
   // Structure:
   // <div #host> (delegatesFocus=true) tabindex=0
@@ -155,16 +144,15 @@ test(() => {
   //        (slotted) <div #slottedToSecondSlot>
   //      <div #belowSlots> tabindex=0
   // <div #outside>
-  // flattened tabindex-ordered focus navigation scope of #host:
-  // [belowSlots]
+  // First focusable = #belowSlots
   host.focus();
   assert_equals(shadowRoot.activeElement, belowSlots);
   assert_equals(document.activeElement, host);
 }, "focus() on host with delegatesFocus & tabindex=0, #belowSlots with tabindex=0");
 
 test(() => {
-  resetFocus();
-  setAllTabIndex(-1);
+  resetTabIndexAndFocus();
+  removeAllTabIndex();
   setTabIndex([host, outside], 0);
   // Structure:
   // <div #host> (delegatesFocus=true) tabindex=0
@@ -176,15 +164,14 @@ test(() => {
   //        (slotted) <div #slottedToSecondSlot>
   //      <div #belowSlots>
   // <div #outside> tabindex=0
-  // flattened tabindex-ordered focus navigation scope of #host:
-  // []
+  // No focusable element under #host in the flat tree.
   host.focus();
   assert_equals(shadowRoot.activeElement, null);
   assert_equals(document.activeElement, null);
 }, "focus() on host with delegatesFocus & tabindex=0, #outside with tabindex=0");
 
 test(() => {
-  resetFocus();
+  resetTabIndexAndFocus();
   setTabIndex([host, aboveSlots, belowSlots], 0);
   // Structure:
   // <div #host> (delegatesFocus=true) tabindex=0
@@ -196,94 +183,30 @@ test(() => {
   //        (slotted) <div #slottedToSecondSlot>
   //      <div #belowSlots> tabindex=0
   // <div #outside>
-  // flattened tabindex-ordered focus navigation scope of #host:
-  // [aboveSlots, belowSlots]
+  // First focusable = #aboveSlots
   host.focus();
   assert_equals(shadowRoot.activeElement, aboveSlots);
   assert_equals(document.activeElement, host);
 }, "focus() on host with delegatesFocus & tabindex=0, #aboveSlots and #belowSlots with tabindex=0");
 
 test(() => {
-  resetFocus();
-  setAllTabIndex(-1);
-  setTabIndex([host, aboveSlots], 0);
-  setTabIndex([belowSlots], 1);
-  // Structure:
-  // <div #host> (delegatesFocus=true) tabindex=0
-  //    #shadowRoot
-  //      <div #aboveSlots> tabindex=0
-  //      <slot #firstSlot>
-  //        (slotted) <div #slottedToFirstSlot>
-  //      <slot #secondSlot>
-  //        (slotted) <div #slottedToSecondSlot>
-  //      <div #belowSlots> tabindex=1
-  // <div #outside>
-  // flattened tabindex-ordered focus navigation scope of #host:
-  // [belowSlots, aboveSlots]
-  host.focus();
-  assert_equals(shadowRoot.activeElement, belowSlots);
-  assert_equals(document.activeElement, host);
-}, "focus() on host with delegatesFocus & tabindex=0, #aboveSlots with tabindex=0, #belowSlots with tabindex=1");
-
-test(() => {
-  resetFocus();
-  setTabIndex([host, firstSlot, slottedToFirstSlot, secondSlot, slottedToSecondSlot], 0);
+  resetTabIndexAndFocus();
+  setTabIndex([host, slottedToFirstSlot, slottedToSecondSlot, belowSlots], 0);
   // Structure:
   // <div #host> (delegatesFocus=true) tabindex=0
   //    #shadowRoot
   //      <div #aboveSlots>
-  //      <slot #firstSlot> tabindex=0
-  //        (slotted) <div #slottedToFirstSlot> tabindex=0
-  //      <slot #secondSlot> tabindex=0
-  //        (slotted) <div #slottedToSecondSlot> tabindex=0
-  //      <div #belowSlots>
-  // <div #outside>
-  // flattened tabindex-ordered focus navigation scope of #host:
-  // [slottedToFirstSlot, slottedToSecondSlot]
-  host.focus();
-  assert_equals(shadowRoot.activeElement, null);
-  assert_equals(document.activeElement, slottedToFirstSlot);
-}, "focus() on host with delegatesFocus & tabindex=0, #firstSlot, #slottedToFirstSlot, #secondSlot, #slottedToSecondSlot with tabindex=0");
-
-test(() => {
-  resetFocus();
-  setTabIndex([firstSlot], 1);
-  setTabIndex([host, aboveSlots, slottedToFirstSlot], 0);
-  // Structure:
-  // <div #host> (delegatesFocus=true) tabindex=0
-  //    #shadowRoot
-  //      <div #aboveSlots> tabindex=0
-  //      <slot #firstSlot> tabindex=1
-  //        (slotted) <div #slottedToFirstSlot> tabindex=0
-  //      <slot #secondSlot>
-  //        (slotted) <div #slottedToSecondSlot>
-  //      <div #belowSlots>
-  // <div #outside>
-  // flattened tabindex-ordered focus navigation scope of #host:
-  // [slottedToFirstSlot, aboveSlots]
-  host.focus();
-  assert_equals(shadowRoot.activeElement, null);
-  assert_equals(document.activeElement, slottedToFirstSlot);
-}, "focus() on host with delegatesFocus & tabindex=0, #firstSlot with tabindex=1, #slottedToFirstSlot and #aboveSlots with tabindex=0");
-
-test(() => {
-  resetFocus();
-  setTabIndex([slottedToFirstSlot], 1);
-  setTabIndex([host, aboveSlots], 0);
-  // Structure:
-  // <div #host> (delegatesFocus=true) tabindex=0
-  //    #shadowRoot
-  //      <div #aboveSlots> tabindex=0
   //      <slot #firstSlot>
-  //        (slotted) <div #slottedToFirstSlot> tabindex=1
+  //        (slotted) <div #slottedToFirstSlot> tabindex=0
   //      <slot #secondSlot>
-  //        (slotted) <div #slottedToSecondSlot>
-  //      <div #belowSlots>
+  //        (slotted) <div #slottedToSecondSlot> tabindex=0
+  //      <div #belowSlots> tabindex=0
   // <div #outside>
-  // flattened tabindex-ordered focus navigation scope of #host:
-  // [aboveSlots, slottedToFirstSlot]
+  // First focusable = #slottedToFirstSlot
   host.focus();
-  assert_equals(shadowRoot.activeElement, aboveSlots);
-  assert_equals(document.activeElement, host);
-}, "focus() on host with delegatesFocus & tabindex=0, #slottedTofirstSlot with tabindex=1, #aboveSlots with tabindex=0");
+  assert_equals(shadowRoot.activeElement, null);
+  assert_equals(document.activeElement, slottedToFirstSlot);
+}, "focus() on host with delegatesFocus & tabindex=0, #slottedToFirstSlot, #slottedToSecondSlot, #belowSlots  with tabindex=0");
+
 </script>
+

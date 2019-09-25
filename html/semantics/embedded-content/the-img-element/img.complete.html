@@ -194,8 +194,6 @@
     img.onload = t.step_func_done(function() {
       assert_true(img.complete);
       img.src = `3.jpg?nocache=${Math.random()}`;
-      // This is not strictly per spec, but that's a spec bug.  See
-      // https://github.com/whatwg/html/issues/4884
       assert_false(img.complete, "Should not be complete because we have started a new load");
     });
   }, "async pending request test");

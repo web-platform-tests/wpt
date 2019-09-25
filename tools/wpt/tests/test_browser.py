@@ -86,7 +86,7 @@ def test_webkitgtk_minibrowser_find_binary(mocked_os_path_isfile):
         assert webkitgtk_minibrowser.find_binary() == debian_minibrowser_path_amd64
 
     # Found on the default Debian path for ARM64 (gcc available)
-    debian_minibrowser_path_arm64 ='/usr/lib/aarch64-linux-gnu/webkit2gtk-4.0/MiniBrowser'
+    debian_minibrowser_path_arm64 = '/usr/lib/aarch64-linux-gnu/webkit2gtk-4.0/MiniBrowser'
     mocked_os_path_isfile.side_effect = lambda path: path in [debian_minibrowser_path_arm64, '/usr/bin/gcc']
     with mock.patch('subprocess.check_output', return_value = 'aarch64-linux-gnu'):
         assert webkitgtk_minibrowser.find_binary() == debian_minibrowser_path_arm64

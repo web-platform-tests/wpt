@@ -16,13 +16,12 @@ function load_iframe(iframe, src) {
   });
 }
 
-promise_test(t => {
+promise_test(async t => {
   let iframe = document.getElementById('blank');
-  let path = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
-  let src = 'https://{{domains[www1]}}:{{ports[https][0]}}' + path + 'support-iframe.html';
-  return load_iframe(iframe, src)
-    .then(iframe => promise_rejects(t, 'SecurityError',
-                                    iframe.contentWindow.navigator.getBattery()));
-}, "throw a 'SecurityError' when invoking navigator.getBattery() within cross-origin iframe");
+  const path = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
+  const src = 'https://{{domains[www1]}}:{{ports[https][0]}}' + path + 'support-iframe.html';
+  iframe = await load_iframe(iframe, src);
+  await promise_rejects(t, 'NotAllowedError', iframe.contentWindow.navigator.getBattery());
+}, "throw a 'NotAllowedError' when invoking navigator.getBattery() within cross-origin iframe");
 
 </script>

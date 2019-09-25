@@ -16,11 +16,11 @@ function load_iframe(iframe, src) {
   });
 }
 
-promise_test(t => {
+promise_test(async t => {
   let iframe = document.getElementById('blank');
-  let src = 'support-iframe.html';
-  return load_iframe(iframe, src)
-    .then(iframe => iframe.contentWindow.navigator.getBattery()));
+  const src = 'support-iframe.html';
+  iframe = await load_iframe(iframe, src);
+  await iframe.contentWindow.navigator.getBattery();
 }, "navigator.getBattery() is allowed in same origin iframe");
 
 </script>

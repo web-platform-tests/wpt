@@ -1,0 +1,52 @@
+<!doctype html>
+<title>&lt;embed&gt; width and height attributes are used to infer aspect-ratio</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  embed {
+    width: 100%;
+    max-width: 100px;
+    height: auto;
+  }
+</style>
+<embed src="/images/green.png"></embed>
+<embed src="/images/green.png" width=100 height=125></embed>
+<script>
+let t = async_test("Embed width and height attributes are used to infer aspect-ratio");
+function assert_ratio(obj, expected) {
+  let epsilon = 0.001;
+  assert_approx_equals(parseInt(getComputedStyle(obj).width, 10) / parseInt(getComputedStyle(obj).height, 10), expected, epsilon);
+}
+// Create and append a new object and immediately check the ratio.
+// This is not racy because the spec requires the user agent to queue a task.
+t.step(function() {
+  var embed = document.createElement("embed");
+  embed.width = 250;
+  embed.height = 100;
+  embed.src = "/images/blue.png";
+  document.body.appendChild(embed);
+  assert_ratio(embed, 2.5);
+
+  embed = document.createElement("embed");
+  embed.setAttribute("width", "0.8");
+  embed.setAttribute("height", "0.2");
+  embed.src = "/images/blue.png";
+  document.body.appendChild(embed);
+  assert_ratio(embed, 4);
+
+  embed = document.createElement("embed");
+  embed.setAttribute("width", "50%");
+  embed.setAttribute("height", "25%");
+  embed.src = "/images/blue.png";
+  document.body.appendChild(embed);
+  // Percentages should be ignored.
+  assert_equals(getComputedStyle(embed).height, "0px");
+});
+
+onload = t.step_func_done(function() {
+  let embeds = document.querySelectorAll("embed");
+  assert_ratio(embeds[2], 1.266); // 1.266 is the original aspect ratio of blue.png
+  assert_ratio(embeds[1], 2.0); // 2.0 is the original aspect ratio of green.png
+  assert_ratio(embeds[0], 2.0); // Loaded object's aspect ratio, at least by default, overrides width / height ratio.
+});
+</script>

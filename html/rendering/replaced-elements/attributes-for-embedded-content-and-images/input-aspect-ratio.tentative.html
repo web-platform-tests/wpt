@@ -1,0 +1,55 @@
+<!doctype html>
+<title>&lt;input type=image&gt; width and height attributes are used to infer aspect-ratio</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  input {
+    width: 100%;
+    max-width: 100px;
+    height: auto;
+  }
+</style>
+<input type="image" src="/images/green.png">
+<input type="image" src="/images/green.png" width=100 height=125>
+<script>
+let t = async_test("Input type=image width and height attributes are used to infer aspect-ratio");
+function assert_ratio(obj, expected) {
+  let epsilon = 0.001;
+  assert_approx_equals(parseInt(getComputedStyle(obj).width, 10) / parseInt(getComputedStyle(obj).height, 10), expected, epsilon);
+}
+// Create and append a new object and immediately check the ratio.
+// This is not racy because the spec requires the user agent to queue a task.
+t.step(function() {
+  var input = document.createElement("input");
+  input.width = 250;
+  input.height = 100;
+  input.type = "image";
+  input.src = "/images/blue.png";
+  document.body.appendChild(input);
+  assert_ratio(input, 2.5);
+
+  input = document.createElement("input");
+  input.setAttribute("width", "0.8");
+  input.setAttribute("height", "0.2");
+  input.type = "image";
+  input.src = "/images/blue.png";
+  document.body.appendChild(input);
+  assert_ratio(input, 4);
+
+  input = document.createElement("input");
+  input.setAttribute("width", "50%");
+  input.setAttribute("height", "25%");
+  input.type = "image";
+  input.src = "/images/blue.png";
+  document.body.appendChild(input);
+  // Percentages should be ignored.
+  assert_equals(getComputedStyle(input).height, "0px");
+});
+
+onload = t.step_func_done(function() {
+  let inputs = document.querySelectorAll("input");
+  assert_ratio(inputs[2], 1.266); // 1.266 is the original aspect ratio of blue.png
+  assert_ratio(inputs[1], 2.0); // 2.0 is the original aspect ratio of green.png
+  assert_ratio(inputs[0], 2.0); // Loaded object's aspect ratio, at least by default, overrides width / height ratio.
+});
+</script>

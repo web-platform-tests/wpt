@@ -40,7 +40,7 @@ t.step(function() {
   img.setAttribute("height", "25%");
   img.src = "/images/blue.png";
   document.body.appendChild(img);
-  // Percentages should be  ignored.
+  // Percentages should be ignored.
   assert_equals(getComputedStyle(img).height, "0px");
 });
 

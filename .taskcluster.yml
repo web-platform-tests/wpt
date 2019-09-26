@@ -269,7 +269,7 @@ tasks:
               --oom-killer \
               --browser=firefox \
               --browser=chrome \
-              --channel=experimental \
+              --channel=beta \
               --xvfb \
               wpt_integration \
               tools/ci/ci_wpt.sh
@@ -298,7 +298,7 @@ tasks:
               --oom-killer \
               --browser=firefox \
               --browser=chrome \
-              --channel=experimental \
+              --channel=beta \
               --no-hosts \
               --xvfb \
               wptrunner_infrastructure \

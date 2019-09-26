@@ -61,6 +61,8 @@ function sensor_test(func, name, properties) {
 }
 
 function verifySensorReading(pattern, values, timestamp, isNull) {
+  // If |val| cannot be converted to a float, we return the original value.
+  // This can happen when a value in |pattern| is not a number.
   function round(val) {
     const res = Number.parseFloat(val).toPrecision(6);
     return res === "NaN" ? val : res;

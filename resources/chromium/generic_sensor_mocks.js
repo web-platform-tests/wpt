@@ -151,7 +151,7 @@ var GenericSensorTest = (() => {
             device.mojom.SensorType.RELATIVE_ORIENTATION_QUATERNION],
         ['RelativeOrientationEulerAngles',
             device.mojom.SensorType.RELATIVE_ORIENTATION_EULER_ANGLES],
-        ['proximity', device.mojom.SensorType.PROXIMITY]
+        ['ProximitySensor', device.mojom.SensorType.PROXIMITY]
       ]);
       this.binding_ = new mojo.Binding(device.mojom.SensorProvider, this);
 

@@ -28,7 +28,7 @@ promise_test(() => {
   resetFocus();
   // Focus should move in flat tree order since every one of them has tabindex ==0,
   // but doesn't include slots and #host.
-  return assertFocusOrder(elementsInFlatTreeOrder.filter(el => (el !== slotAbove && el !== slotBelow && el !== host)));
+  return assertFocusOrder([aboveHost, aboveSlot, slottedAbove, slottedBelow, belowSlot, belowHost]);
 }, "Order when all tabindex=0 is and delegatesFocus = true");
 </script>
 </body>

@@ -5,6 +5,7 @@ import pytest
 from tests.support.asserts import assert_dialog_handled, assert_error, assert_png, assert_success
 from tests.support.inline import inline
 
+
 def take_screenshot(session):
     return session.transport.send(
         "GET", "session/{session_id}/screenshot".format(**vars(session)))

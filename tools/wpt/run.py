@@ -347,6 +347,8 @@ class Chrome(BrowserSetup):
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
             # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
             kwargs["webdriver_args"].append("--disable-build-check")
+            # To investigate https://github.com/web-platform-tests/wpt/issues/19297
+            kwargs["webdriver_args"].append("--verbose")
 
 
 class ChromeAndroid(BrowserSetup):

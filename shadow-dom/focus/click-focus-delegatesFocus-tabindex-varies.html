@@ -22,14 +22,21 @@ const shadowRoot = host.attachShadow({ mode: "open", delegatesFocus: true });
 const aboveSlot = document.createElement("div");
 aboveSlot.innerText = "aboveSlot";
 const slot = document.createElement("slot");
+// Add an unfocusable spacer, because test_driver.click will click on the
+// center point of #host, and we don't want the click to land on #aboveSlot
+// or #slot.
+const spacer = document.createElement("div");
+spacer.style = "height: 1000px;";
+shadowRoot.appendChild(spacer);
 shadowRoot.appendChild(aboveSlot);
 shadowRoot.appendChild(slot);
 
-const elementsInFlatTreeOrder = [host, aboveSlot, slot, slotted, outside];
+const elementsInFlatTreeOrder = [host, aboveSlot, spacer, slot, slotted, outside];
 
 // Final structure:
 // <div #host> (delegatesFocus=true)
 //    #shadowRoot
+//      <div #spacer>
 //      <div #aboveSlot>
 //      <slot #slot>
 //        (slotted) <div #slotted>
@@ -49,35 +56,14 @@ function resetTabIndexAndFocus() {
   resetFocus(shadowRoot);
 }
 
-test(() => {
+async_test(async (t) => {
   resetTabIndexAndFocus();
-  setAllTabIndex(0);
-  test_driver.click(host);
-  assert_equals(shadowRoot.activeElement, null);
-  assert_equals(document.activeElement, document.body);
-}, "click on host with delegatesFocus, all tabindex=0");
+  setTabIndex([aboveSlot], 2);
+  setTabIndex([slot, slotted], 1);
+  await test_driver.click(host);
+  t.step(() => { assert_equals(shadowRoot.activeElement, null); });
+  t.step(() => { assert_equals(document.activeElement, aboveSlot); });
+  t.done();
+}, "click on host with delegatesFocus, #aboveSlot tabindex = 2, #slot and #slotted tabindex = 1");
 
-test(() => {
-  resetTabIndexAndFocus();
-  setAllTabIndex(0);
-  host.click();
-  assert_equals(shadowRoot.activeElement, null);
-  assert_equals(document.activeElement, document.body);
-}, "call click() on host with delegatesFocus, all tabindex=0");
-
-test(() => {
-  resetTabIndexAndFocus();
-  setAllTabIndex(0);
-  test_driver.click(slotted);
-  assert_equals(shadowRoot.activeElement, null);
-  assert_equals(document.activeElement, document.body);
-}, "click on slotted element in delegatesFocus shadow tree, all tabindex=0");
-
-test(() => {
-  resetTabIndexAndFocus();
-  setAllTabIndex(0);
-  slotted.click();
-  assert_equals(shadowRoot.activeElement, null);
-  assert_equals(document.activeElement, document.body);
-}, "call click() on slotted element in delegatesFocus shadow tree, all tabindex=0");
 </script>

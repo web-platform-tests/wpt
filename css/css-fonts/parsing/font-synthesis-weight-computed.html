@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Fonts Module Level 4: getComputedStyle().fontSynthesisWeight</title>
+<link rel="help" href="https://www.w3.org/TR/css-fonts-4/#propdef-font-synthesis-weight">
+<meta name="assert" content="font-synthesis-weight computed value is as specified.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+</head>
+<body>
+<div id="target"></div>
+<script>
+test_computed_value('font-synthesis-weight', 'auto');
+test_computed_value('font-synthesis-weight', 'none');
+</script>
+</body>
+</html>

@@ -56,14 +56,13 @@ function resetTabIndexAndFocus() {
   resetFocus(shadowRoot);
 }
 
-async_test(async (t) => {
+promise_test(async () => {
   resetTabIndexAndFocus();
   setTabIndex([aboveSlot], 2);
   setTabIndex([slot, slotted], 1);
   await test_driver.click(host);
-  t.step(() => { assert_equals(shadowRoot.activeElement, null); });
-  t.step(() => { assert_equals(document.activeElement, aboveSlot); });
-  t.done();
+  assert_equals(shadowRoot.activeElement, null);
+  assert_equals(document.activeElement, aboveSlot);
 }, "click on host with delegatesFocus, #aboveSlot tabindex = 2, #slot and #slotted tabindex = 1");
 
 </script>

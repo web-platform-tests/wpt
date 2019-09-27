@@ -56,14 +56,13 @@ function resetTabIndexAndFocus() {
   resetFocus(shadowRoot);
 }
 
-async_test(async (t) => {
+promise_test(async () => {
   resetTabIndexAndFocus();
   setAllTabIndex(0);
   removeTabIndex([spacer]);
   await test_driver.click(host);
-  t.step(() => { assert_equals(shadowRoot.activeElement, aboveSlot); });
-  t.step(() => { assert_equals(document.activeElement, host); });
-  t.done();
+  assert_equals(shadowRoot.activeElement, aboveSlot);
+  assert_equals(document.activeElement, host);
 }, "click on host with delegatesFocus, all tabindex=0 except spacer");
 
 </script>

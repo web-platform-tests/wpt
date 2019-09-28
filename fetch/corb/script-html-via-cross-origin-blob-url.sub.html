@@ -14,7 +14,7 @@ async_test(function(t) {
     });
     var subframe = document.createElement("iframe")
     // www1 is cross-origin, to ensure that the received blob will be cross-origin.
-    subframe.src = 'http://{{domains[www1]}}:{{ports[http][0]}}/fetch/corb/resources/subframe-that-posts-html-containing-blob-url-to-parent.html';
+    subframe.src = 'http://{{hosts[alt][]}}:{{ports[http][0]}}/fetch/corb/resources/subframe-that-posts-html-containing-blob-url-to-parent.html';
     document.body.appendChild(subframe);
   }
 

@@ -8,7 +8,7 @@ if (this.document === undefined) {
 }
 
 var referrerOrigin = location.origin + '/';
-var fetchedUrl = "https://{{domains[www]}}:{{ports[https][0]}}" + dirname(location.pathname) + RESOURCES_DIR + "inspect-headers.py?cors&headers=referer";
+var fetchedUrl = "https://{{hosts[alt][]}}:{{ports[https][0]}}" + dirname(location.pathname) + RESOURCES_DIR + "inspect-headers.py?cors&headers=referer";
 
 promise_test(function(test) {
   return fetch(fetchedUrl).then(function(resp) {

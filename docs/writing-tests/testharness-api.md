@@ -430,12 +430,12 @@ needed when e.g. testing the `window.onerror` handler.
 
 `timeout_multiplier` - Multiplier to apply to per-test timeouts.
 
-`single_test` - Test authors may set this property to `trust` to enable
-[the "single page test" mode of testharness.js](#single-page-tests); the
-current test must not declare any subtests; testharness.js will
-interpret all events which normally influence the harness status (e.g.
-uncaught exceptions, unhandled promise rejections, and timeouts) in
-terms of a single implicitly-defined subtest.
+`single_test` - Test authors may set this property to `true` to enable [the
+"single page test" mode of testharness.js](#single-page-tests); the current
+test must not declare any subtests; testharness.js will interpret all events
+which normally influence the harness status (e.g. uncaught exceptions,
+unhandled promise rejections, and timeouts) in terms of a single
+implicitly-defined subtest.
 
 ## Determining when all tests are complete ##
 

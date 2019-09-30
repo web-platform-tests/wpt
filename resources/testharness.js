@@ -792,6 +792,15 @@ policies and contribution forms [3].
 
     function done() {
         if (tests.tests.length === 0) {
+            try {
+              console.warn(
+                "This test implicitly enables the 'single-page test' mode " +
+                  "of testharness.js. Please explicitly enable it using the " +
+                  "`single_test` setup option. " +
+                  "https://web-platform-tests.org/writing-tests/testharness-api.html#single-page-tests"
+              );
+            } catch (_) {}
+
             tests.set_file_is_test();
         }
         if (tests.file_is_test) {
@@ -2475,6 +2484,14 @@ policies and contribution forms [3].
                     {
                         clearTimeout(this.timeout_id);
                     }
+                } else if (p == "single_test") {
+                    if (value !== true) {
+                        this.status.status = this.status.ERROR;
+                        this.status.message = "If present, the `single_test` option must be set to `true`.";
+                        this.end_wait();
+                    } else {
+                        this.set_file_is_test();
+                    }
                 } else if (p == "timeout_multiplier") {
                     this.timeout_multiplier = value;
                     if (this.timeout_length) {
@@ -3372,6 +3389,15 @@ policies and contribution forms [3].
     function assert(expected_true, function_name, description, error, substitutions)
     {
         if (tests.tests.length === 0) {
+            try {
+              console.warn(
+                "This test implicitly enables the 'single-page test' mode " +
+                  "of testharness.js. Please explicitly enable it using the " +
+                  "`single_test` setup option. " +
+                  "https://web-platform-tests.org/writing-tests/testharness-api.html#single-page-tests"
+              );
+            } catch (_) {}
+
             tests.set_file_is_test();
         }
         if (expected_true !== true) {
@@ -3665,6 +3691,14 @@ policies and contribution forms [3].
     if (global_scope.addEventListener) {
         var error_handler = function(message, stack) {
             if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
+                try {
+                  console.warn(
+                    "This test implicitly enables the 'single-page test' mode " +
+                      "of testharness.js. Please explicitly enable it using the " +
+                      "`single_test` setup option. " +
+                      "https://web-platform-tests.org/writing-tests/testharness-api.html#single-page-tests"
+                  );
+                } catch (_) {}
                 tests.set_file_is_test();
             }
 

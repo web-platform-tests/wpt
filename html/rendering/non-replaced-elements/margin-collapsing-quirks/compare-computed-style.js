@@ -1,3 +1,4 @@
+setup({ single_test: true });
 var testStyle = getComputedStyle(document.getElementById('test'));
 var refStyle = getComputedStyle(document.getElementById('ref'));
 for (var prop in testStyle) {

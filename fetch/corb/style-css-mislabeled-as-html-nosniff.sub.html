@@ -31,6 +31,7 @@ h1 { color: green; }
 </body>
 
 <script>
+setup({ single_test: true });
 // Verify that CSS is not applied (because of nosniff + non-text/css headers).
 let style = getComputedStyle(document.getElementById('header'));
 const external_color = 'rgb(255, 0, 0)';  // red

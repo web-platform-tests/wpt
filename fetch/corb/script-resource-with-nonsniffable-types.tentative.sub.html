@@ -13,7 +13,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-setup({allow_uncaught_exception : true});
+setup({allow_uncaught_exception : true, single_test : true});
 
 function test(mime_type, is_blocking_expected) {
   async_test(function(t) {

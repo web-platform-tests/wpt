@@ -26,6 +26,7 @@ h1 { color: green; }
 </body>
 
 <script>
+setup({ single_test: true });
 // Verify that CSS got applied / did not get blocked by CORB.
 let style = getComputedStyle(document.getElementById('header'));
 const external_color = 'rgb(255, 0, 0)';  // red

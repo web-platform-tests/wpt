@@ -7,6 +7,7 @@
 </head>
 <body>
 <script>
+setup({ single_test: true });
 
 assert_false(window.isSecureContext, "This test must be run in a non secure context");
 assert_false('MediaDevices' in window, "MediaDevices is not exposed");

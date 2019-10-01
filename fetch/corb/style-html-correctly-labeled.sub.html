@@ -32,6 +32,7 @@ h1 { color: green; }
 </body>
 
 <script>
+setup({ single_test: true });
 // Verify that CSS is not applied (because of mismatched Content-Type header).
 var style = getComputedStyle(document.getElementById('header'));
 const default_color = 'rgb(0, 128, 0)';  // green

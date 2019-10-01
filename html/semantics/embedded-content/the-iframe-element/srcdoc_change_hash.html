@@ -6,6 +6,8 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
+  setup({ single_test: true });
+
   async function test() {
     // Wait until 'document' is available.
     await new Promise(resolve => window.addEventListener('load', resolve));

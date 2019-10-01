@@ -4,5 +4,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
+setup({ single_test: true });
 Promise.reject(new Error("error outside any setup or test"));
 </script>

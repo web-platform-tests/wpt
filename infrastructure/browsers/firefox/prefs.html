@@ -2,6 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
+setup({ single_test: true });
 assert_equals(getComputedStyle(document.documentElement).color, "rgb(0, 255, 0)")
 done();
 </script>

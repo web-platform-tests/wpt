@@ -32,11 +32,15 @@ function redirectTo(origin, url) {
   return origin + "/cookies/resources/redirectWithCORSHeaders.py?status=307&location=" + encodeURIComponent(url);
 }
 
+function assert_in_cookie_str(description, cookie_str, name, value, present) {
+  var re = new RegExp("(?:^|; )" + name + "=" + value + "(?:$|;)");
+  assert_equals(re.test(cookie_str), present, "`" + name + "=" + value + "` in " + description);
+}
+
 // Asserts that `document.cookie` contains or does not contain (according to
 // the value of |present|) a cookie named |name| with a value of |value|.
 function assert_dom_cookie(name, value, present) {
-  var re = new RegExp("(?:^|; )" + name + "=" + value + "(?:$|;)");
-  assert_equals(re.test(document.cookie), present, "`" + name + "=" + value + "` in `document.cookie`");
+  assert_in_cookie_str("`document.cookie`", document.cookie, name, value, present);
 }
 
 function assert_cookie(origin, obj, name, value, present) {

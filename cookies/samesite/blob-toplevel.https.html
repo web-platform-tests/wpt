@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/cookies/resources/cookie-helper.sub.js"></script>
+</head>
+<body onload="doTests()">
+  <script>
+  function doTests() {
+    promise_test(async function(t) {
+      var value = "" + Math.random();
+      await resetSameSiteCookies(SECURE_ORIGIN, value);
+
+      var blob_string = "<script>opener.postMessage({'type': 'COOKIES', 'result': document.cookie}, '*')</sc" +
+                        "ript>";
+      var blob = new Blob([blob_string], {type : 'text/html'});
+      var url = URL.createObjectURL(blob);
+      var child = window.open(url);
+
+      var e = await wait_for_message("COOKIES");
+      assert_equals("debugging", JSON.stringify(e.data));
+      assert_in_cookie_str(SECURE_ORIGIN, e.data.result, "samesite_unspecified", value, true);
+      assert_in_cookie_str(SECURE_ORIGIN, e.data.result, "samesite_lax", value, true);
+      assert_in_cookie_str(SECURE_ORIGIN, e.data.result, "samesite_strict", value, true);
+      assert_in_cookie_str(SECURE_ORIGIN, e.data.result, "samesite_none", value, true);
+      child.close();
+    }, "SameSite cookies with blob child window");
+  }
+  </script>
+</body>

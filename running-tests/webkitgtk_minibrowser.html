@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Running Tests on CI &#8212; web-platform-tests  documentation</title>
+    <title>WebKitGTK MiniBrowser &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -16,8 +16,8 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Writing Your Own Runner" href="custom-runner.html" />
-    <link rel="prev" title="WebKitGTK MiniBrowser" href="webkitgtk_minibrowser.html" />
+    <link rel="next" title="Running Tests on CI" href="from-ci.html" />
+    <link rel="prev" title="Safari" href="safari.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -34,33 +34,38 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="running-tests-on-ci">
-<h1>Running Tests on CI<a class="headerlink" href="#running-tests-on-ci" title="Permalink to this headline">¶</a></h1>
-<p>Contributors with write access to the repository can trigger full runs in the
-same CI systems used to produce results for <a class="reference external" href="https://wpt.fyi">wpt.fyi</a>. The runs
-are triggered by pushing to branch names on the form <code class="docutils literal notranslate"><span class="pre">triggers/$browser_$channel</span></code>
-and the results will be automatically submitted to wpt.fyi.</p>
-<p>This is useful when making infrastructure changes that could affect very many
-tests, in order to avoid regressions.</p>
-<p>Note: Full runs use a lot of CI resources, so please take care to not trigger
-them more than necessary.</p>
-<p>Instructions:</p>
+  <div class="section" id="webkitgtk-minibrowser">
+<h1>WebKitGTK MiniBrowser<a class="headerlink" href="#webkitgtk-minibrowser" title="Permalink to this headline">¶</a></h1>
+<p>To be able to run tests with the WebKitGTK MiniBrowser you need the
+following packages installed:</p>
 <ul class="simple">
-<li>Base your changes on a commit for which there are already results in wpt.fyi.</li>
-<li>Determine which branch name to push to by looking for <code class="docutils literal notranslate"><span class="pre">refs/heads/triggers/</span></code>
-in <code class="docutils literal notranslate"><span class="pre">.azure-pipelines.yml</span></code> and <code class="docutils literal notranslate"><span class="pre">.taskcluster.yml</span></code>. For example, to trigger a
-full run of Safari Technology Preview, the branch name is
-<code class="docutils literal notranslate"><span class="pre">triggers/safari_preview</span></code>.</li>
-<li>Force push to the branch, for example:
-<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">--force-with-lease</span> <span class="pre">origin</span> <span class="pre">HEAD:triggers/safari_preview</span></code>.
-The <code class="docutils literal notranslate"><span class="pre">--force-with-lease</span></code> argument is to detect if someone else has just
-pushed. When this happens wait for the checkout step of their triggered run
-to finish before you force push again.</li>
+<li>Fedora: <code class="docutils literal notranslate"><span class="pre">webkit2gtk3-devel</span></code></li>
+<li>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">webkit2gtk-driver</span></code></li>
 </ul>
-<p>You can see if the run started from the commit status on GitHub’s commits listing
-(<a class="reference external" href="https://github.com/web-platform-tests/wpt/commits/triggers/safari_preview">example</a>)
-and if successful the results will show up on wpt.fyi within 10 minutes
-(<a class="reference external" href="https://wpt.fyi/runs?product=safari">example</a>).</p>
+<p>The WebKitGTK MiniBrowser is not installed on the default binary path.
+The <code class="docutils literal notranslate"><span class="pre">wpt</span></code> script will try to automatically locate it, but if you need
+to run it manually you can find it on any of this paths:</p>
+<ul class="simple">
+<li>Fedora: <code class="docutils literal notranslate"><span class="pre">/usr/libexec/webkit2gtk-4.0/MiniBrowser</span></code></li>
+<li>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">/usr/lib/x86_64-linux-gnu/webkit2gtk-4.0/MiniBrowser</span></code><ul>
+<li>Note: if the machine architecture is not <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>, then it will be located
+inside:
+<code class="docutils literal notranslate"><span class="pre">/usr/lib/${TRIPLET}/webkit2gtk-4.0/MiniBrowser</span></code>
+where <code class="docutils literal notranslate"><span class="pre">TRIPLET=$(gcc</span> <span class="pre">-dumpmachine)</span></code></li>
+</ul>
+</li>
+</ul>
+<p>Known issues:</p>
+<ul class="simple">
+<li>On a docker container WebKitWebDriver fails to listen on localhost,
+because the docker container doesn’t provide an IPv6 localhost address.
+To workaround this issue, manually tell it to only listen on IPv4 localhost
+by passing this parameter to wpt run: <code class="docutils literal notranslate"><span class="pre">--webdriver-arg=--host=127.0.0.1</span></code>
+Example:</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --webdriver-arg<span class="o">=</span>--host<span class="o">=</span><span class="m">127</span>.0.0.1 webkitgtk_minibrowser TESTS
+</pre></div>
+</div>
 </div>
 
 
@@ -84,8 +89,8 @@ and if successful the results will show up on wpt.fyi within 10 minutes
 <li class="toctree-l1"><a class="reference internal" href="../test-suite-design.html">Test Suite Design</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Running Tests</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="from-web.html">Running Tests from the Web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="from-local-system.html">Running Tests from the Local System</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Running Tests on CI</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="from-local-system.html">Running Tests from the Local System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="from-ci.html">Running Tests on CI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="custom-runner.html">Writing Your Own Runner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tools/certs/README.html">WPT Test Certificates</a></li>
 </ul>
@@ -100,8 +105,10 @@ and if successful the results will show up on wpt.fyi within 10 minutes
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Running Tests</a><ul>
-      <li>Previous: <a href="webkitgtk_minibrowser.html" title="previous chapter">WebKitGTK MiniBrowser</a></li>
-      <li>Next: <a href="custom-runner.html" title="next chapter">Writing Your Own Runner</a></li>
+  <li><a href="from-local-system.html">Running Tests from the Local System</a><ul>
+      <li>Previous: <a href="safari.html" title="previous chapter">Safari</a></li>
+      <li>Next: <a href="from-ci.html" title="next chapter">Running Tests on CI</a></li>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -138,7 +145,7 @@ and if successful the results will show up on wpt.fyi within 10 minutes
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/running-tests/from-ci.md.txt"
+      <a href="../_sources/running-tests/webkitgtk_minibrowser.md.txt"
           rel="nofollow">Page source</a>
     </div>
 

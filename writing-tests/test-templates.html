@@ -43,8 +43,8 @@ Text, and emacs’ YASnippet mode.</p>
 delimit text to be replaced and <code class="docutils literal notranslate"><span class="pre">#</span></code> represents a digit.</p>
 <div class="section" id="reftests">
 <h2>Reftests<a class="headerlink" href="#reftests" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="test">
-<h3>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="html-test">
+<h3>HTML test<a class="headerlink" href="#html-test" title="Permalink to this headline">¶</a></h3>
 <!--
   Syntax highlighting cannot be enabled for the following template because it
   contains invalid CSS.
@@ -62,8 +62,8 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 </div>
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.html</span></code></p>
 </div>
-<div class="section" id="reference">
-<h3>Reference:<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="html-reference">
+<h3>HTML reference<a class="headerlink" href="#html-reference" title="Permalink to this headline">¶</a></h3>
 <!--
   Syntax highlighting cannot be enabled for the following template because it
   contains invalid CSS.
@@ -80,9 +80,35 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 </div>
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{description}.html</span></code> or <code class="docutils literal notranslate"><span class="pre">{test-topic}-###-ref.html</span></code></p>
 </div>
+<div class="section" id="svg-test">
+<h3>SVG test<a class="headerlink" href="#svg-test" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span> <span class="na">xmlns:h=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;title&gt;</span>${1:Test title}<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;metadata&gt;</span>
+    <span class="nt">&lt;h:link</span> <span class="na">rel=</span><span class="s">&quot;help&quot;</span> <span class="na">href=</span><span class="s">&quot;${2:Specification link}&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;h:link</span> <span class="na">rel=</span><span class="s">&quot;match&quot;</span> <span class="na">href=</span><span class="s">&quot;${3:URL of match}&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/metadata&gt;</span>
+  ${4:Test body}
+<span class="nt">&lt;/svg&gt;</span>
+</pre></div>
+</div>
+<p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.svg</span></code></p>
+</div>
+<div class="section" id="svg-reference">
+<h3>SVG reference<a class="headerlink" href="#svg-reference" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;title&gt;</span>${1:Reference title}<span class="nt">&lt;/title&gt;</span>
+  ${2:Reference content}
+<span class="nt">&lt;/svg&gt;</span>
+</pre></div>
+</div>
+<p>Filename: <code class="docutils literal notranslate"><span class="pre">{description}.svg</span></code> or <code class="docutils literal notranslate"><span class="pre">{test-topic}-###-ref.svg</span></code></p>
+</div>
 </div>
 <div class="section" id="testharness-js-tests">
 <h2>testharness.js tests<a class="headerlink" href="#testharness-js-tests" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="html">
+<h3>HTML<a class="headerlink" href="#html" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>${1:Test title}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
@@ -94,8 +120,28 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 </pre></div>
 </div>
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.html</span></code></p>
+</div>
+<div class="section" id="svg">
+<h3>SVG<a class="headerlink" href="#svg" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span> <span class="na">xmlns:h=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;title&gt;</span>${1:Test title}<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;metadata&gt;</span>
+    <span class="nt">&lt;h:link</span> <span class="na">rel=</span><span class="s">&quot;help&quot;</span> <span class="na">href=</span><span class="s">&quot;${2:Specification link}&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/metadata&gt;</span>
+  <span class="nt">&lt;h:script</span> <span class="na">src=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;h:script</span> <span class="na">src=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;script&gt;</span><span class="cp">&lt;![CDATA[</span>
+<span class="cp">  ${4:Test body}</span>
+<span class="cp">  ]]&gt;</span><span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/svg&gt;</span>
+</pre></div>
+</div>
+<p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.svg</span></code></p>
+</div>
 <div class="section" id="manual-test">
 <h3>Manual Test<a class="headerlink" href="#manual-test" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h4>HTML<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>${1:Test title}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
@@ -108,6 +154,25 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 </pre></div>
 </div>
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###-manual.html</span></code></p>
+</div>
+<div class="section" id="id2">
+<h4>SVG<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span> <span class="na">xmlns:h=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;title&gt;</span>${1:Test title}<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;metadata&gt;</span>
+    <span class="nt">&lt;h:link</span> <span class="na">rel=</span><span class="s">&quot;help&quot;</span> <span class="na">href=</span><span class="s">&quot;${2:Specification link}&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/metadata&gt;</span>
+  <span class="nt">&lt;h:script</span> <span class="na">src=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;h:script</span> <span class="na">src=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;script&gt;</span><span class="cp">&lt;![CDATA[</span>
+<span class="cp">  setup({explicit_timeout: true});</span>
+<span class="cp">  ${4:Test body}</span>
+<span class="cp">  ]]&gt;</span><span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/svg&gt;</span>
+</pre></div>
+</div>
+<p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###-manual.svg</span></code></p>
+</div>
 </div>
 </div>
 </div>

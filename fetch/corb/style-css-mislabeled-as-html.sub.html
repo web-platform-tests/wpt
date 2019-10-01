@@ -25,6 +25,7 @@ h1 { color: green; }
 </body>
 
 <script>
+setup({ single_test: true });
 // Verify that CSS is not applied (because of strict content-type enforcement
 // for cross-origin stylesheets).
 let style = getComputedStyle(document.getElementById('header'));

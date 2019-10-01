@@ -48,18 +48,6 @@ promise_test(() => {
 promise_test(() => {
   return makeTest(
       () => {
-        setup({ single_test: false });
-        done();
-      }
-    ).then(({harness, tests}) => {
-      assert_equals(harness, 'ERROR');
-      assert_equals(tests['Document title'], 'PASS');
-    });
-}, 'Erroneous usage: invalid option value');
-
-promise_test(() => {
-  return makeTest(
-      () => {
         setup({ single_test: true });
         test(function() {}, 'sync test');
       }

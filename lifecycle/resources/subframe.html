@@ -2,15 +2,15 @@
 <meta charset="utf-8">
 <script>
 window.addEventListener('load', () => {
-  window.parent.postMessage('load');
+  window.top.postMessage('load', '*');
 });
 
 document.addEventListener('freeze', () => {
-  window.parent.postMessage('freeze');
+  window.top.postMessage('freeze', '*');
 });
 
 document.addEventListener('resume', () => {
-  window.parent.postMessage('resume');
+  window.top.postMessage('resume', '*');
 });
 
 </script>

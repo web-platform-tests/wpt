@@ -1,4 +1,4 @@
-from .base import get_timeout_multiplier   # noqa: F401
+from .base import get_timeout_multiplier, maybe_add_args   # noqa: F401
 from .webkit import WebKitBrowser
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
@@ -24,11 +24,9 @@ def check_args(**kwargs):
 
 
 def browser_kwargs(test_type, run_info_data, config, **kwargs):
-    webdriver_args = kwargs.get("webdriver_args")
     # Workaround for https://gitlab.gnome.org/GNOME/libsoup/issues/172
-    if not any(item.startswith('--host=') for item in webdriver_args):
-        webdriver_args.append('--host=127.0.0.1')
-
+    webdriver_required_args = ["--host=127.0.0.1"]
+    webdriver_args = maybe_add_args(webdriver_required_args, kwargs.get("webdriver_args"))
     return {"binary": kwargs["binary"],
             "webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": webdriver_args}

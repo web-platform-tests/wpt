@@ -1,4 +1,4 @@
-from .base import get_timeout_multiplier   # noqa: F401
+from .base import get_timeout_multiplier, maybe_add_args   # noqa: F401
 from .webkit import WebKitBrowser
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
@@ -22,19 +22,6 @@ __wptrunner__ = {"product": "webkitgtk_minibrowser",
 def check_args(**kwargs):
     pass
 
-
-def maybe_add_args(required_args, current_args):
-    for required_arg in required_args:
-        # If the arg is in the form of "variable=value", only add it if
-        # no arg with another value for "variable" is already there.
-        if "=" in required_arg:
-            required_arg_prefix = "%s=" % required_arg.split("=")[0]
-            if not any(item.startswith(required_arg_prefix) for item in current_args):
-                current_args.append(required_arg)
-        else:
-            if required_arg not in current_args:
-                current_args.append(required_arg)
-    return current_args
 
 def browser_kwargs(test_type, run_info_data, config, **kwargs):
     # Workaround for https://gitlab.gnome.org/GNOME/libsoup/issues/172

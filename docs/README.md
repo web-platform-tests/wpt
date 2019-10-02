@@ -1,4 +1,4 @@
-# Project documentation tooling
+# Project documentation tooling!
 
 The documentation for the web-platform-tests project is built using [the Sphinx
 documentation generator](http://www.sphinx-doc.org). [The GitHub Actions

@@ -4,7 +4,9 @@ on:
       - master
   pull_request:
     paths:
-      - 'docs/*'
+      - 'docs/**'
+      - 'resources/**'
+      - 'tools/**'
 name: Build & Publish Documentation Website
 jobs:
   website-build-and-publish:

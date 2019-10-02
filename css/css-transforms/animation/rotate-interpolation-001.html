@@ -55,7 +55,7 @@ test_interpolation({
   to: '-1 1 0 60deg',
 }, [
   {at: -1, expect: '0.447214 -0.447214 0.774597 104.478deg'},
-  {at: 0, expect: '45deg'},
+  {at: 0, expect: 'z 45deg'},
   {at: 0.125, expect: '-0.136456 0.136456 0.981203 40.6037deg'},
   {at: 0.875, expect: '-0.70246 0.70246 0.114452 53.1994deg'},
   {at: 1, expect: '-1 1 0 60deg'},
@@ -229,6 +229,19 @@ test_interpolation({
   {at: 0.75, expect: '1 0 0 112.5deg'},
   {at: 1, expect: '0 1 0 0deg'},
   {at: 2, expect: '1 0 0 -450deg'},
+]);
+
+test_interpolation({
+  property: 'rotate',
+  from: 'z 100deg',
+  to: 'z 180deg',
+}, [
+  {at: -1, expect: 'z 20deg'},
+  {at: 0, expect: 'z 100deg'},
+  {at: 0.125, expect: 'z 110deg'},
+  {at: 0.875, expect: 'z 170deg'},
+  {at: 1, expect: 'z 180deg'},
+  {at: 2, expect: 'z 260deg'}
 ]);
 </script>
 </body>

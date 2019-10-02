@@ -26,7 +26,7 @@ def check_args(**kwargs):
 def browser_kwargs(test_type, run_info_data, config, **kwargs):
     webdriver_args = kwargs.get("webdriver_args")
     # Workaround for https://gitlab.gnome.org/GNOME/libsoup/issues/172
-    if not any('--host=' in item for item in webdriver_args):
+    if not any(item.startswith('--host=') for item in webdriver_args):
         webdriver_args.append('--host=127.0.0.1')
 
     return {"binary": kwargs["binary"],

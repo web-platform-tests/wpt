@@ -1,4 +1,4 @@
-# Writing Tests
+# Writing Tests!
 
 If you haven't already, it's strongly recommended to read
 the [introduction](../index) first, as it introduces the various test types.

@@ -4,11 +4,13 @@
  * Execute testharness.js and one or more scripts in an iframe. Report the
  * results of the execution.
  *
- * @param {...function|string} bodies - a function body. If specified as a
- *                                      function object, it will be converted
- *                                      to a string using the built-in
- *                                      `Function.prototype.toString` prior to
- *                                      inclusion in the generated iframe.
+ * @param {...function|...string} bodies - a function body. If specified as a
+ *                                         function object, it will be
+ *                                         serialized to a string using the
+ *                                         built-in
+ *                                         `Function.prototype.toString` prior
+ *                                         to inclusion in the generated
+ *                                         iframe.
  *
  * @returns {Promise} eventual value describing the result of the test
  *                    execution; the summary object has two properties:

@@ -14,6 +14,9 @@ steps:
       "/Applications/Safari Technology Preview.app/Contents/MacOS/Safari Technology Preview" &
       SAFARI_PID=$!
       sleep 10
+      screencapture tmp.png
+      base64 tmp.png
+      rm tmp.png
       kill $SAFARI_PID
       defaults write com.apple.SafariTechnologyPreview WebKitJavaScriptCanOpenWindowsAutomatically 1
       defaults write com.apple.SafariTechnologyPreview ExperimentalServerTimingEnabled 1

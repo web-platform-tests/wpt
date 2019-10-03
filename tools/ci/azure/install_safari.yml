@@ -11,6 +11,10 @@ steps:
       # https://github.com/web-platform-tests/wpt/issues/17186#issuecomment-529862851
       mkdir -p ~/Library/WebDriver/
       cp tools/ci/azure/com.apple.SafariTechnologyPreview.plist ~/Library/WebDriver/
+      "/Applications/Safari Technology Preview.app/Contents/MacOS/Safari Technology Preview" &
+      SAFARI_PID=$!
+      sleep 10
+      kill $SAFARI_PID
       defaults write com.apple.SafariTechnologyPreview WebKitJavaScriptCanOpenWindowsAutomatically 1
       defaults write com.apple.SafariTechnologyPreview ExperimentalServerTimingEnabled 1
     displayName: 'Install Safari Technology Preview'

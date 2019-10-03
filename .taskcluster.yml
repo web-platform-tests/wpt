@@ -73,7 +73,7 @@ tasks:
                 image:
                   $if: browser.name == 'webkitgtk_minibrowser'
                   then:
-                    cl0p3z/web-platform-tests:webkitgtk20190901
+                    cl0p3z/web-platform-tests:0.1
                   else:
                     harjgam/web-platform-tests:0.33
                 maxRunTime: 7200

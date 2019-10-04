@@ -30,7 +30,7 @@ backgroundFetchTest(async (test, backgroundFetch) => {
 
   const registration = await backgroundFetch.fetch(
       uniqueId(),
-      [uploadRequest, '/common/slow.py']);
+      [uploadRequest, '/common/handlers/slow.py']);
 
     const uploaded = await new Promise(resolve => {
       registration.onprogress = event => {

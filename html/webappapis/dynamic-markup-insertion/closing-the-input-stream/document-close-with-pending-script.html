@@ -51,7 +51,7 @@
           <script>
             parent.t.step(() => {
               var s = document.createElement("script");
-              s.src = "/common/slow.py";
+              s.src = "/common/handlers/slow.py";
               document.documentElement.appendChild(s);
               // Call into the parent async, so we finish our "end of parse"
               // work before it runs.

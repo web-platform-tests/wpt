@@ -37,7 +37,7 @@
         <script>
             // combine the page origin and redirect origin into the IFRAME's src URL
             var destUrl = make_absolute_url({subdomain: "www",
-                                             path: "/common/redirect.py",
+                                             path: "/common/handlers/redirect.py",
                                              query: "location=" + make_absolute_url(
                                                          {path: "/navigation-timing/resources/blank_page_green.html"})
                                              });

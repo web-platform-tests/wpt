@@ -11,10 +11,10 @@
     <link id="sameorigin" href="stylesheet-same-origin.css" rel="stylesheet">
     <link id="sameorigindata" href="data:text/css,.green-text{color:rgb(0, 255, 0)}" rel="stylesheet">
     <link id="redirect-sameorigin-to-crossorigin"
-          href="/common/redirect.py?location=http://www1.{{host}}:{{ports[http][1]}}/css/cssom/stylesheet-same-origin.css"
+          href="/common/handlers/redirect.py?location=http://www1.{{host}}:{{ports[http][1]}}/css/cssom/stylesheet-same-origin.css"
           rel="stylesheet">
     <link id="redirect-crossorigin-to-sameorigin"
-          href="http://www1.{{host}}:{{ports[http][1]}}/common/redirect.py?location=http://{{host}}:{{ports[http][0]}}/css/cssom/stylesheet-same-origin.css"
+          href="http://www1.{{host}}:{{ports[http][1]}}/common/handlers/redirect.py?location=http://{{host}}:{{ports[http][0]}}/css/cssom/stylesheet-same-origin.css"
           rel="stylesheet">
     <link id="loaderror" href="support/malformed-http-response.asis" rel="stylesheet">
 

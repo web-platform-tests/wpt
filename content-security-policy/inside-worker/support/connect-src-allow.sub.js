@@ -43,7 +43,7 @@ async_test(t => {
 
 // Same-origin redirecting to cross-origin
 async_test(t => {
-  var url = "{{location[server]}}/common/redirect-opt-in.py?status=307&location=http://{{domains[www]}}:{{ports[http][1]}}/content-security-policy/support/resource.py?cross-origin-fetch";
+  var url = "{{location[server]}}/common/handlers/redirect-opt-in.py?status=307&location=http://{{domains[www]}}:{{ports[http][1]}}/content-security-policy/support/resource.py?cross-origin-fetch";
   assert_no_csp_event_for_url(t, url);
 
   fetch(url)

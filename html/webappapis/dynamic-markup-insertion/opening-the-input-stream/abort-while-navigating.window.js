@@ -63,7 +63,7 @@ async_test(t => {
 async_test(t => {
   const div = document.body.appendChild(document.createElement("div"));
   t.add_cleanup(() => div.remove());
-  div.innerHTML = "<iframe src='/common/slow.py'></iframe>";
+  div.innerHTML = "<iframe src='/common/handlers/slow.py'></iframe>";
   const frame = div.childNodes[0];
   const client = new frame.contentWindow.XMLHttpRequest();
   client.open("GET", "/common/blank.html");
@@ -75,7 +75,7 @@ async_test(t => {
 async_test(t => {
   const div = document.body.appendChild(document.createElement("div"));
   t.add_cleanup(() => div.remove());
-  div.innerHTML = "<iframe src='/common/slow.py'></iframe>";
+  div.innerHTML = "<iframe src='/common/handlers/slow.py'></iframe>";
   const frame = div.childNodes[0];
   frame.contentWindow.fetch("/common/blank.html").then(
     t.unreached_func("Fetch should have been aborted"),
@@ -86,13 +86,13 @@ async_test(t => {
 // We cannot test for img element's error event for this test, as Firefox does
 // not fire the event if the fetch is aborted while Chrome does.
 //
-// We use /common/slow.py here as the source of the iframe, to prevent the
+// We use /common/handlers/slow.py here as the source of the iframe, to prevent the
 // situation where when document.open() is called the initial about:blank
 // document has already become inactive.
 async_test(t => {
   const div = document.body.appendChild(document.createElement("div"));
   t.add_cleanup(() => div.remove());
-  div.innerHTML = "<iframe src='/common/slow.py'></iframe>";
+  div.innerHTML = "<iframe src='/common/handlers/slow.py'></iframe>";
   const frame = div.childNodes[0];
   let happened = false;
   const img = frame.contentDocument.createElement("img");

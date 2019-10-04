@@ -43,12 +43,12 @@
         <script>
             // combine the page origin and redirect origin into the IFRAME's src URL
             const destUrl_first = make_absolute_url({subdomain: "www",
-                                             path: "/common/redirect-opt-in.py",
+                                             path: "/common/handlers/redirect-opt-in.py",
                                              query: "location=" + make_absolute_url(
                                                          {path: "/navigation-timing/resources/blank_page_green.html"})
                                              });
             const destUrl = make_absolute_url({subdomain: "www",
-                                             path: "/common/redirect.py",
+                                             path: "/common/handlers/redirect.py",
                                              query: "location=" + destUrl_first});
             let frameContext = document.getElementById("frameContext");
             frameContext.onload = onload_test;

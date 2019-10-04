@@ -20,7 +20,7 @@
   var i = document.createElement('iframe');
   i.src = "../support/link_click_navigation.sub.html" +
     "?csp=" + encodeURIComponent("navigate-to {{location[scheme]}}://{{domains[www1]}}:{{location[port]}} 'unsafe-allow-redirects'") +
-    "&target=" + encodeURIComponent("{{location[scheme]}}://{{domains[www2]}}:{{location[port]}}/common/redirect.py?location=" +
+    "&target=" + encodeURIComponent("{{location[scheme]}}://{{domains[www2]}}:{{location[port]}}/common/handlers/redirect.py?location=" +
                                      encodeURIComponent("{{location[scheme]}}://{{domains[www1]}}:{{location[port]}}/content-security-policy/navigate-to/support/post_message_to_frame_owner.html"));
   document.body.appendChild(i);
 </script>

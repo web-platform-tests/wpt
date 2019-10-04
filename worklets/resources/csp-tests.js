@@ -99,7 +99,7 @@ function runSrcTests(workletType) {
 
     promise_test(t => {
         const kScriptURL =
-          '/common/redirect.py?location=' + encodeURIComponent(
+          '/common/handlers/redirect.py?location=' + encodeURIComponent(
               get_host_info().HTTPS_REMOTE_ORIGIN +
               '/worklets/resources/empty-worklet-script-with-cors-header.js');
         return openWindowAndExpectResult(
@@ -128,7 +128,7 @@ function runMixedContentTests(workletType) {
   const kScriptConfigs = [
     {URL: kInsecureURL,
      message: 'An insecure-origin worklet'},
-    {URL: '/common/redirect.py?location=' + encodeURIComponent(kInsecureURL),
+    {URL: '/common/handlers/redirect.py?location=' + encodeURIComponent(kInsecureURL),
      message: 'An insecure-origin-redirected worklet'},
     {URL: 'import-insecure-origin-empty-worklet-script.sub.js',
      message: 'A same-origin worklet importing an insecure-origin script'},

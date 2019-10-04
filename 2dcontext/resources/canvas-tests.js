@@ -103,7 +103,7 @@ function addCrossOriginRedirectYellowImage()
     var img = new Image();
     img.id = "yellow.png";
     img.className = "resource";
-    img.src = get_host_info().HTTP_ORIGIN + "/common/redirect.py?location=" +
+    img.src = get_host_info().HTTP_ORIGIN + "/common/handlers/redirect.py?location=" +
         get_host_info().HTTP_REMOTE_ORIGIN + "/images/yellow.png";
     document.body.appendChild(img);
 }
@@ -157,7 +157,7 @@ function forEachCanvasSource(crossOriginUrl, sameOriginUrl, callback) {
           const video = document.createElement("video");
           video.oncanplaythrough = () => resolve(video);
           video.onerror = reject;
-          video.src = "/common/redirect.py?location=" + getVideoURI(crossOriginUrl + "/media/movie_300");
+          video.src = "/common/handlers/redirect.py?location=" + getVideoURI(crossOriginUrl + "/media/movie_300");
         });
       },
     },
@@ -169,7 +169,7 @@ function forEachCanvasSource(crossOriginUrl, sameOriginUrl, callback) {
           const video = document.createElement("video");
           video.oncanplaythrough = () => resolve(video);
           video.onerror = reject;
-          video.src = crossOriginUrl + "/common/redirect.py?location=" + getVideoURI(sameOriginUrl + "/media/movie_300");
+          video.src = crossOriginUrl + "/common/handlers/redirect.py?location=" + getVideoURI(sameOriginUrl + "/media/movie_300");
         });
       },
     },

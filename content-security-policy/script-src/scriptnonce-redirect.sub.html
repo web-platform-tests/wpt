@@ -51,7 +51,7 @@ script-src 'self' 'unsafe-inline' 'nonce-noncynonce'; connect-src 'self';
 
 <body>
     This tests whether a deferred script load caused by a redirect is properly allowed by a nonce.
-    <script nonce="noncynonce" src="/common/redirect.py?location=http://{{host}}:{{ports[http][0]}}/content-security-policy/support/alert-pass.js"></script>
+    <script nonce="noncynonce" src="/common/handlers/redirect.py?location=http://{{host}}:{{ports[http][0]}}/content-security-policy/support/alert-pass.js"></script>
     <script nonce="noncynonce">
 
 

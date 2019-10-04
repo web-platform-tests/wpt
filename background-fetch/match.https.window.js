@@ -72,7 +72,7 @@ backgroundFetchTest(async (test, backgroundFetch) => {
 
 backgroundFetchTest(async (test, backgroundFetch) => {
   const registration = await backgroundFetch.fetch(
-      uniqueId(), ['resources/feature-name.txt', '/common/slow.py']);
+      uniqueId(), ['resources/feature-name.txt', '/common/handlers/slow.py']);
 
   const record = await registration.match('resources/feature-name.txt');
   const response = await record.responseReady;
@@ -89,7 +89,7 @@ backgroundFetchTest(async (test, backgroundFetch) => {
           'resources/feature-name.txt',
           'resources/feature-name.txt?id=3',
           new Request('resources/feature-name.txt', {method: 'PUT'}),
-          '/common/slow.py',
+          '/common/handlers/slow.py',
       ]);
 
   let matchedRecords = null;

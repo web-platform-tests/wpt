@@ -56,7 +56,7 @@ function generateURLStringWithSecondIframeParams(host, path, second_level_iframe
 }
 
 function generateRedirect(host, target) {
-  var url = new URL("http://{{host}}:{{ports[http][0]}}/common/redirect.py?location=" +
+  var url = new URL("http://{{host}}:{{ports[http][0]}}/common/handlers/redirect.py?location=" +
    encodeURIComponent(target));
   url.hostname = host == Host.SAME_ORIGIN ? "{{host}}" : "{{domains[天気の良い日]}}";
 

@@ -16,7 +16,7 @@
 
       let form = document.getElementById("form");
       let final_url = "/content-security-policy/form-action/support/post-message-to-parent.sub.html?message=DocumentNotBlocked";
-      let redirect_url = "/common/redirect.py?location=";
+      let redirect_url = "/common/handlers/redirect.py?location=";
       form.action = redirect_url + encodeURIComponent(final_url);
 
       let submit = document.getElementById("submit");

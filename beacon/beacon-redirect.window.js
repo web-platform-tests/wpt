@@ -11,7 +11,7 @@
     // Implement the self.buildTargetUrl extension to inject a redirect to
     // the sendBeacon target.
     self.buildTargetUrl = function(targetUrl) {
-        return `/common/redirect.py?status=${status}&location=${encodeURIComponent(targetUrl)}`;
+        return `/common/handlers/redirect.py?status=${status}&location=${encodeURIComponent(targetUrl)}`;
     };
     const tests = [];
     for (const test of sampleTests) {

@@ -51,7 +51,7 @@ promise_test(t => {
 
 // Same-origin redirecting to cross-origin
 promise_test(t => {
-  var url = "{{location[server]}}/common/redirect-opt-in.py?status=307&location=http://{{domains[www]}}:{{ports[http][1]}}/common/text-plain.txt?cross-origin-fetch";
+  var url = "{{location[server]}}/common/handlers/redirect-opt-in.py?status=307&location=http://{{domains[www]}}:{{ports[http][1]}}/common/text-plain.txt?cross-origin-fetch";
 
   // TODO(mkwst): A 'securitypolicyviolation' event should fire.
   return promise_rejects(t, new TypeError, fetch(url));

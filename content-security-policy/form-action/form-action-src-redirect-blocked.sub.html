@@ -30,7 +30,7 @@
 <body>
     <iframe name="test_target" id="test_iframe"></iframe>
 
-    <form id="form1" action="/common/redirect.py?location=http://{{domains[www1]}}:{{ports[http][0]}}/content-security-policy/support/postmessage-fail.html" method="post" target="test_target">
+    <form id="form1" action="/common/handlers/redirect.py?location=http://{{domains[www1]}}:{{ports[http][0]}}/content-security-policy/support/postmessage-fail.html" method="post" target="test_target">
         <input type="text" name="fieldname" value="fieldvalue">
         <input type="submit" id="submit" value="submit">
     </form>

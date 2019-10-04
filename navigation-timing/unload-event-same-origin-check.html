@@ -17,10 +17,10 @@
             const host_info = get_host_info();
             const redirect_chain_partial_tao = () => {
                 let url = host_info["HTTP_REMOTE_ORIGIN"];
-                url += "/common/redirect.py";
+                url += "/common/handlers/redirect.py";
                 url += "?location=";
                 url += host_info["HTTP_REMOTE_ORIGIN"];
-                url += "/common/redirect-opt-in.py";
+                url += "/common/handlers/redirect-opt-in.py";
                 url += "?location=";
                 url += host_info["ORIGIN"];
                 url += end_page;
@@ -28,7 +28,7 @@
             };
             const redirect_chain_full_tao = () => {
                 let url = host_info["HTTP_REMOTE_ORIGIN"];
-                url += "/common/redirect-opt-in.py";
+                url += "/common/handlers/redirect-opt-in.py";
                 url += "?location=";
                 url += host_info["ORIGIN"];
                 url += end_page;
@@ -36,7 +36,7 @@
             };
             const redirect_chain_no_tao = () => {
                 let url = host_info["HTTP_REMOTE_ORIGIN"];
-                url += "/common/redirect.py";
+                url += "/common/handlers/redirect.py";
                 url += "?location=";
                 url += host_info["ORIGIN"];
                 url += end_page;
@@ -44,7 +44,7 @@
             };
             const same_origin_redirect_chain = () => {
                 let url = host_info["ORIGIN"];
-                url += "/common/redirect.py";
+                url += "/common/handlers/redirect.py";
                 url += "?location=";
                 url += host_info["ORIGIN"];
                 url += end_page;

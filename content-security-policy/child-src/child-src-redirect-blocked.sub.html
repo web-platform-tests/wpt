@@ -58,7 +58,7 @@ child-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self';
 </head>
 
 <body>
-    <iframe src="/common/redirect.py?location=http://{{domains[www1]}}:{{ports[http][0]}}/content-security-policy/support/postmessage-fail.html" onload="loadEvent()" onerror="log('FAIL')"></iframe>
+    <iframe src="/common/handlers/redirect.py?location=http://{{domains[www1]}}:{{ports[http][0]}}/content-security-policy/support/postmessage-fail.html" onload="loadEvent()" onerror="log('FAIL')"></iframe>
     <div id="log"></div>
 </body>
 

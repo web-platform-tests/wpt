@@ -119,7 +119,7 @@ function runImportTests(worklet_type) {
                            '/worklets/resources/empty-worklet-script.js' +
                            '?pipe=header(Access-Control-Allow-Origin, ' +
                            location.origin + ')';
-        return worklet.addModule('/common/redirect.py?location=' +
+        return worklet.addModule('/common/handlers/redirect.py?location=' +
                                  encodeURIComponent(kScriptURL))
           .then(undefined_arg => {
               assert_equals(undefined_arg, undefined);
@@ -132,7 +132,7 @@ function runImportTests(worklet_type) {
                            '/worklets/resources/empty-worklet-script.js';
         return promise_rejects(t, new DOMException('', 'AbortError'),
                                worklet.addModule(
-                                   '/common/redirect.py?location=' +
+                                   '/common/handlers/redirect.py?location=' +
                                    encodeURIComponent(kScriptURL)));
     }, 'Importing a cross-origin-redirected resource without the ' +
        'Access-Control-Allow-Origin header should reject the given promise');

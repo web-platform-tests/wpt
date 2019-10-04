@@ -8,7 +8,7 @@ audio {
     outline: solid
 }
 </style>
-<script src="/common/reftest-wait.js"></script>
+<script src="/common/utils/reftest-wait.js"></script>
 <audio autoplay controls onplaying="this.onplaying = null; this.pause(); this.currentTime = 0; takeScreenshotDelayed(1000)">
     <source src="/media/white.webm" type="video/webm">
     <source src="/media/white.mp4" type="video/mp4">

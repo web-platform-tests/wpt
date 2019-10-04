@@ -20,7 +20,7 @@ template_body_reftest = """<title></title>
 <link rel=%(match)s href=%(ref)s>
 """
 
-template_body_reftest_wait = """<script src="/common/reftest-wait.js"></script>
+template_body_reftest_wait = """<script src="/common/utils/reftest-wait.js"></script>
 """
 
 def get_parser():

@@ -55,17 +55,6 @@ where <code class="docutils literal notranslate"><span class="pre">TRIPLET=$(gcc
 </ul>
 </li>
 </ul>
-<p>Known issues:</p>
-<ul class="simple">
-<li>On a docker container WebKitWebDriver fails to listen on localhost,
-because the docker container doesn’t provide an IPv6 localhost address.
-To workaround this issue, manually tell it to only listen on IPv4 localhost
-by passing this parameter to wpt run: <code class="docutils literal notranslate"><span class="pre">--webdriver-arg=--host=127.0.0.1</span></code>
-Example:</li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --webdriver-arg<span class="o">=</span>--host<span class="o">=</span><span class="m">127</span>.0.0.1 webkitgtk_minibrowser TESTS
-</pre></div>
-</div>
 </div>
 
 

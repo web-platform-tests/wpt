@@ -1,4 +1,4 @@
-import {areArraysEqual} from '/common/arrays.js';
+import {areArraysEqual} from '/common/utils/arrays.js';
 
 registerLayout('test', class {
   static get inputProperties() {

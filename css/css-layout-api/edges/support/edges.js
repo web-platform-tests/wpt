@@ -1,4 +1,4 @@
-import {areArraysEqual} from '/common/arrays.js';
+import {areArraysEqual} from '/common/utils/arrays.js';
 
 function parseNumber(value) {
   const num = parseInt(value.toString());

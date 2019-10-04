@@ -34,10 +34,9 @@ RUN apt-get -qqy install \
     git-core
 
 
-# To speed up testers, install in the image most of WebKitGTK dependencies
-# but don't install WebKitGTK itself (that will be done at test time)
-RUN apt-get install -qqy webkit2gtk-driver \
-  && apt-get remove -qqy libjavascriptcore* libwebkit* webkit*
+# To speed up testers, cache in the image most of WebKitGTK dependencies
+# but don't install them (that will be done at test time)
+RUN apt-get install -qqy --download-only webkit2gtk-driver
 
 # Set the timezone
 ENV TZ "UTC"

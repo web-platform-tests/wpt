@@ -156,6 +156,7 @@ def install_webkitgtk_from_apt_repository(channel):
     run(["sudo", "mv", "/tmp/99webkitgtk", "/etc/apt/preferences.d/"])
     # Install webkit2gtk from the webkitgtk.org/debian repository for $channel
     run(["sudo", "apt-get", "-qqy", "update"])
+    run(["sudo", "apt-get", "-qqy", "upgrade"])
     run(["sudo", "apt-get", "-qqy", "-t", "buster-wpt-webkit-updates", "install", "webkit2gtk-driver"])
 
 

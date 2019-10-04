@@ -1,6 +1,6 @@
 # Resources
 
-This directory contains utilities intended for use by tests.
+This directory contains utilities intended for use by tests and maintained as project infrastructure.
 It does not contain tests.
 
 ## `testharness.js`

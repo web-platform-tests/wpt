@@ -1,7 +1,7 @@
 # Resources
 
-This directory contains utilities intended for use by tests of the web
-platform. It does not contain tests for web platform features.
+This directory contains utilities intended for use by tests.
+It does not contain tests.
 
 ## `testharness.js`
 
@@ -11,4 +11,4 @@ making assertions and is intended to work for both simple synchronous
 tests, and tests of asynchronous behaviour.
 
 Complete documentation is available in the `docs/` directory of this repository
-and on the web at http://web-platform-tests.org/writing-tests.
+and on the web at https://web-platform-tests.org/writing-tests/.

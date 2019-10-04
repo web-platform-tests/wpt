@@ -5,6 +5,6 @@
 // META: variant=?21-30
 // META: variant=?31-last
 // META: script=../util/helpers.js
-// META: script=/common/subset-tests.js
+// META: script=/common/utils/subset-tests.js
 // META: script=successes.js
 run_test(["RSASSA-PKCS1-v1_5"]);

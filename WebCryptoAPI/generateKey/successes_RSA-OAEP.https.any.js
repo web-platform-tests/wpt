@@ -17,6 +17,6 @@
 // META: variant=?141-150
 // META: variant=?151-last
 // META: script=../util/helpers.js
-// META: script=/common/subset-tests.js
+// META: script=/common/utils/subset-tests.js
 // META: script=successes.js
 run_test(["RSA-OAEP"]);

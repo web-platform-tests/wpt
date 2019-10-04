@@ -1,6 +1,6 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
-// META: script=/common/subset-tests-by-key.js
+// META: script=/common/utils/subset-tests-by-key.js
 // META: variant=?include=Node
 // META: variant=?exclude=Node
 // META: timeout=long

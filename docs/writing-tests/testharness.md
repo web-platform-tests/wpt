@@ -38,7 +38,7 @@ for example:
 The test can then do different things based on the URL.
 
 There are two utility scripts in that work well together with variants,
-`/common/subset-tests.js` and `/common/subset-tests-by-key.js`, where
+`/common/utils/subset-tests.js` and `/common/utils/subset-tests-by-key.js`, where
 a test that would otherwise have too many tests to be useful can be
 split up in ranges of subtests. For example:
 
@@ -50,7 +50,7 @@ split up in ranges of subtests. For example:
 <meta name="variant" content="?2001-last">
 <script src="/resources/testharness.js">
 <script src="/resources/testharnessreport.js">
-<script src="/common/subset-tests.js">
+<script src="/common/utils/subset-tests.js">
 <script>
  const tests = [
                  { fn: t => { ... }, name: "..." },
@@ -74,7 +74,7 @@ expression).
 <meta name="variant" content="?exclude=(Foo|Bar)">
 <script src="/resources/testharness.js">
 <script src="/resources/testharnessreport.js">
-<script src="/common/subset-tests-by-key.js">
+<script src="/common/utils/subset-tests-by-key.js">
 <script>
    subsetTestByKey("Foo", async_test, () => { ... }, "Testing foo");
    ...

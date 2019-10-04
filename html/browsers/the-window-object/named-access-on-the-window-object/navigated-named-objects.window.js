@@ -1,4 +1,4 @@
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 function echoURL(content) {
   return `/common/echo.py?content=${encodeURIComponent(content)}`;

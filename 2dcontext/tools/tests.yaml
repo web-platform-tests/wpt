@@ -865,7 +865,7 @@
     - security.toDataURL
     - security.getImageData
   scripts:
-    - /common/get-host-info.sub.js
+    - /common/utils/get-host-info.sub.js
   script-variants:
     cross: data:text/javascript,addCrossOriginYellowImage()
     redirect: data:text/javascript,addCrossOriginRedirectYellowImage()
@@ -880,7 +880,7 @@
   testing:
     - security.drawImage.canvas
   scripts:
-    - /common/get-host-info.sub.js
+    - /common/utils/get-host-info.sub.js
   script-variants:
     cross: data:text/javascript,addCrossOriginYellowImage()
     redirect: data:text/javascript,addCrossOriginRedirectYellowImage()
@@ -900,7 +900,7 @@
   testing:
     - security.start
   scripts:
-    - /common/get-host-info.sub.js
+    - /common/utils/get-host-info.sub.js
   script-variants:
     cross: data:text/javascript,addCrossOriginYellowImage()
     redirect: data:text/javascript,addCrossOriginRedirectYellowImage()
@@ -916,7 +916,7 @@
   testing:
     - security.start
   scripts:
-    - /common/get-host-info.sub.js
+    - /common/utils/get-host-info.sub.js
   script-variants:
     cross: data:text/javascript,addCrossOriginYellowImage()
     redirect: data:text/javascript,addCrossOriginRedirectYellowImage()
@@ -941,7 +941,7 @@
     - security.start
     - security.fillStyle.canvas
   scripts:
-    - /common/get-host-info.sub.js
+    - /common/utils/get-host-info.sub.js
   script-variants:
     cross: data:text/javascript,addCrossOriginYellowImage()
     redirect: data:text/javascript,addCrossOriginRedirectYellowImage()
@@ -966,7 +966,7 @@
   testing:
     - security.fillStyle.image
   scripts:
-    - /common/get-host-info.sub.js
+    - /common/utils/get-host-info.sub.js
   script-variants:
     cross: data:text/javascript,addCrossOriginYellowImage()
     redirect: data:text/javascript,addCrossOriginRedirectYellowImage()
@@ -983,7 +983,7 @@
   testing:
     - security.fillStyle.canvas
   scripts:
-    - /common/get-host-info.sub.js
+    - /common/utils/get-host-info.sub.js
   script-variants:
     cross: data:text/javascript,addCrossOriginYellowImage()
     redirect: data:text/javascript,addCrossOriginRedirectYellowImage()
@@ -1005,7 +1005,7 @@
   testing:
     - security.strokeStyle.image
   scripts:
-    - /common/get-host-info.sub.js
+    - /common/utils/get-host-info.sub.js
   script-variants:
     cross: data:text/javascript,addCrossOriginYellowImage()
     redirect: data:text/javascript,addCrossOriginRedirectYellowImage()
@@ -1022,7 +1022,7 @@
   testing:
     - security.strokeStyle.canvas
   scripts:
-    - /common/get-host-info.sub.js
+    - /common/utils/get-host-info.sub.js
   script-variants:
     cross: data:text/javascript,addCrossOriginYellowImage()
     redirect: data:text/javascript,addCrossOriginRedirectYellowImage()
@@ -1064,7 +1064,7 @@
   testing:
     - initial.reset
   scripts:
-    - /common/get-host-info.sub.js
+    - /common/utils/get-host-info.sub.js
   script-variants:
     cross: data:text/javascript,addCrossOriginYellowImage()
     redirect: data:text/javascript,addCrossOriginRedirectYellowImage()

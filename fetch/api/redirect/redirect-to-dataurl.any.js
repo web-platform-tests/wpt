@@ -1,4 +1,4 @@
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 var dataURL = "data:text/plain;base64,cmVzcG9uc2UncyBib2R5";
 var body = "response's body";

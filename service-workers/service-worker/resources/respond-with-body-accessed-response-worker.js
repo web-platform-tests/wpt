@@ -1,4 +1,4 @@
-importScripts('/common/get-host-info.sub.js');
+importScripts('/common/utils/get-host-info.sub.js');
 importScripts('test-helpers.sub.js');
 
 function getQueryParams(url) {

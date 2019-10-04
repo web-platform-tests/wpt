@@ -1,6 +1,6 @@
 // META: timeout=long
 // META: script=../resources/utils.js
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 function corsRedirectCredentials(desc, redirectUrl, redirectLocation, redirectStatus, locationCredentials) {
   var url = redirectUrl

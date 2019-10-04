@@ -1,5 +1,5 @@
 // META: title=Testing a basic asynchronous CORS XHR request.
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
     async_test(function(test) {
       const xhr = new XMLHttpRequest;

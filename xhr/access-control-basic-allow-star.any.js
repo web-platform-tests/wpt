@@ -1,5 +1,5 @@
 // META: title=Tests "*" setting for Access-Control-Allow-Origin header
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
     const xhr = new XMLHttpRequest;
 

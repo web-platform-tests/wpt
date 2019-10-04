@@ -1,6 +1,6 @@
 // META: script=/common/utils.js
 // META: script=../resources/utils.js
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 function corsNoPreflight(desc, baseURL, method, headerName, headerValue) {
 

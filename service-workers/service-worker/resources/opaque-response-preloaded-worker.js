@@ -1,4 +1,4 @@
-importScripts('/common/get-host-info.sub.js');
+importScripts('/common/utils/get-host-info.sub.js');
 
 var remoteUrl = get_host_info()['HTTPS_REMOTE_ORIGIN'] +
   '/service-workers/service-worker/resources/simple.txt'

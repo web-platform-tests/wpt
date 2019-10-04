@@ -1,4 +1,4 @@
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 function closedTest(newWindow, closeNewWindowsBrowsingContext) {
   assert_equals(newWindow.closed, false);

@@ -1,4 +1,4 @@
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 var redirectLocation = "cors-top.txt";
 

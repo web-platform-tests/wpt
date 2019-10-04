@@ -1,5 +1,5 @@
 // META: title=Tests that redirects between origins are allowed when access control is involved.
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
     function runSync(test, url)
     {

@@ -1,5 +1,5 @@
 // META: global=window,worker
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 const host = get_host_info();
 const path = "/fetch/cross-origin-resource-policy/";

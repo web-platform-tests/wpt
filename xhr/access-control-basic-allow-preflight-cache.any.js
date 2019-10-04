@@ -1,5 +1,5 @@
 // META: title=Preflight cache should allow second request without preflight OPTIONS request
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 // META: script=/common/utils.js
 
     const uuid = token();

@@ -1,7 +1,7 @@
 bodyDefault = '''
 importScripts('worker-testharness.js');
 importScripts('test-helpers.sub.js');
-importScripts('/common/get-host-info.sub.js');
+importScripts('/common/utils/get-host-info.sub.js');
 
 var host_info = get_host_info();
 
@@ -56,7 +56,7 @@ async_test(function(t) {
 bodyScript = '''
 importScripts('worker-testharness.js');
 importScripts('test-helpers.sub.js');
-importScripts('/common/get-host-info.sub.js');
+importScripts('/common/utils/get-host-info.sub.js');
 
 var host_info = get_host_info();
 
@@ -111,7 +111,7 @@ async_test(function(t) {
 bodyConnect = '''
 importScripts('worker-testharness.js');
 importScripts('test-helpers.sub.js');
-importScripts('/common/get-host-info.sub.js');
+importScripts('/common/utils/get-host-info.sub.js');
 
 var host_info = get_host_info();
 

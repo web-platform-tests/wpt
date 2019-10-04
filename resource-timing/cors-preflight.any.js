@@ -1,5 +1,5 @@
 // META: script=/common/utils.js
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 // Because apache decrements the Keep-Alive max value on each request, the
 // transferSize will vary slightly between requests for the same resource.

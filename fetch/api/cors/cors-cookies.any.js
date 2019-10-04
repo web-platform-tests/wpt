@@ -1,5 +1,5 @@
 // META: script=../resources/utils.js
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 function corsCookies(desc, baseURL1, baseURL2, credentialsMode, cookies) {
   var urlSetCookie = baseURL1 + dirname(location.pathname) + RESOURCES_DIR + "top.txt";

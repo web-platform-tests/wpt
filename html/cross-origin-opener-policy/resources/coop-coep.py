@@ -16,7 +16,7 @@ def main(request, response):
     response.content = """
 <!doctype html>
 <meta charset=utf-8>
-<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils/get-host-info.sub.js"></script>
 <iframe></iframe>
 <script>
   const navigate = new URL(location).searchParams.get("navigate");

@@ -11,7 +11,7 @@
   <body>
     <p>Access location object from different origins doesn't raise SECURITY_ERR exception</p>
     <div id=log></div>
-    <script src="/common/get-host-info.sub.js"></script>
+    <script src="/common/utils/get-host-info.sub.js"></script>
     <script>
       var runTest = async_test("Accessing location object from different origins doesn't raise SECURITY_ERR exception").step_func_done(function() {
         var frame = document.getElementById('testframe');

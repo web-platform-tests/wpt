@@ -1,5 +1,5 @@
 // META: script=../resources/utils.js
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 function cors(desc, origin) {
   var url = origin + dirname(location.pathname);

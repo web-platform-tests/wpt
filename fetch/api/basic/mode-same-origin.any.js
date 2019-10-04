@@ -1,5 +1,5 @@
 // META: script=../resources/utils.js
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 function fetchSameOrigin(url, shouldPass) {
   promise_test(function(test) {

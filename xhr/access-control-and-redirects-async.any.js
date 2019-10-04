@@ -1,5 +1,5 @@
 // META: title=Tests that asynchronous XMLHttpRequests handle redirects according to the CORS standard.
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
     function runTest(test, destination, parameters, customHeader, local, expectSuccess) {
       const xhr = new XMLHttpRequest();

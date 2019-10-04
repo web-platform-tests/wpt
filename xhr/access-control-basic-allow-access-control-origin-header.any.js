@@ -1,5 +1,5 @@
 // META: title=Access control test with origin header
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
     async_test(function(test) {
       const xhr = new XMLHttpRequest;

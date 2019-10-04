@@ -10,7 +10,7 @@
 // 'no-cors' mode to receive opaque responses. But the service worker cannot do
 // this, because in 'no-cors' mode the 'range' HTTP header is disallowed.
 
-importScripts('/common/get-host-info.sub.js')
+importScripts('/common/utils/get-host-info.sub.js')
 
 let initial = true;
 function is_initial_request() {

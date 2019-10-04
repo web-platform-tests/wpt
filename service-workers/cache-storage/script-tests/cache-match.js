@@ -1,7 +1,7 @@
 if (self.importScripts) {
     importScripts('/resources/testharness.js');
     importScripts('../resources/test-helpers.js');
-    importScripts('/common/get-host-info.sub.js');
+    importScripts('/common/utils/get-host-info.sub.js');
 }
 
 prepopulated_cache_test(simple_entries, function(cache, entries) {

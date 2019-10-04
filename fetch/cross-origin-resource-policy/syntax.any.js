@@ -1,4 +1,4 @@
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 const crossOriginURL = get_host_info().HTTP_REMOTE_ORIGIN + "/fetch/cross-origin-resource-policy/resources/hello.py?corp=";
 

@@ -1,5 +1,5 @@
 // META: title=Tests cross-origin request with non-CORS-safelisted method
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
     test(function() {
       const xhr = new XMLHttpRequest;

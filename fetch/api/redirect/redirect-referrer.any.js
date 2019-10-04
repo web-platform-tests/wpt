@@ -1,7 +1,7 @@
 // META: timeout=long
 // META: script=/common/utils.js
 // META: script=../resources/utils.js
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 function testReferrerAfterRedirection(desc, redirectUrl, redirectLocation, referrerPolicy, redirectReferrerPolicy, expectedReferrer) {
   var url = redirectUrl;

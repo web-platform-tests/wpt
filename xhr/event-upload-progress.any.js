@@ -1,5 +1,5 @@
 // META: title=XMLHttpRequest: upload progress event
-// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils/get-host-info.sub.js
 
 const remote = get_host_info().HTTP_REMOTE_ORIGIN + "/xhr/resources/corsenabled.py",
   redirect = "resources/redirect.py?code=307&location=" + remote;

@@ -1,4 +1,4 @@
-// META: script=/common/media.js
+// META: script=/common/utils/media.js
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 // META: script=/resources/testdriver.js

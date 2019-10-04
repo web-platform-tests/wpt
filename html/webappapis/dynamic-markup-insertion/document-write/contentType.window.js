@@ -1,4 +1,4 @@
-// META: script=/common/media.js
+// META: script=/common/utils/media.js
 
 const videoURL = getVideoURI("/images/pattern"),
       videoMIMEType = getMediaContentType(videoURL);

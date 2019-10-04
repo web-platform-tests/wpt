@@ -18,7 +18,7 @@ function start(event)
   draggedFrame = canvas.toDataURL('image/png');
   event.dataTransfer.setData('text/uri-list',draggedFrame);}
 </script>
-<script src="/common/media.js"></script>
+<script src="/common/utils/media.js"></script>
 </head>
 <body dropzone="copy string:text/uri-list" ondrop="dropIt(event)">
 <p>

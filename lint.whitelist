@@ -144,7 +144,7 @@ SET TIMEOUT: *-manual.*
 SET TIMEOUT: annotation-model/scripts/ajv.min.js
 SET TIMEOUT: apng/animated-png-timeout.html
 SET TIMEOUT: cookies/resources/testharness-helpers.js
-SET TIMEOUT: common/reftest-wait.js
+SET TIMEOUT: common/utils/reftest-wait.js
 SET TIMEOUT: conformance-checkers/*
 SET TIMEOUT: content-security-policy/*
 SET TIMEOUT: css/css-display/display-contents-shadow-dom-1.html

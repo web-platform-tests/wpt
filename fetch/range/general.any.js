@@ -1,4 +1,4 @@
-// META: script=/common/utils.js
+// META: script=/common/utils/utils.js
 
 // Helpers that return headers objects with a particular guard
 function headersGuardNone(fill) {

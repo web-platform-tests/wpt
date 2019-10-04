@@ -1,7 +1,7 @@
 if (self.importScripts) {
   importScripts('/resources/testharness.js');
   importScripts('../resources/test-helpers.js');
-  importScripts('/common/utils.js');
+  importScripts('/common/utils/utils.js');
 }
 
 // We perform the same tests on put, add, addAll. Parameterise the tests to

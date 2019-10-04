@@ -1,4 +1,4 @@
-// META: script=/common/utils.js
+// META: script=/common/utils/utils.js
 
 // .stack properties on errors are unspecified, but are present in most
 // browsers, most of the time. https://github.com/tc39/proposal-error-stacks/ tracks standardizing them.

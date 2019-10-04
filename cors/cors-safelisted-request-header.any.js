@@ -1,5 +1,5 @@
 // META: script=support.js?pipe=sub
-// META: script=/common/utils.js
+// META: script=/common/utils/utils.js
 
 // This is based on simple-requests.htm, with modifications to make the code more modern and test
 // more esoteric cases of header value parsing.

@@ -187,7 +187,7 @@ Use `// META: title=This is the title of the test` at the beginning of the resou
 Use `// META: script=link/to/resource.js` at the beginning of the resource. For example,
 
 ```
-// META: script=/common/utils.js
+// META: script=/common/utils/utils.js
 // META: script=resources/utils.js
 ```
 

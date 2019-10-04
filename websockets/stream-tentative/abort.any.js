@@ -1,6 +1,6 @@
 // META: script=../websocket.sub.js
 // META: script=resources/url-constants.js
-// META: script=/common/utils.js
+// META: script=/common/utils/utils.js
 // META: global=window,worker
 
 promise_test(async t => {

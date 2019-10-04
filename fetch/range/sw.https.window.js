@@ -1,5 +1,5 @@
 // META: script=../../../service-workers/service-worker/resources/test-helpers.sub.js
-// META: script=/common/utils.js
+// META: script=/common/utils/utils.js
 // META: script=/common/utils/get-host-info.sub.js
 // META: script=resources/utils.js
 

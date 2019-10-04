@@ -1,5 +1,5 @@
 // META: script=resources/utils.js
-// META: script=/common/utils.js
+// META: script=/common/utils/utils.js
 
 const onload = new Promise(r => window.addEventListener('load', r));
 

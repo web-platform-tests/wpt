@@ -1,6 +1,6 @@
 // META: title=Preflight cache should be invalidated by changed method
 // META: script=/common/utils/get-host-info.sub.js
-// META: script=/common/utils.js
+// META: script=/common/utils/utils.js
 
     const uuid = token();
     const xhr = new XMLHttpRequest;

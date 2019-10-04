@@ -1,4 +1,4 @@
-// META: script=/common/utils.js
+// META: script=/common/utils/utils.js
 // META: script=/common/utils/get-host-info.sub.js
 
 // Because apache decrements the Keep-Alive max value on each request, the

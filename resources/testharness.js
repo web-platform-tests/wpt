@@ -1516,16 +1516,6 @@ policies and contribution forms [3].
     }
     expose(assert_precondition, "assert_precondition");
 
-
-    function PreconditionFailedError(message)
-    {
-        AssertionError.call(this, message);
-    }
-    expose(PreconditionFailedError, "PreconditionFailedError");
-
-    PreconditionFailedError.prototype = Object.create(AssertionError.prototype);
-    PreconditionFailedError.prototype.constructor = PreconditionFailedError;
-
     function Test(name, properties)
     {
         if (tests.file_is_test && tests.tests.length) {
@@ -3116,6 +3106,7 @@ policies and contribution forms [3].
     expose(AssertionError, "AssertionError");
 
     AssertionError.prototype = Object.create(Error.prototype);
+    AssertionError.prototype.constructor = AssertionError;
 
     AssertionError.prototype.get_stack = function() {
         var stack = new Error().stack;
@@ -3162,6 +3153,15 @@ policies and contribution forms [3].
 
         return lines.slice(i).join("\n");
     }
+
+    function PreconditionFailedError(message)
+    {
+        AssertionError.call(this, message);
+    }
+    expose(PreconditionFailedError, "PreconditionFailedError");
+
+    PreconditionFailedError.prototype = Object.create(AssertionError.prototype);
+    PreconditionFailedError.prototype.constructor = PreconditionFailedError;
 
     function make_message(function_name, description, error, substitutions)
     {

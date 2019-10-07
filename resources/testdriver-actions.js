@@ -3,7 +3,7 @@
 
   /**
    * Builder for creating a sequence of actions
-   * The default tick duration is set to 16ms, which is one frame time based on
+   * The default tick duration is set to 32ms, which is 2 frame time based on
    * 60Hz display.
    */
   function Actions(defaultTickDuration=16) {
@@ -209,9 +209,9 @@
      * @param {String?} sourceName - Named key source to use or null for the default key source
      * @returns {Actions}
      */
-    keyDown: function(key, {sourceName=null}={}) {
+    keyDown: function(key, {sourceName=null, asyncDispatch=false}={}) {
       let source = this.getSource("key", sourceName);
-      source.keyDown(this, key);
+      source.keyDown(this, key, asyncDispatch);
       return this;
     },
 
@@ -222,9 +222,9 @@
      * @param {String?} sourceName - Named key source to use or null for the default key source
      * @returns {Actions}
      */
-    keyUp: function(key, {sourceName=null}={}) {
+    keyUp: function(key, {sourceName=null, asyncDispatch=false}={}) {
       let source = this.getSource("key", sourceName);
-      source.keyUp(this, key);
+      source.keyUp(this, key, asyncDispatch);
       return this;
     },
 
@@ -236,9 +236,9 @@
      *                               pointer source
      * @returns {Actions}
      */
-    pointerDown: function({button=this.ButtonType.LEFT, sourceName=null}={}) {
+    pointerDown: function({button=this.ButtonType.LEFT, sourceName=null, asyncDispatch=false}={}) {
       let source = this.getSource("pointer", sourceName);
-      source.pointerDown(this, button);
+      source.pointerDown(this, button, asyncDispatch);
       return this;
     },
 
@@ -250,9 +250,9 @@
      *                               source
      * @returns {Actions}
      */
-    pointerUp: function({button=this.ButtonType.LEFT, sourceName=null}={}) {
+    pointerUp: function({button=this.ButtonType.LEFT, sourceName=null, asyncDispatch=false}={}) {
       let source = this.getSource("pointer", sourceName);
-      source.pointerUp(this, button);
+      source.pointerUp(this, button, asyncDispatch);
       return this;
     },
 
@@ -269,9 +269,9 @@
      * @returns {Actions}
      */
     pointerMove: function(x, y,
-                          {origin="viewport", duration, sourceName=null}={}) {
+                          {origin="viewport", duration, sourceName=null, asyncDispatch=false}={}) {
       let source = this.getSource("pointer", sourceName);
-      source.pointerMove(this, x, y, duration, origin);
+      source.pointerMove(this, x, y, duration, origin, asyncDispatch);
       return this;
     },
   };
@@ -324,20 +324,20 @@
       return data;
     },
 
-    keyDown: function(actions, key) {
+    keyDown: function(actions, key, asyncDispatch) {
       let tick = actions.tickIdx;
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
       }
-      this.actions.set(tick, {type: "keyDown", value: key});
+      this.actions.set(tick, {type: "keyDown", value: key, asyncDispatch});
     },
 
-    keyUp: function(actions, key) {
+    keyUp: function(actions, key, asyncDispatch) {
       let tick = actions.tickIdx;
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
       }
-      this.actions.set(tick, {type: "keyUp", value: key});
+      this.actions.set(tick, {type: "keyUp", value: key, asyncDispatch});
     },
   };
 
@@ -367,28 +367,28 @@
       return data;
     },
 
-    pointerDown: function(actions, button) {
+    pointerDown: function(actions, button, asyncDispatch) {
       let tick = actions.tickIdx;
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
       }
-      this.actions.set(tick, {type: "pointerDown", button});
+      this.actions.set(tick, {type: "pointerDown", button, asyncDispatch});
     },
 
-    pointerUp: function(actions, button) {
+    pointerUp: function(actions, button, asyncDispatch) {
       let tick = actions.tickIdx;
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
       }
-      this.actions.set(tick, {type: "pointerUp", button});
+      this.actions.set(tick, {type: "pointerUp", button, asyncDispatch});
     },
 
-    pointerMove: function(actions, x, y, duration, origin) {
+    pointerMove: function(actions, x, y, duration, origin, asyncDispatch) {
       let tick = actions.tickIdx;
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
       }
-      this.actions.set(tick, {type: "pointerMove", x, y, origin});
+      this.actions.set(tick, {type: "pointerMove", x, y, origin, asyncDispatch});
       if (duration) {
         this.actions.get(tick).duration = duration;
       }

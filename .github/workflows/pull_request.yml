@@ -6,7 +6,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
       with:
-        ref: refs/heads/master
+        ref: refs/pull/19559/head
         fetch-depth: 50
     - name: update-pr-preview
       uses: ./tools/docker/github

@@ -240,7 +240,7 @@ def main(api_root):
         github.set_ref(ref_labeled, sha)
     elif action == 'unlabeled' and target_label == active_label:
         github.delete_ref(ref_labeled)
-    elif action == 'synchronize' and has_label:
+    elif action == 'synchronize':
         github.set_ref(ref_open, sha)
         github.set_ref(ref_labeled, sha)
     else:

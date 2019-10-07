@@ -34,7 +34,7 @@ var octets = {
                 }
                 out += decoder.decode();
                 assert_equals(out, string);
-            }, 'Streaming decode: ' + encoding + ', ' + len + ' byte window (' + self[arrayBufferOrSharedArrayBuffer].name + ')');
+            }, 'Streaming decode: ' + encoding + ', ' + len + ' byte window (' + arrayBufferOrSharedArrayBuffer + ')');
         }
     });
 })

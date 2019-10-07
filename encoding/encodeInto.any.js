@@ -112,7 +112,7 @@
             assert_equals(fullView[i], testData.written[i - destinationOffset]);
           }
         }
-      }, "encodeInto() into "  + self[arrayBufferOrSharedArrayBuffer].name + " with " + testData.input + " and destination length " + testData.destinationLength + ", offset " + destinationData.destinationOffset + ", filler " + destinationData.filler);
+      }, "encodeInto() into "  + arrayBufferOrSharedArrayBuffer + " with " + testData.input + " and destination length " + testData.destinationLength + ", offset " + destinationData.destinationOffset + ", filler " + destinationData.filler);
     })
   });
 });
@@ -130,14 +130,14 @@
   ["ArrayBuffer", "SharedArrayBuffer"].forEach((arrayBufferOrSharedArrayBuffer) => {
     test(() => {
       assert_throws(new TypeError(), () => new TextEncoder().encodeInto("", new view(new self[arrayBufferOrSharedArrayBuffer](0))));
-    }, "Invalid encodeInto() destination: " + view.name + ", backed by: " + self[arrayBufferOrSharedArrayBuffer].name);
+    }, "Invalid encodeInto() destination: " + view.name + ", backed by: " + arrayBufferOrSharedArrayBuffer);
   });
 });
 
 ["ArrayBuffer", "SharedArrayBuffer"].forEach((arrayBufferOrSharedArrayBuffer) => {
   test(() => {
     assert_throws(new TypeError(), () => new TextEncoder().encodeInto("", new self[arrayBufferOrSharedArrayBuffer](10)));
-  }, "Invalid encodeInto() destination: " + self[arrayBufferOrSharedArrayBuffer].name);
+  }, "Invalid encodeInto() destination: " + arrayBufferOrSharedArrayBuffer);
 });
 
 

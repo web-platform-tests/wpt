@@ -13,5 +13,5 @@
     view[0] = 0x01
     view[1] = 0x02
     assert_equals(decoder.decode(buf2), "@")
-  }, "Modify buffer after passing it in (" + self[arrayBufferOrSharedArrayBuffer].name  + ")")
+  }, "Modify buffer after passing it in (" + arrayBufferOrSharedArrayBuffer  + ")")
 });

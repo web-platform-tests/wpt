@@ -250,23 +250,26 @@ having exactly one test per page is desirable, and the overhead of
 wrapping everything in functions for isolation becomes
 burdensome. For these cases <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> support “single page
 tests”.</p>
-<p>In order for a test to be interpreted as a single page test, then
-it must simply not call <code class="docutils literal notranslate"><span class="pre">test()</span></code> or <code class="docutils literal notranslate"><span class="pre">async_test()</span></code> anywhere on the page, and
-must call the <code class="docutils literal notranslate"><span class="pre">done()</span></code> function to indicate that the test is complete. All
-the <code class="docutils literal notranslate"><span class="pre">assert_*</span></code> functions are available as normal, but are called without
-the normal step function wrapper. For example:</p>
+<p>In order for a test to be interpreted as a single page test, it should set the
+<code class="docutils literal notranslate"><span class="pre">single_test</span></code> <a class="reference external" href="#setup">setup option</a> to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
 <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Basic document.body test<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="nx">setup</span><span class="p">({</span> <span class="nx">single_test</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
     <span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
     <span class="nx">done</span><span class="p">()</span>
  <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <p>The test title for single page tests is always taken from <code class="docutils literal notranslate"><span class="pre">document.title</span></code>.</p>
+<p>(Prior to October 2019, this behavior would be enabled implicitly for any test
+that did not call <code class="docutils literal notranslate"><span class="pre">test()</span></code> or <code class="docutils literal notranslate"><span class="pre">async_test()</span></code> anywhere on the page and that
+eventually called the <code class="docutils literal notranslate"><span class="pre">done()</span></code> function. <a class="reference external" href="https://github.com/web-platform-tests/rfcs/blob/master/rfcs/single_test">This behavior was found to be prone
+to errors and is in the process of being
+removed.</a>)</p>
 </div>
 <div class="section" id="making-assertions">
 <h2>Making assertions<a class="headerlink" href="#making-assertions" title="Permalink to this headline">¶</a></h2>
@@ -391,6 +394,12 @@ with some existing test framework that has its own timeout mechanism).</p>
 <p><code class="docutils literal notranslate"><span class="pre">allow_uncaught_exception</span></code> - don’t treat an uncaught exception as an error;
 needed when e.g. testing the <code class="docutils literal notranslate"><span class="pre">window.onerror</span></code> handler.</p>
 <p><code class="docutils literal notranslate"><span class="pre">timeout_multiplier</span></code> - Multiplier to apply to per-test timeouts.</p>
+<p><code class="docutils literal notranslate"><span class="pre">single_test</span></code> - Test authors may set this property to <code class="docutils literal notranslate"><span class="pre">true</span></code> to enable <a class="reference external" href="#single-page-tests">the
+“single page test” mode of testharness.js</a>; the current
+test must not declare any subtests; testharness.js will interpret all events
+which normally influence the harness status (e.g. uncaught exceptions,
+unhandled promise rejections, and timeouts) in terms of a single
+implicitly-defined subtest.</p>
 </div>
 <div class="section" id="determining-when-all-tests-are-complete">
 <h2>Determining when all tests are complete<a class="headerlink" href="#determining-when-all-tests-are-complete" title="Permalink to this headline">¶</a></h2>

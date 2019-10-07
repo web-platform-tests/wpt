@@ -49,10 +49,12 @@ test_valid_value("transform", "skewY(-90deg)");
 test_valid_value("transform", "translate(1px, 2%) scale(3, 4) rotate(-90deg)");
 
 // Regression test for crbug.com/995038
-test_valid_value("transform", "translateX(2e80px)", "translateX(3.40282e+38px)");
-test_valid_value("transform", "rotate(2e80deg)", "rotate(3.40282e+38deg)");
-test_valid_value("transform", "scaleX(2e80)", "scaleX(3.40282e+38)");
-test_valid_value("transform", "skewX(2e80deg)", "skewX(3.40282e+38deg)");
+// Blink uses 3.40282e+38, Gecko serializes it as 3.40282e38, and WebKit uses
+// 2e+80 for the limits on transform.
+test_valid_value("transform", "translateX(2e80px)", ["translateX(3.40282e+38px)", "translateX(3.40282e38px)", "translateX(2e+80px)"]);
+test_valid_value("transform", "rotate(2e80deg)", ["rotate(3.40282e+38deg)", "rotate(3.40282e38deg)", "rotate(2e+80deg)"]);
+test_valid_value("transform", "scaleX(2e80)", ["scaleX(3.40282e+38)", "scaleX(3.40282e38)", "scaleX(2e+80)"]);
+test_valid_value("transform", "skewX(2e80deg)", ["skewX(3.40282e+38deg)", "skewX(3.40282e38deg)", "skewX(2e+80deg)"]);
 </script>
 </body>
 </html>

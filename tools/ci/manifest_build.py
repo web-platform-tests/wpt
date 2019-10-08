@@ -171,20 +171,8 @@ def should_dry_run():
 
 
 def main():
-    repo_key = "GITHUB_REPOSITORY"
-
     dry_run = should_dry_run()
-
-    owner, repo = os.environ[repo_key].split("/", 1)
-
-    git = get_git_cmd(wpt_root)
-    head_rev = git("rev-parse", "HEAD")
-
-    pr = get_pr(owner, repo, head_rev)
-    if pr is None:
-        return Status.FAIL
-    tag_name = "merge_pr_%s" % pr
-
+    
     manifest_path = os.path.expanduser(os.path.join("~", "meta", "MANIFEST.json"))
 
     os.makedirs(os.path.dirname(manifest_path))
@@ -193,15 +181,25 @@ def main():
 
     compress_manifest(manifest_path)
 
+    owner, repo = os.environ["GITHUB_REPOSITORY"].split("/", 1)
+
+    git = get_git_cmd(wpt_root)
+    head_rev = git("rev-parse", "HEAD")
+    summary = git("show", "--no-patch", '--format="%s"', "HEAD")
+    body = git("show", "--no-patch", '--format="%b"', "HEAD")
+
+    pr = get_pr(owner, repo, head_rev)
+
     if dry_run:
         return Status.SUCCESS
+
+    if pr is None:
+        return Status.FAIL
+    tag_name = "merge_pr_%s" % pr
 
     tagged = tag(owner, repo, head_rev, tag_name)
     if not tagged:
         return Status.FAIL
-
-    summary = git("show", "--no-patch", '--format="%s"', "HEAD")
-    body = git("show", "--no-patch", '--format="%b"', "HEAD")
 
     if not create_release(manifest_path, owner, repo, head_rev, tag_name, summary, body):
         return Status.FAIL

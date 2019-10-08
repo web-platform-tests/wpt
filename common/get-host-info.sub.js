@@ -1,3 +1,7 @@
+/**
+ * Host information for cross-origin tests.
+ * @returns {Object} with properties for different host information.
+ */
 function get_host_info() {
 
   var HTTP_PORT = '{{ports[http][0]}}';
@@ -38,10 +42,13 @@ function get_host_info() {
   };
 }
 
+/**
+ * When a default port is used, location.port returns the empty string.
+ * To compare with wptserve `ports` substitution we need a port...
+ * @param {*} loc - can be Location/<a>/<area>/URL, but assumes http/https only.
+ * @returns {string} The port number.
+ */
 function get_port(loc) {
-  // When a default port is used, location.port returns the empty string.
-  // To compare with wptserve `ports` substitution we need a port...
-  // loc can be Location/<a>/<area>/URL, but assumes http/https only.
   if (loc.port) {
     return loc.port;
   }

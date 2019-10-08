@@ -10,25 +10,101 @@
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="support/parsing-utils.js"></script>
+        <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />-->
     </head>
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-        var shape_margin_valid_unit_tests = [];
-        ParsingUtils.validUnits.forEach(function(unit) {
-            test = "10"+unit;
-            testCase = new Object();
-            // actual & expected_inline should be the same
-            // expected_computed will get converted to the px value in the test framework
-            testCase["actual"] = test;
-            testCase["expected_inline"] = test;
-            testCase["expected_computed"] = test;
-            shape_margin_valid_unit_tests.push(testCase);
+        // actual & expected should be the same for inline
+        // expected for computed are converted to the px value in the test framework
+
+        setup({explicit_done: true});
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10cm", "10cm");
+            }, '10cm - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10mm", "10mm");
+            }, '10mm - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10in", "10in");
+            }, '10in - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10pt", "10pt");
+            }, '10pt - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10pc", "10pc");
+            }, '10pc - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10em", "10em");
+            }, '10em - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10ex", "10ex");
+            }, '10ex - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10ch", "10ch");
+            }, '10ch - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10rem", "10rem");
+            }, '10rem - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10vw", "10vw");
+            }, '10vw - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10vh", "10vh");
+            }, '10vh - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10vmin", "10vmin");
+            }, '10vmin - inline');
+            test(function() {
+                ParsingUtils.testShapeMarginInlineStyle("10vmax", "10vmax");
+            }, '10vmax - inline');
+
+        ParsingUtils.setupFonts();
+        document.fonts.ready.then(()=> {
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10cm", ParsingUtils.convertToPx("10cm"));
+            }, '10cm - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10mm", ParsingUtils.convertToPx("10mm"));
+            }, '10mm - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10in", ParsingUtils.convertToPx("10in"));
+            }, '10in - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10pt", ParsingUtils.convertToPx("10pt"));
+            }, '10pt - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10pc", ParsingUtils.convertToPx("10pc"));
+            }, '10pc - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10em", ParsingUtils.convertToPx("10em"));
+            }, '10em - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10ex", ParsingUtils.convertToPx("10ex"));
+            }, '10ex - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10ch", ParsingUtils.convertToPx("10ch"));
+            }, '10ch - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10rem", ParsingUtils.convertToPx("10rem"));
+            }, '10rem - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10vw", ParsingUtils.convertToPx("10vw"));
+            }, '10vw - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10vh", ParsingUtils.convertToPx("10vh"));
+            }, '10vh - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10vmin", ParsingUtils.convertToPx("10vmin"));
+            }, '10vmin - computed');
+            test(function() {
+                ParsingUtils.testShapeMarginComputedStyle("10vmax", ParsingUtils.convertToPx("10vmax"));
+            }, '10vmax - computed');
+
+            ParsingUtils.restoreFonts();
+            done();
         });
-        generate_tests( ParsingUtils.testShapeMarginInlineStyle,
-                        ParsingUtils.buildTestCases(shape_margin_valid_unit_tests, "inline"), true);
-        generate_tests( ParsingUtils.testShapeMarginComputedStyle,
-                        ParsingUtils.buildTestCases(shape_margin_valid_unit_tests, "computed"), true);
+
         </script>
     </body>
 </html>

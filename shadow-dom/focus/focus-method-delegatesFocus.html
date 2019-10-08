@@ -191,6 +191,26 @@ test(() => {
 
 test(() => {
   resetTabIndexAndFocus();
+  setTabIndex([host, aboveSlots], 0);
+  setTabIndex([belowSlots], 1);
+  // Structure:
+  // <div #host> (delegatesFocus=true) tabindex=0
+  //    #shadowRoot
+  //      <div #aboveSlots> tabindex=0
+  //      <slot #firstSlot>
+  //        (slotted) <div #slottedToFirstSlot>
+  //      <slot #secondSlot>
+  //        (slotted) <div #slottedToSecondSlot>
+  //      <div #belowSlots> tabindex=1
+  // <div #outside>
+  // First focusable = #aboveSlots
+  host.focus();
+  assert_equals(shadowRoot.activeElement, aboveSlots);
+  assert_equals(document.activeElement, host);
+}, "focus() on host with delegatesFocus & tabindex=0, #aboveSlots with tabindex=0 and #belowSlots with tabindex=1");
+  
+test(() => {
+  resetTabIndexAndFocus();
   setTabIndex([host, slottedToFirstSlot, slottedToSecondSlot, belowSlots], 0);
   // Structure:
   // <div #host> (delegatesFocus=true) tabindex=0

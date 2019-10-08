@@ -172,7 +172,7 @@ def should_dry_run():
 
 def main():
     dry_run = should_dry_run()
-    
+
     manifest_path = os.path.expanduser(os.path.join("~", "meta", "MANIFEST.json"))
 
     os.makedirs(os.path.dirname(manifest_path))

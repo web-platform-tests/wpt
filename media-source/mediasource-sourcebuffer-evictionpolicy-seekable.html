@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!-- Copyright © 2019 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
+<html>
+    <head>
+        <meta  charset="utf-8">
+        <title>SourceBuffer.evictionPolicy impact on behavior of media element seekable test cases.</title>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="mediasource-util.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script>
+
+function mediaSourceEvictionPolicySeekableTest(policy, doMediaDataAppend, setInfiniteDuration,
+                                               expectedSeekableRangeLengthWithoutLiveSeekableRange,
+                                               expectedSeekableRangeLengthWithLiveSeekableRange,
+                                               description)
+{
+  function verifySeekable(test, mediaElement, mediaSource, setInfiniteDuration,
+                          expectedSeekableRangeLengthWithoutLiveSeekableRange,
+                          expectedSeekableRangeLengthWithLiveSeekableRange)
+  {
+    if (setInfiniteDuration) {
+      // This engages potential use of any set live seekable range, but not
+      // if using 'before-next-demuxed' policy, or if .
+      mediaSource.duration = +Infinity;
+    } else {
+      // None of the test media should contain +Infinity presentation duration
+      // in their initialization segments.
+      assert_not_equals(mediaSource.duration, +Infinity);
+    }
+
+    assert_equals(mediaElement.seekable.length, expectedSeekableRangeLengthWithoutLiveSeekableRange);
+
+    // Actual range doesn't matter here. Whether or not it lets seekable return
+    // the expected number of time ranges is what is verified.
+    mediaSource.setLiveSeekableRange(0,100);
+
+    assert_equals(mediaElement.seekable.length, expectedSeekableRangeLengthWithLiveSeekableRange);
+  };
+
+  function verifySeek(test, mediaElement)
+  {
+    assert_equals(mediaElement.currentTime, 0.0, 'MediaSource presentation start time is 0 seconds');
+    test.expectEvent(mediaElement, 'seeking');
+    mediaElement.currentTime = 1.0;
+    test.waitForExpectedEvents(function()
+    {
+      assert_equals(mediaElement.currentTime, 1.0, 'currentTime should have changed');
+      test.done();
+    });
+  };
+
+  function verifySeekIgnored(test, mediaElement)
+  {
+    assert_equals(mediaElement.currentTime, 0.0, 'MediaSource presentation start time is 0 seconds');
+    mediaElement.addEventListener('seeking', test.unreached_func('Unexpected event "seeking"'));
+    mediaElement.currentTime = 1.0;
+    // Let 10 milliseconds of "parallel" portion of the HTMLMediaElement seeking
+    // algorithm elapse. If no 'seeking' event, and if the currentTime remains
+    // unchanged, determine that seek was correctly ignored.
+    test.step_timeout(function()
+    {
+      assert_equals(mediaElement.currentTime, 0.0, 'Seek successfully ignored');
+      test.done();
+    }, 10);
+  };
+
+  function verifyDefaultPlaybackStartPositionChange(test, mediaElement)
+  {
+    assert_equals(mediaElement.currentTime, 0.0, 'MediaSource presentation start time is 0 seconds');
+    assert_equals(mediaElement.readyState, HTMLMediaElement.HAVE_NOTHING, 'Media element should have nothing');
+    mediaElement.addEventListener('seeking', test.unreached_func('Unexpected event "seeking"'));
+    mediaElement.currentTime = 1.0;
+    assert_equals(mediaElement.currentTime, 1.0, 'currentTime while HAVE_NOTHING should change regardless of eviction policy');
+    // Ensure that no "parallel" portion of a broken implementation's
+    // HTMLMediaElement seeking algorithm runs and changes currentTime.
+    // Let 10 milliseconds elapse to check for absence of 'seeking' event.
+    test.step_timeout(function()
+    {
+      assert_equals(mediaElement.currentTime, 1.0, 'currentTime should remain set to the new default playback start position');
+      test.done();
+    }, 10);
+  };
+
+  mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+  {
+    sourceBuffer.evictionPolicy = policy;
+    assert_equals(sourceBuffer.evictionPolicy, policy, 'evictionPolicy should be "' + policy + '"');
+
+    if (doMediaDataAppend) {
+      test.expectEvent(sourceBuffer, 'updateend');
+      sourceBuffer.appendBuffer(mediaData);
+      test.waitForExpectedEvents(function()
+      {
+        assert_equals(sourceBuffer.evictionPolicy, policy, 'evictionPolicy should still be "' + policy + '"');
+        assert_greater_than(mediaElement.buffered.length, 0, 'Something should be buffered');
+        assert_greater_than(mediaSource.duration, 1.0, 'Test media should have at least 1 second duration');
+        verifySeekable(test, mediaElement, mediaSource, setInfiniteDuration,
+                       expectedSeekableRangeLengthWithoutLiveSeekableRange,
+                       expectedSeekableRangeLengthWithLiveSeekableRange);
+
+        // Try seeking the media element. Iff 'before-next-demuxed' policy and
+        // media buffered, then seek should not succeed.
+        if (policy == 'before-next-demuxed') {
+          verifySeekIgnored(test, mediaElement);
+        } else {
+          verifySeek(test, mediaElement);
+        }
+      });
+    } else {
+      assert_equals(NaN, mediaSource.duration, 'mediaSource with nothing ever appended should begin with NaN duration');
+      verifySeekable(test, mediaElement, mediaSource, setInfiniteDuration,
+                     expectedSeekableRangeLengthWithoutLiveSeekableRange,
+                     expectedSeekableRangeLengthWithLiveSeekableRange);
+      // Try seeking the media element. Since nothing is buffered, seek should
+      // change "default playback start position" (and currentTime), but not
+      // emit 'seeking' event.
+      verifyDefaultPlaybackStartPositionChange(test, mediaElement);
+    }
+  }, description);
+};
+
+mediaSourceEvictionPolicySeekableTest(
+    'normal', false, false, 0, 0,
+    'Test "normal" seekable range with nothing appended and duration untouched by app');
+
+mediaSourceEvictionPolicySeekableTest(
+    'normal', false, true, 0, 1,
+    'Test "normal" seekable range with nothing appended and duration set to +Infinity');
+mediaSourceEvictionPolicySeekableTest(
+    'normal', true, false, 1, 1,
+    'Test "normal" seekable range with media appended and duration untouched by app');
+
+mediaSourceEvictionPolicySeekableTest(
+    'normal', true, true, 1, 1,
+    'Test "normal" seekable range with media appended and duration set to +Infinity');
+
+mediaSourceEvictionPolicySeekableTest(
+    'before-current-gop', false, false, 0, 0,
+    'Test "before-current-gop" seekable range with nothing appended and duration untouched by app');
+
+mediaSourceEvictionPolicySeekableTest(
+    'before-current-gop', false, true, 0, 1,
+    'Test "before-current-gop" seekable range with nothing appended and duration set to +Infinity');
+
+mediaSourceEvictionPolicySeekableTest(
+    'before-current-gop', true, false, 1, 1,
+    'Test "before-current-gop" seekable range with media appended and duration untouched by app');
+
+mediaSourceEvictionPolicySeekableTest(
+    'before-current-gop', true, true, 1, 1,
+    'Test "before-current-gop" seekable range with media appended and duration set to +Infinity');
+
+// Unlike 'normal' and 'before-current-gop', 'before-next-demuxed' should
+// always have just 0 TimeRanges in media element seekable, except one case
+// noted below.
+
+mediaSourceEvictionPolicySeekableTest(
+    'before-next-demuxed', false, false, 0, 0,
+    'Test "before-next-demuxed" seekable range with nothing appended and duration untouched by app');
+
+// This 'before-next-demuxed' case has 1 TimeRange in media element seekable after setting
+// liveSeekableRange and duration of +Infinity because the SourceBuffer never had anything
+// appended to it, so it is not in MediaSource.activeSourceBuffers.
+mediaSourceEvictionPolicySeekableTest(
+    'before-next-demuxed', false, true, 0, 1,
+    'Test "before-next-demuxed" seekable range with nothing appended and duration set to +Infinity');
+
+mediaSourceEvictionPolicySeekableTest(
+    'before-next-demuxed', true, false, 0, 0,
+    'Test "before-next-demuxed" seekable range with media appended and duration untouched by app');
+
+mediaSourceEvictionPolicySeekableTest(
+    'before-next-demuxed', true, true, 0, 0,
+    'Test "before-next-demuxed" seekable range with media appended and duration set to +Infinity');
+
+        </script>
+    </body>
+</html>

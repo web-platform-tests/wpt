@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!-- Copyright © 2019 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
+<html>
+    <head>
+        <meta  charset="utf-8">
+        <title>SourceBuffer.evictionPolicy test cases.</title>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="mediasource-util.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script>
+
+mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+{
+  assert_equals(sourceBuffer.evictionPolicy, 'normal', 'default evictionPolicy should be "normal"');
+  test.done();
+}, 'Test initial value of SourceBuffer.evictionPolicy is "normal"');
+
+
+mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+{
+  sourceBuffer.evictionPolicy = 'normal';
+  assert_equals(sourceBuffer.evictionPolicy, 'normal', 'evictionPolicy after setting it to "normal"');
+
+  // Setting an evictionPolicy that is not in EvictionPolicy IDL enum should be ignored and not cause exception.
+  sourceBuffer.evictionPolicy = 'invalidpolicy';
+  sourceBuffer.evictionPolicy = null;
+  sourceBuffer.evictionPolicy = '';
+  sourceBuffer.evictionPolicy = 'Before-next-demuxed';
+  assert_equals(sourceBuffer.evictionPolicy, 'normal', 'evictionPolicy unchanged by attempts to set invalid policies');
+
+  sourceBuffer.evictionPolicy = 'before-next-demuxed';
+  assert_equals(sourceBuffer.evictionPolicy, 'before-next-demuxed', 'evictionPolicy after setting it to "before-next-demuxed"');
+
+  sourceBuffer.evictionPolicy = 'before-current-gop';
+  assert_equals(sourceBuffer.evictionPolicy, 'before-current-gop', 'evictionPolicy after setting it to "before-current-gop"');
+
+  test.done();
+}, 'Test setting SourceBuffer.evictionPolicy before appending anything');
+
+mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+{
+  mediaSource.removeSourceBuffer(sourceBuffer);
+  assert_throws('InvalidStateError',
+      function() { sourceBuffer.evictionPolicy = 'before-next-demuxed'; },
+      'Setting valid sourceBuffer.evictionPolicy on removed SourceBuffer should throw InvalidStateError.');
+  assert_equals(sourceBuffer.evictionPolicy, 'normal', 'evictionPolicy should still be "normal"');
+  test.done();
+}, 'Test setting a removed SourceBuffer\'s evictionPolicy');
+
+mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+{
+  // Empty append should cause asynchronous execution and reset of updating flag.
+  sourceBuffer.appendBuffer(new ArrayBuffer(0));
+  assert_true(sourceBuffer.updating, 'updating attribute is true');
+  assert_equals(mediaElement.readyState, HTMLMediaElement.HAVE_NOTHING);
+  assert_throws('InvalidStateError',
+      function() { sourceBuffer.evictionPolicy = 'before-next-demuxed'; },
+      'Setting valid sourceBuffer.evictionPolicy on updating SourceBuffer threw InvalidStateError.');
+  assert_equals(sourceBuffer.evictionPolicy, 'normal', 'evictionPolicy should still be "normal"');
+  test.done();
+}, 'Test setting SourceBuffer.evictionPolicy while still updating, before first initialization segment');
+
+mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+{
+  // Empty append should cause asynchronous execution and reset of updating flag.
+  test.expectEvent(sourceBuffer, 'updatestart');
+  test.expectEvent(sourceBuffer, 'update');
+  test.expectEvent(sourceBuffer, 'updateend');
+  sourceBuffer.appendBuffer(new ArrayBuffer(0));
+  test.waitForExpectedEvents(function()
+  {
+    assert_false(sourceBuffer.updating, 'updating attribute should be false');
+    assert_equals(mediaElement.readyState, HTMLMediaElement.HAVE_NOTHING);
+    sourceBuffer.evictionPolicy = 'before-next-demuxed';
+    assert_equals(sourceBuffer.evictionPolicy, 'before-next-demuxed', 'evictionPolicy after setting it to "before-next-demuxed"');
+    test.done();
+  });
+}, 'Test setting SourceBuffer.evictionPolicy after initial append done, not updating, still before first initialization segment');
+
+mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+{
+  test.expectEvent(sourceBuffer, 'updatestart');
+  test.expectEvent(sourceBuffer, 'update');
+  test.expectEvent(sourceBuffer, 'updateend');
+  sourceBuffer.appendBuffer(mediaData);
+  test.waitForExpectedEvents(function()
+  {
+    assert_false(sourceBuffer.updating, 'updating attribute should be false');
+    assert_greater_than(mediaElement.readyState, HTMLMediaElement.HAVE_NOTHING);
+    assert_throws('InvalidStateError',
+        function() { sourceBuffer.evictionPolicy = 'before-next-demuxed'; },
+        'Setting valid sourceBuffer.evictionPolicy on SourceBuffer, after parsing first initialization segment, threw InvalidStateError.');
+    assert_equals(sourceBuffer.evictionPolicy, 'normal', 'evictionPolicy should still be "normal"');
+    test.done();
+  });
+}, 'Test setting SourceBuffer.evictionPolicy after parsing first initialization segment');
+
+// Tests for setting SourceBuffer.evictionPolicy causing re-opening of an
+// 'ended' MediaSource are elided since some implementations, like Chromium,
+// cannot have an 'ended' MediaSource if the attached HTMLMediaElement never
+// reached HAVE_METADATA (endOfStream() would cause HTMLMediaElement
+// MEDIA_ERR_SRC_NOT_SUPPORTED and MediaSource 'closed').
+// See https://github.com/w3c/media-source/issues/240
+// This feature incubation test case verifies this Chromium behavior. If it
+// fails, then further specification clarification of what endOfStream() means
+// when media element readyState < HAVE_METADATA is required for improved
+// interop.
+mediasource_test(function(test, mediaElement, mediaSource)
+{
+  var sourceBuffer = mediaSource.addSourceBuffer(MediaSourceUtil.SEGMENT_INFO.type);
+  test.expectEvent(sourceBuffer, 'updatestart');
+  test.expectEvent(sourceBuffer, 'update');
+  test.expectEvent(sourceBuffer, 'updateend');
+  sourceBuffer.appendBuffer(new ArrayBuffer(0));
+  test.waitForExpectedEvents(function()
+  {
+    assert_false(sourceBuffer.updating, 'updating attribute should be false');
+    assert_equals(mediaElement.readyState, HTMLMediaElement.HAVE_NOTHING);
+    test.expectEvent(mediaSource, 'sourceended');
+    test.expectEvent(mediaSource, 'sourceclose');  // Chromium's interpretation of spec.
+    mediaSource.endOfStream();
+  });
+
+  test.waitForExpectedEvents(function()
+  {
+    assert_equals(mediaSource.readyState, 'closed');
+    assert_throws('InvalidStateError',
+        function() { sourceBuffer.evictionPolicy = 'before-next-demuxed'; },
+        'Setting valid sourceBuffer.evictionPolicy on SourceBuffer, ' +
+            ' following endOfStream before HAVE_METADATA, should throw ' +
+            ' InvalidStateError because the readyState is closed.');
+    assert_equals(sourceBuffer.evictionPolicy, 'normal', 'evictionPolicy should still be "normal"');
+    test.done();
+  });
+}, 'Test setting SourceBuffer.evictionPolicy before parsing first initialization segment, after endOfStream closes MediaSource');
+
+        </script>
+    </body>
+</html>

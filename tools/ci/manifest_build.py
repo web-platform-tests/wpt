@@ -188,11 +188,10 @@ def main():
     summary = git("show", "--no-patch", '--format="%s"', "HEAD")
     body = git("show", "--no-patch", '--format="%b"', "HEAD")
 
-    pr = get_pr(owner, repo, head_rev)
-
     if dry_run:
         return Status.SUCCESS
 
+    pr = get_pr(owner, repo, head_rev)
     if pr is None:
         return Status.FAIL
     tag_name = "merge_pr_%s" % pr

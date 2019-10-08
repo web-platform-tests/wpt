@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 class Status(object):
     SUCCESS = 0
     FAIL = 1
-    NEUTRAL = 0
 
 
 def run(cmd, return_stdout=False, **kwargs):
@@ -157,25 +156,24 @@ def create_release(manifest_path, owner, repo, sha, tag, summary, body):
     return success
 
 
-def should_run_action():
+def should_dry_run():
     with open(os.environ["GITHUB_EVENT_PATH"]) as f:
         event = json.load(f)
         logger.info(json.dumps(event, indent=2))
 
     if "pull_request" in event:
-        logger.info("Not tagging for PR")
-        return False
+        logger.info("Dry run for PR")
+        return True
     if event.get("ref") != "refs/heads/master":
-        logger.info("Not tagging for ref %s" % event.get("ref"))
-        return False
-    return True
+        logger.info("Dry run for ref %s" % event.get("ref"))
+        return True
+    return False
 
 
 def main():
     repo_key = "GITHUB_REPOSITORY"
 
-    if not should_run_action():
-        return Status.NEUTRAL
+    dry_run = should_dry_run()
 
     owner, repo = os.environ[repo_key].split("/", 1)
 
@@ -194,6 +192,9 @@ def main():
     create_manifest(manifest_path)
 
     compress_manifest(manifest_path)
+
+    if dry_run:
+        return Status.SUCCESS
 
     tagged = tag(owner, repo, head_rev, tag_name)
     if not tagged:

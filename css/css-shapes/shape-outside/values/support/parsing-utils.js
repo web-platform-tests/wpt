@@ -837,6 +837,5 @@ return {
     roundResultStr: roundResultStr,
     setupFonts: setupFonts,
     restoreFonts: restoreFonts,
-    convertToPx: convertToPx
 }
 })();

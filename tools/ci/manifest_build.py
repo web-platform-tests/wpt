@@ -110,15 +110,14 @@ def create_release(manifest_path, owner, repo, sha, tag, body):
     create_data = {"tag_name": tag,
                    "target_commitish": sha,
                    "name": tag,
-                   "body": body}
-    create_data = request(create_url, "Release creation", json_data=create_data)
-    if not create_data:
+                   "body": body,
+                   "draft": True}
+    create_resp = request(create_url, "Release creation", json_data=create_data)
+    if not create_resp:
         return False
 
     # Upload URL contains '{?name,label}' at the end which we want to remove
-    upload_url = create_data["upload_url"].split("{", 1)[0]
-
-    success = True
+    upload_url = create_resp["upload_url"].split("{", 1)[0]
 
     upload_exts = [".gz", ".bz2", ".zst"]
     for upload_ext in upload_exts:
@@ -134,9 +133,17 @@ def create_release(manifest_path, owner, repo, sha, tag, body):
         upload_resp = request(upload_url, "Manifest upload", data=upload_data, params=params,
                               headers={'Content-Type': 'application/octet-stream'})
         if not upload_resp:
-            success = False
+            return False
 
-    return success
+    release_id = create_resp["id"]
+    edit_url = "https://api.github.com/repos/%s/%s/releases/%s" % (owner, repo, release_id)
+    edit_data = {"draft": False}
+    edit_resp = request(edit_url, "Release publishing", json_data=edit_data)
+    if not edit_resp:
+        return False
+
+    logger.info("Released %s" % edit_resp["html_url"])
+    return True
 
 
 def should_dry_run():

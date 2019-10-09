@@ -73,8 +73,8 @@
       "destinationOffset": 4,
       "filler": "random"
     }
-  ].forEach((destinationData) => {
-    ["ArrayBuffer", "SharedArrayBuffer"].forEach((arrayBufferOrSharedArrayBuffer) => {
+  ].forEach(destinationData => {
+    ["ArrayBuffer", "SharedArrayBuffer"].forEach(arrayBufferOrSharedArrayBuffer => {
       test(() => {
         // Setup
         const bufferLength = testData.destinationLength + destinationData.bufferIncrease,
@@ -117,16 +117,15 @@
   });
 });
 
-
 [DataView,
-  Int8Array,
-  Int16Array,
-  Int32Array,
-  Uint16Array,
-  Uint32Array,
-  Uint8ClampedArray,
-  Float32Array,
-  Float64Array].forEach(view => {
+ Int8Array,
+ Int16Array,
+ Int32Array,
+ Uint16Array,
+ Uint32Array,
+ Uint8ClampedArray,
+ Float32Array,
+ Float64Array].forEach(view => {
   ["ArrayBuffer", "SharedArrayBuffer"].forEach((arrayBufferOrSharedArrayBuffer) => {
     test(() => {
       assert_throws(new TypeError(), () => new TextEncoder().encodeInto("", new view(new self[arrayBufferOrSharedArrayBuffer](0))));

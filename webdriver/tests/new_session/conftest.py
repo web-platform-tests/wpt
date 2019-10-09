@@ -30,7 +30,7 @@ def fixture_configuration(configuration):
   """Remove "acceptInsecureCerts" from capabilities if it exists.
 
   Some browser configurations add acceptInsecureCerts capability by default.
-  Remote it during new_session tests to avoid interference.
+  Remove it during new_session tests to avoid interference.
   """
 
   if "acceptInsecureCerts" in configuration["capabilities"]:

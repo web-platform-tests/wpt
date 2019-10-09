@@ -767,5 +767,5 @@ class SetUserVerifiedAction(object):
         authenticator_id = payload["authenticator_id"]
         uv = payload["uv"]
         self.logger.debug(
-                "Setting user verified flag on authenticator %s to %s" % (authenticator_id, uv["isUserVerified"]))
+            "Setting user verified flag on authenticator %s to %s" % (authenticator_id, uv["isUserVerified"]))
         return self.protocol.virtual_authenticator.set_user_verified(authenticator_id, uv)

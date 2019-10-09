@@ -4,6 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script>
 "use strict";
 
@@ -62,7 +63,6 @@ promise_test(async t => {
   await test_driver.add_credential(authenticator_id, credential2);
 
   let credentials = await test_driver.get_credentials(authenticator_id);
-  console.log(credentials);
   assert_equals(credentials.length, 2);
 
   await test_driver.remove_all_credentials(authenticator_id);

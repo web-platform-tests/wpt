@@ -41,6 +41,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 try:
     from urllib2 import urlopen
 except ImportError:
@@ -160,9 +161,24 @@ def install_webkitgtk_from_apt_repository(channel):
     run(["sudo", "apt-get", "-qqy", "-t", "bionic-wpt-webkit-updates", "install", "webkit2gtk-driver"])
 
 
+def install_webkitgtk_from_tarball_bundle(channel):
+    with tempfile.NamedTemporaryFile(suffix=".tar.xz") as temp_tarball:
+        resp = urlopen("https://webkitgtk.org/built-products/nightly/webkitgtk-nightly-build-last.tar.xz")
+        while True:
+            chunk = resp.read(16*1024)
+            if not chunk:
+                break
+            temp_tarball.write(chunk)
+        temp_tarball.flush()
+        run(["sudo", "tar", "xfa", temp_tarball.name, "-C", "/"])
+    # Install dependencies
+    run(["sudo", "apt-get", "-qqy", "update"])
+    run(["sudo", "/opt/webkitgtk/nightly/install-dependencies"])
+
+
 def install_webkitgtk(channel):
     if channel in ("experimental", "dev", "nightly"):
-        raise NotImplementedError("Still can't install from release channel: %s" % channel)
+        install_webkitgtk_from_tarball_bundle(channel)
     elif channel in ("beta", "stable"):
         install_webkitgtk_from_apt_repository(channel)
     else:

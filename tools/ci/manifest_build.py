@@ -43,7 +43,7 @@ def compress_manifest(path):
         run(args + [path])
 
 
-def request(url, desc, data=None, json_data=None, params=None, headers=None):
+def request(url, desc, method=None, data=None, json_data=None, params=None, headers=None):
     github_token = os.environ.get("GITHUB_TOKEN")
     default_headers = {
         "Authorization": "token %s" % github_token,
@@ -57,12 +57,13 @@ def request(url, desc, data=None, json_data=None, params=None, headers=None):
     kwargs = {"params": params,
               "headers": _headers}
     try:
-        logger.info("Loading URL %s" % url)
+        logger.info("Requesting URL %s" % url)
         if json_data is not None or data is not None:
-            method = requests.post
+            if method is None:
+                method = requests.post
             kwargs["json"] = json_data
             kwargs["data"] = data
-        else:
+        elif method is None:
             method = requests.get
 
         resp = method(url, **kwargs)
@@ -138,7 +139,7 @@ def create_release(manifest_path, owner, repo, sha, tag, body):
     release_id = create_resp["id"]
     edit_url = "https://api.github.com/repos/%s/%s/releases/%s" % (owner, repo, release_id)
     edit_data = {"draft": False}
-    edit_resp = request(edit_url, "Release publishing", json_data=edit_data)
+    edit_resp = request(edit_url, "Release publishing", method=requests.patch, json_data=edit_data)
     if not edit_resp:
         return False
 

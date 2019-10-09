@@ -7,6 +7,7 @@ import time
 import traceback
 import urlparse
 import uuid
+from datetime import datetime
 
 from .base import (CallbackHandler,
                    RefTestExecutor,
@@ -438,6 +439,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         return self.protocol.is_alive()
 
     def do_test(self, test):
+        self.logger.info('do_test for WebDriverRefTestExecutor');
         width_offset, height_offset = self.protocol.webdriver.execute_script(
             """return [window.outerWidth - window.innerWidth,
                        window.outerHeight - window.innerHeight];"""
@@ -458,6 +460,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         assert viewport_size is None
         assert dpi is None
 
+        self.logger.info('screenshot: url=' + str(self.test_url(test)) + ', timeout: ' + str(test.timeout))
         return WebDriverRun(self._screenshot,
                            self.protocol,
                            self.test_url(test),
@@ -467,9 +470,17 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         webdriver = protocol.webdriver
         webdriver.url = url
 
+        self.logger.info('_screenshot, trying execute_script()')
+        res = webdriver.execute_script("return document.readyState;")
+        self.logger.info('res: ' + str(res))
+
+        now = datetime.now()
+        self.logger.info(str(now) + ': _screenshot, executing self.wait_script')
         webdriver.execute_async_script(self.wait_script)
 
+        self.logger.info('_screenshot, executing webdriver.screenshot()')
         screenshot = webdriver.screenshot()
+        self.logger.info('_screenshot, screenshot is not None? ' + str(screenshot is not None))
 
         # strip off the data:img/png, part of the url
         if screenshot.startswith("data:image/png;base64,"):

@@ -339,6 +339,7 @@ class RefTestImplementation(object):
         # Depth-first search of reference tree, with the goal
         # of reachings a leaf node with only pass results
 
+        self.logger.info('RefTestImplementation: run_test. test.references: ' + str(test.references))
         stack = list(((test, item[0]), item[1]) for item in reversed(test.references))
         while stack:
             hashes = [None, None]

@@ -42,7 +42,8 @@ RUN apt-get -qqy install \
     libappindicator3-1 \
     libdbusmenu-gtk3-4 \
     libindicator3-7 \
-    libindicator7
+    libindicator7 \
+    libxss1
 
 RUN apt-get -y autoremove
 

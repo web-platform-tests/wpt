@@ -849,6 +849,11 @@ class ManagerGroup(object):
         as possible"""
         self.stop_flag.set()
         self.logger.debug("Stop flag set in ManagerGroup")
+        # Hackz
+        self.logger.info('DUMPING CHROME LOG')
+        with open('/tmp/chrome_log.txt', 'r') as f:
+          self.logger.info(f.read())
+        self.logger.info('DONE')
 
     def test_count(self):
         return sum(manager.test_count for manager in self.pool)

@@ -576,6 +576,8 @@ class Chrome(Browser):
         if dest is None:
             dest = os.pwd
         url = self._latest_chromedriver_url(version)
+        self.logger.info("Overriding ChromeDriver for testing")
+        url = "https://chromedriver.storage.googleapis.com/78.0.3904.11/chromedriver_linux64.zip"
         self.logger.info("Downloading ChromeDriver from %s" % url)
         unzip(get(url).raw, dest)
         chromedriver_dir = os.path.join(

@@ -242,10 +242,7 @@ tasks:
           script: >-
             export TOXENV=py27;
             export HYPOTHESIS_PROFILE=ci;
-            export PY_COLORS=0;
-            ./tools/ci/run_tc.py \
-              tools_unittest \
-              tools/ci/ci_tools_unittest.sh
+            export PY_COLORS=0
           conditions:
             push
             pull-request
@@ -257,10 +254,7 @@ tasks:
             export HYPOTHESIS_PROFILE=ci;
             export PY_COLORS=0;
             sudo apt update -qqy;
-            sudo apt install -qqy python3-pip;
-            ./tools/ci/run_tc.py \
-              tools_unittest \
-              tools/ci/ci_tools_unittest.sh
+            sudo apt install -qqy python3-pip
           conditions:
             push
             pull-request

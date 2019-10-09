@@ -105,22 +105,10 @@ def get_pr(owner, repo, sha):
     return pr["number"]
 
 
-def tag(owner, repo, sha, tag):
-    data = {"ref": "refs/tags/%s" % tag,
-            "sha": sha}
-    url = "https://api.github.com/repos/%s/%s/git/refs" % (owner, repo)
-
-    resp_data = request(url, "Tag creation", json_data=data)
-    if not resp_data:
-        return False
-
-    logger.info("Tagged %s as %s" % (sha, tag))
-    return True
-
-
 def create_release(manifest_path, owner, repo, sha, tag, body):
     create_url = "https://api.github.com/repos/%s/%s/releases" % (owner, repo)
     create_data = {"tag_name": tag,
+                   "target_commitish": sha,
                    "name": tag,
                    "body": body}
     create_data = request(create_url, "Release creation", json_data=create_data)
@@ -189,10 +177,6 @@ def main():
     if pr is None:
         return Status.FAIL
     tag_name = "merge_pr_%s" % pr
-
-    tagged = tag(owner, repo, head_rev, tag_name)
-    if not tagged:
-        return Status.FAIL
 
     if not create_release(manifest_path, owner, repo, head_rev, tag_name, body):
         return Status.FAIL

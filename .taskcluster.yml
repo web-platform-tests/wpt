@@ -72,10 +72,6 @@ tasks:
                 source: ${event.repository.url}
               payload:
                 image:
-                  $if: browser.name == 'webkitgtk_minibrowser'
-                  then:
-                    cl0p3z/web-platform-tests:0.1
-                  else:
                     harjgam/web-platform-tests:0.33
                 maxRunTime: 7200
                 artifacts:

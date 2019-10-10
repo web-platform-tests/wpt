@@ -819,7 +819,7 @@ IdlArray.prototype.test = function()
                     this.members[rhs].members.forEach(function(member) {
                         this.members[lhs].members.push(new IdlInterfaceMember(member));
                     }.bind(this));
-                    assert_true(!clash, "member " + (clash && clash.name) + " is not unique");
+                    assert_true(!clash, "member " + (clash && clash.name) + " is unique");
                 }.bind(this), lhs + " implements " + rhs + ": member names are unique");
             }
         }.bind(this));
@@ -849,7 +849,7 @@ IdlArray.prototype.test = function()
                             "member " + member.name + " is unique");
                         this.members[lhs].members.push(new IdlInterfaceMember(member));
                     }.bind(this));
-                    assert_true(!clash, "member " + (clash && clash.name) + " is not unique");
+                    assert_true(!clash, "member " + (clash && clash.name) + " is unique");
                 }.bind(this), lhs + " includes " + rhs + ": member names are unique");
             }
         }.bind(this));
@@ -990,7 +990,7 @@ IdlArray.prototype.collapse_partials = function()
                 {
                     this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
                 }.bind(this));
-                assert_true(!clash, "member " + (clash && clash.name) + " is not unique");
+                assert_true(!clash, "member " + (clash && clash.name) + " is unique");
             }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: member names are unique`);
         }
     }.bind(this));

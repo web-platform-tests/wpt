@@ -22,7 +22,7 @@
       }, "Check response returned by static method error()");
 
       test(function() {
-        var headers = Response.error().headers;
+        const headers = Response.error().headers;
 
         // Avoid false positives if expected API is not available
         assert_true(!!headers);

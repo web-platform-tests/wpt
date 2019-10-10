@@ -92,18 +92,50 @@ for (const type of ["text/javascript", "module"]) {
     document.body.appendChild(iframe);
   }, `${type}: moving to another document during parsing, external script`);
 
-  async_test(t => {
-    t.add_cleanup(() => {
-      window.didExecute = undefined;
-    });
+  for (const fetchResult of ["successful", "failed"]) {
+    async_test(t => {
+      t.add_cleanup(() => {
+        window.didExecute = undefined;
+      });
 
-    const iframe = document.createElement("iframe");
-    iframe.onload = t.step_func(() => {
+      const iframe = document.createElement("iframe");
+      iframe.onload = t.step_func(() => {
+        const s = document.createElement("script");
+        s.type = type;
+        s.onload = t.unreached_func("onload");
+        s.onerror = t.unreached_func("onerror");
+        s.src = "resources/slow-flag-setter.py?result=" + fetchResult;
+
+        // Start the fetch
+        document.body.appendChild(s);
+
+        // Need to delay since the "prepare a script" algorithm also contains related checks; we want to
+        // test the "execute a script block" algorithm for when the fetch comes back.
+        t.step_timeout(() => {
+          iframe.contentDocument.body.appendChild(s);
+        }, 0);
+
+        t.step_timeout(() => {
+          assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
+          assert_equals(iframe.contentWindow.didExecute, undefined,
+            "The script must not have executed in the iframe window");
+          t.done();
+        }, 3000);
+      });
+
+      document.body.appendChild(iframe);
+    }, `${type}: moving to another Window's document during ${fetchResult} fetching`);
+
+    async_test(t => {
+      t.add_cleanup(() => {
+        window.didExecute = undefined;
+      });
+
       const s = document.createElement("script");
       s.type = type;
       s.onload = t.unreached_func("onload");
       s.onerror = t.unreached_func("onerror");
-      s.src = "resources/slow-flag-setter.py";
+      s.src = "resources/slow-flag-setter.py?result=" + fetchResult;
 
       // Start the fetch
       document.body.appendChild(s);
@@ -111,45 +143,15 @@ for (const type of ["text/javascript", "module"]) {
       // Need to delay since the "prepare a script" algorithm also contains related checks; we want to
       // test the "execute a script block" algorithm for when the fetch comes back.
       t.step_timeout(() => {
-        iframe.contentDocument.body.appendChild(s);
+        const doc2 = document.implementation.createHTMLDocument("title");
+        doc2.body.appendChild(s);
       }, 0);
 
       t.step_timeout(() => {
         assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
-        assert_equals(iframe.contentWindow.didExecute, undefined,
-          "The script must not have executed in the iframe window");
         t.done();
       }, 3000);
-    });
-
-    document.body.appendChild(iframe);
-  }, `${type}: moving to another Window's document during fetching`);
-
-  async_test(t => {
-    t.add_cleanup(() => {
-      window.didExecute = undefined;
-    });
-
-    const s = document.createElement("script");
-    s.type = type;
-    s.onload = t.unreached_func("onload");
-    s.onerror = t.unreached_func("onerror");
-    s.src = "resources/slow-flag-setter.py";
-
-    // Start the fetch
-    document.body.appendChild(s);
-
-    // Need to delay since the "prepare a script" algorithm also contains related checks; we want to
-    // test the "execute a script block" algorithm for when the fetch comes back.
-    t.step_timeout(() => {
-      const doc2 = document.implementation.createHTMLDocument("title");
-      doc2.body.appendChild(s);
-    }, 0);
-
-    t.step_timeout(() => {
-      assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
-      t.done();
-    }, 3000);
-  }, `${type}: moving to a createHTMLDocument document where scripting is disabled during fetching`);
+    }, `${type}: moving to a createHTMLDocument document where scripting is disabled during ${fetchResult} fetching`);
+  }
 }
 </script>

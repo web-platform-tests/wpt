@@ -5,6 +5,11 @@ def main(request, response):
   time.sleep(1)
 
   headers = [("Content-Type", "text/javascript")]
-  body = "window.didExecute = true;"
+
+  if request.GET.first("result", "successful") == "successful":
+    body = "window.didExecute = true;"
+  else:
+    headers.append(("Transfer-encoding", "chunked"))
+    body = "Invalid\n\Chunk\n"
 
   return headers, body

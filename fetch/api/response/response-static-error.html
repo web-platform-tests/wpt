@@ -28,7 +28,7 @@
         assert_true(!!headers);
         assert_equals(typeof headers.append, 'function');
 
-        assert_throws_js(TypeError, () => headers.append('name', 'value'));
+        assert_throws_js(TypeError, function () { headers.append('name', 'value'); });
       }, "the 'guard' of the Headers instance should be immutable");
     </script>
   </body>

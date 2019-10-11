@@ -14,7 +14,12 @@ remote_url=https://${DEPLOY_TOKEN}@github.com/web-platform-tests/wpt.git
 
 function json_property {
   cat ${1} | \
-    python -c "import json, sys; print json.load(sys.stdin).get(\"${2}\", \"\")"
+    python -c "import json, sys;
+obj = json.load(sys.stdin)
+path = \"${2}\".split(\".\")
+while len(path) and obj:
+    obj = obj.get(path.pop(0), \"\")
+print obj"
 }
 
 function is_pull_request {
@@ -26,7 +31,11 @@ function targets_master {
 }
 
 function modifies_relevant_files {
-  base_revision=$(json_property ${GITHUB_EVENT_PATH} before)
+  if is_pull_request ; then
+    base_revision=$(json_property ${GITHUB_EVENT_PATH} pull_request.base.sha)
+  else
+    base_revision=$(json_property ${GITHUB_EVENT_PATH} before)
+  fi
 
   git diff --name-only ${base_revision} | \
     grep -E --silent '^(docs|tools)/'

@@ -125,7 +125,7 @@ def checkout_revision(rev):
 
 def install_chrome(channel):
     # Bisecting
-    url = "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/695233/chrome-linux.zip"
+    url = "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/695028/chrome-linux.zip"
     dest = "/tmp/google-chrome-unstable.zip"
     resp = urlopen(url)
     with open(dest, 'w') as f:

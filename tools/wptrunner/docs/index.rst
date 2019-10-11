@@ -14,6 +14,7 @@ Contents:
    usage
    expectation
    design
+   internals
 
 Indices and tables
 ==================

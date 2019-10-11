@@ -11,7 +11,6 @@ infrastructure which makes the project possible.
 
    ../README
    ../tools/wptserve/docs/index.rst
-   ../tools/wptrunner/docs/index
    ../tools/wptrunner/README
 
 .. toctree::

@@ -32,6 +32,8 @@ function modifies_relevant_files {
     grep -E --silent '^(docs|tools)/'
 }
 
+cat ${GITHUB_EVENT_PATH}
+
 if ! modifies_relevant_files ; then
   echo No files related to the website have been modified. Exiting without
   echo building.

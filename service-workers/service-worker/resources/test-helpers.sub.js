@@ -1,10 +1,16 @@
 // Adapter for testharness.js-style tests with Service Workers
 
-function service_worker_unregister_and_register(test, url, scope) {
+/**
+ * @param options an object that represents RegistrationOptions except for scope.
+ * @param options.type a WorkerType.
+ * @param options.updateViaCache a ServiceWorkerUpdateViaCache.
+ * @see https://w3c.github.io/ServiceWorker/#dictdef-registrationoptions
+ */
+function service_worker_unregister_and_register(test, url, scope, options = {}) {
   if (!scope || scope.length == 0)
     return Promise.reject(new Error('tests must define a scope'));
 
-  var options = { scope: scope };
+  options.scope = scope;
   return service_worker_unregister(test, scope)
     .then(function() {
         return navigator.serviceWorker.register(url, options);

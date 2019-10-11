@@ -118,7 +118,7 @@ test(() => {
   // No focusable element under #host in the flat tree.
   host.focus();
   assert_equals(shadowRoot.activeElement, null);
-  assert_equals(document.activeElement, null);
+  assert_equals(document.activeElement, document.body);
 }, "focus() on host with delegatesFocus, all without tabindex");
 
 test(() => {
@@ -167,7 +167,7 @@ test(() => {
   // No focusable element under #host in the flat tree.
   host.focus();
   assert_equals(shadowRoot.activeElement, null);
-  assert_equals(document.activeElement, null);
+  assert_equals(document.activeElement, document.body);
 }, "focus() on host with delegatesFocus & tabindex=0, #outside with tabindex=0");
 
 test(() => {

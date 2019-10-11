@@ -1,0 +1,166 @@
+<!doctype html>
+<meta charset="utf-8">
+<div id=log></div>
+<script>
+  function write(s) {
+      let pre = document.querySelector('#results');
+      if (!pre) {
+          pre = document.createElement('pre');
+          pre.id = 'results';
+          document.body.appendChild(pre);
+      }
+      pre.textContent += s + '\n';
+  }
+
+  async function timeCompressArrayBuffer(input, format, deflateLevel, size) {
+      const cs = new CompressionStream(format, {level: deflateLevel, bufferSize: size});
+      const writer = cs.writable.getWriter();
+      writer.write(input);
+      writer.close();
+      const out = [];
+      const reader = cs.readable.getReader();
+      let totalSize = 0;
+      const start = performance.now();
+      while (true) {
+          const { value, done } = await reader.read();
+          if (done)
+            break;
+          out.push(value);
+          totalSize += value.byteLength;
+      }
+      const stop = performance.now();
+      const ms = stop - start;
+      const time = ms / 1000;
+      const concatenated = new Uint8Array(totalSize);
+      let offset = 0;
+      for (const array of out) {
+          concatenated.set(array, offset);
+          offset += array.byteLength;
+      }
+      return { concatenated, time };
+  }
+
+  async function timeCompressSplitChunk(input, format, chunkSize) {
+      const ds = new CompressionStream(format);
+      const reader = ds.readable.getReader();
+      const writer = ds.writable.getWriter();
+      for (let beginning = 0; beginning < input.length; beginning += chunkSize) {
+          writer.write(input.slice(beginning, beginning + chunkSize));
+      }
+      writer.close();
+      const out = [];
+      let totalSize = 0;
+      const start = performance.now();
+      while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          out.push(value);
+          totalSize += value.byteLength;
+      }
+      const stop = performance.now();
+      const ms = stop - start;
+      const time = ms / 1000;
+      return time;
+  }
+
+  const jsonFiles = [
+      //"/fetch/api/resources/data.json", //input length: 17
+      //"/fetch/nosniff/resources/x-content-type-options.json", // input length:1248
+      //"/fetch/data-urls/resources/base64.json", // input lengh: 1683
+      //"/url/resources/toascii.json", // input length: 4639
+      //"/mixed-content/spec.src.json", // input length: 10077
+      "/url/resources/urltestdata.json", // input length: 148535
+  ];
+
+  const htmlFiles = [
+      "/compression/test_wiki_google.html", // input length: 488183
+      "/compression/test_wiki_inazuma.html", // input length: 705909
+  ];
+
+  const mp4Files = [
+      "/media-source/mp4/test-av-640k-44100Hz-1ch-640x480-30fps-10kfr.mp4", //input length: 95171
+      "/media-source/mp4/test.mp4", // input length: 187227
+  ];
+
+  async function timeCountLevelChange(files, format, bufferSize) {
+      for (const file of files) {
+          write(`${format}, ${file}, bufferSize=${bufferSize}`);
+          write(`level, output length, time`);
+          for (let level = 0; level <= 9; ++level) {
+              let sum = 0.0;
+              let length;
+              const numberOfRuns = 1000;
+              for (let i = 0; i < numberOfRuns; ++i) {
+                  const response = await fetch(file);
+                  const buffer = await response.arrayBuffer();
+                  const bufferView = new Uint8Array(buffer);
+                  const { concatenated, time } =
+                        await timeCompressArrayBuffer(
+                            bufferView, format, level, bufferSize);
+                  length = concatenated.length;
+                  sum += time;
+              }
+              const average = sum / numberOfRuns;
+              write(`${level},${length},${average}`);
+          }
+      }
+  }
+
+  async function timeCountBufferSizeChange(files, format, level) {
+      for (const file of files) {
+          write(`${format}, ${file}`);
+          write(`buffer size, time`);
+          for (let bufferSize = 2048; bufferSize <= 1048576; bufferSize *= 2) {
+              let sum = 0.0;
+              const numberOfRuns = 1000;
+              for (let i = 0; i < numberOfRuns; ++i) {
+                  const response = await fetch(file);
+                  const buffer = await response.arrayBuffer();
+                  const bufferView = new Uint8Array(buffer);
+                  const { concatenated, time } =
+                        await timeCompressArrayBuffer(
+                            bufferView, format, level, bufferSize);
+                  sum += time;
+              }
+              const average = sum / numberOfRuns;
+              write(`${bufferSize},${average}`);
+          }
+      }
+  }
+
+  async function timeCountChunkSizeChange(files, format) {
+      for (const file of files) {
+          write(`${format}, ${file}`);
+          write(`chunk size, time`);
+          const response = await fetch(file);
+          const buffer = await response.arrayBuffer();
+          const bufferView = new Uint8Array(buffer);
+          const length = bufferView.length;
+          for (let chunkSize = 1; chunkSize <= length; chunkSize *= 2) {
+              let sum = 0.0;
+              const numberOfRuns = 100;
+              for (let i = 0; i < numberOfRuns; ++i) {
+                  const time = await timeCompressSplitChunk(
+                      bufferView, format, chunkSize);
+                  sum += time;
+              }
+              const average = sum / numberOfRuns;
+              write(`${chunkSize},${average}`);
+          }
+      }
+  }
+
+  async function test() {
+      const bufferSize = 16384;
+      await timeCountLevelChange(mp4Files, 'gzip', bufferSize);
+
+      const level = 6;
+      await timeCountBufferSizeChange(jsonFiles, 'deflate', level);
+
+      await timeCountChunkSizeChange(htmlFiles, 'deflate');
+      await timeCountChunkSizeChange(mp4Files, 'deflate');
+  }
+
+  test();
+
+</script>

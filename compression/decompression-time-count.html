@@ -1,0 +1,143 @@
+<!doctype html>
+<meta charset="utf-8">
+<div id=log></div>
+<script>
+  function write(s) {
+      let pre = document.querySelector('#results');
+      if (!pre) {
+          pre = document.createElement('pre');
+          pre.id = 'results';
+          document.body.appendChild(pre);
+      }
+      pre.textContent += s + '\n';
+  }
+
+  async function timeCompressArrayBuffer(input, format, level, fileName) {
+      const cs = new CompressionStream(format, {level});
+      const writer = cs.writable.getWriter();
+      writer.write(input);
+      writer.close();
+      const out = [];
+      const reader = cs.readable.getReader();
+      let totalSize = 0;
+      let start = performance.now();
+      while (true) {
+          const { value, done } = await reader.read();
+          if (done)
+            break;
+          out.push(value);
+          totalSize += value.byteLength;
+      }
+      let stop = performance.now();
+      let ms = stop - start;
+      let time = ms / 1000;
+      const concatenated = new Uint8Array(totalSize);
+      let offset = 0;
+      for (const array of out) {
+          concatenated.set(array, offset);
+          offset += array.byteLength;
+      }
+      return { concatenated, time };
+  }
+
+  async function timeDecompressArrayBuffer(input, format, bufferSize) {
+      const ds = new DecompressionStream(format, {bufferSize});
+      const writer = ds.writable.getWriter();
+      writer.write(input);
+      writer.close();
+      const out = [];
+      const reader = ds.readable.getReader();
+      let totalSize = 0;
+      let start = performance.now();
+      while (true) {
+          const { value, done } = await reader.read();
+          if (done)
+            break;
+          out.push(value);
+          totalSize += value.byteLength;
+      }
+      let stop = performance.now();
+      let ms = stop - start;
+      let time = ms / 1000; // convert to per second
+      return time;
+  }
+
+  const jsonFiles = [
+      "/fetch/api/resources/data.json", //input length: 17
+      "/fetch/nosniff/resources/x-content-type-options.json", // input length:1248
+      "/fetch/data-urls/resources/base64.json", // input lengh: 1683
+      "/url/resources/toascii.json", // input length: 4639
+      "/mixed-content/spec.src.json", // input length: 10077
+      "/url/resources/urltestdata.json", // input length: 148535
+  ];
+
+  const htmlFiles = [
+      "/compression/test_wiki_google.html", //input length: 488183
+      "/compression/test_wiki_inazuma.html", // input length: 705909
+  ];
+
+  const mp4Files = [
+      "/media-source/mp4/test-av-640k-44100Hz-1ch-640x480-30fps-10kfr.mp4", //input length: 95171
+      "/media-source/mp4/test.mp4", // input length: 187227
+  ];
+
+  async function timeCountLevelChange(files, format, bufferSize) {
+      for (const file of files) {
+          write(`${format}, ${file}`);
+          write(`level, time`);
+          for (let level = 0; level <= 9; ++level) {
+              const response = await fetch(file);
+              const buffer = await response.arrayBuffer();
+              const bufferView = new Uint8Array(buffer);
+              const { concatenated } =
+                    await timeCompressArrayBuffer(
+                        bufferView, format, level, bufferSize);
+              let sum = 0.0;
+              const numberOfRuns = 5000;
+              for (let i = 0; i < numberOfRuns; ++i) {
+                  const time = await timeDecompressArrayBuffer(
+                      concatenated, format);
+                  sum += time;
+              }
+              let average = sum / numberOfRuns;
+              write(`${level},${average}`);
+          }
+      }
+  }
+
+  async function timeCountBufferSizeChange(files, format, level, compressBufferSize) {
+      for (const file of files) {
+          write(`${format}, ${file}`);
+          write(`level, time`);
+          const response = await fetch(file);
+          const buffer = await response.arrayBuffer();
+          const bufferView = new Uint8Array(buffer);
+          const { concatenated } =
+                await timeCompressArrayBuffer(
+                    bufferView, format, level, compressBufferSize);
+          for (let bufferSize = 2048; bufferSize <= 1048576; bufferSize *= 2) {
+              let sum = 0.0;
+              const numberOfRuns = 3000;
+              for (let i = 0; i < numberOfRuns; ++i) {
+                  const time = await timeDecompressArrayBuffer(
+                      concatenated, format, bufferSize);
+                  sum += time;
+              }
+              let average = sum / numberOfRuns;
+              write(`${level},${average}`);
+          }
+      }
+  }
+
+  async function test() {
+      const bufferSize = 65536;
+      timeCountLevelChange(jsonFiles, 'deflate', bufferSize);
+
+      const level = 6;
+      const compressBufferSize = 16384;
+      timeCountBufferSizeChange(jsonFiles, 'deflate', level);
+  }
+
+  test()
+
+</script>

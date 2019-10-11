@@ -399,6 +399,8 @@ NON-EXISTENT-REF: css/CSS2/normal-flow/blocks-017.xht
 
 
 ## Whitespace rules that we can't enforce yet
+INDENT TABS: compression/test_wiki_google.html
+INDENT TABS: compression/test_wiki_inazuma.html
 INDENT TABS: css/compositing/*
 INDENT TABS: css/CSS2/*
 INDENT TABS: css/css-align/*
@@ -435,6 +437,8 @@ INDENT TABS: css/WOFF2/*
 
 
 ## Things we're stopping from getting worse
+TRAILING WHITESPACE: compression/test_wiki_google.html
+TRAILING WHITESPACE: compression/test_wiki_inazuma.html
 CONSOLE: css/css-regions/elements/support/Three.js
 CONSOLE: css/css-regions/interactivity/selection/support/js/selection-test-helper.js
 CONSOLE: css/css-regions/stacking-context/javascript-stacking-context-002.html

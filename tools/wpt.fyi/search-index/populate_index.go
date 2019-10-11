@@ -36,8 +36,8 @@ var blacklist = regexp.MustCompile("^/(" + strings.Join([]string{
 }, "|") + ")")
 
 type WTPFile struct {
-	Path     string
-	Contents string
+	Path    string
+	Content string
 }
 
 func main() {
@@ -72,8 +72,8 @@ func main() {
 			}
 			if !*dryRun {
 				_, err = index.Put(ctx, path, &WTPFile{
-					Path:     path,
-					Contents: string(contents),
+					Path:    path,
+					Content: string(contents),
 				})
 				if err != nil {
 					log.Printf("Error storing search atom: %s", err.Error())

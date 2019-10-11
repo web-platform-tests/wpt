@@ -59,8 +59,12 @@ Notifications standard](https://notifications.spec.whatwg.org/#constructors):
 
 > The Notification(title, options) constructor, when invoked, must run these steps:
 >
-> 1. If the current global object is a ServiceWorkerGlobalScope object, then
->    throw a TypeError exception.
+> 1. If the [current global
+>    object](https://html.spec.whatwg.org/multipage/webappapis.html#current-global-object)
+>    is a
+>    [ServiceWorkerGlobalScope](https://w3c.github.io/ServiceWorker/#serviceworkerglobalscope)
+>    object, then [throw](https://heycam.github.io/webidl/#dfn-throw) a
+>    `TypeError` exception.
 >
 > [...]
 
@@ -452,7 +456,7 @@ HTML attributes follow a fairly consistent format. If you're interested in
 testing a feature like this, you may be able to learn where your tests belong
 by querying the contents of the files in WPT.
 
-You may be able to preform such a search on the web. WPT is hosted on
+You may be able to perform such a search on the web. WPT is hosted on
 GitHub.com, and [GitHub offers some basic functionality for querying
 code](https://help.github.com/en/articles/about-searching-on-github). However,
 to search effectively, you may need to use [regular

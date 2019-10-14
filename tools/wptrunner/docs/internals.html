@@ -1,0 +1,674 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>wptrunner Internals &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="wptserve" href="../../wptserve/README.html" />
+    <link rel="prev" title="wptrunner Design" href="design.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="wptrunner-internals">
+<h1>wptrunner Internals<a class="headerlink" href="#wptrunner-internals" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-wptrunner.browsers.base"></span><dl class="class">
+<dt id="wptrunner.browsers.base.Browser">
+<em class="property">class </em><code class="descclassname">wptrunner.browsers.base.</code><code class="descname">Browser</code><span class="sig-paren">(</span><em>logger</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class serving as the basis for Browser implementations.</p>
+<p>The Browser is used in the TestRunnerManager to start and stop the browser
+process, and to check the state of that process. This class also acts as a
+context manager, enabling it to do browser-specific setup at the start of
+the testrun and cleanup after the run is complete.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logger</strong> – Structured logger to use for output.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="wptrunner.browsers.base.Browser.check_crash">
+<code class="descname">check_crash</code><span class="sig-paren">(</span><em>process</em>, <em>test</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser.check_crash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a crash occured and output any useful information to the
+log. Returns a boolean indicating whether a crash occured.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.browsers.base.Browser.cleanup">
+<code class="descname">cleanup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Browser-specific cleanup that is run after the testrun is finished</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.browsers.base.Browser.executor_browser">
+<code class="descname">executor_browser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser.executor_browser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the ExecutorBrowser subclass for this Browser subclass and the keyword arguments
+with which it should be instantiated</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.browsers.base.Browser.is_alive">
+<code class="descname">is_alive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser.is_alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean indicating whether the browser process is still running</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.browsers.base.Browser.pid">
+<code class="descname">pid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser.pid" title="Permalink to this definition">¶</a></dt>
+<dd><p>pid of the browser process or None if there is no pid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.browsers.base.Browser.setup">
+<code class="descname">setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for browser-specific setup that happens at the start of a test run</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.browsers.base.Browser.setup_ssl">
+<code class="descname">setup_ssl</code><span class="sig-paren">(</span><em>hosts</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser.setup_ssl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a certificate to use for tests requiring ssl that will be trusted by the browser</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.browsers.base.Browser.start">
+<code class="descname">start</code><span class="sig-paren">(</span><em>group_metadata</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launch the browser object and get it into a state where is is ready to run tests</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.browsers.base.Browser.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><em>force=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the running browser process.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="wptrunner.browsers.base.BrowserError">
+<em class="property">exception </em><code class="descclassname">wptrunner.browsers.base.</code><code class="descname">BrowserError</code><a class="headerlink" href="#wptrunner.browsers.base.BrowserError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.browsers.base.ExecutorBrowser">
+<em class="property">class </em><code class="descclassname">wptrunner.browsers.base.</code><code class="descname">ExecutorBrowser</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.ExecutorBrowser" title="Permalink to this definition">¶</a></dt>
+<dd><p>View of the Browser used by the Executor object.
+This is needed because the Executor runs in a child process and
+we can’t ship Browser instances between processes on Windows.</p>
+<p>Typically this will have a few product-specific properties set,
+but in some cases it may have more elaborate methods for setting
+up the browser from the runner process.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.browsers.base.NullBrowser">
+<em class="property">class </em><code class="descclassname">wptrunner.browsers.base.</code><code class="descname">NullBrowser</code><span class="sig-paren">(</span><em>logger</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.NullBrowser" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="wptrunner.browsers.base.NullBrowser.is_alive">
+<code class="descname">is_alive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.NullBrowser.is_alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean indicating whether the browser process is still running</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.browsers.base.NullBrowser.pid">
+<code class="descname">pid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.NullBrowser.pid" title="Permalink to this definition">¶</a></dt>
+<dd><p>pid of the browser process or None if there is no pid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.browsers.base.NullBrowser.start">
+<code class="descname">start</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.NullBrowser.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>No-op browser to use in scenarios where the TestRunnerManager shouldn’t
+actually own the browser process (e.g. Servo where we start one browser
+per test)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.browsers.base.NullBrowser.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><em>force=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.NullBrowser.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the running browser process.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="wptrunner.browsers.base.get_free_port">
+<code class="descclassname">wptrunner.browsers.base.</code><code class="descname">get_free_port</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.get_free_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a random unbound port</p>
+</dd></dl>
+
+<span class="target" id="module-wptrunner.environment"></span><dl class="class">
+<dt id="wptrunner.environment.TestEnvironment">
+<em class="property">class </em><code class="descclassname">wptrunner.environment.</code><code class="descname">TestEnvironment</code><span class="sig-paren">(</span><em>test_paths</em>, <em>testharness_timeout_multipler</em>, <em>pause_after_test</em>, <em>debug_info</em>, <em>options</em>, <em>ssl_config</em>, <em>env_extras</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.environment.TestEnvironment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager that owns the test environment i.e. the http and
+websockets servers</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="wptrunner.environment.TestEnvironmentError">
+<em class="property">exception </em><code class="descclassname">wptrunner.environment.</code><code class="descname">TestEnvironmentError</code><a class="headerlink" href="#wptrunner.environment.TestEnvironmentError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<span class="target" id="module-wptrunner.executors.base"></span><dl class="class">
+<dt id="wptrunner.executors.base.CallbackHandler">
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">CallbackHandler</code><span class="sig-paren">(</span><em>logger</em>, <em>protocol</em>, <em>test_window</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.CallbackHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle callbacks from testdriver-using tests.</p>
+<p>The default implementation here makes sense for things that are roughly like
+WebDriver. Things that are more different to WebDriver may need to create a
+fully custom implementation.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.executors.base.ConnectionlessBaseProtocolPart">
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">ConnectionlessBaseProtocolPart</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="wptrunner.executors.base.ConnectionlessBaseProtocolPart.execute_script">
+<code class="descname">execute_script</code><span class="sig-paren">(</span><em>script</em>, <em>asynchronous=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart.execute_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute javascript in the current Window.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>script</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The js source to execute. This is implicitly wrapped in a function.</li>
+<li><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Whether the script is asynchronous in the webdriver
+sense i.e. whether the return value is the result of
+the initial function call or if it waits for some callback.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The result of the script execution.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.executors.base.ConnectionlessBaseProtocolPart.set_timeout">
+<code class="descname">set_timeout</code><span class="sig-paren">(</span><em>timeout</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart.set_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the timeout for script execution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timeout</strong> – Script timeout in seconds</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.executors.base.ConnectionlessBaseProtocolPart.set_window">
+<code class="descname">set_window</code><span class="sig-paren">(</span><em>handle</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart.set_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the top level browsing context to one specified by a given handle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>handle</strong> – A protocol-specific handle identifying a top level browsing
+context.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.executors.base.ConnectionlessBaseProtocolPart.wait">
+<code class="descname">wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessBaseProtocolPart.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait indefinitely for the browser to close</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.executors.base.ConnectionlessProtocol">
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">ConnectionlessProtocol</code><span class="sig-paren">(</span><em>executor</em>, <em>browser</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessProtocol" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="wptrunner.executors.base.ConnectionlessProtocol.after_connect">
+<code class="descname">after_connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessProtocol.after_connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run any post-connection steps. This happens after the ProtocolParts are
+initalized so can depend on a fully-populated object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.executors.base.ConnectionlessProtocol.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ConnectionlessProtocol.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a connection to the remote browser</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="wptrunner.executors.base.ExecutorException">
+<em class="property">exception </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">ExecutorException</code><span class="sig-paren">(</span><em>status</em>, <em>message</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.ExecutorException" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.executors.base.RefTestExecutor">
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">RefTestExecutor</code><span class="sig-paren">(</span><em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>screenshot_cache=None</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.RefTestExecutor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.executors.base.TestExecutor">
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">TestExecutor</code><span class="sig-paren">(</span><em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.TestExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract Base class for object that actually executes the tests in a
+specific browser. Typically there will be a different TestExecutor
+subclass for each test type and method of executing tests.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>browser</strong> – ExecutorBrowser instance providing properties of the
+browser that will be tested.</li>
+<li><strong>server_config</strong> – Dictionary of wptserve server configuration of the
+form stored in TestEnvironment.config</li>
+<li><strong>timeout_multiplier</strong> – Multiplier relative to base timeout to use
+when setting test timeout.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="wptrunner.executors.base.TestExecutor.do_test">
+<code class="descname">do_test</code><span class="sig-paren">(</span><em>test</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.TestExecutor.do_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test-type and protocol specific implementation of running a
+specific test.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>test</strong> – The test to run.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wptrunner.executors.base.TestExecutor.logger">
+<code class="descname">logger</code><a class="headerlink" href="#wptrunner.executors.base.TestExecutor.logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>StructuredLogger for this executor</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.executors.base.TestExecutor.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.TestExecutor.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-initialize internal state to facilitate repeated test execution
+as implemented by the <cite>–rerun</cite> command-line argument.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.executors.base.TestExecutor.run_test">
+<code class="descname">run_test</code><span class="sig-paren">(</span><em>test</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.TestExecutor.run_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a particular test.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>test</strong> – The test to run</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.executors.base.TestExecutor.setup">
+<code class="descname">setup</code><span class="sig-paren">(</span><em>runner</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.TestExecutor.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run steps needed before tests can be started e.g. connecting to
+browser instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>runner</strong> – TestRunner instance that is going to run the tests</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.executors.base.TestExecutor.teardown">
+<code class="descname">teardown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.TestExecutor.teardown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run cleanup steps after tests have finished</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.executors.base.TestharnessExecutor">
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">TestharnessExecutor</code><span class="sig-paren">(</span><em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.TestharnessExecutor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.executors.base.WdspecExecutor">
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">WdspecExecutor</code><span class="sig-paren">(</span><em>browser</em>, <em>server_config</em>, <em>webdriver_binary</em>, <em>webdriver_args</em>, <em>timeout_multiplier=1</em>, <em>capabilities=None</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="wptrunner.executors.base.WdspecExecutor.do_test">
+<code class="descname">do_test</code><span class="sig-paren">(</span><em>test</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecExecutor.do_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test-type and protocol specific implementation of running a
+specific test.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>test</strong> – The test to run.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.executors.base.WebDriverProtocol">
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">WebDriverProtocol</code><span class="sig-paren">(</span><em>executor</em>, <em>browser</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WebDriverProtocol" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="wptrunner.executors.base.WebDriverProtocol.after_connect">
+<code class="descname">after_connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WebDriverProtocol.after_connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run any post-connection steps. This happens after the ProtocolParts are
+initalized so can depend on a fully-populated object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.executors.base.WebDriverProtocol.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WebDriverProtocol.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to browser via the HTTP server.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wptrunner.executors.base.WebDriverProtocol.is_alive">
+<code class="descname">is_alive</code><a class="headerlink" href="#wptrunner.executors.base.WebDriverProtocol.is_alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that the connection is still alive.</p>
+<p>Because the remote communication happens over HTTP we need to
+make an explicit request to the remote.  It is allowed for
+WebDriver spec tests to not have a WebDriver session, since this
+may be what is tested.</p>
+<p>An HTTP request to an invalid path that results in a 404 is
+proof enough to us that the server is alive and kicking.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.executors.base.WebDriverProtocol.teardown">
+<code class="descname">teardown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WebDriverProtocol.teardown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run cleanup steps after the tests are finished.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="wptrunner.executors.base.hash_screenshot">
+<code class="descclassname">wptrunner.executors.base.</code><code class="descname">hash_screenshot</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.hash_screenshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the sha1 checksum of a base64-encoded screenshot.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="wptrunner.executors.base.strip_server">
+<code class="descclassname">wptrunner.executors.base.</code><code class="descname">strip_server</code><span class="sig-paren">(</span><em>url</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.strip_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the scheme and netloc from a url, leaving only the path and any query
+or fragment.</p>
+<p>url - the url to strip</p>
+<p>e.g. <a class="reference external" href="http://example.org:8000/tests?id=1#2">http://example.org:8000/tests?id=1#2</a> becomes /tests?id=1#2</p>
+</dd></dl>
+
+<span class="target" id="module-wptrunner.wptrunner"></span><dl class="data">
+<dt id="wptrunner.wptrunner.logger">
+<code class="descclassname">wptrunner.wptrunner.</code><code class="descname">logger</code><em class="property"> = None</em><a class="headerlink" href="#wptrunner.wptrunner.logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runner for web-platform-tests</p>
+<p>The runner has several design goals:</p>
+<ul class="simple">
+<li>Tests should run with no modification from upstream.</li>
+<li>Tests should be regarded as “untrusted” so that errors, timeouts and even
+crashes in the tests can be handled without failing the entire test run.</li>
+<li>For performance tests can be run in multiple browsers in parallel.</li>
+</ul>
+<p>The upstream repository has the facility for creating a test manifest in JSON
+format. This manifest is used directly to determine which tests exist. Local
+metadata files are used to store the expected test results.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="wptrunner.wptrunner.main">
+<code class="descclassname">wptrunner.wptrunner.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.wptrunner.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main entry point when calling from the command line</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="wptrunner.wptrunner.run_tests">
+<code class="descclassname">wptrunner.wptrunner.</code><code class="descname">run_tests</code><span class="sig-paren">(</span><em>config</em>, <em>test_paths</em>, <em>product</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.wptrunner.run_tests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up the test environment, load the list of tests to be executed, and
+invoke the remainder of the code to execute tests</p>
+</dd></dl>
+
+<span class="target" id="module-wptrunner.testloader"></span><dl class="class">
+<dt id="wptrunner.testloader.DirectoryHashChunker">
+<em class="property">class </em><code class="descclassname">wptrunner.testloader.</code><code class="descname">DirectoryHashChunker</code><span class="sig-paren">(</span><em>total_chunks</em>, <em>chunk_number</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testloader.DirectoryHashChunker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like HashChunker except the directory is hashed.</p>
+<p>This ensures that all tests in the same directory end up in the same
+chunk.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.testloader.TestFilter">
+<em class="property">class </em><code class="descclassname">wptrunner.testloader.</code><code class="descname">TestFilter</code><span class="sig-paren">(</span><em>test_manifests</em>, <em>include=None</em>, <em>exclude=None</em>, <em>manifest_path=None</em>, <em>explicit=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testloader.TestFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callable that restricts the set of tests in a given manifest according
+to initial criteria</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.testloader.TestLoader">
+<em class="property">class </em><code class="descclassname">wptrunner.testloader.</code><code class="descname">TestLoader</code><span class="sig-paren">(</span><em>test_manifests</em>, <em>test_types</em>, <em>run_info</em>, <em>manifest_filters=None</em>, <em>chunk_type='none'</em>, <em>total_chunks=1</em>, <em>chunk_number=1</em>, <em>include_https=True</em>, <em>skip_timeout=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testloader.TestLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads tests according to a WPT manifest and any associated expectation files</p>
+</dd></dl>
+
+<span class="target" id="module-wptrunner.testrunner"></span><dl class="class">
+<dt id="wptrunner.testrunner.ManagerGroup">
+<em class="property">class </em><code class="descclassname">wptrunner.testrunner.</code><code class="descname">ManagerGroup</code><span class="sig-paren">(</span><em>suite_name</em>, <em>size</em>, <em>test_source_cls</em>, <em>test_source_kwargs</em>, <em>browser_cls</em>, <em>browser_kwargs</em>, <em>executor_cls</em>, <em>executor_kwargs</em>, <em>rerun=1</em>, <em>pause_after_test=False</em>, <em>pause_on_unexpected=False</em>, <em>restart_on_unexpected=True</em>, <em>debug_info=None</em>, <em>capture_stdio=True</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.ManagerGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main thread object that owns all the TestRunnerManager threads.</p>
+<dl class="method">
+<dt id="wptrunner.testrunner.ManagerGroup.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>test_type</em>, <em>tests</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.ManagerGroup.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start all managers in the group</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.testrunner.ManagerGroup.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.ManagerGroup.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the stop flag so that all managers in the group stop as soon
+as possible</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.testrunner.ManagerGroup.wait">
+<code class="descname">wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.ManagerGroup.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait for all the managers in the group to finish</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.testrunner.TestRunner">
+<em class="property">class </em><code class="descclassname">wptrunner.testrunner.</code><code class="descname">TestRunner</code><span class="sig-paren">(</span><em>logger</em>, <em>command_queue</em>, <em>result_queue</em>, <em>executor</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.TestRunner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class implementing the main loop for running tests.</p>
+<p>This class delegates the job of actually running a test to the executor
+that is passed in.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>logger</strong> – Structured logger</li>
+<li><strong>command_queue</strong> – subprocess.Queue used to send commands to the
+process</li>
+<li><strong>result_queue</strong> – subprocess.Queue used to send results to the
+parent TestRunnerManager process</li>
+<li><strong>executor</strong> – TestExecutor object that will actually run a test.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="wptrunner.testrunner.TestRunner.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.TestRunner.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main loop accepting commands over the pipe and triggering
+the associated methods</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.testrunner.TestRunnerManager">
+<em class="property">class </em><code class="descclassname">wptrunner.testrunner.</code><code class="descname">TestRunnerManager</code><span class="sig-paren">(</span><em>suite_name</em>, <em>test_queue</em>, <em>test_source_cls</em>, <em>browser_cls</em>, <em>browser_kwargs</em>, <em>executor_cls</em>, <em>executor_kwargs</em>, <em>stop_flag</em>, <em>rerun=1</em>, <em>pause_after_test=False</em>, <em>pause_on_unexpected=False</em>, <em>restart_on_unexpected=True</em>, <em>debug_info=None</em>, <em>capture_stdio=True</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.TestRunnerManager" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="wptrunner.testrunner.TestRunnerManager.restart_runner">
+<code class="descname">restart_runner</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.TestRunnerManager.restart_runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop and restart the TestRunner</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.testrunner.TestRunnerManager.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.TestRunnerManager.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main loop for the TestRunnerManager.</p>
+<p>TestRunnerManagers generally receive commands from their
+TestRunner updating them on the status of a test. They
+may also have a stop flag set by the main thread indicating
+that the manager should shut down the next time the event loop
+spins.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.testrunner.TestRunnerManager.stop_runner">
+<code class="descname">stop_runner</code><span class="sig-paren">(</span><em>force=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.TestRunnerManager.stop_runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the TestRunner and the browser binary.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.testrunner.TestRunnerManager.test_ended">
+<code class="descname">test_ended</code><span class="sig-paren">(</span><em>test</em>, <em>results</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.TestRunnerManager.test_ended" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle the end of a test.</p>
+<p>Output the result of each subtest, and the result of the overall
+harness to the logs.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="wptrunner.testrunner.start_runner">
+<code class="descclassname">wptrunner.testrunner.</code><code class="descname">start_runner</code><span class="sig-paren">(</span><em>runner_command_queue</em>, <em>runner_result_queue</em>, <em>executor_cls</em>, <em>executor_kwargs</em>, <em>executor_browser_cls</em>, <em>executor_browser_kwargs</em>, <em>capture_stdio</em>, <em>stop_flag</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.start_runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launch a TestRunner in a new process</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../test-suite-design.html">Test Suite Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../admin/index.html">Project Administration</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../admin/index.html#tooling">Tooling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../admin/index.html#secrets">Secrets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../admin/index.html#third-party-account-owners">Third-party account owners</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../admin/index.html">Project Administration</a><ul>
+  <li><a href="../README.html">wptrunner: A web-platform-tests harness</a><ul>
+      <li>Previous: <a href="design.html" title="previous chapter">wptrunner Design</a></li>
+      <li>Next: <a href="../../wptserve/README.html" title="next chapter">wptserve</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/tools/wptrunner/docs/internals.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

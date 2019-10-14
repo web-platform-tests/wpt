@@ -1,0 +1,121 @@
+<!doctype html>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<link rel='stylesheet' href='../support/base.css' />
+<link rel="author" title="Aleks Totic" href="atotic@chromium.org" />
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#row-layout" />
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/4418" />
+<style>
+  table {
+    border-collapse: collapse;
+    background: #DDD;
+  }
+  td {
+    padding: 0;
+  }
+  .sizer {
+    width: 30px;
+    height: 100px;
+    background: #444;
+  }
+  tbody tr:nth-child(1) td:nth-child(1) {
+    background: #888;
+  }
+</style>
+<p>Tests for redistribution of tall cell heights (rowspan > 1).</p>
+<p>Unconstrained cells are redistributed proportionally</p>
+<table id="one">
+  <tbody>
+    <tr>
+      <td>0,0</td><td rowspan="2"><div class="sizer"></div></td>
+    </tr>
+    <tr>
+      <td>0,1</td>
+    </tr>
+</table>
+<p>Constrained fixed cells do not grow if there are unconstrained ones</p>
+<table id="two">
+  <tbody>
+    <tr style="height: 30px">
+      <td>0,0 30px</td><td rowspan="2"><div class="sizer"></div></td>
+    </tr>
+    <tr>
+      <td>0,1</td>
+    </tr>
+</table>
+<p>Constrained percentage cells grow to %ge size, but no more.</p>
+<table id="three">
+  <tbody>
+    <tr style="height: 30%">
+      <td>0,0 30%</td><td rowspan="2"><div class="sizer"></div></td>
+    </tr>
+    <tr>
+      <td>0,1</td>
+    </tr>
+</table>
+<p>Percentage cells grow greedily.</p>
+<table id="four">
+  <tbody>
+    <tr style="height: 60%">
+      <td>0,0 60%</td><td rowspan="3"><div class="sizer"></div></td>
+    </tr>
+    <tr style="height: 40%">
+      <td>0,1 40%</td>
+    </tr>
+    <tr>
+      <td>0,1</td>
+    </tr>
+</table>
+<p>Zero height unconstrained rows do not grow.</p>
+<table id="five">
+  <tbody>
+    <tr>
+      <td>0,0</td><td rowspan="3"><div class="sizer"></div></td>
+    </tr>
+    <tr>
+      <td>0,1</td>
+    </tr>
+    <tr>
+    </tr>
+</table>
+<p>Unconstrained cells are redistributed proportionally</p>
+<table id="six">
+  <tbody>
+    <tr>
+      <td><div style="height:30px">0,0</div></td><td rowspan="2"><div class="sizer"></div></td>
+    </tr>
+    <tr>
+      <td><div style="height:10px">0,1</div></td>
+    </tr>
+</table>
+<script>
+  test(function() {
+    var cells = document.querySelectorAll("#one td");
+    assert_equals(cells[0].offsetHeight, 50);
+    assert_equals(cells[2].offsetHeight, 50);
+  }, "Unconstrained cells heights are distributed proportionally.");
+  test(function() {
+    var cells = document.querySelectorAll("#two td");
+    assert_equals(cells[0].offsetHeight, 30);
+    assert_equals(cells[2].offsetHeight, 70);
+  }, "Constrained fixed cells not resized if unconstrained exist.");
+  test(function() {
+    var cells = document.querySelectorAll("#three td");
+    assert_equals(cells[0].offsetHeight, 30);
+    assert_equals(cells[2].offsetHeight, 70);
+  }, "Constrained %ge cells grow to %ge size, but no more.");
+  test(function() {
+    var cells = document.querySelectorAll("#four td");
+    assert_equals(cells[0].offsetHeight, 60);
+    assert_less_than(cells[2].offsetHeight, 40);
+  }, "%ge grow greedily.");
+  test(function() {
+    var rows = document.querySelectorAll("#five tr");
+    assert_equals(rows[2].offsetHeight, 0);
+  }, "Zero height rows do not grow.");
+  test(function() {
+    var rows = document.querySelectorAll("#six tr");
+    assert_equals(rows[0].offsetHeight, 75);
+    assert_equals(rows[1].offsetHeight, 25);
+  }, "Unconstrained cells are redistributed proportionally");
+</script>

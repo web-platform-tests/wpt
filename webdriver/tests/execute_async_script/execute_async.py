@@ -36,6 +36,12 @@ def test_abort_by_user_prompt(session, dialog_type):
     session.alert.accept()
 
 
+def test_with_args(session):
+    js = "arguments[arguments.length - 1](arguments[0] + arguments[1]);"
+    response = execute_async_script(session, js, args=[1, 2])
+    assert_success(response, 3)
+
+
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
 def test_abort_by_user_prompt_twice(session, dialog_type):
     response = execute_async_script(

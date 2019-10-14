@@ -33,6 +33,11 @@ def test_ending_comment(session):
     assert_success(response, 1)
 
 
+def test_with_args(session):
+    response = execute_script(session, "return arguments[0];", args=["one"])
+    assert_success(response, "one")
+
+
 def test_override_listeners(session):
     session.url = inline("""
 <script>

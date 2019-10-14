@@ -27,35 +27,25 @@ def execute_script(session, script, name=None, args=None):
             script_name=name),
         body)
 
-def test_pinning(session):
-    response = pin_script(session, "One", "return 1;")
-    assert_success(response)
 
-
-def test_null_parameter_value(session, http):
-    path = "/session/{session_id}/execute/sync/one".format(**vars(session))
-    with http.post(path, None) as response:
-        assert_error(Response.from_http(response), "invalid argument")
-
-
-def test_no_browsing_context(session, closed_window):
-    response = pin_script(session, "one", "return 1;")
-    assert_error(response, "no such window")
-
-
-def test_no_name(session):
-    response = pin_script(session, None, "return 1;")
-    assert_error(response, "invalid argument")
-
-
-def test_not_string(session):
-    response = pin_script(session, "One", "return 1;")
-    assert_error(response, "invalid argument")
-
-
-def test_duplicate_success(session):
-    pin_script(session, "One", "return 2;")
+def test_execute_pinned(session):
     pin_script(session, "One", "return 1;")
     response = execute_script(session, name="One")
+    assert_success(response, 1)
 
+
+def test_name_and_script(session):
+    pin_script(session, "One", "return 1;")
+    response = execute_script(session, "return 1;", name="One")
+    assert_error(response, "invalid argument")
+
+
+def test_no_such_pinned_script(session):
+    response = execute_script(session, name="One")
+    assert_error(response, "no such script")
+
+
+def test_execute_pinned_with_args(session, http):
+    pin_script(session, "One", "return arguments[0];")
+    response = execute_script(session, name="One", args=[1])
     assert_success(response, 1)

@@ -25,28 +25,10 @@ tasks:
               }
           each(browser):
             $map:
-              - [testharness, 1, 16]
-              - [testharness, 2, 16]
-              - [testharness, 3, 16]
-              - [testharness, 4, 16]
-              - [testharness, 5, 16]
-              - [testharness, 6, 16]
-              - [testharness, 7, 16]
-              - [testharness, 8, 16]
-              - [testharness, 9, 16]
-              - [testharness, 10, 16]
-              - [testharness, 11, 16]
-              - [testharness, 12, 16]
-              - [testharness, 13, 16]
-              - [testharness, 14, 16]
-              - [testharness, 15, 16]
-              - [testharness, 16, 16]
-              - [reftest, 1, 5]
-              - [reftest, 2, 5]
-              - [reftest, 3, 5]
-              - [reftest, 4, 5]
-              - [reftest, 5, 5]
-              - [wdspec, 1, 1]
+              - [reftest, 1, 4]
+              - [reftest, 2, 4]
+              - [reftest, 3, 4]
+              - [reftest, 4, 4]
             each(chunk):
               taskId: {$eval: 'as_slugid(browser.name + browser.channel + chunk[0] + str(chunk[1]))'}
               taskGroupId: {$eval: 'as_slugid("task group")'}

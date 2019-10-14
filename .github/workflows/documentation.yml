@@ -21,9 +21,6 @@ jobs:
       with:
         fetch-depth: 50
     - name: Run website_build.sh
-      uses: ./tools/docker/documentation
+      run: ./tools/ci/website_build.sh
       env:
         DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-      with:
-        entrypoint: /bin/bash
-        args: tools/ci/website_build.sh

@@ -220,6 +220,12 @@ def start_xvfb():
     start(["sudo", "fluxbox", "-display", os.environ["DISPLAY"]])
 
 
+def start_x11grab():
+    run(["sudo", "apt-get", "-qqy", "update"])
+    run(["sudo", "apt-get", "-qqy", "install", "ffmpeg"])
+    start(["./tools/ci/taskcluster-x11grab.sh"])
+
+
 def get_extra_jobs(event):
     body = None
     jobs = set()
@@ -289,6 +295,8 @@ def setup_environment(args):
 
     if args.xvfb:
         start_xvfb()
+
+    start_x11grab()
 
     if args.oom_killer:
         start_userspace_oom_killer()

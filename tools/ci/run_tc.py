@@ -125,13 +125,23 @@ def checkout_revision(rev):
 
 def install_chrome(channel):
     # Bisecting
-    url = "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/694908/chrome-linux.zip"
-    dest = "/tmp/google-chrome-unstable.zip"
+    # url = "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/694908/chrome-linux.zip"
+    # dest = "/tmp/google-chrome-unstable.zip"
+    # resp = urlopen(url)
+    # with open(dest, 'w') as f:
+    #   f.write(resp.read())
+    # run(["unzip", "/tmp/google-chrome-unstable.zip", "-d", "/tmp/"])
+    # run(["sudo", "apt-get", "install", "libxss1"])
+
+    # Trying without the CL.
+    url = "https://storage.googleapis.com/smcgruer-chrome-builds/chrome_without_cls.zip"
+    dest = "/tmp/chrome_without_cls.zip"
     resp = urlopen(url)
     with open(dest, 'w') as f:
       f.write(resp.read())
-    run(["unzip", "/tmp/google-chrome-unstable.zip", "-d", "/tmp/"])
+    run(["unzip", "/tmp/chrome_without_cls.zip", "-d", "/tmp/"])
     run(["sudo", "apt-get", "install", "libxss1"])
+
     #deb_prefix = "https://dl.google.com/linux/direct/"
     #if channel in ("experimental", "dev", "nightly"):
     #    # Bisecting

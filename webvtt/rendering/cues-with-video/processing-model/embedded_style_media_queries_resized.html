@@ -1,0 +1,16 @@
+<!doctype html>
+<html class="reftest-wait">
+<title>Embedded Style: Media Queries Resize Frame</title>
+<link rel="match" href="embedded_style_media_queries_resized-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="/common/utils.js"></script>
+<style>iframe {width:100%; height:500px}</style>
+<script>
+    onload = function() {
+        document.getElementById("form-iframe").style.height = "300px";
+        setTimeout(function() {
+            takeScreenshot();
+        }, 100);
+    }
+</script>
+<iframe id="form-iframe" src="support/embedded_style_media_queries_resized-iframe.html"></iframe>

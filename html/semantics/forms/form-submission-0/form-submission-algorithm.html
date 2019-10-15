@@ -77,6 +77,20 @@ promise_test(async () => {
   assert_true(event instanceof SubmitEvent);
 }, 'firing an event named submit; form.requestSubmit()');
 
+promise_test(async () => {
+  let form = populateForm('<input type=submit><button type=submit></button>');
+  let iframe = form.previousSibling;
+  let submitter = form.querySelector('button');
+  let event;
+  form.addEventListener('submit', e => { event = e; });
+  form.requestSubmit(submitter);
+  await loadPromise(iframe);
+  assert_true(event.bubbles);
+  assert_true(event.cancelable);
+  assert_equals(event.submitter, submitter);
+  assert_true(event instanceof SubmitEvent);
+}, 'firing an event named submit; form.requestSubmit(submitter)');
+
 async_test(t => {
   let form = populateForm('<input name=n1 value=v1>');
   form.onformdata = (e) => { e.target.remove(); };

@@ -1,5 +1,6 @@
 // META: title=Blob Content Type
 // META: script=support.js
+// META: timeout=long
 
 indexeddb_test(
     function upgrade(t, db) {

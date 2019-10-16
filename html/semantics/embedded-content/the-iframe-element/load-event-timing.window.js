@@ -1,7 +1,7 @@
 async_test(t => {
   const frame = document.createElement("iframe");
   t.add_cleanup(() => frame.remove());
-  let happened = []
+  const happened = [];
   frame.onload = t.step_func(() => happened.push("load"));
   document.body.append(frame);
   happened.push("append");
@@ -15,7 +15,7 @@ async_test(t => {
 async_test(t => {
   const frame = document.createElement("iframe");
   t.add_cleanup(() => frame.remove());
-  let happened = []
+  const happened = [];
   frame.onload = t.step_func(() => happened.push("load"));
   frame.src = "about:blank";
   document.body.append(frame);

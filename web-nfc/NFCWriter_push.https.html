@@ -381,16 +381,14 @@ nfc_test(async (t, mockNFC) => {
 nfc_test(async (t, mockNFC) => {
   const writer = new NFCWriter();
   await writer.push({ records: [{ data: test_text_data}] });
-  const message = createMessage([createTextRecord(test_text_data)]);
-  assertNDEFMessagesEqual(message, mockNFC.pushedMessage());
+  assertNDEFMessagesEqual(test_text_data, mockNFC.pushedMessage());
 }, "Test that recordType should be set to 'text' if NDEFRecordInit.record's \
 recordType is undefined and NDEFRecordInit.record's data is DOMString.");
 
 nfc_test(async (t, mockNFC) => {
   const writer = new NFCWriter();
   await writer.push({ records: [{ data: test_buffer_data}] });
-  const message = createMessage([createOpaqueRecord(test_buffer_data)]);
-  assertNDEFMessagesEqual(message, mockNFC.pushedMessage());
+  assertNDEFMessagesEqual(test_buffer_data, mockNFC.pushedMessage());
 }, "Test that recordType should be set to 'opaque' if NDEFRecordInit.record's \
 recordType is undefined and NDEFRecordInit.record's data is ArrayBuffer.");
 
@@ -406,16 +404,14 @@ ArrayBuffer.");
 nfc_test(async (t, mockNFC) => {
   const writer = new NFCWriter();
   await writer.push({ records: [{ recordType: "text", data: test_text_data }] });
-  const message = createMessage([createTextRecord(test_text_data)]);
-  assertNDEFMessagesEqual(message, mockNFC.pushedMessage());
+  assertNDEFMessagesEqual(test_text_data, mockNFC.pushedMessage());
 }, "Test that mediaType should be set to 'text/plain' if NDEFRecordInit.record's \
 recordType is 'text' and NDEFRecordInit.record's mediaType is undefined.");
 
 nfc_test(async (t, mockNFC) => {
   const writer = new NFCWriter();
   await writer.push({ records: [{ recordType: "opaque", data: test_buffer_data }] });
-  const message = createMessage([createOpaqueRecord(test_buffer_data)]);
-  assertNDEFMessagesEqual(message, mockNFC.pushedMessage());
+  assertNDEFMessagesEqual(test_buffer_data, mockNFC.pushedMessage());
 }, "Test that mediaType should be set to 'application/octet-stream' if \
 NDEFRecordInit.record's recordType is 'opaque' and NDEFRecordInit.record's \
 mediaType is undefined.");

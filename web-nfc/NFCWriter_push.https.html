@@ -432,4 +432,14 @@ nfc_test(async (t, mockNFC) => {
   assertNDEFMessagesEqual(message, mockNFC.pushedMessage());
 }, "Test that mediaType should be set to 'text/plain' if NDEFRecordInit.record's \
 recordType is 'url' and NDEFRecordInit.record's mediaType is undefined.");
+
+nfc_test(async (t, mockNFC) => {
+  const writer = new NFCWriter();
+  await writer.push({ records: [{ recordType: "w3.org:xyz", data: test_buffer_data }] });
+  const message = createMessage([createRecord('w3.org:xyz', 'application/octet-stream',
+      test_buffer_data)]);
+  assertNDEFMessagesEqual(message, mockNFC.pushedMessage());
+}, "Test that mediaType should be set to 'application/octet-stream' if \
+NDEFRecordInit.record's recordType is external type and NDEFRecordInit.record's \
+mediaType is undefined.");
 </script>

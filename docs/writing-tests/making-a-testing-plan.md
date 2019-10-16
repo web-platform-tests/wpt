@@ -29,12 +29,11 @@ This guide will:
 
 ## Understanding the "testing surface"
 
-[The web platform specifications](https://platform.html5.org/) are instructions
-about how a feature should work. They're critical for implementers to "build
-the right thing," but they are also important for anyone writing tests. We can
-use the same instructions to infer what kinds of tests would be likely to
-detect mistakes. Here are a few common patterns in specification text and the
-kind of tests they suggest.
+Web platform specifications are instructions about how a feature should work.
+They're critical for implementers to "build the right thing," but they are also
+important for anyone writing tests. We can use the same instructions to infer
+what kinds of tests would be likely to detect mistakes. Here are a few common
+patterns in specification text and the kind of tests they suggest.
 
 ### Input sources
 

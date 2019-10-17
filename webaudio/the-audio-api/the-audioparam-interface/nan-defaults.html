@@ -1,0 +1,278 @@
+<!doctype html>
+<html>
+  <head>
+    <title>AudioParam NaN values use default</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/webaudio/resources/audit.js"></script>
+  </head>
+
+  <body>
+    <script>
+      let audit = Audit.createTaskRunner();
+
+      // Fairly arbitrary sample rate, with a bias to small values to make
+      // testing faster.
+      const sampleRate = 8000;
+
+      // How long to render.  Pretty arbitrary, but a small value should be good
+      // enough to demonstrate things are working.
+      const renderFrames = 256;
+
+      audit.define(
+          {
+            label: 'ConstantSourceNode.offset',
+            description: 'Test NaN replaced by default'
+          },
+          (task, should) => {
+            let context = new OfflineAudioContext(
+                {sampleRate: sampleRate, length: renderFrames});
+
+            let src = new ConstantSourceNode(context, {offset: 42});
+            let nan = NaNSource(context);
+
+            nan.connect(src.offset);
+
+            src.connect(context.destination);
+
+            src.start();
+
+            context.startRendering()
+                .then(buffer => {
+                  let output = buffer.getChannelData(0);
+
+                  // Output from the source should be the default when the
+                  // automated offset is NaN.
+                  should(output, 'Output from ConstantSourceNode')
+                      .beConstantValueOf(src.offset.defaultValue);
+                })
+                .then(() => task.done());
+          });
+
+      audit.define(
+          {
+            label: 'DelayNode.delayTime',
+            description: 'Test NaN replaced by default'
+          },
+          (task, should) => {
+            let context = new OfflineAudioContext(
+                {sampleRate: sampleRate, length: renderFrames});
+
+            let src = new ConstantSourceNode(context, {offset: 42});
+            let node = new DelayNode(context, {delayTime: .5});
+            let nan = NaNSource(context);
+
+            nan.connect(node.delayTime);
+            src.connect(node).connect(context.destination);
+
+            src.start();
+
+            context.startRendering()
+                .then(buffer => {
+                  let output = buffer.getChannelData(0);
+
+                  // Output from the DelayNode should be the same as the
+                  // constant source value since the default delay time is 0.
+                  should(output, 'Output from DelayNode')
+                      .beConstantValueOf(src.offset.value);
+                })
+                .then(() => task.done());
+          });
+
+      audit.define(
+          {label: 'Gain.gain', description: 'Test NaN replaced by default'},
+          (task, should) => {
+            let context = new OfflineAudioContext(
+                {sampleRate: sampleRate, length: renderFrames});
+
+            let src = new ConstantSourceNode(context, {offset: 42});
+            let node = new GainNode(context);
+            let nan = NaNSource(context);
+
+            nan.connect(node.gain);
+            src.connect(node).connect(context.destination);
+
+            src.start();
+
+            context.startRendering()
+                .then(buffer => {
+                  let output = buffer.getChannelData(0);
+
+                  // Output from the gain node should be the same as the source
+                  // since the default gain value is 1.
+                  should(output, 'Output from GainNode')
+                      .beConstantValueOf(src.offset.value);
+                })
+                .then(() => task.done());
+          });
+
+      // Test each AudioParam of an Oscillator
+      ['detune', 'frequency'].forEach(param => {
+        audit.define(
+            {
+              label: `OscillatorNode.${param}`,
+              description: 'Test NaN replaced by default'
+            },
+            (task, should) => {
+              let context = new OfflineAudioContext({
+                numberOfChannels: 2,
+                sampleRate: sampleRate,
+                length: renderFrames
+              });
+
+              let merger = new ChannelMergerNode(
+                  context, {numberOfInputs: context.destination.channelCount});
+              merger.connect(context.destination);
+
+              let src = new OscillatorNode(context);
+              let ref = new OscillatorNode(context);
+              let nan = NaNSource(context);
+
+              nan.connect(src[param]);
+              ref.connect(merger, 0, 0);
+              src.connect(merger, 0, 1);
+
+              src.start();
+              ref.start();
+
+              context.startRendering()
+                  .then(buffer => {
+                    let expected = buffer.getChannelData(0);
+                    let actual = buffer.getChannelData(1);
+
+                    // Output from the automated source should match the output
+                    // from the ref node because the default AudioParam value
+                    // matches the ref node.
+                    should(actual, `Output from Oscillator with ${param} input`)
+                        .beEqualToArray(expected);
+                  })
+                  .then(() => task.done());
+            });
+      });
+
+      // Test each AudioParam of a BiquadFilter
+      [{paramName: 'Q', type: 'lowpass'},
+       {paramName: 'detune', type: 'lowpass'},
+       {paramName: 'frequency', type: 'lowpass'},
+       {paramName: 'gain', type: 'peaking'}]
+          .forEach(testEntry => {
+            audit.define(
+                {
+                  label: `BiquadFilterNode.${testEntry.paramName}`,
+                  description: 'Test NaN replaced by default'
+                },
+                (task, should) => {
+                  let context = new OfflineAudioContext({
+                    numberOfChannels: 2,
+                    sampleRate: sampleRate,
+                    length: renderFrames
+                  });
+
+                  let merger = new ChannelMergerNode(
+                      context,
+                      {numberOfChannels: context.destination.channelCount});
+                  merger.connect(context.destination);
+
+                  let src = new OscillatorNode(context);
+                  let ref =
+                      new BiquadFilterNode(context, {type: testEntry.type});
+                  let node =
+                      new BiquadFilterNode(context, {type: testEntry.type});
+                  let nan = NaNSource(context);
+
+                  nan.connect(node[testEntry.paramName]);
+                  src.connect(ref).connect(merger, 0, 0);
+                  src.connect(node).connect(merger, 0, 1);
+
+                  src.start();
+
+                  context.startRendering()
+                      .then(buffer => {
+                        let expected = buffer.getChannelData(0);
+                        let actual = buffer.getChannelData(1);
+
+                        // Output from the automated BiquadFilter should match
+                        // the output from the ref node because the default
+                        // AudioParam value matches the ref node.
+                        should(
+                            actual,
+                            `Output with BiquadFilterNode.${
+                                testEntry.paramName} NaN`)
+                            .beEqualToArray(expected);
+                      })
+                      .then(() => task.done());
+                });
+          });
+
+      // Test of NaN happening for a few frames
+      audit.define(
+          {
+            label: 'Isolated NaN test',
+            description: 'CosntantSourceNode.offset'
+          },
+          (task, should) => {
+            let context = new OfflineAudioContext(
+                {sampleRate: sampleRate, length: renderFrames});
+
+            let src = new ConstantSourceNode(context, {offset: 42});
+
+            // Fill a short buffer with NaN in a couple of random places to test
+            // that the ConstantSource.offset replaces just those values with
+            // the default.  The length of the buffer, the number of NaN values,
+            // and their locations is arbitrary as long as the buffer is not a
+            // constant NaN.
+            let b = new AudioBuffer({length: 10, sampleRate: sampleRate});
+            let d = b.getChannelData(0);
+            d.fill(3);
+            d[3] = NaN;
+            d[9] = NaN;
+
+            let nan = new AudioBufferSourceNode(context, {buffer: b});
+
+            nan.connect(src.offset);
+            src.connect(context.destination);
+
+            nan.start();
+            src.start();
+
+            context.startRendering()
+                .then(buffer => {
+                  let output = buffer.getChannelData(0);
+                  let expected = new Float32Array(output.length);
+
+                  // The expected output should be the constant source offset
+                  // value everywhere, except where the NaN source contains NaN
+                  // values.  At those places the offset default value is used.
+                  expected.fill(src.offset.value);
+                  for (let k = 0; k < d.length; ++k) {
+                    if (isNaN(d[k])) {
+                      expected[k] = src.offset.defaultValue;
+                    } else {
+                      expected[k] += d[k];
+                    }
+                  }
+
+                  should(
+                      output,
+                      'ConstantSource output with isolated NaN offset input values')
+                      .beEqualToArray(expected);
+                })
+                .then(() => task.done());
+          });
+
+      audit.run();
+
+      function NaNSource(context) {
+        // Create a node whose output is NaN and return the node.
+
+        let b = new AudioBuffer({length: 1, sampleRate: context.sampleRate});
+        b.getChannelData(0).fill(NaN);
+
+        let src = new AudioBufferSourceNode(context, {buffer: b, loop: true});
+        src.start();
+
+        return src;
+      }
+    </script>
+  </body>
+</html>

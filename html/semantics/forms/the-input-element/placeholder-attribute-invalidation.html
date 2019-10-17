@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<link rel="author" title="Joey Arhar" href="mailto:jarhar@chromium.org">
+<link rel="match" href="placeholder-attribute-invalidation-ref.html">
+<title>setAttribute placeholder visually updates input element</title>
+
+<p>Test passes if setAttribute('placeholder') on input element immediately shows placeholder value</p>
+
+<script>
+window.onload = () => {
+  const input = document.createElement('input');
+  document.body.appendChild(input);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      input.setAttribute('placeholder', 'placeholder value');
+      document.documentElement.classList.remove('reftest-wait');
+    });
+  });
+};
+</script>

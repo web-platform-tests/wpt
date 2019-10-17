@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>setAttribute placeholder visually updates input element</title>
+
+<p>Test passes if setAttribute('placeholder') on input element immediately shows placeholder value</p>
+
+<input placeholder="placeholder value"></input>
+
+<script>
+window.onload = async () => {
+  const doubleRaf = () => {
+    return new Promise(resolve => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          resolve();
+        });
+      });
+    });
+  };
+
+  const input = document.getElementsByTagName('input')[0];
+
+  // change value with doubleRaf to make sure the placeholder text appears
+  input.value = 'hello world';
+  await doubleRaf();
+  input.value = '';
+  await doubleRaf();
+
+  document.documentElement.classList.remove('reftest-wait');
+};
+</script>

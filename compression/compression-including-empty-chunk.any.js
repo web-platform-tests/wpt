@@ -5,9 +5,9 @@
 'use strict';
 
 // This test asserts that compressing '' doesn't affect the compressed data.
-// ex) compressing ['Hello', '', 'Hello'] results in 'HelloHello'
+// Example: compressing ['Hello', '', 'Hello'] results in 'HelloHello'
 
-async function compressIncludingEmptyChunk(chunkList, format) {
+async function compressChunkList(chunkList, format) {
   const cs = new CompressionStream(format);
   const writer = cs.writable.getWriter();
   for (const chunk of chunkList) {
@@ -44,13 +44,13 @@ const expectedValue = new TextEncoder().encode('HelloHello');
 
 for (const chunkList of chunkLists) {
   promise_test(async t => {
-    const compressedData = await compressIncludingEmptyChunk(chunkList, 'deflate');
+    const compressedData = await compressChunkList(chunkList, 'deflate');
     // decompress with pako, and check that we got the same result as our original string
     assert_array_equals(expectedValue, pako.inflate(compressedData), 'value should match');
-  }, `the reslut of compressing [${chunkList}] with deflate should be 'HelloHello'`);
+  }, `the result of compressing [${chunkList}] with deflate should be 'HelloHello'`);
 
   promise_test(async t => {
-    const compressedData = await compressIncludingEmptyChunk(chunkList, 'gzip');
+    const compressedData = await compressChunkList(chunkList, 'gzip');
     // decompress with pako, and check that we got the same result as our original string
     assert_array_equals(expectedValue, pako.inflate(compressedData), 'value should match');
   }, `the result of compressing [${chunkList}] with gzip should be 'HelloHello'`);

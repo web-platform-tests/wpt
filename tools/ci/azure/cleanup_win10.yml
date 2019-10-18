@@ -9,10 +9,12 @@ steps:
         cmd /c taskkill /f /im setup.exe `> nul 2`> nul
         if (Test-Path $edgePath) {
           $installerPath = Get-ChildItem -PATH $edgePath -Filter "setup.exe" -Recurse | Select -First 1 FullName
-          if (Test-Path $installerPath.FullName) {
+          if(-not($installerPath -eq $nul) -and (Test-Path $installerPath.FullName)) {
             Write-Host "Uninstall: $($installerPath.FullName) $uninstallArgs"
             Start-Process "$($installerPath.FullName)" -ArgumentList $uninstallArgs -Wait
             Remove-Item -Path $edgePath -Recurse -Force -ErrorAction SilentlyContinue
+          } else {
+            Write-Host "Failed to find setup.exe under $edgePath"
           }
         }
       } catch [Exception] {

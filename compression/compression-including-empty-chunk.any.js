@@ -11,7 +11,7 @@ async function compressIncludingEmptyChunk(chunkList, format) {
   const cs = new CompressionStream(format);
   const writer = cs.writable.getWriter();
   for (const chunk of chunkList) {
-    const chunkByte = new TextEncoder().encode(chunk);	
+    const chunkByte = new TextEncoder().encode(chunk);
     writer.write(chunkByte);
   }
   const closePromise = writer.close();

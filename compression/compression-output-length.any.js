@@ -6,7 +6,7 @@
 // data length. If the input is extremely small, the compressed data may be
 // larger than the original data.
 
-const LARGE_FILE = "/media/test-av-384k-44100Hz-1ch-320x240-30fps-10kfr.webm";
+const LARGE_FILE = '/media/test-av-384k-44100Hz-1ch-320x240-30fps-10kfr.webm';
 
 async function compressArrayBuffer(input, format) {
   const cs = new CompressionStream(format);
@@ -41,7 +41,7 @@ promise_test(async () => {
   const compressedData = await compressArrayBuffer(bufferView, 'deflate');
   const compressedLength = compressedData.length;
   assert_less_than(compressedLength, originalLength, 'output should be smaller');
-}, "the length of deflated data should be shorter than that of the original data");
+}, 'the length of deflated data should be shorter than that of the original data');
 
 promise_test(async () => {
   const response = await fetch(LARGE_FILE);
@@ -51,4 +51,4 @@ promise_test(async () => {
   const compressedData = await compressArrayBuffer(bufferView, 'gzip');
   const compressedLength = compressedData.length;
   assert_less_than(compressedLength, originalLength, 'output should be smaller');
-}, "the length of gzipped data should be shorter than that of the original data");
+}, 'the length of gzipped data should be shorter than that of the original data');

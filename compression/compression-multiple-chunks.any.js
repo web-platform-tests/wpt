@@ -6,13 +6,13 @@
 
 // This test asserts that compressing multiple chunks should work.
 
-// ('Hello', 3) => TextEncoder().encode('HelloHelloHello')
+// Example: ('Hello', 3) => TextEncoder().encode('HelloHelloHello')
 function makeExpectedChunk(input, numberOfChunks) {
   const expectedChunk = input.repeat(numberOfChunks);
   return new TextEncoder().encode(expectedChunk);
 }
 
-// ex) ('Hello', 3, 'deflate') => compress ['Hello', 'Hello', Hello']
+// Example: ('Hello', 3, 'deflate') => compress ['Hello', 'Hello', Hello']
 async function compressMultipleChunks(input, numberOfChunks, format) {
   const cs = new CompressionStream(format);
   const writer = cs.writable.getWriter();

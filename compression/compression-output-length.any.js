@@ -34,21 +34,21 @@ async function compressArrayBuffer(input, format) {
 }
 
 promise_test(async () => {
-  const response = await fetch(LARGE_FILE)
+  const response = await fetch(LARGE_FILE);
   const buffer = await response.arrayBuffer();
   const bufferView = new Uint8Array(buffer);
   const originalLength = bufferView.length;
   const compressedData = await compressArrayBuffer(bufferView, 'deflate');
   const compressedLength = compressedData.length;
-  assert_equals(true, compressedLength < originalLength, 'value should match');
+  assert_less_than(compressedLength, originalLength, 'output should be smaller');
 }, "the length of deflated data should be shorter than that of the original data");
 
 promise_test(async () => {
-  const response = await fetch(LARGE_FILE)
+  const response = await fetch(LARGE_FILE);
   const buffer = await response.arrayBuffer();
   const bufferView = new Uint8Array(buffer);
   const originalLength = bufferView.length;
   const compressedData = await compressArrayBuffer(bufferView, 'gzip');
   const compressedLength = compressedData.length;
-  assert_equals(true, compressedLength < originalLength, 'value should match');
+  assert_less_than(compressedLength, originalLength, 'output should be smaller');
 }, "the length of gzipped data should be shorter than that of the original data");

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>MediaSource replay test case.</title>
+    <link rel="author" title="Alicia Boya García" href="mailto:aboya@igalia.com">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="mediasource-util.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+    mediasource_testafterdataloaded(function (test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData) {
+        // To make the test faster, let's clip the duration.
+        sourceBuffer.appendWindowEnd = 0.5;
+
+        test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
+        sourceBuffer.appendBuffer(mediaData);
+
+        test.waitForExpectedEvents(function () {
+            mediaSource.endOfStream();
+            test.expectEvent(mediaElement, 'playing', 'Playing triggered');
+            test.expectEvent(mediaElement, 'ended', 'First playback ends');
+            mediaElement.play();
+        });
+
+        test.waitForExpectedEvents(function () {
+            // Play again from the beginning.
+            mediaElement.play();
+            test.expectEvent(mediaElement, 'playing', 'Playing triggered');
+            test.expectEvent(mediaElement, 'ended', 'First playback ends');
+        });
+
+        test.waitForExpectedEvents(function () {
+            test.done();
+        })
+
+    }, 'Test playing twice.');
+</script>
+</body>
+</html>

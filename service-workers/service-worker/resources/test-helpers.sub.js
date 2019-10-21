@@ -6,11 +6,14 @@
  * @param options.updateViaCache a ServiceWorkerUpdateViaCache.
  * @see https://w3c.github.io/ServiceWorker/#dictdef-registrationoptions
  */
-function service_worker_unregister_and_register(test, url, scope, options = {}) {
+function service_worker_unregister_and_register(test, url, scope, options) {
   if (!scope || scope.length == 0)
     return Promise.reject(new Error('tests must define a scope'));
 
-  options.scope = scope;
+  if (options && options.scope)
+    return Promise.reject(new Error('scope must not be passed in options'));
+
+  options = Object.assign({ scope: scope }, options);
   return service_worker_unregister(test, scope)
     .then(function() {
         return navigator.serviceWorker.register(url, options);

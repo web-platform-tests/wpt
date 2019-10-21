@@ -153,12 +153,12 @@ def install_chrome(channel):
     # run(["sudo", "apt-get", "install", "libxss1"])
 
     # Trying patches from thomasanderson@
-    url = "https://storage.googleapis.com/smcgruer-chrome-builds/chrome_patch_1.zip"
-    dest = "/tmp/chrome_patch_1.zip"
+    url = "https://storage.googleapis.com/smcgruer-chrome-builds/chrome_patch_2.zip"
+    dest = "/tmp/chrome_patch_2.zip"
     resp = urlopen(url)
     with open(dest, 'w') as f:
       f.write(resp.read())
-    run(["unzip", "/tmp/chrome_patch_1.zip", "-d", "/tmp/"])
+    run(["unzip", "/tmp/chrome_patch_2.zip", "-d", "/tmp/"])
     run(["sudo", "apt-get", "install", "libxss1"])
 
     #deb_prefix = "https://dl.google.com/linux/direct/"

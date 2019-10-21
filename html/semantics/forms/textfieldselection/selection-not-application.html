@@ -75,7 +75,7 @@
     }, `selectionEnd on an input[type=${type}] returns a value`);
 
     test(() => {
-      assert_in_array(el.selectionDirection, ["forward", "backward", "none"]);
+      assert_in_array(el.selectionDirection, ["forward", "none"]);
     }, `selectionDirection on an input[type=${type}] returns a value`);
 
     test(() => {

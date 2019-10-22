@@ -205,10 +205,12 @@ def install_webkitgtk(channel):
         raise ValueError("Unrecognized release channel: %s" % channel)
 
 def start_xvfb():
+    run(["ps", "-fC", "Xvfb"])
     start(["sudo", "Xvfb", os.environ["DISPLAY"], "-screen", "0",
            "%sx%sx%s" % (os.environ["SCREEN_WIDTH"],
                          os.environ["SCREEN_HEIGHT"],
                          os.environ["SCREEN_DEPTH"])])
+    run(["ps", "-fC", "Xvfb"])
     start(["sudo", "fluxbox", "-display", os.environ["DISPLAY"]])
 
 

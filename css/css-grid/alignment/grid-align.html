@@ -3,7 +3,8 @@
 <title>CSS Grid Layout test: align-self property</title>
 <link rel="author" title="Rossana Monteriso" href="mailto:rmonteriso@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-align-3/#propdef-align-self">
-<link rel="help" href="https://drafts.csswg.org/css-align-3/#positional-values">
+<link rel="help" href="https://drafts.csswg.org/css-align-3/#alignment-values">
+<link rel="help" href="https://drafts.csswg.org/css-writing-modes-4/#propdef-direction">
 <meta name="assert" content="This test checks that the align-self property is applied correctly for RL and LR, vertical and horizontal writing modes.">
 <meta name="flags" content="ahem">
 <link rel="stylesheet" href="/css/support/grid.css">
@@ -46,8 +47,6 @@ body {
         <div class="cell alignSelfStart firstRowSecondColumn" data-offset-x="100" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
         <div class="cell alignSelfEnd firstRowSecondColumn" data-offset-x="100" data-offset-y="160" data-expected-width="20" data-expected-height="40"></div>
         <div class="cell alignSelfCenter secondRowFirstColumn" data-offset-x="0" data-offset-y="280" data-expected-width="20" data-expected-height="40"></div>
-        <div class="cell alignSelfRight secondRowSecondColumn" data-offset-x="100" data-offset-y="200" data-expected-width="20" data-expected-height="40"></div>
-        <div class="cell alignSelfLeft secondRowSecondColumn" data-offset-x="100" data-offset-y="200" data-expected-width="20" data-expected-height="40"></div>
     </div>
 </div>
 
@@ -86,8 +85,6 @@ body {
          <div class="cell alignSelfStart firstRowSecondColumn" data-offset-x="80" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
          <div class="cell alignSelfEnd firstRowSecondColumn" data-offset-x="80" data-offset-y="160" data-expected-width="20" data-expected-height="40"></div>
          <div class="cell alignSelfCenter secondRowFirstColumn" data-offset-x="180" data-offset-y="280" data-expected-width="20" data-expected-height="40"></div>
-         <div class="cell alignSelfRight secondRowSecondColumn" data-offset-x="80" data-offset-y="200" data-expected-width="20" data-expected-height="40"></div>
-         <div class="cell alignSelfLeft secondRowSecondColumn" data-offset-x="80" data-offset-y="200" data-expected-width="20" data-expected-height="40"></div>
      </div>
 </div>
 
@@ -107,8 +104,6 @@ body {
          <div class="cell alignSelfStart firstRowSecondColumn directionRTL" data-offset-x="100" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
          <div class="cell alignSelfEnd firstRowSecondColumn directionRTL" data-offset-x="100" data-offset-y="160" data-expected-width="20" data-expected-height="40"></div>
          <div class="cell alignSelfCenter secondRowFirstColumn directionRTL" data-offset-x="0" data-offset-y="280" data-expected-width="20" data-expected-height="40"></div>
-         <div class="cell alignSelfRight secondRowSecondColumn directionRTL" data-offset-x="100" data-offset-y="200" data-expected-width="20" data-expected-height="40"></div>
-         <div class="cell alignSelfLeft secondRowSecondColumn directionRTL" data-offset-x="100" data-offset-y="200" data-expected-width="20" data-expected-height="40"></div>
      </div>
 </div>
 
@@ -128,8 +123,6 @@ body {
         <div class="cell alignSelfStart firstRowSecondColumn" data-offset-x="380" data-offset-y="100" data-expected-width="20" data-expected-height="40"></div>
         <div class="cell alignSelfEnd firstRowSecondColumn" data-offset-x="200" data-offset-y="100" data-expected-width="20" data-expected-height="40"></div>
         <div class="cell alignSelfCenter secondRowFirstColumn" data-offset-x="90" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
-        <div class="cell alignSelfRight secondRowSecondColumn" data-offset-x="180" data-offset-y="100" data-expected-width="20" data-expected-height="40"></div>
-        <div class="cell alignSelfLeft secondRowSecondColumn" data-offset-x="180" data-offset-y="100" data-expected-width="20" data-expected-height="40"></div>
     </div>
 </div>
 
@@ -149,8 +142,6 @@ body {
         <div class="cell alignSelfStart firstRowSecondColumn" data-offset-x="0" data-offset-y="100" data-expected-width="20" data-expected-height="40"></div>
         <div class="cell alignSelfEnd firstRowSecondColumn" data-offset-x="180" data-offset-y="100" data-expected-width="20" data-expected-height="40"></div>
         <div class="cell alignSelfCenter secondRowFirstColumn" data-offset-x="290" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
-        <div class="cell alignSelfRight secondRowSecondColumn" data-offset-x="200" data-offset-y="100" data-expected-width="20" data-expected-height="40"></div>
-        <div class="cell alignSelfLeft secondRowSecondColumn" data-offset-x="200" data-offset-y="100" data-expected-width="20" data-expected-height="40"></div>
     </div>
 </div>
 
@@ -175,12 +166,6 @@ body {
             <div class="item"></div>
         </div>
         <div class="cell alignSelfCenter secondRowFirstColumn verticalLR" data-offset-x="90" data-offset-y="0" data-expected-width="20" data-expected-height="40">
-            <div class="item"></div>
-        </div>
-        <div class="cell alignSelfRight secondRowSecondColumn verticalLR" data-offset-x="180" data-offset-y="100" data-expected-width="20" data-expected-height="40">
-            <div class="item"></div>
-        </div>
-        <div class="cell alignSelfLeft secondRowSecondColumn verticalLR" data-offset-x="180" data-offset-y="100" data-expected-width="20" data-expected-height="40">
             <div class="item"></div>
         </div>
     </div>
@@ -215,12 +200,6 @@ body {
             <div class="item"></div>
         </div>
         <div class="cell alignSelfCenter secondRowFirstColumn verticalRL" data-offset-x="290" data-offset-y="0" data-expected-width="20" data-expected-height="40">
-            <div class="item"></div>
-        </div>
-        <div class="cell alignSelfRight secondRowSecondColumn verticalRL" data-offset-x="200" data-offset-y="100" data-expected-width="20" data-expected-height="40">
-            <div class="item"></div>
-        </div>
-        <div class="cell alignSelfLeft secondRowSecondColumn verticalRL" data-offset-x="200" data-offset-y="100" data-expected-width="20" data-expected-height="40">
             <div class="item"></div>
         </div>
     </div>

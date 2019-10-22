@@ -37,23 +37,22 @@ patterns in specification text and the kind of tests they suggest.
 
 ### Input sources
 
-Algorithms may accept input from many sources. Modifying the input is the only
-way we can influence the browser's behavior and verify that it matches the
-specifications. That's why it's helpful to be able to recognize all the
+Algorithms may accept input from many sources. Modifying the input is the most
+direct way we can influence the browser's behavior and verify that it matches
+the specifications. That's why it's helpful to be able to recognize all the
 different sources of input.
 
-For JavaScript APIs, the most explicit form of input is the function parameter.
-For functions that are [JavaScript
-methods](https://developer.mozilla.org/en-US/docs/Glossary/Method), then the
-behavior may also depend on the state of the "[context
-object](https://dom.spec.whatwg.org/#context-object)" (e.g. the value of `foo`
-when invoking a method like `foo.method()`).
+```eval_rst
+================ ==============================================================
+Type of feature  Potential input sources
+================ ==============================================================
+JavaScript       parameters, `context object <https://dom.spec.whatwg.org/#context-object>`_
+HTML             element content, attributes, attribute values
+CSS              selector strings, property values, markup
+================ ==============================================================
+```
 
-The state of the browser may also influence algorithm behavior. Examples
-include the current document, the dimensions of the viewport, and the entries
-in the browsing history.
-
-*Example* This is the first step of the `Notification` constructor from [the
+*Example:* This is the first step of the `Notification` constructor from [the
 Notifications standard](https://notifications.spec.whatwg.org/#constructors):
 
 > The Notification(title, options) constructor, when invoked, must run these steps:
@@ -64,14 +63,31 @@ Notifications standard](https://notifications.spec.whatwg.org/#constructors):
 >    [ServiceWorkerGlobalScope](https://w3c.github.io/ServiceWorker/#serviceworkerglobalscope)
 >    object, then [throw](https://heycam.github.io/webidl/#dfn-throw) a
 >    `TypeError` exception.
+> 2. Let *notification* be the result of [creating a
+>    notification](https://notifications.spec.whatwg.org/#create-a-notification)
+>    given *title* and *options*. Rethrow any exceptions.
 >
 > [...]
 
 A thorough test suite for this constructor will include tests for the behavior
 of many different values of the *title* parameter and the *options* parameter.
-The type of "the current global object" is also a form of input, so the test
-suite should also include tests which execute with different types of global
-objects.
+Choosing those values is a challenge unto itself--see [Avoid Excessive
+Breadth](#avoid-excessive-breadth) for advice on the topic.
+
+### Browser state
+
+The state of the browser may also influence algorithm behavior. Examples
+include the current document, the dimensions of the viewport, and the entries
+in the browsing history. Just like with direct input, a thorough set of tests
+will likely need to control these values. Browser state is often more expensive
+to manipulate (whether in terms of code, execution time, or system resources),
+and you may want to design your tests to mitigate these costs (e.g. by writing
+many subtests from the same state).
+
+*Example:* In [the `Notification` constructor referenced
+above](https://notifications.spec.whatwg.org/#constructors), the type of "the
+current global object" is also a form of input. The test suite should include
+tests which execute with different types of global objects.
 
 ### Branches
 
@@ -80,7 +96,7 @@ interesting behavior that might be missed. You should write at least one test
 that verifies the behavior when the branch is taken and at least one more test
 that verifies the behavior when the branch is *not* taken.
 
-*Example* The following algorithm from [the HTML
+*Example:* The following algorithm from [the HTML
 standard](https://html.spec.whatwg.org/) describes how the
 `localStorage.getItem` method works:
 
@@ -112,7 +128,7 @@ many independent checks. The precise order of the checks may not influence
 result of the overall algorithm, but the order is well-defined and observable,
 so it's important to verify.
 
-*Example* The following algorithm from [the DOM
+*Example:* The following algorithm from [the DOM
 specification](https://dom.spec.whatwg.org) describes how the
 `createCDATASection` method works:
 
@@ -158,7 +174,7 @@ do. Be sure to [label the test as optional according to WPT's
 conventions](file-names) so that people reviewing test results know how to
 accurate interpret failures.
 
-*Example* The algorithm underpinning
+*Example:* The algorithm underpinning
 [`document.getElementsByTagName`](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByTagName)
 includes the following paragraph:
 
@@ -202,7 +218,7 @@ entirely), and rely only on surface-level testing everywhere else. While it's
 always possible for more tests to uncover new bugs, the chances may be slim.
 The time we spend writing tests is highly valuable, so we have to be efficient!
 
-*Example* The following algorithm from [the DOM
+*Example:* The following algorithm from [the DOM
 standard](https://dom.spec.whatwg.org/) powers
 [`document.querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector):
 
@@ -250,7 +266,7 @@ carefully-chosen test cases. Although the risks of dynamic test generation may
 be tolerable in some specific cases, it's sometimes best to select the most
 interesting edge cases and move on.
 
-*Example* We can see this consideration in the very first step of the
+*Example:* We can see this consideration in the very first step of the
 `Response` constructor from [the Fetch
 standard](https://fetch.spec.whatwg.org/)
 
@@ -306,7 +322,7 @@ Whatever the case, test authors try to choose names that communicate the
 behavior under test, so you can use them to make an educated guess about where
 your tests should go.
 
-*Example* Imagine you wanted to write a test to verify that headers were made
+*Example:* Imagine you wanted to write a test to verify that headers were made
 immutable by the `Request.error` method defined in [the Fetch
 standard](https://fetch.spec.whatwg.org). Here's the algorithm:
 
@@ -381,7 +397,7 @@ various browsers. Because most browsers pass most tests, the pass/fail
 characteristics of the behavior you're testing can help you filter through a
 large number of highly similar tests.
 
-*Example* Imagine you've found a bug in the way Safari renders the top CSS
+*Example:* Imagine you've found a bug in the way Safari renders the top CSS
 border of HTML tables. By searching through directory names and file names,
 you've determined the probable location for the test: the `css/CSS2/borders/`
 directory. However, there are *three hundred* files that begin with
@@ -416,8 +432,10 @@ by querying the contents of the files in WPT.
 
 You may be able to perform such a search on the web. WPT is hosted on
 GitHub.com, and [GitHub offers some basic functionality for querying
-code](https://help.github.com/en/articles/about-searching-on-github). However,
-to search effectively, you may need to use [regular
+code](https://help.github.com/en/articles/about-searching-on-github). If your
+search criteria are short and distinctive (e.g. all files containing
+"querySelectorAll"), then this interface may be sufficient. However, more
+complicated criteria may require [regular
 expressions](https://www.regular-expressions.info/). For that, you can
 [download the WPT
 repository](https://web-platform-tests.org/writing-tests/github-intro.html) and
@@ -434,7 +452,7 @@ JavaScript identifier references  ``obj.foo()``      ``\bfoo\b``
 JavaScript string literals        ``x = "foo";``     ``(["'])foo\1``
 HTML tag names                    ``<foo attr>``     ``<foo(\s|>|$)``
 HTML attributes                   ``<div foo=3>``    ``<[^>]+\sfoo(\s|>|=|$)``
-CSS property name                 ``style="foo: 4"`` ``([;=\"']|\s|^)foo\s+:``
+CSS property name                 ``style="foo: 4"`` ``({[;=\"']|\s|^)foo\s+:``
 ================================= ================== ==========================
 ```
 
@@ -443,7 +461,7 @@ on the feature, it may be difficult (or even impossible) to write a query that
 correctly identifies all relevant tests. This strategy can give a helpful
 guide, but the results may not be conclusive.
 
-*Example* Imagine you're interested in testing how the `src` attribute of the
+*Example:* Imagine you're interested in testing how the `src` attribute of the
 `iframe` element works with `javascript:` URLs. Judging only from the names of
 directories, you've found a lot of potential locations for such a test. You
 also know many tests use `javascript:` URLs without describing that in their

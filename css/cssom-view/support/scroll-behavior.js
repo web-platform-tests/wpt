@@ -85,3 +85,7 @@ function scrollWindow(scrollingWindow, scrollFunction, behavior, elementToReveal
   args.top = elementToRevealTop;
   scrollingWindow[scrollFunction](args);
 }
+
+function setScrollAttribute(scrollingElement, scrollAttribute, scrollValue) {
+  scrollingElement[scrollAttribute] = scrollValue;
+}

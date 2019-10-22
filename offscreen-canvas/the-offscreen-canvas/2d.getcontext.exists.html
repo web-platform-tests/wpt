@@ -12,14 +12,8 @@
 <script>
 var t = async_test("The 2D context is implemented");
 t.step(function() {
-
-var offscreenCanvas = new OffscreenCanvas(100, 50);
-var ctx = offscreenCanvas.getContext('2d');
-
-var offscreenCanvas2 = new OffscreenCanvas(100, 50);
-_assertDifferent(offscreenCanvas2.getContext('2d'), null, "offscreenCanvas2.getContext('2d')", "null");
-
+  var osc2D = "OffscreenCanvasRenderingContext2D";
+  assert_own_property(globalThis, osc2d, osc2D + " is defined");
 t.done();
-
 });
 </script>

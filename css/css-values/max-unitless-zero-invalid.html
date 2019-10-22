@@ -2,29 +2,14 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>
-		CSS Values and Units Test:
-		min() with unitless 0
-	</title>
-	<meta name="assert" content="
-	    Unitless 0 isn't supported in math functions.
-	" />
+	<title>CSS Values and Units Test: min() with unitless 0</title>
 
-	<link
-		rel="author"
-		title="Fuqiao Xue"
-		href="mailto:xfq@w3.org"
-	/>
-
-	<link rel="help" href="https://drafts.csswg.org/css-values/#calc-type-checking"/>
-
-	<link
-		rel="match"
-		href="reference/all-green.html"
-	/>
+	<meta name="assert" content="Unitless 0 isn't supported in math functions.">
+	<link rel="author" title="Fuqiao Xue" href="mailto:xfq@w3.org">
+	<link rel="help" href="https://drafts.csswg.org/css-values/#calc-type-checking">
+	<link rel="match" href="reference/all-green.html">
 
 	<style>
-
 			html, body { margin: 0px; padding: 0px; }
 
 			html { background: red; overflow: hidden; }
@@ -37,7 +22,6 @@
 	 			/* The min() expression (thus the declaration) should be invalid */
 				height: min(0, 100%);
 			}
-
 	</style>
 
 </head>

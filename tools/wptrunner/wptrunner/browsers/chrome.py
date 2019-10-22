@@ -39,6 +39,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     executor_kwargs["supports_eager_pageload"] = False
 
     capabilities = {
+        "acceptInsecureCerts": True,
         "goog:chromeOptions": {
             "prefs": {
                 "profile": {
@@ -121,7 +122,7 @@ class ChromeBrowser(Browser):
         # TODO(ato): This only indicates the driver is alive,
         # and doesn't say anything about whether a browser session
         # is active.
-        return self.server.is_alive()
+        return self.server.is_alive
 
     def cleanup(self):
         self.stop()

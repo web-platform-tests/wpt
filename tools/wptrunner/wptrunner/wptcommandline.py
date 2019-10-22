@@ -5,6 +5,7 @@ import sys
 from collections import OrderedDict
 from distutils.spawn import find_executable
 from datetime import timedelta
+from six import iterkeys, itervalues, iteritems
 
 from . import config
 from . import wpttest
@@ -269,7 +270,7 @@ scheme host and port.""")
                              help="Defines an extra user preference (overrides those in prefs_root)")
     gecko_group.add_argument("--leak-check", dest="leak_check", action="store_true", default=None,
                              help="Enable leak checking (enabled by default for debug builds, "
-                             "silently ignored for opt)")
+                             "silently ignored for opt, mobile)")
     gecko_group.add_argument("--no-leak-check", dest="leak_check", action="store_false", default=None,
                              help="Disable leak checking")
     gecko_group.add_argument("--stylo-threads", action="store", type=int, default=1,
@@ -368,7 +369,7 @@ def set_from_config(kwargs):
                     ("host_cert_path", "host_cert_path", True),
                     ("host_key_path", "host_key_path", True)]}
 
-    for section, values in keys.iteritems():
+    for section, values in iteritems(keys):
         for config_value, kw_value, is_path in values:
             if kw_value in kwargs and kwargs[kw_value] is None:
                 if not is_path:
@@ -404,7 +405,7 @@ def get_test_paths(config):
     # Set up test_paths
     test_paths = OrderedDict()
 
-    for section in config.iterkeys():
+    for section in iterkeys(config):
         if section.startswith("manifest:"):
             manifest_opts = config.get(section)
             url_base = manifest_opts.get("url_base", "/")
@@ -430,7 +431,7 @@ def exe_path(name):
 
 
 def check_paths(kwargs):
-    for test_paths in kwargs["test_paths"].itervalues():
+    for test_paths in itervalues(kwargs["test_paths"]):
         if not ("tests_path" in test_paths and
                 "metadata_path" in test_paths):
             print("Fatal: must specify both a test path and metadata path")
@@ -438,7 +439,7 @@ def check_paths(kwargs):
         if "manifest_path" not in test_paths:
             test_paths["manifest_path"] = os.path.join(test_paths["metadata_path"],
                                                        "MANIFEST.json")
-        for key, path in test_paths.iteritems():
+        for key, path in iteritems(test_paths):
             name = key.split("_", 1)[0]
 
             if name == "manifest":
@@ -609,11 +610,15 @@ def create_parser_update(product_choices=None):
                         help="Don't create a VCS commit containing the changes.")
     parser.add_argument("--sync", dest="sync", action="store_true", default=False,
                         help="Sync the tests with the latest from upstream (implies --patch)")
-    parser.add_argument("--ignore-existing", action="store_true",
-                        help="When updating test results only consider results from the logfiles provided, not existing expectations.")
-    parser.add_argument("--stability", nargs="?", action="store", const="unstable", default=None,
+    parser.add_argument("--full", action="store_true", default=False,
+                        help=("For all tests that are updated, remove any existing conditions and missing subtests"))
+    parser.add_argument("--disable-intermittent", nargs="?", action="store", const="unstable", default=None,
         help=("Reason for disabling tests. When updating test results, disable tests that have "
               "inconsistent results across many runs with the given reason."))
+    parser.add_argument("--update-intermittent", action="store_true", default=False,
+                        help=("Update test metadata with expected intermittent statuses."))
+    parser.add_argument("--remove-intermittent", action="store_true", default=False,
+                        help=("Remove obsolete intermittent statuses from expected statuses."))
     parser.add_argument("--no-remove-obsolete", action="store_false", dest="remove_obsolete", default=True,
                         help=("Don't remove metadata files that no longer correspond to a test file"))
     parser.add_argument("--no-store-state", action="store_false", dest="store_state",

@@ -2,6 +2,7 @@ import base64
 import hashlib
 from six.moves.http_client import HTTPConnection
 import io
+import json
 import os
 import threading
 import traceback
@@ -128,6 +129,17 @@ class ExecutorException(Exception):
 
 
 class TestExecutor(object):
+    """Abstract Base class for object that actually executes the tests in a
+    specific browser. Typically there will be a different TestExecutor
+    subclass for each test type and method of executing tests.
+
+    :param browser: ExecutorBrowser instance providing properties of the
+                    browser that will be tested.
+    :param server_config: Dictionary of wptserve server configuration of the
+                          form stored in TestEnvironment.config
+    :param timeout_multiplier: Multiplier relative to base timeout to use
+                               when setting test timeout.
+    """
     __metaclass__ = ABCMeta
 
     test_type = None
@@ -137,17 +149,6 @@ class TestExecutor(object):
 
     def __init__(self, browser, server_config, timeout_multiplier=1,
                  debug_info=None, **kwargs):
-        """Abstract Base class for object that actually executes the tests in a
-        specific browser. Typically there will be a different TestExecutor
-        subclass for each test type and method of executing tests.
-
-        :param browser: ExecutorBrowser instance providing properties of the
-                        browser that will be tested.
-        :param server_config: Dictionary of wptserve server configuration of the
-                              form stored in TestEnvironment.config
-        :param timeout_multiplier: Multiplier relative to base timeout to use
-                                   when setting test timeout.
-        """
         self.runner = None
         self.browser = browser
         self.server_config = server_config
@@ -497,7 +498,7 @@ class WdspecRun(object):
 
 
 class ConnectionlessBaseProtocolPart(BaseProtocolPart):
-    def execute_script(self, script, async=False):
+    def execute_script(self, script, asynchronous=False):
         pass
 
     def set_timeout(self, timeout):
@@ -615,15 +616,16 @@ class CallbackHandler(object):
         except KeyError:
             raise ValueError("Unknown action %s" % action)
         try:
-            action_handler(payload)
+            result = action_handler(payload)
         except Exception:
             self.logger.warning("Action %s failed" % action)
             self.logger.warning(traceback.format_exc())
             self._send_message("complete", "error")
             raise
         else:
-            self.logger.debug("Action %s completed" % action)
-            self._send_message("complete", "success")
+            self.logger.debug("Action %s completed with result %s" % (action, result))
+            return_message = {"result": result}
+            self._send_message("complete", "success", json.dumps(return_message))
 
         return False, None
 

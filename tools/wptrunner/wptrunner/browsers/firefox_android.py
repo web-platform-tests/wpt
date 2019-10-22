@@ -1,7 +1,6 @@
 import os
 
 import moznetwork
-from mozprocess import ProcessHandler
 from mozprofile import FirefoxProfile
 from mozrunner import FennecEmulatorRunner
 
@@ -11,7 +10,7 @@ from .base import (get_free_port,
 from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # noqa: F401
                                             MarionetteRefTestExecutor)  # noqa: F401
 from .firefox import (get_timeout_multiplier,  # noqa: F401
-                      run_info_browser_version,
+                      run_info_extras as fx_run_info_extras,
                       update_properties,  # noqa: F401
                       executor_kwargs,  # noqa: F401
                       FirefoxBrowser)  # noqa: F401
@@ -52,7 +51,8 @@ def browser_kwargs(test_type, run_info_data, config, **kwargs):
             "timeout_multiplier": get_timeout_multiplier(test_type,
                                                          run_info_data,
                                                          **kwargs),
-            "leak_check": kwargs["leak_check"],
+            # desktop only
+            "leak_check": False,
             "stylo_threads": kwargs["stylo_threads"],
             "chaos_mode_flags": kwargs["chaos_mode_flags"],
             "config": config,
@@ -65,11 +65,10 @@ def env_extras(**kwargs):
 
 
 def run_info_extras(**kwargs):
+    rv = fx_run_info_extras(**kwargs)
     package = kwargs["package_name"]
-    rv = {"e10s": True if package is not None and "geckoview" in package else False,
-          "headless": False,
-          "sw-e10s": False}
-    rv.update(run_info_browser_version(kwargs["binary"]))
+    rv.update({"e10s": True if package is not None and "geckoview" in package else False,
+               "headless": False})
     return rv
 
 
@@ -145,13 +144,7 @@ class FirefoxAndroidBrowser(FirefoxBrowser):
                 with open(os.path.join(font_dir, "Ahem.ttf"), "wb") as dest:
                     dest.write(src.read())
 
-        if self.leak_check and kwargs.get("check_leaks", True):
-            self.leak_report_file = os.path.join(self.profile.profile, "runtests_leaks.log")
-            if os.path.exists(self.leak_report_file):
-                os.remove(self.leak_report_file)
-            env["XPCOM_MEM_BLOAT_LOG"] = self.leak_report_file
-        else:
-            self.leak_report_file = None
+        self.leak_report_file = None
 
         if self.ca_certificate_path is not None:
             self.setup_ssl()
@@ -168,9 +161,7 @@ class FirefoxAndroidBrowser(FirefoxBrowser):
                                            symbols_path=self.symbols_path,
                                            serial=self.device_serial,
                                            # TODO - choose appropriate log dir
-                                           logdir=os.getcwd(),
-                                           process_class=ProcessHandler,
-                                           process_args={"processOutputLine": [self.on_output]})
+                                           logdir=os.getcwd())
 
         self.logger.debug("Starting %s" % self.package_name)
         # connect to a running emulator
@@ -201,11 +192,11 @@ class FirefoxAndroidBrowser(FirefoxBrowser):
                 except Exception as e:
                     self.logger.warning("Failed to remove forwarded or reversed ports: %s" % e)
             # We assume that stopping the runner prompts the
-            # browser to shut down. This allows the leak log to be written
+            # browser to shut down.
             self.runner.stop()
         self.logger.debug("stopped")
 
     def check_crash(self, process, test):
         if not os.environ.get("MINIDUMP_STACKWALK", "") and self.stackwalk_binary:
             os.environ["MINIDUMP_STACKWALK"] = self.stackwalk_binary
-        return self.runner.check_for_crashes()
+        return bool(self.runner.check_for_crashes(test_name=test))

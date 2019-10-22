@@ -21,10 +21,11 @@ interface PerformanceEntry {
 
 callback PerformanceObserverCallback = void (PerformanceObserverEntryList entries,
                                              PerformanceObserver observer);
-[Constructor(PerformanceObserverCallback callback), Exposed=(Window,Worker)]
+[Exposed=(Window,Worker)]
 interface PerformanceObserver {
-  void observe(optional PerformanceObserverInit options);
-  void disconnect();
+  constructor(PerformanceObserverCallback callback);
+  void observe (optional PerformanceObserverInit options = {});
+  void disconnect ();
   PerformanceEntryList takeRecords();
   [SameObject] static readonly attribute FrozenArray<DOMString> supportedEntryTypes;
 };

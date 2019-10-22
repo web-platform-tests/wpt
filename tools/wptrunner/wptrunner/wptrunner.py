@@ -12,7 +12,7 @@ import testloader
 import wptcommandline
 import wptlogging
 import wpttest
-from mozlog import capture
+from mozlog import capture, handlers
 from font import FontInstaller
 from testrunner import ManagerGroup
 from browsers.base import NullBrowser
@@ -134,6 +134,8 @@ def get_pause_after_test(test_loader, **kwargs):
 
 
 def run_tests(config, test_paths, product, **kwargs):
+    """Set up the test environment, load the list of tests to be executed, and
+    invoke the remainder of the code to execute tests"""
     with capture.CaptureIO(logger, not kwargs["no_capture_stdio"]):
         env.do_delayed_imports(logger, test_paths)
 
@@ -169,10 +171,10 @@ def run_tests(config, test_paths, product, **kwargs):
         unexpected_total = 0
 
         if len(test_loader.test_ids) == 0 and kwargs["test_list"]:
-            logger.error("Unable to find any tests at the path(s):")
+            logger.critical("Unable to find any tests at the path(s):")
             for path in kwargs["test_list"]:
-                logger.error("  %s" % path)
-            logger.error("Please check spelling and make sure there are tests in the specified path(s).")
+                logger.critical("  %s" % path)
+            logger.critical("Please check spelling and make sure there are tests in the specified path(s).")
             return False
         kwargs["pause_after_test"] = get_pause_after_test(test_loader, **kwargs)
 
@@ -302,7 +304,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 logger.info("No tests ran")
                 return True
             else:
-                logger.error("No tests ran")
+                logger.critical("No tests ran")
                 return False
 
     if unexpected_total and not kwargs["fail_on_unexpected"]:
@@ -332,16 +334,25 @@ def check_stability(**kwargs):
 
 
 def start(**kwargs):
-    if kwargs["list_test_groups"]:
-        list_test_groups(**kwargs)
-    elif kwargs["list_disabled"]:
-        list_disabled(**kwargs)
-    elif kwargs["list_tests"]:
-        list_tests(**kwargs)
-    elif kwargs["verify"] or kwargs["stability"]:
-        return check_stability(**kwargs)
-    else:
-        return not run_tests(**kwargs)
+    assert logger is not None
+
+    logged_critical = wptlogging.LoggedAboveLevelHandler("CRITICAL")
+    handler = handlers.LogLevelFilter(logged_critical, "CRITICAL")
+    logger.add_handler(handler)
+
+    try:
+        if kwargs["list_test_groups"]:
+            list_test_groups(**kwargs)
+        elif kwargs["list_disabled"]:
+            list_disabled(**kwargs)
+        elif kwargs["list_tests"]:
+            list_tests(**kwargs)
+        elif kwargs["verify"] or kwargs["stability"]:
+            return check_stability(**kwargs) or logged_critical.has_log
+        else:
+            return not run_tests(**kwargs) or logged_critical.has_log
+    finally:
+        logger.remove_handler(handler)
 
 
 def main():

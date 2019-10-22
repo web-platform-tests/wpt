@@ -158,7 +158,7 @@ promise_test(test_function, name, properties)
 ```
 
 `test_function` is a function that receives a test as an argument. It must
-return a promise. The test completes when the returned promise resolves. The
+return a promise. The test completes when the returned promise settles. The
 test fails if the returned promise rejects.
 
 E.g.:
@@ -184,7 +184,12 @@ Note that in the promise chain constructed in `test_function` assertions don't
 need to be wrapped in `step` or `step_func` calls.
 
 Unlike Asynchronous Tests, Promise Tests don't start running until after the
-previous Promise Test finishes.
+previous Promise Test finishes. [Under rare
+circumstances](https://github.com/web-platform-tests/wpt/pull/17924), the next
+test may begin to execute before the returned promise has settled. Use
+[add_cleanup](#cleanup) to register any necessary cleanup actions such as
+resetting global state that need to happen consistently before the next test
+starts.
 
 `promise_rejects` can be used to test Promises that need to reject:
 
@@ -256,11 +261,8 @@ wrapping everything in functions for isolation becomes
 burdensome. For these cases `testharness.js` support "single page
 tests".
 
-In order for a test to be interpreted as a single page test, then
-it must simply not call `test()` or `async_test()` anywhere on the page, and
-must call the `done()` function to indicate that the test is complete. All
-the `assert_*` functions are available as normal, but are called without
-the normal step function wrapper. For example:
+In order for a test to be interpreted as a single page test, it should set the
+`single_test` [setup option](#setup) to `true`.
 
 ```html
 <!doctype html>
@@ -269,12 +271,19 @@ the normal step function wrapper. For example:
 <script src="/resources/testharnessreport.js"></script>
 <body>
   <script>
+    setup({ single_test: true });
     assert_equals(document.body, document.getElementsByTagName("body")[0])
     done()
  </script>
 ```
 
 The test title for single page tests is always taken from `document.title`.
+
+(Prior to October 2019, this behavior would be enabled implicitly for any test
+that did not call `test()` or `async_test()` anywhere on the page and that
+eventually called the `done()` function. [This behavior was found to be prone
+to errors and is in the process of being
+removed.](https://github.com/web-platform-tests/rfcs/blob/master/rfcs/single_test.md))
 
 ## Making assertions ##
 
@@ -291,6 +300,11 @@ only takes `actual` and `description` as arguments.
 
 The description parameter is used to present more useful error messages when
 a test fails.
+
+When assertions are violated, they throw a runtime exception. This interrupts
+test execution, so subsequent statements are not evaluated. A given test can
+only fail due to one such violation, so if you would like to assert multiple
+behaviors independently, you should use multiple tests.
 
 NOTE: All asserts must be located in a `test()` or a step of an
 `async_test()`, unless the test is a single page test. Asserts outside
@@ -415,6 +429,13 @@ with some existing test framework that has its own timeout mechanism).
 needed when e.g. testing the `window.onerror` handler.
 
 `timeout_multiplier` - Multiplier to apply to per-test timeouts.
+
+`single_test` - Test authors may set this property to `true` to enable [the
+"single page test" mode of testharness.js](#single-page-tests); the current
+test must not declare any subtests; testharness.js will interpret all events
+which normally influence the harness status (e.g. uncaught exceptions,
+unhandled promise rejections, and timeouts) in terms of a single
+implicitly-defined subtest.
 
 ## Determining when all tests are complete ##
 
@@ -796,6 +817,24 @@ asserts that one `assert_func(actual, expected_array_N, extra_arg1, ..., extra_a
   with multiple allowed pass conditions are bad practice unless the spec specifically
   allows multiple behaviours. Test authors should not use this method simply to hide
   UA bugs.
+
+## Formatting ##
+
+When many JavaScript Object values are coerced to a String, the resulting value
+will be `"[object Object]"`. This obscures helpful information, making the
+coerced value unsuitable for use in assertion messages, test names, and
+debugging statements.
+
+testharness.js provides a global function named `format_value` which produces
+more distinctive string representations of many kinds of objects, including
+arrays and the more important DOM Node types. It also translates String values
+containing control characters to include human-readable representations.
+
+```js
+format_value(document); // "Document node with 2 children"
+format_value("foo\uffffbar"); // "\"foo\\uffffbar\""
+format_value([-0, Infinity]); // "[-0, Infinity]"
+```
 
 ## Metadata ##
 

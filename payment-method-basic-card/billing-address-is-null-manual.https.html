@@ -107,7 +107,7 @@
     for (const item of ["organization", "phone", "recipient"]) {
       assert_equals(
         billingAddress[item],
-        null,
+        "",
         `Expected billingAddress's "${item}" attribute to equal null (redacted).`
       );
     }

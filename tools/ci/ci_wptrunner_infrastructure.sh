@@ -20,7 +20,7 @@ test_infrastructure() {
 }
 
 main() {
-    PRODUCTS=( "firefox" "chrome" )
+    PRODUCTS=( "chrome" )
     ./wpt manifest --rebuild -p ~/meta/MANIFEST.json
     for PRODUCT in "${PRODUCTS[@]}"; do
         if [[ "$PRODUCT" == "chrome" ]]; then

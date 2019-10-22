@@ -16,12 +16,11 @@ test_infrastructure() {
     else
         ARGS=$1
     fi
-    ./wpt run --no-pause-after-test --log-tbpl - --log-tbpl-level debug --yes --manifest ~/meta/MANIFEST.json --metadata infrastructure/metadata/ --install-fonts --binary-arg=--enable-logging --binary-arg=--log-level=0 --binary-arg=--log-file=/tmp/chrome_log.txt $ARGS $PRODUCT infrastructure/assumptions/ahem.html; echo "Dumping chrome log"; cat /tmp/chrome_log.txt
+    ./wpt run --log-tbpl - --log-tbpl-level debug --yes --manifest ~/meta/MANIFEST.json --metadata infrastructure/metadata/ --install-fonts --binary-arg=--enable-logging --binary-arg=--log-level=0 --binary-arg=--log-file=/tmp/chrome_log.txt $ARGS $PRODUCT infrastructure/
 }
 
 main() {
-#    PRODUCTS=( "firefox" "chrome" )
-    PRODUCTS=( "chrome" )
+    PRODUCTS=( "firefox" "chrome" )
     ./wpt manifest --rebuild -p ~/meta/MANIFEST.json
     for PRODUCT in "${PRODUCTS[@]}"; do
         if [[ "$PRODUCT" == "chrome" ]]; then

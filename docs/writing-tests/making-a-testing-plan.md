@@ -75,11 +75,6 @@ objects.
 
 ### Branches
 
-Just like traditional computer programs, specification algorithms often behave
-differently based on the state of the system. And just like programs, those
-differences are expressed with branching logic, usually using the same familiar
-concepts of "if", "then", and "else."
-
 When an algorithm branches based on some condition, that's an indication of an
 interesting behavior that might be missed. You should write at least one test
 that verifies the behavior when the branch is taken and at least one more test
@@ -94,12 +89,10 @@ standard](https://html.spec.whatwg.org/) describes how the
 > the object then this method must return null.
 
 This algorithm exhibits different behavior depending on whether or not an item
-exists at the provided key. In specification language, we'd say "it branches on
-the presence of the key." To test this thoroughly, we would write two tests.
-One test would verify that `null` is returned when there is no item at the
-provided key (that's the "branch taken" path). The other test would verify that
-an item we previously stored was correctly retrieved when we called the method
-with its name (that's the "branch not taken" path).
+exists at the provided key. To test this thoroughly, we would write two tests:
+one test would verify that `null` is returned when there is no item at the
+provided key, and the other test would verify that an item we previously stored
+was correctly retrieved when we called the method with its name.
 
 ### Sequence
 
@@ -154,80 +147,41 @@ document and pass the string "`]]>`"; that should produce a
 know that the implementation has incorrectly placed the second step before the
 first.
 
-## Exercising Restraint
-
-When writing conformance tests, choosing what *not* to test is sometimes just
-as hard as finding what needs testing.
-
-### Skip ambiguity
+### Optional behavior
 
 Specifications occasionally allow browsers some discretion in how they
 implement certain features. These are described using [RFC
 2119](https://tools.ietf.org/html/rfc2119) terms like "MAY" and "OPTIONAL".
-Even though each browser will likely maintain its own tests for the behavior it
-chooses to implement, it's important that shared conformance test suites like
-WPT do not include tests for any particular behavior. If the specification
-doesn't require something, then neither should the tests!
+Although browsers should not be penalized for deciding not to implement this
+behavior, WPT offers tests that verify the correctness of the browsers which
+do. Be sure to [label the test as optional according to WPT's
+conventions](file-names) so that people reviewing test results know how to
+accurate interpret failures.
 
-*Example* The following algorithm from [the DOM
-standard](https://dom.spec.whatwg.org/) powers
-[`document.getElementsByTagName`](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByTagName):
+*Example* The algorithm underpinning
+[`document.getElementsByTagName`](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByTagName)
+includes the following paragraph:
 
-> The list of elements with qualified name *qualifiedName* for a
-> [node](https://dom.spec.whatwg.org/#boundary-point-node) *root* is the
-> [HTMLCollection](https://dom.spec.whatwg.org/#htmlcollection) returned by the
-> following algorithm:
->
-> 1. If *qualifiedName* is "`*`" (U+002A), return a
->    [HTMLCollection](https://dom.spec.whatwg.org/#htmlcollection) rooted at
->    *root*, whose filter matches only
->    [descendant](https://dom.spec.whatwg.org/#concept-tree-descendant)
->    [elements](https://dom.spec.whatwg.org/#concept-element).
-> 2. Otherwise, if *root*'s [node
->    document](https://dom.spec.whatwg.org/#concept-node-document) is an [HTML
->    document](https://dom.spec.whatwg.org/#html-document), return a
->    [HTMLCollection](https://dom.spec.whatwg.org/#htmlcollection) rooted at
->    *root*, whose filter matches the following
->    [descendant](https://dom.spec.whatwg.org/#concept-tree-descendant)
->    [elements](https://dom.spec.whatwg.org/#concept-element).
->    - Whose
->      [namespace](https://dom.spec.whatwg.org/#concept-element-namespace) is
->      the [HTML namespace](https://infra.spec.whatwg.org/#html-namespace) and
->      whose [qualified
->      name](https://dom.spec.whatwg.org/#concept-element-qualified-name) is
->      *qualifiedName*, in [ASCII
->      lowercase](https://infra.spec.whatwg.org/#ascii-lowercase).
->    - Whose
->      [namespace](https://dom.spec.whatwg.org/#concept-element-namespace) is
->      *not* the [HTML
->      namespace](https://infra.spec.whatwg.org/#html-namespace) and whose
->      [qualified
->      name](https://dom.spec.whatwg.org/#concept-element-qualified-name) is
->      *qualifiedName*.
-> 3. Otherwise, return a
->    [HTMLCollection](https://dom.spec.whatwg.org/#htmlcollection) rooted at
->    *root*, whose filter matches
->    [descendant](https://dom.spec.whatwg.org/#concept-tree-descendant)
->    [elements](https://dom.spec.whatwg.org/#concept-element).
->    whose [qualified
->    name](https://dom.spec.whatwg.org/#concept-element-qualified-name) is
->    *qualifiedName*.
->
 > When invoked with the same argument, and as long as *root*'s [node
 > document](https://dom.spec.whatwg.org/#concept-node-document)'s
 > [type](https://dom.spec.whatwg.org/#concept-document-type) has not changed,
 > the same [HTMLCollection](https://dom.spec.whatwg.org/#htmlcollection) object
 > may be returned as returned by an earlier call.
 
-The final statement uses the word "may," so even though it modifies the
-behavior of the algorithm, it is not appropriate to verify it in a conformance
-test.
+That statement uses the word "may," so even though it modifies the behavior of
+the preceding algorithm, it is strictly optional. The test we write for this
+should be designated accordingly.
 
 It's important to read these sections carefully, though, because the
 distinction between "mandatory" behavior and "optional" behavior can be quite
 nuanced. In this case, the optional behavior is never allowed if the document's
-type has changed. That makes for a valid conformance test, one that verifies
-browsers don't return the same result when the document's type changes.
+type has changed. That makes for a mandatory test, one that verifies browsers
+don't return the same result when the document's type changes.
+
+## Exercising Restraint
+
+When writing conformance tests, choosing what *not* to test is sometimes just
+as hard as finding what needs testing.
 
 ### Don't dive too deep
 
@@ -258,7 +212,6 @@ standard](https://dom.spec.whatwg.org/) powers
 > 1. Let *s* be the result of [parse a
 >    selector](https://drafts.csswg.org/selectors-4/#parse-a-selector)
 >    *selectors*.
->    [[SELECTORS4]](https://dom.spec.whatwg.org/#biblio-selectors4)
 > 2. If *s* is failure, then
 >    [throw](https://heycam.github.io/webidl/#dfn-throw) a
 >    "[`SyntaxError`](https://heycam.github.io/webidl/#syntaxerror)"
@@ -268,7 +221,6 @@ standard](https://dom.spec.whatwg.org/) powers
 >    with *s* and *node*'s
 >    [root](https://dom.spec.whatwg.org/#concept-tree-root) using [scoping
 >    root](https://drafts.csswg.org/selectors-4/#scoping-root) *node*.
->    [[SELECTORS4]](https://dom.spec.whatwg.org/#biblio-selectors4).
 
 As described earlier in this guide, we'd certainly want to test the branch
 regarding the parsing failure. However, there are many ways a string might fail
@@ -281,22 +233,22 @@ confer with the people who are maintaining the tests.
 
 ### Avoid excessive breadth
 
-Many algorithms operate on input that takes the form of a scalar value. When
-the set of values is finite, it can be tempting to test them all exhaustively.
-When the set is very large, test authors can reduce repetition by defining
-tests programmatically in loops.
+When the set of input values is finite, it can be tempting to test them all
+exhaustively. When the set is very large, test authors can reduce repetition by
+defining tests programmatically in loops.
 
 Using advanced control flow techniques to dynamically generate tests has a
 number of drawbacks. It makes the test suite more difficult to understand since
 readers have to mentally "unwind" the iteration to determine what is actually
 being verified. It also increases the risk of bugs in the tests. These bugs may
 not be obvious--they may not cause failures, and they may exercise fewer cases
-than intended.
+than intended. Finally, tests authored using this approach often have execution
+time requirements that outpaces their relative value.
 
-Generally speaking, such exhaustive approaches are unlikely to catch more bugs
-than a handful of carefully-chosen test cases. Although the risks of dynamic
-test generation may be tolerable in some specific cases, it's usually best to
-select the most interesting edge cases and move on.
+Such exhaustive approaches may not catch more bugs than a handful of
+carefully-chosen test cases. Although the risks of dynamic test generation may
+be tolerable in some specific cases, it's sometimes best to select the most
+interesting edge cases and move on.
 
 *Example* We can see this consideration in the very first step of the
 `Response` constructor from [the Fetch
@@ -429,16 +381,23 @@ various browsers. Because most browsers pass most tests, the pass/fail
 characteristics of the behavior you're testing can help you filter through a
 large number of highly similar tests.
 
-*Example* Imagine you've found a bug in the way Apple Safari renders the top
-CSS border of HTML tables. By searching through directory names and file names,
+*Example* Imagine you've found a bug in the way Safari renders the top CSS
+border of HTML tables. By searching through directory names and file names,
 you've determined the probable location for the test: the `css/CSS2/borders/`
 directory. However, there are *three hundred* files that begin with
 `border-top-`! None of the names mention the `<table>` element, so any one of
 the files may already be testing the case you found.
 
 Luckily, you also know that Firefox and Chrome do not exhibit this bug. You
-look at the results on [wpt.fyi](https://wpt.fyi), and you find that only three
-of those tests fail in Safari but pass in Firefox and Chrome:
+could find such tests by visual inspection of the [wpt.fyi](https://wpt.fyi)
+results overview, but [the website's "search" feature includes operators that
+let you query for this information
+directly](https://github.com/web-platform-tests/wpt.fyi/blob/master/api/query/README.md).
+To find the tests which begin with `border-top-`, pass in Chrome, pass in
+Firefox, and fail in Safari, you could write [`border-top- chrome:pass
+firefox:pass
+safari:fail](https://wpt.fyi/results/?label=master&label=experimental&aligned&q=border-top-%20safari%3Afail%20firefox%3Apass%20chrome%3Apass).
+The results show only three such tests exist:
 
 - `border-top-applies-to-005.xht`
 - `border-top-color-applies-to-005.xht`
@@ -463,6 +422,21 @@ expressions](https://www.regular-expressions.info/). For that, you can
 [download the WPT
 repository](https://web-platform-tests.org/writing-tests/github-intro.html) and
 use [git](https://git-scm.com) to perform more powerful searches.
+
+The following table lists some common search criteria and examples of how they
+can be expressed using regular expressions:
+
+```eval_rst
+================================= ================== ==========================
+Criteria                          Example match      Example regular expression
+================================= ================== ==========================
+JavaScript identifier references  ``obj.foo()``      ``\bfoo\b``
+JavaScript string literals        ``x = "foo";``     ``(["'])foo\1``
+HTML tag names                    ``<foo attr>``     ``<foo(\s|>|$)``
+HTML attributes                   ``<div foo=3>``    ``<[^>]+\sfoo(\s|>|=|$)``
+CSS property name                 ``style="foo: 4"`` ``([;=\"']|\s|^)foo\s+:``
+================================= ================== ==========================
+```
 
 Bear in mind that searches like this are not necessarily exhaustive. Depending
 on the feature, it may be difficult (or even impossible) to write a query that

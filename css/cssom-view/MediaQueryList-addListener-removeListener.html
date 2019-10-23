@@ -52,6 +52,21 @@ promise_test(async t => {
 
 promise_test(async t => {
     const mql = await createMQL(t);
+
+    let eventsCount = 0;
+    mql.addListener(() => {
+        eventsCount++;
+    });
+
+    for (let i = 1; i <= 10; i++) {
+        triggerMQLEvent(mql);
+        await waitForChangesReported();
+        assert_equals(eventsCount, i);
+    }
+}, "listeners are called correct number of times");
+
+promise_test(async t => {
+    const mql = await createMQL(t);
     const calls = [];
 
     mql.addListener(() => {

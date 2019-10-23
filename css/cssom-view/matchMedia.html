@@ -43,6 +43,11 @@ test(() => {
 }, "MediaQueryList::matches is read-only IDL attribute");
 
 test(() => {
+    const mql = window.matchMedia("");
+    assert_equals(mql.media, "");
+    assert_true(mql.matches);
+}, 'window.matchMedia("") matches and is serialized as-is');
+test(() => {
     const mql = window.matchMedia("::");
     assert_true(mql instanceof MediaQueryList);
     assert_equals(mql.media, "not all");

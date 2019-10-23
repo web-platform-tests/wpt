@@ -253,13 +253,13 @@ When the set of input values is finite, it can be tempting to test them all
 exhaustively. When the set is very large, test authors can reduce repetition by
 defining tests programmatically in loops.
 
-Using advanced control flow techniques to dynamically generate tests has a
-number of drawbacks. It makes the test suite more difficult to understand since
+Using advanced control flow techniques to dynamically generate tests can
+actually *reduce* test quality. It may obscure the intent of the tests since
 readers have to mentally "unwind" the iteration to determine what is actually
-being verified. It also increases the risk of bugs in the tests. These bugs may
-not be obvious--they may not cause failures, and they may exercise fewer cases
-than intended. Finally, tests authored using this approach often have execution
-time requirements that outpaces their relative value.
+being verified. The practice is more susceptible to bugs. These bugs may not be
+obvious--they may not cause failures, and they may exercise fewer cases than
+intended. Finally, tests authored using this approach often have execution time
+requirements that outpace their relative value.
 
 Such exhaustive approaches may not catch more bugs than a handful of
 carefully-chosen test cases. Although the risks of dynamic test generation may
@@ -297,7 +297,7 @@ to test a "3xx" value and a "4xx" value.
 
 It's very likely that WPT already has some tests for the feature (or at least
 the specification) that you're interesting in testing. In that case, you'll
-have to study what's already been done before starting to write new tests.
+have to learn what's already been done before starting to write new tests.
 Understanding the design of existing tests will let you avoid duplicating
 effort, and it will also help you integrate your work more logically.
 

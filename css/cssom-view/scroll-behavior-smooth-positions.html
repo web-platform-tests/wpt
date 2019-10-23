@@ -71,7 +71,7 @@
           var oldValue = overflowNode[scrollTest.scrollAttribute];
           assert_equals(oldValue, initial, `${scrollTest.scrollAttribute} should be at initial position`);
           var expectedValue = Number(scrollTest.scrollValue);
-          setScrollAttribute(overflowNode, scrollTest.scrollAttribute, expectedValue);
+          overflowNode[scrollTest.scrollAttribute] = expectedValue;
           observeScrolling(overflowNode, function(done) {
             try {
               var newValue = overflowNode[scrollTest.scrollAttribute];

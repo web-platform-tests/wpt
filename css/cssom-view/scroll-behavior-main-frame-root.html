@@ -147,7 +147,7 @@
         assert_equals(scrollingElement.scrollLeft, 0);
         assert_equals(scrollingElement.scrollTop, 0);
         var expectedValue = Number(attributeTest.scrollValue);
-        setScrollAttribute(scrollingElement, attributeTest.scrollAttribute, expectedValue);
+        scrollingElement[attributeTest.scrollAttribute] = expectedValue;
         assert_equals( scrollingElement[attributeTest.scrollAttribute], expectedValue, "Should set scroll attribute immediately");
         return new Promise((resolve) => { resolve(); });
       }, `Set ${attributeTest.scrollAttribute} to frame with auto scroll-behavior`);
@@ -158,7 +158,7 @@
         assert_equals(scrollingElement.scrollLeft, 0);
         assert_equals(scrollingElement.scrollTop, 0);
         var expectedValue = Number(attributeTest.scrollValue);
-        setScrollAttribute(scrollingElement, attributeTest.scrollAttribute, expectedValue);
+        scrollingElement[attributeTest.scrollAttribute] = expectedValue;
         assert_less_than(scrollingElement[attributeTest.scrollAttribute], expectedValue, "Shouldn't set scroll attribute immediately");
         return waitForScrollEnd(scrollingElement).then(() => {
           assert_equals(scrollingElement[attributeTest.scrollAttribute], expectedValue, "Final value of scroll attribute");

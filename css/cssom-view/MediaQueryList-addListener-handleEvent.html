@@ -1,6 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Test: CSSOM View matchMedia handleEvent via addListener</title>
+<meta name="flags" content="dom">
+<title>CSS Test: CSSOM View MediaQueryList::addListener with handleEvent</title>
 <link rel="help" href="https://dom.spec.whatwg.org/#callbackdef-eventlistener">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -14,18 +15,18 @@ promise_test(async t => {
 
     let _this;
     let _event;
-    const eventListener = {
+    const listener = {
         handleEvent(event) {
             _this = this;
             _event = event;
         },
     };
 
-    mql.addListener(eventListener);
+    mql.addListener(listener);
     triggerMQLEvent(mql);
     await waitForChangesReported();
 
-    assert_equals(_this, eventListener);
+    assert_equals(_this, listener);
     assert_equals(_event.media, mql.media);
     assert_equals(_event.matches, mql.matches);
 }, "calls handleEvent method of event listener");
@@ -55,11 +56,14 @@ promise_test(async t => {
     const mql = await createMQL(t);
 
     let calls = 0;
-    const eventListener = function() { calls++; };
-    Object.defineProperty(eventListener, "handleEvent", {
+    const listener = () => {
+        calls++;
+    };
+
+    Object.defineProperty(listener, "handleEvent", {
         get: t.unreached_func("handleEvent method should not be looked up on functions"),
     });
-    mql.addListener(eventListener);
+    mql.addListener(listener);
 
     triggerMQLEvent(mql);
     await waitForChangesReported();

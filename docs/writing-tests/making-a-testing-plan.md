@@ -122,46 +122,56 @@ verifying the end result implicitly verifies the sequence of the steps. But
 sometimes, the order of two steps isn't particularly relevant to the result of
 the overall algorithm. This makes it easier for implementations to diverge.
 
-The most common example may be input validation. Many algorithms for JavaScript
-APIs begin by verifying that the input meets some criteria. This may involve
-many independent checks. The precise order of the checks may not influence
-result of the overall algorithm, but the order is well-defined and observable,
-so it's important to verify.
+There are many common patterns where step sequence is observable but not
+necessarily inherent to the correctness of the algorithm:
 
-*Example:* The following algorithm from [the DOM
-specification](https://dom.spec.whatwg.org) describes how the
-`createCDATASection` method works:
+- input validation (when an algorithm verifies that two or more input values
+  satisfy some criteria)
+- event dispatch (when an algorithm [fires two or more
+  events](https://dom.spec.whatwg.org/#concept-event-fire))
+- object property access (when an algorithm retrieves two or more property
+  values from an object provided as input)
 
-> The `createCDATASection`(*data*) method, when invoked, must run these steps:
->
-> 1. If [context object](https://dom.spec.whatwg.org/#context-object) is an
->    [HTML document](https://dom.spec.whatwg.org/#html-document), then
->    [throw](https://heycam.github.io/webidl/#dfn-throw) a
->    "[`NotSupportedError`](https://heycam.github.io/webidl/#notsupportederror)"
->    [DOMException](https://heycam.github.io/webidl/#idl-DOMException).
-> 2. If *data* contains the string "`]]>`", then
->    [throw](https://heycam.github.io/webidl/#dfn-throw) an
->    "[`InvalidCharacterError`](https://heycam.github.io/webidl/#invalidcharactererror)"
->    [DOMException](https://heycam.github.io/webidl/#idl-DOMException).
-> 3. Return a new [CDATASection](https://dom.spec.whatwg.org/#cdatasection)
->    [node](https://dom.spec.whatwg.org/#boundary-point-node) with its
->    [data](https://dom.spec.whatwg.org/#concept-cd-data) set to *data* and
->    [node document](https://dom.spec.whatwg.org/#concept-node-document) set to
->    the [context object](https://dom.spec.whatwg.org/#context-object).
+*Example:* The following text is an abbreviated excerpt of the algorithm that
+runs during drag operations (from [the HTML
+specification](https://html.spec.whatwg.org/multipage/dnd.html#dnd)):
 
-This algorithm begins by ensuring that the context object isn't an HTML
-document. Then, it verifies that the first argument doesn't include a certain
-sequence of characters. Implementations that verify those things in the
-opposite order would achieve a similar result (i.e. they'd reject invalid
-input), but that slight difference could cause interoperability bugs on the
-web.
+> [...]
+> 4. Otherwise, if the user ended the drag-and-drop operation (e.g. by
+>    releasing the mouse button in a mouse-driven drag-and-drop interface), or
+>    if the `drag` event was canceled, then this will be the last iteration.
+>    Run the following steps, then stop the drag-and-drop operation:
+>    1. If the [current drag
+>       operation](https://html.spec.whatwg.org/multipage/dnd.html#current-drag-operation)
+>       is "`none`" (no drag operation) [...] Otherwise, the drag operation
+>       might be a success; run these substeps:
+>       1. Let *dropped* be true.
+>       2. If the [current target
+>          element](https://html.spec.whatwg.org/multipage/dnd.html#current-target-element)
+>          is a DOM element, [fire a DND
+>          event](https://html.spec.whatwg.org/multipage/dnd.html#fire-a-dnd-event)
+>          named `drop` at it; otherwise, use platform-specific conventions for
+>          indicating a drop.
+>       3. [...]
+>    2. [Fire a DND
+>       event](https://html.spec.whatwg.org/multipage/dnd.html#fire-a-dnd-event)
+>       named `dragend` at the [source
+>       node](https://html.spec.whatwg.org/multipage/dnd.html#source-node).
+>    3. [...]
 
-If we prepare input that violates *both* steps, then we can verify that they're
-taken in the correct order. We can call `createCDATASection` on an HTML
-document and pass the string "`]]>`"; that should produce a
-`NotSupportedError`. If it produces a `InvalidCharacterError` instead, we'll
-know that the implementation has incorrectly placed the second step before the
-first.
+A strong test suite will verify that the `drop` event is fired as specified,
+and it will also verify that the `dragend` event is fired as specified. An even
+better test suite will also verify that the `drop` event is fired *before* the
+`dragend` event.
+
+Unfortunately, there was no test like this in September of 2019. That's why
+[the Chromium project was able to release a new version which changed the
+sequence and interfered with real web
+applications](https://bugs.chromium.org/p/chromium/issues/detail?id=1005747).
+
+When making your testing plan, be sure to look carefully for event dispatch and
+the other patterns listed above. They won't always be as clear as the
+abbreviated "drag" example!
 
 ### Optional behavior
 
@@ -258,8 +268,9 @@ actually *reduce* test quality. It may obscure the intent of the tests since
 readers have to mentally "unwind" the iteration to determine what is actually
 being verified. The practice is more susceptible to bugs. These bugs may not be
 obvious--they may not cause failures, and they may exercise fewer cases than
-intended. Finally, tests authored using this approach often have execution time
-requirements that outpace their relative value.
+intended. Finally, tests authored using this approach often take a relatively
+long time to complete, and that puts a burden on people who collect test
+results in large numbers.
 
 Such exhaustive approaches may not catch more bugs than a handful of
 carefully-chosen test cases. Although the risks of dynamic test generation may
@@ -451,8 +462,8 @@ Criteria                          Example match      Example regular expression
 JavaScript identifier references  ``obj.foo()``      ``\bfoo\b``
 JavaScript string literals        ``x = "foo";``     ``(["'])foo\1``
 HTML tag names                    ``<foo attr>``     ``<foo(\s|>|$)``
-HTML attributes                   ``<div foo=3>``    ``<[^>]+\sfoo(\s|>|=|$)``
-CSS property name                 ``style="foo: 4"`` ``({[;=\"']|\s|^)foo\s+:``
+HTML attributes                   ``<div foo=3>``    ``<[a-zA-Z][^>]*\sfoo(\s|>|=|$)``
+CSS property name                 ``style="foo: 4"`` ``([{;=\"']|\s|^)foo\s+:``
 ================================= ================== ==========================
 ```
 

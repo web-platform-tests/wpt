@@ -32,8 +32,10 @@ function createIFrame(t, width = IFRAME_DEFAULT_SIZE, height = width) {
     });
 }
 
-function triggerMQLEvent(iframe) {
-    iframe.width = iframe.width === IFRAME_BASE_WIDTH ? "250" : IFRAME_BASE_WIDTH;
+function triggerMQLEvent(mql) {
+    const iframe = iframes.get(mql);
+    assert_not_equals(iframe, undefined, "HARNESS ERROR: passed MQL instance was not created with createMQL");
+    iframe.width = iframe.width === IFRAME_DEFAULT_SIZE ? "250" : IFRAME_DEFAULT_SIZE;
 }
 
 function waitForChangesReported() {

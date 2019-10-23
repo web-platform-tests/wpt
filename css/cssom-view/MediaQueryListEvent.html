@@ -1,5 +1,6 @@
-<!doctype html>
+<!DOCTYPE html>
 <meta charset="utf-8">
+<meta name="flags" content="dom">
 <title>CSS Test: CSSOM View MediaQueryListEvent</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -17,7 +18,7 @@ test(t => {
 
 test(t => {
     assert_equals(new MediaQueryListEvent("test").type, "test");
-}, "type can be different from 'change'");
+}, 'type can be different from "change"');
 
 test(t => {
     assert_equals(Object.getPrototypeOf(MediaQueryListEvent), Event);

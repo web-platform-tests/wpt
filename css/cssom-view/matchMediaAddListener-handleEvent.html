@@ -10,8 +10,7 @@
 setup({ allow_uncaught_exception: true });
 
 promise_test(async t => {
-    const iframe = await createIframe(t);
-    const mql = iframe.contentWindow.matchMedia(MEDIA_QUERY);
+    const mql = await createMQL(t);
 
     let _this;
     let _event;
@@ -23,12 +22,12 @@ promise_test(async t => {
     };
 
     mql.addListener(eventListener);
-    triggerMQLEvent(iframe);
+    triggerMQLEvent(mql);
     await waitForChangesReported();
 
     assert_equals(_this, eventListener);
+    assert_equals(_event.media, mql.media);
     assert_equals(_event.matches, mql.matches);
-    assert_equals(_event.media, MEDIA_QUERY);
 }, "calls handleEvent method of event listener");
 
 promise_test(async t => {
@@ -57,8 +56,7 @@ promise_test(async t => {
 }, "rethrows errors when getting handleEvent");
 
 promise_test(async t => {
-    const iframe = await createIframe(t);
-    const mql = iframe.contentWindow.matchMedia(MEDIA_QUERY);
+    const mql = await createMQL(t);
 
     let calls = 0;
     mql.addListener({
@@ -69,18 +67,17 @@ promise_test(async t => {
     });
     assert_equals(calls, 0);
 
-    triggerMQLEvent(iframe);
+    triggerMQLEvent(mql);
     await waitForChangesReported();
     assert_equals(calls, 1);
 
-    triggerMQLEvent(iframe);
+    triggerMQLEvent(mql);
     await waitForChangesReported();
     assert_equals(calls, 2);
 }, "looks up handleEvent method on every event dispatch");
 
 promise_test(async t => {
-    const iframe = await createIframe(t);
-    const mql = iframe.contentWindow.matchMedia(MEDIA_QUERY);
+    const mql = await createMQL(t);
 
     let calls = 0;
     const eventListener = function() { calls++; };
@@ -89,7 +86,7 @@ promise_test(async t => {
     });
     mql.addListener(eventListener);
 
-    triggerMQLEvent(iframe);
+    triggerMQLEvent(mql);
     await waitForChangesReported();
     assert_equals(calls, 1);
 }, "doesn't look up handleEvent method on callable event listeners");

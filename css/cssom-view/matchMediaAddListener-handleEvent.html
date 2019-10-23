@@ -31,31 +31,6 @@ promise_test(async t => {
 }, "calls handleEvent method of event listener");
 
 promise_test(async t => {
-    const iframe = await createIframe(t);
-    const mql = iframe.contentWindow.matchMedia(MEDIA_QUERY);
-
-    let uncaughtError;
-    const errorHandler = event => {
-        uncaughtError = event.error;
-    };
-    window.addEventListener("error", errorHandler);
-    t.add_cleanup(() => {
-        window.removeEventListener("error", errorHandler);
-    });
-
-    const thrownError = { name: "test" };
-    mql.addListener({
-        get handleEvent() {
-            throw thrownError;
-        },
-    });
-
-    triggerMQLEvent(iframe);
-    await waitForChangesReported();
-    assert_equals(uncaughtError, thrownError);
-}, "rethrows errors when getting handleEvent");
-
-promise_test(async t => {
     const mql = await createMQL(t);
 
     let calls = 0;
@@ -91,43 +66,36 @@ promise_test(async t => {
     assert_equals(calls, 1);
 }, "doesn't look up handleEvent method on callable event listeners");
 
-promise_test(async t => {
-    const iframe = await createIframe(t);
-    const mql = iframe.contentWindow.matchMedia(MEDIA_QUERY);
+const uncaught_error_test = async (t, listener) => {
+    const mql = await createMQL(t);
+    mql.addListener(listener);
 
-    let uncaughtError;
-    const errorHandler = event => {
-        uncaughtError = event.error;
+    const eventWatcher = new EventWatcher(t, window, "error");
+    const errorPromise = eventWatcher.wait_for("error");
+    triggerMQLEvent(mql);
+
+    const event = await errorPromise;
+    throw event.error;
+};
+
+promise_test(t => {
+    const error = { name: "test" };
+    const listener = {
+        get handleEvent() {
+            throw error;
+        },
     };
-    window.addEventListener("error", errorHandler);
-    t.add_cleanup(() => {
-        window.removeEventListener("error", errorHandler);
-    });
 
-    mql.addListener({ handleEvent: null });
-    triggerMQLEvent(iframe);
-    await waitForChangesReported();
+    return promise_rejects_exactly(t, error, uncaught_error_test(t, listener));
+}, "rethrows errors when getting handleEvent");
 
-    assert_equals(uncaughtError.name, "TypeError");
+promise_test(t => {
+    const listener = { handleEvent: null };
+    return promise_rejects(t, new TypeError(), uncaught_error_test(t, listener));
 }, "throws if handleEvent is falsy and not callable");
 
-promise_test(async t => {
-    const iframe = await createIframe(t);
-    const mql = iframe.contentWindow.matchMedia(MEDIA_QUERY);
-
-    let uncaughtError;
-    const errorHandler = event => {
-        uncaughtError = event.error;
-    };
-    window.addEventListener("error", errorHandler);
-    t.add_cleanup(() => {
-        window.removeEventListener("error", errorHandler);
-    });
-
-    mql.addListener({ handleEvent: "str" });
-    triggerMQLEvent(iframe);
-    await waitForChangesReported();
-
-    assert_equals(uncaughtError.name, "TypeError");
+promise_test(t => {
+    const listener = { handleEvent: "str" };
+    return promise_rejects(t, new TypeError(), uncaught_error_test(t, listener));
 }, "throws if handleEvent is thruthy and not callable");
 </script>

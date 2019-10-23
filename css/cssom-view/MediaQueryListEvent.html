@@ -29,9 +29,9 @@ test(t => {
     const event = new MediaQueryListEvent("change");
 
     assert_equals(event.media, "");
-    assert_equals(event.matches, false);
-    assert_equals(event.bubbles, false);
-    assert_equals(event.cancelable, false);
+    assert_false(event.matches);
+    assert_false(event.bubbles);
+    assert_false(event.cancelable);
 }, "init dictionary default values");
 
 test(t => {
@@ -43,22 +43,20 @@ test(t => {
     });
 
     assert_equals(event.media, "test");
-    assert_equals(event.matches, true);
-    assert_equals(event.bubbles, true);
-    assert_equals(event.cancelable, true);
+    assert_true(event.matches);
+    assert_true(event.bubbles);
+    assert_true(event.cancelable);
 }, "init dictionary overrides");
 
 test(t => {
     const event = new MediaQueryListEvent("change");
-    assert_throws(new TypeError(), () => {
-        event.media = "print";
-    });
-}, "media attribute is readonly");
+    assert_idl_attribute(event, "media");
+    assert_readonly(event, "media");
+}, "MediaQueryListEvent::media is read-only IDL attribute");
 
 test(t => {
     const event = new MediaQueryListEvent("change");
-    assert_throws(new TypeError(), () => {
-        event.matches = true;
-    });
-}, "matches attribute is readonly");
+    assert_idl_attribute(event, "matches");
+    assert_readonly(event, "matches");
+}, "MediaQueryListEvent::matches is read-only IDL attribute");
 </script>

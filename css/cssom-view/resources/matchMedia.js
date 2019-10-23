@@ -1,5 +1,13 @@
-const MEDIA_QUERY = `(max-width: ${IFRAME_BASE_WIDTH}px)`;
 const IFRAME_DEFAULT_SIZE = "200";
+const iframes = new WeakMap();
+
+async function createMQL(t) {
+    const iframe = await createIFrame(t);
+    const mql = iframe.contentWindow.matchMedia(`(max-width: ${IFRAME_DEFAULT_SIZE}px)`);
+    assert_true(mql.matches, "HARNESS ERROR: invariant");
+    iframes.set(mql, iframe);
+    return mql;
+}
 
 function createIFrame(t, width = IFRAME_DEFAULT_SIZE, height = width) {
     assert_not_equals(document.body, null, "HARNESS ERROR: <body> is missing");

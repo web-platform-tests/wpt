@@ -37,15 +37,38 @@ def test_document_element_is_interactable(session):
     """)
 
     body = session.find.css("body", all=False)
-    element = session.find.css(":root", all=False)
-    result = session.find.css("input", all=False)
+    document_element = session.execute_script("return document.documentElement")
+    textfield = session.find.css("input", all=False)
 
-    # By default body is the active element
-    assert session.active_element == body
+    # active element should always be <body>
+    assert session.execute_script("return document.activeElement") == body
 
-    response = element_send_keys(session, element, "foo")
+    response = element_send_keys(session, document_element, "foo")
     assert_success(response)
-    assert session.active_element in [element, body]
+
+    # Firefox allows <html> to be focussed and become the active element.
+    # Chrome (correctly?) makes the active element always be <body>.
+    assert execute_script("return document.activeElement") in [document_element, body]
+
+    assert textfield.property("value") == "foo"
+
+
+def test_body_element_is_interactable(session):
+    session.url = inline("""
+        <body onkeypress="document.querySelector('input').value += event.key">
+          <input>
+        </body>
+    """)
+
+    body = session.find.css("body", all=False)
+    textfield = session.find.css("input", all=False)
+
+    # active element should always be <body>
+    assert session.execute_script("return document.activeElement") == body
+
+    response = element_send_keys(session, body, "foo")
+    assert_success(response)
+    assert session.execute_script("return document.activeElement") == body
     assert result.property("value") == "foo"
 
 

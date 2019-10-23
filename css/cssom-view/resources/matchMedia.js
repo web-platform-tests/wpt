@@ -1,11 +1,13 @@
-const IFRAME_BASE_WIDTH = "200";
 const MEDIA_QUERY = `(max-width: ${IFRAME_BASE_WIDTH}px)`;
+const IFRAME_DEFAULT_SIZE = "200";
 
-function createIframe(t) {
+function createIFrame(t, width = IFRAME_DEFAULT_SIZE, height = width) {
+    assert_not_equals(document.body, null, "HARNESS ERROR: <body> is missing");
+
     const iframe = document.createElement("iframe");
     iframe.srcdoc = "";
-    iframe.width = IFRAME_BASE_WIDTH;
-    iframe.height = "100";
+    iframe.width = String(width);
+    iframe.height = String(height);
     iframe.style.border = "none";
 
     t.add_cleanup(() => {

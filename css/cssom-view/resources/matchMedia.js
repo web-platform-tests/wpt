@@ -16,6 +16,7 @@ function createIFrame(t, width = IFRAME_DEFAULT_SIZE, height = width) {
 
     return new Promise(resolve => {
         iframe.addEventListener("load", () => {
+            iframe.contentDocument.body.offsetWidth; // reflow
             resolve(iframe);
         });
 

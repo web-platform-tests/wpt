@@ -47,6 +47,13 @@ test(() => {
     assert_equals(mql.media, "");
     assert_true(mql.matches);
 }, 'window.matchMedia("") matches and is serialized as-is');
+
+test(() => {
+    const mql = window.matchMedia("(min-width: 1px)");
+    assert_equals(mql.media, "(min-width: 1px)");
+    assert_true(mql.matches);
+}, 'window.matchMedia("(min-width: 1px)") matches');
+
 test(() => {
     const mql = window.matchMedia("::");
     assert_true(mql instanceof MediaQueryList);

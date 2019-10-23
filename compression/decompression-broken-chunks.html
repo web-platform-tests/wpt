@@ -1,0 +1,122 @@
+<!doctype html>
+<meta charset="utf-8">
+<div id=log></div>
+<script>
+
+  // This file tests whether the input data is valid or invalid
+  // when the input is a little different from correct compressed data.
+
+  // First, confirm that input is valid or invalid for DecompressionStream.
+  // If input is valid, decompress it and output the decompressed string.
+  // Then, compare the expected output and the decompressed string.
+  // Else, output ' => invalid input for DecompressionStream'.
+
+  // |shift| is used as below.
+  // correct compressed data: [0, 0, 0], |shift| = 2
+  // input: [2, 0, 0,], [0, 2, 0], [0, 0, 2]
+
+  function write(s) {
+    let pre = document.querySelector('#results');
+    if (!pre) {
+      pre = document.createElement('pre');
+      pre.id = 'results';
+      document.body.appendChild(pre);
+    }
+    pre.textContent += s + '\n';
+  }
+
+  // expected output is 'expected output'
+  const compressedArrayWithDeflate = [120, 156, 75, 173, 40, 72, 77, 46, 73, 77, 81, 200, 47, 45, 41, 40, 45, 1, 0, 48, 173, 6, 36];
+  const compressedArrayWithGzip = [31, 139, 8, 0, 0, 0, 0, 0, 0, 3, 75, 173, 40, 72, 77, 46, 73, 77, 81, 200, 47, 45, 41, 40, 45, 1, 0, 176, 1, 57, 179, 15, 0, 0, 0];
+
+  async function decompressArrayBuffer(input, format) {
+    const ds = new DecompressionStream(format);
+    const reader = ds.readable.getReader();
+    const writer = ds.writable.getWriter();
+    writer.write(input);
+    writer.close();
+    const out = [];
+    let totalSize = 0;
+    while (true) {
+      try {
+        const { value, done } = await reader.read();
+        console.log('read succeeded');
+        if (done) break;
+        out.push(value);
+        totalSize += value.byteLength;
+      } catch (e) {
+        console.log('read failed');
+        console.assert(e.name == 'TypeError');
+        return 'invalid input';
+      }
+    }
+    const concatenated = new Uint8Array(totalSize);
+    let offset = 0;
+    for (const array of out) {
+      concatenated.set(array, offset);
+      offset += array.byteLength;
+    }
+    return concatenated;
+  }
+
+  async function testDeflate() {
+    write('===== deflate test =====');
+    write('correct compressed array of deflate:');
+    write(compressedArrayWithDeflate);
+    write(`expected output is 'expected output'`);
+    write('========================');
+    for (let i = 0; i < compressedArrayWithDeflate.length; ++i) {
+      for (let shift = 1; shift < 5; ++shift) {
+        write('shift:');
+        write(shift);
+        let brokenArray = compressedArrayWithDeflate.slice();
+        brokenArray[i] += 1;
+        write('incorrect input of deflate:');
+        write(brokenArray);
+        const bufferView = new Uint8Array(brokenArray);
+        decompressedData = await decompressArrayBuffer(bufferView, 'deflate');
+        if (decompressedData == 'invalid input') {
+          write(' => invalid input for DecompressionStream\n');
+        } else {
+          write('decompressed output of deflate:');
+          write(new TextDecoder().decode(decompressedData));
+          write('\n');
+        }
+      }
+    }
+  }
+
+  async function testGzip() {
+    write('===== gzip test =====');
+    write('correct compressed array of gzip:');
+    write(compressedArrayWithGzip);
+    write(`expected output is 'expected output'`);
+    write('=====================');
+    for (let i = 0; i < compressedArrayWithGzip.length; ++i) {
+      for (let shift = 1; shift < 5; ++shift) {
+        write('shift:');
+        write(shift);
+        let brokenArray = compressedArrayWithGzip.slice();
+        brokenArray[i] += shift;
+        write('incorrect input of gzip:');
+        write(brokenArray);
+        const bufferView = new Uint8Array(brokenArray);
+        decompressedData = await decompressArrayBuffer(bufferView, 'gzip');
+        if (decompressedData == 'invalid input') {
+          write(' => invalid input for DecompressionStream\n');
+        } else {
+          write('decompressed output:');
+          write(new TextDecoder().decode(decompressedData));
+          write('\n');
+        }
+      }
+    }
+  }
+
+  async function test() {
+    await testDeflate();
+    await testGzip();
+  }
+
+  test();
+</script>

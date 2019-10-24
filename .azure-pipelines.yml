@@ -1,6 +1,7 @@
 # This is the configuration file for Azure Pipelines, used to run tests on
 # macOS. Documentation to help understand this setup:
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/build/triggers
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/multiple-phases
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables
@@ -10,12 +11,15 @@
 # project is required:
 #  - The "Build pull requests from forks of this repository" setting must be
 #    enabled: https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github#validate-contributions-from-forks
-#  - A scheduled build needs to be set up for one of the epochs/* branches.
 #  - Self-hosted agents for Windows 10 are used:
 #    - 'Hosted Windows Client' is the latest Windows 10
 #    - 'Hosted Windows Client Next' is Windows 10 Insider Preview
 #    Documention for the setup of these agents:
 #    https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/v2-windows
+
+trigger:
+- epochs/*
+- triggers/*
 
 jobs:
 # The affected tests jobs are unconditional for speed, as most PRs have one or
@@ -24,7 +28,7 @@ jobs:
   displayName: 'affected tests: Safari Technology Preview'
   condition: eq(variables['Build.Reason'], 'PullRequest')
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
   steps:
   - template: tools/ci/azure/affected_tests.yml
     parameters:
@@ -38,7 +42,7 @@ jobs:
   displayName: 'affected tests without changes: Safari Technology Preview'
   condition: eq(variables['Build.Reason'], 'PullRequest')
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
   steps:
   - template: tools/ci/azure/affected_tests.yml
     parameters:
@@ -56,7 +60,7 @@ jobs:
   displayName: './wpt test-jobs'
   condition: eq(variables['Build.Reason'], 'PullRequest')
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-18.04'
   steps:
   - template: tools/ci/azure/checkout.yml
   - script: |
@@ -72,7 +76,7 @@ jobs:
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_infrastructure']
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
   steps:
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/pip_install.yml
@@ -102,7 +106,7 @@ jobs:
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.tools_unittest']
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
   steps:
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
@@ -115,7 +119,7 @@ jobs:
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
   steps:
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
@@ -127,7 +131,7 @@ jobs:
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wpt_integration']
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
   steps:
   # full checkout required
   - template: tools/ci/azure/install_chrome.yml
@@ -232,16 +236,14 @@ jobs:
     condition: always()
   - template: tools/ci/azure/cleanup_win10.yml
 
-# All `./wpt run` tests are run from epochs/* branches on a schedule. See
-# documentation at the top of this file for required setup.
-- job: results_edge
-  displayName: 'all tests: Edge'
+- job: results_edge_dev
+  displayName: 'all tests: Edge Dev'
   condition: |
-    or(eq(variables['Build.Reason'], 'Schedule'),
-       and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_edge']))
-  # There are 12 agents in the pool, but use more jobs so that each takes <1h.
+    or(eq(variables['Build.SourceBranch'], 'refs/heads/epochs/six_hourly'),
+       eq(variables['Build.SourceBranch'], 'refs/heads/triggers/edge_dev'),
+       and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_edge_dev']))
   strategy:
-    parallel: 20
+    parallel: 10 # chosen to make runtime ~2h
   timeoutInMinutes: 360
   pool:
     name: 'Hosted Windows Client'
@@ -254,6 +256,8 @@ jobs:
       packages: virtualenv
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/install_edge.yml
+    parameters:
+      channel: dev
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
   - script: python ./wpt run --yes --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --install-fonts --this-chunk $(System.JobPositionInPhase) --total-chunks $(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-tbpl - --log-tbpl-level info --channel dev edgechromium
@@ -261,20 +265,57 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:
-      artifactName: 'edge-results'
+      artifactName: 'edge-dev-results'
   - template: tools/ci/azure/cleanup_win10.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
-    dependsOn: results_edge
-    artifactName: edge-results
+    dependsOn: results_edge_dev
+    artifactName: edge-dev-results
+
+- job: results_edge_canary
+  displayName: 'all tests: Edge Canary'
+  condition: |
+    or(eq(variables['Build.SourceBranch'], 'refs/heads/epochs/six_hourly'),
+       eq(variables['Build.SourceBranch'], 'refs/heads/triggers/edge_canary'),
+       and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_edge_canary']))
+  strategy:
+    parallel: 10 # chosen to make runtime ~2h
+  timeoutInMinutes: 360
+  pool:
+    name: 'Hosted Windows Client'
+  steps:
+  - template: tools/ci/azure/system_info.yml
+  - template: tools/ci/azure/checkout.yml
+  - template: tools/ci/azure/install_python.yml
+  - template: tools/ci/azure/pip_install.yml
+    parameters:
+      packages: virtualenv
+  - template: tools/ci/azure/install_certs.yml
+  - template: tools/ci/azure/install_edge.yml
+    parameters:
+      channel: canary
+  - template: tools/ci/azure/update_hosts.yml
+  - template: tools/ci/azure/update_manifest.yml
+  - script: python ./wpt run --yes --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --install-fonts --this-chunk $(System.JobPositionInPhase) --total-chunks $(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-tbpl - --log-tbpl-level info --channel canary edgechromium
+    displayName: 'Run tests (Edge Canary)'
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish results'
+    inputs:
+      artifactName: 'edge-canary-results'
+  - template: tools/ci/azure/cleanup_win10.yml
+- template: tools/ci/azure/fyi_hook.yml
+  parameters:
+    dependsOn: results_edge_canary
+    artifactName: edge-canary-results
 
 - job: results_safari
   displayName: 'all tests: Safari'
   condition: |
-    or(eq(variables['Build.Reason'], 'Schedule'),
+    or(eq(variables['Build.SourceBranch'], 'refs/heads/epochs/daily'),
+       eq(variables['Build.SourceBranch'], 'refs/heads/triggers/safari_stable'),
        and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_safari']))
   strategy:
-    parallel: 4 # chosen to make runtime ~2h
+    parallel: 5 # chosen to make runtime ~2h
   timeoutInMinutes: 360
   pool:
     vmImage: 'macOS-10.13'
@@ -290,10 +331,8 @@ jobs:
       channel: stable
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
-  - script: |
-      # TODO: drop this when `safaridriver --version` is supported.
-      SAFARI_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Safari.app/Contents/Info.plist) ($(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' /Applications/Safari.app/Contents/Info.plist))"
-      no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-tbpl - --log-tbpl-level info --browser-version "$SAFARI_VERSION" safari
+  # --exclude is a workaround for https://github.com/web-platform-tests/wpt/issues/18634
+  - script: no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-tbpl - --log-tbpl-level info safari --exclude /inert/inert-retargeting.tentative.html --exclude /inert/inert-retargeting-iframe.tentative.html
     displayName: 'Run tests'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
@@ -307,13 +346,14 @@ jobs:
 - job: results_safari_preview
   displayName: 'all tests: Safari Technology Preview'
   condition: |
-    or(eq(variables['Build.Reason'], 'Schedule'),
+    or(eq(variables['Build.SourceBranch'], 'refs/heads/epochs/six_hourly'),
+       eq(variables['Build.SourceBranch'], 'refs/heads/triggers/safari_preview'),
        and(eq(variables['Build.Reason'], 'Manual'), variables['run_all_safari_preview']))
   strategy:
-    parallel: 4 # chosen to make runtime ~2h
+    parallel: 5 # chosen to make runtime ~2h
   timeoutInMinutes: 360
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
   steps:
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/pip_install.yml

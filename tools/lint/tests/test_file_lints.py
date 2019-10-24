@@ -203,6 +203,36 @@ def test_internals():
                                1)]
 
 
+def test_missing_deps():
+    error_map = check_with_files(b"<script src='/gen/foo.js'></script>")
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind == "python":
+            assert errors == [("PARSE-FAILED", "Unable to parse file", filename, 1)]
+        else:
+            assert errors == [('MISSING DEPENDENCY',
+                               'Chromium-specific content referenced',
+                               filename,
+                               1)]
+
+
+def test_no_missing_deps():
+    error_map = check_with_files(b"""<head>
+<script src='/foo/gen/foo.js'></script>
+<script src='/gens/foo.js'></script>
+</head>""")
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind == "python":
+            assert errors == [("PARSE-FAILED", "Unable to parse file", filename, 1)]
+        else:
+            assert errors == []
+
+
 def test_meta_timeout():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -644,6 +674,45 @@ def test_print_function():
                 ("PARSE-FAILED", "Unable to parse file", filename, None),
             ]
         else:
+            assert errors == []
+
+
+def test_ahem_system_font():
+    code = b"""\
+<html>
+<style>
+body {
+  font-family: aHEm, sans-serif;
+}
+</style>
+</html>
+"""
+    error_map = check_with_files(code)
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if filename.endswith((".htm", ".html", ".xht", ".xhtml")):
+            assert errors == [
+                ("AHEM SYSTEM FONT", "Don't use Ahem as a system font, use /fonts/ahem.css", filename, None)
+            ]
+
+
+def test_ahem_web_font():
+    code = b"""\
+<html>
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
+<style>
+body {
+  font-family: aHEm, sans-serif;
+}
+</style>
+</html>
+"""
+    error_map = check_with_files(code)
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if filename.endswith((".htm", ".html", ".xht", ".xhtml")):
             assert errors == []
 
 

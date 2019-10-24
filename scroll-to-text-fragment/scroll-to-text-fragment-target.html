@@ -1,0 +1,41 @@
+<!doctype html>
+<title>Navigating to a text fragment anchor</title>
+<script>
+function isInView(element) {
+  return (element.offsetTop >= window.scrollY) &&
+         (element.offsetTop <= (window.scrollY + window.innerHeight));
+}
+
+function checkScroll() {
+  let bc = new BroadcastChannel('scroll-to-text-fragment');
+
+  var position = 'unknown';
+  if (window.scrollY == 0)
+    position = 'top';
+  else if (isInView(document.getElementById('element')))
+    position = 'element';
+  else if (isInView(document.getElementById('text')))
+    position = 'text';
+
+  bc.postMessage({ scrollPosition: position });
+  bc.close();
+  window.close();
+}
+</script>
+<style>
+  body {
+    height: 3200px;
+  }
+  p {
+    position: absolute;
+    top: 3000px;
+  }
+  #element {
+    position: absolute;
+    top: 2000px;
+  }
+</style>
+<body onload="window.requestAnimationFrame(checkScroll)">
+  <div id="element">Element</div>
+  <p id="text">This is a test page</p>
+</body>

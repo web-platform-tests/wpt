@@ -46,8 +46,8 @@ class SeleniumBaseProtocolPart(BaseProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    def execute_script(self, script, async=False):
-        method = self.webdriver.execute_async_script if async else self.webdriver.execute_script
+    def execute_script(self, script, asynchronous=False):
+        method = self.webdriver.execute_async_script if asynchronous else self.webdriver.execute_script
         return method(script)
 
     def set_timeout(self, timeout):
@@ -148,6 +148,9 @@ class SeleniumSelectorProtocolPart(SelectorProtocolPart):
 
     def elements_by_selector(self, selector):
         return self.webdriver.find_elements_by_css_selector(selector)
+
+    def elements_by_selector_and_frame(self, element_selector, frame):
+        return self.webdriver.find_elements_by_css_selector(element_selector)
 
 
 class SeleniumClickProtocolPart(ClickProtocolPart):
@@ -332,7 +335,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         handler = CallbackHandler(self.logger, protocol, test_window)
         while True:
             result = protocol.base.execute_script(
-                self.script_resume % format_map, async=True)
+                self.script_resume % format_map, asynchronous=True)
             done, rv = handler(result)
             if done:
                 break

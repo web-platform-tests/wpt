@@ -228,5 +228,12 @@ test(() => {
   assert_equals(document.activeElement, slottedToFirstSlot);
 }, "focus() on host with delegatesFocus & tabindex=0, #slottedToFirstSlot, #slottedToSecondSlot, #belowSlots  with tabindex=0");
 
+test(() => {
+  resetTabIndexAndFocus();
+  setTabIndex([aboveSlots, belowSlots], 0);
+  belowSlots.focus();
+  host.focus();
+  assert_equals(shadowRoot.activeElement, aboveSlots);
+}, "focus() on host with delegatesFocus and a focused non-first shadow element");
 </script>
 

@@ -20,7 +20,7 @@ function doTest(callGetUserMedia, testName)
         for (let i = 0; i < deviceList1.length; i++) {
             const device1 = deviceList1[i];
             const device2 = deviceList2[i];
-            assert_false(device1 === device2);
+            assert_not_equals(device1, device2);
             assert_equals(device1.deviceId, device2.deviceId, "deviceId");
             assert_equals(device1.kind, device2.kind, "kind");
         }

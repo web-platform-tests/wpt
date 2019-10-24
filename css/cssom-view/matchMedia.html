@@ -22,10 +22,6 @@ test(() => {
 }, "window.matchMedia is a function");
 
 test(() => {
-    assert_inherits(window, "matchMedia");
-}, "window.matchMedia is inherited");
-
-test(() => {
     const mql = window.matchMedia("all");
     assert_true(mql instanceof MediaQueryList);
 }, "window.matchMedia returns MediaQueryList instance");

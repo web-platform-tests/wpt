@@ -6,7 +6,6 @@
 
 // This test asserts that compressing multiple chunks should work.
 
-<<<<<<< HEAD
 // Example: ('Hello', 3) => TextEncoder().encode('HelloHelloHello')
 function makeExpectedChunk(input, numberOfChunks) {
   const expectedChunk = input.repeat(numberOfChunks);
@@ -19,23 +18,6 @@ async function compressMultipleChunks(input, numberOfChunks, format) {
   const writer = cs.writable.getWriter();
   const chunk = new TextEncoder().encode(input);
   for (let i = 0; i < numberOfChunks; ++i) {
-=======
-// ('Hello', 3) => TextEncoder().encode('HelloHelloHello')
-function makeExpectedChunk(input, numberOfChunk) {
-  let expectedChunk = '';
-  for (let i = 0; i < numberOfChunk; ++i) {
-    expectedChunk += input;
-  }
-  return new TextEncoder().encode(expectedChunk);
-}
-
-// ex) ('Hello', 3, 'deflate') => compress ['Hello', 'Hello', Hello']
-async function compressMultipleChunks(input, numberOfChunk, format) {
-  const cs = new CompressionStream(format);
-  const writer = cs.writable.getWriter();
-  const chunk = new TextEncoder().encode(input);
-  for (let i = 0; i < numberOfChunk; ++i) {
->>>>>>> Add some tests for CompressionStream
     writer.write(chunk);
   }
   const closePromise = writer.close();
@@ -61,7 +43,6 @@ async function compressMultipleChunks(input, numberOfChunk, format) {
 
 const hello = 'Hello';
 
-<<<<<<< HEAD
 for (let numberOfChunks = 2; numberOfChunks <= 16; ++numberOfChunks) {
   promise_test(async t => {
     const compressedData = await compressMultipleChunks(hello, numberOfChunks, 'deflate');
@@ -76,20 +57,4 @@ for (let numberOfChunks = 2; numberOfChunks <= 16; ++numberOfChunks) {
     // decompress with pako, and check that we got the same result as our original string
     assert_array_equals(expectedValue, pako.inflate(compressedData), 'value should match');
   }, `compressing ${numberOfChunks} chunks with gzip should work`);
-=======
-for (let numberOfChunk = 2; numberOfChunk <= 16; ++numberOfChunk) {
-  promise_test(async t => {
-    const compressedData = await compressMultipleChunks(hello, numberOfChunk, 'deflate');
-    const expectedValue = makeExpectedChunk(hello, numberOfChunk);
-    // decompress with pako, and check that we got the same result as our original string
-    assert_array_equals(expectedValue, pako.inflate(compressedData), 'value should match');
-  }, `compressing ${numberOfChunk} chunks with deflate should work`);
-
-  promise_test(async t => {
-    const compressedData = await compressMultipleChunks(hello, numberOfChunk, 'gzip');
-    const expectedValue = makeExpectedChunk(hello, numberOfChunk);
-    // decompress with pako, and check that we got the same result as our original string
-    assert_array_equals(expectedValue, pako.inflate(compressedData), 'value should match');
-  }, `compressing ${numberOfChunk} chunks with gzip should work`);
->>>>>>> Add some tests for CompressionStream
 }

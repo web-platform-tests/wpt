@@ -5,7 +5,6 @@
 'use strict';
 
 // This test asserts that compressing '' doesn't affect the compressed data.
-<<<<<<< HEAD
 // Example: compressing ['Hello', '', 'Hello'] results in 'HelloHello'
 
 async function compressChunkList(chunkList, format) {
@@ -13,15 +12,6 @@ async function compressChunkList(chunkList, format) {
   const writer = cs.writable.getWriter();
   for (const chunk of chunkList) {
     const chunkByte = new TextEncoder().encode(chunk);
-=======
-// ex) compressing ['Hello', '', 'Hello'] results in 'HelloHello'
-
-async function compressIncludingEmptyChunk(chunkList, format) {
-  const cs = new CompressionStream(format);
-  const writer = cs.writable.getWriter();
-  for (const chunk of chunkList) {
-    const chunkByte = new TextEncoder().encode(chunk);	
->>>>>>> Add some tests for CompressionStream
     writer.write(chunkByte);
   }
   const closePromise = writer.close();
@@ -54,7 +44,6 @@ const expectedValue = new TextEncoder().encode('HelloHello');
 
 for (const chunkList of chunkLists) {
   promise_test(async t => {
-<<<<<<< HEAD
     const compressedData = await compressChunkList(chunkList, 'deflate');
     // decompress with pako, and check that we got the same result as our original string
     assert_array_equals(expectedValue, pako.inflate(compressedData), 'value should match');
@@ -62,15 +51,6 @@ for (const chunkList of chunkLists) {
 
   promise_test(async t => {
     const compressedData = await compressChunkList(chunkList, 'gzip');
-=======
-    const compressedData = await compressIncludingEmptyChunk(chunkList, 'deflate');
-    // decompress with pako, and check that we got the same result as our original string
-    assert_array_equals(expectedValue, pako.inflate(compressedData), 'value should match');
-  }, `the reslut of compressing [${chunkList}] with deflate should be 'HelloHello'`);
-
-  promise_test(async t => {
-    const compressedData = await compressIncludingEmptyChunk(chunkList, 'gzip');
->>>>>>> Add some tests for CompressionStream
     // decompress with pako, and check that we got the same result as our original string
     assert_array_equals(expectedValue, pako.inflate(compressedData), 'value should match');
   }, `the result of compressing [${chunkList}] with gzip should be 'HelloHello'`);

@@ -72,7 +72,7 @@ steps:
   ignoreLASTEXITCODE: true
 
 - powershell: |
-    $channels = @('Edge', 'Edge Beta', 'Edge Dev', 'Edge Canary')
+    $channels = @('Edge', 'Edge Beta', 'Edge Dev', 'Edge SxS')
     foreach ($channel in $channels) {
       Write-Host "Deleting regkeys for $channel folder"
       Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft $channel" -Recurse -Force -ErrorAction SilentlyContinue

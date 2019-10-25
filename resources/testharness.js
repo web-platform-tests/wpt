@@ -1829,6 +1829,8 @@ policies and contribution forms [3].
         this.message = null;
         this.stack = null;
 
+        this.assertions = [];
+
         this.steps = [];
         this._is_promise_test = false;
 
@@ -1881,6 +1883,10 @@ policies and contribution forms [3].
         this._structured_clone.phase = this.phase;
         return this._structured_clone;
     };
+
+    Test.prototype.add_assertion = function(assertion) {
+        this.assertions.push(assertion);
+    }
 
     Test.prototype.step = function(func, this_obj)
     {
@@ -2026,7 +2032,7 @@ policies and contribution forms [3].
             return;
         }
 
-        if (this.phase <= this.phases.STARTED) {
+        if (this.phase <= this.phases.STARTED && this.status !== this.FAIL) {
             this.set_status(this.PASS, null);
         }
 
@@ -3371,10 +3377,29 @@ policies and contribution forms [3].
     /*
      * Utility functions
      */
+
+    let continue_execution_after_failing_assertion = false;
+    function execute_single_page_test_after_failing_assertion()
+    {
+        continue_execution_after_failing_assertion = true;
+    }
+    expose(execute_single_page_test_after_failing_assertion, 'execute_single_page_test_after_failing_assertion');
+
     function assert(expected_true, function_name, description, error, substitutions)
     {
         if (tests.tests.length === 0) {
             tests.set_file_is_test();
+        }
+        if (tests.file_is_test) {
+            let test = tests.tests[0];
+            let message = expected_true ? description : make_message(function_name, description, error, substitutions);
+            test.add_assertion({passed: !!expected_true, message: message});
+            if (continue_execution_after_failing_assertion) {
+                if (!expected_true && test.status !== test.FAIL) {
+                    test.set_status(test.FAIL, "At least one assertion failed: " + message);
+                }
+                return;
+            }
         }
         if (expected_true !== true) {
             var msg = make_message(function_name, description,

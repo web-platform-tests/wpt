@@ -39,12 +39,12 @@ steps:
 
     # uninstall Edge
     $stableExitCode = UninstallEdge "$env:localappdata\Microsoft\Edge" "--uninstall --force-uninstall --verbose-logging"
-    # uninstall Edge Canary channel
-    $canaryExitCode = UninstallEdge "$env:localappdata\Microsoft\Edge SxS" "--uninstall --msedge-sxs --force-uninstall --verbose-logging"
-    # uninstall Edge Dev channel
-    $devExitCode = UninstallEdge "$env:systemdrive\Program Files (x86)\Microsoft\Edge Dev" "--uninstall --msedge-dev --force-uninstall --verbose-logging"
     # uninstall Edge Beta channel
     $betaExitCode = UninstallEdge "$env:systemdrive\Program Files (x86)\Microsoft\Edge Beta" "--uninstall --msedge-beta --force-uninstall --verbose-logging"
+    # uninstall Edge Dev channel
+    $devExitCode = UninstallEdge "$env:systemdrive\Program Files (x86)\Microsoft\Edge Dev" "--uninstall --msedge-dev --force-uninstall --verbose-logging"
+    # uninstall Edge Canary channel
+    $canaryExitCode = UninstallEdge "$env:localappdata\Microsoft\Edge SxS" "--uninstall --msedge-sxs --force-uninstall --verbose-logging"
 
     # Check if Edge is still running and try to close it.
     # If we fail to close it, then reboot the system
@@ -58,9 +58,9 @@ steps:
       }
     }
     if (($stableExitCode -ne $exitCodeSuccess) -and
-        ($canaryExitCode -ne $exitCodeSuccess) -and
+        ($betaExitCode -ne $exitCodeSuccess) -and
         ($devExitCode -ne $exitCodeSuccess) -and
-        ($betaExitCode -ne $exitCodeSuccess)) {
+        ($canaryExitCode -ne $exitCodeSuccess)) {
       Copy-Item -Path "$env:temp\*edge*.log" -Destination $(Build.ArtifactStagingDirectory) -Force
       Throw "Failed to uninstall Edge."
     } else {
@@ -72,23 +72,23 @@ steps:
   ignoreLASTEXITCODE: true
 
 - powershell: |
-    $channelFolders = @('Edge', 'Edge SxS', 'Edge Dev', 'Edge Beta')
-    foreach ($folder in $channelFolders) {
-      Write-Host "Deleting regkeys for $folder folder"
-      Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft $folder" -Recurse -Force -ErrorAction SilentlyContinue
-      Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft $folder" -Recurse -Force -ErrorAction SilentlyContinue
+    $channels = @('Edge', 'Edge Beta', 'Edge Dev', 'Edge Canary')
+    foreach ($channel in $channels) {
+      Write-Host "Deleting regkeys for $channel folder"
+      Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft $channel" -Recurse -Force -ErrorAction SilentlyContinue
+      Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft $channel" -Recurse -Force -ErrorAction SilentlyContinue
       Remove-Item -Path "HKLM:SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate" -Recurse -Force -ErrorAction SilentlyContinue
-      Remove-Item -Path "HKLM:SOFTWARE\WOW6432Node\Microsoft\$folder" -Recurse -Force -ErrorAction SilentlyContinue
+      Remove-Item -Path "HKLM:SOFTWARE\WOW6432Node\Microsoft\$channel" -Recurse -Force -ErrorAction SilentlyContinue
       Remove-Item -Path "HKLM:SOFTWARE\Microsoft\EdgeUpdate" -Recurse -Force -ErrorAction SilentlyContinue
-      Remove-Item -Path "HKLM:SOFTWARE\Microsoft\$folder" -Recurse -Force -ErrorAction SilentlyContinue
+      Remove-Item -Path "HKLM:SOFTWARE\Microsoft\$channel" -Recurse -Force -ErrorAction SilentlyContinue
       Remove-Item -Path "HKCU:SOFTWARE\Microsoft\EdgeUpdate" -Recurse -Force -ErrorAction SilentlyContinue
-      Remove-Item -Path "HKCU:SOFTWARE\Microsoft\$folder" -Recurse -Force -ErrorAction SilentlyContinue
+      Remove-Item -Path "HKCU:SOFTWARE\Microsoft\$channel" -Recurse -Force -ErrorAction SilentlyContinue
 
       Write-Host "Deleting all remaining Edge folders"
       Remove-Item -Path "$env:localappdata\Microsoft\EdgeUpdate" -Recurse -Force -ErrorAction SilentlyContinue
-      $edgePath = "$env:localappdata\Microsoft\$folder"
+      $edgePath = "$env:localappdata\Microsoft\$channel"
       Remove-Item -Path $edgePath -Recurse -Force -ErrorAction SilentlyContinue
-      $edgePath = "$env:systemdrive\Program Files (x86)\Microsoft\$folder"
+      $edgePath = "$env:systemdrive\Program Files (x86)\Microsoft\$channel"
       Remove-Item -Path $edgePath -Recurse -Force -ErrorAction SilentlyContinue
     }
   displayName: 'Cleanup Edge registry'

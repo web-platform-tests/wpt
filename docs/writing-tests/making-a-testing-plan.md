@@ -39,8 +39,8 @@ patterns in specification text and the kind of tests they suggest.
 
 Algorithms may accept input from many sources. Modifying the input is the most
 direct way we can influence the browser's behavior and verify that it matches
-the specifications. That's why it's helpful to be able to recognize all the
-different sources of input.
+the specifications. That's why it's helpful to be able to recognize different
+sources of input.
 
 ```eval_rst
 ================ ==============================================================
@@ -71,8 +71,8 @@ Notifications standard](https://notifications.spec.whatwg.org/#constructors):
 
 A thorough test suite for this constructor will include tests for the behavior
 of many different values of the *title* parameter and the *options* parameter.
-Choosing those values is a challenge unto itself--see [Avoid Excessive
-Breadth](#avoid-excessive-breadth) for advice on the topic.
+Choosing those values can be a challenge unto itself--see [Avoid Excessive
+Breadth](#avoid-excessive-breadth) for advice.
 
 ### Browser state
 
@@ -127,8 +127,8 @@ necessarily inherent to the correctness of the algorithm:
 
 - input validation (when an algorithm verifies that two or more input values
   satisfy some criteria)
-- event dispatch (when an algorithm [fires two or more
-  events](https://dom.spec.whatwg.org/#concept-event-fire))
+- event dispatch (when an algorithm
+  [fires](https://dom.spec.whatwg.org/#concept-event-fire) two or more events)
 - object property access (when an algorithm retrieves two or more property
   values from an object provided as input)
 
@@ -164,25 +164,26 @@ and it will also verify that the `dragend` event is fired as specified. An even
 better test suite will also verify that the `drop` event is fired *before* the
 `dragend` event.
 
-Unfortunately, there was no test like this in September of 2019. That's why
-[the Chromium project was able to release a new version which changed the
-sequence and interfered with real web
-applications](https://bugs.chromium.org/p/chromium/issues/detail?id=1005747).
+In September of 2019, [Chromium accidentally changed the ordering of the `drop`
+and `dragend`
+events](https://bugs.chromium.org/p/chromium/issues/detail?id=1005747), and as
+a result, real web applications stopped functioning. If there had been a test
+fpr the sequence of these events, then this confusion would have been avoided.
 
 When making your testing plan, be sure to look carefully for event dispatch and
-the other patterns listed above. They won't always be as clear as the
-abbreviated "drag" example!
+the other patterns listed above. They won't always be as clear as the "drag"
+example!
 
 ### Optional behavior
 
-Specifications occasionally allow browsers some discretion in how they
-implement certain features. These are described using [RFC
+Specifications occasionally allow browsers discretion in how they implement
+certain features. These are described using [RFC
 2119](https://tools.ietf.org/html/rfc2119) terms like "MAY" and "OPTIONAL".
-Although browsers should not be penalized for deciding not to implement this
+Although browsers should not be penalized for deciding not to implement such
 behavior, WPT offers tests that verify the correctness of the browsers which
 do. Be sure to [label the test as optional according to WPT's
 conventions](file-names) so that people reviewing test results know how to
-accurate interpret failures.
+interpret failures.
 
 *Example:* The algorithm underpinning
 [`document.getElementsByTagName`](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByTagName)
@@ -198,11 +199,11 @@ That statement uses the word "may," so even though it modifies the behavior of
 the preceding algorithm, it is strictly optional. The test we write for this
 should be designated accordingly.
 
-It's important to read these sections carefully, though, because the
-distinction between "mandatory" behavior and "optional" behavior can be quite
-nuanced. In this case, the optional behavior is never allowed if the document's
-type has changed. That makes for a mandatory test, one that verifies browsers
-don't return the same result when the document's type changes.
+It's important to read these sections carefully because the distinction between
+"mandatory" behavior and "optional" behavior can be nuanced. In this case, the
+optional behavior is never allowed if the document's type has changed. That
+makes for a mandatory test, one that verifies browsers don't return the same
+result when the document's type changes.
 
 ## Exercising Restraint
 
@@ -211,8 +212,8 @@ as hard as finding what needs testing.
 
 ### Don't dive too deep
 
-Algorithms are usually composed of many other algorithms which themselves are
-defined in terms of still more algorithms. It can be intimidating to consider
+Algorithms are composed of many other algorithms which themselves are defined
+in terms of still more algorithms. It can be intimidating to consider
 exhaustively testing one of those "nested" algorithms, especially when they are
 shared by many different APIs.
 

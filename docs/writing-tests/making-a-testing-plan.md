@@ -273,10 +273,13 @@ intended. Finally, tests authored using this approach often take a relatively
 long time to complete, and that puts a burden on people who collect test
 results in large numbers.
 
-Such exhaustive approaches may not catch more bugs than a handful of
-carefully-chosen test cases. Although the risks of dynamic test generation may
-be tolerable in some specific cases, it's sometimes best to select the most
-interesting edge cases and move on.
+The severity of these drawbacks varies with the complexity of the generation
+logic. For example, it would be pronounced in a test which conditionally made
+different assertions within many nested loops. Conversely, the severity would
+be low in a test which only iterated over a list of values in order to make the
+same assertions about each. Recognizing when the benefits outweigh the risks
+requires discretion, so once you understand then, you should use your best
+judgement.
 
 *Example:* We can see this consideration in the very first step of the
 `Response` constructor from [the Fetch

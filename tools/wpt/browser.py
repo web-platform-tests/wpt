@@ -532,37 +532,61 @@ class Chrome(Browser):
         return find_executable("chromedriver")
 
     def _official_chromedriver_url(self, chrome_version):
-        # http://chromedriver.chromium.org/downloads/version-selection
-        parts = chrome_version.split(".")
-        assert len(parts) == 4
-        latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s.%s.%s" % tuple(parts[:-1])
-        try:
-            latest = get(latest_url).text.strip()
-        except requests.RequestException:
-            latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s" % parts[0]
+        # The algorithm for downloading Chromedriver is documented at
+        # https://chromedriver.chromium.org/downloads/version-selection
+        # This implements that algorithm going back a maximum of two
+        # major releases
+        version_parts = chrome_version.split(".")
+        assert len(version_parts) == 4
+        major_version = int(version_parts[0])
+        try_versions = [".".join(version_parts[:3]),
+                        str(major_version),
+                        str(major_version - 1),
+                        str(major_version - 2)]
+
+        try_urls = [("https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s" % item,
+                     "https://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip")
+                    for item in try_versions]
+
+        for revision_url, driver_url in try_urls:
+            self.logger.info("Getting chromedriver version from %s" % revision_url)
             try:
-                latest = get(latest_url).text.strip()
+                get(revision_url)
             except requests.RequestException:
-                return None
-        return "https://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (
-            latest, self.platform_string())
+                continue
+            revision = get(revision_url).text.strip()
+            driver_url = driver_url % (revision, self.platform_string())
+            self.logger.info("Getting chromedriver from %s" % driver_url)
+            try:
+                get(driver_url)
+            except requests.RequestException:
+                continue
+            break
+        else:
+            return
+
+        return driver_url
 
     def _chromium_chromedriver_url(self, chrome_version):
         try:
             # Try to find the Chromium build with the same revision.
             omaha = get("https://omahaproxy.appspot.com/deps.json?version=" + chrome_version).json()
+            self.logger.info("Getting chromedriver version from %s" % omaha)
             revision = omaha['chromium_base_position']
             url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/chromedriver_%s.zip" % (
                 self.chromium_platform_string(), revision, self.platform_string())
             # Check the status without downloading the content (this is a streaming request).
+            self.logger.info("Getting chromedriver from %s" % url)
             get(url)
         except requests.RequestException:
             # Fall back to the tip-of-tree Chromium build.
             revision_url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/LAST_CHANGE" % (
                 self.chromium_platform_string())
+            self.logger.info("Getting chromedriver version from %s" % revision_url)
             revision = get(revision_url).text.strip()
             url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/chromedriver_%s.zip" % (
                 self.chromium_platform_string(), revision, self.platform_string())
+            self.logger.info("Getting chromedriver from %s" % url)
         return url
 
     def _latest_chromedriver_url(self, chrome_version):

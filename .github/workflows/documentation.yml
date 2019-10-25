@@ -1,13 +1,17 @@
+name: documentation
 on:
   push:
     branches:
       - master
+    paths:
+      - 'docs/**'
+      - 'resources/**'
+      - 'tools/**'
   pull_request:
     paths:
       - 'docs/**'
       - 'resources/**'
       - 'tools/**'
-name: documentation
 jobs:
   build-and-publish:
     runs-on: ubuntu-18.04

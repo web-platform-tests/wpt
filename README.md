@@ -60,7 +60,7 @@ To get the tests running, you need to set up the test domains in your
 
 The necessary content can be generated with `./wpt make-hosts-file`; on
 Windows, you will need to precede the prior command with `python` or
-the path to the Python binary (`python wpt make-hosts-file`).
+the path to the Python binary (`python ./wpt make-hosts-file`).
 
 For example, on most UNIX-like systems, you can setup the hosts file with:
 
@@ -71,7 +71,7 @@ For example, on most UNIX-like systems, you can setup the hosts file with:
 And on Windows (this must be run in a PowerShell session with Administrator privileges):
 
 ```powershell
-python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
+python ./wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
 ```
 
 If you are behind a proxy, you also need to make sure the domains above are
@@ -89,7 +89,7 @@ The test server can be started using
 **On Windows**: You will need to precede the prior command with
 `python` or the path to the python binary.
 ```bash
-python wpt serve
+python ./wpt serve
 ```
 
 This will start HTTP servers on two ports and a websockets server on
@@ -136,7 +136,7 @@ line syntax is:
 **On Windows**: You will need to precede the prior command with
 `python` or the path to the python binary.
 ```bash
-python wpt run product [tests]
+python ./wpt run product [tests]
 ```
 
 where `product` is currently `firefox` or `chrome` and `[tests]` is a
@@ -192,7 +192,7 @@ On Windows `wpt` commands must be prefixed with `python` or the path
 to the python binary (if `python` is not in your `%PATH%`).
 
 ```bash
-python wpt [command]
+python ./wpt [command]
 ```
 
 Alternatively, you may also use

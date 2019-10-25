@@ -31,7 +31,7 @@ To get the tests running, you need to set up the test domains in your
 
 The necessary content can be generated with `./wpt make-hosts-file`; on
 Windows, you will need to preceed the prior command with `python` or
-the path to the Python binary (`python wpt make-hosts-file`).
+the path to the Python binary (`python ./wpt make-hosts-file`).
 
 For example, on most UNIX-like systems, you can setup the hosts file with:
 
@@ -42,7 +42,7 @@ For example, on most UNIX-like systems, you can setup the hosts file with:
 And on Windows (this must be run in a PowerShell session with Administrator privileges):
 
 ```bash
-python wpt make-hosts-file | Out-File %SystemRoot%\System32\drivers\etc\hosts -Encoding ascii -Append
+python ./wpt make-hosts-file | Out-File %SystemRoot%\System32\drivers\etc\hosts -Encoding ascii -Append
 ```
 
 If you are behind a proxy, you also need to make sure the domains above are
@@ -66,7 +66,7 @@ The standard Windows shell requires that all `wpt` commands are prefixed
 by the Python binary i.e. assuming `python` is on your path the server is
 started using:
 
-`python wpt serve`
+`python ./wpt serve`
 
 ## Via the browser
 

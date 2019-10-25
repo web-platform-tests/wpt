@@ -23,28 +23,15 @@ test(() => {
 
 test(() => {
     const mql = window.matchMedia("all");
-    assert_true(mql instanceof MediaQueryList);
-}, "window.matchMedia returns MediaQueryList instance");
-
-test(() => {
-    const mql = window.matchMedia("all");
-    assert_idl_attribute(mql, "media");
-    assert_readonly(mql, "media");
     assert_equals(mql.media, "all");
-}, "MediaQueryList::media is read-only IDL attribute");
-
-test(() => {
-    const mql = window.matchMedia("all");
-    assert_idl_attribute(mql, "matches");
-    assert_readonly(mql, "matches");
     assert_true(mql.matches);
-}, "MediaQueryList::matches is read-only IDL attribute");
+}, 'window.matchMedia("all") matches');
 
 test(() => {
     const mql = window.matchMedia("");
     assert_equals(mql.media, "");
     assert_true(mql.matches);
-}, 'window.matchMedia("") matches and is serialized as-is');
+}, 'window.matchMedia("") matches');
 
 test(() => {
     const mql = window.matchMedia("(min-width: 1px)");

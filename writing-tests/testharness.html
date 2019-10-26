@@ -193,6 +193,10 @@ be made available by the framework:</p>
 <span class="bp">self</span><span class="o">.</span><span class="n">GLOBAL</span><span class="o">.</span><span class="n">isWorker</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>Although <a class="reference external" href="testharness-api.html#determining-when-all-tests-are-complete">the global <code class="docutils literal notranslate"><span class="pre">done</span></code> function must be explicitly invoked for most
+dedicated worker tests and shared worker
+tests</a>, it is
+automatically invoked for tests defined using the “multi-global” pattern.</p>
 </div>
 <div class="section" id="specifying-a-test-title-in-auto-generated-boilerplate-tests">
 <h3>Specifying a test title in auto-generated boilerplate tests<a class="headerlink" href="#specifying-a-test-title-in-auto-generated-boilerplate-tests" title="Permalink to this headline">¶</a></h3>

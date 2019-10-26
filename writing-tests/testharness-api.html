@@ -415,7 +415,9 @@ not assume it is done until the global <code class="docutils literal notranslate
 is called, the two conditions above apply like normal.</p>
 <p>Dedicated and shared workers don’t have an event that corresponds to the <code class="docutils literal notranslate"><span class="pre">load</span></code>
 event in a document. Therefore these worker tests always behave as if the
-<code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> property is set to true. Service workers depend on the
+<code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> property is set to true (unless they are defined using <a class="reference external" href="testharness.html#multi-global-tests">the
+“multi-global” pattern</a>). Service workers
+depend on the
 <a class="reference external" href="https://w3c.github.io/ServiceWorker/#service-worker-global-scope-install-event">install</a>
 event which is fired following the completion of <a class="reference external" href="https://html.spec.whatwg.org/multipage/workers.html#run-a-worker">running the
 worker</a>.</p>

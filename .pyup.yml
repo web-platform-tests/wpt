@@ -7,6 +7,9 @@ search: False
 # default: empty
 # allowed: list
 requirements:
+ - docs/requirements.txt:
+      update: all
+      pin: True
  - tools/requirements_flake8.txt:
       update: all
       pin: True

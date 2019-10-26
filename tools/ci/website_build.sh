@@ -14,7 +14,7 @@ remote_url=https://${DEPLOY_TOKEN}@github.com/web-platform-tests/wpt.git
 
 function json_property {
   cat ${1} | \
-    python -c "import json, sys; print json.load(sys.stdin).get(\"${2}\", \"\")"
+    python3 -c "import json, sys; print json.load(sys.stdin).get(\"${2}\", \"\")"
 }
 
 function is_pull_request {
@@ -39,7 +39,7 @@ git rm -rf .
 
 # Build the website
 cd ../..
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 make html
 
 cd _build/html

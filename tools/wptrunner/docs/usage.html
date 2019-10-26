@@ -193,19 +193,20 @@ metadata files in a subdirectory of the current directory named <code class="doc
 </div>
 <div class="section" id="output">
 <h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
-<p>wptrunner uses [the <cite>mozlog</cite> package](<a class="reference external" href="https://firefox-source-docs.mozilla.org/mozbase/mozlog.html">https://firefox-source-docs.mozilla.org/mozbase/mozlog.html</a>) for output. This
-structures events such as test results or log messages as JSON objects
-that can then be fed to other tools for interpretation. More details
-about the message format are given in [the
-<cite>mozlog</cite> documentation](<a class="reference external" href="https://firefox-source-docs.mozilla.org/mozbase/mozlog.html">https://firefox-source-docs.mozilla.org/mozbase/mozlog.html</a>).</p>
+<p>wptrunner uses <a class="reference external" href="https://firefox-source-docs.mozilla.org/mozbase/mozlog.html">the mozlog package</a>) for
+output. This structures events such as test results or log messages as
+JSON objects that can then be fed to other tools for
+interpretation. More details about the message format are given in
+<a class="reference external" href="https://firefox-source-docs.mozilla.org/mozbase/mozlog.html">the mozlog documentation</a>.</p>
 <p>By default the raw JSON messages are dumped to stdout. This is
 convenient for piping into other tools, but not ideal for humans
-reading the output. [<cite>mozlog</cite>](<a class="reference external" href="https://firefox-source-docs.mozilla.org/mozbase/mozlog.html">https://firefox-source-docs.mozilla.org/mozbase/mozlog.html</a>) comes with several other
-formatters, which are accessible through command line options. The
-general format of these options is <code class="docutils literal notranslate"><span class="pre">--log-name=dest</span></code>, where <code class="docutils literal notranslate"><span class="pre">name</span></code>
-is the name of the format and <code class="docutils literal notranslate"><span class="pre">dest</span></code> is a path to a destination
-file, or <code class="docutils literal notranslate"><span class="pre">-</span></code> for stdout. The raw JSON data is written by the <code class="docutils literal notranslate"><span class="pre">raw</span></code>
-formatter so, the default setup corresponds to <code class="docutils literal notranslate"><span class="pre">--log-raw=-</span></code>.</p>
+reading the output. <a class="reference external" href="https://firefox-source-docs.mozilla.org/mozbase/mozlog.html">mozlog</a> comes
+with several other formatters, which are accessible through command
+line options. The general format of these options is
+<code class="docutils literal notranslate"><span class="pre">--log-name=dest</span></code>, where <code class="docutils literal notranslate"><span class="pre">name</span></code> is the name of the format and
+<code class="docutils literal notranslate"><span class="pre">dest</span></code> is a path to a destination file, or <code class="docutils literal notranslate"><span class="pre">-</span></code> for stdout. The raw
+JSON data is written by the <code class="docutils literal notranslate"><span class="pre">raw</span></code> formatter so, the default setup
+corresponds to <code class="docutils literal notranslate"><span class="pre">--log-raw=-</span></code>.</p>
 <p>A reasonable output format for humans is provided as <code class="docutils literal notranslate"><span class="pre">mach</span></code>. So in
 order to output the full raw log to a file and a human-readable
 summary to stdout, one might pass the options:</p>

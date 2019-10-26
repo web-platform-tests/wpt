@@ -4,20 +4,20 @@ The tests are designed to be run from your local computer.
 
 ## System Setup
 
-The test environment requires [Python 2.7+](http://www.python.org/downloads)
+The test environment requires [Python 2.7+](https://www.python.org/downloads)
 (but not Python 3.x).
 
 On Windows, be sure to add the Python directory (`c:\python2x`, by default) to
 your `%Path%` [Environment Variable](http://www.computerhope.com/issues/ch000549.htm),
 and read the [Windows Notes](#windows-notes) section below.
 
-<!--
-  There does not appear to be a cross-platform means of installing `pip`.
-  https://github.com/web-platform-tests/wpt/pull/16670
--->
+Ensure that you have `pip` installed using the following command:
+```bash
+python -m ensurepip
+```
 
-Install `pip`. On many systems, this can be achieved with the command `python
--m ensurepip`. If this is not possible, use your system's package manager to
+See the [`ensurepip` documentation](https://docs.python.org/2.7/library/ensurepip.html#command-line-interface)
+for more options. You may be able to use your system's package manager to
 install the `python-pip` package.
 
 Next, install `virtualenv` using the following command:

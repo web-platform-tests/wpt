@@ -3,120 +3,144 @@
 <div id=log></div>
 <script>
 
-  // This file tests whether the input data is valid or invalid
-  // when the input is a little different from correct compressed data.
+ // This file confirms whether DecompressionStream returns a expected data
+ // or unexpected data if a compressed data is broken.
 
-  // First, confirm that input is valid or invalid for DecompressionStream.
-  // If input is valid, decompress it and output the decompressed string.
-  // Then, compare the expected output and the decompressed string.
-  // Else, output ' => invalid input for DecompressionStream'.
+ // Both deflated data and gzipped data has a header and a footer, and
+ // in them, there are some bytes which have their own roles, for example
+ // Compression Method(CM), FLG, and so on. 
+ // If you want to know more details, see
+ // RFC1950 for deflate: https://tools.ietf.org/html/rfc1950
+ // RFC1952 for gzip: https://tools.ietf.org/html/rfc1952
 
-  // |shift| is used as below.
-  // correct compressed data: [0, 0, 0], |shift| = 2
-  // input: [2, 0, 0,], [0, 2, 0], [0, 0, 2]
+ // Expected decompressed string is 'expected output'.
+ const compressedArrayWithDeflate = [120, 156, 75, 173, 40, 72, 77, 46, 73, 77, 81, 200, 47, 45, 41, 40, 45, 1, 0, 48, 173, 6, 36];
+ const compressedArrayWithGzip = [31, 139, 8, 0, 0, 0, 0, 0, 0, 3, 75, 173, 40, 72, 77, 46, 73, 77, 81, 200, 47, 45, 41, 40, 45, 1, 0, 176, 1, 57, 179, 15, 0, 0, 0];
 
-  function write(s) {
-    let pre = document.querySelector('#results');
-    if (!pre) {
-      pre = document.createElement('pre');
-      pre.id = 'results';
-      document.body.appendChild(pre);
-    }
-    pre.textContent += s + '\n';
-  }
+ // The numbers in the following list represent roles of the byte offset like CM.
+ // for deflate
+ const deflateByteoffsetList = [
+   CMF = 0, FLG = 1, DICTID0 = 2, DICTID1 = 3, DICTID2 = 4,
+   DICTID3 = 5, ADLER0 = compressedArrayWithDeflate.length - 4,
+   ADLER1 = compressedArrayWithDeflate.length - 3,
+   ADLER2 = compressedArrayWithDeflate.length - 2,
+   ADLER3 = compressedArrayWithDeflate.length - 1];
+ const deflateByteoffsetNameList = ['CMF', 'FLG', 'DICTID', 'DICTID', 'DICTID',
+				   'DICTID', 'ADLER32', 'ADLER32', 'ADLER32', 'ADLER32'];
+ // for gzip
+ const gzipByteoffsetList = [
+   ID1 = 0, ID2 = 1, CM = 2, FLG = 3, MTIME0 = 4, MTIME1 = 5, MTIME2 = 6, MTIME3 = 7,
+   XFL = 8, OS = 9, CRC0 = compressedArrayWithGzip.length - 8,
+   CRC1 = compressedArrayWithGzip.length - 7,
+   CRC2 = compressedArrayWithGzip.length - 6,
+   CRC3 = compressedArrayWithGzip.length - 5,
+   ISIZE0 = compressedArrayWithGzip.length - 4,
+   ISIZE1 = compressedArrayWithGzip.length - 3,
+   ISIZE2 = compressedArrayWithGzip.length - 2,
+   ISIZE3 = compressedArrayWithGzip.length - 1];
+ const gzipByteoffsetNameList = [
+   'ID1', 'ID2', 'CM', 'FLG', 'MTIME', 'MTIME', 'MTIME', 'MTIME', 'XFL',
+   'OS', 'CRC32', 'CRC32', 'CRC32', 'CRC32', 'ISIZE', 'ISIZE', 'ISIZE', 'ISIZE'];
 
-  // expected output is 'expected output'
-  const compressedArrayWithDeflate = [120, 156, 75, 173, 40, 72, 77, 46, 73, 77, 81, 200, 47, 45, 41, 40, 45, 1, 0, 48, 173, 6, 36];
-  const compressedArrayWithGzip = [31, 139, 8, 0, 0, 0, 0, 0, 0, 3, 75, 173, 40, 72, 77, 46, 73, 77, 81, 200, 47, 45, 41, 40, 45, 1, 0, 176, 1, 57, 179, 15, 0, 0, 0];
+ // First, make an incorrest input for by changing a |byte| of compressedArray
+ // indicated by the offset above into |byte| + |shift|. |shift| is from 1 to 255.
+ // Next, confirm that input is valid or invalid for DecompressionStream.
+ // If input is valid, decompress it and decode it to string (decompressedString).
+ // If decompressedString is correctly decompressed data, write like this:
+ //   [offset: 3, shift: 1 offset name: FLG]
+ // Else, write like this:
+ //   [offset: 17, shift: 7 offset name: DATA output: "expected outpupP"]
 
-  async function decompressArrayBuffer(input, format) {
-    const ds = new DecompressionStream(format);
-    const reader = ds.readable.getReader();
-    const writer = ds.writable.getWriter();
-    writer.write(input);
-    writer.close();
-    const out = [];
-    let totalSize = 0;
-    while (true) {
-      try {
-        const { value, done } = await reader.read();
-        console.log('read succeeded');
-        if (done) break;
-        out.push(value);
-        totalSize += value.byteLength;
-      } catch (e) {
-        console.log('read failed');
-        console.assert(e.name == 'TypeError');
-        return 'invalid input';
-      }
-    }
-    const concatenated = new Uint8Array(totalSize);
-    let offset = 0;
-    for (const array of out) {
-      concatenated.set(array, offset);
-      offset += array.byteLength;
-    }
-    return concatenated;
-  }
+ // Example: gzip, byteoffset: CM = 2, shift: 3, correct input: [31, 139, 8, 0, 0, ...]
+ // => incorrect input: [31, 139, 11, 0, 0, ...]
 
-  async function testDeflate() {
-    write('===== deflate test =====');
-    write('correct compressed array of deflate:');
-    write(compressedArrayWithDeflate);
-    write(`expected output is 'expected output'`);
-    write('========================');
-    for (let i = 0; i < compressedArrayWithDeflate.length; ++i) {
-      for (let shift = 1; shift < 5; ++shift) {
-        write('shift:');
-        write(shift);
-        let brokenArray = compressedArrayWithDeflate.slice();
-        brokenArray[i] += 1;
-        write('incorrect input of deflate:');
-        write(brokenArray);
-        const bufferView = new Uint8Array(brokenArray);
-        decompressedData = await decompressArrayBuffer(bufferView, 'deflate');
-        if (decompressedData == 'invalid input') {
-          write(' => invalid input for DecompressionStream\n');
-        } else {
-          write('decompressed output of deflate:');
-          write(new TextDecoder().decode(decompressedData));
-          write('\n');
-        }
-      }
-    }
-  }
+ function write(s) {
+   let pre = document.querySelector('#results');
+   if (!pre) {
+     pre = document.createElement('pre');
+     pre.id = 'results';
+     document.body.appendChild(pre);
+   }
+   pre.textContent += s + '\n';
+ }
 
-  async function testGzip() {
-    write('===== gzip test =====');
-    write('correct compressed array of gzip:');
-    write(compressedArrayWithGzip);
-    write(`expected output is 'expected output'`);
-    write('=====================');
-    for (let i = 0; i < compressedArrayWithGzip.length; ++i) {
-      for (let shift = 1; shift < 5; ++shift) {
-        write('shift:');
-        write(shift);
-        let brokenArray = compressedArrayWithGzip.slice();
-        brokenArray[i] += shift;
-        write('incorrect input of gzip:');
-        write(brokenArray);
-        const bufferView = new Uint8Array(brokenArray);
-        decompressedData = await decompressArrayBuffer(bufferView, 'gzip');
-        if (decompressedData == 'invalid input') {
-          write(' => invalid input for DecompressionStream\n');
-        } else {
-          write('decompressed output:');
-          write(new TextDecoder().decode(decompressedData));
-          write('\n');
-        }
-      }
-    }
-  }
+ async function decompressArrayBuffer(input, format) {
+   const ds = new DecompressionStream(format);
+   const reader = ds.readable.getReader();
+   const writer = ds.writable.getWriter();
+   writer.write(input);
+   writer.close();
+   const out = [];
+   let totalSize = 0;
+   while (true) {
+     try {
+       const { value, done } = await reader.read();
+       console.log('read succeeded');
+       if (done) break;
+       out.push(value);
+       totalSize += value.byteLength;
+     } catch (e) {
+       console.assert(e.name == 'TypeError');
+       return 'invalid input';
+     }
+   }
+   const concatenated = new Uint8Array(totalSize);
+   let offset = 0;
+   for (const array of out) {
+     concatenated.set(array, offset);
+     offset += array.byteLength;
+   }
+   return concatenated;
+ }
 
-  async function test() {
-    await testDeflate();
-    await testGzip();
-  }
+ async function decompressTest(format, input, byteoffsetList, byteoffsetNameList) {
+   write(`===== ${format} test =====`);
+   write(`correct compressed array of ${format}: ${input}`);
+   write(`expected output: 'expected output'`);
+   let correctList = [];
+   let incorrectList = [];
+   for (let offset = 0; offset < input.length; ++offset) {
+     for (let shift = 1; shift <= 255; ++shift) {
+       let brokenArray = input.slice();
+       brokenArray[offset] += shift;
+       const bufferView = new Uint8Array(brokenArray);
+       decompressedData = await decompressArrayBuffer(bufferView, format);
+       if (decompressedData !== 'invalid input') {
+         const decompressedString = new TextDecoder().decode(decompressedData);
+         let name = '';
+         if (byteoffsetList.includes(offset)) {
+           // name means the role of the shifted byte
+           name = byteoffsetNameList[byteoffsetList.indexOf(offset)];
+         } else {
+	   // 'DATA' means a part of compressed data
+	   name = 'DATA';
+	 }
+	 if (decompressedString === 'expected output') {
+	   correctList.push(`offset: ${offset}, shift: ${shift}, offset name: ${name}`);
+	 } else {
+	   incorrectList.push(`offset: ${offset}, shift: ${shift}, offset name: ${name}, output: "${decompressedString}"`);
+	 }
+       }
+     }
+   }
+   write('======== correct output =======');
+   for (const element of correctList) {
+     write(element);
+   }
+   write('======== incorrect output =======');
+   for (const element of incorrectList) {
+     write(element);
+   }
+   write('\n');
+ }
 
-  test();
+ async function test() {
+   await decompressTest('deflate', compressedArrayWithDeflate,
+			deflateByteoffsetList, deflateByteoffsetNameList);
+   await decompressTest('gzip', compressedArrayWithGzip,
+			gzipByteoffsetList, gzipByteoffsetNameList);
+ }
+
+ test();
+
 </script>

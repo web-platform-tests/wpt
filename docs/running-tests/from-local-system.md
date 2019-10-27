@@ -17,8 +17,8 @@ python -m ensurepip
 ```
 
 See the [`ensurepip` documentation](https://docs.python.org/2.7/library/ensurepip.html#command-line-interface)
-for more options. You may be able to use your system's package manager to
-install the `python-pip` package.
+for more options. You may also be able to use your system's package
+manager to install the `python-pip` package.
 
 Next, install `virtualenv` using the following command:
 

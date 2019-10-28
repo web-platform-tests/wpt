@@ -64,9 +64,9 @@ def test_partially_visible_does_not_scroll(session, offset):
         </script>
         """.format(offset=offset))
     target = session.find.css("div", all=False)
-    assert session.execute_script("return window.scrollY || document.scrollingElement.scrollTop") == 0
+    assert session.execute_script("return window.scrollY || document.documentElement.scrollTop") == 0
     response = element_click(session, target)
     assert_success(response)
-    assert session.execute_script("return window.scrollY || document.scrollingElement.scrollTop") == 0
+    assert session.execute_script("return window.scrollY || document.documentElement.scrollTop") == 0
     click_point = assert_one_click(session)
     assert click_point == center_point(target)

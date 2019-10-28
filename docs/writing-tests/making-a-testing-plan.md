@@ -1,9 +1,9 @@
 # Making a Testing Plan
 
 When contributing to a project as large and open-ended as WPT, it's easy to get
-lost in the details. Starting with an informal testing strategy helps you
-anticipate how much work will be involved, and it helps you stay focused once
-you begin.
+lost in the details. It can be helpful to start by making a rough list of tests
+you intend to write. That plan will let you anticipate how much work will be
+involved, and it will help you stay focused once you begin.
 
 Many people come to WPT with a general testing goal in mind:
 
@@ -19,13 +19,13 @@ GitHub.com](https://github.com/web-platform-tests/wpt/labels/type%3Amissing-cove
 Leave a comment if you'd like to get started with one, and don't hesitate to
 ask clarifying questions!)
 
-This guide will:
+This guide will help you write a testing plan by:
 
-1. show you how to use the specifications to learn what kinds of tests will be
-   most helpful
-2. help you develop a sense for what *doesn't* need to be tested
-3. demonstrate methods for figuring out which tests (if any) have already been
-   written for WPT
+1. showing you how to use the specifications to learn what kinds of tests will
+   be most helpful
+2. developing your sense for what *doesn't* need to be tested
+3. demonstrating methods for figuring out which tests (if any) have already
+   been written for WPT
 
 ## Understanding the "testing surface"
 
@@ -51,6 +51,12 @@ HTML             element content, attributes, attribute values
 CSS              selector strings, property values, markup
 ================ ==============================================================
 ```
+
+Determine which input sources are relevant for your chosen feature, and build a
+list of values which seem worthwhile to test (keep reading for advice on
+identifying worthwhile values). For features that accept multiple sources of
+input, remember that the interaction between values can often produce
+interesting results. Every value you identify should go into your testing plan.
 
 *Example:* This is the first step of the `Notification` constructor from [the
 Notifications standard](https://notifications.spec.whatwg.org/#constructors):
@@ -84,6 +90,14 @@ to manipulate (whether in terms of code, execution time, or system resources),
 and you may want to design your tests to mitigate these costs (e.g. by writing
 many subtests from the same state).
 
+You may not be able to control all relevant aspects of the browser's state.
+[The `type:untestable`
+label](https://github.com/web-platform-tests/wpt/issues?q=is%3Aopen+is%3Aissue+label%3Atype%3Auntestable)
+includes issues for web platform features which cannot be controlled in a
+cross-browser way. You should include tests like these in your plan both to
+communicate your intention and to remind you when/if testing solutions become
+available.
+
 *Example:* In [the `Notification` constructor referenced
 above](https://notifications.spec.whatwg.org/#constructors), the type of "the
 current global object" is also a form of input. The test suite should include
@@ -92,9 +106,9 @@ tests which execute with different types of global objects.
 ### Branches
 
 When an algorithm branches based on some condition, that's an indication of an
-interesting behavior that might be missed. You should write at least one test
-that verifies the behavior when the branch is taken and at least one more test
-that verifies the behavior when the branch is *not* taken.
+interesting behavior that might be missed. Your testing plan should have at
+least one test that verifies the behavior when the branch is taken and at least
+one more test that verifies the behavior when the branch is *not* taken.
 
 *Example:* The following algorithm from [the HTML
 standard](https://html.spec.whatwg.org/) describes how the
@@ -217,9 +231,9 @@ in terms of still more algorithms. It can be intimidating to consider
 exhaustively testing one of those "nested" algorithms, especially when they are
 shared by many different APIs.
 
-In general, you should start by writing only "surface tests" for the nested
-algorithms. That means only verifying that they exhibit the basic behavior you
-are expecting.
+In general, you should plan to write "surface tests" for the nested algorithms.
+That means only verifying that they exhibit the basic behavior you are
+expecting.
 
 It's definitely important to test exhaustively, but it's just as important to
 do so in a structured way. Reach out to the test suite's maintainers to learn
@@ -505,7 +519,8 @@ this list is far more approachable!
 
 ## Writing the Tests
 
-Now that you know the scope of your work, it's time to write the tests! There's
-a lot to say about how this is done technically. To learn more, check out [the
-WPT "reftest" tutorial](./reftest-tutorial) and [the introduction to
+With a complete testing plan in hand, you now have a good idea of the scope of
+your work. It's finally time to write the tests! There's a lot to say about how
+this is done technically. To learn more, check out [the WPT "reftest"
+tutorial](./reftest-tutorial) and [the introduction to
 testharness.js](./testharness).

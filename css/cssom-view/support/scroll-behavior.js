@@ -41,6 +41,10 @@ function waitForScrollEnd(elements) {
 }
 
 function resetScroll(scrollingElement) {
+  // Reattach the node, make sure it won't be affected by last scrolling.
+  var parentElement = scrollingElement.parentNode;
+  parentElement.removeChild(scrollingElement);
+  parentElement.appendChild(scrollingElement);
   // Try various methods to ensure the element position is reset immediately.
   scrollingElement.scrollLeft = 0;
   scrollingElement.scrollTop = 0;

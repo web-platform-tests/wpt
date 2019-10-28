@@ -67,6 +67,7 @@
     [0, initialPosition].forEach((initial) => {
       promise_test(() => {
         return new Promise(function(resolve, reject) {
+          resetScroll(overflowNode);
           scrollNode(overflowNode, "scroll", "instant", initial, initial);
           var oldValue = overflowNode[scrollTest.scrollAttribute];
           assert_equals(oldValue, initial, `${scrollTest.scrollAttribute} should be at initial position`);

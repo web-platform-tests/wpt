@@ -186,4 +186,20 @@
       assert_equals(scrollingElement.scrollTop, 0, "Final value of scrollTop");
     });
   }, "Aborting an ongoing smooth scrolling on an element with an instant scrolling");
+
+  promise_test(() => {
+    scrollNode(scrollingElement, "scroll", "smooth", elementToRevealLeft, elementToRevealTop);
+    return waitForScrollEnd(scrollingElement).then(() => {
+      assert_equals(scrollingElement.scrollLeft, elementToRevealLeft, "Final value of scrollLeft after first smooth scroll");
+      assert_equals(scrollingElement.scrollTop, elementToRevealTop, "Final value of scrollTop after first smooth scroll");
+      scrollNode(scrollingElement, "scroll", "instant", 0, 0);
+      assert_equals(scrollingElement.scrollLeft, 0);
+      assert_equals(scrollingElement.scrollTop, 0);
+      scrollNode(scrollingElement, "scroll", "smooth", elementToRevealLeft, elementToRevealTop);
+      return waitForScrollEnd(scrollingElement).then(() => {
+        assert_equals(scrollingElement.scrollLeft, elementToRevealLeft, "Final value of scrollLeft");
+        assert_equals(scrollingElement.scrollTop, elementToRevealTop, "Final value of scrollTop");
+      });
+    });
+  }, "Test a combination of instant and smooth scroll");
 </script>

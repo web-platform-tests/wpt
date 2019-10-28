@@ -8,7 +8,7 @@
 
  // Both deflated data and gzipped data has a header and a footer, and
  // in them, there are some bytes which have their own roles, for example
- // Compression Method(CM), FLG, and so on. 
+ // Compression Method(CM), FLG, and so on.
  // If you want to know more details, see
  // RFC1950 for deflate: https://tools.ietf.org/html/rfc1950
  // RFC1952 for gzip: https://tools.ietf.org/html/rfc1952
@@ -112,14 +112,14 @@
            // name means the role of the shifted byte
            name = byteoffsetNameList[byteoffsetList.indexOf(offset)];
          } else {
-	   // 'DATA' means a part of compressed data
-	   name = 'DATA';
-	 }
-	 if (decompressedString === 'expected output') {
-	   correctList.push(`offset: ${offset}, shift: ${shift}, offset name: ${name}`);
-	 } else {
-	   incorrectList.push(`offset: ${offset}, shift: ${shift}, offset name: ${name}, output: "${decompressedString}"`);
-	 }
+           // 'DATA' means a part of compressed data
+           name = 'DATA';
+         }
+         if (decompressedString === 'expected output') {
+           correctList.push(`offset: ${offset}, shift: ${shift}, offset name: ${name}`);
+         } else {
+           incorrectList.push(`offset: ${offset}, shift: ${shift}, offset name: ${name}, output: "${decompressedString}"`);
+         }
        }
      }
    }

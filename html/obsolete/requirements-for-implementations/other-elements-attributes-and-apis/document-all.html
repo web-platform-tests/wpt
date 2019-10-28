@@ -21,10 +21,14 @@ test(function () {
 
   assert_equals(typeof document.all, "undefined");
 
-  if (document.all) { assert_true(false); }
+  if (document.all) {
+    assert_true(false);
+  }
 
-  if (!document.all) {}
-  else { assert_true(false); }
+  if (!document.all) {
+  } else {
+    assert_true(false);
+  }
 }, "'unusual behaviors' of document.all")
 
 test(function() {
@@ -44,9 +48,13 @@ test(function() {
 
   assert_equals(typeof all, "undefined");
 
-  if (all) { assert_true(false); }
+  if (all) {
+    assert_true(false);
+  }
 
-  if (!all) {}
-  else { assert_true(false); }
+  if (!all) {
+  } else {
+    assert_true(false);
+  }
 }, "'unusual behaviors' of document.all with assignment")
 </script>

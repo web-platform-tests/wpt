@@ -27,6 +27,15 @@ This guide will help you write a testing plan by:
 3. demonstrating methods for figuring out which tests (if any) have already
    been written for WPT
 
+The level of detail in useful testing plans can vary widely. From [a list of
+specific
+cases](https://github.com/web-platform-tests/wpt/issues/6980#issue-252255894),
+to [an outline of important coverage
+areas](https://github.com/web-platform-tests/wpt/issues/18549#issuecomment-522631537),
+to [an annotated version of the specification under
+test](https://rwaldron.github.io/webrtc-pc/), the appropriate fidelity depends
+on your needs, so you can be as precise as you feel is helpful.
+
 ## Understanding the "testing surface"
 
 Web platform specifications are instructions about how a feature should work.

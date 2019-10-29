@@ -95,3 +95,15 @@ steps:
   condition: always()
   errorActionPreference: silentlyContinue
   ignoreLASTEXITCODE: true
+
+- powershell: |
+    ($webdriverFiles = Get-ChildItem -PATH "$env:systemdrive\*msedgedriver.exe" -Recurse) >$null 2>$null
+    Write-Host "Found $($webdriverFiles.Count) msedgedriver binaries"
+    foreach ($file in $webdriverFiles) {
+      Write-Host "Deleting $file"
+      Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
+    }
+  displayName: 'Cleanup Edge driver binaries'
+  condition: always()
+  errorActionPreference: silentlyContinue
+  ignoreLASTEXITCODE: true

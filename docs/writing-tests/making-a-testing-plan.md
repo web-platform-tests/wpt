@@ -191,7 +191,7 @@ In September of 2019, [Chromium accidentally changed the ordering of the `drop`
 and `dragend`
 events](https://bugs.chromium.org/p/chromium/issues/detail?id=1005747), and as
 a result, real web applications stopped functioning. If there had been a test
-fpr the sequence of these events, then this confusion would have been avoided.
+for the sequence of these events, then this confusion would have been avoided.
 
 When making your testing plan, be sure to look carefully for event dispatch and
 the other patterns listed above. They won't always be as clear as the "drag"
@@ -301,7 +301,7 @@ logic. For example, it would be pronounced in a test which conditionally made
 different assertions within many nested loops. Conversely, the severity would
 be low in a test which only iterated over a list of values in order to make the
 same assertions about each. Recognizing when the benefits outweigh the risks
-requires discretion, so once you understand then, you should use your best
+requires discretion, so once you understand them, you should use your best
 judgement.
 
 *Example:* We can see this consideration in the very first step of the

@@ -169,7 +169,7 @@ are:
 
 * `window` (default): to be run at <code><var>x</var>.any.html</code>
 * `dedicatedworker` (default): to be run at <code><var>x</var>.any.worker.html</code>
-* `serviceworker`: to be run at <code><var>x</var>.https.any.serviceworker.html</code>
+* `serviceworker`: to be run at <code><var>x</var>.any.serviceworker.html</code> (`.https` is implied)
 * `sharedworker`: to be run at <code><var>x</var>.any.sharedworker.html</code>
 * `jsshell`: to be run in a JavaScript shell, without access to the DOM
   (currently only supported in SpiderMonkey, and skipped in wptrunner)
@@ -181,6 +181,11 @@ be made available by the framework:
 
     self.GLOBAL.isWindow()
     self.GLOBAL.isWorker()
+
+Although [the global `done` function must be explicitly invoked for most
+dedicated worker tests and shared worker
+tests](testharness-api.html#determining-when-all-tests-are-complete), it is
+automatically invoked for tests defined using the "multi-global" pattern.
 
 ### Specifying a test title in auto-generated boilerplate tests
 

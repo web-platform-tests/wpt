@@ -18,6 +18,7 @@ There's also a load of [general guidelines](general-guidelines) that apply to al
    h2tests
    lint-tool
    manual
+   reftest-tutorial
    reftests
    rendering
    server-features
@@ -26,8 +27,11 @@ There's also a load of [general guidelines](general-guidelines) that apply to al
    testdriver-tutorial
    testharness
    testharness-tutorial
+   tools
    visual
    wdspec
+   test-templates
+   github-intro
 ```
 
 ## Test Type

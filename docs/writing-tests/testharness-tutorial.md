@@ -16,7 +16,7 @@ API](https://fetch.spec.whatwg.org/) sets cookies from an HTTP response. This
 tutorial will guide you through the process of writing a test for the
 web-platform, verifying it, and submitting it back to WPT. Although it includes
 some very brief instructions on using git, you can find more guidance in [the
-tutorial for git and GitHub](../appendix/github-intro).
+tutorial for git and GitHub](github-intro).
 
 WPT's testharness.js is a framework designed to help people write tests for the
 web platform's JavaScript APIs. [The testharness.js reference
@@ -378,7 +378,7 @@ And now we can push the commit to our fork of WPT:
 The last step is to submit the test for review. WPT doesn't actually need the
 test we wrote in this tutorial, but if we wanted to submit it for inclusion in
 the repository, we would create a pull request on GitHub. [The guide on git and
-GitHub](../appendix/github-intro) has all the details on how to do that.
+GitHub](github-intro) has all the details on how to do that.
 
 ## More practice
 

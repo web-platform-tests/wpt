@@ -1,0 +1,501 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>testharness.js tutorial &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Command-line utility scripts" href="tools.html" />
+    <link rel="prev" title="testharness.js API" href="testharness-api.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="testharness-js-tutorial">
+<h1>testharness.js tutorial<a class="headerlink" href="#testharness-js-tutorial" title="Permalink to this headline">¶</a></h1>
+<!--
+Note to maintainers:
+
+This tutorial is designed to be an authentic depiction of the WPT contribution
+experience. It is not intended to be comprehensive; its scope is intentionally
+limited in order to demonstrate authoring a complete test without overwhelming
+the reader with features. Because typical WPT usage patterns change over time,
+this should be updated periodically; please weigh extensions against the
+demotivating effect that a lengthy guide can have on new contributors.
+--><p>Let’s say you’ve discovered that WPT doesn’t have any tests for how <a class="reference external" href="https://fetch.spec.whatwg.org/">the Fetch
+API</a> sets cookies from an HTTP response. This
+tutorial will guide you through the process of writing a test for the
+web-platform, verifying it, and submitting it back to WPT. Although it includes
+some very brief instructions on using git, you can find more guidance in <a class="reference internal" href="github-intro.html"><span class="doc">the
+tutorial for git and GitHub</span></a>.</p>
+<p>WPT’s testharness.js is a framework designed to help people write tests for the
+web platform’s JavaScript APIs. <a class="reference internal" href="testharness.html"><span class="doc">The testharness.js reference
+page</span></a> describes the framework in the abstract, but for the
+purposes of this guide, we’ll only consider the features we need to test the
+behavior of <code class="docutils literal notranslate"><span class="pre">fetch</span></code>.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#setting-up-your-workspace" id="id1">Setting up your workspace</a></li>
+<li><a class="reference internal" href="#writing-a-subtest" id="id2">Writing a subtest</a></li>
+<li><a class="reference internal" href="#refining-the-subtest" id="id3">Refining the subtest</a></li>
+<li><a class="reference internal" href="#writing-a-second-subtest" id="id4">Writing a second subtest</a></li>
+<li><a class="reference internal" href="#verifying-our-work" id="id5">Verifying our work</a></li>
+<li><a class="reference internal" href="#submitting-the-test" id="id6">Submitting the test</a></li>
+<li><a class="reference internal" href="#more-practice" id="id7">More practice</a></li>
+</ul>
+</div>
+<div class="section" id="setting-up-your-workspace">
+<h2><a class="toc-backref" href="#id1">Setting up your workspace</a><a class="headerlink" href="#setting-up-your-workspace" title="Permalink to this headline">¶</a></h2>
+<p>To make sure you have the latest code, first type the following into a terminal
+located in the root of the WPT git repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git fetch git@github.com:web-platform-tests/wpt.git
+</pre></div>
+</div>
+<p>Next, we need a place to store the change set we’re about to author. Here’s how
+to create a new git branch named <code class="docutils literal notranslate"><span class="pre">fetch-cookie</span></code> from the revision of WPT we
+just downloaded:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git checkout -b fetch-cookie FETCH_HEAD
+</pre></div>
+</div>
+<p>The tests we’re going to write will rely on special abilities of the WPT
+server, so you’ll also need to <a class="reference internal" href="../running-tests/from-local-system.html"><span class="doc">configure your system to run
+WPT</span></a> before you continue.</p>
+<p>With that out of the way, you’re ready to create your patch.</p>
+</div>
+<div class="section" id="writing-a-subtest">
+<h2><a class="toc-backref" href="#id2">Writing a subtest</a><a class="headerlink" href="#writing-a-subtest" title="Permalink to this headline">¶</a></h2>
+<!--
+Goals of this section:
+
+- demonstrate asynchronous testing with Promises
+- motivate non-trivial integration with WPT server
+- use web technology likely to be familiar to web developers
+- use web technology likely to be supported in the reader's browser
+--><p>The first thing we’ll do is configure the server to respond to a certain request
+by setting a cookie. Once that’s done, we’ll be able to make the request with
+<code class="docutils literal notranslate"><span class="pre">fetch</span></code> and verify that it interpreted the response correctly.</p>
+<p>We’ll configure the server with an “asis” file. That’s the WPT convention for
+controlling the contents of an HTTP response. <a class="reference internal" href="server-features.html"><span class="doc">You can read more about it
+here</span></a>, but for now, we’ll save the following text into a file
+named <code class="docutils literal notranslate"><span class="pre">set-cookie.asis</span></code> in the <code class="docutils literal notranslate"><span class="pre">fetch/api/basic/</span></code> directory of WPT:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span> <span class="mi">204</span> <span class="n">No</span> <span class="n">Content</span>
+<span class="n">Set</span><span class="o">-</span><span class="n">Cookie</span><span class="p">:</span> <span class="n">test1</span><span class="o">=</span><span class="n">t1</span>
+</pre></div>
+</div>
+<p>With this in place, any requests to <code class="docutils literal notranslate"><span class="pre">/fetch/api/basic/set-cookie.asis</span></code> will
+receive an HTTP 204 response that sets the cookie named <code class="docutils literal notranslate"><span class="pre">test1</span></code>. When writing
+more tests in the future, you may want the server to behave more dynamically.
+In that case, <a class="reference internal" href="python-handlers/index.html"><span class="doc">you can write Python code to control how the server
+responds</span></a>.</p>
+<p>Now, we can write the test! Create a new file named <code class="docutils literal notranslate"><span class="pre">set-cookie.html</span></code> in the
+same directory and insert the following text:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>fetch: setting cookies<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;set-cookie.asis&#39;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">,</span> <span class="s1">&#39;test1=t1&#39;</span><span class="p">);</span>
+      <span class="p">});</span>
+<span class="p">});</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Let’s step through each part of this file.</p>
+<ul>
+<li><div class="first highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>We explicitly set the DOCTYPE and character set to be sure that browsers
+don’t infer them to be something we aren’t expecting. We’re omitting the
+<code class="docutils literal notranslate"><span class="pre">&lt;html&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;head&gt;</span></code> tags. That’s a common practice in WPT, preferred
+because it makes tests more concise.</p>
+</li>
+<li><div class="first highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>fetch: setting cookies<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>The document’s title should succinctly describe the feature under test.</p>
+</li>
+<li><div class="first highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>These two <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tags retrieve the code that powers testharness.js. A
+testharness.js test can’t run without them!</p>
+</li>
+<li><div class="first highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;thing.asis&#39;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">,</span> <span class="s1">&#39;test1=t1&#39;</span><span class="p">);</span>
+      <span class="p">});</span>
+<span class="p">});</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>This script uses the testharness.js function <code class="docutils literal notranslate"><span class="pre">promise_test</span></code> to define a
+“subtest”. We’re using that because the behavior we’re testing is
+asynchronous. By returning a Promise value, we tell the harness to wait until
+that Promise settles. The harness will report that the test has passed if
+the Promise is fulfilled, and it will report that the test has failed if the
+Promise is rejected.</p>
+<p>We invoke the global <code class="docutils literal notranslate"><span class="pre">fetch</span></code> function to exercise the “behavior under test,”
+and in the fulfillment handler, we verify that the expected cookie is set.
+We’re using the testharness.js <code class="docutils literal notranslate"><span class="pre">assert_equals</span></code> function to verify that the
+value is correct; the function will throw an error otherwise. That will cause
+the Promise to be rejected, and <em>that</em> will cause the harness to report a
+failure.</p>
+</li>
+</ul>
+<p>If you run the server according to the instructions in <a class="reference internal" href="../running-tests/from-local-system.html"><span class="doc">the guide for local
+configuration</span></a>, you can access the test at
+<a class="reference external" href="http://web-platform.test:8000/fetch/api/basic/set-cookie.html.">http://web-platform.test:8000/fetch/api/basic/set-cookie.html</a>.
+You should see something like this:</p>
+<p><img alt="../_images/testharness-tutorial-test-screenshot-1.png" src="../_images/testharness-tutorial-test-screenshot-1.png" /></p>
+</div>
+<div class="section" id="refining-the-subtest">
+<h2><a class="toc-backref" href="#id3">Refining the subtest</a><a class="headerlink" href="#refining-the-subtest" title="Permalink to this headline">¶</a></h2>
+<!--
+Goals of this section:
+
+- explain the motivation for "clean up" logic and demonstrate its usage
+- motivate explicit test naming
+--><p>We’d like to test a little more about <code class="docutils literal notranslate"><span class="pre">fetch</span></code> and cookies, but before we do,
+there are some improvements we can make to what we’ve written so far.</p>
+<p>For instance, we should remove the cookie after the subtest is complete. This
+ensures a consistent state for any additional subtests we may add and also for
+any tests that follow. We’ll use the <code class="docutils literal notranslate"><span class="pre">add_cleanup</span></code> method to ensure that the
+cookie is deleted even if the test fails.</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">-promise_test(function() {</span>
+<span class="gi">+promise_test(function(t) {</span>
+<span class="gi">+  t.add_cleanup(function() {</span>
+<span class="gi">+    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;</span>
+<span class="gi">+  });</span>
+<span class="gi">+</span>
+   return fetch(&#39;thing.asis&#39;)
+     .then(function() {
+         assert_equals(document.cookie, &#39;test1=t1&#39;);
+       });
+ });
+</pre></div>
+</div>
+<p>Although we’d prefer it if there were no other cookies defined during our test,
+we shouldn’t take that for granted. As written, the test will fail if the
+<code class="docutils literal notranslate"><span class="pre">document.cookie</span></code> includes additional cookies. We’ll use slightly more
+complicated logic to test for the presence of the expected cookie.</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span> promise_test(function(t) {
+   t.add_cleanup(function() {
+     document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;
+   });
+
+   return fetch(&#39;thing.asis&#39;)
+     .then(function() {
+<span class="gd">-        assert_equals(document.cookie, &#39;test1=t1&#39;);</span>
+<span class="gi">+        assert_true(/(^|; )test1=t1($|;)/.test(document.cookie);</span>
+       });
+ });
+</pre></div>
+</div>
+<p>In the screen shot above, the subtest’s result was reported using the
+document’s title, “fetch: setting cookies”. Since we expect to add another
+subtest, we should give this one a more specific name:</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span> promise_test(function(t) {
+   t.add_cleanup(function() {
+     document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;
+   });
+
+   return fetch(&#39;thing.asis&#39;)
+     .then(function() {
+         assert_true(/(^|; )test1=t1($|;)/.test(document.cookie));
+       });
+<span class="gd">-});</span>
+<span class="gi">+}, &#39;cookie set for successful request&#39;);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="writing-a-second-subtest">
+<h2><a class="toc-backref" href="#id4">Writing a second subtest</a><a class="headerlink" href="#writing-a-second-subtest" title="Permalink to this headline">¶</a></h2>
+<!--
+Goals of this section:
+
+- introduce the concept of cross-domain testing and the associated tooling
+- demonstrate how to verify promise rejection
+- demonstrate additional assertion functions
+--><p>There are many things we might want to verify about how <code class="docutils literal notranslate"><span class="pre">fetch</span></code> sets cookies.
+For instance, it should <em>not</em> set a cookie if the request fails due to
+cross-origin security restrictions. Let’s write a subtest which verifies that.</p>
+<p>We’ll add another <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag for a JavaScript support file:</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span> &lt;!DOCTYPE html&gt;
+ &lt;meta charset=&quot;utf-8&quot;&gt;
+ &lt;title&gt;fetch: setting cookies&lt;/title&gt;
+ &lt;script src=&quot;/resources/testharness.js&quot;&gt;&lt;/script&gt;
+ &lt;script src=&quot;/resources/testharnessreport.js&quot;&gt;&lt;/script&gt;
+<span class="gi">+&lt;script src=&quot;/common/get-host-info.sub.js&quot;&gt;&lt;/script&gt;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">get-host-info.sub.js</span></code> is a general-purpose script provided by WPT. It’s
+designed to help with testing cross-domain functionality. Since it’s stored in
+WPT’s <code class="docutils literal notranslate"><span class="pre">common/</span></code> directory, tests from all sorts of specifications rely on it.</p>
+<p>Next, we’ll define the new subtest inside the same <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag that holds
+our first subtest.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">t</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span> <span class="o">=</span> <span class="s1">&#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;</span><span class="p">;</span>
+  <span class="p">});</span>
+  <span class="kr">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">get_host_info</span><span class="p">().</span><span class="nx">HTTP_NOTSAMESITE_ORIGIN</span> <span class="o">+</span>
+    <span class="s1">&#39;/fetch/api/basic/set-cookie.asis&#39;</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">assert_unreached</span><span class="p">(</span><span class="s1">&#39;The promise for the aborted fetch operation should reject.&#39;</span><span class="p">);</span>
+      <span class="p">},</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">assert_false</span><span class="p">(</span><span class="sr">/(^|; )test1=t1($|;)/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">));</span>
+      <span class="p">});</span>
+<span class="p">},</span> <span class="s1">&#39;no cookie is set for cross-domain fetch operations&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This may look familiar from the previous subtest, but there are some important
+differences.</p>
+<ul>
+<li><div class="first highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kr">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">get_host_info</span><span class="p">().</span><span class="nx">HTTP_NOTSAMESITE_ORIGIN</span> <span class="o">+</span>
+  <span class="s1">&#39;/fetch/api/basic/set-cookie.asis&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>We’re requesting the same resource, but we’re referring to it with an
+alternate host name. The name of the host depends on how the WPT server has
+been configured, so we rely on the helper to provide an appropriate value.</p>
+</li>
+<li><div class="first highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">assert_unreached</span><span class="p">(</span><span class="s1">&#39;The promise for the aborted fetch operation should reject.&#39;</span><span class="p">);</span>
+    <span class="p">},</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">assert_false</span><span class="p">(</span><span class="sr">/(^|; )test1=t1($|;)/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">));</span>
+    <span class="p">});</span>
+</pre></div>
+</div>
+<p>We’re returning a Promise value, just like the first subtest. This time, we
+expect the operation to fail, so the Promise should be rejected. To express
+this, we’ve used <code class="docutils literal notranslate"><span class="pre">assert_unreached</span></code> <em>in the fulfillment handler</em>.
+<code class="docutils literal notranslate"><span class="pre">assert_unreached</span></code> is a testharness.js utility function which always throws
+an error. With this in place, if fetch does <em>not</em> produce an error, then this
+subtest will fail.</p>
+<p>We’ve moved the assertion about the cookie to the rejection handler. We also
+switched from <code class="docutils literal notranslate"><span class="pre">assert_true</span></code> to <code class="docutils literal notranslate"><span class="pre">assert_false</span></code> because the test should only
+pass if the cookie is <em>not</em> set. It’s a good thing we have the cleanup logic
+in the previous subtest, right?</p>
+</li>
+</ul>
+<p>If you run the test in your browser now, you can expect to see both tests
+reported as passing with their distinct names.</p>
+<p><img alt="../_images/testharness-tutorial-test-screenshot-2.png" src="../_images/testharness-tutorial-test-screenshot-2.png" /></p>
+</div>
+<div class="section" id="verifying-our-work">
+<h2><a class="toc-backref" href="#id5">Verifying our work</a><a class="headerlink" href="#verifying-our-work" title="Permalink to this headline">¶</a></h2>
+<p>We’re done writing the test, but we should make sure it fits in with the rest
+of WPT before we submit it.</p>
+<p><a class="reference internal" href="lint-tool.html"><span class="doc">The lint tool</span></a> can detect some of the common mistakes people make
+when contributing to WPT. You enabled it when you <a class="reference internal" href="../running-tests/from-local-system.html"><span class="doc">configured your system to
+work with WPT</span></a>. To run it, open a
+command-line terminal, navigate to the root of the WPT repository, and enter
+the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">./</span><span class="n">wpt</span> <span class="n">lint</span> <span class="n">fetch</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">basic</span>
+</pre></div>
+</div>
+<p>If this recognizes any of those common mistakes in the new files, it will tell
+you where they are and how to fix them. If you do have changes to make, you can
+run the command again to make sure you got them right.</p>
+<p>Now, we’ll run the test using the automated test runner. This is important for
+testharness.js tests because there are subtleties of the automated test runner
+which can influence how the test behaves. That’s not to say your test has to
+pass in all browsers (or even in <em>any</em> browser). But if we expect the test to
+pass, then running it this way will help us catch other kinds of mistakes.</p>
+<p>The tools support running the tests in many different browsers. We’ll use
+Firefox this time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="n">firefox</span> <span class="n">fetch</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">basic</span><span class="o">/</span><span class="nb">set</span><span class="o">-</span><span class="n">cookie</span><span class="o">.</span><span class="n">html</span>
+</pre></div>
+</div>
+<p>We expect this test to pass, so if it does, we’re ready to submit it. If we
+were testing a web-platform feature that Firefox didn’t support, we would
+expect the test to fail instead.</p>
+<p>There are a few problems to look out for in addition to passing/failing status.
+The report will describe fewer tests than we expect if the test isn’t run at
+all. That’s usually a sign of a formatting mistake, so you’ll want to make sure
+you’ve used the right file names and metadata. Separately, the web browser
+might crash. That’s often a sign of a browser bug, so you should consider
+<a class="reference external" href="https://rachelandrew.co.uk/archives/2017/01/30/reporting-browser-bugs/">reporting it to the browser’s
+maintainers</a>!</p>
+</div>
+<div class="section" id="submitting-the-test">
+<h2><a class="toc-backref" href="#id6">Submitting the test</a><a class="headerlink" href="#submitting-the-test" title="Permalink to this headline">¶</a></h2>
+<p>First, let’s stage the new files for committing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git add fetch/api/basic/set-cookie.asis
+$ git add fetch/api/basic/set-cookie.html
+</pre></div>
+</div>
+<p>We can make sure the commit has everything we want to submit (and nothing we
+don’t) by using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git diff --staged
+</pre></div>
+</div>
+<p>On most systems, you can use the arrow keys to navigate through the changes,
+and you can press the <code class="docutils literal notranslate"><span class="pre">q</span></code> key when you’re done reviewing.</p>
+<p>Next, we’ll create a commit with the staged changes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git commit -m &#39;[fetch] Add test for setting cookies&#39;
+</pre></div>
+</div>
+<p>And now we can push the commit to our fork of WPT:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git push origin fetch-cookie
+</pre></div>
+</div>
+<p>The last step is to submit the test for review. WPT doesn’t actually need the
+test we wrote in this tutorial, but if we wanted to submit it for inclusion in
+the repository, we would create a pull request on GitHub. <a class="reference internal" href="github-intro.html"><span class="doc">The guide on git and
+GitHub</span></a> has all the details on how to do that.</p>
+</div>
+<div class="section" id="more-practice">
+<h2><a class="toc-backref" href="#id7">More practice</a><a class="headerlink" href="#more-practice" title="Permalink to this headline">¶</a></h2>
+<p>Here are some ways you can keep experimenting with WPT using this test:</p>
+<ul class="simple">
+<li>Improve the test’s readability by defining helper functions like
+<code class="docutils literal notranslate"><span class="pre">cookieIsSet</span></code> and <code class="docutils literal notranslate"><span class="pre">deleteCookie</span></code></li>
+<li>Improve the test’s coverage by refactoring it into <a class="reference internal" href="testharness.html"><span class="doc">a “multi-global”
+test</span></a></li>
+<li>Improve the test’s coverage by writing more subtests (e.g. the behavior when
+the fetch operation is aborted by <code class="docutils literal notranslate"><span class="pre">window.stop</span></code>, or the behavior when the
+HTTP response sets multiple cookies)</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../test-suite-design.html">Test Suite Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftest-tutorial.html">Writing a reftest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testdriver.html">testdriver.js Automation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testdriver-tutorial.html">testdriver.js Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">testharness.js tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html">Command-line utility scripts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test-templates.html">Test Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-intro.html">Introduction to GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Writing Tests</a><ul>
+      <li>Previous: <a href="testharness-api.html" title="previous chapter">testharness.js API</a></li>
+      <li>Next: <a href="tools.html" title="next chapter">Command-line utility scripts</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/testharness-tutorial.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

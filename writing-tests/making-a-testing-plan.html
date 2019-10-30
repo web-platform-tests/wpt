@@ -1,0 +1,683 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Making a Testing Plan &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Manual Tests" href="manual.html" />
+    <link rel="prev" title="Lint Tool" href="lint-tool.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="making-a-testing-plan">
+<h1>Making a Testing Plan<a class="headerlink" href="#making-a-testing-plan" title="Permalink to this headline">¶</a></h1>
+<p>When contributing to a project as large and open-ended as WPT, it’s easy to get
+lost in the details. It can be helpful to start by making a rough list of tests
+you intend to write. That plan will let you anticipate how much work will be
+involved, and it will help you stay focused once you begin.</p>
+<p>Many people come to WPT with a general testing goal in mind:</p>
+<ul class="simple">
+<li>specification authors often want to test for new spec text</li>
+<li>browser maintainers often want to test new features or fixes to existing
+features</li>
+<li>web developers often want to test discrepancies between browsers on their web
+applications</li>
+</ul>
+<p>(If you don’t have any particular goal, we can help you get started. Check out
+<a class="reference external" href="https://github.com/web-platform-tests/wpt/labels/type%3Amissing-coverage">the issues labeled with <code class="docutils literal notranslate"><span class="pre">type:missing-coverage</span></code> on
+GitHub.com</a>.
+Leave a comment if you’d like to get started with one, and don’t hesitate to
+ask clarifying questions!)</p>
+<p>This guide will help you write a testing plan by:</p>
+<ol class="simple">
+<li>showing you how to use the specifications to learn what kinds of tests will
+be most helpful</li>
+<li>developing your sense for what <em>doesn’t</em> need to be tested</li>
+<li>demonstrating methods for figuring out which tests (if any) have already
+been written for WPT</li>
+</ol>
+<p>The level of detail in useful testing plans can vary widely. From <a class="reference external" href="https://github.com/web-platform-tests/wpt/issues/6980#issue-252255894">a list of
+specific
+cases</a>,
+to <a class="reference external" href="https://github.com/web-platform-tests/wpt/issues/18549#issuecomment-522631537">an outline of important coverage
+areas</a>,
+to <a class="reference external" href="https://rwaldron.github.io/webrtc-pc/">an annotated version of the specification under
+test</a>, the appropriate fidelity depends
+on your needs, so you can be as precise as you feel is helpful.</p>
+<div class="section" id="understanding-the-testing-surface">
+<h2>Understanding the “testing surface”<a class="headerlink" href="#understanding-the-testing-surface" title="Permalink to this headline">¶</a></h2>
+<p>Web platform specifications are instructions about how a feature should work.
+They’re critical for implementers to “build the right thing,” but they are also
+important for anyone writing tests. We can use the same instructions to infer
+what kinds of tests would be likely to detect mistakes. Here are a few common
+patterns in specification text and the kind of tests they suggest.</p>
+<div class="section" id="input-sources">
+<h3>Input sources<a class="headerlink" href="#input-sources" title="Permalink to this headline">¶</a></h3>
+<p>Algorithms may accept input from many sources. Modifying the input is the most
+direct way we can influence the browser’s behavior and verify that it matches
+the specifications. That’s why it’s helpful to be able to recognize different
+sources of input.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Type of feature</th>
+<th class="head">Potential input sources</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>JavaScript</td>
+<td>parameters, <a class="reference external" href="https://dom.spec.whatwg.org/#context-object">context object</a></td>
+</tr>
+<tr class="row-odd"><td>HTML</td>
+<td>element content, attributes, attribute values</td>
+</tr>
+<tr class="row-even"><td>CSS</td>
+<td>selector strings, property values, markup</td>
+</tr>
+</tbody>
+</table>
+<p>Determine which input sources are relevant for your chosen feature, and build a
+list of values which seem worthwhile to test (keep reading for advice on
+identifying worthwhile values). For features that accept multiple sources of
+input, remember that the interaction between values can often produce
+interesting results. Every value you identify should go into your testing plan.</p>
+<p><em>Example:</em> This is the first step of the <code class="docutils literal notranslate"><span class="pre">Notification</span></code> constructor from <a class="reference external" href="https://notifications.spec.whatwg.org/#constructors">the
+Notifications standard</a>:</p>
+<blockquote>
+<div><p>The Notification(title, options) constructor, when invoked, must run these steps:</p>
+<ol class="simple">
+<li>If the <a class="reference external" href="https://html.spec.whatwg.org/multipage/webappapis.html#current-global-object">current global
+object</a>
+is a
+<a class="reference external" href="https://w3c.github.io/ServiceWorker/#serviceworkerglobalscope">ServiceWorkerGlobalScope</a>
+object, then <a class="reference external" href="https://heycam.github.io/webidl/#dfn-throw">throw</a> a
+<code class="docutils literal notranslate"><span class="pre">TypeError</span></code> exception.</li>
+<li>Let <em>notification</em> be the result of <a class="reference external" href="https://notifications.spec.whatwg.org/#create-a-notification">creating a
+notification</a>
+given <em>title</em> and <em>options</em>. Rethrow any exceptions.</li>
+</ol>
+<p>[…]</p>
+</div></blockquote>
+<p>A thorough test suite for this constructor will include tests for the behavior
+of many different values of the <em>title</em> parameter and the <em>options</em> parameter.
+Choosing those values can be a challenge unto itself–see <a class="reference external" href="#avoid-excessive-breadth">Avoid Excessive
+Breadth</a> for advice.</p>
+</div>
+<div class="section" id="browser-state">
+<h3>Browser state<a class="headerlink" href="#browser-state" title="Permalink to this headline">¶</a></h3>
+<p>The state of the browser may also influence algorithm behavior. Examples
+include the current document, the dimensions of the viewport, and the entries
+in the browsing history. Just like with direct input, a thorough set of tests
+will likely need to control these values. Browser state is often more expensive
+to manipulate (whether in terms of code, execution time, or system resources),
+and you may want to design your tests to mitigate these costs (e.g. by writing
+many subtests from the same state).</p>
+<p>You may not be able to control all relevant aspects of the browser’s state.
+<a class="reference external" href="https://github.com/web-platform-tests/wpt/issues?q=is%3Aopen+is%3Aissue+label%3Atype%3Auntestable">The <code class="docutils literal notranslate"><span class="pre">type:untestable</span></code>
+label</a>
+includes issues for web platform features which cannot be controlled in a
+cross-browser way. You should include tests like these in your plan both to
+communicate your intention and to remind you when/if testing solutions become
+available.</p>
+<p><em>Example:</em> In <a class="reference external" href="https://notifications.spec.whatwg.org/#constructors">the <code class="docutils literal notranslate"><span class="pre">Notification</span></code> constructor referenced
+above</a>, the type of “the
+current global object” is also a form of input. The test suite should include
+tests which execute with different types of global objects.</p>
+</div>
+<div class="section" id="branches">
+<h3>Branches<a class="headerlink" href="#branches" title="Permalink to this headline">¶</a></h3>
+<p>When an algorithm branches based on some condition, that’s an indication of an
+interesting behavior that might be missed. Your testing plan should have at
+least one test that verifies the behavior when the branch is taken and at least
+one more test that verifies the behavior when the branch is <em>not</em> taken.</p>
+<p><em>Example:</em> The following algorithm from <a class="reference external" href="https://html.spec.whatwg.org/">the HTML
+standard</a> describes how the
+<code class="docutils literal notranslate"><span class="pre">localStorage.getItem</span></code> method works:</p>
+<blockquote>
+<div>The <code class="docutils literal notranslate"><span class="pre">getItem</span></code>(<em>key</em>) method must return the current value associated with the
+given <em>key</em>. If the given <em>key</em> does not exist in the list associated with
+the object then this method must return null.</div></blockquote>
+<p>This algorithm exhibits different behavior depending on whether or not an item
+exists at the provided key. To test this thoroughly, we would write two tests:
+one test would verify that <code class="docutils literal notranslate"><span class="pre">null</span></code> is returned when there is no item at the
+provided key, and the other test would verify that an item we previously stored
+was correctly retrieved when we called the method with its name.</p>
+</div>
+<div class="section" id="sequence">
+<h3>Sequence<a class="headerlink" href="#sequence" title="Permalink to this headline">¶</a></h3>
+<p>Even without branching, the interplay between sequential algorithm steps can
+suggest interesting test cases. If two steps have observable side-effects, then
+it can be useful to verify they happen in the correct order.</p>
+<p>Most of the time, step sequence is implicit in the nature of the
+algorithm–each step operates on the result of the step that precedes it, so
+verifying the end result implicitly verifies the sequence of the steps. But
+sometimes, the order of two steps isn’t particularly relevant to the result of
+the overall algorithm. This makes it easier for implementations to diverge.</p>
+<p>There are many common patterns where step sequence is observable but not
+necessarily inherent to the correctness of the algorithm:</p>
+<ul class="simple">
+<li>input validation (when an algorithm verifies that two or more input values
+satisfy some criteria)</li>
+<li>event dispatch (when an algorithm
+<a class="reference external" href="https://dom.spec.whatwg.org/#concept-event-fire">fires</a> two or more events)</li>
+<li>object property access (when an algorithm retrieves two or more property
+values from an object provided as input)</li>
+</ul>
+<p><em>Example:</em> The following text is an abbreviated excerpt of the algorithm that
+runs during drag operations (from <a class="reference external" href="https://html.spec.whatwg.org/multipage/dnd.html#dnd">the HTML
+specification</a>):</p>
+<blockquote>
+<div><p>[…]
+4. Otherwise, if the user ended the drag-and-drop operation (e.g. by
+releasing the mouse button in a mouse-driven drag-and-drop interface), or
+if the <code class="docutils literal notranslate"><span class="pre">drag</span></code> event was canceled, then this will be the last iteration.
+Run the following steps, then stop the drag-and-drop operation:</p>
+<ol class="simple">
+<li>If the <a class="reference external" href="https://html.spec.whatwg.org/multipage/dnd.html#current-drag-operation">current drag
+operation</a>
+is “<code class="docutils literal notranslate"><span class="pre">none</span></code>” (no drag operation) […] Otherwise, the drag operation
+might be a success; run these substeps:<ol>
+<li>Let <em>dropped</em> be true.</li>
+<li>If the <a class="reference external" href="https://html.spec.whatwg.org/multipage/dnd.html#current-target-element">current target
+element</a>
+is a DOM element, <a class="reference external" href="https://html.spec.whatwg.org/multipage/dnd.html#fire-a-dnd-event">fire a DND
+event</a>
+named <code class="docutils literal notranslate"><span class="pre">drop</span></code> at it; otherwise, use platform-specific conventions for
+indicating a drop.</li>
+<li>[…]</li>
+</ol>
+</li>
+<li><a class="reference external" href="https://html.spec.whatwg.org/multipage/dnd.html#fire-a-dnd-event">Fire a DND
+event</a>
+named <code class="docutils literal notranslate"><span class="pre">dragend</span></code> at the <a class="reference external" href="https://html.spec.whatwg.org/multipage/dnd.html#source-node">source
+node</a>.</li>
+<li>[…]</li>
+</ol>
+</div></blockquote>
+<p>A thorough test suite will verify that the <code class="docutils literal notranslate"><span class="pre">drop</span></code> event is fired as specified,
+and it will also verify that the <code class="docutils literal notranslate"><span class="pre">dragend</span></code> event is fired as specified. An even
+better test suite will also verify that the <code class="docutils literal notranslate"><span class="pre">drop</span></code> event is fired <em>before</em> the
+<code class="docutils literal notranslate"><span class="pre">dragend</span></code> event.</p>
+<p>In September of 2019, <a class="reference external" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1005747">Chromium accidentally changed the ordering of the <code class="docutils literal notranslate"><span class="pre">drop</span></code>
+and <code class="docutils literal notranslate"><span class="pre">dragend</span></code>
+events</a>, and as
+a result, real web applications stopped functioning. If there had been a test
+for the sequence of these events, then this confusion would have been avoided.</p>
+<p>When making your testing plan, be sure to look carefully for event dispatch and
+the other patterns listed above. They won’t always be as clear as the “drag”
+example!</p>
+</div>
+<div class="section" id="optional-behavior">
+<h3>Optional behavior<a class="headerlink" href="#optional-behavior" title="Permalink to this headline">¶</a></h3>
+<p>Specifications occasionally allow browsers discretion in how they implement
+certain features. These are described using <a class="reference external" href="https://tools.ietf.org/html/rfc2119">RFC
+2119</a> terms like “MAY” and “OPTIONAL”.
+Although browsers should not be penalized for deciding not to implement such
+behavior, WPT offers tests that verify the correctness of the browsers which
+do. Be sure to <a class="reference internal" href="file-names.html"><span class="doc">label the test as optional according to WPT’s
+conventions</span></a> so that people reviewing test results know how to
+interpret failures.</p>
+<p><em>Example:</em> The algorithm underpinning
+<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByTagName"><code class="docutils literal notranslate"><span class="pre">document.getElementsByTagName</span></code></a>
+includes the following paragraph:</p>
+<blockquote>
+<div>When invoked with the same argument, and as long as <em>root</em>’s <a class="reference external" href="https://dom.spec.whatwg.org/#concept-node-document">node
+document</a>’s
+<a class="reference external" href="https://dom.spec.whatwg.org/#concept-document-type">type</a> has not changed,
+the same <a class="reference external" href="https://dom.spec.whatwg.org/#htmlcollection">HTMLCollection</a> object
+may be returned as returned by an earlier call.</div></blockquote>
+<p>That statement uses the word “may,” so even though it modifies the behavior of
+the preceding algorithm, it is strictly optional. The test we write for this
+should be designated accordingly.</p>
+<p>It’s important to read these sections carefully because the distinction between
+“mandatory” behavior and “optional” behavior can be nuanced. In this case, the
+optional behavior is never allowed if the document’s type has changed. That
+makes for a mandatory test, one that verifies browsers don’t return the same
+result when the document’s type changes.</p>
+</div>
+</div>
+<div class="section" id="exercising-restraint">
+<h2>Exercising Restraint<a class="headerlink" href="#exercising-restraint" title="Permalink to this headline">¶</a></h2>
+<p>When writing conformance tests, choosing what <em>not</em> to test is sometimes just
+as hard as finding what needs testing.</p>
+<div class="section" id="don-t-dive-too-deep">
+<h3>Don’t dive too deep<a class="headerlink" href="#don-t-dive-too-deep" title="Permalink to this headline">¶</a></h3>
+<p>Algorithms are composed of many other algorithms which themselves are defined
+in terms of still more algorithms. It can be intimidating to consider
+exhaustively testing one of those “nested” algorithms, especially when they are
+shared by many different APIs.</p>
+<p>In general, you should plan to write “surface tests” for the nested algorithms.
+That means only verifying that they exhibit the basic behavior you are
+expecting.</p>
+<p>It’s definitely important to test exhaustively, but it’s just as important to
+do so in a structured way. Reach out to the test suite’s maintainers to learn
+if and how they have already tested those algorithms. In many cases, it’s
+acceptable to test them in just one place (and maybe through a different API
+entirely), and rely only on surface-level testing everywhere else. While it’s
+always possible for more tests to uncover new bugs, the chances may be slim.
+The time we spend writing tests is highly valuable, so we have to be efficient!</p>
+<p><em>Example:</em> The following algorithm from <a class="reference external" href="https://dom.spec.whatwg.org/">the DOM
+standard</a> powers
+<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector"><code class="docutils literal notranslate"><span class="pre">document.querySelector</span></code></a>:</p>
+<blockquote>
+<div><p>To <strong>scope-match a selectors string</strong> <em>selectors</em> against a <em>node</em>, run these
+steps:</p>
+<ol class="simple">
+<li>Let <em>s</em> be the result of <a class="reference external" href="https://drafts.csswg.org/selectors-4/#parse-a-selector">parse a
+selector</a>
+<em>selectors</em>.</li>
+<li>If <em>s</em> is failure, then
+<a class="reference external" href="https://heycam.github.io/webidl/#dfn-throw">throw</a> a
+“<a class="reference external" href="https://heycam.github.io/webidl/#syntaxerror"><code class="docutils literal notranslate"><span class="pre">SyntaxError</span></code></a>”
+<a class="reference external" href="https://heycam.github.io/webidl/#idl-DOMException">DOMException</a>.</li>
+<li>Return the result of <a class="reference external" href="https://drafts.csswg.org/selectors-4/#match-a-selector-against-a-tree">match a selector against a
+tree</a>
+with <em>s</em> and <em>node</em>’s
+<a class="reference external" href="https://dom.spec.whatwg.org/#concept-tree-root">root</a> using <a class="reference external" href="https://drafts.csswg.org/selectors-4/#scoping-root">scoping
+root</a> <em>node</em>.</li>
+</ol>
+</div></blockquote>
+<p>As described earlier in this guide, we’d certainly want to test the branch
+regarding the parsing failure. However, there are many ways a string might fail
+to parse–should we verify them all in the tests for <code class="docutils literal notranslate"><span class="pre">document.querySelector</span></code>?
+What about <code class="docutils literal notranslate"><span class="pre">document.querySelectorAll</span></code>? Should we test them all there, too?</p>
+<p>The answers depend on the current state of the test suite: whether or not tests
+for selector parsing exist and where they are located. That’s why it’s best to
+confer with the people who are maintaining the tests.</p>
+</div>
+<div class="section" id="avoid-excessive-breadth">
+<h3>Avoid excessive breadth<a class="headerlink" href="#avoid-excessive-breadth" title="Permalink to this headline">¶</a></h3>
+<p>When the set of input values is finite, it can be tempting to test them all
+exhaustively. When the set is very large, test authors can reduce repetition by
+defining tests programmatically in loops.</p>
+<p>Using advanced control flow techniques to dynamically generate tests can
+actually <em>reduce</em> test quality. It may obscure the intent of the tests since
+readers have to mentally “unwind” the iteration to determine what is actually
+being verified. The practice is more susceptible to bugs. These bugs may not be
+obvious–they may not cause failures, and they may exercise fewer cases than
+intended. Finally, tests authored using this approach often take a relatively
+long time to complete, and that puts a burden on people who collect test
+results in large numbers.</p>
+<p>The severity of these drawbacks varies with the complexity of the generation
+logic. For example, it would be pronounced in a test which conditionally made
+different assertions within many nested loops. Conversely, the severity would
+be low in a test which only iterated over a list of values in order to make the
+same assertions about each. Recognizing when the benefits outweigh the risks
+requires discretion, so once you understand them, you should use your best
+judgement.</p>
+<p><em>Example:</em> We can see this consideration in the very first step of the
+<code class="docutils literal notranslate"><span class="pre">Response</span></code> constructor from <a class="reference external" href="https://fetch.spec.whatwg.org/">the Fetch
+standard</a></p>
+<blockquote>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">Response</span></code>(<em>body</em>, <em>init</em>) constructor, when invoked, must run these
+steps:</p>
+<ol class="simple">
+<li>If <em>init</em>[“<code class="docutils literal notranslate"><span class="pre">status</span></code>”] is not in the range <code class="docutils literal notranslate"><span class="pre">200</span></code> to <code class="docutils literal notranslate"><span class="pre">599</span></code>, inclusive, then
+<a class="reference external" href="https://heycam.github.io/webidl/#dfn-throw">throw</a> a <code class="docutils literal notranslate"><span class="pre">RangeError</span></code>.</li>
+</ol>
+<p>[…]</p>
+</div></blockquote>
+<p>This function accepts exactly 400 values for the “status.” With <a class="reference internal" href="testharness.html"><span class="doc">WPT’s
+testharness.js</span></a>, it’s easy to dynamically create one test for
+each value. Unless we have reason to believe that a browser may exhibit
+drastically different behavior for any of those values (e.g. correctly
+accepting <code class="docutils literal notranslate"><span class="pre">546</span></code> but incorrectly rejecting <code class="docutils literal notranslate"><span class="pre">547</span></code>), then the complexity of
+testing those cases probably isn’t warranted.</p>
+<p>Instead, focus on writing declarative tests for specific values which are novel
+in the context of the algorithm. For ranges like in this example, testing the
+boundaries is a good idea. <code class="docutils literal notranslate"><span class="pre">200</span></code> and <code class="docutils literal notranslate"><span class="pre">599</span></code> should not produce an error while
+<code class="docutils literal notranslate"><span class="pre">199</span></code> and <code class="docutils literal notranslate"><span class="pre">600</span></code> should produce an error. Feel free to use what you know about
+the feature to choose additional values. In this case, HTTP response status
+codes are classified by the “hundred” order of magnitude, so we might also want
+to test a “3xx” value and a “4xx” value.</p>
+</div>
+</div>
+<div class="section" id="assessing-coverage">
+<h2>Assessing coverage<a class="headerlink" href="#assessing-coverage" title="Permalink to this headline">¶</a></h2>
+<p>It’s very likely that WPT already has some tests for the feature (or at least
+the specification) that you’re interesting in testing. In that case, you’ll
+have to learn what’s already been done before starting to write new tests.
+Understanding the design of existing tests will let you avoid duplicating
+effort, and it will also help you integrate your work more logically.</p>
+<p>Even if the feature you’re testing does <em>not</em> have any tests, you should still
+keep these guidelines in mind. Sooner or later, someone else will want to
+extend your work, so you ought to give them a good starting point!</p>
+<div class="section" id="file-names">
+<h3>File names<a class="headerlink" href="#file-names" title="Permalink to this headline">¶</a></h3>
+<p>The names of existing files and folders in the repository can help you find
+tests that are relevant to your work. <a class="reference internal" href="../test-suite-design.html"><span class="doc">This page on the design of
+WPT</span></a> goes into detail about how files are generally laid
+out in the repository.</p>
+<p>Generally speaking, every conformance tests is stored in a subdirectory
+dedicated to the specification it verifies. The structure of these
+subdirectories vary. Some organize tests in directories related to algorithms
+or behaviors. Others have a more “flat” layout, where all tests are listed
+together.</p>
+<p>Whatever the case, test authors try to choose names that communicate the
+behavior under test, so you can use them to make an educated guess about where
+your tests should go.</p>
+<p><em>Example:</em> Imagine you wanted to write a test to verify that headers were made
+immutable by the <code class="docutils literal notranslate"><span class="pre">Request.error</span></code> method defined in <a class="reference external" href="https://fetch.spec.whatwg.org">the Fetch
+standard</a>. Here’s the algorithm:</p>
+<blockquote>
+<div><p>The static error() method, when invoked, must run these steps:</p>
+<ol class="simple">
+<li>Let <em>r</em> be a new <a class="reference external" href="https://fetch.spec.whatwg.org/#response">Response</a>
+object, whose
+<a class="reference external" href="https://fetch.spec.whatwg.org/#concept-response-response">response</a> is a
+new <a class="reference external" href="https://fetch.spec.whatwg.org/#concept-network-error">network error</a>.</li>
+<li>Set <em>r</em>’s <a class="reference external" href="https://fetch.spec.whatwg.org/#response-headers">headers</a> to a
+new <a class="reference external" href="https://fetch.spec.whatwg.org/#headers">Headers</a> object whose
+<a class="reference external" href="https://fetch.spec.whatwg.org/#concept-headers-guard">guard</a> is
+“<code class="docutils literal notranslate"><span class="pre">immutable</span></code>”.</li>
+<li>Return <em>r</em>.</li>
+</ol>
+</div></blockquote>
+<p>In order to figure out where to write the test (and whether it’s needed at
+all), you can review the contents of the <code class="docutils literal notranslate"><span class="pre">fetch/</span></code> directory in WPT. Here’s how
+that looks on a UNIX-like command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls fetch
+api/                           data-urls/   range/
+content-encoding/              http-cache/  README.md
+content-length/                images/      redirect-navigate/
+content-type/                  metadata/    security/
+corb/                          META.yml     stale-while-revalidate/
+cors-rfc1918/                  nosniff/
+cross-origin-resource-policy/  origin/
+</pre></div>
+</div>
+<p>This test is for a behavior directly exposed through the API, so we should look
+in the <code class="docutils literal notranslate"><span class="pre">api/</span></code> directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls fetch/api
+abort/  cors/         headers/           policies/  request/    response/
+basic/  credentials/  idlharness.any.js  redirect/  resources/
+</pre></div>
+</div>
+<p>And since this is a static method on the <code class="docutils literal notranslate"><span class="pre">Response</span></code> constructor, we would
+expect the test to belong in the <code class="docutils literal notranslate"><span class="pre">response/</span></code> directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls fetch/api/response
+multi-globals/                   response-static-error.html
+response-cancel-stream.html      response-static-redirect.html
+response-clone.html              response-stream-disturbed-1.html
+response-consume-empty.html      response-stream-disturbed-2.html
+response-consume.html            response-stream-disturbed-3.html
+response-consume-stream.html     response-stream-disturbed-4.html
+response-error-from-stream.html  response-stream-disturbed-5.html
+response-error.html              response-stream-disturbed-6.html
+response-from-stream.any.js      response-stream-with-broken-then.any.js
+response-init-001.html           response-trailer.html
+response-init-002.html
+</pre></div>
+</div>
+<p>There seems to be a test file for the <code class="docutils literal notranslate"><span class="pre">error</span></code> method:
+<code class="docutils literal notranslate"><span class="pre">response-static-error.html</span></code>. We can open that to decide if the behavior is
+already covered. If not, then we know where to <a class="reference external" href="https://github.com/web-platform-tests/wpt/pull/19601">write the
+test</a>!</p>
+</div>
+<div class="section" id="failures-on-wpt-fyi">
+<h3>Failures on wpt.fyi<a class="headerlink" href="#failures-on-wpt-fyi" title="Permalink to this headline">¶</a></h3>
+<p>There are many behaviors that are difficult to describe in a succinct file
+name. That’s commonly the case with low-level rendering details of CSS
+specifications. Test authors may resort to generic number-based naming schemes
+for their files, e.g. <code class="docutils literal notranslate"><span class="pre">feature-001.html</span></code>, <code class="docutils literal notranslate"><span class="pre">feature-002.html</span></code>, etc. This makes
+it difficult to determine if a test case exists judging only by the names of
+files.</p>
+<p>If the behavior you want to test is demonstrated by some browsers but not by
+others, you may be able to use the <em>results</em> of the tests to locate the
+relevant test.</p>
+<p><a class="reference external" href="https://wpt.fyi">wpt.fyi</a> is a website which publishes results of WPT in
+various browsers. Because most browsers pass most tests, the pass/fail
+characteristics of the behavior you’re testing can help you filter through a
+large number of highly similar tests.</p>
+<p><em>Example:</em> Imagine you’ve found a bug in the way Safari renders the top CSS
+border of HTML tables. By searching through directory names and file names,
+you’ve determined the probable location for the test: the <code class="docutils literal notranslate"><span class="pre">css/CSS2/borders/</span></code>
+directory. However, there are <em>three hundred</em> files that begin with
+<code class="docutils literal notranslate"><span class="pre">border-top-</span></code>! None of the names mention the <code class="docutils literal notranslate"><span class="pre">&lt;table&gt;</span></code> element, so any one of
+the files may already be testing the case you found.</p>
+<p>Luckily, you also know that Firefox and Chrome do not exhibit this bug. You
+could find such tests by visual inspection of the <a class="reference external" href="https://wpt.fyi">wpt.fyi</a>
+results overview, but <a class="reference external" href="https://github.com/web-platform-tests/wpt.fyi/blob/master/api/query/README">the website’s “search” feature includes operators that
+let you query for this information
+directly</a>.
+To find the tests which begin with <code class="docutils literal notranslate"><span class="pre">border-top-</span></code>, pass in Chrome, pass in
+Firefox, and fail in Safari, you could write <a class="reference external" href="https://wpt.fyi/results/?label=master&amp;label=experimental&amp;aligned&amp;q=border-top-%20safari%3Afail%20firefox%3Apass%20chrome%3Apass">`border-top- chrome:pass
+firefox:pass
+safari:fail</a>.
+The results show only three such tests exist:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">border-top-applies-to-005.xht</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">border-top-color-applies-to-005.xht</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">border-top-width-applies-to-005.xht</span></code></li>
+</ul>
+<p>These may not describe the behavior you’re interested in testing; the only way
+to know for sure is to review their contents. However, this is a much more
+manageable set to work with!</p>
+</div>
+<div class="section" id="querying-file-contents">
+<h3>Querying file contents<a class="headerlink" href="#querying-file-contents" title="Permalink to this headline">¶</a></h3>
+<p>Some web platform features are enabled with a predictable pattern. For example,
+HTML attributes follow a fairly consistent format. If you’re interested in
+testing a feature like this, you may be able to learn where your tests belong
+by querying the contents of the files in WPT.</p>
+<p>You may be able to perform such a search on the web. WPT is hosted on
+GitHub.com, and <a class="reference external" href="https://help.github.com/en/articles/about-searching-on-github">GitHub offers some basic functionality for querying
+code</a>. If your
+search criteria are short and distinctive (e.g. all files containing
+“querySelectorAll”), then this interface may be sufficient. However, more
+complicated criteria may require <a class="reference external" href="https://www.regular-expressions.info/">regular
+expressions</a>. For that, you can
+<a class="reference external" href="https://web-platform-tests.org/writing-tests/github-intro.html">download the WPT
+repository</a> and
+use <a class="reference external" href="https://git-scm.com">git</a> to perform more powerful searches.</p>
+<p>The following table lists some common search criteria and examples of how they
+can be expressed using regular expressions:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="39%" />
+<col width="21%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Criteria</th>
+<th class="head">Example match</th>
+<th class="head">Example regular expression</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>JavaScript identifier references</td>
+<td><code class="docutils literal notranslate"><span class="pre">obj.foo()</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">\bfoo\b</span></code></td>
+</tr>
+<tr class="row-odd"><td>JavaScript string literals</td>
+<td><code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">&quot;foo&quot;;</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">([&quot;'])foo\1</span></code></td>
+</tr>
+<tr class="row-even"><td>HTML tag names</td>
+<td><code class="docutils literal notranslate"><span class="pre">&lt;foo</span> <span class="pre">attr&gt;</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">&lt;foo(\s|&gt;|$)</span></code></td>
+</tr>
+<tr class="row-odd"><td>HTML attributes</td>
+<td><code class="docutils literal notranslate"><span class="pre">&lt;div</span> <span class="pre">foo=3&gt;</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">&lt;[a-zA-Z][^&gt;]*\sfoo(\s|&gt;|=|$)</span></code></td>
+</tr>
+<tr class="row-even"><td>CSS property name</td>
+<td><code class="docutils literal notranslate"><span class="pre">style=&quot;foo:</span> <span class="pre">4&quot;</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">([{;=\&quot;']|\s|^)foo\s+:</span></code></td>
+</tr>
+</tbody>
+</table>
+<p>Bear in mind that searches like this are not necessarily exhaustive. Depending
+on the feature, it may be difficult (or even impossible) to write a query that
+correctly identifies all relevant tests. This strategy can give a helpful
+guide, but the results may not be conclusive.</p>
+<p><em>Example:</em> Imagine you’re interested in testing how the <code class="docutils literal notranslate"><span class="pre">src</span></code> attribute of the
+<code class="docutils literal notranslate"><span class="pre">iframe</span></code> element works with <code class="docutils literal notranslate"><span class="pre">javascript:</span></code> URLs. Judging only from the names of
+directories, you’ve found a lot of potential locations for such a test. You
+also know many tests use <code class="docutils literal notranslate"><span class="pre">javascript:</span></code> URLs without describing that in their
+name. How can you find where to contribute new tests?</p>
+<p>You can design a regular expression that matches many cases where a
+<code class="docutils literal notranslate"><span class="pre">javascript:</span></code> URL is assigned to the <code class="docutils literal notranslate"><span class="pre">src</span></code> property in HTML. You can use the
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">grep</span></code> command to query the contents of the <code class="docutils literal notranslate"><span class="pre">html/</span></code> directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git grep -lE &quot;src\s*=\s*[\&quot;&#39;]?javascript:&quot; html
+html/browsers/browsing-the-web/navigating-across-documents/javascript-url-query-fragment-components.html
+html/browsers/browsing-the-web/navigating-across-documents/javascript-url-return-value-handling.html
+html/dom/documents/dom-tree-accessors/Document.currentScript.html
+html/dom/self-origin.sub.html
+html/editing/dnd/target-origin/114-manual.html
+html/semantics/embedded-content/media-elements/track/track-element/cloneNode.html
+html/semantics/scripting-1/the-script-element/execution-timing/040.html
+html/semantics/scripting-1/the-script-element/execution-timing/080.html
+html/semantics/scripting-1/the-script-element/execution-timing/108.html
+html/semantics/scripting-1/the-script-element/execution-timing/109.html
+html/webappapis/dynamic-markup-insertion/opening-the-input-stream/document-open-cancels-javascript-url-navigation.html
+</pre></div>
+</div>
+<p>You will still have to review the contents to know which are relevant for your
+purposes (if any), but compared to the 5,000 files in the <code class="docutils literal notranslate"><span class="pre">html/</span></code> directory,
+this list is far more approachable!</p>
+</div>
+</div>
+<div class="section" id="writing-the-tests">
+<h2>Writing the Tests<a class="headerlink" href="#writing-the-tests" title="Permalink to this headline">¶</a></h2>
+<p>With a complete testing plan in hand, you now have a good idea of the scope of
+your work. It’s finally time to write the tests! There’s a lot to say about how
+this is done technically. To learn more, check out <a class="reference internal" href="reftest-tutorial.html"><span class="doc">the WPT “reftest”
+tutorial</span></a> and <a class="reference internal" href="testharness-tutorial.html"><span class="doc">the testharness.js
+tutorial</span></a>.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../test-suite-design.html">Test Suite Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="h2tests.html">Writing H2 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lint-tool.html">Lint Tool</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Making a Testing Plan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftest-tutorial.html">Writing a reftest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testdriver.html">testdriver.js Automation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testdriver-tutorial.html">testdriver.js Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness-tutorial.html">testharness.js tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html">Command-line utility scripts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visual.html">Visual Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdspec.html">wdspec tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test-templates.html">Test Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-intro.html">Introduction to GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#test-type">Test Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submitting-tests">Submitting Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Writing Tests</a><ul>
+      <li>Previous: <a href="lint-tool.html" title="previous chapter">Lint Tool</a></li>
+      <li>Next: <a href="manual.html" title="next chapter">Manual Tests</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/making-a-testing-plan.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

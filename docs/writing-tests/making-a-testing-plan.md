@@ -182,7 +182,7 @@ specification](https://html.spec.whatwg.org/multipage/dnd.html#dnd)):
 >       node](https://html.spec.whatwg.org/multipage/dnd.html#source-node).
 >    3. [...]
 
-A strong test suite will verify that the `drop` event is fired as specified,
+A thorough test suite will verify that the `drop` event is fired as specified,
 and it will also verify that the `dragend` event is fired as specified. An even
 better test suite will also verify that the `drop` event is fired *before* the
 `dragend` event.

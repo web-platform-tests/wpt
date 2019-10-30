@@ -131,7 +131,7 @@
             pending_resolve = resolve;
             pending_reject = reject;
         });
-        window.__wptrunner_message_queue.push({"type": "action", "action": "add_virtual_authenticator", "config": config});
+        window.__wptrunner_message_queue.push({"type": "action", "action": "add_virtual_authenticator", config});
         return pending_promise;
     };
 

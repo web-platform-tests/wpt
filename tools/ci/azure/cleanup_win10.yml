@@ -98,19 +98,20 @@ steps:
 
 - powershell: |
     ($webdriverFiles = Get-ChildItem -PATH "$env:systemdrive\*msedgedriver.exe" -Recurse) >$null 2>$null
-    if ($webdriverFiles.Count -gt 0) {
-      Write-Host "Found $($webdriverFiles.Count) msedgedriver binaries"
-      foreach ($file in $webdriverFiles) {
-        Write-Host "Deleting $file"
-        Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
-      }
-      $driverNotesFolder = Join-Path $webdriverFiles.Directory 'Driver_Notes'
-      if (Test-Path $driverNotesFolder) {
-        Write-Host "Delete $driverNotesFolder folder"
-        Remove-Item -Path $driverNotesFolder -Recurse -Force -ErrorAction SilentlyContinue
-      }
-      Write-Host "Delete downloaded zip file"
-      Remove-Item -Path $webdriverFiles.Directory -Filter "edgedriver*" -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Host "Found $($webdriverFiles.Count) msedgedriver binaries"
+    foreach ($file in $webdriverFiles) {
+      Write-Host "Deleting $file"
+      Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
+    }
+    ($driverNotesFolder = Get-ChildItem -PATH "$env:systemdrive\*Driver_Notes" -Recurse) >$null 2>$null
+    foreach ($file in $driverNotesFolder) {
+      Write-Host "Deleting $file folder"
+      Remove-Item -Path $file.FullName -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    ($zipFile = Get-ChildItem -PATH "$env:systemdrive\*edgedriver_*.zip" -Recurse) >$null 2>$null
+    foreach ($file in $zipFile) {
+      Write-Host "Deleting $file file"
+      Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
     }
   displayName: 'Cleanup Edge driver binaries'
   condition: always()

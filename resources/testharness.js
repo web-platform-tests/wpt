@@ -793,6 +793,11 @@ policies and contribution forms [3].
     function done() {
         if (tests.tests.length === 0) {
             tests.set_file_is_test();
+            tests.status.status = tests.status.ERROR;
+            tests.status.message = "The test signaled completion before testing began.";
+            var test = tests.tests[0];
+            test.set_status(test.FAIL, tests.status.message);
+            test.phase = test.phases.HAS_RESULT;
         }
         if (tests.file_is_test) {
             // file is test files never have asynchronous cleanup logic,
@@ -3375,6 +3380,12 @@ policies and contribution forms [3].
     {
         if (tests.tests.length === 0) {
             tests.set_file_is_test();
+            tests.status.status = tests.status.ERROR;
+            tests.status.message = "An assertion was made before testing began.";
+            var test = tests.tests[0];
+            test.set_status(test.FAIL, tests.status.message);
+            test.phase = test.phases.HAS_RESULT;
+            done();
         }
         if (expected_true !== true) {
             var msg = make_message(function_name, description,
@@ -3668,6 +3679,8 @@ policies and contribution forms [3].
         var error_handler = function(message, stack) {
             if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
                 tests.set_file_is_test();
+                tests.status.status = tests.status.ERROR;
+                tests.status.message = "An error occured before testing began.";
             }
 
             if (tests.file_is_test) {

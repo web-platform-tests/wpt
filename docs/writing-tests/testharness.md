@@ -25,6 +25,10 @@ documented in two sections:
 See [server features](server-features) for advanced testing features that are commonly used
 with testharness.js. See also the [general guidelines](general-guidelines) for all test types.
 
+This page describes testharness.js exhaustively; [the tutorial on writing a
+testharness.js test](testharness-tutorial) provides a concise guide to writing
+a test--a good place to start for newcomers to the project.
+
 ## Variants
 
 A test file can have multiple variants by including `meta` elements,
@@ -177,6 +181,11 @@ be made available by the framework:
 
     self.GLOBAL.isWindow()
     self.GLOBAL.isWorker()
+
+Although [the global `done` function must be explicitly invoked for most
+dedicated worker tests and shared worker
+tests](testharness-api.html#determining-when-all-tests-are-complete), it is
+automatically invoked for tests defined using the "multi-global" pattern.
 
 ### Specifying a test title in auto-generated boilerplate tests
 

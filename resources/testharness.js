@@ -3682,7 +3682,14 @@ policies and contribution forms [3].
                 tests.status.message = message;
                 tests.status.stack = stack;
             }
-            done();
+
+            // Do not transition to the "complete" phase if the test has been
+            // configured to allow uncaught exceptions. This gives the test an
+            // opportunity to define subtests based on the exception reporting
+            // behavior.
+            if (!tests.allow_uncaught_exception) {
+                done();
+            }
         };
 
         addEventListener("error", function(e) {
@@ -3697,7 +3704,13 @@ policies and contribution forms [3].
         }, false);
 
         addEventListener("unhandledrejection", function(e) {
-            var message = "Unhandled rejection: " + e.reason.message;
+            var reason;
+            if (e.reason) {
+                reason  = e.reason.message ? e.reason.message : e.reason;
+            } else {
+                reason = e;
+            }
+            var message = "Unhandled rejection: " + reason;
             // There's no stack for unhandled rejections.
             error_handler(message);
         }, false);

@@ -531,5 +531,5 @@ this list is far more approachable!
 With a complete testing plan in hand, you now have a good idea of the scope of
 your work. It's finally time to write the tests! There's a lot to say about how
 this is done technically. To learn more, check out [the WPT "reftest"
-tutorial](./reftest-tutorial) and [the introduction to
-testharness.js](./testharness).
+tutorial](./reftest-tutorial) and [the testharness.js
+tutorial](./testharness-tutorial).

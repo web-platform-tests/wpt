@@ -703,7 +703,9 @@ class AddVirtualAuthenticatorAction(object):
     def __call__(self, payload):
         self.logger.debug("Adding virtual authenticator")
         config = payload["config"]
-        return self.protocol.virtual_authenticator.add_virtual_authenticator(config)
+        authenticator_id = self.protocol.virtual_authenticator.add_virtual_authenticator(config)
+        self.logger.debug("Authenticator created with ID %s" % authenticator_id)
+        return authenticator_id
 
 class RemoveVirtualAuthenticatorAction(object):
     def __init__(self, logger, protocol):

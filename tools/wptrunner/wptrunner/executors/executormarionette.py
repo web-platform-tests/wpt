@@ -80,6 +80,9 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
     def set_window(self, handle):
         self.marionette.switch_to_window(handle)
 
+    def load(self, url):
+        self.marionette.navigate(url)
+
     def wait(self):
         try:
             socket_timeout = self.marionette.client.socket_timeout

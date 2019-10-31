@@ -365,7 +365,7 @@ jobs:
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
   - script: |
-      tools/ci/azure/screencapture.sh "$(Build.ArtifactStagingDirectory)/screencapture_$(System.JobPositionInPhase)_" &
+      tools/ci/screencapture.sh "$(Build.ArtifactStagingDirectory)/screencapture_$(System.JobPositionInPhase)" &
       no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --test-type=reftest --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info --channel preview safari
     displayName: 'Run tests'
   - task: PublishBuildArtifacts@1

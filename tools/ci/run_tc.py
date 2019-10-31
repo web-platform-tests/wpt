@@ -223,7 +223,7 @@ def start_xvfb():
 def start_x11grab():
     run(["sudo", "apt-get", "-qqy", "update"])
     run(["sudo", "apt-get", "-qqy", "install", "ffmpeg"])
-    start(["./tools/ci/taskcluster-x11grab.sh"])
+    start(["./tools/ci/screencapture.sh", "/home/test/artifacts/x11grab"])
 
 
 def get_extra_jobs(event):

@@ -39,6 +39,9 @@ wherever you currently set your PATH.
 See also [additional setup required to run Safari](safari).
 
 ### Windows Setup
+**Note:** In general, Windows Subsystem for Linux will provide the smoothest
+user experience for running web-platform-tests on Windows, where installation
+and usage are similar to Linux.
 
 Download and install [Python 2.7](https://www.python.org/downloads). The
 installer includes `pip` by default.

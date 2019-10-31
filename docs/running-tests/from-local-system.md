@@ -22,12 +22,6 @@ On Debian or Ubuntu:
 sudo apt-get install python python-pip virtualenv
 ```
 
-On Fedora or Red Hat:
-
-```bash
-sudo dnf install python2 python2-pip python2-virtualenv
-```
-
 ### macOS Setup
 
 The system-provided Python can be used, while `pip` and `virtualenv` can be

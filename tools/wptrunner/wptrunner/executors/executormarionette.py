@@ -793,8 +793,8 @@ class MarionetteRefTestExecutor(RefTestExecutor):
 
         with open(os.path.join(here, "reftest.js")) as f:
             self.script = f.read()
-        with open(os.path.join(here, "reftest-wait_webdriver.js")) as f:
-            self.wait_script = f.read()
+        with open(os.path.join(here, "test-wait.js")) as f:
+            self.wait_script = f.read() % {"classname": "reftest-wait"}
 
     def setup(self, runner):
         super(self.__class__, self).setup(runner)

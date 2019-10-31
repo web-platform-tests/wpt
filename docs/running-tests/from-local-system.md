@@ -33,7 +33,8 @@ export PATH="$PATH:$HOME/Library/Python/2.7/bin"
 pip install --user virtualenv
 ```
 
-To make the `PATH` change persistent, add it to your `~/.profile` file.
+To make the `PATH` change persistent, add it to your `~/.bash_profile` file or
+wherever you currently set your PATH.
 
 See also [additional setup required to run Safari](safari).
 

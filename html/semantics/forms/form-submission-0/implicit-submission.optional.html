@@ -32,7 +32,7 @@ promise_test(async () => {
   await test_driver.send_keys(form.text, ENTER);
   assert_true(event.bubbles);
   assert_true(event.cancelable);
-  assert_equals(event.submitter, form);
+  assert_equals(event.submitter, null);
   assert_true(event instanceof SubmitEvent);
 }, 'Submit event with no submit button');
 </script>

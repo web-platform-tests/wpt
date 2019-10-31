@@ -58,6 +58,9 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
     def set_window(self, handle):
         self.webdriver.window_handle = handle
 
+    def load(self, url):
+        self.webdriver.url = url
+
     def wait(self):
         while True:
             try:

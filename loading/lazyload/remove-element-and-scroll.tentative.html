@@ -13,18 +13,18 @@ Marked as tentative until https://github.com/whatwg/html/pull/3752 is landed.
 <body>
   <img id="in_viewport" src='resources/image.png'>
   <div style="height:10000px;"></div>
-  <img id="below_viewport" src='resources/image.png' loading="lazy">
+  <img id="below_viewport" src='resources/image.png?second' loading="lazy">
 
   <script>
-    var in_viewport_element = document.getElementById("in_viewport");
-    var below_viewport_element = document.getElementById("below_viewport");
+    const in_viewport_element = document.getElementById("in_viewport");
+    const below_viewport_element = document.getElementById("below_viewport");
 
     async_test(function(t) {
       below_viewport_element.remove();
       assert_false(is_image_fully_loaded(below_viewport_element));
       in_viewport_element.addEventListener("load", t.step_func(function() {
         window.scrollTo(0, 10000);
-        t.step_timeout(function() { assert_false(is_image_fully_loaded(below_viewport_element)); t.done(); }, 1000);
+        t.step_timeout(function() { assert_false(is_image_fully_loaded(below_viewport_element)); t.done(); }, 2000);
       }));
     }, "Test that <img> below viewport is not loaded when removed from the document and then scrolled to.");
   </script>

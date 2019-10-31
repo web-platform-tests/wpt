@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and first-line pseudo-element</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+  <link rel="match" href="active-selection-027-ref.html">
+
+  <meta content="" name="flags">
+  <meta name="assert" content="In this test, the div::selection rule does not define a color. Therefore it must inherit it from the div rule. Therefore the highlight overlay should use the green color and should overlay over the red div::first-line.">
+
+  <style>
+  div
+    {
+      color: green;
+      font-size: 300%;
+    }
+
+  div::first-line
+    {
+      color: red;
+    }
+
+  div::selection
+    {
+      background-color: yellow;
+    }
+  </style>
+
+  <script>
+  function startTest()
+  {
+  var targetRange = document.createRange();
+  /* We first create an empty range */
+  targetRange.selectNodeContents(document.getElementById("test"));
+  /* Then we set the range boundaries to the children of div#test */
+  window.getSelection().addRange(targetRange);
+  /* Finally, we now select such range of content */
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>Test passes if both "text sample" have a yellow background and if each glyph of both "text sample" is green.
+
+  <div id="test">1st text sample<br>2nd text sample</div>

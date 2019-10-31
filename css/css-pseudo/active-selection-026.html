@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and first-line pseudo-element</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+  <link rel="match" href="active-selection-026-ref.html">
+
+  <meta content="" name="flags">
+  <meta name="assert" content="In this test, the div::selection pseudo-element must paint over the ::first-line pseudo-element since the first line is being selected.">
+
+  <style>
+  div
+    {
+      color: black;
+      font-size: 300%;
+    }
+
+  div::first-line
+    {
+      color: red;
+    }
+
+  div::selection
+    {
+      color: green;
+    }
+  </style>
+
+  <script>
+  function startTest()
+  {
+  var targetRange = document.createRange();
+  /* We first create an empty range */
+  targetRange.selectNodeContents(document.getElementById("test"));
+  /* Then we set the range boundaries to the children of div#test */
+  window.getSelection().addRange(targetRange);
+  /* Finally, we now select such range of content */
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>Test passes if both "text sample" are green and <strong>not red</strong>.
+
+  <div id="test">1st text sample<br>2nd text sample</div>

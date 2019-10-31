@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Reftest Reference</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+
+  <style>
+  div
+    {
+      background-color: red;
+      height: 100px;
+      width: 100px;
+    }
+
+  div#overlay
+    {
+      background-color: rgba(0, 128, 0, 0.5);
+    }
+
+  /*
+  The resulting color should be
+  #7F4000 which is some kind of
+  brown color
+  */
+  </style>
+
+  <p>Test passes if there is a filled brown square and <strong>no red</strong>.
+
+  <div><div id="overlay"></div></div>

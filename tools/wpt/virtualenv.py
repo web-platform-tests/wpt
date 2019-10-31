@@ -1,7 +1,10 @@
+from __future__ import absolute_import
+
 import os
 import shutil
 import sys
 import logging
+import virtualenv
 from distutils.spawn import find_executable
 
 # The `pkg_resources` module is provided by `setuptools`, which is itself a
@@ -24,11 +27,7 @@ class Virtualenv(object):
     def __init__(self, path, skip_virtualenv_setup):
         self.path = path
         self.skip_virtualenv_setup = skip_virtualenv_setup
-        if not skip_virtualenv_setup:
-            self.virtualenv = find_executable("virtualenv")
-            if not self.virtualenv:
-                raise ValueError("virtualenv must be installed and on the PATH")
-            self._working_set = None
+        self._working_set = None
 
     @property
     def exists(self):
@@ -40,10 +39,8 @@ class Virtualenv(object):
         return os.path.lexists(python_link) and not os.path.exists(python_link)
 
     def create(self):
-        if os.path.exists(self.path):
-            shutil.rmtree(self.path)
-            self._working_set = None
-        call(self.virtualenv, self.path, "-p", sys.executable)
+        virtualenv.create_environment(self.path, clear=True)
+        self._working_set = None
 
     @property
     def bin_path(self):

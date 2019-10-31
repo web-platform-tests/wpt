@@ -19,7 +19,7 @@ If not already present, use the system package manager to install `python`,
 On Debian or Ubuntu:
 
 ```bash
-sudo apt-get install python python-pip virtualenv
+sudo apt-get install python python-pip python-virtualenv
 ```
 
 On Fedora or Red Hat:
@@ -35,11 +35,8 @@ installed for the user only:
 
 ```bash
 python -m ensurepip --user
-export PATH="$PATH:$HOME/Library/Python/2.7/bin"
-pip install --user virtualenv
+python -m pip install --user virtualenv
 ```
-
-To make the `PATH` change persistent, add it to your `~/.profile` file.
 
 See also [additional setup required to run Safari](safari).
 
@@ -48,13 +45,12 @@ See also [additional setup required to run Safari](safari).
 Download and install [Python 2.7](https://www.python.org/downloads). The
 installer includes `pip` by default.
 
-Add `C:\Python27` and `C:\Python27\Scripts` to your `%Path%`
-[environment variable](http://www.computerhope.com/issues/ch000549.htm).
+Add `C:\Python27` to your `%Path%` [environment variable](http://www.computerhope.com/issues/ch000549.htm).
 
 Finally, install `virtualenv`:
 
 ```bash
-pip install virtualenv
+python -m pip install virtualenv
 ```
 
 The standard Windows shell requires that all `wpt` commands are prefixed

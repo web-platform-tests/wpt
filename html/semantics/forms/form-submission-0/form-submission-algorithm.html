@@ -86,7 +86,7 @@ promise_test(async () => {
   await loadPromise(iframe);
   assert_true(event.bubbles);
   assert_true(event.cancelable);
-  assert_equals(event.submitter, form);
+  assert_equals(event.submitter, null);
   assert_true(event instanceof SubmitEvent);
 }, 'firing an event named submit; form.requestSubmit(null)');
 

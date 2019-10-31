@@ -39,26 +39,57 @@
 <p>The tests are designed to be run from your local computer.</p>
 <div class="section" id="system-setup">
 <h2>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this headline">¶</a></h2>
-<p>The test environment requires <a class="reference external" href="http://www.python.org/downloads">Python 2.7+</a>
-(but not Python 3.x).</p>
-<p>On Windows, be sure to add the Python directory (<code class="docutils literal notranslate"><span class="pre">c:\python2x</span></code>, by default) to
-your <code class="docutils literal notranslate"><span class="pre">%Path%</span></code> <a class="reference external" href="http://www.computerhope.com/issues/ch000549.htm">Environment Variable</a>,
-and read the <a class="reference external" href="#windows-notes">Windows Notes</a> section below.</p>
-<!--
-  There does not appear to be a cross-platform means of installing `pip`.
-  https://github.com/web-platform-tests/wpt/pull/16670
---><p>Install <code class="docutils literal notranslate"><span class="pre">pip</span></code>. On many systems, this can be achieved with the command <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">ensurepip</span></code>. If this is not possible, use your system’s package manager to
-install the <code class="docutils literal notranslate"><span class="pre">python-pip</span></code> package.</p>
-<p>Next, install <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> using the following command:</p>
+<p>Running the tests requires <code class="docutils literal notranslate"><span class="pre">python</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>, as well as updating
+the system <code class="docutils literal notranslate"><span class="pre">hosts</span></code> file.</p>
+<p>Note that Python 2.7 is required. Using Python 3 is not supported.</p>
+<p>The required setup is different depending on your operating system.</p>
+<div class="section" id="linux-setup">
+<h3>Linux Setup<a class="headerlink" href="#linux-setup" title="Permalink to this headline">¶</a></h3>
+<p>If not already present, use the system package manager to install <code class="docutils literal notranslate"><span class="pre">python</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>.</p>
+<p>On Debian or Ubuntu:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get install python python-pip virtualenv
+</pre></div>
+</div>
+</div>
+<div class="section" id="macos-setup">
+<h3>macOS Setup<a class="headerlink" href="#macos-setup" title="Permalink to this headline">¶</a></h3>
+<p>The system-provided Python can be used, while <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> can be
+installed for the user only:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m ensurepip --user
+<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:</span><span class="nv">$HOME</span><span class="s2">/Library/Python/2.7/bin&quot;</span>
+pip install --user virtualenv
+</pre></div>
+</div>
+<p>To make the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> change persistent, add it to your <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> file or
+wherever you currently set your PATH.</p>
+<p>See also <a class="reference internal" href="safari.html"><span class="doc">additional setup required to run Safari</span></a>.</p>
+</div>
+<div class="section" id="windows-setup">
+<h3>Windows Setup<a class="headerlink" href="#windows-setup" title="Permalink to this headline">¶</a></h3>
+<p><strong>Note:</strong> In general, Windows Subsystem for Linux will provide the smoothest
+user experience for running web-platform-tests on Windows, where installation
+and usage are similar to Linux.</p>
+<p>Download and install <a class="reference external" href="https://www.python.org/downloads">Python 2.7</a>. The
+installer includes <code class="docutils literal notranslate"><span class="pre">pip</span></code> by default.</p>
+<p>Add <code class="docutils literal notranslate"><span class="pre">C:\Python27</span></code> and <code class="docutils literal notranslate"><span class="pre">C:\Python27\Scripts</span></code> to your <code class="docutils literal notranslate"><span class="pre">%Path%</span></code>
+<a class="reference external" href="http://www.computerhope.com/issues/ch000549.htm">environment variable</a>.</p>
+<p>Finally, install <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install virtualenv
 </pre></div>
 </div>
+<p>The standard Windows shell requires that all <code class="docutils literal notranslate"><span class="pre">wpt</span></code> commands are prefixed
+by the Python binary i.e. assuming <code class="docutils literal notranslate"><span class="pre">python</span></code> is on your path the server is
+started using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python wpt serve
+</pre></div>
+</div>
+</div>
+<div class="section" id="hosts-file-setup">
+<h3><code class="docutils literal notranslate"><span class="pre">hosts</span></code> File Setup<a class="headerlink" href="#hosts-file-setup" title="Permalink to this headline">¶</a></h3>
 <p>To get the tests running, you need to set up the test domains in your
 <a class="reference external" href="http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system"><code class="docutils literal notranslate"><span class="pre">hosts</span></code> file</a>.</p>
-<p>The necessary content can be generated with <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">make-hosts-file</span></code>; on
-Windows, you will need to preceed the prior command with <code class="docutils literal notranslate"><span class="pre">python</span></code> or
-the path to the Python binary (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">wpt</span> <span class="pre">make-hosts-file</span></code>).</p>
-<p>For example, on most UNIX-like systems, you can setup the hosts file with:</p>
+<p>On Linux, macOS or other UNIX-like system:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt make-hosts-file <span class="p">|</span> sudo tee -a /etc/hosts
 </pre></div>
 </div>
@@ -68,14 +99,6 @@ the path to the Python binary (<code class="docutils literal notranslate"><span 
 </div>
 <p>If you are behind a proxy, you also need to make sure the domains above are
 excluded from your proxy lookups.</p>
-<div class="section" id="windows-notes">
-<h3>Windows Notes<a class="headerlink" href="#windows-notes" title="Permalink to this headline">¶</a></h3>
-<p>Generally Windows Subsystem for Linux will provide the smoothest user
-experience for running web-platform-tests on Windows.</p>
-<p>The standard Windows shell requires that all <code class="docutils literal notranslate"><span class="pre">wpt</span></code> commands are prefixed
-by the Python binary i.e. assuming <code class="docutils literal notranslate"><span class="pre">python</span></code> is on your path the server is
-started using:</p>
-<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">wpt</span> <span class="pre">serve</span></code></p>
 </div>
 </div>
 <div class="section" id="via-the-browser">

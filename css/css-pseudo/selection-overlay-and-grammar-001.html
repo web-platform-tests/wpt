@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+ <html lang="en">
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: ::selection overlay drawn over the ::grammar-error overlay</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-painting">
+  <link rel="match" href="selection-overlay-and-grammar-001-ref.html">
+
+  <meta content="" name="flags">
+  <meta name="assert" content="In this test, the ::selection pseudo-element must be drawn over the ::grammar-error overlay.">
+
+  <style>
+  div
+    {
+      color: black;
+      font-size: 300%;
+    }
+
+  div::selection
+    {
+      color: green;
+    }
+
+  div::grammar-error
+    {
+      color: red;
+    }
+  </style>
+
+  <script>
+  function startTest()
+  {
+  var targetRange = document.createRange();
+  /* We first create an empty range */
+  targetRange.selectNodeContents(document.getElementById("test"));
+  /* Then we set the range boundaries to the children of div#test */
+  window.getSelection().addRange(targetRange);
+  /* Finally, we now select such range of content */
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>PREREQUISITE: User agent needs to have an enabled and capable grammar error module. If it does not, then this test does not apply to such user agent.
+
+  <p>Test passes if each glyph of "thing" is green and <strong>not red</strong>.
+
+  <div contenteditable="true" id="test">Many thing can happen.</div>

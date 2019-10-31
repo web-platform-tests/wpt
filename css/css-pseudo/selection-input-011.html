@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and input type="text" element</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+  <link rel="match" href="selection-input-011-ref.html">
+
+  <meta content="" name="flags">
+
+  <style>
+  input
+    {
+      background-color: red;
+      color: yellow;
+      font-family: monospace;
+      font-size: 48px;
+      line-height: 52px;
+      padding: 0px;
+      width: 11ch;
+    }
+
+  input::selection
+    {
+      background-color: yellow;
+      color: green;
+    }
+  </style>
+
+  <script>
+  function startTest()
+  {
+  var targetRange = document.createRange();
+  /* We first create an empty range */
+  targetRange.selectNodeContents(document.getElementById("test"));
+  /* Then we set the range boundaries to the children of div#test */
+  window.getSelection().addRange(targetRange);
+  /* Finally, we now select such range of content */
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>Test passes if each glyph of "Text sample" is green with a yellow background and if there is <strong>no red</strong>.
+
+  <div><input type="text" value="Text sample" id="test"></div>

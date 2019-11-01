@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Test if elements layout properly if they have too many children</title>
+<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#script-and-limit-schemata">
+<meta name="assert" content="Elements should add additional children to an mrow that includes the last valid child so layout is maintained.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/mathml/support/feature-detection.js"></script>
+<script src="/mathml/support/layout-comparison.js"></script>
+<script>
+  function getBox(id, i) {
+    return document.getElementById(id+i)
+  }
+
+  function removeIgnoredMrows(children) {
+    let result = [];
+    Array.from(children).forEach(child => {
+      if (child.getAttribute("class")==="ignore_mrow") {
+        if (child.childElementCount > 0)
+          Array.prototype.push.apply(result, child.children);
+      } else {
+        result.push(child);
+      }
+    });
+    return result;
+  }
+
+
+  function compareLayout(element, reference, epsilon) {
+    // Compare sizes of elements and children.
+    compareSize(element, reference, epsilon);
+    const elementBox = element.getBoundingClientRect();
+    const referenceBox = reference.getBoundingClientRect();
+
+    const elementChildren = childrenParticipatingToLayout(element);
+    const referenceChildren = removeIgnoredMrows(childrenParticipatingToLayout(reference));
+    
+    if (elementChildren.length != referenceChildren.length) {
+      throw "Reference should have the same number of children participating to layout."
+    }
+
+    for (let i = 0; i < elementChildren.length; i++) {
+      compareLayout(elementChildren[i], referenceChildren[i], epsilon);
+    }
+  }
+
+
+  setup({ explicit_done: true });
+  window.addEventListener("load", () => { document.fonts.ready.then(runTests); });
+
+  function runTests() {
+
+    // elements being tested
+    const elements = [
+      {name:"mover", n:2},
+      {name:"munder", n:2},
+      {name:"munderover", n:3},
+      {name:"msub", n:2},
+      {name:"msup", n:2},
+      {name:"msubsup", n:3},
+      {name:"mfrac", n:2},
+      {name:"mroot", n:2},
+      {name:"msqrt", n:1},
+      {name:"mstyle", n:1},
+      {name:"merror", n:1},
+      {name:"mpadded", n:1},
+      {name:"mphantom", n:1},
+      {name:"menclose", n:1},
+      {name:"mtd", n:1},
+      {name:"maction", n:1},
+      {name:"semantics", n:1},
+      {name:"math", n:1}
+    ];
+
+    // add a has_xxx key/value pair for feature dectection
+    elements.forEach((e) => { e.has = "has_"+e.name;});
+
+    // preconditions for all the tests running
+    // note: these could be done for each test, but repeatitive and really this is independent of what is really tested
+    test(
+      function() {
+        assert_true(MathMLFeatureDetection.has_mspace());
+        assert_true(MathMLFeatureDetection.has_mrow());
+        // check all tested elements (not all has_xxx functions implemented yet)
+        // elements.forEach(e) (
+        //  assert_true(MathMLFeatureDetection[e.has])
+        // )
+      },
+      "features/preconditions for running MathML tests with too many children"
+    );
+
+    // loop over number of children and elements and run a test on each
+    // we test for one over the limit and also 10 total (easier to setup tests if uniform)
+    const epsilon = 0.001;
+    [1,10].forEach((i) =>  {
+      elements.forEach(function(element) {
+          let nTest = (i==1) ? 1 + element.n : i; // actual number of children being tested
+          test(
+            function() {
+              compareLayout(getBox(element.name, nTest), getBox("ref_" + element.name, nTest), epsilon);
+            },
+            "too many children for " + element.name + " (" + nTest + " " + (nTest==1 ? "child" : "children") + ")."
+          )
+        }
+      )
+    });
+    
+    testMultiscripts(epsilon);
+    done();
+  }
+  
+  // mmultiscript requires one argument; additional args come in pairs with the exception of <mprescripts>
+  // this requires some special tests
+  // tests to be created pending some sort of resolution of issue #166
+  function testMultiscripts(epsilon) {
+  }
+</script>
+</head>
+<body>
+  <div id="log"></div>
+    <p>
+      <math>
+        <munderover id="munderover4">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+        </munderover>
+      </math>
+      <math>
+        <munder id="munder3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+        </munder>
+      </math>
+      <math>
+        <mover id="mover3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+        </mover>
+      </math>
+      <math>
+        <msub id="msub3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+        </msub>
+      </math>
+      <math>
+        <msup id="msup3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+        </msup>
+      </math>
+      <math>
+        <msubsup id="msubsup4">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+        </msubsup>
+      </math>
+      <math>
+        <mfrac id="mfrac3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+        </mfrac>
+      </math>
+      <math>
+        <mroot id="mroot3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+        </mroot>
+      </math>
+      <math>
+        <msqrt id="msqrt2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+        </msqrt>
+      </math>
+      <math>
+        <mstyle id="mstyle2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+        </mstyle>
+      </math>
+      <math>
+        <merror id="merror2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+        </merror>
+      </math>
+      <math>
+        <mpadded id="mpadded2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+        </mpadded>
+      </math>
+      <math>
+        <mphantom id="mphantom2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+        </mphantom>
+      </math>
+      <math>
+        <menclose id="menclose2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+        </menclose>
+      </math>
+      <math>
+         <mtable>
+           <mtr>
+             <mtd id="mtd2">
+               <mspace width="20px" height="10px" style="background: black"/>
+               <mspace width="20px" height="10px" style="background: blue"/>
+             </mtd>
+           </mtr>
+         </mtable>
+      </math>
+      <math>
+        <maction id="maction2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+        </maction>
+      </math>
+      <math>
+        <semantics id="semantics2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+        </semantics>
+      </math>
+      <math id="math2">
+        <mspace width="20px" height="10px" style="background: black"/>
+        <mspace width="20px" height="10px" style="background: blue"/>
+      </math>
+
+
+      <math>
+        <munderover id="munderover10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </munderover>
+      </math>
+      <math>
+        <munder id="munder10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </munder>
+      </math>
+      <math>
+        <mover id="mover10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </mover>
+      </math>
+      <math>
+        <msub id="msub10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </msub>
+      </math>
+      <math>
+        <msup id="msup10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </msup>
+      </math>
+      <math>
+        <msubsup id="msubsup10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </msubsup>
+      </math>
+      <math>
+        <mfrac id="mfrac10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </mfrac>
+      </math>
+      <math>
+        <mroot id="mroot10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </mroot>
+      </math>
+      <math>
+        <msqrt id="msqrt10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </msqrt>
+      </math>
+      <math>
+        <mstyle id="mstyle10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </mstyle>
+      </math>
+      <math>
+        <merror id="merror10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </merror>
+      </math>
+      <math>
+        <mpadded id="mpadded10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </mpadded>
+      </math>
+      <math>
+        <mphantom id="mphantom10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </mphantom>
+      </math>
+      <math>
+        <menclose id="menclose10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </menclose>
+      </math>
+      <math>
+         <mtable>
+           <mtr>
+             <mtd id="mtd10">
+              <mspace width="20px" height="10px" style="background: black"/>
+              <mspace width="20px" height="10px" style="background: blue"/>
+              <mspace width="20px" height="10px" style="background: red"/>
+              <mspace width="20px" height="10px" style="background: green"/>
+              <mspace width="20px" height="10px" style="background: "yellow"/>
+              <mspace width="20px" height="10px" style="background: black"/>
+              <mspace width="20px" height="10px" style="background: blue"/>
+              <mspace width="20px" height="10px" style="background: red"/>
+              <mspace width="20px" height="10px" style="background: green"/>
+              <mspace width="20px" height="10px" style="background: "yellow"/>
+             </mtd>
+           </mtr>
+         </mtable>
+      </math>
+      <math>
+        <maction id="maction10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </maction>
+      </math>
+      <math>
+        <semantics id="semantics10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+        </semantics>
+      </math>
+      <math id="math10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mspace width="20px" height="10px" style="background: red"/>
+          <mspace width="20px" height="10px" style="background: green"/>
+          <mspace width="20px" height="10px" style="background: "yellow"/>
+      </math>
+
+
+
+      <!-- reference MathML -->
+      <math>
+        <munderover id="ref_munderover4">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+          </mrow>
+        </munderover>
+      </math>
+      <math>
+        <munder id="ref_munder3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+          </mrow>
+        </munder>
+      </math>
+      <math>
+        <mover id="ref_mover3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+          </mrow>
+        </mover>
+      </math>
+      <math>
+        <msub id="ref_msub3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+          </mrow>
+        </msub>
+      </math>
+      <math>
+        <msup id="ref_msup3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+          </mrow>
+        </msup>
+      </math>
+      <math>
+        <msubsup id="ref_msubsup4">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+          </mrow>
+        </msubsup>
+      </math>
+      <math>
+        <mfrac id="ref_mfrac3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+          </mrow>
+        </mfrac>
+      </math>
+      <math>
+        <mroot id="ref_mroot3">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+          </mrow>
+        </mroot>
+      </math>
+      <math>
+        <msqrt id="ref_msqrt2">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+          </mrow>
+        </msqrt>
+      </math>
+      <math>
+        <mstyle id="ref_mstyle2">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+          </mrow>
+        </mstyle>
+      </math>
+      <math>
+        <merror id="ref_merror2">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+          </mrow>
+        </merror>
+      </math>
+      <math>
+        <mpadded id="ref_mpadded2">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+          </mrow>
+        </mpadded>
+      </math>
+      <math>
+        <mphantom id="ref_mphantom2">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+          </mrow>
+        </mphantom>
+      </math>
+      <math>
+        <menclose id="ref_menclose2">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+          </mrow>
+        </menclose>
+      </math>
+      <math>
+         <mtable>
+           <mtr>
+             <mtd id="ref_mtd2">
+                <mrow class="ignore_mrow">
+                  <mspace width="20px" height="10px" style="background: black"/>
+                  <mspace width="20px" height="10px" style="background: blue"/>
+                </mrow>
+             </mtd>
+           </mtr>
+         </mtable>
+      </math>
+      <math>
+        <maction id="ref_maction2">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+          </mrow>
+        </maction>
+      </math>
+      <math>
+        <semantics id="ref_semantics2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue" display="none"/>
+        </semantics>
+      </math>
+      <math id="ref_math2">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+          </mrow>
+      </math>
+
+
+      <math>
+        <munderover id="ref_munderover10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </munderover>
+      </math>
+      <math>
+        <munder id="ref_munder10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </munder>
+      </math>
+      <math>
+        <mover id="ref_mover10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </mover>
+      </math>
+      <math>
+        <msub id="ref_msub10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </msub>
+      </math>
+      <math>
+        <msup id="ref_msup10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </msup>
+      </math>
+      <math>
+        <msubsup id="ref_msubsup10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </msubsup>
+      </math>
+      <math>
+        <mfrac id="ref_mfrac10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </mfrac>
+      </math>
+      <math>
+        <mroot id="ref_mroot10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </mroot>
+      </math>
+      <math>
+        <msqrt id="ref_msqrt10">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </msqrt>
+      </math>
+      <math>
+        <mstyle id="ref_mstyle10">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </mstyle>
+      </math>
+      <math>
+        <merror id="ref_merror10">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </merror>
+      </math>
+      <math>
+        <mpadded id="ref_mpadded10">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </mpadded>
+      </math>
+      <math>
+        <mphantom id="ref_mphantom10">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </mphantom>
+      </math>
+      <math>
+        <menclose id="ref_menclose10">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </menclose>
+      </math>
+      <math>
+         <mtable>
+           <mtr>
+             <mtd id="ref_mtd10">
+              <mrow class="ignore_mrow">
+                <mspace width="20px" height="10px" style="background: black"/>
+                <mspace width="20px" height="10px" style="background: blue"/>
+                <mspace width="20px" height="10px" style="background: red"/>
+                <mspace width="20px" height="10px" style="background: green"/>
+                <mspace width="20px" height="10px" style="background: "yellow"/>
+                <mspace width="20px" height="10px" style="background: black"/>
+                <mspace width="20px" height="10px" style="background: blue"/>
+                <mspace width="20px" height="10px" style="background: red"/>
+                <mspace width="20px" height="10px" style="background: green"/>
+                <mspace width="20px" height="10px" style="background: "yellow"/>
+              </mrow>
+             </mtd>
+           </mtr>
+         </mtable>
+      </math>
+      <math>
+        <maction id="ref_maction10">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+        </maction>
+      </math>
+      <math>
+        <semantics id="ref_semantics10">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="20px" height="10px" style="background: blue" display="none"/>
+          <mspace width="20px" height="10px" style="background: red" display="none"/>
+          <mspace width="20px" height="10px" style="background: green" display="none"/>
+          <mspace width="20px" height="10px" style="background: "yellow" display="none"/>
+          <mspace width="20px" height="10px" style="background: black" display="none"/>
+          <mspace width="20px" height="10px" style="background: blue" display="none"/>
+          <mspace width="20px" height="10px" style="background: red" display="none"/>
+          <mspace width="20px" height="10px" style="background: green" display="none"/>
+          <mspace width="20px" height="10px" style="background: "yellow" display="none"/>
+        </semantics>
+      </math>
+      <math id="ref_math10">
+          <mrow class="ignore_mrow">
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+            <mspace width="20px" height="10px" style="background: black"/>
+            <mspace width="20px" height="10px" style="background: blue"/>
+            <mspace width="20px" height="10px" style="background: red"/>
+            <mspace width="20px" height="10px" style="background: green"/>
+            <mspace width="20px" height="10px" style="background: "yellow"/>
+          </mrow>
+      </math>
+
+    </p>
+</body>
+</html>

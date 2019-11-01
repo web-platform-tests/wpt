@@ -25,6 +25,22 @@ test(t => {
 }, 'Effect values reflect changes to font-size on element');
 
 test(t => {
+  const div = createDiv(t);
+  div.style.fontSize = '10px';
+  div.style.marginLeft = '10em';
+  div.style.transition = 'margin-left 1s linear';
+  getComputedStyle(div).marginLeft;
+  div.style.marginLeft = '20em';
+  const animation = div.getAnimations()[0];
+  animation.currentTime = 500;
+  assert_equals(getComputedStyle(div).marginLeft, '150px',
+                'Effect value before updating font-size');
+  div.style.fontSize = '20px';
+  assert_equals(getComputedStyle(div).marginLeft, '300px',
+                'Effect value after updating font-size');
+}, 'CSSTransition effect values reflect changes to font-size on element');
+
+test(t => {
   const parentDiv = createDiv(t);
   const div = createDiv(t);
   parentDiv.appendChild(div);
@@ -39,6 +55,25 @@ test(t => {
   assert_equals(getComputedStyle(div).marginLeft, '300px',
                 'Effect value after updating font-size on parent element');
 }, 'Effect values reflect changes to font-size on parent element');
+
+test(t => {
+  const parentDiv = createDiv(t);
+  const div = createDiv(t);
+  parentDiv.appendChild(div);
+  parentDiv.style.fontSize = '10px';
+  div.style.marginLeft = '10em';
+  div.style.transition = 'margin-left 1s linear';
+  getComputedStyle(div).marginLeft;
+  div.style.marginLeft = '20em';
+  const animation = div.getAnimations()[0];
+  animation.currentTime = 500;
+  assert_equals(getComputedStyle(div).marginLeft, '150px',
+                'Effect value before updating font-size');
+  parentDiv.style.fontSize = '20px';
+  assert_equals(getComputedStyle(div).marginLeft, '300px',
+                'Effect value after updating font-size');
+}, 'CSSTransition effect values reflect changes to font-size on parent element');
+
 
 promise_test(t => {
   const parentDiv = createDiv(t);

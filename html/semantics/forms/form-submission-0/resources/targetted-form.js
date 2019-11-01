@@ -22,7 +22,7 @@ function submitPromise(form, iframe) {
 
 function loadPromise(iframe) {
   return new Promise((resolve, reject) => {
-    iframe.onload = () => resolve(iframe.contentWindow.location.search);
+    iframe.onload = resolve;
     iframe.onerror = () => reject(new Error('iframe onerror fired'));
   });
 }

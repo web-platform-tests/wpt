@@ -11,6 +11,8 @@ logging.basicConfig()
 logger = logging.getLogger("tc-download")
 
 # The root URL of the Taskcluster deployment from which to download wpt reports
+# (after https://bugzilla.mozilla.org/show_bug.cgi?id=1574668 lands, this will
+# be https://community-tc.services.mozilla.com)
 TASKCLUSTER_ROOT_URL = 'https://taskcluster.net'
 
 def get_parser():

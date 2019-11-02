@@ -73,7 +73,7 @@ promise_test(() => {
       () => { done(); }
     ).then(({harness, tests}) => {
       assert_equals(harness, 'ERROR');
-      assert_equals(tests['Document title'], 'FAIL');
+      assert_array_equals(Object.keys(tests), []);
     });
 }, 'completion signaled before testing begins');
 
@@ -82,7 +82,7 @@ promise_test(() => {
       () => { assert_true(true); }
     ).then(({harness, tests}) => {
       assert_equals(harness, 'ERROR');
-      assert_equals(tests['Document title'], 'FAIL');
+      assert_array_equals(Object.keys(tests), []);
     });
 }, 'passing assertion before testing begins');
 
@@ -91,7 +91,7 @@ promise_test(() => {
       () => { assert_false(true); }
     ).then(({harness, tests}) => {
       assert_equals(harness, 'ERROR');
-      assert_equals(tests['Document title'], 'FAIL');
+      assert_array_equals(Object.keys(tests), []);
     });
 }, 'failing assertion before testing begins');
 
@@ -100,7 +100,7 @@ promise_test(() => {
       () => { throw new Error('this error is expected'); }
     ).then(({harness, tests}) => {
       assert_equals(harness, 'ERROR');
-      assert_equals(tests['Document title'], 'FAIL');
+      assert_array_equals(Object.keys(tests), []);
     });
 }, 'uncaught exception before testing begins');
 
@@ -193,7 +193,7 @@ if ('onunhandledrejection' in window) {
         () => { Promise.reject(new Error('this error is expected')); }
       ).then(({harness, tests}) => {
         assert_equals(harness, 'ERROR');
-        assert_equals(tests['Document title'], 'FAIL');
+        assert_array_equals(Object.keys(tests), []);
       });
   }, 'unhandled rejection before testing begins');
 

@@ -16,7 +16,7 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="testdriver.js Tutorial" href="testdriver-tutorial.html" />
+    <link rel="next" title="Testdriver extension tutorial" href="testdriver-extension-tutorial.html" />
     <link rel="prev" title="Submitting Tests" href="submission-process.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -48,17 +48,20 @@ tests.</p>
 the global scope.</p>
 <p>NB: presently, testdriver.js only works in the top-level test browsing
 context (and not therefore in any frame or window opened from it).</p>
-<div class="section" id="action-sequence">
-<h3>action_sequence<a class="headerlink" href="#action-sequence" title="Permalink to this headline">¶</a></h3>
-<p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.action_sequence(actions)</span></code></p>
-<ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">actions</span></code>: an array of <code class="docutils literal notranslate"><span class="pre">Action</span></code> objects</li>
-</ul>
-<p>This function causes a sequence of actions to be sent to the browser. It is based on the <a class="reference external" href="https://w3c.github.io/webdriver/#actions">WebDriver API</a>.
+<div class="section" id="actions">
+<h3>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h3>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">actions</span> <span class="o">=</span> <span class="n">new</span> <span class="n">test_driver</span><span class="o">.</span><span class="n">Actions</span><span class="p">()</span>
+   <span class="o">.</span><span class="n">action1</span><span class="p">()</span>
+   <span class="o">.</span><span class="n">action2</span><span class="p">();</span>
+<span class="n">actions</span><span class="o">.</span><span class="n">send</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Test authors are encouraged to use the builder API to generate the sequence of actions. The builder
+API can be accessed via the <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">test_driver.Actions()</span></code> object, and actions are defined in <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver-actions.js">testdriver-actions.js</a></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">actions.send()</span></code> function causes the sequence of actions to be sent to the browser. It is based on the <a class="reference external" href="https://w3c.github.io/webdriver/#actions">WebDriver API</a>.
 The action can be a keyboard action, a pointer action or a pause. It returns a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> that
 resolves after the actions have been sent or rejects if an error was thrown.</p>
-<p>Test authors are encouraged to use the builder API to generate the sequence of actions. The builder
-API can be accessed via the <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">test_driver.Actions()</span></code> object.</p>
 <p>Example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">text_box</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">);</span>
 
@@ -187,7 +190,7 @@ For example, to send the tab key you would send “\uE004”.</p>
 <li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">testdriver.js Automation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testdriver-tutorial.html">testdriver.js Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testdriver-extension-tutorial.html">Testdriver extension tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testharness.html">testharness.js Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testharness-tutorial.html">testharness.js tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html">Command-line utility scripts</a></li>
@@ -209,7 +212,7 @@ For example, to send the tab key you would send “\uE004”.</p>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Writing Tests</a><ul>
       <li>Previous: <a href="submission-process.html" title="previous chapter">Submitting Tests</a></li>
-      <li>Next: <a href="testdriver-tutorial.html" title="next chapter">testdriver.js Tutorial</a></li>
+      <li>Next: <a href="testdriver-extension-tutorial.html" title="next chapter">Testdriver extension tutorial</a></li>
   </ul></li>
   </ul></li>
 </ul>

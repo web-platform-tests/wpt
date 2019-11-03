@@ -18,7 +18,7 @@ interface NDEFRecord {
   constructor(NDEFRecordInit recordInit);
 
   readonly attribute USVString recordType;
-  readonly attribute USVString mediaType;
+  readonly attribute USVString? mediaType;
   readonly attribute USVString id;
   readonly attribute DataView? data;
 
@@ -72,7 +72,6 @@ dictionary NDEFReadingEventInit : EventInit {
 
 dictionary NDEFPushOptions {
   NDEFPushTarget target = "any";
-  unrestricted double timeout = Infinity;
   boolean ignoreRead = true;
   boolean overwrite = true;
   AbortSignal? signal;

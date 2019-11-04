@@ -79,7 +79,7 @@ promise_test(() => {
 
 promise_test(() => {
   return makeTest(
-      () => { assert_true(true); }
+      () => { assert_true(true); done(); }
     ).then(({harness, tests}) => {
       assert_equals(harness, 'ERROR');
       assert_array_equals(Object.keys(tests), []);

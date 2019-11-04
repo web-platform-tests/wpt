@@ -3376,12 +3376,6 @@ policies and contribution forms [3].
      */
     function assert(expected_true, function_name, description, error, substitutions)
     {
-        if (tests.tests.length === 0) {
-            tests.status.status = tests.status.ERROR;
-            tests.status.message = "An assertion was made before testing began.";
-            tests.complete();
-            return;
-        }
         if (expected_true !== true) {
             var msg = make_message(function_name, description,
                                    error, substitutions);
@@ -3672,13 +3666,6 @@ policies and contribution forms [3].
 
     if (global_scope.addEventListener) {
         var error_handler = function(message, stack) {
-            if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
-                tests.status.status = tests.status.ERROR;
-                tests.status.message = "An error occured before testing began.";
-                tests.complete();
-                return;
-            }
-
             if (tests.file_is_test) {
                 var test = tests.tests[0];
                 if (test.phase >= test.phases.HAS_RESULT) {

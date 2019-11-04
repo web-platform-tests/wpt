@@ -793,7 +793,7 @@ policies and contribution forms [3].
     function done() {
         if (tests.tests.length === 0) {
             tests.status.status = tests.status.ERROR;
-            tests.status.message = "The test signaled completion before testing began.";
+            tests.status.message = "done() was called without first defining any tests";
             tests.complete();
             return;
         }

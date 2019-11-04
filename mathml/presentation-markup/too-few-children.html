@@ -43,9 +43,7 @@
 
 
     for (let i = 0; i < elementChildren.length; i++) {
-        const childBox = elementChildren[i].getBoundingClientRect();
-        const referenceChildBox = referenceChildren[i].getBoundingClientRect();
-        compareLayout(childBox, referenceChildBox, epsilon);
+      compareLayout(elementChildren[i], referenceChildren[i], epsilon);
     }
   }
 
@@ -98,12 +96,13 @@
     );
 
     // loop over number of children and elements and run a test on each
+    const epsilon = 0.001;
     for (let i=0; i<3; i++) {
       elements.forEach(function(element) {
         if (i < element.n) {
           test(
             function() {
-              compareLayout(getBox(element.name, i), getBox("ref_" + element.name, i), 0);
+              compareLayout(getBox(element.name, i), getBox("ref_" + element.name, i), epsilon);
             },
             "too few children for " + element.name + " (" + i + " " + (i==1 ? "child" : "children") + ")."
           )

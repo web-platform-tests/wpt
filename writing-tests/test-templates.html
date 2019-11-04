@@ -121,6 +121,23 @@ delimit text to be replaced and <code class="docutils literal notranslate"><span
 </div>
 <p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.html</span></code></p>
 </div>
+<div class="section" id="html-with-testdriver-automation">
+<h3>HTML with <a class="reference internal" href="testdriver.html"><span class="doc">testdriver automation</span></a><a class="headerlink" href="#html-with-testdriver-automation" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>${1:Test title}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver-vendor.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="nx">$</span><span class="p">{</span><span class="mi">2</span><span class="o">:</span><span class="nx">Test</span> <span class="nx">body</span><span class="p">}</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Filename: <code class="docutils literal notranslate"><span class="pre">{test-topic}-###.html</span></code></p>
+</div>
 <div class="section" id="svg">
 <h3>SVG<a class="headerlink" href="#svg" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;svg</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2000/svg&quot;</span> <span class="na">xmlns:h=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="nt">&gt;</span>

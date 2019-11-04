@@ -820,10 +820,11 @@ asserts that one `assert_func(actual, expected_array_N, extra_arg1, ..., extra_a
 
 ## Utility functions ##
 
-### `on_event(object, event, callback)`
+### **DEPRECATED** `on_event(object, event, callback)`
 
 Register a function as a DOM event listener to the given object for the event
-bubbling phase.
+bubbling phase. New tests should not use this function. Instead, they should
+invoke the `addEventListener` method of the `object` value.
 
 ### `format_value(value)`
 

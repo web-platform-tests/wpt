@@ -1,0 +1,15 @@
+{
+    "ports": {
+        "http": [80, 8000],
+        "https": [443],
+        "ws": [8001],
+        "wss": [8002],
+        "http2": [8003]
+    },
+    "bind_address": false,
+    "browser_host": "wpt.live",
+    "alternate_hosts": {
+        "alt": "not-wpt.live"
+    },
+    "check_subdomains": false
+}

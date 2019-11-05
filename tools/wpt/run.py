@@ -697,7 +697,7 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
     kwargs["product"] = product_parts[0].replace("-", "_")
     sub_product = product_parts[1:]
 
-    check_environ(kwargs["product"])
+    #check_environ(kwargs["product"])
     args_general(kwargs)
 
     if kwargs["product"] not in product_setup:

@@ -94,16 +94,31 @@ test(function(t) {
   assert_equals(sheet.cssRules[1].cssText, '@media screen and (color) {\n}');
 }, 'features - character case normalization');
 
+/**
+ * The following test is disabled pending clarification of the intended
+ * behavior: https://github.com/w3c/csswg-drafts/issues/533
+ */
+//test(function(t) {
+//  var sheet = makeSheet(t);
+//  sheet.insertRule('@media screen and (color) and (color) {}');
+//
+//  assert_equals(sheet.cssRules.length, 1);
+//  assert_equals(
+//    sheet.cssRules[0].cssText,
+//    '@media screen and (color) {\n}'
+//  );
+//}, 'features - de-duplication');
+
 test(function(t) {
   var sheet = makeSheet(t);
-  sheet.insertRule('@media screen and (color) and (color) {}');
+  sheet.insertRule('@media print and (max-width: 23px) and (max-width: 45px) {}');
 
   assert_equals(sheet.cssRules.length, 1);
   assert_equals(
     sheet.cssRules[0].cssText,
-    '@media screen and (color) {\n}'
+    '@media print and (max-width: 23px) and (max-width: 45px) {\n}'
   );
-}, 'features - de-duplicatoin');
+}, 'features - preservation of overspecified features');
 
 test(function(t) {
   var sheet = makeSheet(t);

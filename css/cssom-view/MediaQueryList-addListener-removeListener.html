@@ -11,12 +11,6 @@
 <script>
 "use strict";
 
-test(function() {
-    const mql = window.matchMedia("all");
-    assert_inherits(mql, "addListener");
-    assert_equals(typeof mql.addListener, "function");
-}, "MediaQueryList::addListener is a function");
-
 promise_test(async t => {
     const iframe = await createIFrame(t, 200, 100);
     const heightMQL = iframe.contentWindow.matchMedia("(max-height: 50px)");
@@ -100,12 +94,6 @@ promise_test(async t => {
 
     assert_equals(called, 1);
 }, "listener that was added twice is called only once");
-
-test(function() {
-    const mql = window.matchMedia("all");
-    assert_inherits(mql, "removeListener");
-    assert_equals(typeof mql.removeListener, "function");
-}, "MediaQueryList::removeListener is a function");
 
 promise_test(async t => {
     const mql = await createMQL(t);

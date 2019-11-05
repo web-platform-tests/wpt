@@ -9,11 +9,11 @@
 <script>
 "use strict";
 
-test(t => {
+test(() => {
     assert_equals(new MediaQueryListEvent("test").type, "test");
 }, 'type can be different from "change"');
 
-test(t => {
+test(() => {
     const event = new MediaQueryListEvent("change");
 
     assert_equals(event.media, "");
@@ -22,7 +22,7 @@ test(t => {
     assert_false(event.cancelable);
 }, "init dictionary default values");
 
-test(t => {
+test(() => {
     const event = new MediaQueryListEvent("change", {
         media: "test",
         matches: true,

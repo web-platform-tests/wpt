@@ -1005,6 +1005,28 @@ class Safari(Browser):
         return m.group(1)
 
 
+class SafariiOS(Browser):
+    """Safari-specific interface for iOS."""
+
+    product = "safari_ios"
+    requirements = "requirements_safari.txt"
+
+    def install(self, dest=None, channel=None):
+        raise NotImplementedError
+
+    def find_binary(self, venv_path=None, channel=None):
+        raise NotImplementedError
+
+    def find_webdriver(self, channel=None):
+        return find_executable("safaridriver")
+
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
+        raise NotImplementedError
+
+    def version(self, binary=None, webdriver_binary=None):
+        return None
+
+
 class Servo(Browser):
     """Servo-specific interface."""
 

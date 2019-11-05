@@ -541,6 +541,20 @@ class Safari(BrowserSetup):
             kwargs["webdriver_binary"] = webdriver_binary
 
 
+class SafariiOS(BrowserSetup):
+    name = "safari_ios"
+    browser_cls = browser.SafariiOS
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["webdriver_binary"] is None:
+            webdriver_binary = self.browser.find_webdriver()
+
+            if webdriver_binary is None:
+                raise WptrunError("Unable to locate safaridriver binary")
+
+            kwargs["webdriver_binary"] = webdriver_binary
+
+
 class Sauce(BrowserSetup):
     name = "sauce"
     browser_cls = browser.Sauce
@@ -645,6 +659,7 @@ product_setup = {
     "edge_webdriver": EdgeWebDriver,
     "ie": InternetExplorer,
     "safari": Safari,
+    "safari_ios": SafariiOS,
     "servo": Servo,
     "servodriver": ServoWebDriver,
     "sauce": Sauce,

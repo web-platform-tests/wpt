@@ -51,7 +51,7 @@ async_test(function(t) {
   });
 
   document.body.appendChild(iframe);
-}, "Changing `srcdoc` (via property) triggers attributes processing");
+}, "Setting `srcdoc` (via property) triggers attributes processing");
 
 async_test(function(t) {
   var iframe = createIFrameWithBlobSrc();

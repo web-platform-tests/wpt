@@ -5,14 +5,21 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <body>
 <script>
-async_test(t => {
+function runStartEndTest(t, utterance) {
   test_driver.bless('speechSynthesis.speak', t.step_func(() => {
-    const utter = new SpeechSynthesisUtterance('test');
-    utter.onerror = t.unreached_func('error event');
-    speechSynthesis.speak(utter);
-    utter.onstart = t.step_func(() => {
-      utter.onend = t.step_func_done();
+    utterance.onerror = t.unreached_func('error event');
+    speechSynthesis.speak(utterance);
+    utterance.onstart = t.step_func(() => {
+      utterance.onend = t.step_func_done();
     });
   }));
+}
+async_test(t => {
+  const utterance = new SpeechSynthesisUtterance();
+  runStartEndTest(t, utterance);
+}, 'speechSynthesis.speak() fires start and end events with empty utterance');
+async_test(t => {
+  const utterance = new SpeechSynthesisUtterance('test');
+  runStartEndTest(t, utterance);
 }, 'speechSynthesis.speak() fires start and end events');
 </script>

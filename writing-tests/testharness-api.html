@@ -777,8 +777,16 @@ allows multiple behaviours. Test authors should not use this method simply to hi
 UA bugs.</p>
 </div>
 </div>
-<div class="section" id="formatting">
-<h2>Formatting<a class="headerlink" href="#formatting" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="utility-functions">
+<h2>Utility functions<a class="headerlink" href="#utility-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="deprecated-on-event-object-event-callback">
+<h3><strong>DEPRECATED</strong> <code class="docutils literal notranslate"><span class="pre">on_event(object,</span> <span class="pre">event,</span> <span class="pre">callback)</span></code><a class="headerlink" href="#deprecated-on-event-object-event-callback" title="Permalink to this headline">¶</a></h3>
+<p>Register a function as a DOM event listener to the given object for the event
+bubbling phase. New tests should not use this function. Instead, they should
+invoke the <code class="docutils literal notranslate"><span class="pre">addEventListener</span></code> method of the <code class="docutils literal notranslate"><span class="pre">object</span></code> value.</p>
+</div>
+<div class="section" id="format-value-value">
+<h3><code class="docutils literal notranslate"><span class="pre">format_value(value)</span></code><a class="headerlink" href="#format-value-value" title="Permalink to this headline">¶</a></h3>
 <p>When many JavaScript Object values are coerced to a String, the resulting value
 will be <code class="docutils literal notranslate"><span class="pre">&quot;[object</span> <span class="pre">Object]&quot;</span></code>. This obscures helpful information, making the
 coerced value unsuitable for use in assertion messages, test names, and
@@ -791,6 +799,7 @@ containing control characters to include human-readable representations.</p>
 <span class="nx">format_value</span><span class="p">(</span><span class="s2">&quot;foo\uffffbar&quot;</span><span class="p">);</span> <span class="c1">// &quot;\&quot;foo\\uffffbar\&quot;&quot;</span>
 <span class="nx">format_value</span><span class="p">([</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="kc">Infinity</span><span class="p">]);</span> <span class="c1">// &quot;[-0, Infinity]&quot;</span>
 </pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="metadata">

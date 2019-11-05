@@ -35,6 +35,10 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                                            cache_manager, run_info_data, **kwargs)
     executor_kwargs["close_after_done"] = True
     executor_kwargs["capabilities"] = {"platformName": "iOS"}
+    use_simulator = kwargs.get("use_simulator", False)
+    executor_kwargs["capabilities"]["safari:useSimulator"] = use_simulator
+    if use_simulator:
+        executor_kwargs["capabilities"]["safari:deviceType"] = "iPad"
     if test_type == "testharness":
         executor_kwargs["capabilities"]["pageLoadStrategy"] = "eager"
     if kwargs["binary"] is not None:

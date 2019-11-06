@@ -810,7 +810,6 @@ IdlArray.prototype.test = function()
             if (!(this.members[rhs] instanceof IdlInterface)) throw errStr + rhs + " is not an interface.";
 
             if (this.members[rhs].members.length) {
-                test(function () {
                     var clash = this.members[rhs].members.find(function(member) {
                         return this.members[lhs].members.find(function(m) {
                             return this.are_duplicate_members(m, member);
@@ -820,7 +819,6 @@ IdlArray.prototype.test = function()
                         this.members[lhs].members.push(new IdlInterfaceMember(member));
                     }.bind(this));
                     assert_true(!clash, "member " + (clash && clash.name) + " is unique");
-                }.bind(this), lhs + " implements " + rhs + ": member names are unique");
             }
         }.bind(this));
     }
@@ -837,7 +835,6 @@ IdlArray.prototype.test = function()
             if (!(this.members[rhs] instanceof IdlInterface)) throw errStr + rhs + " is not an interface.";
 
             if (this.members[rhs].members.length) {
-                test(function () {
                     var clash = this.members[rhs].members.find(function(member) {
                         return this.members[lhs].members.find(function(m) {
                             return this.are_duplicate_members(m, member);
@@ -850,7 +847,6 @@ IdlArray.prototype.test = function()
                         this.members[lhs].members.push(new IdlInterfaceMember(member));
                     }.bind(this));
                     assert_true(!clash, "member " + (clash && clash.name) + " is unique");
-                }.bind(this), lhs + " includes " + rhs + ": member names are unique");
             }
         }.bind(this));
     }
@@ -923,7 +919,6 @@ IdlArray.prototype.collapse_partials = function()
         testedPartials.set(parsed_idl.name, partialTestCount);
 
         if (!parsed_idl.untested) {
-            test(function () {
                 assert_true(originalExists, `Original ${parsed_idl.type} should be defined`);
 
                 var expected;
@@ -938,7 +933,6 @@ IdlArray.prototype.collapse_partials = function()
                 assert_true(
                     expected.prototype.isPrototypeOf(this.members[parsed_idl.name]),
                     `Original ${parsed_idl.name} definition should have type ${parsed_idl.type}`);
-            }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: original ${parsed_idl.type} defined`);
         }
         if (!originalExists) {
             // Not good.. but keep calm and carry on.
@@ -954,7 +948,6 @@ IdlArray.prototype.collapse_partials = function()
             const exposureAttr = parsed_idl.extAttrs.find(a => a.name === "Exposed");
             if (exposureAttr) {
                 if (!parsed_idl.untested) {
-                    test(function () {
                         const partialExposure = exposure_set(parsed_idl);
                         const memberExposure = exposure_set(this.members[parsed_idl.name]);
                         partialExposure.forEach(name => {
@@ -963,7 +956,6 @@ IdlArray.prototype.collapse_partials = function()
                                     `Partial ${parsed_idl.name} ${parsed_idl.type} is exposed to '${name}', the original ${parsed_idl.type} is not.`);
                             }
                         });
-                    }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: valid exposure set`);
                 }
                 parsed_idl.members.forEach(function (member) {
                     member.extAttrs.push(exposureAttr);
@@ -980,7 +972,6 @@ IdlArray.prototype.collapse_partials = function()
             }.bind(this));
         }
         if (parsed_idl.members.length) {
-            test(function () {
                 var clash = parsed_idl.members.find(function(member) {
                     return this.members[parsed_idl.name].members.find(function(m) {
                         return this.are_duplicate_members(m, member);
@@ -991,7 +982,6 @@ IdlArray.prototype.collapse_partials = function()
                     this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
                 }.bind(this));
                 assert_true(!clash, "member " + (clash && clash.name) + " is unique");
-            }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: member names are unique`);
         }
     }.bind(this));
     this.partials = [];

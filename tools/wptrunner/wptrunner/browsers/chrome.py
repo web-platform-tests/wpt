@@ -61,7 +61,9 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         chrome_options["binary"] = kwargs["binary"]
 
     # Here we set a few Chrome flags that are always passed.
-    chrome_options["args"] = []
+    # ChromeDriver's "acceptInsecureCerts" capability only controls the current
+    # browsing context, whereas the CLI flag works for workers, too.
+    chrome_options["args"] = ["--ignore-certificate-errors"]
     # Allow audio autoplay without a user gesture.
     chrome_options["args"].append("--autoplay-policy=no-user-gesture-required")
     # Allow WebRTC tests to call getUserMedia.
@@ -121,7 +123,7 @@ class ChromeBrowser(Browser):
         # TODO(ato): This only indicates the driver is alive,
         # and doesn't say anything about whether a browser session
         # is active.
-        return self.server.is_alive()
+        return self.server.is_alive
 
     def cleanup(self):
         self.stop()

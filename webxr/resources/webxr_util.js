@@ -16,6 +16,15 @@ function xr_promise_test(name, func, properties) {
       await loadChromiumResources;
     }
 
+    // Ensure that any devices are disconnected when done. If this were done in
+    // a .then() for the success case, a test that expected failure would
+    // already be marked done at the time that runs and the shutdown would
+    // interfere with the next test.
+    t.add_cleanup(async () => {
+      // Ensure system state is cleaned up.
+      await navigator.xr.test.disconnectAllDevices();
+    });
+
     return func(t);
   }, name, properties);
 }
@@ -44,19 +53,16 @@ function xr_session_promise_test(
   xr_promise_test(
       name,
       (t) => {
-          // Ensure that any pending sessions are ended and devices are
-          // disconnected when done. This needs to use a cleanup function to
-          // ensure proper sequencing. If this were done in a .then() for the
-          // success case, a test that expected failure would already be marked
-          // done at the time that runs, and the shutdown would interfere with
-          // the next test which may have started already.
+          // Ensure that any pending sessions are ended when done. This needs to
+          // use a cleanup function to ensure proper sequencing. If this were
+          // done in a .then() for the success case, a test that expected
+          // failure would already be marked done at the time that runs, and the
+          // shutdown would interfere with the next test which may have started.
           t.add_cleanup(async () => {
-                // If a session was created, end it.
-                if (testSession) {
-                  await testSession.end().catch(() => {});
-                }
-                // Cleanup system state.
-                await navigator.xr.test.disconnectAllDevices();
+            // If a session was created, end it.
+            if (testSession) {
+              await testSession.end().catch(() => {});
+            }
           });
 
           return navigator.xr.test.simulateDeviceConnection(fakeDeviceInit)
@@ -71,9 +77,8 @@ function xr_session_promise_test(
                             .then((session) => {
                               testSession = session;
                               session.mode = sessionMode;
-                              let glLayer = new XRWebGLLayer(session, gl, {
-                                compositionDisabled: session.mode == 'inline'
-                              });
+                              let glLayer = new XRWebGLLayer(session, gl);
+                              glLayer.context = gl;
                               // Session must have a baseLayer or frame requests
                               // will be ignored.
                               session.updateRenderState({
@@ -113,7 +118,6 @@ function forEachWebxrObject(callback) {
   callback(window.XRView, 'XRView');
   callback(window.XRViewport, 'XRViewport');
   callback(window.XRViewerPose, 'XRViewerPose');
-  callback(window.XRLayer, 'XRLayer');
   callback(window.XRWebGLLayer, 'XRWebGLLayer');
   callback(window.XRWebGLLayerInit, 'XRWebGLLayerInit');
   callback(window.XRCoordinateSystem, 'XRCoordinateSystem');
@@ -123,7 +127,7 @@ function forEachWebxrObject(callback) {
   callback(window.XRCoordinateSystemEvent, 'XRCoordinateSystemEvent');
 }
 
-// Code for loading test api in chromium.
+// Code for loading test API in Chromium.
 let loadChromiumResources = Promise.resolve().then(() => {
   if (!('MojoInterfaceInterceptor' in self)) {
     // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
@@ -131,26 +135,38 @@ let loadChromiumResources = Promise.resolve().then(() => {
     return;
   }
 
+  let chromiumResources = [
+    '/gen/layout_test_data/mojo/public/js/mojo_bindings.js',
+    '/gen/mojo/public/mojom/base/time.mojom.js',
+    '/gen/gpu/ipc/common/mailbox_holder.mojom.js',
+    '/gen/gpu/ipc/common/sync_token.mojom.js',
+    '/gen/ui/display/mojom/display.mojom.js',
+    '/gen/ui/gfx/geometry/mojom/geometry.mojom.js',
+    '/gen/ui/gfx/mojom/gpu_fence_handle.mojom.js',
+    '/gen/ui/gfx/mojom/transform.mojom.js',
+    '/gen/device/vr/public/mojom/vr_service.mojom.js',
+    '/resources/chromium/webxr-test.js',
+    '/resources/testdriver.js',
+    '/resources/testdriver-vendor.js',
+  ];
+
+  // This infrastructure is also used by Chromium-specific internal tests that
+  // may need additional resources (e.g. internal API extensions), this allows
+  // those tests to rely on this infrastructure while ensuring that no tests
+  // make it into public WPTs that rely on APIs outside of the webxr test API.
+  if (typeof(additionalChromiumResources) !== 'undefined') {
+    chromiumResources = chromiumResources.concat(additionalChromiumResources);
+  }
+
   let chain = Promise.resolve();
-  ['/gen/layout_test_data/mojo/public/js/mojo_bindings.js',
-   '/gen/mojo/public/mojom/base/time.mojom.js',
-   '/gen/gpu/ipc/common/mailbox_holder.mojom.js',
-   '/gen/gpu/ipc/common/sync_token.mojom.js',
-   '/gen/ui/display/mojom/display.mojom.js',
-   '/gen/ui/gfx/geometry/mojo/geometry.mojom.js',
-   '/gen/ui/gfx/mojo/gpu_fence_handle.mojom.js',
-   '/gen/ui/gfx/mojo/transform.mojom.js',
-   '/gen/device/vr/public/mojom/vr_service.mojom.js',
-   '/resources/chromium/webxr-test.js', '/resources/testdriver.js',
-   '/resources/testdriver-vendor.js',
-  ].forEach(path => {
-    let script = document.createElement('script');
-    script.src = path;
-    script.async = false;
-    chain = chain.then(() => new Promise(resolve => {
-                         script.onload = () => resolve();
-                       }));
-    document.head.appendChild(script);
+    chromiumResources.forEach(path => {
+      let script = document.createElement('script');
+      script.src = path;
+      script.async = false;
+      chain = chain.then(() => new Promise(resolve => {
+                           script.onload = () => resolve();
+                         }));
+      document.head.appendChild(script);
   });
 
   return chain;

@@ -4,6 +4,19 @@ policy:
 tasks:
   $let:
     event_str: {$json: {$eval: event}}
+    provisionerId:
+      $if: 'taskcluster_root_url == "https://taskcluster.net"'
+      then: aws-provisioner-v1
+      else: proj-wpt
+    workerType:
+      $if: 'taskcluster_root_url == "https://taskcluster.net"'
+      then:
+        $if: event.repository.full_name == 'web-platform-tests/wpt'
+        then:
+          wpt-docker-worker
+        else:
+          github-worker
+      else: ci
   in:
     $flattenDeep:
       - $if: tasks_for == "github-push"
@@ -12,49 +25,48 @@ tasks:
             $flatten:
               $match: {
                 event.ref == "refs/heads/master": [{name: firefox, channel: nightly}, {name: chrome, channel: dev}],
-                event.ref == "refs/heads/epochs/daily": [{name: firefox, channel: stable}, {name: chrome, channel: stable}],
-                event.ref == "refs/heads/epochs/weekly": [{name: firefox, channel: beta}, {name: chrome, channel: beta}]
-                }
+                event.ref == "refs/heads/epochs/daily": [{name: firefox, channel: stable}, {name: chrome, channel: stable}, {name: webkitgtk_minibrowser, channel: nightly}],
+                event.ref == "refs/heads/epochs/weekly": [{name: firefox, channel: beta}, {name: chrome, channel: beta}, {name: webkitgtk_minibrowser, channel: stable}],
+                event.ref == "refs/heads/triggers/chrome_stable": [{name: chrome, channel: stable}],
+                event.ref == "refs/heads/triggers/chrome_beta": [{name: chrome, channel: beta}],
+                event.ref == "refs/heads/triggers/chrome_dev": [{name: chrome, channel: dev}],
+                event.ref == "refs/heads/triggers/firefox_stable": [{name: firefox, channel: stable}],
+                event.ref == "refs/heads/triggers/firefox_beta": [{name: firefox, channel: beta}],
+                event.ref == "refs/heads/triggers/firefox_nightly": [{name: firefox, channel: nightly}],
+                event.ref == "refs/heads/triggers/webkitgtk_minibrowser_stable": [{name: webkitgtk_minibrowser, channel: stable}],
+                event.ref == "refs/heads/triggers/webkitgtk_minibrowser_nightly": [{name: webkitgtk_minibrowser, channel: nightly}]
+              }
           each(browser):
             $map:
-              - [testharness, 1, 15]
-              - [testharness, 2, 15]
-              - [testharness, 3, 15]
-              - [testharness, 4, 15]
-              - [testharness, 5, 15]
-              - [testharness, 6, 15]
-              - [testharness, 7, 15]
-              - [testharness, 8, 15]
-              - [testharness, 9, 15]
-              - [testharness, 10, 15]
-              - [testharness, 11, 15]
-              - [testharness, 12, 15]
-              - [testharness, 13, 15]
-              - [testharness, 14, 15]
-              - [testharness, 15, 15]
-              - [reftest, 1, 10]
-              - [reftest, 2, 10]
-              - [reftest, 3, 10]
-              - [reftest, 4, 10]
-              - [reftest, 5, 10]
-              - [reftest, 6, 10]
-              - [reftest, 7, 10]
-              - [reftest, 8, 10]
-              - [reftest, 9, 10]
-              - [reftest, 10, 10]
+              - [testharness, 1, 16]
+              - [testharness, 2, 16]
+              - [testharness, 3, 16]
+              - [testharness, 4, 16]
+              - [testharness, 5, 16]
+              - [testharness, 6, 16]
+              - [testharness, 7, 16]
+              - [testharness, 8, 16]
+              - [testharness, 9, 16]
+              - [testharness, 10, 16]
+              - [testharness, 11, 16]
+              - [testharness, 12, 16]
+              - [testharness, 13, 16]
+              - [testharness, 14, 16]
+              - [testharness, 15, 16]
+              - [testharness, 16, 16]
+              - [reftest, 1, 5]
+              - [reftest, 2, 5]
+              - [reftest, 3, 5]
+              - [reftest, 4, 5]
+              - [reftest, 5, 5]
               - [wdspec, 1, 1]
             each(chunk):
               taskId: {$eval: 'as_slugid(browser.name + browser.channel + chunk[0] + str(chunk[1]))'}
               taskGroupId: {$eval: 'as_slugid("task group")'}
               created: {$fromNow: ''}
               deadline: {$fromNow: '24 hours'}
-              provisionerId: aws-provisioner-v1
-              workerType:
-                $if: event.repository.full_name == 'web-platform-tests/wpt'
-                then:
-                  wpt-docker-worker
-                else:
-                  github-worker
+              provisionerId: ${provisionerId}
+              workerType: ${workerType}
               metadata:
                 name: wpt-${browser.name}-${browser.channel}-${chunk[0]}-${chunk[1]}
                 description: >-
@@ -64,14 +76,13 @@ tasks:
                 owner: ${event.pusher.email}
                 source: ${event.repository.url}
               payload:
-                image: harjgam/web-platform-tests:0.32
+                image:
+                    harjgam/web-platform-tests:0.33
                 maxRunTime: 7200
                 artifacts:
                   public/results:
                     path: /home/test/artifacts
                     type: directory
-                env:
-                    TASK_EVENT: "${event_str}"
                 command:
                   - /bin/bash
                   - --login
@@ -82,6 +93,9 @@ tasks:
                       ${event.repository.url}
                       ${event.ref};
                     cd ~/web-platform-tests;
+                    sudo cp tools/certs/cacert.pem
+                        /usr/local/share/ca-certificates/cacert.crt;
+                    sudo update-ca-certificates;
                     ./tools/ci/run_tc.py
                       --checkout=${event.after}
                       --oom-killer
@@ -100,6 +114,9 @@ tasks:
                         --test-type=${chunk[0]}
                         --this-chunk=${chunk[1]}
                         --total-chunks=${chunk[2]};
+              extra:
+                github_event: "${event_str}"
+
       - $if: tasks_for == "github-pull-request"
         # PR tasks that run the tests in various configurations
         then:
@@ -112,6 +129,7 @@ tasks:
               $map:
                 # This is the main place to define new stability checks
                 - name: wpt-${browser.name}-${browser.channel}-stability
+                  job_name: stability
                   checkout: task_head
                   diff_base: base_head
                   description: >-
@@ -119,6 +137,7 @@ tasks:
                     when executed in ${browser.name}.
                   extra_args: '--verify'
                 - name: wpt-${browser.name}-${browser.channel}-results
+                  job_name: affected_tests
                   checkout: task_head
                   diff_base: base_head
                   description: >-
@@ -129,6 +148,7 @@ tasks:
                     --log-wptreport=../artifacts/wpt_report.json
                     --log-wptscreenshot=../artifacts/wpt_screenshot.txt
                 - name: wpt-${browser.name}-${browser.channel}-results-without-changes
+                  job_name: affected_tests
                   checkout: base_head
                   diff_base: task_head
                   description: >-
@@ -143,27 +163,20 @@ tasks:
                 taskGroupId: {$eval: 'as_slugid("task group")'}
                 created: {$fromNow: ''}
                 deadline: {$fromNow: '24 hours'}
-                provisionerId: aws-provisioner-v1
-                workerType:
-                  $if: event.repository.full_name == 'web-platform-tests/wpt'
-                  then:
-                    wpt-docker-worker
-                  else:
-                    github-worker
+                provisionerId: ${provisionerId}
+                workerType: ${workerType}
                 metadata:
                   name: ${operation.name}
                   description: ${operation.description}
                   owner: ${event.pull_request.user.login}@users.noreply.github.com
                   source: ${event.repository.url}
                 payload:
-                  image: harjgam/web-platform-tests:0.32
+                  image: harjgam/web-platform-tests:0.33
                   maxRunTime: 7200
                   artifacts:
                     public/results:
                       path: /home/test/artifacts
                       type: directory
-                  env:
-                    TASK_EVENT: "${event_str}"
                   # Fetch the GitHub-provided merge commit (rather than the pull
                   # request branch) so that the tasks simulate the behavior of the
                   # submitted patch after it is merged. Using the merge commit also
@@ -186,13 +199,16 @@ tasks:
                         --browser=${browser.name}
                         --channel=${browser.channel}
                         --xvfb
-                        stability
+                        ${operation.job_name}
                         ./tools/ci/taskcluster-run.py
                           --commit-range ${operation.diff_base}
                           ${browser.name}
                           --
                           --channel=${browser.channel}
                           ${operation.extra_args};
+                extra:
+                  github_event: "${event_str}"
+
       - $map:
           # This is the main point to define new CI checks other than stability checks
         - name: lint
@@ -222,6 +238,7 @@ tasks:
           script: >-
             export TOXENV=py27;
             export HYPOTHESIS_PROFILE=ci;
+            export PY_COLORS=0;
             ./tools/ci/run_tc.py \
               tools_unittest \
               tools/ci/ci_tools_unittest.sh
@@ -234,6 +251,7 @@ tasks:
           script: >-
             export TOXENV=py36;
             export HYPOTHESIS_PROFILE=ci;
+            export PY_COLORS=0;
             sudo apt update -qqy;
             sudo apt install -qqy python3-pip;
             ./tools/ci/run_tc.py \
@@ -266,7 +284,6 @@ tasks:
             export TOXENV=py27;
             ./tools/ci/run_tc.py \
               --browser=firefox \
-              --channel=experimental \
               --xvfb \
               resources_unittest \
               tools/ci/ci_resources_unittest.sh
@@ -307,27 +324,20 @@ tasks:
                 taskGroupId: {$eval: 'as_slugid("task group")'}
                 created: {$fromNow: ''}
                 deadline: {$fromNow: '24 hours'}
-                provisionerId: aws-provisioner-v1
-                workerType:
-                  $if: event.repository.full_name == 'web-platform-tests/wpt'
-                  then:
-                    wpt-docker-worker
-                  else:
-                    github-worker
+                provisionerId: ${provisionerId}
+                workerType: ${workerType}
                 metadata:
                   name: ${operation.name}
                   description: ${operation.description}
                   owner: ${event.sender.login}@users.noreply.github.com
                   source: ${event.repository.url}
                 payload:
-                  image: harjgam/web-platform-tests:0.32
+                  image: harjgam/web-platform-tests:0.33
                   maxRunTime: 7200
                   artifacts:
                     public/results:
                       path: /home/test/artifacts
                       type: directory
-                  env:
-                    TASK_EVENT: "${event_str}"
                   command:
                     - /bin/bash
                     - --login
@@ -339,3 +349,5 @@ tasks:
                         ${checkout_ref};
                       cd ~/web-platform-tests;
                       ${operation.script};
+                extra:
+                  github_event: "${event_str}"

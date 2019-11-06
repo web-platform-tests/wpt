@@ -22,7 +22,7 @@ enum RTCStatsType {
 "local-candidate",
 "remote-candidate",
 "certificate",
-"stunserverconnection"
+"ice-server"
 };
 
 dictionary RTCRtpStreamStats : RTCStats {
@@ -40,7 +40,6 @@ dictionary RTCCodecStats : RTCStats {
              unsigned long clockRate;
              unsigned long channels;
              DOMString sdpFmtpLine;
-             DOMString implementation;
 };
 
 enum RTCCodecType {
@@ -49,55 +48,82 @@ enum RTCCodecType {
 };
 
 dictionary RTCReceivedRtpStreamStats : RTCRtpStreamStats {
-             unsigned long packetsReceived;
-             long packetsLost;
+             unsigned long long packetsReceived;
+             long long packetsLost;
              double jitter;
-             unsigned long packetsDiscarded;
-             unsigned long packetsRepaired;
-             unsigned long burstPacketsLost;
-             unsigned long burstPacketsDiscarded;
+             unsigned long long packetsDiscarded;
+             unsigned long long packetsRepaired;
+             unsigned long long burstPacketsLost;
+             unsigned long long burstPacketsDiscarded;
              unsigned long burstLossCount;
              unsigned long burstDiscardCount;
              double burstLossRate;
              double burstDiscardRate;
              double gapLossRate;
              double gapDiscardRate;
+             unsigned long framesDropped;
+             unsigned long partialFramesLost;
+             unsigned long fullFramesLost;
+
 };
 
 dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
-             DOMString trackId;
-             DOMString receiverId;
-             DOMString remoteId;
-             unsigned long framesDecoded;
-             unsigned long keyFramesDecoded;
-             unsigned long long qpSum;
-             double totalDecodeTime;
-             DOMHighResTimeStamp lastPacketReceivedTimestamp;
-             double averageRtcpInterval;
-             unsigned long fecPacketsReceived;
-             unsigned long fecPacketsDiscarded;
-             unsigned long long bytesReceived;
-             unsigned long packetsFailedDecryption;
-             unsigned long packetsDuplicated;
-             record<USVString, unsigned long> perDscpPacketsReceived;
-             unsigned long nackCount;
-             unsigned long firCount;
-             unsigned long pliCount;
-             unsigned long sliCount;
-            };
+ DOMString trackId;
+ DOMString receiverId;
+ DOMString remoteId;
+ unsigned long framesDecoded;
+ unsigned long keyFramesDecoded;
+ unsigned long frameWidth;
+ unsigned long frameHeight;
+ double framesPerSecond;
+ unsigned long long qpSum;
+ double totalDecodeTime;
+ double totalInterFrameDelay;
+ double totalSquaredInterFrameDelay;
+ boolean voiceActivityFlag;
+ DOMHighResTimeStamp lastPacketReceivedTimestamp;
+ double averageRtcpInterval;
+ unsigned long long headerBytesReceived;
+ unsigned long long fecPacketsReceived;
+ unsigned long long fecPacketsDiscarded;
+ unsigned long long bytesReceived;
+ unsigned long long packetsFailedDecryption;
+ unsigned long long packetsDuplicated;
+ record<USVString, unsigned long long> perDscpPacketsReceived;
+ unsigned long nackCount;
+ unsigned long firCount;
+ unsigned long pliCount;
+ unsigned long sliCount;
+ DOMHighResTimeStamp estimatedPlayoutTimestamp;
+ double jitterBufferDelay;
+ unsigned long long jitterBufferEmittedCount;
+ unsigned long long totalSamplesReceived;
+ unsigned long long samplesDecodedWithSilk;
+ unsigned long long samplesDecodedWithCelt;
+ unsigned long long concealedSamples;
+ unsigned long long silentConcealedSamples;
+ unsigned long long concealmentEvents;
+ unsigned long long insertedSamplesForDeceleration;
+ unsigned long long removedSamplesForAcceleration;
+ double audioLevel;
+ double totalAudioEnergy;
+ double totalSamplesDuration;
+ unsigned long framesReceived;
+ DOMString decoderImplementation;
+};
 
 dictionary RTCRemoteInboundRtpStreamStats : RTCReceivedRtpStreamStats {
              DOMString localId;
              double roundTripTime;
+             double totalRoundTripTime;
              double fractionLost;
+             unsigned long long reportsReceived;
+             unsigned long long roundTripTimeMeasurements;
 };
 
 dictionary RTCSentRtpStreamStats : RTCRtpStreamStats {
              unsigned long packetsSent;
-             unsigned long packetsDiscardedOnSend;
-             unsigned long fecPacketsSent;
              unsigned long long bytesSent;
-             unsigned long long bytesDiscardedOnSend;
 };
 
 dictionary RTCOutboundRtpStreamStats : RTCSentRtpStreamStats {
@@ -105,36 +131,54 @@ dictionary RTCOutboundRtpStreamStats : RTCSentRtpStreamStats {
              DOMString mediaSourceId;
              DOMString senderId;
              DOMString remoteId;
+             DOMString rid;
              DOMHighResTimeStamp lastPacketSentTimestamp;
+             unsigned long long headerBytesSent;
+             unsigned long packetsDiscardedOnSend;
+             unsigned long long bytesDiscardedOnSend;
+             unsigned long fecPacketsSent;
              unsigned long long retransmittedPacketsSent;
              unsigned long long retransmittedBytesSent;
              double targetBitrate;
              unsigned long long totalEncodedBytesTarget;
+             unsigned long frameWidth;
+             unsigned long frameHeight;
+             double framesPerSecond;
+             unsigned long framesSent;
+             unsigned long hugeFramesSent;
              unsigned long framesEncoded;
              unsigned long keyFramesEncoded;
+             unsigned long framesDiscardedOnSend;
              unsigned long long qpSum;
+             unsigned long long totalSamplesSent;
+             unsigned long long samplesEncodedWithSilk;
+             unsigned long long samplesEncodedWithCelt;
+             boolean voiceActivityFlag;
              double totalEncodeTime;
              double totalPacketSendDelay;
              double averageRtcpInterval;
              RTCQualityLimitationReason qualityLimitationReason;
              record<DOMString, double> qualityLimitationDurations;
-             record<USVString, unsigned long> perDscpPacketsSent;
+             unsigned long qualityLimitationResolutionChanges;
+             record<USVString, unsigned long long> perDscpPacketsSent;
              unsigned long nackCount;
              unsigned long firCount;
              unsigned long pliCount;
              unsigned long sliCount;
+             DOMString encoderImplementation;
 };
 
 enum RTCQualityLimitationReason {
-            "none",
-            "cpu",
-            "bandwidth",
-            "other",
-          };
+  "none",
+  "cpu",
+  "bandwidth",
+  "other",
+};
 
 dictionary RTCRemoteOutboundRtpStreamStats : RTCSentRtpStreamStats {
              DOMString localId;
              DOMHighResTimeStamp remoteTimestamp;
+             unsigned long long reportsSent;
 };
 
 dictionary RTCMediaSourceStats : RTCStats {
@@ -146,6 +190,8 @@ dictionary RTCAudioSourceStats : RTCMediaSourceStats {
               double audioLevel;
               double totalAudioEnergy;
               double totalSamplesDuration;
+              double echoReturnLoss;
+              double echoReturnLossEnhancement;
 };
 
 dictionary RTCVideoSourceStats : RTCMediaSourceStats {
@@ -183,59 +229,29 @@ dictionary RTCMediaHandlerStats : RTCStats {
 };
 
 dictionary RTCVideoHandlerStats : RTCMediaHandlerStats {
-             unsigned long frameWidth;
-             unsigned long frameHeight;
-             double framesPerSecond;
 };
 
 dictionary RTCVideoSenderStats : RTCVideoHandlerStats {
              DOMString mediaSourceId;
-             unsigned long framesCaptured;
-             unsigned long framesSent;
-             unsigned long hugeFramesSent;
 };
 
 dictionary RTCSenderVideoTrackAttachmentStats : RTCVideoSenderStats {
 };
 
 dictionary RTCVideoReceiverStats : RTCVideoHandlerStats {
-             DOMHighResTimeStamp estimatedPlayoutTimestamp;
-             double jitterBufferDelay;
-             unsigned long long jitterBufferEmittedCount;
-             unsigned long framesReceived;
-             unsigned long framesDecoded;
-             unsigned long framesDropped;
-             unsigned long partialFramesLost;
-             unsigned long fullFramesLost;
 };
 
 dictionary RTCAudioHandlerStats : RTCMediaHandlerStats {
-             boolean voiceActivityFlag;
 };
 
 dictionary RTCAudioSenderStats : RTCAudioHandlerStats {
              DOMString mediaSourceId;
-             double echoReturnLoss;
-             double echoReturnLossEnhancement;
-             unsigned long long totalSamplesSent;
 };
 
 dictionary RTCSenderAudioTrackAttachmentStats : RTCAudioSenderStats {
 };
 
 dictionary RTCAudioReceiverStats : RTCAudioHandlerStats {
-             DOMHighResTimeStamp estimatedPlayoutTimestamp;
-             double jitterBufferDelay;
-             unsigned long long jitterBufferEmittedCount;
-             unsigned long long totalSamplesReceived;
-             unsigned long long concealedSamples;
-             unsigned long long silentConcealedSamples;
-             unsigned long long concealmentEvents;
-             unsigned long long insertedSamplesForDeceleration;
-             unsigned long long removedSamplesForAcceleration;
-             double audioLevel;
-             double totalAudioEnergy;
-             double totalSamplesDuration;
 };
 
 dictionary RTCDataChannelStats : RTCStats {
@@ -251,8 +267,8 @@ dictionary RTCDataChannelStats : RTCStats {
 };
 
 dictionary RTCTransportStats : RTCStats {
-             unsigned long packetsSent;
-             unsigned long packetsReceived;
+             unsigned long long packetsSent;
+             unsigned long long packetsReceived;
              unsigned long long bytesSent;
              unsigned long long bytesReceived;
              DOMString rtcpTransportStatsId;
@@ -265,6 +281,7 @@ dictionary RTCTransportStats : RTCStats {
              DOMString dtlsCipher;
              DOMString srtpCipher;
              DOMString tlsGroup;
+             unsigned long selectedCandidatePairChanges;
 };
 
 dictionary RTCIceCandidateStats : RTCStats {
@@ -277,7 +294,6 @@ dictionary RTCIceCandidateStats : RTCStats {
              long priority;
              DOMString url;
              DOMString relayProtocol;
-             boolean deleted = false;
 };
 
 enum RTCNetworkType {
@@ -296,8 +312,8 @@ dictionary RTCIceCandidatePairStats : RTCStats {
              DOMString remoteCandidateId;
              RTCStatsIceCandidatePairState state;
              boolean nominated;
-             unsigned long packetsSent;
-             unsigned long packetsReceived;
+             unsigned long long packetsSent;
+             unsigned long long packetsReceived;
              unsigned long long bytesSent;
              unsigned long long bytesReceived;
              DOMHighResTimeStamp lastPacketSentTimestamp;
@@ -318,6 +334,8 @@ dictionary RTCIceCandidatePairStats : RTCStats {
              unsigned long long retransmissionsSent;
              unsigned long long consentRequestsSent;
              DOMHighResTimeStamp consentExpiredTimestamp;
+             unsigned long packetsDiscardedOnSend;
+             unsigned long long bytesDiscardedOnSend;
 };
 
 enum RTCStatsIceCandidatePairState {
@@ -335,25 +353,36 @@ dictionary RTCCertificateStats : RTCStats {
              DOMString issuerCertificateId;
 };
 
-dictionary RTCStunServerConnectionStats : RTCStats {
-             DOMString url;
-             long port;
-             DOMString protocol;
-             RTCNetworkType networkType;
-             unsigned long totalRequestsSent;
-             unsigned long totalResponsesReceived;
-             double totalRoundTripTime;
-  };
+dictionary RTCIceServerStats : RTCStats {
+           DOMString url;
+           long port;
+           DOMString protocol;
+           RTCNetworkType networkType;
+           unsigned long totalRequestsSent;
+           unsigned long totalResponsesReceived;
+           double totalRoundTripTime;
+};
+
+dictionary RTCReceiverVideoTrackAttachmentStats : RTCVideoReceiverStats {
+};
+
+dictionary RTCReceiverAudioTrackAttachmentStats : RTCAudioReceiverStats {
+};
+
+partial dictionary RTCCodecStats {
+   DOMString implementation;
+};
 
 partial dictionary RTCIceCandidateStats {
-           boolean isRemote;
-        };
+   boolean deleted = false;
+   boolean isRemote;
+};
 
 partial dictionary RTCIceCandidatePairStats {
-          double totalRtt;
-          double currentRtt;
-          unsigned long long priority;
-          };
+double totalRtt;
+double currentRtt;
+unsigned long long priority;
+};
 
 partial dictionary RTCRtpStreamStats {
              DOMString mediaType;
@@ -368,12 +397,51 @@ partial dictionary RTCAudioHandlerStats {
             double audioLevel;
             double totalAudioEnergy;
             double totalSamplesDuration;
+            boolean voiceActivityFlag;
+};
+
+partial dictionary RTCAudioSenderStats {
+            unsigned long long totalSamplesSent;
+            double echoReturnLoss;
+            double echoReturnLossEnhancement;
+};
+
+partial dictionary RTCAudioReceiverStats {
+            DOMHighResTimeStamp estimatedPlayoutTimestamp;
+            double jitterBufferDelay;
+            unsigned long long jitterBufferEmittedCount;
+            unsigned long long totalSamplesReceived;
+            unsigned long long concealedSamples;
+            unsigned long long silentConcealedSamples;
+            unsigned long long concealmentEvents;
+            unsigned long long insertedSamplesForDeceleration;
+            unsigned long long removedSamplesForAcceleration;
+            double audioLevel;
+            double totalAudioEnergy;
+            double totalSamplesDuration;
+};
+
+partial dictionary RTCVideoHandlerStats {
+          unsigned long frameWidth;
+          unsigned long frameHeight;
+          double framesPerSecond;
 };
 
 partial dictionary RTCVideoSenderStats {
           unsigned long keyFramesSent;
+          unsigned long framesCaptured;
+          unsigned long framesSent;
+          unsigned long hugeFramesSent;
 };
 
 partial dictionary RTCVideoReceiverStats {
           unsigned long keyFramesReceived;
+          DOMHighResTimeStamp estimatedPlayoutTimestamp;
+          double jitterBufferDelay;
+          unsigned long long jitterBufferEmittedCount;
+          unsigned long framesReceived;
+          unsigned long framesDecoded;
+          unsigned long framesDropped;
+          unsigned long partialFramesLost;
+          unsigned long fullFramesLost;
 };

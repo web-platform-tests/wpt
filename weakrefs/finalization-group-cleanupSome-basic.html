@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import garbageCollect from './resources/test-utils.js';
+
+test(function() {
+  let called = false;
+  function callback(iter) {
+    called = true;
+    const values = [...iter];
+    assert_equals(values[0], 'holdings',
+                  'holdings should be initialized correctly');
+  };
+
+  const fg = new FinalizationGroup(callback);
+
+  (function() {
+    let x = {};
+    fg.register(x, 'holdings');
+    x = null;
+  })();
+
+  assert_false(called, 'finalizer should not be called yet');
+
+  garbageCollect();
+
+  fg.cleanupSome();
+  assert_true(called, 'finalizer should be called');
+
+}, `FinalizationGroup.cleanupSome calls finalizer in same turn`);
+</script>

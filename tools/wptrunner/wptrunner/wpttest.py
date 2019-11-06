@@ -352,7 +352,7 @@ class Test(object):
         if metadata is None:
             return False
         try:
-            expect_any_subtest_failure = metadata.get("expect_any_subtest_status")
+            metadata.get("expect_any_subtest_status")
             return True
         except KeyError:
             return False

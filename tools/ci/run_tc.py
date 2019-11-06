@@ -277,7 +277,7 @@ def setup_environment(args):
         assert args.channel is not None
         install_chrome(args.channel)
         # Try enabling user sandboxing
-        run(["sudo", "sysctl", "-w", "kernel.unprivileged_userns_clone=1"])
+        print(run(["sudo", "sysctl", "kernel.unprivileged_userns_clone"], return_stdout=True))
     elif "webkitgtk_minibrowser" in args.browser:
         assert args.channel is not None
         install_webkitgtk(args.channel)

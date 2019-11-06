@@ -56,7 +56,8 @@ def main(product, commit_range, wpt_args):
         logger.info("Running all tests")
 
     wpt_args += [
-        "--log-mach-level=info",
+        "--webdriver-arg=--verbose",
+        "--log-mach-level=debug",
         "--log-mach=-",
         "-y",
         "--no-pause",

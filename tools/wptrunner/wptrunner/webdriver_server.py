@@ -130,6 +130,7 @@ class ChromeDriverServer(WebDriverServer):
     def make_command(self):
         return [self.binary,
                 cmd_arg("port", str(self.port)),
+                cmd_arg("log-level", "ALL"),
                 cmd_arg("url-base", self.base_path) if self.base_path else ""] + self._args
 
 class CWTChromeDriverServer(WebDriverServer):

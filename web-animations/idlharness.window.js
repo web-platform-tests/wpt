@@ -5,7 +5,7 @@
 
 idl_test(
   ['web-animations'],
-  ['css-pseudo', 'dom', 'html'],
+  ['dom', 'html'],
   idl_array => {
     idl_array.add_objects({
       Animation: ['new Animation()'],

@@ -75,7 +75,9 @@ promise_test(async t => {
   area.href = '/common/blank.html';
   w.document.querySelector('map').appendChild(area);
   await waitUntilStableAutofocusState(w);
-  // Why assert_in_array? See https://github.com/whatwg/html/issues/5054
-  assert_in_array(w.document.activeElement, [area, w.document.querySelector('img')]);
+  // According to the specification, DOM anchor for an AREA shape is an IMG
+  // element, but major browsers don't follow it.
+  // See https://github.com/whatwg/html/issues/5054
+  assert_equals(w.document.activeElement, area);
 }, 'Area element should support autofocus');
 </script>

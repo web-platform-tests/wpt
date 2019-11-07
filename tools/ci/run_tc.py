@@ -276,6 +276,8 @@ def setup_environment(args):
     if "chrome" in args.browser:
         assert args.channel is not None
         install_chrome(args.channel)
+        # Taskcluster Docker doesn't have enough permissions to enable sandbox.
+        args.script_args.append("--binary-arg=--no-sandbox")
     elif "webkitgtk_minibrowser" in args.browser:
         assert args.channel is not None
         install_webkitgtk(args.channel)

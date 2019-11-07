@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <title>
+      Analyser with Suspended and Then Resumed Context
+    </title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+
+  <body>
+    <script>
+      let context = new AudioContext();
+
+      // Use oscillator as test source because it varies over time.  Connect to
+      // destination just so we can hear if if desired.
+      let osc = new OscillatorNode(context);
+      osc.connect(context.destination);
+
+      // Create the analyser to inspect the oscillator signal
+      let analyser = new AnalyserNode(context);
+      osc.connect(analyser);
+
+      let tester = async_test('AnalyserWithResumedContext');
+
+      // Now periodically request data from the analyser
+      let count = 0;
+      let lastOutput = 0;
+      let signal = new Float32Array(analyser.frequencyBinCount);
+      let interval = setInterval(() => {
+        tester.step(() => {
+          analyser.getFloatTimeDomainData(signal);
+
+          if (count === 0) {
+            lastOutput = signal[0];
+          } else if (count === 5) {
+            clearInterval(interval);
+            tester.done();
+          } else {
+            assert_not_equals(signal[0], lastOutput,
+      'Output from analyser must be changing over time');
+          }
+          lastOutput = signal[0];
+          ++count;
+        });
+      }, 100);
+    </script>
+  </body>
+</html>

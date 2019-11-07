@@ -19,13 +19,17 @@ class ReferrerPolicyConfig(object):
               '%(subresource)s/' + \
               '%(origin)s.%(redirection)s.%(source_scheme)s'
 
-        self.test_file_path_pattern = 'gen/' + self.selection_pattern + '.html'
+        self.test_file_path_pattern = \
+              'gen/' + \
+              '%(source_context_list)s.%(delivery_type)s/' + \
+              '%(delivery_value)s/' + \
+              '%(subresource)s.%(source_scheme)s.html'
 
         self.test_description_template = 'Referrer Policy: Expects %(expectation)s for %(subresource)s to %(origin)s origin and %(redirection)s redirection from %(source_scheme)s context.'
 
         self.test_page_title_template = 'Referrer-Policy: %s'
 
-        self.helper_js = '/referrer-policy/generic/test-case.sub.js'
+        self.helper_js = '/referrer-policy/generic/test-case_2.sub.js'
 
         # For debug target only.
         self.sanity_checker_js = '/referrer-policy/generic/sanity-checker.js'

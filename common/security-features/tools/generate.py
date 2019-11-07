@@ -9,6 +9,12 @@ import sys
 import spec_validator
 import util
 
+try:
+    # Only for type checking.
+    import typing  # pylint: disable=unused-import
+except:
+    pass
+
 
 def expand_pattern(expansion_pattern, test_expansion_schema):
     expansion = {}
@@ -51,13 +57,10 @@ def permute_expansion(expansion,
 
 
 # Dumps the test config `selection` into a serialized JSON string.
-# We omit `name` parameter because it is not used by tests.
-def dump_test_parameters(selection):
-    selection = dict(selection)
-    del selection['name']
-
+def dump_test_parameters(scenarios):
+    # type: (typing.List[typing.Dict[str, typing.Any]]) -> str
     return json.dumps(
-        selection,
+        scenarios,
         indent=2,
         separators=(',', ': '),
         sort_keys=True,
@@ -127,8 +130,27 @@ def handle_deliveries(policy_deliveries):
     return {"meta": meta, "headers": headers}
 
 
-def generate_selection(spec_json, config, selection, spec,
-                       test_html_template_basename):
+class GeneratedSelection(object):
+    '''
+    1. Per one selection, we create one `GeneratedSelection` object that
+       represents a scenario + top-level policy deliveries + other associated
+       parameters.
+    2. We generate a test HTML file based on (possibly multiple)
+       `GeneratedSelection` object(s) with the same `test_filename`.
+       We assume `top_level_policy_deliveries` and `parameters` are the same
+       for all `GeneratedSelection` objects with the same `test_filename`,
+       while `scenario` are different for each `GeneratedSelection`.
+    '''
+
+    def __init__(self, test_filename, scenario, top_level_policy_deliveries,
+                 parameters):
+        self.test_filename = test_filename
+        self.scenario = scenario
+        self.top_level_policy_deliveries = top_level_policy_deliveries
+        self.parameters = parameters
+
+
+def generate_selection(spec_json, config, selection, spec):
     test_filename = get_test_filename(config, selection)
 
     target_policy_delivery = util.PolicyDelivery(selection['delivery_type'],
@@ -169,24 +191,50 @@ def generate_selection(spec_json, config, selection, spec,
     top_source_context = selection['source_context_list'].pop(0)
     assert (top_source_context.source_context_type == 'top')
 
-    # Adjust the template for the test invoking JS. Indent it to look nice.
-    indent = "\n" + " " * 8
-    selection['scenario'] = dump_test_parameters(selection).replace(
-        "\n", indent)
-
-    selection['spec_name'] = spec['name']
     selection[
-        'test_page_title'] = config.test_page_title_template % spec['title']
-    selection['spec_description'] = spec['description']
-    selection['spec_specification_url'] = spec['specification_url']
-    selection['helper_js'] = config.helper_js
-    selection['sanity_checker_js'] = config.sanity_checker_js
-    selection['spec_json_js'] = config.spec_json_js
+        'test_description'] = config.test_description_template % selection
 
-    test_headers_filename = test_filename + ".headers"
-    test_directory = os.path.dirname(test_filename)
+    return GeneratedSelection(
+        test_filename=test_filename,
+        scenario=selection,
+        top_level_policy_deliveries=handle_deliveries(
+            top_source_context.policy_deliveries),
+        parameters={
+            'test_page_title': config.test_page_title_template % spec['title'],
+            'spec_description': spec['description'],
+            'spec_specification_url': spec['specification_url'],
+            'helper_js': config.helper_js,
+            'sanity_checker_js': config.sanity_checker_js,
+            'spec_json_js': config.spec_json_js
+        })
 
-    test_html_template = util.get_template(test_html_template_basename)
+
+def generate_test_file(generated_selections, test_html_template_basename):
+    '''
+    Generates a test HTML file (and possibly its associated .headers file)
+    from `generated_selections`.
+    '''
+    # type: (typing.List[GeneratedSelection], str) -> None
+
+    if len(generated_selections) == 0:
+        return
+
+    # `GeneratedSelection`s for the same file should be the same except for
+    # `scenario`.
+    test_filename = generated_selections[0].test_filename
+    top_level_policy_deliveries = generated_selections[
+        0].top_level_policy_deliveries
+    parameters = generated_selections[0].parameters
+
+    for s in generated_selections:
+        assert (s.test_filename == test_filename)
+        assert (s.top_level_policy_deliveries == top_level_policy_deliveries)
+        assert (s.parameters == parameters)
+
+    parameters['scenarios'] = dump_test_parameters(
+        [s.scenario for s in generated_selections]).replace(
+            "\n", "\n" + " " * 8)
+
     disclaimer_template = util.get_template('disclaimer.template')
 
     html_template_filename = os.path.join(util.template_directory,
@@ -196,35 +244,32 @@ def generate_selection(spec_json, config, selection, spec,
                                                          util.test_root_directory),
            'html_template_filename': os.path.relpath(html_template_filename,
                                                      util.test_root_directory)}
-
-    # Adjust the template for the test invoking JS. Indent it to look nice.
-    selection['generated_disclaimer'] = generated_disclaimer.rstrip()
-    selection[
-        'test_description'] = config.test_description_template % selection
-    selection['test_description'] = \
-        selection['test_description'].rstrip().replace("\n", "\n" + " " * 33)
+    parameters['generated_disclaimer'] = generated_disclaimer.rstrip()
 
     # Directory for the test files.
     try:
+        test_directory = os.path.dirname(test_filename)
         os.makedirs(test_directory)
     except:
         pass
 
-    delivery = handle_deliveries(top_source_context.policy_deliveries)
-
-    if len(delivery['headers']) > 0:
+    if len(top_level_policy_deliveries['headers']) > 0:
+        test_headers_filename = test_filename + ".headers"
         with open(test_headers_filename, "w") as f:
-            for header in delivery['headers']:
-                f.write('%s: %s\n' % (header, delivery['headers'][header]))
+            for header in top_level_policy_deliveries['headers']:
+                f.write(
+                    '%s: %s\n' %
+                    (header, top_level_policy_deliveries['headers'][header]))
 
-    selection['meta_delivery_method'] = delivery['meta']
+    parameters['meta_delivery_method'] = top_level_policy_deliveries['meta']
     # Obey the lint and pretty format.
-    if len(selection['meta_delivery_method']) > 0:
-        selection['meta_delivery_method'] = "\n    " + \
-                                            selection['meta_delivery_method']
+    if len(parameters['meta_delivery_method']) > 0:
+        parameters['meta_delivery_method'] = "\n    " + \
+                                            parameters['meta_delivery_method']
 
     # Write out the generated HTML file.
-    util.write_file(test_filename, test_html_template % selection)
+    test_html_template = util.get_template(test_html_template_basename)
+    util.write_file(test_filename, test_html_template % parameters)
 
 
 def generate_test_source_files(config, spec_json, target):
@@ -254,6 +299,10 @@ def generate_test_source_files(config, spec_json, target):
             excluded_selection_path = config.selection_pattern % excluded_selection
             exclusion_dict[excluded_selection_path] = True
 
+    # `generated_selections[filename]` is the list of
+    # `GeneratedSelection`s to be generated for `filename`.
+    generated_selections = {}
+
     for spec in specification:
         # Used to make entries with expansion="override" override preceding
         # entries with the same |selection_path|.
@@ -264,6 +313,8 @@ def generate_test_source_files(config, spec_json, target):
                                        test_expansion_schema)
             for selection in permute_expansion(expansion, artifact_order):
                 selection['delivery_key'] = spec_json['delivery_key']
+                # We omit `name` parameter because it is not used by tests.
+                del selection['name']
                 selection_path = config.selection_pattern % selection
                 if not selection_path in exclusion_dict:
                     if selection_path in output_dict:
@@ -280,10 +331,16 @@ def generate_test_source_files(config, spec_json, target):
         for selection_path in output_dict:
             selection = output_dict[selection_path]
             try:
-                generate_selection(spec_json, config, selection, spec,
-                                   html_template)
+                generated_selection = generate_selection(
+                    spec_json, config, selection, spec)
+                test_filename = generated_selection.test_filename
+                generated_selections[test_filename] = generated_selections.get(
+                    test_filename, []) + [generated_selection]
             except util.ShouldSkip:
                 continue
+
+    for filename in generated_selections:
+        generate_test_file(generated_selections[filename], html_template)
 
 
 def main(config):

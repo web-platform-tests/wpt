@@ -47,11 +47,11 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
             body = {"type": "script", "ms": timeout * 1000}
             self.webdriver.send_session_command("POST", "timeouts", body)
 
-    @property
-    def current_window(self):
-        return self.webdriver.window_handle
-
     def set_window(self, handle):
+        """Set the top level browsing context to one specified by a given handle.
+
+        :param handle: A protocol-specific handle identifying a top level browsing
+                       context."""
         self.webdriver.window_handle = handle
 
     def wait(self):

@@ -53,11 +53,11 @@ class SeleniumBaseProtocolPart(BaseProtocolPart):
     def set_timeout(self, timeout):
         self.webdriver.set_script_timeout(timeout * 1000)
 
-    @property
-    def current_window(self):
-        return self.webdriver.current_window_handle
-
     def set_window(self, handle):
+        """Set the top level browsing context to one specified by a given handle.
+
+        :param handle: A protocol-specific handle identifying a top level browsing
+                       context."""
         self.webdriver.switch_to_window(handle)
 
     def wait(self):

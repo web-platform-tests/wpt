@@ -32,6 +32,7 @@ def take_element_screenshot(session, element_id):
 
 
 @pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
+@decorators.Disabled('linux')
 def test_source_origin(session, url, domain):
     session.url = inline("""{0}{1}""".format(DEFAULT_CSS_STYLE, DEFAULT_CONTENT))
     element = session.find.css("div", all=False)

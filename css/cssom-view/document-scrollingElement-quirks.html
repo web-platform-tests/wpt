@@ -1,0 +1,38 @@
+<!-- Quirks Mode -->
+<meta charset=utf-8>
+<title>Document.scrollingElement in Quirks Mode</title>
+<link rel=help href="https://drafts.csswg.org/cssom-view/#dom-document-scrollingelement">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(function() {
+  assert_equals(document.scrollingElement, null);
+  assert_readonly(document, "scrollingElement");
+}, "scrollingElement should be equal to null without body Element for Quirks Mode");
+
+test(function() {
+  let body = document.createElement("body");
+  document.documentElement.appendChild(body);
+
+  assert_true(document.scrollingElement instanceof HTMLBodyElement, "scrollingElement is a reference to HTMLBodyElement");
+  assert_equals(document.scrollingElement, body);
+  assert_readonly(document, "scrollingElement");
+
+  // clean up
+  body.parentNode.removeChild(body);
+}, "scrollingElement should be equal to body Element for Quirks Mode");
+
+test(function() {
+  let body = document.createElement("body");
+  document.documentElement.appendChild(body);
+
+  // make body potentially scrollable: https://drafts.csswg.org/cssom-view/#potentially-scrollable
+  body.style.overflow = "scroll";
+  document.documentElement.style.overflow = "scroll";
+
+  assert_equals(document.scrollingElement, null);
+
+  // clean up
+  body.parentNode.removeChild(body);
+}, "scrollingElement should be equal null if body potentially scrollable for Quirks Mode");
+</script>

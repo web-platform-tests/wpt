@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Document.scrollingElement in Standards Mode</title>
+<link rel=help href="https://drafts.csswg.org/cssom-view/#dom-document-scrollingelement">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(function() {
+  assert_true(document.scrollingElement instanceof HTMLElement, "scrollingElement is a reference to Element");
+  assert_equals(document.scrollingElement, document.documentElement);
+  assert_readonly(document, "scrollingElement");
+}, "scrollingElement should be equal to documentElement for Standards Mode");
+
+test(function() {
+  let newDoc = new Document();
+  assert_equals(newDoc.scrollingElement, null);
+
+  let htmlElt = newDoc.createElement("html");
+  newDoc.appendChild(htmlElt);
+  assert_equals(newDoc.scrollingElement, htmlElt);
+}, "scrollingElement should be null in document doesn't have html Element");
+</script>

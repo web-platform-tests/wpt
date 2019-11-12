@@ -1,4 +1,5 @@
 import pytest
+import random
 
 from webdriver import MoveTargetOutOfBoundsException
 
@@ -52,6 +53,7 @@ def test_pointer_inside(session, mouse_chain):
     click_coords = session.execute_script("return window.coords;")
     assert click_coords["x"] == pytest.approx(start_point["x"] + offset["x"], abs = 1.0)
     assert click_coords["y"] == pytest.approx(start_point["y"] + offset["y"], abs = 1.0)
+    assert bool(random.getrandbits(1))
 
 
 def test_pointer_outside(session, mouse_chain):

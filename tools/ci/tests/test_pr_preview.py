@@ -40,13 +40,13 @@ def same_members(a, b):
 # Source:
 # https://stackoverflow.com/questions/1213706/what-user-do-python-scripts-run-as-in-windows
 def handle_remove_readonly(func, path, exc):
-  excvalue = exc[1]
-  candidates = (os.rmdir, os.remove, os.unlink)
-  if func in candidates and excvalue.errno == errno.EACCES:
-      os.chmod(path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO) # 0777
-      func(path)
-  else:
-      raise
+    excvalue = exc[1]
+    candidates = (os.rmdir, os.remove, os.unlink)
+    if func in candidates and excvalue.errno == errno.EACCES:
+        os.chmod(path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
+        func(path)
+    else:
+        raise
 
 
 class MockHandler(BaseHTTPRequestHandler, object):

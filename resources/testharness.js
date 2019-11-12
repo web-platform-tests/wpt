@@ -3698,6 +3698,14 @@ policies and contribution forms [3].
     if (global_scope.addEventListener) {
         var error_handler = function(error, message, stack) {
             var precondition_failed = error instanceof PreconditionFailedError;
+
+            // Modifying the harness status following completion could
+            // interfere with the value reported by some implementations
+            // (depending on the synchronicity of the reporting mechanism).
+            if (tests.phase === tests.phases.COMPLETE) {
+                return;
+            }
+
             if (tests.file_is_test) {
                 var test = tests.tests[0];
                 if (test.phase >= test.phases.HAS_RESULT) {

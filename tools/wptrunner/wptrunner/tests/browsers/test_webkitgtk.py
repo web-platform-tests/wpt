@@ -3,14 +3,15 @@ from os.path import join, dirname
 import pytest
 
 from wptserve.config import ConfigBuilder
+from ..base import active_products
 from wptrunner import environment, products
 
 test_paths = {"/": {"tests_path": join(dirname(__file__), "..", "..", "..", "..", "..")}}  # repo root
 environment.do_delayed_imports(None, test_paths)
 
 
-@pytest.mark.parametrize("browser_product", ["epiphany", "webkit", "webkitgtk_minibrowser"])
-def test_webkitgtk_certificate_domain_list(browser_product):
+@active_products("product")
+def test_webkitgtk_certificate_domain_list(product):
 
     def domain_is_inside_certificate_list_cert(domain_to_find, webkitgtk_certificate_list, cert_file):
         for domain in webkitgtk_certificate_list:
@@ -18,10 +19,13 @@ def test_webkitgtk_certificate_domain_list(browser_product):
                 return True
         return False
 
+    if product not in ["epiphany", "webkit", "webkitgtk_minibrowser"]:
+        pytest.skip("%s doesn't support certificate_domain_list" % product)
+
     (check_args,
      target_browser_cls, get_browser_kwargs,
      executor_classes, get_executor_kwargs,
-     env_options, get_env_extras, run_info_extras) = products.load_product({}, browser_product)
+     env_options, get_env_extras, run_info_extras) = products.load_product({}, product)
 
     cert_file = "/home/user/wpt/tools/certs/cacert.pem"
     valid_domains_test = ["a.example.org", "b.example.org", "example.org",

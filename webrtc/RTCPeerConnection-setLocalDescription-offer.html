@@ -11,7 +11,7 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  //   generateOffer
+  //   generateDataChannelOffer
   //   assert_session_desc_not_similar
   //   assert_session_desc_similar
 
@@ -62,7 +62,7 @@
     const states = [];
     pc.addEventListener('signalingstatechange', () => states.push(pc.signalingState));
 
-    return pc.createOffer({ offerToReceiveAudio: true })
+    return generateAudioReceiveOnlyOffer(pc)
     .then(offer =>
       pc.setLocalDescription(offer)
       .then(() => {
@@ -84,7 +84,7 @@
   promise_test(t => {
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
-    return pc.createOffer({ offerToReceiveAudio: true })
+    return generateAudioReceiveOnlyOffer(pc)
     .then(offer =>
       pc.setLocalDescription({ type: 'offer' })
       .then(() => {
@@ -109,7 +109,7 @@
 
     t.add_cleanup(() => pc2.close());
 
-    return generateOffer({ pc, data: true })
+    return generateDataChannelOffer(pc)
     .then(offer =>
       promise_rejects(t, 'InvalidModificationError',
         pc2.setLocalDescription(offer)));
@@ -122,9 +122,9 @@
     // with the first offer
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
-    return pc.createOffer({ offerToReceiveAudio: true })
+    return generateAudioReceiveOnlyOffer(pc)
     .then(offer1 =>
-      pc.createOffer({ offerToReceiveVideo: true })
+      generateVideoReceiveOnlyOffer(pc)
       .then(offer2 => {
         assert_session_desc_not_similar(offer1, offer2);
         return promise_rejects(t, 'InvalidModificationError',
@@ -139,14 +139,14 @@
     const states = [];
     pc.addEventListener('signalingstatechange', () => states.push(pc.signalingState));
 
-    return pc.createOffer({ offerToReceiveAudio: true })
+    return generateAudioReceiveOnlyOffer(pc)
     .then(offer1 =>
       pc.setLocalDescription(offer1)
       .then(() =>
-        pc.createOffer({ offerToReceiveVideo: true })
+        generateVideoReceiveOnlyOffer(pc)
         .then(offer2 =>
           pc.setLocalDescription(offer2)
-          .then(offer2 => {
+          .then(() => {
             assert_session_desc_not_similar(offer1, offer2);
             assert_equals(pc.signalingState, 'have-local-offer');
             assert_session_desc_similar(pc.localDescription, offer2);
@@ -156,5 +156,40 @@
             assert_array_equals(states, ['have-local-offer']);
           }))));
   }, 'Creating and setting offer multiple times should succeed');
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+
+    const offer = await pc1.createOffer({offerToReceiveAudio: true}); // [[LastOffer]] set
+    const offer2 = await pc2.createOffer({offerToReceiveVideo: true});
+    await pc1.setRemoteDescription(offer2);
+    await pc1.createAnswer(); // [[LastAnswer]] set
+    await pc1.setRemoteDescription({type: "rollback"});
+    await pc1.setLocalDescription(offer);
+  }, "Setting previously generated offer after a call to createAnswer should work");
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+
+    await pc1.setLocalDescription(await pc1.createOffer({offerToReceiveAudio: true}));
+
+    const offer = await pc1.createOffer();
+    await pc1.setLocalDescription(offer);
+    await pc2.setRemoteDescription(offer);
+    const answer = await pc2.createAnswer();
+    await pc2.setLocalDescription(answer);
+    await pc1.setRemoteDescription(answer);
+
+    assert_equals(pc1.getTransceivers().length, 1);
+    assert_equals(pc1.getTransceivers()[0].receiver.track.kind, "audio");
+    assert_equals(pc2.getTransceivers().length, 1);
+    assert_equals(pc2.getTransceivers()[0].receiver.track.kind, "audio");
+  }, "Negotiation works when there has been a repeated setLocalDescription(offer)");
 
 </script>

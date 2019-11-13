@@ -1,11 +1,12 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Accelerated Shape Detection in Images" spec.
-// See: https://wicg.github.io/shape-detection-api/
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: Accelerated Shape Detection in Images (https://wicg.github.io/shape-detection-api/)
 
 [Exposed=(Window,Worker),
- Constructor(optional FaceDetectorOptions faceDetectorOptions)]
+ SecureContext]
 interface FaceDetector {
+  constructor(optional FaceDetectorOptions faceDetectorOptions = {});
   Promise<sequence<DetectedFace>> detect(ImageBitmapSource image);
 };
 
@@ -14,6 +15,9 @@ dictionary FaceDetectorOptions {
   boolean fastMode;
 };
 
+[Exposed=(Window,Worker),
+ SecureContext,
+ Serializable]
 interface DetectedFace {
   [SameObject] readonly attribute DOMRectReadOnly boundingBox;
   [SameObject] readonly attribute FrozenArray<Landmark>? landmarks;
@@ -31,9 +35,10 @@ enum LandmarkType {
 };
 
 [Exposed=(Window,Worker),
- Constructor(optional BarcodeDetectorOptions barcodeDetectorOptions)]
+ SecureContext]
 interface BarcodeDetector {
-  readonly attribute FrozenArray<BarcodeFormat> supportedFormats;
+  constructor(optional BarcodeDetectorOptions barcodeDetectorOptions = {});
+  static Promise<sequence<BarcodeFormat>> getSupportedFormats();
 
   Promise<sequence<DetectedBarcode>> detect(ImageBitmapSource image);
 };
@@ -42,6 +47,9 @@ dictionary BarcodeDetectorOptions {
   sequence<BarcodeFormat> formats;
 };
 
+[Exposed=(Window,Worker),
+ SecureContext,
+ Serializable]
 interface DetectedBarcode {
   [SameObject] readonly attribute DOMRectReadOnly boundingBox;
   [SameObject] readonly attribute DOMString rawValue;

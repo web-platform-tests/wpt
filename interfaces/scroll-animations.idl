@@ -1,10 +1,9 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Scroll-linked Animations" spec.
-// See: https://wicg.github.io/scroll-animations/
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: Scroll-linked Animations (https://drafts.csswg.org/scroll-animations-1/)
 
 enum ScrollDirection {
-  "auto",
   "block",
   "inline",
   "horizontal",
@@ -14,15 +13,16 @@ enum ScrollDirection {
 enum ScrollTimelineAutoKeyword { "auto" };
 
 dictionary ScrollTimelineOptions {
-  Element scrollSource;
-  ScrollDirection orientation = "auto";
+  Element? scrollSource = null;
+  ScrollDirection orientation = "block";
   DOMString startScrollOffset = "auto";
   DOMString endScrollOffset = "auto";
   (double or ScrollTimelineAutoKeyword) timeRange = "auto";
   FillMode fill = "none";
 };
 
-[Constructor(optional ScrollTimelineOptions options)]
+[Exposed=Window,
+ Constructor(optional ScrollTimelineOptions options = {})]
 interface ScrollTimeline : AnimationTimeline {
   readonly attribute Element scrollSource;
   readonly attribute ScrollDirection orientation;

@@ -1,6 +1,7 @@
+import json
+import os
 import pickle
 import platform
-import os
 
 import pytest
 
@@ -14,22 +15,18 @@ from .serve import ConfigBuilder
 def test_make_hosts_file_nix():
     with ConfigBuilder(ports={"http": [8000]},
                        browser_host="foo.bar",
-                       alternate_hosts={"alt": "foo2.bar"}) as c:
+                       alternate_hosts={"alt": "foo2.bar"},
+                       subdomains={"a", "b"},
+                       not_subdomains={"x, y"}) as c:
         hosts = serve.make_hosts_file(c, "192.168.42.42")
         lines = hosts.split("\n")
         assert set(lines) == {"",
                               "192.168.42.42\tfoo.bar",
                               "192.168.42.42\tfoo2.bar",
-                              "192.168.42.42\twww.foo.bar",
-                              "192.168.42.42\twww.foo2.bar",
-                              "192.168.42.42\twww1.foo.bar",
-                              "192.168.42.42\twww1.foo2.bar",
-                              "192.168.42.42\twww2.foo.bar",
-                              "192.168.42.42\twww2.foo2.bar",
-                              "192.168.42.42\txn--lve-6lad.foo.bar",
-                              "192.168.42.42\txn--lve-6lad.foo2.bar",
-                              "192.168.42.42\txn--n8j6ds53lwwkrqhv28a.foo.bar",
-                              "192.168.42.42\txn--n8j6ds53lwwkrqhv28a.foo2.bar"}
+                              "192.168.42.42\ta.foo.bar",
+                              "192.168.42.42\ta.foo2.bar",
+                              "192.168.42.42\tb.foo.bar",
+                              "192.168.42.42\tb.foo2.bar"}
         assert lines[-1] == ""
 
 @pytest.mark.skipif(platform.uname()[0] != "Windows",
@@ -37,24 +34,22 @@ def test_make_hosts_file_nix():
 def test_make_hosts_file_windows():
     with ConfigBuilder(ports={"http": [8000]},
                        browser_host="foo.bar",
-                       alternate_hosts={"alt": "foo2.bar"}) as c:
+                       alternate_hosts={"alt": "foo2.bar"},
+                       subdomains={"a", "b"},
+                       not_subdomains={"x", "y"}) as c:
         hosts = serve.make_hosts_file(c, "192.168.42.42")
         lines = hosts.split("\n")
         assert set(lines) == {"",
-                              "0.0.0.0\tnonexistent.foo.bar",
-                              "0.0.0.0\tnonexistent.foo2.bar",
+                              "0.0.0.0\tx.foo.bar",
+                              "0.0.0.0\tx.foo2.bar",
+                              "0.0.0.0\ty.foo.bar",
+                              "0.0.0.0\ty.foo2.bar",
                               "192.168.42.42\tfoo.bar",
                               "192.168.42.42\tfoo2.bar",
-                              "192.168.42.42\twww.foo.bar",
-                              "192.168.42.42\twww.foo2.bar",
-                              "192.168.42.42\twww1.foo.bar",
-                              "192.168.42.42\twww1.foo2.bar",
-                              "192.168.42.42\twww2.foo.bar",
-                              "192.168.42.42\twww2.foo2.bar",
-                              "192.168.42.42\txn--lve-6lad.foo.bar",
-                              "192.168.42.42\txn--lve-6lad.foo2.bar",
-                              "192.168.42.42\txn--n8j6ds53lwwkrqhv28a.foo.bar",
-                              "192.168.42.42\txn--n8j6ds53lwwkrqhv28a.foo2.bar"}
+                              "192.168.42.42\ta.foo.bar",
+                              "192.168.42.42\ta.foo2.bar",
+                              "192.168.42.42\tb.foo.bar",
+                              "192.168.42.42\tb.foo2.bar"}
         assert lines[-1] == ""
 
 
@@ -81,3 +76,32 @@ def test_pickle():
     # Ensure that the config object can be pickled
     with ConfigBuilder() as c:
         pickle.dumps(c)
+
+
+def test_config_json_length():
+    # we serialize the config as JSON for pytestrunner and put it in an env
+    # variable, which on Windows must have a length <= 0x7FFF (int16)
+    with ConfigBuilder() as c:
+        data = json.dumps(c.as_dict())
+    assert len(data) <= 0x7FFF
+
+def test_alternate_host_unspecified():
+    ConfigBuilder(browser_host="web-platform.test")
+
+@pytest.mark.parametrize("primary, alternate", [
+    ("web-platform.test", "web-platform.test"),
+    ("a.web-platform.test", "web-platform.test"),
+    ("web-platform.test", "a.web-platform.test"),
+    ("a.web-platform.test", "a.web-platform.test"),
+])
+def test_alternate_host_invalid(primary, alternate):
+    with pytest.raises(ValueError):
+        ConfigBuilder(browser_host=primary, alternate_hosts={"alt": alternate})
+
+@pytest.mark.parametrize("primary, alternate", [
+    ("web-platform.test", "not-web-platform.test"),
+    ("a.web-platform.test", "b.web-platform.test"),
+    ("web-platform-tests.dev", "web-platform-tests.live"),
+])
+def test_alternate_host_valid(primary, alternate):
+    ConfigBuilder(browser_host=primary, alternate_hosts={"alt": alternate})

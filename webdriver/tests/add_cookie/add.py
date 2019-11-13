@@ -1,13 +1,20 @@
 from datetime import datetime, timedelta
 
-from tests.support.asserts import assert_success
-from tests.support.fixtures import clear_all_cookies
+from webdriver.transport import Response
 
+from tests.support.asserts import assert_error, assert_success
+from tests.support.helpers import clear_all_cookies
 
 def add_cookie(session, cookie):
     return session.transport.send(
         "POST", "session/{session_id}/cookie".format(**vars(session)),
         {"cookie": cookie})
+
+
+def test_null_parameter_value(session, http):
+    path = "/session/{session_id}/cookie".format(**vars(session))
+    with http.post(path, None) as response:
+        assert_error(Response.from_http(response), "invalid argument")
 
 
 def test_null_response_value(session, url):
@@ -22,6 +29,16 @@ def test_null_response_value(session, url):
     response = add_cookie(session, new_cookie)
     value = assert_success(response)
     assert value is None
+
+
+def test_no_browsing_context(session, closed_window):
+    new_cookie = {
+        "name": "hello",
+        "value": "world",
+    }
+
+    response = add_cookie(session, new_cookie)
+    assert_error(response, "no such window")
 
 
 def test_add_domain_cookie(session, url, server_config):
@@ -84,13 +101,13 @@ def test_add_cookie_for_ip(session, url, server_config, configuration):
 
 
 def test_add_non_session_cookie(session, url):
-    a_year_from_now = int(
-        (datetime.utcnow() + timedelta(days=365) - datetime.utcfromtimestamp(0)).total_seconds())
+    a_day_from_now = int(
+        (datetime.utcnow() + timedelta(days=1) - datetime.utcfromtimestamp(0)).total_seconds())
 
     new_cookie = {
         "name": "hello",
         "value": "world",
-        "expiry": a_year_from_now
+        "expiry": a_day_from_now
     }
 
     session.url = url("/common/blank.html")
@@ -109,7 +126,7 @@ def test_add_non_session_cookie(session, url):
 
     assert cookie["name"] == "hello"
     assert cookie["value"] == "world"
-    assert cookie["expiry"] == a_year_from_now
+    assert cookie["expiry"] == a_day_from_now
 
 
 def test_add_session_cookie(session, url):

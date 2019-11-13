@@ -75,9 +75,9 @@
 
             // Single value, calc
             { value: "calc(100.5)",             isValid: true,  expectedValue: "100.5", description: "Simple calc value" },
-            { value: "calc(1001)",              isValid: false, description: "Out-of-range simple calc value" },
+            { value: "calc(1001)",              isValid: true, description: "Out-of-range simple calc value (should be clamped)" },
             { value: "calc(100.5*3 + 50.5)",    isValid: true,  expectedValue: "352", description: "Valid calc expression" },
-            { value: "calc(100.5*3 + 800)",     isValid: false, description: "Valid calc expression with out-of-range value" },
+            { value: "calc(100.5*3 + 800)",     isValid: true, description: "Valid calc expression with out-of-range value (should be clamped)" },
             { value: "calc(100.5px + 50.5px)",  isValid: false, description: "Valid calc expression with units" },
 
             // Value range
@@ -147,6 +147,8 @@
             { value: "oblique 20deg",           isValid: true,  expectedValue: "oblique", description: "'oblique' followed by default 20deg angle" },
             { value: "oblique 90deg",           isValid: true,  description: "'oblique' followed by maxumum 90 degree angle" },
             { value: "oblique -90deg",          isValid: true,  description: "'oblique' followed by minimum -90 degree angle" },
+            { value: "oblique calc(91deg)",     isValid: true,  expectedValue: "oblique 90deg", description: "'oblique' followed by calc with out of range value (should be clamped)" },
+            { value: "oblique calc(-91deg)",    isValid: true,  expectedValue: "oblique -90deg", description: "'oblique' followed by calc with out of range value (should be clamped)" },
             { value: "oblique 0rad",            isValid: true,  expectedValue: "oblique 0deg", description: "'oblique' followed by  angle in radians" },
             { value: "oblique 20",              isValid: false, description: "'oblique' followed by unit-less number" },
             { value: "oblique 20px",            isValid: false, description: "'oblique' followed by non-angle" },

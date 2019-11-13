@@ -1,6 +1,9 @@
 import pytest
 
-from tests.support.asserts import assert_success
+from webdriver.transport import Response
+
+from tests.support.asserts import assert_error, assert_success
+from tests.support.inline import inline
 
 
 def execute_script(session, script, args=None):
@@ -12,6 +15,36 @@ def execute_script(session, script, args=None):
         "POST", "/session/{session_id}/execute/sync".format(
             session_id=session.session_id),
         body)
+
+
+def test_null_parameter_value(session, http):
+    path = "/session/{session_id}/execute/sync".format(**vars(session))
+    with http.post(path, None) as response:
+        assert_error(Response.from_http(response), "invalid argument")
+
+
+def test_no_browsing_context(session, closed_window):
+    response = execute_script(session, "return 1;")
+    assert_error(response, "no such window")
+
+
+def test_ending_comment(session):
+    response = execute_script(session, "return 1; // foo")
+    assert_success(response, 1)
+
+
+def test_override_listeners(session):
+    session.url = inline("""
+<script>
+called = [];
+window.addEventListener = () => {called.push("Internal addEventListener")}
+window.removeEventListener = () => {called.push("Internal removeEventListener")}
+</script>
+})""")
+    response = execute_script(session, "return !window.onunload");
+    assert_success(response, True);
+    response = execute_script(session, "return called")
+    assert_success(response, [])
 
 
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])

@@ -1,3 +1,7 @@
+import base64
+import imghdr
+import struct
+
 from webdriver import Element, NoSuchAlertException, WebDriverException
 
 
@@ -20,10 +24,10 @@ errors = {
     "no such element": 404,
     "no such frame": 404,
     "no such window": 404,
-    "script timeout": 408,
+    "script timeout": 500,
     "session not created": 500,
     "stale element reference": 404,
-    "timeout": 408,
+    "timeout": 500,
     "unable to set cookie": 500,
     "unable to capture screen": 500,
     "unexpected alert open": 500,
@@ -48,13 +52,14 @@ def assert_error(response, error_code):
     assert response.body["value"]["error"] == error_code
     assert isinstance(response.body["value"]["message"], basestring)
     assert isinstance(response.body["value"]["stacktrace"], basestring)
+    assert_response_headers(response.headers)
 
 
 def assert_success(response, value=None):
     """
     Verify that the provided webdriver.Response instance described
-    a valid error response as defined by `dfn-send-an-error` and
-    the provided error code.
+    a valid success response as defined by `dfn-send-a-response` and
+    the provided response value.
 
     :param response: ``webdriver.Response`` instance.
     :param value: Expected value of the response body, if any.
@@ -63,7 +68,21 @@ def assert_success(response, value=None):
 
     if value is not None:
         assert response.body["value"] == value
+
+    assert_response_headers(response.headers)
     return response.body.get("value")
+
+
+def assert_response_headers(headers):
+    """
+    Method to assert response headers for WebDriver requests
+
+    :param headers: dict with header data
+    """
+    assert 'cache-control' in headers
+    assert 'no-cache' == headers['cache-control']
+    assert 'content-type' in headers
+    assert 'application/json; charset=utf-8' == headers['content-type']
 
 
 def assert_dialog_handled(session, expected_text, expected_retval):
@@ -73,7 +92,7 @@ def assert_dialog_handled(session, expected_text, expected_retval):
     # of this fixture's dialog.
     try:
         assert session.alert.text != expected_text, (
-            "User prompt with text '%s' was not handled." % expected_text)
+            "User prompt with text '{}' was not handled.".format(expected_text))
 
     except NoSuchAlertException:
         # If dialog has been closed and no other one is open, check its return value
@@ -113,6 +132,16 @@ def assert_files_uploaded(session, element, files):
 
     for index, f in enumerate(files):
         assert get_file_contents(index) == f.read()
+
+
+def assert_is_active_element(session, element):
+    """Verify that element reference is the active element."""
+    from_js = session.execute_script("return document.activeElement")
+
+    if element is None:
+        assert from_js is None
+    else:
+        assert_same_element(session, element, from_js)
 
 
 def assert_same_element(session, a, b):
@@ -179,3 +208,10 @@ def assert_move_to_coordinates(point, target, events):
             assert e["pageX"] == point["x"]
             assert e["pageY"] == point["y"]
             assert e["target"] == target
+
+
+def assert_png(screenshot):
+    """Test that screenshot is a Base64 encoded PNG file."""
+    image = base64.decodestring(screenshot)
+    mime_type = imghdr.what("", image)
+    assert mime_type == "png", "Expected image to be PNG, but it was {}".format(mime_type)

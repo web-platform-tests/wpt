@@ -107,7 +107,17 @@
               node = new PannerNode(context, options);
             },
             'new PannerNode(c, ' + JSON.stringify(options) + ')')
-            .throw('NotSupportedError');
+            .throw(DOMException, 'NotSupportedError');
+        should(
+            () => {
+              node = new PannerNode(context);
+              node.channelCount = options.channelCount;
+            },
+            `node.channelCount = ${options.channelCount}`)
+            .throw(DOMException, "NotSupportedError");
+        should(node.channelCount,
+               `node.channelCount after setting to ${options.channelCount}`)
+            .beEqualTo(2);
 
         options = {channelCount: 3};
         should(
@@ -115,7 +125,17 @@
               node = new PannerNode(context, options);
             },
             'new PannerNode(c, ' + JSON.stringify(options) + ')')
-            .throw('NotSupportedError');
+            .throw(DOMException, 'NotSupportedError');
+        should(
+            () => {
+              node = new PannerNode(context);
+              node.channelCount = options.channelCount;
+            },
+            `node.channelCount = ${options.channelCount}`)
+            .throw(DOMException, "NotSupportedError");
+        should(node.channelCount,
+               `node.channelCount after setting to ${options.channelCount}`)
+            .beEqualTo(2);
 
         options = {channelCount: 99};
         should(
@@ -123,7 +143,17 @@
               node = new PannerNode(context, options);
             },
             'new PannerNode(c, ' + JSON.stringify(options) + ')')
-            .throw('NotSupportedError');
+            .throw(DOMException, 'NotSupportedError');
+        should(
+            () => {
+              node = new PannerNode(context);
+              node.channelCount = options.channelCount;
+            },
+            `node.channelCount = ${options.channelCount}`)
+            .throw(DOMException, "NotSupportedError");
+        should(node.channelCount,
+               `node.channelCount after setting to ${options.channelCount}`)
+            .beEqualTo(2);
 
         // Test channelCountMode.  A mode of "max" is illegal, but others are
         // ok.
@@ -153,7 +183,17 @@
               node = new PannerNode(context, options);
             },
             'new PannerNode(c, ' + JSON.stringify(options) + ')')
-            .throw('NotSupportedError');
+            .throw(DOMException, 'NotSupportedError');
+        should(
+            () => {
+              node = new PannerNode(context);
+              node.channelCountMode = options.channelCountMode;
+            },
+            `node.channelCountMode = ${options.channelCountMode}`)
+            .throw(DOMException, "NotSupportedError");
+        should(node.channelCountMode,
+               `node.channelCountMode after setting to ${options.channelCountMode}`)
+            .beEqualTo("clamped-max");
 
         options = {channelCountMode: 'foobar'};
         should(
@@ -162,6 +202,16 @@
             },
             'new PannerNode(c, " + JSON.stringify(options) + ")')
             .throw(TypeError);
+        should(
+            () => {
+              node = new PannerNode(context);
+              node.channelCountMode = options.channelCountMode;
+            },
+            `node.channelCountMode = ${options.channelCountMode}`)
+            .notThrow(); // Invalid assignment to enum-valued attrs does not throw.
+        should(node.channelCountMode,
+               `node.channelCountMode after setting to ${options.channelCountMode}`)
+            .beEqualTo("clamped-max");
 
         // Test channelInterpretation.
         options = {channelInterpretation: 'speakers'};
@@ -192,6 +242,150 @@
             'new PannerNode(c, ' + JSON.stringify(options) + ')')
             .throw(TypeError);
 
+        // Test maxDistance
+        options = {maxDistance: -1};
+        should(
+            () => {
+              node = new PannerNode(context, options);
+            },
+            'new PannerNode(c, ' + JSON.stringify(options) + ')')
+            .throw(RangeError);
+        should(
+            () => {
+              node = new PannerNode(context);
+              node.maxDistance = options.maxDistance;
+            },
+            `node.maxDistance = ${options.maxDistance}`)
+            .throw(RangeError);
+        should(node.maxDistance,
+               `node.maxDistance after setting to ${options.maxDistance}`)
+            .beEqualTo(10000);
+
+        options = {maxDistance: 100};
+        should(
+            () => {
+              node = new PannerNode(context, options);
+            },
+            'node7 = new PannerNode(c, ' + JSON.stringify(options) + ')')
+            .notThrow();
+        should(node.maxDistance, 'node7.maxDistance')
+            .beEqualTo(options.maxDistance);
+
+        // Test rolloffFactor
+        options = {rolloffFactor: -1};
+        should(
+            () => {
+              node = new PannerNode(context, options);
+            },
+            'new PannerNode(c, ' + JSON.stringify(options) + ')')
+            .throw(RangeError);
+        should(
+            () => {
+              node = new PannerNode(context);
+              node.rolloffFactor = options.rolloffFactor;
+            },
+            `node.rolloffFactor = ${options.rolloffFactor}`)
+            .throw(RangeError);
+        should(node.rolloffFactor,
+               `node.rolloffFactor after setting to ${options.rolloffFactor}`)
+            .beEqualTo(1);
+
+        options = {rolloffFactor: 0};
+        should(
+            () => {
+              node = new PannerNode(context, options);
+            },
+            'node8 = new PannerNode(c, ' + JSON.stringify(options) + ')')
+            .notThrow();
+        should(node.rolloffFactor, 'node8.rolloffFactor')
+            .beEqualTo(options.rolloffFactor);
+
+        options = {rolloffFactor: 0.5};
+        should(
+            () => {
+              node = new PannerNode(context, options);
+            },
+            'node8 = new PannerNode(c, ' + JSON.stringify(options) + ')')
+            .notThrow();
+        should(node.rolloffFactor, 'node8.rolloffFactor')
+            .beEqualTo(options.rolloffFactor);
+
+        options = {rolloffFactor: 100};
+        should(
+            () => {
+              node = new PannerNode(context, options);
+            },
+            'node8 = new PannerNode(c, ' + JSON.stringify(options) + ')')
+            .notThrow();
+        should(node.rolloffFactor, 'node8.rolloffFactor')
+            .beEqualTo(options.rolloffFactor);
+
+        // Test coneOuterGain
+        options = {coneOuterGain: -1};
+        should(
+            () => {
+              node = new PannerNode(context, options);
+            },
+            'new PannerNode(c, ' + JSON.stringify(options) + ')')
+            .throw(DOMException, 'InvalidStateError');
+        should(
+            () => {
+              node = new PannerNode(context);
+              node.coneOuterGain = options.coneOuterGain;
+            },
+            `node.coneOuterGain = ${options.coneOuterGain}`)
+            .throw(DOMException, 'InvalidStateError');
+        should(node.coneOuterGain,
+               `node.coneOuterGain after setting to ${options.coneOuterGain}`)
+            .beEqualTo(0);
+
+        options = {coneOuterGain: 1.1};
+        should(
+            () => {
+              node = new PannerNode(context, options);
+            },
+            'new PannerNode(c, ' + JSON.stringify(options) + ')')
+            .throw(DOMException, 'InvalidStateError');
+        should(
+            () => {
+              node = new PannerNode(context);
+              node.coneOuterGain = options.coneOuterGain;
+            },
+            `node.coneOuterGain = ${options.coneOuterGain}`)
+            .throw(DOMException, 'InvalidStateError');
+        should(node.coneOuterGain,
+               `node.coneOuterGain after setting to ${options.coneOuterGain}`)
+            .beEqualTo(0);
+
+        options = {coneOuterGain: 0.0};
+        should(
+            () => {
+              node = new PannerNode(context, options);
+            },
+            'node9 = new PannerNode(c, ' + JSON.stringify(options) + ')')
+            .notThrow();
+        should(node.coneOuterGain, 'node9.coneOuterGain')
+            .beEqualTo(options.coneOuterGain);
+        options = {coneOuterGain: 0.5};
+        should(
+            () => {
+              node = new PannerNode(context, options);
+            },
+            'node9 = new PannerNode(c, ' + JSON.stringify(options) + ')')
+            .notThrow();
+        should(node.coneOuterGain, 'node9.coneOuterGain')
+            .beEqualTo(options.coneOuterGain);
+
+        options = {coneOuterGain: 1.0};
+        should(
+            () => {
+              node = new PannerNode(context, options);
+            },
+            'node9 = new PannerNode(c, ' + JSON.stringify(options) + ')')
+            .notThrow();
+        should(node.coneOuterGain, 'node9.coneOuterGain')
+            .beEqualTo(options.coneOuterGain);
+
         task.done();
       });
 
@@ -218,7 +412,7 @@
           rolloffFactor: 3 * Math.PI,
           coneInnerAngle: 4 * Math.PI,
           coneOuterAngle: 5 * Math.PI,
-          coneOuterGain: 6 * Math.PI
+          coneOuterGain: 0.1 * Math.PI
         };
 
         should(

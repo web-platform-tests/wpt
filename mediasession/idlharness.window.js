@@ -1,7 +1,7 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 
-// https://wicg.github.io/mediasession/
+// https://w3c.github.io/mediasession/
 
 'use strict';
 
@@ -14,6 +14,5 @@ idl_test(
       MediaSession: ['navigator.mediaSession'],
       Navigator: ['navigator']
     });
-  },
-  'Test IDL implementation of Media Session'
+  }
 );

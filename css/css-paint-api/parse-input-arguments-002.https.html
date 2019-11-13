@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
+<link rel="help" href="https://drafts.css-houdini.org/css-paint-api/">
 <link rel="match" href="parse-input-arguments-ref.html">
 <style>
 .container {
@@ -25,7 +26,8 @@ try {
         }
     });
 } catch(ex) {
-    if (ex.name == "TypeError" && ex.message == "Failed to execute 'registerPaint' on 'PaintWorkletGlobalScope': The provided value cannot be converted to a sequence.")
+    // 'inputArguments' property is a string, not a sequence.
+    if (ex.name == 'TypeError')
         testsPassed = true;
 }
 

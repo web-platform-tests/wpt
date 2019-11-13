@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 from webdriver.transport import HTTPWireProtocol
@@ -26,6 +24,19 @@ def fixture_add_browser_capabilities(configuration):
 
     return add_browser_capabilities
 
+
+@pytest.fixture(name="configuration")
+def fixture_configuration(configuration):
+  """Remove "acceptInsecureCerts" from capabilities if it exists.
+
+  Some browser configurations add acceptInsecureCerts capability by default.
+  Remove it during new_session tests to avoid interference.
+  """
+
+  if "acceptInsecureCerts" in configuration["capabilities"]:
+    configuration = dict(configuration)
+    del configuration["capabilities"]["acceptInsecureCerts"]
+  return configuration
 
 @pytest.fixture(name="new_session")
 def fixture_new_session(request, configuration, current_session):
@@ -66,13 +77,3 @@ def fixture_new_session(request, configuration, current_session):
     if custom_session.get("session") is not None:
         _delete_session(custom_session["session"]["sessionId"])
         custom_session = None
-
-
-@pytest.fixture(scope="session")
-def platform_name():
-    return {
-        "linux2": "linux",
-        "win32": "windows",
-        "cygwin": "windows",
-        "darwin": "mac"
-    }.get(sys.platform)

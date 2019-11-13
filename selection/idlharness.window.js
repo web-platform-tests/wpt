@@ -7,13 +7,12 @@
 
 idl_test(
   ['selection-api'],
-  ['dom', 'html'],
+  ['html', 'dom'],
   idlArray => {
     idlArray.add_objects({
       Window: ['window'],
       Document: ['document'],
       Selection: ['getSelection()'],
     });
-  },
-  'selection-api interfaces'
+  }
 );

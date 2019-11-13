@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <title>CSS Transform Module Level 2: calc values</title>
-<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-transforms-2/">
 <link rel="help" href="https://drafts.csswg.org/css-values-3/#calc-notation">
 <meta name="assert" content="calc values are supported in css-transforms properties.">
@@ -31,7 +30,7 @@
 
 test(function(){
   target.style = 'translate: calc(30px + 20%) calc(-200px + 100%);';
-  assert_equals(getComputedStyle(target).translate, 'calc(30px + 20%) calc(-200px + 100%)');
+  assert_equals(getComputedStyle(target).translate, 'calc(20% + 30px) calc(100% - 200px)');
 }, 'translate supports calc');
 
 test(function(){

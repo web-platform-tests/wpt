@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -19,7 +20,7 @@ test(function () {
   assert_throws("SYNTAX_ERR", function() {
     new IntersectionObserver(e => {}, {rootMargin: "1"})
   })
-}, 'IntersectionObserver constructor witth { rootMargin: "1" }');
+}, 'IntersectionObserver constructor with { rootMargin: "1" }');
 
 test(function () {
   assert_throws("SYNTAX_ERR", function() {

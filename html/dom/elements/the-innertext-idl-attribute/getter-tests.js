@@ -9,6 +9,7 @@ testText("<div>abc\ndef", "abc def", "\\n converted to space");
 testText("<div>abc\rdef", "abc def", "\\r converted to space");
 testText("<div>abc\tdef", "abc def", "\\t converted to space");
 testText("<div>abc <br>def", "abc\ndef", "Trailing whitespace before hard line break removed");
+testText("<div>abc<br> def", "abc\ndef", "Leading whitespace after hard line break removed");
 
 /**** <pre> ****/
 
@@ -52,11 +53,44 @@ testText("<div style='white-space:pre-line'>abc\tdef", "abc def", "\\t converted
 testText("<div><span>abc </span> def", "abc def", "Whitespace collapses across element boundaries");
 testText("<div><span>abc </span><span></span> def", "abc def", "Whitespace collapses across element boundaries");
 testText("<div><span>abc </span><span style='white-space:pre'></span> def", "abc def", "Whitespace collapses across element boundaries");
+testText("<div>abc <input> def", "abc  def", "Whitespace around <input> should not be collapsed");
+testText("<div>abc <span style='display:inline-block'></span> def", "abc  def", "Whitespace around inline-block should not be collapsed");
+testText("<div>abc <span style='display:inline-block'> def </span> ghi", "abc def ghi", "Trailing space at end of inline-block should be collapsed");
+testText("<div><input> <div>abc</div>", "abc", "Whitespace between <input> and block should be collapsed");
+testText("<div><span style='inline-block'></span> <div>abc</div>", "abc", "Whitespace between inline-block and block should be collapsed");
+testText("<div>abc <img> def", "abc  def", "Whitespace around <img> should not be collapsed");
+testText("<div>abc <img width=1 height=1> def", "abc  def", "Whitespace around <img> should not be collapsed");
+testText("<div><img> abc", " abc", "Leading whitesapce should not be collapsed");
+testText("<div>abc <img>", "abc ", "Trailing whitesapce should not be collapsed");
+testText("<div>abc <b></b> def", "abc def", "Whitespace around empty span should be collapsed");
+testText("<div>abc <b><i></i></b> def", "abc def", "Whitespace around empty spans should be collapsed");
+testText("<div><canvas></canvas> abc", " abc", "<canvas> should not collapse following space");
+testText("<div>abc <img style='display:block'> def", "abc\ndef", "Replaced element <img> with display:block should be treated as block-level");
+testText("<div>abc <canvas style='display:block'></canvas> def", "abc\ndef", "Replaced element <canvas> with display:block should be treated as block-level");
 
 /**** Soft line breaks ****/
 
 testText("<div style='width:0'>abc def", "abc def", "Soft line breaks ignored");
+testText("<div style='width:0'>abc-def", "abc-def", "Soft line break at hyphen ignored");
 testText("<div style='width:0'><span>abc</span> <span>def</span>", "abc def", "Whitespace text node preserved");
+
+/**** Soft line breaks when word-break:break-word is in effect ****/
+/* (based on Testcase #2 at https://bugzilla.mozilla.org/show_bug.cgi?id=1241631) */
+
+testText("<div style='width:1px; word-break:break-word'>Hello Kitty</div>", "Hello Kitty", "Soft breaks ignored in presence of word-break:break-word");
+testText("<div style='width:1px; word-break:break-word'><x>Hello</x> <x>Kitty</x></div>", "Hello Kitty", "Element boundaries ignored for soft break handling (1)");
+testText("<div style='width:1px; word-break:break-word'><x>Hello</x> <x> Kitty</x></div>", "Hello Kitty", "Whitespace collapses across element boundaries at soft break (1)");
+testText("<div style='width:1px; word-break:break-word'><x>Hello</x><x> Kitty</x></div>", "Hello Kitty", "Element boundaries ignored for soft break handling (2)");
+testText("<div style='width:1px; word-break:break-word'><x>Hello </x> <x>Kitty</x></div>", "Hello Kitty", "Whitespace collapses across element boundaries at soft break (2)");
+testText("<div style='width:1px; word-break:break-word'><x>Hello </x><x>Kitty</x></div>", "Hello Kitty", "Element boundaries ignored for soft break handling (3)");
+testText("<div style='width:1px; word-break:break-word'><x>Hello </x><x> Kitty</x></div>", "Hello Kitty", "Whitespace collapses across element boundaries at soft break (3)");
+testText("<div style='width:1px; word-break:break-word'><x>Hello </x> <x> Kitty</x></div>", "Hello Kitty", "Whitespace collapses across element boundaries at soft break (4)");
+testText("<div style='width:1px; word-break:break-word'><x>Hello</x> Kitty</div>", "Hello Kitty", "Element boundaries ignored for soft break handling (4)");
+testText("<div style='width:1px; word-break:break-word'><x>Hello </x>Kitty</div>", "Hello Kitty", "Element boundaries ignored for soft break handling (5)");
+testText("<div style='width:1px; word-break:break-word; text-transform:uppercase'>Hello Kitty</div>", "HELLO KITTY", "Soft breaks ignored, text-transform applied");
+testText("<div style='width:1px; word-break:break-word'>Hello<br> Kitty</div>", "Hello\nKitty", "<br> returned as newline, following space collapsed");
+testText("<div style='width:1px; word-break:break-word'>Hello <br>Kitty</div>", "Hello\nKitty", "<br> returned as newline, preceding space collapsed");
+testText("<div style='width:1px; word-break:break-word'><x>Hello </x> <br> <x> Kitty</x></div>", "Hello\nKitty", "<br> returned as newline, adjacent spaces collapsed across element boundaries");
 
 /**** first-line/first-letter ****/
 
@@ -75,7 +109,7 @@ testText("<div style='display:none'>abc  def", "abc  def", "No whitespace compre
 testText("<div style='display:none'> abc def ", " abc def ", "No removal of leading/trailing whitespace in display:none container");
 testText("<div>123<span style='display:none'>abc", "123", "display:none child not rendered");
 testText("<div style='display:none'><span id='target'>abc", "abc", "display:none container with non-display-none target child");
-testTextInSVG("<div id='target'>abc", "", "non-display-none child of svg");
+testTextInSVG("<div id='target'>abc", "abc", "non-display-none child of svg");
 testTextInSVG("<div style='display:none' id='target'>abc", "abc", "display:none child of svg");
 testTextInSVG("<div style='display:none'><div id='target'>abc", "abc", "child of display:none child of svg");
 
@@ -132,13 +166,13 @@ testText("<iframe>abc", "", "<iframe> contents ignored");
 testText("<iframe><div id='target'>abc", "", "<iframe> contents ignored");
 testText("<iframe src='data:text/html,abc'>", "","<iframe> subdocument ignored");
 testText("<audio style='display:block'>abc", "", "<audio> contents ignored");
-testText("<audio style='display:block'><source id='target' class='poke' style='display:block'>", "", "<audio> contents ignored");
-testText("<audio style='display:block'><source id='target' class='poke' style='display:none'>", "abc", "<audio> contents ok if display:none");
+testText("<audio style='display:block'><source id='target' class='poke' style='display:block'>", "abc", "<audio> contents ok for element not being rendered");
+testText("<audio style='display:block'><source id='target' class='poke' style='display:none'>", "abc", "<audio> contents ok for element not being rendered");
 testText("<video>abc", "", "<video> contents ignored");
-testText("<video style='display:block'><source id='target' class='poke' style='display:block'>", "", "<video> contents ignored");
-testText("<video style='display:block'><source id='target' class='poke' style='display:none'>", "abc", "<video> contents ok if display:none");
+testText("<video style='display:block'><source id='target' class='poke' style='display:block'>", "abc", "<video> contents ok for element not being rendered");
+testText("<video style='display:block'><source id='target' class='poke' style='display:none'>", "abc", "<video> contents ok for element not being rendered");
 testText("<canvas>abc", "", "<canvas> contents ignored");
-testText("<canvas><div id='target'>abc", "", "<canvas><div id='target'> contents ignored");
+testText("<canvas><div id='target'>abc", "abc", "<canvas><div id='target'> contents ok for element not being rendered");
 testText("<img alt='abc'>", "", "<img> alt text ignored");
 testText("<img src='about:blank' class='poke'>", "", "<img> contents ignored");
 
@@ -236,6 +270,8 @@ testText("<div><table style='border-collapse:collapse'><tr><td>abc<td>def</table
 testText("<div><table><tfoot>x</tfoot><tbody>y</tbody></table>", "xy", "tfoot not reordered");
 testText("<table><tfoot><tr><td>footer</tfoot><thead><tr><td style='visibility:collapse'>thead</thead><tbody><tr><td>tbody</tbody></table>",
          "footer\n\ntbody", "");
+testText("<table><tr><td id=target>abc</td><td>def</td>", "abc", "No tab on table-cell itself");
+testText("<table><tr id=target><td>abc</td><td>def</td></tr><tr id=target><td>ghi</td><td>jkl</td></tr>", "abc\tdef", "No newline on table-row itself");
 
 /**** Table captions ****/
 
@@ -258,6 +294,11 @@ testText("<div>abc<div class='itable'><span class='cell'>def</span></div>ghi", "
 testText("<div>abc<div class='itable'><span class='row'><span class='cell'>def</span></span>\n<span class='row'><span class='cell'>123</span></span></div>ghi",
          "abcdef\n123ghi", "Single newline in two-row inline-table");
 
+/**** display:table-row/table-cell/table-caption ****/
+testText("<div style='display:table-row'>", "", "display:table-row on the element itself");
+testText("<div style='display:table-cell'>", "", "display:table-cell on the element itself");
+testText("<div style='display:table-caption'>", "", "display:table-caption on the element itself");
+
 /**** Lists ****/
 
 testText("<div><ol><li>abc", "abc", "<ol> list items get no special treatment");
@@ -278,6 +319,9 @@ testText("<div>abc<hr><hr>def", "abc\ndef", "<hr><hr> induces just one line brea
 testText("<div>abc<hr><hr><hr>def", "abc\ndef", "<hr><hr><hr> induces just one line break");
 testText("<div><hr class='poke'>", "abc", "<hr> content rendered");
 testText("<div>abc<!--comment-->def", "abcdef", "comment ignored");
+testText("<br>", "", "<br>");
+testText("<p>", "", "empty <p>");
+testText("<div>", "", "empty <div>");
 
 /**** text-transform ****/
 
@@ -293,11 +337,13 @@ testText("<div>abc<span>123<div>456</div>789</span>def", "abc123\n456\n789def", 
 
 testText("<div>abc<div style='float:left'>123</div>def", "abc\n123\ndef", "floats induce a block boundary");
 testText("<div>abc<span style='float:left'>123</span>def", "abc\n123\ndef", "floats induce a block boundary");
+testText("<div style='float:left'>123", "123", "float on the element itself");
 
 /**** position ****/
 
 testText("<div>abc<div style='position:absolute'>123</div>def", "abc\n123\ndef", "position:absolute induces a block boundary");
 testText("<div>abc<span style='position:absolute'>123</span>def", "abc\n123\ndef", "position:absolute induces a block boundary");
+testText("<div style='position:absolute'>123", "123", "position:absolute on the element itself");
 testText("<div>abc<div style='position:relative'>123</div>def", "abc\n123\ndef", "position:relative has no effect");
 testText("<div>abc<span style='position:relative'>123</span>def", "abc123def", "position:relative has no effect");
 

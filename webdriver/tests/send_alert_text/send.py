@@ -1,7 +1,19 @@
 import pytest
 
+from webdriver.error import NoSuchAlertException
+from webdriver.transport import Response
+
 from tests.support.asserts import assert_error, assert_success
+from tests.support.authentication import basic_authentication
 from tests.support.inline import inline
+from tests.support.sync import Poll
+
+
+@pytest.fixture
+def page(session):
+    session.url = inline("""
+        <script>window.result = window.prompt('Enter Your Name: ', 'Name');</script>
+    """)
 
 
 def send_alert_text(session, text=None):
@@ -10,25 +22,25 @@ def send_alert_text(session, text=None):
         {"text": text})
 
 
-def test_null_response_value(session, url):
-    session.url = inline("<script>window.result = window.prompt('Enter Your Name: ', 'Name');</script>")
+def test_null_parameter_value(session, http):
+    path = "/session/{session_id}/alert/text".format(**vars(session))
+    with http.post(path, None) as response:
+        assert_error(Response.from_http(response), "invalid argument")
 
+
+def test_null_response_value(session, page):
     response = send_alert_text(session, "Federer")
     value = assert_success(response)
     assert value is None
 
 
 @pytest.mark.parametrize("text", [None, {}, [], 42, True])
-def test_invalid_input(session, text):
-    session.url = inline("<script>window.result = window.prompt('Enter Your Name: ', 'Name');</script>")
+def test_invalid_input(session, page, text):
     response = send_alert_text(session, text)
     assert_error(response, "invalid argument")
 
 
-def test_no_browsing_context(session, create_window):
-    session.window_handle = create_window()
-    session.close()
-
+def test_no_browsing_context(session, closed_window):
     response = send_alert_text(session, "Federer")
     assert_error(response, "no such window")
 
@@ -38,39 +50,39 @@ def test_no_user_prompt(session):
     assert_error(response, "no such alert")
 
 
-def test_alert_element_not_interactable(session):
-    session.url = inline("<script>window.alert('Hello');</script>")
+@pytest.mark.parametrize("dialog_type", ["alert", "confirm"])
+def test_alert_element_not_interactable(session, dialog_type):
+    session.url = inline("<script>window.{}('Hello');</script>".format(dialog_type))
 
     response = send_alert_text(session, "Federer")
     assert_error(response, "element not interactable")
 
 
-def test_confirm_element_not_interactable(session):
-    session.url = inline("<script>window.confirm('Hello');</script>")
+def test_alert_unsupported_operation(session):
+    session.url = basic_authentication()
 
     response = send_alert_text(session, "Federer")
-    assert_error(response, "element not interactable")
+    assert_error(response, "unsupported operation")
 
 
-def test_send_alert_text(session):
-    session.url = inline("<script>window.result = window.prompt('Enter Your Name: ', 'Name');</script>")
-
-    send_response = send_alert_text(session, "Federer")
+@pytest.mark.parametrize("text", ["", "Federer", " Fed erer ", "Fed\terer"])
+def test_send_alert_text(session, page, text):
+    send_response = send_alert_text(session, text)
     assert_success(send_response)
 
-    accept_response = session.transport.send("POST", "session/{session_id}/alert/accept"
-                                             .format(session_id=session.session_id))
-    assert_success(accept_response)
-    assert session.execute_script("return window.result") == "Federer"
+    session.alert.accept()
+
+    assert session.execute_script("return window.result") == text
 
 
-def test_send_alert_text_with_whitespace(session):
-    session.url = inline("<script>window.result = window.prompt('Enter Your Name: ', 'Name');</script>")
+def test_unexpected_alert(session):
+    session.execute_script("setTimeout(function() { prompt('Hello'); }, 100);")
+    wait = Poll(
+        session,
+        timeout=5,
+        ignored_exceptions=NoSuchAlertException,
+        message="No user prompt with text 'Hello' detected")
+    wait.until(lambda s: s.alert.text == "Hello")
 
-    send_response = send_alert_text(session, " Fed erer ")
-    assert_success(send_response)
-
-    accept_response = session.transport.send("POST", "session/{session_id}/alert/accept"
-                                             .format(session_id=session.session_id))
-    assert_success(accept_response)
-    assert session.execute_script("return window.result") == " Fed erer "
+    response = send_alert_text(session, "Federer")
+    assert_success(response)

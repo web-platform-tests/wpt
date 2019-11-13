@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "MediaStream Recording" spec.
-// See: https://w3c.github.io/mediacapture-record/
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: MediaStream Recording (https://w3c.github.io/mediacapture-record/)
 
 [Exposed=Window,
  Constructor(MediaStream stream, optional MediaRecorderOptions options)]
@@ -18,7 +18,7 @@ interface MediaRecorder : EventTarget {
   readonly attribute unsigned long videoBitsPerSecond;
   readonly attribute unsigned long audioBitsPerSecond;
 
-  void start(optional long timeslice);
+  void start(optional unsigned long timeslice);
   void stop();
   void pause();
   void resume();
@@ -28,7 +28,7 @@ interface MediaRecorder : EventTarget {
 };
 
 dictionary MediaRecorderOptions {
-  DOMString mimeType;
+  DOMString mimeType = "";
   unsigned long audioBitsPerSecond;
   unsigned long videoBitsPerSecond;
   unsigned long bitsPerSecond;

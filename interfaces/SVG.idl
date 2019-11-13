@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Scalable Vector Graphics (SVG) 2" spec.
-// See: https://svgwg.org/svg2-draft/
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: Scalable Vector Graphics (SVG) 2 (https://svgwg.org/svg2-draft/)
 
 [Exposed=Window]
 interface SVGElement : Element {
@@ -27,7 +27,7 @@ dictionary SVGBoundingBoxOptions {
 interface SVGGraphicsElement : SVGElement {
   [SameObject] readonly attribute SVGAnimatedTransformList transform;
 
-  DOMRect getBBox(optional SVGBoundingBoxOptions options);
+  DOMRect getBBox(optional SVGBoundingBoxOptions options = {});
   DOMMatrix? getCTM();
   DOMMatrix? getScreenCTM();
 };
@@ -38,8 +38,8 @@ SVGGraphicsElement includes SVGTests;
 interface SVGGeometryElement : SVGGraphicsElement {
   [SameObject] readonly attribute SVGAnimatedNumber pathLength;
 
-  boolean isPointInFill(optional DOMPointInit point);
-  boolean isPointInStroke(optional DOMPointInit point);
+  boolean isPointInFill(optional DOMPointInit point = {});
+  boolean isPointInStroke(optional DOMPointInit point = {});
   float getTotalLength();
   DOMPoint getPointAtLength(float distance);
 };
@@ -126,6 +126,22 @@ interface SVGLengthList {
 };
 
 [Exposed=Window]
+interface SVGStringList {
+
+  readonly attribute unsigned long length;
+  readonly attribute unsigned long numberOfItems;
+
+  void clear();
+  DOMString initialize(DOMString newItem);
+  getter DOMString getItem(unsigned long index);
+  DOMString insertItemBefore(DOMString newItem, unsigned long index);
+  DOMString replaceItem(DOMString newItem, unsigned long index);
+  DOMString removeItem(unsigned long index);
+  DOMString appendItem(DOMString newItem);
+  setter void (unsigned long index, DOMString newItem);
+};
+
+[Exposed=Window]
 interface SVGAnimatedBoolean {
            attribute boolean baseVal;
   readonly attribute boolean animVal;
@@ -186,22 +202,6 @@ interface SVGAnimatedLengthList {
 };
 
 [Exposed=Window]
-interface SVGStringList {
-
-  readonly attribute unsigned long length;
-  readonly attribute unsigned long numberOfItems;
-
-  void clear();
-  DOMString initialize(DOMString newItem);
-  getter DOMString getItem(unsigned long index);
-  DOMString insertItemBefore(DOMString newItem, unsigned long index);
-  DOMString replaceItem(DOMString newItem, unsigned long index);
-  DOMString removeItem(unsigned long index);
-  DOMString appendItem(DOMString newItem);
-  setter void (unsigned long index, DOMString newItem);
-};
-
-[Exposed=Window]
 interface SVGUnitTypes {
   // Unit Types
   const unsigned short SVG_UNIT_TYPE_UNKNOWN = 0;
@@ -217,16 +217,6 @@ interface mixin SVGTests {
 interface mixin SVGFitToViewBox {
   [SameObject] readonly attribute SVGAnimatedRect viewBox;
   [SameObject] readonly attribute SVGAnimatedPreserveAspectRatio preserveAspectRatio;
-};
-
-interface mixin SVGZoomAndPan {
-
-  // Zoom and Pan Types
-  const unsigned short SVG_ZOOMANDPAN_UNKNOWN = 0;
-  const unsigned short SVG_ZOOMANDPAN_DISABLE = 1;
-  const unsigned short SVG_ZOOMANDPAN_MAGNIFY = 2;
-
-  attribute unsigned short zoomAndPan;
 };
 
 interface mixin SVGURIReference {
@@ -262,7 +252,7 @@ interface SVGSVGElement : SVGGraphicsElement {
   DOMMatrix createSVGMatrix();
   DOMRect createSVGRect();
   SVGTransform createSVGTransform();
-  SVGTransform createSVGTransformFromMatrix(DOMMatrixReadOnly matrix);
+  SVGTransform createSVGTransformFromMatrix(optional DOMMatrix2DInit matrix);
 
   Element getElementById(DOMString elementId);
 
@@ -275,15 +265,10 @@ interface SVGSVGElement : SVGGraphicsElement {
 };
 
 SVGSVGElement includes SVGFitToViewBox;
-SVGSVGElement includes SVGZoomAndPan;
 SVGSVGElement includes WindowEventHandlers;
 
 [Exposed=Window]
 interface SVGGElement : SVGGraphicsElement {
-};
-
-[Exposed=Window]
-interface SVGUnknownElement : SVGGraphicsElement {
 };
 
 [Exposed=Window]
@@ -367,7 +352,7 @@ interface SVGTransform {
   [SameObject] readonly attribute DOMMatrix matrix;
   readonly attribute float angle;
 
-  void setMatrix(DOMMatrixReadOnly matrix);
+  void setMatrix(optional DOMMatrix2DInit matrix);
   void setTranslate(float tx, float ty);
   void setScale(float sx, float sy);
   void setRotate(float angle, float cx, float cy);
@@ -391,7 +376,7 @@ interface SVGTransformList {
   setter void (unsigned long index, SVGTransform newItem);
 
   // Additional methods not common to other list interfaces.
-  SVGTransform createSVGTransformFromMatrix(DOMMatrixReadOnly matrix);
+  SVGTransform createSVGTransformFromMatrix(optional DOMMatrix2DInit matrix);
   SVGTransform? consolidate();
 };
 
@@ -520,7 +505,7 @@ interface SVGTextContentElement : SVGGraphicsElement {
   DOMPoint getEndPositionOfChar(unsigned long charnum);
   DOMRect getExtentOfChar(unsigned long charnum);
   float getRotationOfChar(unsigned long charnum);
-  long getCharNumAtPosition(optional DOMPointInit point);
+  long getCharNumAtPosition(optional DOMPointInit point = {});
   void selectSubString(unsigned long charnum, unsigned long nchars);
 };
 
@@ -673,11 +658,16 @@ SVGScriptElement includes SVGURIReference;
 [Exposed=Window]
 interface SVGAElement : SVGGraphicsElement {
   [SameObject] readonly attribute SVGAnimatedString target;
-  [SameObject] readonly attribute SVGAnimatedString download;
-  [SameObject] readonly attribute SVGAnimatedString rel;
-  [SameObject] readonly attribute SVGAnimatedString relList;
-  [SameObject] readonly attribute SVGAnimatedString hreflang;
-  [SameObject] readonly attribute SVGAnimatedString type;
+  attribute DOMString download;
+  attribute USVString ping;
+  attribute DOMString rel;
+  [SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
+  attribute DOMString hreflang;
+  attribute DOMString type;
+
+  attribute DOMString text;
+
+  attribute DOMString referrerPolicy;
 };
 
 SVGAElement includes SVGURIReference;
@@ -687,4 +677,3 @@ SVGAElement includes HTMLHyperlinkElementUtils;
 interface SVGViewElement : SVGElement {};
 
 SVGViewElement includes SVGFitToViewBox;
-SVGViewElement includes SVGZoomAndPan;

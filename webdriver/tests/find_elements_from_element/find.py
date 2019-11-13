@@ -1,5 +1,7 @@
 import pytest
 
+from webdriver.transport import Response
+
 from tests.support.asserts import assert_error, assert_same_element, assert_success
 from tests.support.inline import inline
 
@@ -10,6 +12,21 @@ def find_elements(session, element_id, using, value):
             session_id=session.session_id,
             element_id=element_id),
         {"using": using, "value": value})
+
+
+def test_null_parameter_value(session, http):
+    session.url = inline("<div><a href=# id=linkText>full link text</a></div>")
+    element = session.find.css("div", all=False)
+
+    path = "/session/{session_id}/element/{element_id}/elements".format(
+        session_id=session.session_id, element_id=element.id)
+    with http.post(path, None) as response:
+        assert_error(Response.from_http(response), "invalid argument")
+
+
+def test_no_browsing_context(session, closed_window):
+    response = find_elements(session, "notReal", "css selector", "foo")
+    assert_error(response, "no such window")
 
 
 @pytest.mark.parametrize("using", [("a"), (True), (None), (1), ([]), ({})])
@@ -24,17 +41,6 @@ def test_invalid_selector_argument(session, value):
     # Step 3 - 4
     response = find_elements(session, "notReal", "css selector", value)
     assert_error(response, "invalid argument")
-
-
-def test_closed_context(session, create_window):
-    # Step 5
-    new_window = create_window()
-    session.window_handle = new_window
-    session.close()
-
-    response = find_elements(session, "notReal", "css selector", "foo")
-
-    assert_error(response, "no such window")
 
 
 @pytest.mark.parametrize("using,value",

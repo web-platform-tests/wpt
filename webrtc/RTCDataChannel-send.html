@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name="timeout" content="long">
 <title>RTCDataChannel.prototype.send</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -14,7 +15,7 @@
   //  createDataChannelPair
   //  awaitMessage
   //  blobToArrayBuffer
-  //  assert_equals_array_buffer
+  //  assert_equals_typed_array
 
   /*
     6.2.  RTCDataChannel
@@ -140,7 +141,7 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
+      assert_equals_typed_array(messageBuffer, helloBuffer.buffer);
     });
   }, 'Data channel should be able to send Uint8Array message and receive as ArrayBuffer');
 
@@ -162,7 +163,7 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
+      assert_equals_typed_array(messageBuffer, helloBuffer.buffer);
     });
   }, 'Data channel should be able to send ArrayBuffer message and receive as ArrayBuffer');
 
@@ -183,7 +184,7 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
+      assert_equals_typed_array(messageBuffer, helloBuffer.buffer);
     });
   }, 'Data channel should be able to send Blob message and receive as ArrayBuffer');
 
@@ -210,7 +211,7 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
+      assert_equals_typed_array(messageBuffer, helloBuffer.buffer);
     });
   }, 'Data channel should be able to send ArrayBuffer message and receive as Blob');
 
@@ -240,7 +241,7 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
+      assert_equals_typed_array(messageBuffer, helloBuffer.buffer);
     });
   }, 'Data channel binaryType should receive message as Blob by default');
 
@@ -253,9 +254,9 @@
       receivedMessages.push(data);
 
       if(receivedMessages.length === 3) {
-        assert_equals_array_buffer(receivedMessages[0], helloBuffer.buffer);
+        assert_equals_typed_array(receivedMessages[0], helloBuffer.buffer);
         assert_equals(receivedMessages[1], unicodeString);
-        assert_equals_array_buffer(receivedMessages[2], helloBuffer.buffer);
+        assert_equals_typed_array(receivedMessages[2], helloBuffer.buffer);
 
         t.done();
       }
@@ -295,5 +296,23 @@
       assert_equals(channel.readyState, 'closing');
       channel.send(helloString);
     }, 'Calling send() when data channel is in closing state should succeed');
-   */
+  */
+
+promise_test(async t => {
+  let pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  let [channel1, channel2] = await createDataChannelPair(pc1);
+  let message = 'hello888'; // 8 bytes
+  while (message.length <= pc1.sctp.maxMessageSize) {
+    channel1.send(message);
+    let received_message = await awaitMessage(channel2);
+    assert_equals(received_message.length, message.length, "Size mismatch");
+    // Double size
+    message = message + message;
+  }
+  // "send" method step 4:
+  // If the byte size of "data" exceeds the value of maxMessageSize, throw
+  // a TypeError.
+  assert_throws('TypeError', () => channel1.send(message));
+}, 'Calling send() up to max size should succeed, above max size should fail');
 </script>

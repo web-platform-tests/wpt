@@ -274,21 +274,25 @@ window.Audit = (function() {
 
     /**
      * Check if |actual| operation wrapped in a function throws an exception
-     * with a expected error type correctly. |expected| is optional. If it is a
-     * String, then it is considered to be the name of a DOMException. It can
-     * also be an instance of either an Error or a DOMException, to be more
-     * strict about the actual error type.
+     * with a expected error type correctly. |expected| is optional. If it is an
+     * instance of DOMException, then the description (second argument) can be
+     * provided to be more strict about the expected exception type. |expected|
+     * also can be other generic error types such as TypeError, RangeError or
+     * etc.
      *
      * @example
      *   should(() => { let a = b; }, 'A bad code').throw();
-     *   should(() => { let c = d; }, 'Assigning d to c.')
-     *       .throw('ReferenceError');
-     *   should(() => { let e = f; }, 'Assigning e to f.')
-     *       .throw('ReferenceError', { omitErrorMessage: true });
+     *   should(() => { new SomeConstructor(); }, 'A bad construction')
+     *       .throw(DOMException, 'NotSupportedError');
+     *   should(() => { let c = d; }, 'Assigning d to c')
+     *       .throw(ReferenceError);
+     *   should(() => { let e = f; }, 'Assigning e to f')
+     *       .throw(ReferenceError, { omitErrorMessage: true });
      *
      * @result
      *   "PASS   A bad code threw an exception of ReferenceError: b is not
      *       defined."
+     *   "PASS   A bad construction threw DOMException:NotSupportedError."
      *   "PASS   Assigning d to c threw ReferenceError: d is not defined."
      *   "PASS   Assigning e to f threw ReferenceError: [error message
      *       omitted]."
@@ -313,17 +317,16 @@ window.Audit = (function() {
           // The expected error type was not given.
           didThrowCorrectly = true;
           passDetail = '${actual} threw ' + error.name + errorMessage + '.';
-        } else if (typeof(this._expected) == "string" &&
-                   error instanceof DOMException &&
-                   error.name === this._expected) {
-          // A DOMException was thrown and expected, and the names match
+        } else if (this._expected === DOMException &&
+                   (this._expectedDescription === undefined ||
+                    this._expectedDescription === error.name)) {
+          // Handles DOMException with the associated name.
           didThrowCorrectly = true;
           passDetail = '${actual} threw ${expected}' + errorMessage + '.';
-        } else if (this._expected == error.constructor &&
-                   this._expected.name == error.name) {
-          // The expected error type and names match the actual one.
+        } else if (this._expected == error.constructor) {
+          // Handler other error types.
           didThrowCorrectly = true;
-          passDetail = '${actual} threw ${expected}' + errorMessage + '.';
+          passDetail = '${actual} threw ' + error.name + errorMessage + '.';
         } else {
           didThrowCorrectly = false;
           failDetail =
@@ -785,21 +788,31 @@ window.Audit = (function() {
       }
 
       // Compare against the expected sequence.
-      for (let j = 0; j < this._expected.length; j++) {
-        if (this._expected[j] !== indexedActual[j].value) {
-          firstErrorIndex = indexedActual[j].index;
-          passed = false;
-          break;
+      let failMessage =
+          '${actual} expected to have the value sequence of ${expected} but ' +
+          'got ';
+      if (this._expected.length === indexedActual.length) {
+        for (let j = 0; j < this._expected.length; j++) {
+          if (this._expected[j] !== indexedActual[j].value) {
+            firstErrorIndex = indexedActual[j].index;
+            passed = false;
+            failMessage += this._actual[firstErrorIndex] + ' at index ' +
+                firstErrorIndex + '.';
+            break;
+          }
         }
+      } else {
+        passed = false;
+        let indexedValues = indexedActual.map(x => x.value);
+        failMessage += `${indexedActual.length} values, [${
+            indexedValues}], instead of ${this._expected.length}.`;
       }
 
       return this._assert(
           passed,
           '${actual} contains all the expected values in the correct order: ' +
               '${expected}.',
-          '${actual} expected to have the value sequence of ${expected} but ' +
-              'got ' + this._actual[firstErrorIndex] + ' at index ' +
-              firstErrorIndex + '.');
+          failMessage);
     }
 
     /**
@@ -1174,7 +1187,21 @@ window.Audit = (function() {
           '> [' + this._label + '] ' +
           (this._description ? this._description : ''));
 
-      this._taskFunction(this, this.should.bind(this));
+      // Ideally we would just use testharness async_test instead of reinventing
+      // that wheel, but since it's been reinvented...  At least make sure that
+      // an exception while running a task doesn't preclude us running all the
+      // _other_ tasks for the test.
+      try {
+        this._taskFunction(this, this.should.bind(this));
+      } catch (e) {
+        // Log the failure.
+        test(() => { throw e; }, `Executing "${this.label}"`);
+        if (this.state != TaskState.FINISHED) {
+          // We threw before calling done(), so do that manually to run our
+          // other tasks.
+          this.done();
+        }
+      }
     }
 
     // Update the task success based on the individual assertion/test inside.
@@ -1205,6 +1232,18 @@ window.Audit = (function() {
       }
 
       this._taskRunner._runNextTask();
+    }
+
+    // Runs |subTask| |time| milliseconds later. |setTimeout| is not allowed in
+    // WPT linter, so a thin wrapper around the harness's |step_timeout| is
+    // used here.
+    timeout(subTask, time) {
+      async_test((test) => {
+        test.step_timeout(() => {
+          subTask();
+          test.done();
+        }, time);
+      });
     }
 
     isPassed() {

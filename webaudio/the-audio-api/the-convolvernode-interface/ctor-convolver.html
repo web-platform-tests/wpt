@@ -46,12 +46,15 @@
 
       audit.define('test AudioNodeOptions', (task, should) => {
         testAudioNodeOptions(should, context, 'ConvolverNode', {
-          channelCount:
-              {value: 2, isFixed: true, errorType: 'NotSupportedError'},
+          channelCount: {
+            value: 2,
+            isFixed: true,
+            exceptionType: 'NotSupportedError'
+          },
           channelCountMode: {
             value: 'clamped-max',
             isFixed: true,
-            errorType: 'NotSupportedError'
+            exceptionType: 'NotSupportedError'
           },
         });
         task.done();
@@ -69,6 +72,19 @@
             .notThrow();
 
         should(node.buffer, 'node1.buffer').beEqualTo(null);
+
+        task.done();
+      });
+      audit.define('illegal sample-rate', (task, should) => {
+        let node;
+        let options = {buffer: context.createBuffer(1, 1, context.sampleRate / 2)};
+
+        should(
+            () => {
+              node = new ConvolverNode(context, options);
+            },
+            'node1 = new ConvolverNode(c, ' + JSON.stringify(options))
+            .throw(DOMException, 'NotSupportedError');
 
         task.done();
       });

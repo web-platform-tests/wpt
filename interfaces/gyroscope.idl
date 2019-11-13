@@ -1,10 +1,11 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Gyroscope" spec.
-// See: https://w3c.github.io/gyroscope/
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: Gyroscope (https://w3c.github.io/gyroscope/)
 
-[Constructor(optional GyroscopeSensorOptions sensorOptions), SecureContext, Exposed=Window]
+[SecureContext, Exposed=Window]
 interface Gyroscope : Sensor {
+  constructor(optional GyroscopeSensorOptions sensorOptions = {});
   readonly attribute double? x;
   readonly attribute double? y;
   readonly attribute double? z;
@@ -14,4 +15,10 @@ enum GyroscopeLocalCoordinateSystem { "device", "screen" };
 
 dictionary GyroscopeSensorOptions : SensorOptions {
   GyroscopeLocalCoordinateSystem referenceFrame = "device";
+};
+
+dictionary GyroscopeReadingValues {
+  required double? x;
+  required double? y;
+  required double? z;
 };

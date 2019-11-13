@@ -1,8 +1,9 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Selection API" spec.
-// See: https://w3c.github.io/selection-api/
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: Selection API (https://w3c.github.io/selection-api/)
 
+[Exposed=Window]
 interface Selection {
   readonly attribute Node? anchorNode;
   readonly attribute unsigned long anchorOffset;
@@ -37,7 +38,7 @@ partial interface Window {
   Selection? getSelection();
 };
 
-partial interface GlobalEventHandlers {
+partial interface mixin GlobalEventHandlers {
   attribute EventHandler onselectstart;
   attribute EventHandler onselectionchange;
 };

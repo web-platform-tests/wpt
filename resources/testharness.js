@@ -145,9 +145,9 @@ policies and contribution forms [3].
     };
 
     WindowTestEnvironment.prototype._forEach_windows = function(callback) {
-        // Iterate of the the windows [self ... top, opener]. The callback is passed
-        // two objects, the first one is the windows object itself, the second one
-        // is a boolean indicating whether or not its on the same origin as the
+        // Iterate over the windows [self ... top, opener]. The callback is passed
+        // two objects, the first one is the window object itself, the second one
+        // is a boolean indicating whether or not it's on the same origin as the
         // current window.
         var cache = this.window_cache;
         if (!cache) {
@@ -513,7 +513,7 @@ policies and contribution forms [3].
             return new DedicatedWorkerTestEnvironment();
         }
 
-        if (!('self' in global_scope)) {
+        if (!('location' in global_scope)) {
             return new ShellTestEnvironment();
         }
 
@@ -536,13 +536,27 @@ policies and contribution forms [3].
     /*
      * API functions
      */
-
     function test(func, name, properties)
     {
         var test_name = name ? name : test_environment.next_default_test_name();
         properties = properties ? properties : {};
         var test_obj = new Test(test_name, properties);
-        test_obj.step(func, test_obj, test_obj);
+        var value = test_obj.step(func, test_obj, test_obj);
+
+        if (value !== undefined) {
+            var msg = "Test named \"" + test_name +
+                "\" inappropriately returned a value";
+
+            try {
+                if (value && value.hasOwnProperty("then")) {
+                    msg += ", consider using `promise_test` instead";
+                }
+            } catch (err) {}
+
+            tests.status.status = tests.status.ERROR;
+            tests.status.message = msg;
+        }
+
         if (test_obj.phase === test_obj.phases.STARTED) {
             test_obj.done();
         }
@@ -566,31 +580,47 @@ policies and contribution forms [3].
 
     function promise_test(func, name, properties) {
         var test = async_test(name, properties);
+        test._is_promise_test = true;
+
         // If there is no promise tests queue make one.
         if (!tests.promise_tests) {
             tests.promise_tests = Promise.resolve();
         }
         tests.promise_tests = tests.promise_tests.then(function() {
-            var donePromise = new Promise(function(resolve) {
-                test._add_cleanup(resolve);
-            });
-            var promise = test.step(func, test, test);
-            test.step(function() {
-                assert_not_equals(promise, undefined);
-            });
-            Promise.resolve(promise).then(
-                    function() {
+            return new Promise(function(resolve) {
+                var promise = test.step(func, test, test);
+
+                test.step(function() {
+                    assert(!!promise, "promise_test", null,
+                           "test body must return a 'thenable' object (received ${value})",
+                           {value:promise});
+                    assert(typeof promise.then === "function", "promise_test", null,
+                           "test body must return a 'thenable' object (received an object with no `then` method)",
+                           null);
+                });
+
+                // Test authors may use the `step` method within a
+                // `promise_test` even though this reflects a mixture of
+                // asynchronous control flow paradigms. The "done" callback
+                // should be registered prior to the resolution of the
+                // user-provided Promise to avoid timeouts in cases where the
+                // Promise does not settle but a `step` function has thrown an
+                // error.
+                add_test_done_callback(test, resolve);
+
+                Promise.resolve(promise)
+                    .catch(test.step_func(
+                        function(value) {
+                            if (value instanceof AssertionError) {
+                                throw value;
+                            }
+                            assert(false, "promise_test", null,
+                                   "Unhandled rejection with value: ${value}", {value:value});
+                        }))
+                    .then(function() {
                         test.done();
-                    })
-                .catch(test.step_func(
-                    function(value) {
-                        if (value instanceof AssertionError) {
-                            throw value;
-                        }
-                        assert(false, "promise_test", null,
-                               "Unhandled rejection with value: ${value}", {value:value});
-                    }));
-            return donePromise;
+                    });
+                });
         });
     }
 
@@ -600,12 +630,33 @@ policies and contribution forms [3].
         });
     }
 
+    function promise_rejects_js(test, expected, promise, description) {
+        return promise.then(test.unreached_func("Should have rejected: " + description)).catch(function(e) {
+            assert_throws_js_impl(expected, function() { throw e },
+                                  description, "promise_reject_js");
+        });
+    }
+
+    function promise_rejects_dom(test, expected, promise, description) {
+        return promise.then(test.unreached_func("Should have rejected: " + description)).catch(function(e) {
+            assert_throws_dom_impl(expected, function() { throw e },
+                                   description, "promise_rejects_dom");
+        });
+    }
+
+    function promise_rejects_exactly(test, expected, promise, description) {
+        return promise.then(test.unreached_func("Should have rejected: " + description)).catch(function(e) {
+            assert_throws_exactly_impl(expected, function() { throw e },
+                                       description, "promise_rejects_exactly");
+        });
+    }
+
     /**
      * This constructor helper allows DOM events to be handled using Promises,
      * which can make it a lot easier to test a very specific series of events,
      * including ensuring that unexpected events are not fired at any point.
      */
-    function EventWatcher(test, watchedNode, eventTypes)
+    function EventWatcher(test, watchedNode, eventTypes, timeoutPromise)
     {
         if (typeof eventTypes == 'string') {
             eventTypes = [eventTypes];
@@ -650,7 +701,7 @@ policies and contribution forms [3].
 
         /**
          * Returns a Promise that will resolve after the specified event or
-         * series of events has occured.
+         * series of events has occurred.
          *
          * @param options An optional options object. If the 'record' property
          *                on this object has the value 'all', when the Promise
@@ -682,6 +733,27 @@ policies and contribution forms [3].
                 recordedEvents = [];
             }
             return new Promise(function(resolve, reject) {
+                var timeout = test.step_func(function() {
+                    // If the timeout fires after the events have been received
+                    // or during a subsequent call to wait_for, ignore it.
+                    if (!waitingFor || waitingFor.resolve !== resolve)
+                        return;
+
+                    // This should always fail, otherwise we should have
+                    // resolved the promise.
+                    assert_true(waitingFor.types.length == 0,
+                                'Timed out waiting for ' + waitingFor.types.join(', '));
+                    var result = recordedEvents;
+                    recordedEvents = null;
+                    var resolveFunc = waitingFor.resolve;
+                    waitingFor = null;
+                    resolveFunc(result);
+                });
+
+                if (timeoutPromise) {
+                    timeoutPromise().then(timeout);
+                }
+
                 waitingFor = {
                     types: types,
                     resolve: resolve,
@@ -720,9 +792,20 @@ policies and contribution forms [3].
 
     function done() {
         if (tests.tests.length === 0) {
-            tests.set_file_is_test();
+            // `done` is invoked after handling uncaught exceptions, so if the
+            // harness status is already set, the corresponding message is more
+            // descriptive than the generic message defined here.
+            if (tests.status.status === null) {
+                tests.status.status = tests.status.ERROR;
+                tests.status.message = "done() was called without first defining any tests";
+            }
+
+            tests.complete();
+            return;
         }
         if (tests.file_is_test) {
+            // file is test files never have asynchronous cleanup logic,
+            // meaning the fully-synchronous `done` function can be used here.
             tests.tests[0].done();
         }
         tests.end_wait();
@@ -741,6 +824,12 @@ policies and contribution forms [3].
                 });
     }
 
+    /*
+     * Register a function as a DOM event listener to the given object for the
+     * event bubbling phase.
+     *
+     * This function was deprecated in November of 2019.
+     */
     function on_event(object, event, callback)
     {
         object.addEventListener(event, callback, false);
@@ -758,6 +847,9 @@ policies and contribution forms [3].
     expose(async_test, 'async_test');
     expose(promise_test, 'promise_test');
     expose(promise_rejects, 'promise_rejects');
+    expose(promise_rejects_js, 'promise_rejects_js');
+    expose(promise_rejects_dom, 'promise_rejects_dom');
+    expose(promise_rejects_exactly, 'promise_rejects_exactly');
     expose(generate_tests, 'generate_tests');
     expose(setup, 'setup');
     expose(done, 'done');
@@ -1059,7 +1151,7 @@ policies and contribution forms [3].
     function assert_array_approx_equals(actual, expected, epsilon, description)
     {
         /*
-         * Test if two primitive arrays are equal withing +/- epsilon
+         * Test if two primitive arrays are equal within +/- epsilon
          */
         assert(actual.length === expected.length,
                "assert_array_approx_equals", description,
@@ -1079,7 +1171,7 @@ policies and contribution forms [3].
             assert(Math.abs(actual[i] - expected[i]) <= epsilon,
                    "assert_array_approx_equals", description,
                    "property ${i}, expected ${expected} +/- ${epsilon}, expected ${expected} but got ${actual}",
-                   {i:i, expected:expected[i], actual:actual[i]});
+                   {i:i, expected:expected[i], actual:actual[i], epsilon:epsilon});
         }
     }
     expose(assert_array_approx_equals, "assert_array_approx_equals");
@@ -1087,7 +1179,7 @@ policies and contribution forms [3].
     function assert_approx_equals(actual, expected, epsilon, description)
     {
         /*
-         * Test if two primitive numbers are equal withing +/- epsilon
+         * Test if two primitive numbers are equal within +/- epsilon
          */
         assert(typeof actual === "number",
                "assert_approx_equals", description,
@@ -1217,30 +1309,28 @@ policies and contribution forms [3].
     expose(assert_regexp_match, "assert_regexp_match");
 
     function assert_class_string(object, class_string, description) {
-        assert_equals({}.toString.call(object), "[object " + class_string + "]",
-                      description);
+        var actual = {}.toString.call(object);
+        var expected = "[object " + class_string + "]";
+        assert(same_value(actual, expected), "assert_class_string", description,
+                                             "expected ${expected} but got ${actual}",
+                                             {expected:expected, actual:actual});
     }
     expose(assert_class_string, "assert_class_string");
 
 
-    function _assert_own_property(name) {
-        return function(object, property_name, description)
-        {
-            assert(object.hasOwnProperty(property_name),
-                   name, description,
-                   "expected property ${p} missing", {p:property_name});
-        };
+    function assert_own_property(object, property_name, description) {
+        assert(object.hasOwnProperty(property_name),
+               "assert_own_property", description,
+               "expected property ${p} missing", {p:property_name});
     }
-    expose(_assert_own_property("assert_exists"), "assert_exists");
-    expose(_assert_own_property("assert_own_property"), "assert_own_property");
+    expose(assert_own_property, "assert_own_property");
 
-    function assert_not_exists(object, property_name, description)
-    {
+    function assert_not_own_property(object, property_name, description) {
         assert(!object.hasOwnProperty(property_name),
-               "assert_not_exists", description,
-               "unexpected property ${p} found", {p:property_name});
+               "assert_not_own_property", description,
+               "unexpected property ${p} is found on object", {p:property_name});
     }
-    expose(assert_not_exists, "assert_not_exists");
+    expose(assert_not_own_property, "assert_not_own_property");
 
     function _assert_inherits(name) {
         return function (object, property_name, description)
@@ -1388,11 +1478,28 @@ policies and contribution forms [3].
                 NotAllowedError: 0
             };
 
-            if (!(name in name_code_map)) {
-                throw new AssertionError('Test bug: unrecognized DOMException code "' + code + '" passed to assert_throws()');
+            var code_name_map = {};
+            for (var key in name_code_map) {
+                if (name_code_map[key] > 0) {
+                    code_name_map[name_code_map[key]] = key;
+                }
             }
 
-            var required_props = { code: name_code_map[name] };
+            var required_props = { code: code };
+
+            if (typeof code === "number") {
+                if (code === 0) {
+                    throw new AssertionError('Test bug: ambiguous DOMException code 0 passed to assert_throws()');
+                } else if (!(code in code_name_map)) {
+                    throw new AssertionError('Test bug: unrecognized DOMException code "' + code + '" passed to assert_throws()');
+                }
+                name = code_name_map[code];
+            } else if (typeof code === "string") {
+                if (!(name in name_code_map)) {
+                    throw new AssertionError('Test bug: unrecognized DOMException code "' + code + '" passed to assert_throws()');
+                }
+                required_props.code = name_code_map[name];
+            }
 
             if (required_props.code === 0 ||
                ("name" in e &&
@@ -1416,6 +1523,276 @@ policies and contribution forms [3].
         }
     }
     expose(assert_throws, "assert_throws");
+
+    /**
+     * Assert a JS Error with the expected constructor is thrown.
+     *
+     * @param {object} constructor The expected exception constructor.
+     * @param {Function} func Function which should throw.
+     * @param {string} description Error description for the case that the error is not thrown.
+     */
+    function assert_throws_js(constructor, func, description)
+    {
+        assert_throws_js_impl(constructor, func, description,
+                              "assert_throws_js");
+    }
+    expose(assert_throws_js, "assert_throws_js");
+
+    /**
+     * Like assert_throws_js but allows specifying the assertion type
+     * (assert_throws_js or promise_rejects_js, in practice).
+     */
+    function assert_throws_js_impl(constructor, func, description,
+                                   assertion_type)
+    {
+        try {
+            func.call(this);
+            assert(false, assertion_type, description,
+                   "${func} did not throw", {func:func});
+        } catch (e) {
+            if (e instanceof AssertionError) {
+                throw e;
+            }
+
+            // Basic sanity-checks on the thrown exception.
+            assert(typeof e === "object",
+                   assertion_type, description,
+                   "${func} threw ${e} with type ${type}, not an object",
+                   {func:func, e:e, type:typeof e});
+
+            assert(e !== null,
+                   assertion_type, description,
+                   "${func} threw null, not an object",
+                   {func:func});
+
+            // Basic sanity-check on the passed-in constructor
+            assert(typeof constructor == "function",
+                   assertion_type, description,
+                   "${constructor} is not a constructor",
+                   {constructor:constructor});
+            var obj = constructor;
+            while (obj) {
+                if (typeof obj === "function" &&
+                    obj.name === "Error") {
+                    break;
+                }
+                obj = Object.getPrototypeOf(obj);
+            }
+            assert(obj != null,
+                   assertion_type, description,
+                   "${constructor} is not an Error subtype",
+                   {constructor:constructor});
+
+            // And checking that our exception is reasonable
+            assert(e.constructor === constructor &&
+                   e.name === constructor.name,
+                   assertion_type, description,
+                   "${func} threw ${actual} (${actual_name}) expected instance of ${expected} (${expected_name})",
+                   {func:func, actual:e, actual_name:e.name,
+                    expected:constructor,
+                    expected_name:constructor.name});
+        }
+    }
+
+    /**
+     * Assert a DOMException with the expected type is thrown.
+     *
+     * @param {number|string} type The expected exception name or code.  See the
+     *        table of names and codes at
+     *        https://heycam.github.io/webidl/#dfn-error-names-table
+     *        If a number is passed it should be one of the numeric code values
+     *        in that table (e.g. 3, 4, etc).  If a string is passed it can
+     *        either be an exception name (e.g. "HierarchyRequestError",
+     *        "WrongDocumentError") or the name of the corresponding error code
+     *        (e.g. "HIERARCHY_REQUEST_ERR", "WRONG_DOCUMENT_ERR").
+     * @param {Function} func Function which should throw.
+     * @param {string} description Error description for the case that the error is not thrown.
+     */
+    function assert_throws_dom(type, func, description)
+    {
+        assert_throws_dom_impl(type, func, description, "assert_throws_dom")
+    }
+    expose(assert_throws_dom, "assert_throws_dom");
+
+    /**
+     * Like assert_throws_dom but allows specifying the assertion type
+     * (assert_throws_dom or promise_rejects_dom, in practice).
+     */
+    function assert_throws_dom_impl(type, func, description, assertion_type)
+    {
+        try {
+            func.call(this);
+            assert(false, assertion_type, description,
+                   "${func} did not throw", {func:func});
+        } catch (e) {
+            if (e instanceof AssertionError) {
+                throw e;
+            }
+
+            assert(typeof e === "object",
+                   assertion_type, description,
+                   "${func} threw ${e} with type ${type}, not an object",
+                   {func:func, e:e, type:typeof e});
+
+            assert(e !== null,
+                   assertion_type, description,
+                   "${func} threw null, not an object",
+                   {func:func});
+
+            // Sanity-check our type
+            assert(typeof type == "number" ||
+                   typeof type == "string",
+                   assertion_type, description,
+                   "${type} is not a number or string",
+                   {type:type});
+
+            var codename_name_map = {
+                INDEX_SIZE_ERR: 'IndexSizeError',
+                HIERARCHY_REQUEST_ERR: 'HierarchyRequestError',
+                WRONG_DOCUMENT_ERR: 'WrongDocumentError',
+                INVALID_CHARACTER_ERR: 'InvalidCharacterError',
+                NO_MODIFICATION_ALLOWED_ERR: 'NoModificationAllowedError',
+                NOT_FOUND_ERR: 'NotFoundError',
+                NOT_SUPPORTED_ERR: 'NotSupportedError',
+                INUSE_ATTRIBUTE_ERR: 'InUseAttributeError',
+                INVALID_STATE_ERR: 'InvalidStateError',
+                SYNTAX_ERR: 'SyntaxError',
+                INVALID_MODIFICATION_ERR: 'InvalidModificationError',
+                NAMESPACE_ERR: 'NamespaceError',
+                INVALID_ACCESS_ERR: 'InvalidAccessError',
+                TYPE_MISMATCH_ERR: 'TypeMismatchError',
+                SECURITY_ERR: 'SecurityError',
+                NETWORK_ERR: 'NetworkError',
+                ABORT_ERR: 'AbortError',
+                URL_MISMATCH_ERR: 'URLMismatchError',
+                QUOTA_EXCEEDED_ERR: 'QuotaExceededError',
+                TIMEOUT_ERR: 'TimeoutError',
+                INVALID_NODE_TYPE_ERR: 'InvalidNodeTypeError',
+                DATA_CLONE_ERR: 'DataCloneError'
+            };
+
+            var name_code_map = {
+                IndexSizeError: 1,
+                HierarchyRequestError: 3,
+                WrongDocumentError: 4,
+                InvalidCharacterError: 5,
+                NoModificationAllowedError: 7,
+                NotFoundError: 8,
+                NotSupportedError: 9,
+                InUseAttributeError: 10,
+                InvalidStateError: 11,
+                SyntaxError: 12,
+                InvalidModificationError: 13,
+                NamespaceError: 14,
+                InvalidAccessError: 15,
+                TypeMismatchError: 17,
+                SecurityError: 18,
+                NetworkError: 19,
+                AbortError: 20,
+                URLMismatchError: 21,
+                QuotaExceededError: 22,
+                TimeoutError: 23,
+                InvalidNodeTypeError: 24,
+                DataCloneError: 25,
+
+                EncodingError: 0,
+                NotReadableError: 0,
+                UnknownError: 0,
+                ConstraintError: 0,
+                DataError: 0,
+                TransactionInactiveError: 0,
+                ReadOnlyError: 0,
+                VersionError: 0,
+                OperationError: 0,
+                NotAllowedError: 0
+            };
+
+            var code_name_map = {};
+            for (var key in name_code_map) {
+                if (name_code_map[key] > 0) {
+                    code_name_map[name_code_map[key]] = key;
+                }
+            }
+
+            var required_props = {};
+            var name;
+
+            if (typeof type === "number") {
+                if (type === 0) {
+                    throw new AssertionError('Test bug: ambiguous DOMException code 0 passed to assert_throws_dom()');
+                } else if (!(type in code_name_map)) {
+                    throw new AssertionError('Test bug: unrecognized DOMException code "' + type + '" passed to assert_throws_dom()');
+                }
+                name = code_name_map[type];
+                required_props.code = type;
+            } else if (typeof type === "string") {
+                name = type in codename_name_map ? codename_name_map[type] : type;
+                if (!(name in name_code_map)) {
+                    throw new AssertionError('Test bug: unrecognized DOMException code name or name "' + type + '" passed to assert_throws_dom()');
+                }
+
+                required_props.code = name_code_map[name];
+            }
+
+            if (required_props.code === 0 ||
+               ("name" in e &&
+                e.name !== e.name.toUpperCase() &&
+                e.name !== "DOMException")) {
+                // New style exception: also test the name property.
+                required_props.name = name;
+            }
+
+            //We'd like to test that e instanceof the appropriate interface,
+            //but we can't, because we don't know what window it was created
+            //in.  It might be an instanceof the appropriate interface on some
+            //unknown other window.  TODO: Work around this somehow?  Maybe have
+            //the first arg just be a DOMException with the right name instead
+            //of the string-or-code thing we have now?
+
+            for (var prop in required_props) {
+                assert(prop in e && e[prop] == required_props[prop],
+                       assertion_type, description,
+                       "${func} threw ${e} that is not a DOMException " + type + ": property ${prop} is equal to ${actual}, expected ${expected}",
+                       {func:func, e:e, prop:prop, actual:e[prop], expected:required_props[prop]});
+            }
+        }
+    }
+
+    /**
+     * Assert the provided value is thrown.
+     *
+     * @param {value} exception The expected exception.
+     * @param {Function} func Function which should throw.
+     * @param {string} description Error description for the case that the error is not thrown.
+     */
+    function assert_throws_exactly(exception, func, description)
+    {
+        assert_throws_exactly_impl(exception, func, description,
+                                   "assert_throws_exactly");
+    }
+    expose(assert_throws_exactly, "assert_throws_exactly");
+
+    /**
+     * Like assert_throws_exactly but allows specifying the assertion type
+     * (assert_throws_exactly or promise_rejects_exactly, in practice).
+     */
+    function assert_throws_exactly_impl(exception, func, description,
+                                        assertion_type)
+    {
+        try {
+            func.call(this);
+            assert(false, assertion_type, description,
+                   "${func} did not throw", {func:func});
+        } catch (e) {
+            if (e instanceof AssertionError) {
+                throw e;
+            }
+
+            assert(same_value(e, exception), assertion_type, description,
+                   "${func} threw ${e} but we expected it to throw ${exception}",
+                   {func:func, e:e, exception:exception});
+        }
+    }
 
     function assert_unreached(description) {
          assert(false, "assert_unreached", description,
@@ -1444,6 +1821,13 @@ policies and contribution forms [3].
     }
     expose(assert_any, "assert_any");
 
+    function assert_precondition(precondition, description) {
+        if (!precondition) {
+            throw new PreconditionFailedError(description);
+        }
+    }
+    expose(assert_precondition, "assert_precondition");
+
     function Test(name, properties)
     {
         if (tests.file_is_test && tests.tests.length) {
@@ -1451,7 +1835,7 @@ policies and contribution forms [3].
         }
         this.name = name;
 
-        this.phase = tests.phase === tests.phases.ABORTED ?
+        this.phase = (tests.is_aborted || tests.phase === tests.phases.COMPLETE) ?
             this.phases.COMPLETE : this.phases.INITIAL;
 
         this.status = this.NOTRUN;
@@ -1459,20 +1843,27 @@ policies and contribution forms [3].
         this.index = null;
 
         this.properties = properties;
-        var timeout = properties.timeout ? properties.timeout : settings.test_timeout;
-        if (timeout !== null) {
-            this.timeout_length = timeout * tests.timeout_multiplier;
-        } else {
-            this.timeout_length = null;
+        this.timeout_length = settings.test_timeout;
+        if (this.timeout_length !== null) {
+            this.timeout_length *= tests.timeout_multiplier;
         }
 
         this.message = null;
         this.stack = null;
 
         this.steps = [];
+        this._is_promise_test = false;
 
         this.cleanup_callbacks = [];
         this._user_defined_cleanup_count = 0;
+        this._done_callbacks = [];
+
+        // Tests declared following harness completion are likely an indication
+        // of a programming error, but they cannot be reported
+        // deterministically.
+        if (tests.phase === tests.phases.COMPLETE) {
+            return;
+        }
 
         tests.push(this);
     }
@@ -1481,7 +1872,8 @@ policies and contribution forms [3].
         PASS:0,
         FAIL:1,
         TIMEOUT:2,
-        NOTRUN:3
+        NOTRUN:3,
+        PRECONDITION_FAILED:4
     };
 
     Test.prototype = merge({}, Test.statuses);
@@ -1490,7 +1882,8 @@ policies and contribution forms [3].
         INITIAL:0,
         STARTED:1,
         HAS_RESULT:2,
-        COMPLETE:3
+        CLEANING:3,
+        COMPLETE:4
     };
 
     Test.prototype.structured_clone = function()
@@ -1518,7 +1911,7 @@ policies and contribution forms [3].
             return;
         }
         this.phase = this.phases.STARTED;
-        //If we don't get a result before the harness times out that will be a test timout
+        //If we don't get a result before the harness times out that will be a test timeout
         this.set_status(this.TIMEOUT, "Test timed out");
 
         tests.started = true;
@@ -1540,10 +1933,11 @@ policies and contribution forms [3].
             if (this.phase >= this.phases.HAS_RESULT) {
                 return;
             }
+            var status = e instanceof PreconditionFailedError ? this.PRECONDITION_FAILED : this.FAIL;
             var message = String((typeof e === "object" && e !== null) ? e.message : e);
             var stack = e.stack ? e.stack : null;
 
-            this.set_status(this.FAIL, message, stack);
+            this.set_status(status, message, stack);
             this.phase = this.phases.HAS_RESULT;
             this.done();
         }
@@ -1646,9 +2040,13 @@ policies and contribution forms [3].
 
     Test.prototype.force_timeout = Test.prototype.timeout;
 
+    /**
+     * Update the test status, initiate "cleanup" functions, and signal test
+     * completion.
+     */
     Test.prototype.done = function()
     {
-        if (this.phase == this.phases.COMPLETE) {
+        if (this.phase >= this.phases.CLEANING) {
             return;
         }
 
@@ -1656,14 +2054,22 @@ policies and contribution forms [3].
             this.set_status(this.PASS, null);
         }
 
-        this.phase = this.phases.COMPLETE;
-
         if (global_scope.clearTimeout) {
             clearTimeout(this.timeout_id);
         }
-        tests.result(this);
+
         this.cleanup();
     };
+
+    function add_test_done_callback(test, callback)
+    {
+        if (test.phase === test.phases.COMPLETE) {
+            callback();
+            return;
+        }
+
+        test._done_callbacks.push(callback);
+    }
 
     /*
      * Invoke all specified cleanup functions. If one or more produce an error,
@@ -1672,29 +2078,108 @@ policies and contribution forms [3].
      */
     Test.prototype.cleanup = function() {
         var error_count = 0;
-        var total;
+        var bad_value_count = 0;
+        function on_error() {
+            error_count += 1;
+            // Abort tests immediately so that tests declared within subsequent
+            // cleanup functions are not run.
+            tests.abort();
+        }
+        var this_obj = this;
+        var results = [];
+
+        this.phase = this.phases.CLEANING;
 
         forEach(this.cleanup_callbacks,
                 function(cleanup_callback) {
+                    var result;
+
                     try {
-                        cleanup_callback();
+                        result = cleanup_callback();
                     } catch (e) {
-                        // Set test phase immediately so that tests declared
-                        // within subsequent cleanup functions are not run.
-                        tests.phase = tests.phases.ABORTED;
-                        error_count += 1;
+                        on_error();
+                        return;
                     }
+
+                    if (!is_valid_cleanup_result(this_obj, result)) {
+                        bad_value_count += 1;
+                        // Abort tests immediately so that tests declared
+                        // within subsequent cleanup functions are not run.
+                        tests.abort();
+                    }
+
+                    results.push(result);
                 });
 
-        if (error_count > 0) {
-            total = this._user_defined_cleanup_count;
-            tests.status.status = tests.status.ERROR;
-            tests.status.message = "Test named '" + this.name +
-                "' specified " + total + " 'cleanup' function" +
-                (total > 1 ? "s" : "") + ", and " + error_count + " failed.";
-            tests.status.stack = null;
+        if (!this._is_promise_test) {
+            cleanup_done(this_obj, error_count, bad_value_count);
+        } else {
+            all_async(results,
+                      function(result, done) {
+                          if (result && typeof result.then === "function") {
+                              result
+                                  .then(null, on_error)
+                                  .then(done);
+                          } else {
+                              done();
+                          }
+                      },
+                      function() {
+                          cleanup_done(this_obj, error_count, bad_value_count);
+                      });
         }
     };
+
+    /**
+     * Determine if the return value of a cleanup function is valid for a given
+     * test. Any test may return the value `undefined`. Tests created with
+     * `promise_test` may alternatively return "thenable" object values.
+     */
+    function is_valid_cleanup_result(test, result) {
+        if (result === undefined) {
+            return true;
+        }
+
+        if (test._is_promise_test) {
+            return result && typeof result.then === "function";
+        }
+
+        return false;
+    }
+
+    function cleanup_done(test, error_count, bad_value_count) {
+        if (error_count || bad_value_count) {
+            var total = test._user_defined_cleanup_count;
+
+            tests.status.status = tests.status.ERROR;
+            tests.status.message = "Test named '" + test.name +
+                "' specified " + total +
+                " 'cleanup' function" + (total > 1 ? "s" : "");
+
+            if (error_count) {
+                tests.status.message += ", and " + error_count + " failed";
+            }
+
+            if (bad_value_count) {
+                var type = test._is_promise_test ?
+                   "non-thenable" : "non-undefined";
+                tests.status.message += ", and " + bad_value_count +
+                    " returned a " + type + " value";
+            }
+
+            tests.status.message += ".";
+
+            tests.status.stack = null;
+        }
+
+        test.phase = test.phases.COMPLETE;
+        tests.result(test);
+        forEach(test._done_callbacks,
+                function(callback) {
+                    callback();
+                });
+        test._done_callbacks.length = 0;
+    }
 
     /*
      * A RemoteTest object mirrors a Test object on a remote worker. The
@@ -1712,6 +2197,7 @@ policies and contribution forms [3].
         this.index = null;
         this.phase = this.phases.INITIAL;
         this.update_state_from(clone);
+        this._done_callbacks = [];
         tests.push(this);
     }
 
@@ -1720,6 +2206,15 @@ policies and contribution forms [3].
         Object.keys(this).forEach(
                 (function(key) {
                     var value = this[key];
+                    // `RemoteTest` instances are responsible for managing
+                    // their own "done" callback functions, so those functions
+                    // are not relevant in other execution contexts. Because of
+                    // this (and because Function values cannot be serialized
+                    // for cross-realm transmittance), the property should not
+                    // be considered when cloning instances.
+                    if (key === '_done_callbacks' ) {
+                        return;
+                    }
 
                     if (typeof value === "object" && value !== null) {
                         clone[key] = merge({}, value);
@@ -1731,7 +2226,19 @@ policies and contribution forms [3].
         return clone;
     };
 
-    RemoteTest.prototype.cleanup = function() {};
+    /**
+     * `RemoteTest` instances are objects which represent tests running in
+     * another realm. They do not define "cleanup" functions (if necessary,
+     * such functions are defined on the associated `Test` instance within the
+     * external realm). However, `RemoteTests` may have "done" callbacks (e.g.
+     * as attached by the `Tests` instance responsible for tracking the overall
+     * test status in the parent realm). The `cleanup` method delegates to
+     * `done` in order to ensure that such callbacks are invoked following the
+     * completion of the `RemoteTest`.
+     */
+    RemoteTest.prototype.cleanup = function() {
+        this.done();
+    };
     RemoteTest.prototype.phases = Test.prototype.phases;
     RemoteTest.prototype.update_state_from = function(clone) {
         this.status = clone.status;
@@ -1743,6 +2250,11 @@ policies and contribution forms [3].
     };
     RemoteTest.prototype.done = function() {
         this.phase = this.phases.COMPLETE;
+
+        forEach(this._done_callbacks,
+                function(callback) {
+                    callback();
+                });
     }
 
     /*
@@ -1756,7 +2268,9 @@ policies and contribution forms [3].
      */
     function RemoteContext(remote, message_target, message_filter) {
         this.running = true;
+        this.started = false;
         this.tests = new Array();
+        this.early_exception = null;
 
         var this_obj = this;
         // If remote context is cross origin assigning to onerror is not
@@ -1774,6 +2288,11 @@ policies and contribution forms [3].
         this.message_target = message_target;
         this.message_handler = function(message) {
             var passesFilter = !message_filter || message_filter(message);
+            // The reference to the `running` property in the following
+            // condition is unnecessary because that value is only set to
+            // `false` after the `message_handler` function has been
+            // unsubscribed.
+            // TODO: Simplify the condition by removing the reference.
             if (this_obj.running && message.data && passesFilter &&
                 (message.data.type in this_obj.message_handlers)) {
                 this_obj.message_handlers[message.data.type].call(this_obj, message.data);
@@ -1790,20 +2309,36 @@ policies and contribution forms [3].
     }
 
     RemoteContext.prototype.remote_error = function(error) {
+        if (error.preventDefault) {
+            error.preventDefault();
+        }
+
+        // Defer interpretation of errors until the testing protocol has
+        // started and the remote test's `allow_uncaught_exception` property
+        // is available.
+        if (!this.started) {
+            this.early_exception = error;
+        } else if (!this.allow_uncaught_exception) {
+            this.report_uncaught(error);
+        }
+    };
+
+    RemoteContext.prototype.report_uncaught = function(error) {
         var message = error.message || String(error);
         var filename = (error.filename ? " " + error.filename: "");
         // FIXME: Display remote error states separately from main document
         // error state.
-        this.remote_done({
-            status: {
-                status: tests.status.ERROR,
-                message: "Error in remote" + filename + ": " + message,
-                stack: error.stack
-            }
-        });
+        tests.set_status(tests.status.ERROR,
+                         "Error in remote" + filename + ": " + message,
+                         error.stack);
+    };
 
-        if (error.preventDefault) {
-            error.preventDefault();
+    RemoteContext.prototype.start = function(data) {
+        this.started = true;
+        this.allow_uncaught_exception = data.properties.allow_uncaught_exception;
+
+        if (this.early_exception && !this.allow_uncaught_exception) {
+            this.report_uncaught(this.early_exception);
         }
     };
 
@@ -1827,10 +2362,9 @@ policies and contribution forms [3].
     RemoteContext.prototype.remote_done = function(data) {
         if (tests.status.status === null &&
             data.status.status !== data.status.OK) {
-            tests.status.status = data.status.status;
-            tests.status.message = data.status.message;
-            tests.status.stack = data.status.stack;
+            tests.set_status(data.status.status, data.status.message, data.status.sack);
         }
+
         this.message_target.removeEventListener("message", this.message_handler);
         this.running = false;
 
@@ -1854,6 +2388,7 @@ policies and contribution forms [3].
     };
 
     RemoteContext.prototype.message_handlers = {
+        start: RemoteContext.prototype.start,
         test_state: RemoteContext.prototype.test_state,
         result: RemoteContext.prototype.test_done,
         complete: RemoteContext.prototype.remote_done
@@ -1873,7 +2408,8 @@ policies and contribution forms [3].
     TestsStatus.statuses = {
         OK:0,
         ERROR:1,
-        TIMEOUT:2
+        TIMEOUT:2,
+        PRECONDITION_FAILED:3
     };
 
     TestsStatus.prototype = merge({}, TestsStatus.statuses);
@@ -1902,8 +2438,7 @@ policies and contribution forms [3].
             SETUP:1,
             HAVE_TESTS:2,
             HAVE_RESULTS:3,
-            COMPLETE:4,
-            ABORTED:5
+            COMPLETE:4
         };
         this.phase = this.phases.INITIAL;
 
@@ -1965,8 +2500,13 @@ policies and contribution forms [3].
                     {
                         clearTimeout(this.timeout_id);
                     }
+                } else if (p == "single_test" && value) {
+                    this.set_file_is_test();
                 } else if (p == "timeout_multiplier") {
                     this.timeout_multiplier = value;
+                    if (this.timeout_length) {
+                         this.timeout_length *= this.timeout_multiplier;
+                    }
                 }
             }
         }
@@ -1975,9 +2515,10 @@ policies and contribution forms [3].
             try {
                 func();
             } catch (e) {
-                this.status.status = this.status.ERROR;
+                this.status.status = e instanceof PreconditionFailedError ? this.status.PRECONDITION_FAILED : this.status.ERROR;
                 this.status.message = String(e);
                 this.status.stack = e.stack ? e.stack : null;
+                this.complete();
             }
         }
         this.set_timeout();
@@ -1993,6 +2534,13 @@ policies and contribution forms [3].
         async_test();
     };
 
+    Tests.prototype.set_status = function(status, message, stack)
+    {
+        this.status.status = status;
+        this.status.message = message;
+        this.status.stack = stack ? stack : null;
+    };
+
     Tests.prototype.set_timeout = function() {
         if (global_scope.clearTimeout) {
             var this_obj = this;
@@ -2006,9 +2554,35 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.timeout = function() {
+        var test_in_cleanup = null;
+
         if (this.status.status === null) {
-            this.status.status = this.status.TIMEOUT;
+            forEach(this.tests,
+                    function(test) {
+                        // No more than one test is expected to be in the
+                        // "CLEANUP" phase at any time
+                        if (test.phase === test.phases.CLEANING) {
+                            test_in_cleanup = test;
+                        }
+
+                        test.phase = test.phases.COMPLETE;
+                    });
+
+            // Timeouts that occur while a test is in the "cleanup" phase
+            // indicate that some global state was not properly reverted. This
+            // invalidates the overall test execution, so the timeout should be
+            // reported as an error and cancel the execution of any remaining
+            // tests.
+            if (test_in_cleanup) {
+                this.status.status = this.status.ERROR;
+                this.status.message = "Timeout while running cleanup for " +
+                    "test named \"" + test_in_cleanup.name + "\".";
+                tests.status.stack = null;
+            } else {
+                this.status.status = this.status.TIMEOUT;
+            }
         }
+
         this.complete();
     };
 
@@ -2039,11 +2613,10 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.all_done = function() {
-        return this.phase === this.phases.ABORTED ||
-            (this.tests.length > 0 && test_environment.all_loaded &&
-                this.num_pending === 0 && !this.wait_for_finish &&
+        return this.tests.length > 0 && test_environment.all_loaded &&
+                (this.num_pending === 0 || this.is_aborted) && !this.wait_for_finish &&
                 !this.processing_callbacks &&
-                !this.pending_remotes.some(function(w) { return w.running; }));
+                !this.pending_remotes.some(function(w) { return w.running; });
     };
 
     Tests.prototype.start = function() {
@@ -2062,10 +2635,11 @@ policies and contribution forms [3].
 
     Tests.prototype.result = function(test)
     {
-        if (this.phase > this.phases.HAVE_RESULTS) {
-            return;
+        // If the harness has already transitioned beyond the `HAVE_RESULTS`
+        // phase, subsequent tests should not cause it to revert.
+        if (this.phase <= this.phases.HAVE_RESULTS) {
+            this.phase = this.phases.HAVE_RESULTS;
         }
-        this.phase = this.phases.HAVE_RESULTS;
         this.num_pending--;
         this.notify_result(test);
     };
@@ -2088,19 +2662,54 @@ policies and contribution forms [3].
         if (this.phase === this.phases.COMPLETE) {
             return;
         }
-        this.phase = this.phases.COMPLETE;
         var this_obj = this;
-        this.tests.forEach(
-            function(x)
-            {
-                if (x.phase < x.phases.COMPLETE) {
-                    this_obj.notify_result(x);
-                    x.cleanup();
-                    x.phase = x.phases.COMPLETE;
-                }
-            }
-        );
-        this.notify_complete();
+        var all_complete = function() {
+            this_obj.phase = this_obj.phases.COMPLETE;
+            this_obj.notify_complete();
+        };
+        var incomplete = filter(this.tests,
+                                function(test) {
+                                    return test.phase < test.phases.COMPLETE;
+                                });
+
+        /**
+         * To preserve legacy behavior, overall test completion must be
+         * signaled synchronously.
+         */
+        if (incomplete.length === 0) {
+            all_complete();
+            return;
+        }
+
+        all_async(incomplete,
+                  function(test, testDone)
+                  {
+                      if (test.phase === test.phases.INITIAL) {
+                          test.phase = test.phases.COMPLETE;
+                          testDone();
+                      } else {
+                          add_test_done_callback(test, testDone);
+                          test.cleanup();
+                      }
+                  },
+                  all_complete);
+    };
+
+    /**
+     * Update the harness status to reflect an unrecoverable harness error that
+     * should cancel all further testing. Update all previously-defined tests
+     * which have not yet started to indicate that they will not be executed.
+     */
+    Tests.prototype.abort = function() {
+        this.status.status = this.status.ERROR;
+        this.is_aborted = true;
+
+        forEach(this.tests,
+                function(test) {
+                    if (test.phase === test.phases.INITIAL) {
+                        test.phase = test.phases.COMPLETE;
+                    }
+                });
     };
 
     /*
@@ -2123,12 +2732,53 @@ policies and contribution forms [3].
         return duplicates;
     };
 
+    function code_unit_str(char) {
+        return 'U+' + char.charCodeAt(0).toString(16);
+    }
+
+    function sanitize_unpaired_surrogates(str) {
+        return str.replace(/([\ud800-\udbff])(?![\udc00-\udfff])/g,
+                           function(_, unpaired)
+                           {
+                               return code_unit_str(unpaired);
+                           })
+                  // This replacement is intentionally implemented without an
+                  // ES2018 negative lookbehind assertion to support runtimes
+                  // which do not yet implement that language feature.
+                  .replace(/(^|[^\ud800-\udbff])([\udc00-\udfff])/g,
+                           function(_, previous, unpaired) {
+                              if (/[\udc00-\udfff]/.test(previous)) {
+                                  previous = code_unit_str(previous);
+                              }
+
+                              return previous + code_unit_str(unpaired);
+                           });
+    }
+
+    function sanitize_all_unpaired_surrogates(tests) {
+        forEach (tests,
+                 function (test)
+                 {
+                     var sanitized = sanitize_unpaired_surrogates(test.name);
+
+                     if (test.name !== sanitized) {
+                         test.name = sanitized;
+                         delete test._structured_clone;
+                     }
+                 });
+    }
+
     Tests.prototype.notify_complete = function() {
         var this_obj = this;
         var duplicates;
 
         if (this.status.status === null) {
             duplicates = this.find_duplicates();
+
+            // Some transports adhere to UTF-8's restriction on unpaired
+            // surrogates. Sanitize the titles so that the results can be
+            // consistently sent via all transports.
+            sanitize_all_unpaired_surrogates(this.tests);
 
             // Test names are presumed to be unique within test files--this
             // allows consumers to use them for identification purposes.
@@ -2321,6 +2971,9 @@ policies and contribution forms [3].
 
     Output.prototype.resolve_log = function() {
         var output_document;
+        if (this.output_node) {
+            return;
+        }
         if (typeof this.output_document === "function") {
             output_document = this.output_document.apply(undefined);
         } else {
@@ -2331,7 +2984,7 @@ policies and contribution forms [3].
         }
         var node = output_document.getElementById("log");
         if (!node) {
-            if (!document.readyState == "loading") {
+            if (output_document.readyState === "loading") {
                 return;
             }
             node = output_document.createElementNS("http://www.w3.org/1999/xhtml", "div");
@@ -2339,27 +2992,24 @@ policies and contribution forms [3].
             if (output_document.body) {
                 output_document.body.appendChild(node);
             } else {
-                var is_html = false;
-                var is_svg = false;
-                var output_window = output_document.defaultView;
-                if (output_window && "SVGSVGElement" in output_window) {
-                    is_svg = output_document.documentElement instanceof output_window.SVGSVGElement;
-                } else if (output_window) {
-                    is_html = (output_document.namespaceURI == "http://www.w3.org/1999/xhtml" &&
-                               output_document.localName == "html");
-                }
+                var root = output_document.documentElement;
+                var is_html = (root &&
+                               root.namespaceURI == "http://www.w3.org/1999/xhtml" &&
+                               root.localName == "html");
+                var is_svg = (output_document.defaultView &&
+                              "SVGSVGElement" in output_document.defaultView &&
+                              root instanceof output_document.defaultView.SVGSVGElement);
                 if (is_svg) {
                     var foreignObject = output_document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
                     foreignObject.setAttribute("width", "100%");
                     foreignObject.setAttribute("height", "100%");
-                    output_document.documentElement.appendChild(foreignObject);
+                    root.appendChild(foreignObject);
                     foreignObject.appendChild(node);
                 } else if (is_html) {
-                    var body = output_document.createElementNS("http://www.w3.org/1999/xhtml", "body");
-                    output_document.documentElement.appendChild(body);
-                    body.appendChild(node);
+                    root.appendChild(output_document.createElementNS("http://www.w3.org/1999/xhtml", "body"))
+                        .appendChild(node);
                 } else {
-                    output_document.documentElement.appendChild(node);
+                    root.appendChild(node);
                 }
             }
         }
@@ -2371,11 +3021,11 @@ policies and contribution forms [3].
         if (this.phase < this.STARTED) {
             this.init();
         }
-        if (!this.enabled) {
+        if (!this.enabled || this.phase === this.COMPLETE) {
             return;
         }
+        this.resolve_log();
         if (this.phase < this.HAVE_RESULTS) {
-            this.resolve_log();
             this.phase = this.HAVE_RESULTS;
         }
         var done_count = tests.tests.length - tests.num_pending;
@@ -2423,12 +3073,14 @@ policies and contribution forms [3].
         status_text_harness[harness_status.OK] = "OK";
         status_text_harness[harness_status.ERROR] = "Error";
         status_text_harness[harness_status.TIMEOUT] = "Timeout";
+        status_text_harness[harness_status.PRECONDITION_FAILED] = "Precondition Failed";
 
         var status_text = {};
         status_text[Test.prototype.PASS] = "Pass";
         status_text[Test.prototype.FAIL] = "Fail";
         status_text[Test.prototype.TIMEOUT] = "Timeout";
         status_text[Test.prototype.NOTRUN] = "Not Run";
+        status_text[Test.prototype.PRECONDITION_FAILED] = "Precondition Failed";
 
         var status_number = {};
         forEach(tests,
@@ -2582,7 +3234,7 @@ policies and contribution forms [3].
     /*
      * Template code
      *
-     * A template is just a javascript structure. An element is represented as:
+     * A template is just a JavaScript structure. An element is represented as:
      *
      * [tag_name, {attr_name:attr_value}, child1, child2]
      *
@@ -2744,13 +3396,10 @@ policies and contribution forms [3].
     }
 
     /*
-     * Utility funcions
+     * Utility functions
      */
     function assert(expected_true, function_name, description, error, substitutions)
     {
-        if (tests.tests.length === 0) {
-            tests.set_file_is_test();
-        }
         if (expected_true !== true) {
             var msg = make_message(function_name, description,
                                    error, substitutions);
@@ -2813,6 +3462,13 @@ policies and contribution forms [3].
         return lines.slice(i).join("\n");
     }
 
+    function PreconditionFailedError(message)
+    {
+        AssertionError.call(this, message);
+    }
+    PreconditionFailedError.prototype = Object.create(AssertionError.prototype);
+    expose(PreconditionFailedError, "PreconditionFailedError");
+
     function make_message(function_name, description, error, substitutions)
     {
         for (var p in substitutions) {
@@ -2864,6 +3520,57 @@ policies and contribution forms [3].
                 callback.call(thisObj, array[i], i, array);
             }
         }
+    }
+
+    /**
+     * Immediately invoke a "iteratee" function with a series of values in
+     * parallel and invoke a final "done" function when all of the "iteratee"
+     * invocations have signaled completion.
+     *
+     * If all callbacks complete synchronously (or if no callbacks are
+     * specified), the `done_callback` will be invoked synchronously. It is the
+     * responsibility of the caller to ensure asynchronicity in cases where
+     * that is desired.
+     *
+     * @param {array} value Zero or more values to use in the invocation of
+     *                      `iter_callback`
+     * @param {function} iter_callback A function that will be invoked once for
+     *                                 each of the provided `values`. Two
+     *                                 arguments will be available in each
+     *                                 invocation: the value from `values` and
+     *                                 a function that must be invoked to
+     *                                 signal completion
+     * @param {function} done_callback A function that will be invoked after
+     *                                 all operations initiated by the
+     *                                 `iter_callback` function have signaled
+     *                                 completion
+     */
+    function all_async(values, iter_callback, done_callback)
+    {
+        var remaining = values.length;
+
+        if (remaining === 0) {
+            done_callback();
+        }
+
+        forEach(values,
+                function(element) {
+                    var invoked = false;
+                    var elDone = function() {
+                        if (invoked) {
+                            return;
+                        }
+
+                        invoked = true;
+                        remaining -= 1;
+
+                        if (remaining === 0) {
+                            done_callback();
+                        }
+                    };
+
+                    iter_callback(element, elDone);
+                });
     }
 
     function merge(a,b)
@@ -2956,7 +3663,7 @@ policies and contribution forms [3].
         // Touching the postMessage prop on a window can throw if the window is
         // not from the same origin AND post message is not supported in that
         // browser. So just doing an existence test here won't do, you also need
-        // to wrap it in a try..cacth block.
+        // to wrap it in a try..catch block.
         try {
             type = typeof w.postMessage;
             if (type === "function") {
@@ -2989,36 +3696,56 @@ policies and contribution forms [3].
     var tests = new Tests();
 
     if (global_scope.addEventListener) {
-        var error_handler = function(e) {
-            if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
-                tests.set_file_is_test();
+        var error_handler = function(error, message, stack) {
+            var precondition_failed = error instanceof PreconditionFailedError;
+            if (tests.file_is_test) {
+                var test = tests.tests[0];
+                if (test.phase >= test.phases.HAS_RESULT) {
+                    return;
+                }
+                var status = precondition_failed ? test.PRECONDITION_FAILED : test.FAIL;
+                test.set_status(status, message, stack);
+                test.phase = test.phases.HAS_RESULT;
+            } else if (!tests.allow_uncaught_exception) {
+                var status = precondition_failed ? tests.status.PRECONDITION_FAILED : tests.status.ERROR;
+                tests.status.status = status;
+                tests.status.message = message;
+                tests.status.stack = stack;
             }
 
+            // Do not transition to the "complete" phase if the test has been
+            // configured to allow uncaught exceptions. This gives the test an
+            // opportunity to define subtests based on the exception reporting
+            // behavior.
+            if (!tests.allow_uncaught_exception) {
+                done();
+            }
+        };
+
+        addEventListener("error", function(e) {
+            var message = e.message;
             var stack;
             if (e.error && e.error.stack) {
                 stack = e.error.stack;
             } else {
                 stack = e.filename + ":" + e.lineno + ":" + e.colno;
             }
+            error_handler(e.error, message, stack);
+        }, false);
 
-            if (tests.file_is_test) {
-                var test = tests.tests[0];
-                if (test.phase >= test.phases.HAS_RESULT) {
-                    return;
-                }
-                test.set_status(test.FAIL, e.message, stack);
-                test.phase = test.phases.HAS_RESULT;
-                test.done();
-            } else if (!tests.allow_uncaught_exception) {
-                tests.status.status = tests.status.ERROR;
-                tests.status.message = e.message;
-                tests.status.stack = stack;
+        addEventListener("unhandledrejection", function(e) {
+            var message;
+            if (e.reason && e.reason.message) {
+                message = "Unhandled rejection: " + e.reason.message;
+            } else {
+                message = "Unhandled rejection";
             }
-            done();
-        };
-
-        addEventListener("error", error_handler, false);
-        addEventListener("unhandledrejection", function(e){ error_handler(e.reason); }, false);
+            var stack;
+            if (e.reason && e.reason.stack) {
+                stack = e.reason.stack;
+            }
+            error_handler(e.reason, message, stack);
+        }, false);
     }
 
     test_environment.on_tests_ready();
@@ -3055,7 +3782,7 @@ table#results {\
 \
 table#results th:first-child,\
 table#results td:first-child {\
-    width:4em;\
+    width:8em;\
 }\
 \
 table#results th:last-child,\
@@ -3096,7 +3823,11 @@ tr.notrun > td:first-child {\
     color:blue;\
 }\
 \
-.pass > td:first-child, .fail > td:first-child, .timeout > td:first-child, .notrun > td:first-child {\
+tr.preconditionfailed > td:first-child {\
+    color:blue;\
+}\
+\
+.pass > td:first-child, .fail > td:first-child, .timeout > td:first-child, .notrun > td:first-child, .preconditionfailed > td:first-child {\
     font-variant:small-caps;\
 }\
 \

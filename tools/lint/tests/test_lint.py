@@ -213,12 +213,11 @@ def test_ref_absolute_url(caplog):
 
 
 def test_about_blank_as_ref(caplog):
-    with _mock_lint("check_path") as mocked_check_path:
+    with _mock_lint("check_path"):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["about_blank-ref.html"], "normal")
+            rv = lint(_dummy_repo, ["about_blank.html"], "normal")
             assert rv == 0
-            assert not mocked_check_path.called
-            assert not mocked_check_file_contents.called
+            assert mocked_check_file_contents.call_count == 1
     assert caplog.text == ""
 
 
@@ -401,19 +400,36 @@ def test_check_css_globally_unique_ignored_dir(caplog):
 
 def test_all_filesystem_paths():
     with mock.patch(
-            'os.walk',
-            return_value=[('.',
-                           ['dir_a', 'dir_b'],
-                           ['file_a', 'file_b']),
-                          (os.path.join('.', 'dir_a'),
+            'tools.lint.lint.walk',
+            return_value=[('',
+                           [('dir_a', None), ('dir_b', None)],
+                           [('file_a', None), ('file_b', None)]),
+                          ('dir_a',
                            [],
-                           ['file_c', 'file_d'])]
+                           [('file_c', None), ('file_d', None)])]
     ):
         got = list(lint_mod.all_filesystem_paths('.'))
         assert got == ['file_a',
                        'file_b',
                        os.path.join('dir_a', 'file_c'),
                        os.path.join('dir_a', 'file_d')]
+
+
+def test_filesystem_paths_subdir():
+    with mock.patch(
+            'tools.lint.lint.walk',
+            return_value=[('',
+                           [('dir_a', None), ('dir_b', None)],
+                           [('file_a', None), ('file_b', None)]),
+                          ('dir_a',
+                           [],
+                           [('file_c', None), ('file_d', None)])]
+    ):
+        got = list(lint_mod.all_filesystem_paths('.', 'dir'))
+        assert got == [os.path.join('dir', 'file_a'),
+                       os.path.join('dir', 'file_b'),
+                       os.path.join('dir', 'dir_a', 'file_c'),
+                       os.path.join('dir', 'dir_a', 'file_d')]
 
 
 def test_main_with_args():

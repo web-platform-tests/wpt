@@ -12,24 +12,24 @@
         width: 200px;
         margin-bottom: 2px;
         background: lightgray;
-        height: 20px;
+        height: 10px;
         clear: all;
       }
       div.a {
         width: 10px;
-        height: 20px;
+        height: 10px;
         background: lightgreen;
         float: left;
       }
       div.b {
         width: 30px;
-        height: 20px;
+        height: 10px;
         background: pink;
         float: left;
       }
       div.c {
         width: 40px;
-        height: 20px;
+        height: 10px;
         background: orange;
         float: left;
       }
@@ -37,7 +37,7 @@
       /* Inside of 'b': */
       div.fixedSizeChild {
         width: 30px;
-        height: 10px;
+        height: 5px;
         background: purple;
       }
     </style>
@@ -140,6 +140,34 @@
       <div class="a" style="margin-left: 30px"/>
       <div class="b" style="margin-left: 30px"><div class="fixedSizeChild"/></div>
       <div class="c" style="margin-left: 30px"/>
+    </div>
+
+    <!-- start -->
+    <div class="flexbox">
+      <div class="a"/>
+    </div>
+    <div class="flexbox">
+      <div class="a"/>
+      <div class="b"><div class="fixedSizeChild"/></div>
+    </div>
+    <div class="flexbox">
+      <div class="a"/>
+      <div class="b"><div class="fixedSizeChild"/></div>
+      <div class="c"/>
+    </div>
+
+    <!-- end -->
+    <div class="flexbox">
+      <div class="a" style="margin-left: 190px"/>
+    </div>
+    <div class="flexbox">
+      <div class="a" style="margin-left: 160px"/>
+      <div class="b"><div class="fixedSizeChild"/></div>
+    </div>
+    <div class="flexbox">
+      <div class="a" style="margin-left: 120px"/>
+      <div class="b"><div class="fixedSizeChild"/></div>
+      <div class="c"/>
     </div>
   </body>
 </html>

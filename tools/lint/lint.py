@@ -868,12 +868,12 @@ def main(**kwargs):
 
     paths = lint_paths(kwargs, repo_root)
 
-    ignore_glob = kwargs.get("ignore_glob")
+    ignore_glob = kwargs.get(str("ignore_glob")) or str()
 
-    return lint(repo_root, paths, output_format, ignore_glob)
+    return lint(repo_root, paths, output_format, str(ignore_glob))
 
 
-def lint(repo_root, paths, output_format, ignore_glob=""):
+def lint(repo_root, paths, output_format, ignore_glob=str()):
     # type: (str, List[str], str, str) -> int
     error_count = defaultdict(int)  # type: Dict[Text, int]
     last = None

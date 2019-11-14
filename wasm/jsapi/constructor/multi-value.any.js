@@ -56,7 +56,7 @@ promise_test(async () => {
 }, "multiple return values inside wasm");
 
 promise_test(async () => {
-  const type_if_fi = makeSig([kWasmF32, kWasmI32], [kWasmI32, kWasmF32]);
+  const type_if_fi = makeSig([kWasmF64, kWasmI32], [kWasmI32, kWasmF64]);
 
   const builder = new WasmModuleBuilder();
 
@@ -64,7 +64,7 @@ promise_test(async () => {
   builder
     .addFunction("callfn", kSig_i_v)
     .addBody([
-        ...wasmF32Const(4.2),
+        ...wasmF64Const(4.2),
         ...wasmI32Const(7),
         kExprCallFunction, fnIndex,
         kExprDrop,
@@ -85,37 +85,41 @@ promise_test(async () => {
         return {
           get [Symbol.iterator]() {
             actual.push("@@iterator getter");
-            return function() {
+            return function iterator() {
               actual.push("@@iterator call");
               return {
-                next() {
-                  let j = ++i;
-                  actual.push(`next call ${j}`);
-                  if (j > result.length) {
-                    return {
-                      get done() {
-                        actual.push(`done call ${j}`);
-                        return true;
-                      }
-                    };
-                  }
-                  return {
-                    get done() {
-                      actual.push(`done call ${j}`);
-                      return false;
-                    },
-                    get value() {
-                      actual.push(`value call ${j}`);
+                get next() {
+                  actual.push("next getter");
+                  return function next(...args) {
+                    assert_array_equals(args, []);
+                    let j = ++i;
+                    actual.push(`next call ${j}`);
+                    if (j > result.length) {
                       return {
-                        get valueOf() {
-                          actual.push(`valueOf get ${j}`);
-                          return function() {
-                            actual.push(`valueOf call ${j}`);
-                            return result[j - 1];
-                          };
+                        get done() {
+                          actual.push(`done call ${j}`);
+                          return true;
                         }
                       };
                     }
+                    return {
+                      get done() {
+                        actual.push(`done call ${j}`);
+                        return false;
+                      },
+                      get value() {
+                        actual.push(`value call ${j}`);
+                        return {
+                          get valueOf() {
+                            actual.push(`valueOf get ${j}`);
+                            return function() {
+                              actual.push(`valueOf call ${j}`);
+                              return result[j - 1];
+                            };
+                          }
+                        };
+                      }
+                    };
                   };
                 }
               };
@@ -126,9 +130,13 @@ promise_test(async () => {
     }
   };
 
+  const { instance } = await WebAssembly.instantiate(buffer, imports);
+  const result = instance.exports.callfn();
+  assert_equals(result, 2);
   assert_array_equals(actual, [
     "@@iterator getter",
     "@@iterator call",
+    "next getter",
     "next call 1",
     "done call 1",
     "value call 1",
@@ -142,7 +150,4 @@ promise_test(async () => {
     "valueOf get 2",
     "valueOf call 2",
   ]);
-  const { instance } = await WebAssembly.instantiate(buffer, imports);
-  const result = instance.exports.callfn();
-  assert_equals(result, 2);
 }, "multiple return values from js to wasm");

@@ -54,65 +54,171 @@ exceptional reason shouldn’t prevent the test from being merged; in
 those cases you can <a class="reference external" href="#updating-the-whitelist">whitelist test files</a>
 to suppress the errors. In all other cases, follow the instructions
 below to fix all errors reported.</p>
-<ul class="simple">
-<li><strong>CONSOLE</strong>: Test-file line has a <code class="docutils literal notranslate"><span class="pre">console.*(...)</span></code> call; <strong>fix</strong>: remove
-the <code class="docutils literal notranslate"><span class="pre">console.*(...)</span></code> call (and in some cases, consider adding an
-<code class="docutils literal notranslate"><span class="pre">assert_*</span></code> of some kind in place of it).</li>
-<li><strong>CR AT EOL</strong>: Test-file line ends with CR (U+000D) character; <strong>fix</strong>:
-reformat file so each line just has LF (U+000A) line ending (standard,
-cross-platform “Unix” line endings instead of, e.g., DOS line endings).</li>
-<li><strong>EARLY-TESTHARNESSREPORT</strong>: Test file has an instance of
-<code class="docutils literal notranslate"><span class="pre">&lt;script&nbsp;src='/resources/testharnessreport.js'&gt;</span></code> prior to
-<code class="docutils literal notranslate"><span class="pre">&lt;script&nbsp;src='/resources/testharness.js'&gt;</span></code>; <strong>fix</strong>: flip the order.</li>
-<li><strong>GENERATE_TESTS</strong>: Test file line has a generate_tests call; <strong>fix</strong>: remove
-the call and call <code class="docutils literal notranslate"><span class="pre">test()</span></code> a number of times instead.</li>
-<li><strong>INDENT TABS</strong>: Test-file line starts with one or more tab characters;
-<strong>fix</strong>: use spaces to replace any tab characters at beginning of lines.</li>
-<li><strong>INVALID-TIMEOUT</strong>: Test file with <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name='timeout'...&gt;</span></code> element
-that has a <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute whose value is not <code class="docutils literal notranslate"><span class="pre">long</span></code>; <strong>fix</strong>:
-replace the value of the <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute with <code class="docutils literal notranslate"><span class="pre">long</span></code>.</li>
-<li><strong>LATE-TIMEOUT</strong>: Test file with <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=&quot;timeout&quot;...&gt;</span></code> element after
-<code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code> element ; <strong>fix</strong>: move
-the <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=&quot;timeout&quot;...&gt;</span></code> element to precede the <code class="docutils literal notranslate"><span class="pre">script</span></code> element.</li>
-<li><strong>LAYOUTTESTS APIS</strong>: Test file uses <code class="docutils literal notranslate"><span class="pre">eventSender</span></code>, <code class="docutils literal notranslate"><span class="pre">testRunner</span></code>, or
-<code class="docutils literal notranslate"><span class="pre">internals</span></code> which are LayoutTests-specific APIs used in WebKit/Blink.</li>
-<li><strong>MALFORMED-VARIANT</strong>: Test file with a <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name='variant'...&gt;</span></code>
-element whose <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute has a malformed value; <strong>fix</strong>: ensure
-the value of the <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute starts with <code class="docutils literal notranslate"><span class="pre">?</span></code> or <code class="docutils literal notranslate"><span class="pre">#</span></code> or is empty.</li>
-<li><strong>MISSING-LINK</strong>: CSS test file is missing a link to a spec. <strong>fix</strong>: Ensure that there is a <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=&quot;help&quot;</span> <span class="pre">href=&quot;[url]&quot;&gt;</span></code> for the spec.<ul>
-<li>Note: <code class="docutils literal notranslate"><span class="pre">MISSING-LINK</span></code> is designed to ensure that the CSS build tool can find the tests. Note that the CSS build system is primarily used by <a class="reference external" href="http://test.csswg.org/">test.csswg.org/</a>, which doesn’t use <code class="docutils literal notranslate"><span class="pre">wptserve</span></code>, so <code class="docutils literal notranslate"><span class="pre">*.any.js</span></code> and similar tests won’t work there; stick with the <code class="docutils literal notranslate"><span class="pre">.html</span></code> equivalent.</li>
-</ul>
-</li>
-<li><strong>MISSING-TESTHARNESSREPORT</strong>: Test file is missing an instance of
-<code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code>; <strong>fix</strong>: ensure each
-test file contains <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code>.</li>
-<li><strong>MULTIPLE-TESTHARNESS</strong>: Test file with multiple instances of
-<code class="docutils literal notranslate"><span class="pre">&lt;script&nbsp;src='/resources/testharness.js'&gt;</span></code>; <strong>fix</strong>: ensure each test
-has only one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharness.js'&gt;</span></code> instance.</li>
-<li><strong>MULTIPLE-TESTHARNESSREPORT</strong>: Test file with multiple instances of
-<code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code>; <strong>fix</strong>: ensure each test
-has only one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code> instance.</li>
-<li><strong>MULTIPLE-TIMEOUT</strong>: Test file with multiple <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=&quot;timeout&quot;...&gt;</span></code>
-elements; <strong>fix</strong>: ensure each test file has only one instance of a
-<code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=&quot;timeout&quot;...&gt;</span></code> element.</li>
-<li><strong>PARSE-FAILED</strong>: Test file failed parsing by manifest builder; <strong>fix</strong>:
-examine the file to find the causes of any parse errors, and fix them.</li>
-<li><strong>PATH LENGTH</strong>: Test file’s pathname has a total length greater than 150
-characters; <strong>fix</strong>: use shorter filename to rename the test file.</li>
-<li><strong>PRINT STATEMENT</strong>: A server-side python support file contains a <code class="docutils literal notranslate"><span class="pre">print</span></code>
-statement; <strong>fix</strong>: remove the <code class="docutils literal notranslate"><span class="pre">print</span></code> statement or replace it with
-something else that achieves the intended effect (e.g., a logging call).</li>
-<li><strong>SET TIMEOUT</strong>: Test-file line has <code class="docutils literal notranslate"><span class="pre">setTimeout(...)</span></code> call; <strong>fix</strong>:
-replace all <code class="docutils literal notranslate"><span class="pre">setTimeout(...)</span></code> calls with <code class="docutils literal notranslate"><span class="pre">step_timeout(...)</span></code> calls.</li>
-<li><strong>TRAILING WHITESPACE</strong>: Test-file line has trailing whitespace; <strong>fix</strong>:
-remove trailing whitespace from all lines in the file.</li>
-<li><strong>VARIANT-MISSING</strong>: Test file with a <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name='variant'...&gt;</span></code> element
-that’s missing a <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute; <strong>fix</strong>: add a <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute
-with an appropriate value to the <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name='variant'...&gt;</span></code> element.</li>
-<li><strong>W3C-TEST.ORG</strong>: Test-file line has the string <code class="docutils literal notranslate"><span class="pre">w3c-test.org</span></code>; <strong>fix</strong>:
-either replace the <code class="docutils literal notranslate"><span class="pre">w3c-test.org</span></code> string with the expression
-<code class="docutils literal notranslate"><span class="pre">{{host}}:{{ports[http][0]}}</span></code> or a generic hostname like <code class="docutils literal notranslate"><span class="pre">example.org</span></code>.</li>
-</ul>
+<!--
+  This listing is automatically generated from the linting tool's Python source
+  code.
+--><dl class="docutils">
+<dt><code class="docutils literal notranslate"><span class="pre">ABSOLUTE-URL-REF</span></code></dt>
+<dd>Reference test with a reference file specified via an absolute URL: ‘%s’</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">AHEM</span> <span class="pre">COPY</span></code></dt>
+<dd>Don’t add extra copies of Ahem, use /fonts/Ahem.ttf</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">AHEM</span> <span class="pre">SYSTEM</span> <span class="pre">FONT</span></code></dt>
+<dd>Don’t use Ahem as a system font, use /fonts/ahem.css</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">BROKEN-GLOBAL-METADATA</span></code></dt>
+<dd>Invalid global metadata: %s</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">BROKEN-METADATA</span></code></dt>
+<dd>Metadata comment is not formatted correctly</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CONSOLE</span></code></dt>
+<dd><p class="first">Test-file line has a <code class="docutils literal notranslate"><span class="pre">console.*(...)</span></code> call</p>
+<strong>To fix:</strong><p class="last">remove the <code class="docutils literal notranslate"><span class="pre">console.*(...)</span></code> call (and in some cases, consider adding an
+<code class="docutils literal notranslate"><span class="pre">assert_*</span></code> of some kind in place of it)</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CONTENT-MANUAL</span></code></dt>
+<dd>Manual test whose filename doesn’t end in ‘-manual’</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CONTENT-VISUAL</span></code></dt>
+<dd>Visual test whose filename doesn’t end in ‘-visual’</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CR</span> <span class="pre">AT</span> <span class="pre">EOL</span></code></dt>
+<dd><p class="first">Test-file line ends with CR (U+000D) character</p>
+<strong>To fix:</strong><p class="last">reformat file so each line just has LF (U+000A) line ending (standard,
+cross-platform “Unix” line endings instead of, e.g., DOS line endings).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CSS-COLLIDING-REF-NAME</span></code></dt>
+<dd>The filename %s is shared by: %s</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CSS-COLLIDING-SUPPORT-NAME</span></code></dt>
+<dd>The filename %s is shared by: %s</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CSS-COLLIDING-TEST-NAME</span></code></dt>
+<dd>The filename %s in the %s testsuite is shared by: %s</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">EARLY-TESTHARNESSREPORT</span></code></dt>
+<dd><p class="first">Test file has an instance of <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code> prior to <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharness.js'&gt;</span></code></p>
+<strong>To fix:</strong><p class="last">flip the order</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">FILE</span> <span class="pre">TYPE</span></code></dt>
+<dd>/%s is an unsupported file type (%s)</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">GENERATE_TESTS</span></code></dt>
+<dd><p class="first">Test file line has a generate_tests call</p>
+<strong>To fix:</strong><p class="last">remove the call and call <code class="docutils literal notranslate"><span class="pre">test()</span></code> a number of times instead</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">GITIGNORE</span></code></dt>
+<dd>.gitignore found outside the root</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">IGNORED</span> <span class="pre">PATH</span></code></dt>
+<dd>%s matches an ignore filter in .gitignore - please add a .gitignore exception</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">INDENT</span> <span class="pre">TABS</span></code></dt>
+<dd><p class="first">Test-file line starts with one or more tab characters</p>
+<strong>To fix:</strong><p class="last">use spaces to replace any tab characters at beginning of lines</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">INDENTED-METADATA</span></code></dt>
+<dd>Metadata comments should start the line</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">INVALID-TIMEOUT</span></code></dt>
+<dd><p class="first">Test file with <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name='timeout'...&gt;</span></code> element that has a <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute whose value is not <code class="docutils literal notranslate"><span class="pre">long</span></code>: %s</p>
+<strong>To fix:</strong><p class="last">replace the value of the <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute with <code class="docutils literal notranslate"><span class="pre">long</span></code></p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">LATE-TIMEOUT</span></code></dt>
+<dd><p class="first">Test file with <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name='timeout'...&gt;</span></code> element after <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code> element</p>
+<strong>To fix:</strong><p class="last">move the <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=&quot;timeout&quot;...&gt;</span></code> element to precede the <code class="docutils literal notranslate"><span class="pre">script</span></code>
+element.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">LAYOUTTESTS</span> <span class="pre">APIS</span></code></dt>
+<dd>eventSender/testRunner/internals used; these are LayoutTests-specific APIs (WebKit/Blink)</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MALFORMED-VARIANT</span></code></dt>
+<dd>%s <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=variant&gt;</span></code> ‘content’ attribute must be the empty string or start with ‘?’ or ‘#’</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MISSING</span> <span class="pre">DEPENDENCY</span></code></dt>
+<dd><p class="first">Chromium-specific content referenced</p>
+<strong>To fix:</strong><p class="last">Reimplement the test to use well-documented testing interfaces</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MISSING-LINK</span></code></dt>
+<dd><p class="first">Testcase file must have a link to a spec</p>
+<strong>To fix:</strong><p class="last">Ensure that there is a <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=&quot;help&quot;</span> <span class="pre">href=&quot;[url]&quot;&gt;</span></code> for the spec.
+<code class="docutils literal notranslate"><span class="pre">MISSING-LINK</span></code> is designed to ensure that the CSS build tool can find
+the tests. Note that the CSS build system is primarily used by
+<a class="reference external" href="http://test.csswg.org/">test.csswg.org/</a>, which doesn’t use
+<code class="docutils literal notranslate"><span class="pre">wptserve</span></code>, so <code class="docutils literal notranslate"><span class="pre">*.any.js</span></code> and similar tests won’t work there; stick
+with the <code class="docutils literal notranslate"><span class="pre">.html</span></code> equivalent.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MISSING-TESTDRIVER-VENDOR</span></code></dt>
+<dd>Missing <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testdriver-vendor.js'&gt;</span></code></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MISSING-TESTHARNESSREPORT</span></code></dt>
+<dd><p class="first">Missing <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code></p>
+<strong>To fix:</strong><p class="last">ensure each test file contains <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code></p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MULTIPLE-TESTDRIVER</span></code></dt>
+<dd>More than one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testdriver.js'&gt;</span></code></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MULTIPLE-TESTDRIVER-VENDOR</span></code></dt>
+<dd>More than one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testdriver-vendor.js'&gt;</span></code></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MULTIPLE-TESTHARNESS</span></code></dt>
+<dd><p class="first">More than one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharness.js'&gt;</span></code></p>
+<strong>To fix:</strong><p class="last">ensure each test has only one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code> instance</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MULTIPLE-TESTHARNESSREPORT</span></code></dt>
+<dd>More than one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MULTIPLE-TIMEOUT</span></code></dt>
+<dd><p class="first">More than one meta name=’timeout’</p>
+<strong>To fix:</strong><p class="last">ensure each test file has only one instance of a <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=&quot;timeout&quot;...&gt;</span></code> element</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">NON-EXISTENT-REF</span></code></dt>
+<dd>Reference test with a non-existent ‘%s’ relationship reference: ‘%s’</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">OPEN-NO-MODE</span></code></dt>
+<dd>File opened without providing an explicit mode (note: binary files must be read with ‘b’ in the mode flags)</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PARSE-FAILED</span></code></dt>
+<dd><p class="first">Unable to parse file</p>
+<strong>To fix:</strong><p class="last">examine the file to find the causes of any parse errors, and fix them.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PATH</span> <span class="pre">LENGTH</span></code></dt>
+<dd><p class="first">/%s longer than maximum path length (%d &gt; 150)</p>
+<strong>To fix:</strong><p class="last">use shorter filename to rename the test file</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PRESENT-TESTHARNESSCSS</span></code></dt>
+<dd>Explicit link to testharness.css present</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PRINT</span> <span class="pre">STATEMENT</span></code></dt>
+<dd><p class="first">A server-side python support file contains a <code class="docutils literal notranslate"><span class="pre">print</span></code> statement</p>
+<strong>To fix:</strong><p class="last">remove the <code class="docutils literal notranslate"><span class="pre">print</span></code> statement or replace it with something else that
+achieves the intended effect (e.g., a logging call)</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">SAME-FILE-REF</span></code></dt>
+<dd>Reference test which points at itself as a reference</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">SET</span> <span class="pre">TIMEOUT</span></code></dt>
+<dd><p class="first">setTimeout used</p>
+<strong>To fix:</strong><p class="last">replace all <code class="docutils literal notranslate"><span class="pre">setTimeout(...)</span></code> calls with <code class="docutils literal notranslate"><span class="pre">step_timeout(...)</span></code> calls</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">SPECIALPOWERS</span> <span class="pre">API</span></code></dt>
+<dd>SpecialPowers used; this is gecko-specific and not supported in wpt</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">STRAY-METADATA</span></code></dt>
+<dd>Metadata comments should start the file</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">SUPPORT-WRONG-DIR</span></code></dt>
+<dd>Support file not in support directory</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">TESTDRIVER-PATH</span></code></dt>
+<dd>testdriver.js script seen with incorrect path</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">TESTDRIVER-VENDOR-PATH</span></code></dt>
+<dd>testdriver-vendor.js script seen with incorrect path</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">TESTHARNESS-PATH</span></code></dt>
+<dd>testharness.js script seen with incorrect path</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">TESTHARNESSREPORT-PATH</span></code></dt>
+<dd>testharnessreport.js script seen with incorrect path</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">TRAILING</span> <span class="pre">WHITESPACE</span></code></dt>
+<dd><p class="first">Whitespace at EOL</p>
+<strong>To fix:</strong><p class="last">Remove trailing whitespace from all lines in the file.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">UNKNOWN-GLOBAL-METADATA</span></code></dt>
+<dd>Unexpected value for global metadata</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">UNKNOWN-METADATA</span></code></dt>
+<dd>Unexpected kind of metadata</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">UNKNOWN-TIMEOUT-METADATA</span></code></dt>
+<dd>Unexpected value for timeout metadata</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">VARIANT-MISSING</span></code></dt>
+<dd><p class="first">Test file with a <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name='variant'...&gt;</span></code> element that’s missing a <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute</p>
+<strong>To fix:</strong><p class="last">add a <code class="docutils literal notranslate"><span class="pre">content</span></code> attribute with an appropriate value to the <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name='variant'...&gt;</span></code> element</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">W3C-TEST.ORG</span></code></dt>
+<dd><p class="first">Test-file line has the string <code class="docutils literal notranslate"><span class="pre">w3c-test.org</span></code></p>
+<strong>To fix:</strong><p class="last">either replace the <code class="docutils literal notranslate"><span class="pre">w3c-test.org</span></code> string with the expression
+<code class="docutils literal notranslate"><span class="pre">{{host}}:{{ports[http][0]}}</span></code> or a generic hostname like <code class="docutils literal notranslate"><span class="pre">example.org</span></code></p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">WEB-PLATFORM.TEST</span></code></dt>
+<dd>Internal web-platform.test domain used</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">WEBIDL2.JS</span></code></dt>
+<dd>Legacy webidl2.js script used</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">WORKER</span> <span class="pre">COLLISION</span></code></dt>
+<dd>path ends with %s which collides with generated tests from %s files</dd>
+</dl>
 </div>
 <div class="section" id="updating-the-whitelist">
 <h2>Updating the whitelist<a class="headerlink" href="#updating-the-whitelist" title="Permalink to this headline">¶</a></h2>

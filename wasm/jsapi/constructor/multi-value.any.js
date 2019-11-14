@@ -3,7 +3,7 @@
 // META: script=/wasm/jsapi/assertions.js
 
 promise_test(async () => {
-  const type_if_fi = makeSig([kWasmF32, kWasmI32], [kWasmI32, kWasmF32]);
+  const type_if_fi = makeSig([kWasmF64, kWasmI32], [kWasmI32, kWasmF64]);
 
   const builder = new WasmModuleBuilder();
 
@@ -19,14 +19,14 @@ promise_test(async () => {
   const buffer = builder.toBuffer();
 
   const result = await WebAssembly.instantiate(buffer);
-  const swapped = result.instance.exports.swap(7, 4.2);
+  const swapped = result.instance.exports.swap(4.2, 7);
   assert_true(Array.isArray(swapped));
   assert_equals(Object.getPrototypeOf(swapped), Array.prototype);
-  assert_array_equals(swapped, [4.2, 7]);
+  assert_array_equals(swapped, [7, 4.2]);
 }, "multiple return values from wasm to js");
 
 promise_test(async () => {
-  const type_if_fi = makeSig([kWasmF32, kWasmI32], [kWasmI32, kWasmF32]);
+  const type_if_fi = makeSig([kWasmF64, kWasmI32], [kWasmI32, kWasmF64]);
 
   const builder = new WasmModuleBuilder();
 
@@ -40,7 +40,7 @@ promise_test(async () => {
   builder
     .addFunction("callswap", kSig_i_v)
     .addBody([
-        ...wasmF32Const(4.2),
+        ...wasmF64Const(4.2),
         ...wasmI32Const(7),
         kExprCallFunction, swap.index,
         kExprDrop,

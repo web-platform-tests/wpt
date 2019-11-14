@@ -57,9 +57,9 @@ tasks:
                 owner:
                   # event.pusher.email is null when it comes from a GitHub action, so it has to be null-checked.
                   # and it seems that the null-check has to be done appart (on its own if statment).
-                  $if: 'event.after'
+                  $if: 'event.pusher.email'
                   then:
-                    $if: '"@" in event.after'
+                    $if: '"@" in event.pusher.email'
                     then: ${event.pusher.email}
                     else: web-platform-tests1@users.noreply.github.com
                   else: web-platform-tests2@users.noreply.github.com

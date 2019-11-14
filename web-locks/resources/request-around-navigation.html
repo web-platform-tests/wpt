@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body>
+<script>
+'use strict';
+(async () => {
+  const [uuid, phase] = location.search.split('_');
+  const neverSettled = new Promise(() => {});
+  navigator.locks.request(uuid, () => neverSettled);
+  navigator.locks.request(uuid, () => neverSettled);
+  const state = await navigator.locks.query();
+  parent.postMessage({
+    held: state.held.filter(lock => lock.name === uuid).length,
+    pending: state.pending.filter(lock => lock.name === uuid).length,
+  }, '*');
+
+  if (phase === 'first') {
+    location.search = uuid + '_second';
+  }
+})().catch((err) => parent.postMessage(err, '*'));
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>Web Locks API: Release of locks following termination</title>
+<link rel=help href="https://wicg.github.io/web-locks/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+</head>
+<body>
+<script>
+'use strict';
+const queue = [];
+addEventListener('message', (event) => {
+  queue.push(event.data);
+});
+
+function getMessage() {
+  return new Promise((resolve) => {
+    if (queue.length) {
+      resolve(queue.shift());
+      return;
+    }
+
+    addEventListener('message', (event) => {
+      resolve(queue.shift());
+    }, { once: true });
+  });
+}
+
+promise_test(async () => {
+  const iframe = document.createElement('iframe');
+  iframe.src = `resources/request-around-navigation.html?${token()}_first`;
+  document.body.appendChild(iframe);
+
+  {
+    const { held, pending } = await getMessage();
+    assert_equals(held, 1, 'held initially');
+    assert_equals(pending, 1, 'pending initially');
+  }
+
+  {
+    const { held, pending } = await getMessage();
+    assert_equals(held, 1, 'held following naviation');
+    assert_equals(pending, 1, 'pending following naviation');
+  }
+});
+</script>
+</body>
+</html>

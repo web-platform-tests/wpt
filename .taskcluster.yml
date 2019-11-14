@@ -58,8 +58,8 @@ tasks:
                   $if: 'event.base_ref'
                   then:
                     $if: '"@" in event.base_ref'
-                      then: ${event.pusher.email}
-                      else: web-platform-tests1@users.noreply.github.com
+                    then: ${event.pusher.email}
+                    else: web-platform-tests1@users.noreply.github.com
                   else: web-platform-tests2@users.noreply.github.com
                 source: ${event.repository.url}
               payload:

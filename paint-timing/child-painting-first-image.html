@@ -1,31 +1,36 @@
 <!DOCTYPE html>
+<head>
+  <title>Parent frame ignores paint-timing events fired from child image rendering.</title>
+</head>
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
 <script>
-async_test(function (t) {
-    // This test must take place within an iframe to avoid interference from
-    // paint entries created by testharness.js
-    const parent = document.createElement('iframe');
-    document.body.appendChild(parent);
+// If this test were to define subtests (using the global `async_test`
+// function, for example), testharness.js would modify the DOM while the test
+// executed. This modification would trigger the creation of paint timing
+// performance entries and interfere with the semantics under test.
+//
+// Define the test as a single-page test so that the harness does not make any
+// modifications until after the test has completed.
+setup({ single_test: true });
 
-    parent.contentWindow.addEventListener('message', t.step_func(e => {
-        assert_equals(e.data, '2 paint first-paint paint first-contentful-paint');
-        // When only child frame paints, expect only first-paint.
-        t.step_timeout( function() {
-            const bufferedEntries = parent.contentWindow.performance.getEntriesByType('paint');
-            assert_equals(bufferedEntries.length, 1);
-            assert_equals(bufferedEntries[0].entryType, 'paint');
-            assert_equals(bufferedEntries[0].name, 'first-paint');
-            t.done();
-        }, 50);
-    }));
-    const iframe = parent.contentDocument.createElement('iframe');
-    iframe.id = 'child-iframe';
-    iframe.src = 'resources/subframe-painting.html';
-    parent.contentDocument.body.appendChild(iframe);
-}, 'Parent frame ignores paint-timing events fired from child image rendering.');
+window.addEventListener('message', e => {
+    assert_equals(e.data, '2 paint first-paint paint first-contentful-paint');
+    // When only child frame paints, expect only first-paint.
+    step_timeout(function() {
+        const bufferedEntries = performance.getEntriesByType('paint');
+        assert_equals(bufferedEntries.length, 1);
+        assert_equals(bufferedEntries[0].entryType, 'paint');
+        assert_equals(bufferedEntries[0].name, 'first-paint');
+        done();
+    }, 50);
+});
+const iframe = document.createElement('iframe');
+iframe.id = 'child-iframe';
+iframe.src = 'resources/subframe-painting.html';
+document.body.appendChild(iframe);
 </script>
 </body>
 </html>

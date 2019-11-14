@@ -22,7 +22,7 @@ import requests
 API_RATE_LIMIT_THRESHOLD = 0.2
 # The GitHub Pull Request label which indicates that a Pull Request is expected
 # to be actively mirrored by the preview server
-LABEL = 'safelisted-for-preview'
+LABEL = 'safe for preview'
 # The number of seconds to wait between attempts to verify that a submission
 # preview is available on the Pull Request preview server
 POLLING_PERIOD = 5
@@ -35,7 +35,8 @@ TRUSTED_AUTHOR_ASSOCIATIONS = ('COLLABORATOR', 'MEMBER', 'OWNER')
 # These GitHub accounts are not associated with individuals, and the Pull
 # Requests they submit rarely require a preview.
 AUTOMATION_GITHUB_USERS = (
-    'chromium-wpt-export-bot', 'moz-wptsync-bot', 'servo-wpt-sync'
+    'autofoolip', 'chromium-wpt-export-bot', 'moz-wptsync-bot',
+    'servo-wpt-sync'
 )
 
 logging.basicConfig(level=logging.INFO)

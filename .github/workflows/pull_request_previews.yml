@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
     - name: Install dependency
       run: pip install requests
     - name: Synchronize state

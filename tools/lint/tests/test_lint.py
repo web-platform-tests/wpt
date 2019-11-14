@@ -443,7 +443,8 @@ def test_main_with_args():
                 m.assert_called_once_with(repo_root,
                                           [os.path.relpath(os.path.join(os.getcwd(), x), repo_root)
                                            for x in ['a', 'b', 'c']],
-                                          "normal")
+                                          "normal",
+                                          None)
     finally:
         sys.argv = orig_argv
 
@@ -455,7 +456,7 @@ def test_main_no_args():
         with _mock_lint('lint', return_value=True) as m:
             with _mock_lint('changed_files', return_value=['foo', 'bar']):
                 lint_mod.main(**vars(create_parser().parse_args()))
-                m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal")
+                m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal", None)
     finally:
         sys.argv = orig_argv
 
@@ -467,6 +468,6 @@ def test_main_all():
         with _mock_lint('lint', return_value=True) as m:
             with _mock_lint('all_filesystem_paths', return_value=['foo', 'bar']):
                 lint_mod.main(**vars(create_parser().parse_args()))
-                m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal")
+                m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal", None)
     finally:
         sys.argv = orig_argv

@@ -465,7 +465,7 @@ def test_synchronize_sync_trusted_contributor():
                 'items': [
                     {
                         'number': 23,
-                        'labels': [{'name': 'safelisted-for-preview'}],
+                        'labels': [{'name': 'safe for preview'}],
                         'closed_at': None,
                         'user': {'login': 'Hexcles'},
                         'author_association': 'CONTRIBUTOR'

@@ -28,6 +28,7 @@ tasks:
                 event.ref == "refs/heads/epochs/daily": [{name: firefox, channel: stable}, {name: chrome, channel: stable}, {name: webkitgtk_minibrowser, channel: nightly}],
                 event.ref == "refs/heads/epochs/weekly": [{name: firefox, channel: beta}, {name: chrome, channel: beta}, {name: webkitgtk_minibrowser, channel: stable}],
                 event.ref == "refs/heads/epochs/three_hourly": [{name: firefox, channel: stable}, {name: chrome, channel: stable}, {name: webkitgtk_minibrowser, channel: nightly}],
+                event.ref == "refs/heads/clopez/test_ci": [{name: webkitgtk_minibrowser, channel: nightly}],
                 event.ref == "refs/heads/triggers/chrome_stable": [{name: chrome, channel: stable}],
                 event.ref == "refs/heads/triggers/chrome_beta": [{name: chrome, channel: beta}],
                 event.ref == "refs/heads/triggers/chrome_dev": [{name: chrome, channel: dev}],
@@ -40,27 +41,6 @@ tasks:
           each(browser):
             $map:
               - [testharness, 1, 16]
-              - [testharness, 2, 16]
-              - [testharness, 3, 16]
-              - [testharness, 4, 16]
-              - [testharness, 5, 16]
-              - [testharness, 6, 16]
-              - [testharness, 7, 16]
-              - [testharness, 8, 16]
-              - [testharness, 9, 16]
-              - [testharness, 10, 16]
-              - [testharness, 11, 16]
-              - [testharness, 12, 16]
-              - [testharness, 13, 16]
-              - [testharness, 14, 16]
-              - [testharness, 15, 16]
-              - [testharness, 16, 16]
-              - [reftest, 1, 5]
-              - [reftest, 2, 5]
-              - [reftest, 3, 5]
-              - [reftest, 4, 5]
-              - [reftest, 5, 5]
-              - [wdspec, 1, 1]
             each(chunk):
               taskId: {$eval: 'as_slugid(browser.name + browser.channel + chunk[0] + str(chunk[1]))'}
               taskGroupId: {$eval: 'as_slugid("task group")'}
@@ -75,7 +55,7 @@ tasks:
                   of ${chunk[2]}), run in the ${browser.channel} release of
                   ${browser.name}.
                 owner:
-                  $if: '"epochs/" in event.ref'
+                  $if: 'event.base_ref && "@" in event.base_ref'
                   then: web-platform-tests@users.noreply.github.com
                   else: ${event.pusher.email}
                 source: ${event.repository.url}

@@ -2,9 +2,9 @@
 // META: script=/wasm/jsapi/wasm-module-builder.js
 // META: script=/wasm/jsapi/assertions.js
 
-promise_test(async () => {
-  const type_if_fi = makeSig([kWasmF64, kWasmI32], [kWasmI32, kWasmF64]);
+const type_if_fi = makeSig([kWasmF64, kWasmI32], [kWasmI32, kWasmF64]);
 
+promise_test(async () => {
   const builder = new WasmModuleBuilder();
 
   builder
@@ -26,8 +26,6 @@ promise_test(async () => {
 }, "multiple return values from wasm to js");
 
 promise_test(async () => {
-  const type_if_fi = makeSig([kWasmF64, kWasmI32], [kWasmI32, kWasmF64]);
-
   const builder = new WasmModuleBuilder();
 
   const swap = builder
@@ -56,8 +54,6 @@ promise_test(async () => {
 }, "multiple return values inside wasm");
 
 promise_test(async () => {
-  const type_if_fi = makeSig([kWasmF64, kWasmI32], [kWasmI32, kWasmF64]);
-
   const builder = new WasmModuleBuilder();
 
   const fnIndex = builder.addImport("module", "fn", type_if_fi);

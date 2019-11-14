@@ -14,7 +14,7 @@
 setup({single_test: true});
 addEventListener('load', function() {
   step_timeout(function() {
-    var childNodes = Array.prototype.slice.call(document.body.childNodes);
+    var childNodes = document.body.childNodes;
     assert_equals(childNodes.length, 2);
     assert_equals(childNodes[0].tagName, 'SCRIPT');
     assert_equals(childNodes[1].nodeType, 3);

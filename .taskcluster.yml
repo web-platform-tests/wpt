@@ -55,6 +55,8 @@ tasks:
                   of ${chunk[2]}), run in the ${browser.channel} release of
                   ${browser.name}.
                 owner:
+                  # event.pusher.email is null when it comes from a GitHub action, so it has to be null-checked.
+                  # and it seems that the null-check has to be done appart (on its own if statment).
                   $if: 'event.base_ref'
                   then:
                     $if: '"@" in event.base_ref'

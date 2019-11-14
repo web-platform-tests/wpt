@@ -70,7 +70,7 @@ test_6 = """\
 
 test_7 = """\
 [7.html]
-  expect_any_subtest_status: yep
+  blink_expect_any_subtest_status: yep
 """
 
 test_fuzzy = """\

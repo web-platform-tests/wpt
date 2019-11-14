@@ -352,7 +352,8 @@ class Test(object):
         if metadata is None:
             return False
         try:
-            metadata.get("expect_any_subtest_status")
+            # This key is used by the Blink CI to ignore subtest statuses
+            metadata.get("blink_expect_any_subtest_status")
             return True
         except KeyError:
             return False

@@ -277,7 +277,8 @@ In order for a test to be interpreted as a single page test, it should set the
  </script>
 ```
 
-The test title for single page tests is always taken from `document.title`.
+The test title for single page tests is always taken from `document.title`. The
+harness will not modify the document until testing is complete.
 
 ## Making assertions ##
 

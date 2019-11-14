@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name="timeout" content="long">
 <title>RTCRtpTransceiver</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -215,7 +216,7 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+    const stream = await getNoiseStream({audio: true, video: true});
     t.add_cleanup(() => stopTracks(stream));
     const audio = stream.getAudioTracks()[0];
     const video = stream.getVideoTracks()[0];
@@ -248,7 +249,7 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+    const stream = await getNoiseStream({audio: true, video: true});
     t.add_cleanup(() => stopTracks(stream));
     const audio = stream.getAudioTracks()[0];
     const video = stream.getVideoTracks()[0];
@@ -311,7 +312,7 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTransceiver(track, {streams: [stream]});
@@ -346,7 +347,7 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTransceiver(track);
@@ -387,13 +388,33 @@
     hasProps(pc.getTransceivers(), []);
   };
 
+  const checkMsidNoTrackId = async t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+    const stream = await getNoiseStream({audio: true});
+    t.add_cleanup(() => stopTracks(stream));
+    const track = stream.getAudioTracks()[0];
+    pc1.addTrack(track, stream);
+    const offer = await pc1.createOffer();
+    await pc1.setLocalDescription(offer);
+    // Remove track-id from msid
+    offer.sdp = offer.sdp.replace(/(a=msid:[^ \t]+).*\r\n/g, "$1\r\n");
+    assert_true(offer.sdp.includes(`a=msid:${stream.id}\r\n`));
+    await pc2.setRemoteDescription(offer);
+    const answer = await pc2.createAnswer();
+    await pc1.setRemoteDescription(answer);
+    await pc2.setLocalDescription(answer);
+  };
+
   const checkNoMidOffer = async t => {
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -419,6 +440,68 @@
     const answer = await pc2.createAnswer();
     await pc2.setLocalDescription(answer);
     await pc1.setRemoteDescription(answer);
+  };
+
+  const checkNoMidAnswer = async t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    t.add_cleanup(() => stopTracks(stream));
+    const track = stream.getAudioTracks()[0];
+    pc1.addTrack(track, stream);
+
+    const offer = await pc1.createOffer();
+    await pc1.setLocalDescription(offer);
+    await pc2.setRemoteDescription(offer);
+
+    hasPropsAndUniqueMids(pc1.getTransceivers(),
+      [
+        {
+          receiver: {track: {kind: "audio"}},
+          sender: {track: {kind: "audio"}},
+          direction: "sendrecv",
+          currentDirection: null,
+          stopped: false
+        }
+      ]);
+
+    const lastMid = pc1.getTransceivers()[0].mid;
+
+    let answer = await pc2.createAnswer();
+    // Remove mid attr
+    answer.sdp = answer.sdp.replace("a=mid:", "a=unknownattr:");
+    // Remove group attr also
+    answer.sdp = answer.sdp.replace("a=group:", "a=unknownattr:");
+    await pc1.setRemoteDescription(answer);
+
+    hasProps(pc1.getTransceivers(),
+      [
+        {
+          receiver: {track: {kind: "audio"}},
+          sender: {track: {kind: "audio"}},
+          direction: "sendrecv",
+          currentDirection: "sendonly",
+          stopped: false,
+          mid: lastMid
+        }
+      ]);
+
+    const reoffer = await pc1.createOffer();
+    await pc1.setLocalDescription(reoffer);
+    hasProps(pc1.getTransceivers(),
+      [
+        {
+          receiver: {track: {kind: "audio"}},
+          sender: {track: {kind: "audio"}},
+          direction: "sendrecv",
+          currentDirection: "sendonly",
+          stopped: false,
+          mid: lastMid
+        }
+      ]);
   };
 
   const checkAddTransceiverNoTrackDoesntPair = async t => {
@@ -454,7 +537,7 @@
     t.add_cleanup(() => pc2.close());
     pc1.addTransceiver("audio");
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc2.addTransceiver(track);
@@ -484,10 +567,10 @@
     pc1.addTransceiver("audio");
     pc2.addTransceiver("audio");
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
-    pc2.getTransceivers()[0].sender.replaceTrack(track);
+    await pc2.getTransceivers()[0].sender.replaceTrack(track);
 
     const offer = await pc1.createOffer();
     const trackEvents = await setRemoteDescriptionReturnTrackEvents(pc2, offer);
@@ -514,7 +597,7 @@
     pc1.addTransceiver("audio");
     pc2.addTransceiver("audio");
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc2.addTrack(track, stream);
@@ -542,7 +625,7 @@
     t.add_cleanup(() => pc2.close());
     pc1.addTransceiver("audio");
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc2.addTrack(track, stream);
@@ -570,11 +653,11 @@
     t.add_cleanup(() => pc2.close());
     pc1.addTransceiver("audio");
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc2.addTrack(track, stream);
-    pc2.getTransceivers()[0].sender.replaceTrack(null);
+    await pc2.getTransceivers()[0].sender.replaceTrack(null);
 
     const offer = await pc1.createOffer();
     const trackEvents = await setRemoteDescriptionReturnTrackEvents(pc2, offer);
@@ -597,7 +680,7 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -665,7 +748,7 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
     pc.addTransceiver("audio");
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     const audio = stream.getAudioTracks()[0];
     let sender = pc.addTrack(audio, stream);
     pc.removeTrack(sender);
@@ -685,7 +768,7 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+    const stream = await getNoiseStream({audio: true, video: true});
     t.add_cleanup(() => stopTracks(stream));
     const audio = stream.getAudioTracks()[0];
     pc1.addTrack(audio, stream);
@@ -840,7 +923,7 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -934,6 +1017,9 @@
       ]);
 
     hasProps(pc2.getTransceivers(), [{currentDirection: "sendrecv"}]);
+
+    pc2.close();
+    hasProps(pc2.getTransceivers(), [{currentDirection: null}]);
   };
 
   const checkSendrecvWithNoSendTrack = async t => {
@@ -942,7 +1028,7 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTransceiver("audio");
@@ -1006,7 +1092,7 @@
   const checkMute = async t => {
     const pc1 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
-    const stream1 = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+    const stream1 = await getNoiseStream({audio: true, video: true});
     t.add_cleanup(() => stopTracks(stream1));
     const audio1 = stream1.getAudioTracks()[0];
     pc1.addTrack(audio1, stream1);
@@ -1020,7 +1106,7 @@
 
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
-    const stream2 = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+    const stream2 = await getNoiseStream({audio: true, video: true});
     t.add_cleanup(() => stopTracks(stream2));
     const audio2 = stream2.getAudioTracks()[0];
     pc2.addTrack(audio2, stream2);
@@ -1132,7 +1218,7 @@
   const checkStop = async t => {
     const pc1 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -1155,6 +1241,8 @@
       stoppedTransceiver.receiver.track.onended = resolve;
     });
     stoppedTransceiver.stop();
+    assert_equals(pc1.getReceivers().length, 0, 'getReceivers does not expose a receiver of a stopped transceiver');
+    assert_equals(pc1.getSenders().length, 0, 'getSenders does not expose a sender of a stopped transceiver');
 
     await onended;
 
@@ -1175,7 +1263,7 @@
                         transceiver.sender.getParameters()),
                 "InvalidStateError", "setParameters on stopped transceiver");
 
-    const stream2 = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream2 = await getNoiseStream({audio: true});
     const track2 = stream.getAudioTracks()[0];
     checkThrows(() => transceiver.sender.replaceTrack(track2),
                 "InvalidStateError", "replaceTrack on stopped transceiver");
@@ -1219,8 +1307,10 @@
     pc1.close();
     pc2.close();
 
-    // Still shouldn't throw
-    stoppedTransceiver.stop();
+    // Spec says the closed check comes before the stopped check, so this
+    // should throw now.
+    checkThrows(() => stoppedTransceiver.stop(),
+                "InvalidStateError", "RTCRtpTransceiver.stop() with closed PC");
   };
 
   const checkStopAfterCreateOffer = async t => {
@@ -1229,7 +1319,7 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -1299,7 +1389,7 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -1369,7 +1459,7 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -1404,7 +1494,7 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -1474,7 +1564,7 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -1544,7 +1634,7 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -1567,7 +1657,7 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc.addTrack(track, stream);
@@ -1588,7 +1678,7 @@
 
     // Verify that rollback doesn't stomp things it should not
     pc.getTransceivers()[0].direction = "sendonly";
-    const stream2 = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream2 = await getNoiseStream({audio: true});
     const track2 = stream2.getAudioTracks()[0];
     await pc.getTransceivers()[0].sender.replaceTrack(track2);
 
@@ -1619,7 +1709,7 @@
     const pc1 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
 
-    const audioStream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const audioStream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(audioStream));
     const audioTrack = audioStream.getAudioTracks()[0];
     pc1.addTrack(audioTrack, audioStream);
@@ -1627,7 +1717,7 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    const videoStream = await navigator.mediaDevices.getUserMedia({video: true});
+    const videoStream = await getNoiseStream({video: true});
     t.add_cleanup(() => stopTracks(videoStream));
     const videoTrack = videoStream.getVideoTracks()[0];
     pc2.addTrack(videoTrack, videoStream);
@@ -1698,7 +1788,7 @@
     const pc1 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -1755,7 +1845,7 @@
     const mid0 = pc2.getTransceivers()[0].mid;
 
     // Give pc2 a track with replaceTrack
-    const stream2 = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream2 = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream2));
     const track2 = stream2.getAudioTracks()[0];
     await pc2.getTransceivers()[0].sender.replaceTrack(track2);
@@ -1908,6 +1998,30 @@
       ]);
   };
 
+  const checkBundleTagRejected = async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+
+    const stream1 = await getNoiseStream({audio: true});
+    t.add_cleanup(() => stopTracks(stream1));
+    const track1 = stream1.getAudioTracks()[0];
+    const stream2 = await getNoiseStream({audio: true});
+    t.add_cleanup(() => stopTracks(stream2));
+    const track2 = stream2.getAudioTracks()[0];
+
+    pc1.addTrack(track1, stream1);
+    pc1.addTrack(track2, stream2);
+
+    await offerAnswer(pc1, pc2);
+
+    pc2.getTransceivers()[0].stop();
+
+    await offerAnswer(pc1, pc2);
+    await offerAnswer(pc2, pc1);
+  };
+
   const checkMsectionReuse = async t => {
     // Use max-compat to make it easier to check for disabled m-sections
     const pc1 = new RTCPeerConnection({ bundlePolicy: "max-compat" });
@@ -1915,7 +2029,7 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream));
     const track = stream.getAudioTracks()[0];
     pc1.addTrack(track, stream);
@@ -1951,7 +2065,7 @@
       ]);
 
     // Check that m-section is reused on both ends
-    const stream2 = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream2 = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream2));
     const track2 = stream2.getAudioTracks()[0];
 
@@ -2022,7 +2136,7 @@
     // new one for the new track)
     const stoppedMid1 = pc1.getTransceivers()[1].mid;
     pc1.getTransceivers()[1].stop();
-    const stream3 = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream3 = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream3));
     const track3 = stream3.getAudioTracks()[0];
     pc1.addTrack(track3, stream3);
@@ -2092,7 +2206,7 @@
       ]);
 
     // Add _another_ track; this should reuse the disabled m-section
-    const stream4 = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream4 = await getNoiseStream({audio: true});
     t.add_cleanup(() => stopTracks(stream4));
     const track4 = stream4.getAudioTracks()[0];
     pc2.addTrack(track4, stream4);
@@ -2124,6 +2238,68 @@
                   "No rejected m-line, because it was reused");
   };
 
+  const checkStopAfterCreateOfferWithReusedMsection = async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+
+    const stream = await getNoiseStream({audio: true, video: true});
+    t.add_cleanup(() => stopTracks(stream));
+    const audio = stream.getAudioTracks()[0];
+    const video = stream.getVideoTracks()[0];
+
+    pc1.addTrack(audio, stream);
+    pc1.addTrack(video, stream);
+
+    await offerAnswer(pc1, pc2);
+    pc1.getTransceivers()[1].stop();
+    await offerAnswer(pc1, pc2);
+
+    // Second (video) m-section has been negotiated disabled.
+    const transceiver = pc1.addTransceiver("video");
+    const offer = await pc1.createOffer();
+    transceiver.stop();
+    await pc1.setLocalDescription(offer);
+    await pc2.setRemoteDescription(offer);
+
+    const answer = await pc2.createAnswer();
+    await pc2.setLocalDescription(answer);
+    await pc1.setRemoteDescription(answer);
+  };
+
+  const checkAddIceCandidateToStoppedTransceiver = async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+
+    const stream = await getNoiseStream({audio: true, video: true});
+    t.add_cleanup(() => stopTracks(stream));
+    const audio = stream.getAudioTracks()[0];
+    const video = stream.getVideoTracks()[0];
+
+    pc1.addTrack(audio, stream);
+    pc1.addTrack(video, stream);
+
+    pc2.addTrack(audio, stream);
+    pc2.addTrack(video, stream);
+
+    await pc1.setLocalDescription(await pc1.createOffer());
+    pc1.getTransceivers()[1].stop();
+    pc1.setLocalDescription({type: "rollback"});
+
+    const offer = await pc2.createOffer();
+    await pc2.setLocalDescription(offer);
+    await pc1.setRemoteDescription(offer);
+
+    await pc1.addIceCandidate(
+      {
+        candidate: "candidate:0 1 UDP 2122252543 192.168.1.112 64261 typ host",
+        sdpMid: pc2.getTransceivers()[1].mid
+      });
+  };
+
 const tests = [
   checkAddTransceiverNoTrack,
   checkAddTransceiverWithTrack,
@@ -2134,6 +2310,7 @@ const tests = [
   checkAddTransceiverWithSetRemoteOfferNoSend,
   checkAddTransceiverBadKind,
   checkNoMidOffer,
+  checkNoMidAnswer,
   checkSetDirection,
   checkCurrentDirection,
   checkSendrecvWithNoSendTrack,
@@ -2158,7 +2335,10 @@ const tests = [
   checkLocalRollback,
   checkRollbackAndSetRemoteOfferWithDifferentType,
   checkRemoteRollback,
-  checkMsectionReuse
+  checkMsectionReuse,
+  checkStopAfterCreateOfferWithReusedMsection,
+  checkAddIceCandidateToStoppedTransceiver,
+  checkBundleTagRejected
 ].forEach(test => promise_test(test, test.name));
 
 </script>

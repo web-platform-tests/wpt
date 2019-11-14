@@ -75,7 +75,7 @@ class TestUsingServer(unittest.TestCase):
             req.add_data(body)
 
         if auth is not None:
-            req.add_header("Authorization", b"Basic %s" % base64.b64encode((b"%s:%s" % auth)))
+            req.add_header("Authorization", b"Basic %s" % base64.b64encode(b"%s:%s" % auth))
 
         return urlopen(req)
 
@@ -106,7 +106,6 @@ class TestUsingH2Server:
         self.conn.connect()
 
     def teardown_method(self, test_method):
-        self.conn.close()
         self.server.stop()
 
 

@@ -3,11 +3,13 @@
 
   /**
    * Builder for creating a sequence of actions
+   * The default tick duration is set to 16ms, which is one frame time based on
+   * 60Hz display.
    */
-  function Actions() {
+  function Actions(defaultTickDuration=16) {
     this.sourceTypes = new Map([["key", KeySource],
                                 ["pointer", PointerSource],
-                                ["general", GeneralSource]]);
+                                ["none", GeneralSource]]);
     this.sources = new Map();
     this.sourceOrder = [];
     for (let sourceType of this.sourceTypes.keys()) {
@@ -17,11 +19,20 @@
     for (let sourceType of this.sourceTypes.keys()) {
       this.currentSources.set(sourceType, null);
     }
-    this.createSource("general");
+    this.createSource("none");
     this.tickIdx = 0;
+    this.defaultTickDuration = defaultTickDuration;
   }
 
   Actions.prototype = {
+    ButtonType: {
+      LEFT: 0,
+      MIDDLE: 1,
+      RIGHT: 2,
+      BACK: 3,
+      FORWARD: 4,
+    },
+
     /**
      * Generate the action sequence suitable for passing to
      * test_driver.action_sequence
@@ -32,7 +43,7 @@
       let actions = [];
       for (let [sourceType, sourceName] of this.sourceOrder) {
         let source = this.sources.get(sourceType).get(sourceName);
-        let serialized = source.serialize(this.tickIdx + 1);
+        let serialized = source.serialize(this.tickIdx + 1, this.defaultTickDuration);
         if (serialized) {
           serialized.id = sourceName;
           actions.push(serialized);
@@ -62,7 +73,7 @@
      * If no name is passed, a new source with the given type is
      * created.
      *
-     * @param {String} type - Source type ('general', 'key', or 'pointer')
+     * @param {String} type - Source type ('none', 'key', or 'pointer')
      * @param {String?} name - Name of the source
      * @returns {Source} Source object for that source.
      */
@@ -98,7 +109,7 @@
      * @returns {Actions}
      */
     addKeyboard: function(name, set=true) {
-      this.createSource("key", name, true);
+      this.createSource("key", name);
       if (set) {
         this.setKeyboard(name);
       }
@@ -125,7 +136,7 @@
      * @returns {Actions}
      */
     addPointer: function(name, pointerType="mouse", set=true) {
-      this.createSource("pointer", name, true, {pointerType: pointerType});
+      this.createSource("pointer", name, {pointerType: pointerType});
       if (set) {
         this.setPointer(name);
       }
@@ -184,10 +195,16 @@
      * Add a pause to the current tick
      *
      * @param {Number?} duration - Minimum length of the tick in ms.
+     * @param {String} sourceType - source type
+     * @param {String?} sourceName - Named key or pointer source to use or null for the default
+     *                               key or pointer source
      * @returns {Actions}
      */
-    pause: function(duration) {
-      this.getSource("general").addPause(this, duration);
+    pause: function(duration=0, sourceType="none", {sourceName=null}={}) {
+      if (sourceType=="none")
+        this.getSource("none").addPause(this, duration);
+      else
+        this.getSource(sourceType, sourceName).addPause(this, duration);
       return this;
     },
 
@@ -225,7 +242,7 @@
      *                               pointer source
      * @returns {Actions}
      */
-    pointerDown: function({button=0, sourceName=null}={}) {
+    pointerDown: function({button=this.ButtonType.LEFT, sourceName=null}={}) {
       let source = this.getSource("pointer", sourceName);
       source.pointerDown(this, button);
       return this;
@@ -239,7 +256,7 @@
      *                               source
      * @returns {Actions}
      */
-    pointerUp: function({button=0, sourceName=null}={}) {
+    pointerUp: function({button=this.ButtonType.LEFT, sourceName=null}={}) {
       let source = this.getSource("pointer", sourceName);
       source.pointerUp(this, button);
       return this;
@@ -270,17 +287,14 @@
   }
 
   GeneralSource.prototype = {
-    serialize: function(tickCount) {
-      if (!this.actions.size) {
-        return undefined;
-      }
+    serialize: function(tickCount, defaultTickDuration) {
       let actions = [];
       let data = {"type": "none", "actions": actions};
       for (let i=0; i<tickCount; i++) {
         if (this.actions.has(i)) {
           actions.push(this.actions.get(i));
         } else {
-          actions.push({"type": "pause"});
+          actions.push({"type": "pause", duration: defaultTickDuration});
         }
       }
       return data;
@@ -330,6 +344,14 @@
         tick = actions.addTick().tickIdx;
       }
       this.actions.set(tick, {type: "keyUp", value: key});
+    },
+
+    addPause: function(actions, duration) {
+      let tick = actions.tickIdx;
+      if (this.actions.has(tick)) {
+        tick = actions.addTick().tickIdx;
+      }
+      this.actions.set(tick, {type: "pause", duration: duration});
     },
   };
 
@@ -384,6 +406,14 @@
       if (duration) {
         this.actions.get(tick).duration = duration;
       }
+    },
+
+    addPause: function(actions, duration) {
+      let tick = actions.tickIdx;
+      if (this.actions.has(tick)) {
+        tick = actions.addTick().tickIdx;
+      }
+      this.actions.set(tick, {type: "pause", duration: duration});
     },
   };
 

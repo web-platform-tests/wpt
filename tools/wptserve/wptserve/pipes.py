@@ -342,18 +342,27 @@ def sub(request, response, escape_type="html"):
       A dictionary of parts of the request URL. Valid keys are
       'server, 'scheme', 'host', 'hostname', 'port', 'path' and 'query'.
       'server' is scheme://host:port, 'host' is hostname:port, and query
-       includes the leading '?', but other delimiters are omitted.
+      includes the leading '?', but other delimiters are omitted.
     headers
       A dictionary of HTTP headers in the request.
+    header_or_default(header, default)
+      The value of an HTTP header, or a default value if it is absent.
+      For example::
+
+        {{header_or_default(X-Test, test-header-absent)}}
+
     GET
       A dictionary of query parameters supplied with the request.
     uuid()
       A pesudo-random UUID suitable for usage with stash
     file_hash(algorithm, filepath)
       The cryptographic hash of a file. Supported algorithms: md5, sha1,
-      sha224, sha256, sha384, and sha512. For example:
+      sha224, sha256, sha384, and sha512. For example::
 
         {{file_hash(md5, dom/interfaces.html)}}
+
+    fs_path(filepath)
+      The absolute path to a file inside the wpt document root
 
     So for example in a setup running on localhost with a www
     subdomain and a http server on ports 80 and 81::
@@ -362,16 +371,15 @@ def sub(request, response, escape_type="html"):
       {{domains[www]}} => www.localhost
       {{ports[http][1]}} => 81
 
+    It is also possible to assign a value to a variable name, which must start
+    with the $ character, using the ":" syntax e.g.::
 
-    It is also possible to assign a value to a variable name, which must start with
-    the $ character, using the ":" syntax e.g.
-
-    {{$id:uuid()}}
+      {{$id:uuid()}}
 
     Later substitutions in the same file may then refer to the variable
-    by name e.g.
+    by name e.g.::
 
-    {{$id}}
+      {{$id}}
     """
     content = resolve_content(response)
 
@@ -413,6 +421,25 @@ class SubFunctions(object):
             raise Exception('Cannot open file for hash computation: "%s"' % absolute_path)
 
         return base64.b64encode(hash_obj.digest()).strip()
+
+    @staticmethod
+    def fs_path(request, path):
+        if not path.startswith("/"):
+            subdir = request.request_path[len(request.url_base):]
+            if "/" in subdir:
+                subdir = subdir.rsplit("/", 1)[0]
+            root_rel_path = subdir + "/" + path
+        else:
+            root_rel_path = path[1:]
+        root_rel_path = root_rel_path.replace("/", os.path.sep)
+        absolute_path = os.path.abspath(os.path.join(request.doc_root, root_rel_path))
+        if ".." in os.path.relpath(absolute_path, request.doc_root):
+            raise ValueError("Path outside wpt root")
+        return absolute_path
+
+    @staticmethod
+    def header_or_default(request, name, default):
+        return request.headers.get(name, default)
 
 def template(request, content, escape_type="html"):
     #TODO: There basically isn't any error handling here

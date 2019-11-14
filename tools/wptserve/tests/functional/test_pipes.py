@@ -2,7 +2,6 @@ import os
 import unittest
 import time
 import json
-import sys
 
 from six.moves import urllib
 
@@ -61,8 +60,6 @@ class TestSub(TestUsingServer):
         expected = b"localhost localhost %i" % self.server.port
         self.assertEqual(resp.read().rstrip(), expected)
 
-    @pytest.mark.xfail(sys.platform == "win32",
-                       reason="https://github.com/web-platform-tests/wpt/issues/12949")
     def test_sub_file_hash(self):
         resp = self.request("/sub_file_hash.sub.txt")
         expected = b"""
@@ -83,8 +80,6 @@ sha512: r8eLGRTc7ZznZkFjeVLyo6/FyQdra9qmlYCwKKxm3kfQAswRS9+3HsYk3thLUhcFmmWhK4dX
         expected = b"PASS"
         self.assertEqual(resp.read().rstrip(), expected)
 
-    @pytest.mark.xfail(sys.platform == "win32",
-                       reason="https://github.com/web-platform-tests/wpt/issues/12949")
     def test_sub_location(self):
         resp = self.request("/sub_location.sub.txt?query_string")
         expected = """
@@ -107,6 +102,10 @@ server: http://localhost:{0}""".format(self.server.port).encode("ascii")
         resp = self.request("/sub_url_base.sub.txt")
         self.assertEqual(resp.read().rstrip(), b"Before / After")
 
+    def test_sub_url_base_via_filename_with_query(self):
+        resp = self.request("/sub_url_base.sub.txt?pipe=slice(5,10)")
+        self.assertEqual(resp.read().rstrip(), b"e / A")
+
     def test_sub_uuid(self):
         resp = self.request("/sub_uuid.sub.txt")
         self.assertRegexpMatches(resp.read().rstrip(), b"Before [a-f0-9-]+ After")
@@ -115,6 +114,20 @@ server: http://localhost:{0}""".format(self.server.port).encode("ascii")
         resp = self.request("/sub_var.sub.txt")
         port = self.server.port
         expected = b"localhost %d A %d B localhost C" % (port, port)
+        self.assertEqual(resp.read().rstrip(), expected)
+
+    def test_sub_fs_path(self):
+        resp = self.request("/subdir/sub_path.sub.txt")
+        root = os.path.abspath(doc_root)
+        expected = """%(root)s%(sep)ssubdir%(sep)ssub_path.sub.txt
+%(root)s%(sep)ssub_path.sub.txt
+%(root)s%(sep)ssub_path.sub.txt
+""" % {"root": root, "sep": os.path.sep}
+        self.assertEqual(resp.read(), expected.encode("utf8"))
+
+    def test_sub_header_or_default(self):
+        resp = self.request("/sub_header_or_default.sub.txt", headers={"X-Present": "OK"})
+        expected = b"OK\nabsent-default"
         self.assertEqual(resp.read().rstrip(), expected)
 
 class TestTrickle(TestUsingServer):

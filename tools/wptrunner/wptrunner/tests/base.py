@@ -7,7 +7,7 @@ import pytest
 
 sys.path.insert(0, join(dirname(__file__), "..", ".."))
 
-from wptrunner import browsers
+from .. import browsers
 
 
 _products = browsers.product_list
@@ -19,7 +19,6 @@ if "CURRENT_TOX_ENV" in os.environ:
     tox_env_extra_browsers = {
         "chrome": {"chrome_android"},
         "edge": {"edge_webdriver"},
-        "safari": {"safari_webdriver"},
         "servo": {"servodriver"},
     }
 

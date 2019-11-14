@@ -22,13 +22,12 @@ enum EffectiveConnectionType {
   "slow-2g"
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
-  interface NavigatorNetworkInformation {
-    readonly attribute NetworkInformation connection;
-  };
+interface mixin NavigatorNetworkInformation {
+  [SameObject] readonly attribute NetworkInformation connection;
+};
 
-  Navigator implements NavigatorNetworkInformation;
-  WorkerNavigator implements NavigatorNetworkInformation;
+Navigator includes NavigatorNetworkInformation;
+WorkerNavigator includes NavigatorNetworkInformation;
 
 [Exposed=(Window,Worker)]
 interface NetworkInformation : EventTarget {

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>HTML Test: focus - key events</title>
+<meta name="timeout" content="long">
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#focus">
 <meta assert="flag" content="interact">
@@ -21,7 +22,7 @@ var t1 = async_test("The keydown event must be targeted at the input element"),
 setup(function () {
   testEle = document.getElementById("test");
   testEle.focus();
-}, {timeout: 10000});
+});
 
 document.onkeydown = t1.step_func_done(function(evt){
   assert_equals(evt.target, testEle, "The keydown events must be targeted at the input element.");

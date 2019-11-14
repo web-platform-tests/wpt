@@ -6,29 +6,23 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 
 browser_specific_args = {
     "firefox": ["--install-browser"]
 }
-
-def tests_affected(commit_range):
-    output = subprocess.check_output([
-        "python", "./wpt", "tests-affected", "--null", commit_range
-    ], stderr=open(os.devnull, "w"))
-
-    tests = output.split("\0")
-
-    # Account for trailing null byte
-    if tests and not tests[-1]:
-        tests.pop()
-
-    return tests
 
 
 def find_wptreport(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('--log-wptreport', action='store')
     return parser.parse_known_args(args)[0].log_wptreport
+
+
+def find_wptscreenshot(args):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--log-wptscreenshot', action='store')
+    return parser.parse_known_args(args)[0].log_wptscreenshot
 
 
 def gzip_file(filename, delete_original=True):
@@ -40,7 +34,7 @@ def gzip_file(filename, delete_original=True):
 
 
 def main(product, commit_range, wpt_args):
-    """Invoke the `wpt run` command according to the needs of the TaskCluster
+    """Invoke the `wpt run` command according to the needs of the Taskcluster
     continuous integration service."""
 
     logger = logging.getLogger("tc-run")
@@ -51,43 +45,41 @@ def main(product, commit_range, wpt_args):
     )
     logger.addHandler(handler)
 
-    child = subprocess.Popen(['python', './wpt', 'manifest-download'])
-    child.wait()
+    subprocess.call(['python', './wpt', 'manifest-download'])
 
     if commit_range:
         logger.info(
-            "Identifying tests affected in range '%s'..." % commit_range
+            "Running tests affected in range '%s'..." % commit_range
         )
-        tests = tests_affected(commit_range)
-        logger.info("Identified %s affected tests" % len(tests))
-
-        if not tests:
-            logger.info("Quitting because no tests were affected.")
-            return
+        wpt_args += ['--affected', commit_range]
     else:
-        tests = []
         logger.info("Running all tests")
 
     wpt_args += [
-        "--log-tbpl-level=info",
-        "--log-tbpl=-",
+        "--log-mach-level=info",
+        "--log-mach=-",
         "-y",
         "--no-pause",
         "--no-restart-on-unexpected",
         "--install-fonts",
-        "--no-headless"
+        "--no-headless",
+        "--verify-log-full"
     ]
     wpt_args += browser_specific_args.get(product, [])
 
-    command = ["python", "./wpt", "run"] + wpt_args + [product] + tests
+    command = ["python", "./wpt", "run"] + wpt_args + [product]
 
     logger.info("Executing command: %s" % " ".join(command))
-
-    subprocess.check_call(command)
+    retcode = subprocess.call(command, env=dict(os.environ, TERM="dumb"))
+    if retcode != 0:
+        sys.exit(retcode)
 
     wptreport = find_wptreport(wpt_args)
     if wptreport:
         gzip_file(wptreport)
+    wptscreenshot = find_wptscreenshot(wpt_args)
+    if wptscreenshot:
+        gzip_file(wptscreenshot)
 
 
 if __name__ == "__main__":

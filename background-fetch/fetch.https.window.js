@@ -1,5 +1,7 @@
+// META: script=/common/get-host-info.sub.js
 // META: script=/service-workers/service-worker/resources/test-helpers.sub.js
 // META: script=resources/utils.js
+
 'use strict';
 
 // Covers basic functionality provided by BackgroundFetchManager.fetch().
@@ -196,27 +198,6 @@ backgroundFetchTest(async (test, backgroundFetch) => {
 }, 'Fetches can have requests with duplicate URLs');
 
 backgroundFetchTest(async (test, backgroundFetch) => {
-  const request =
-    new Request('resources/feature-name.txt',
-                {method: 'POST', body: 'TestBody'});
-
-  const registration = await backgroundFetch.fetch('my-id', request);
-
-  const {type, eventRegistration, results} = await getMessageFromServiceWorker();
-  assert_equals('backgroundfetchsuccess', type);
-  assert_equals(results.length, 1);
-
-  assert_equals(eventRegistration.id, registration.id);
-  assert_equals(eventRegistration.failureReason, '');
-
-  assert_true(results[0].url.includes('resources/feature-name.txt'));
-  assert_equals(results[0].status, 200);
-  assert_equals(results[0].text, 'Background Fetch');
-
-
-}, 'Fetches can have requests with a body');
-
-backgroundFetchTest(async (test, backgroundFetch) => {
   const registrationId = uniqueId();
   const registration =
     await backgroundFetch.fetch(registrationId, 'resources/feature-name.txt');
@@ -284,39 +265,16 @@ backgroundFetchTest(async (test, backgroundFetch) => {
 }, 'Fetches with mixed content should fail.');
 
 backgroundFetchTest(async (test, backgroundFetch) => {
-  const registrationId = 'matchexistingrequest';
-  const registration =
-    await backgroundFetch.fetch(registrationId, 'resources/feature-name.txt');
-
-  assert_equals(registration.id, registrationId);
+  const filePath = '/background-fetch/resources/feature-name.txt';
+  const registration = await backgroundFetch.fetch(
+    uniqueId(),
+    `https://${get_host_info().REMOTE_HOST}${filePath}`);
 
   const {type, eventRegistration, results} = await getMessageFromServiceWorker();
-  assert_equals('backgroundfetchsuccess', type);
+  assert_equals(type, 'backgroundfetchfail');
   assert_equals(results.length, 1);
 
+  assert_equals(results[0], null);
   assert_equals(eventRegistration.id, registration.id);
-  assert_equals(eventRegistration.result, 'success');
-  assert_equals(eventRegistration.failureReason, '');
-
-  assert_true(results[0].url.includes('resources/feature-name.txt'));
-  assert_equals(results[0].status, 200);
-  assert_equals(results[0].text, 'Background Fetch');
-
-}, 'Matching to a single request should work');
-
-backgroundFetchTest(async (test, backgroundFetch) => {
-  const registrationId = 'matchmissingrequest';
-  const registration =
-    await backgroundFetch.fetch(registrationId, 'resources/feature-name.txt');
-
-  assert_equals(registration.id, registrationId);
-
-  const {type, eventRegistration, results} = await getMessageFromServiceWorker();
-  assert_equals('backgroundfetchsuccess', type);
-  assert_equals(results.length, 0);
-
-  assert_equals(eventRegistration.id, registration.id);
-  assert_equals(eventRegistration.result, 'success');
-  assert_equals(eventRegistration.failureReason, '');
-
-}, 'Matching to a non-existing request should work');
+  assert_equals(eventRegistration.downloaded, 0);
+}, 'Responses failing CORS checks are not leaked');

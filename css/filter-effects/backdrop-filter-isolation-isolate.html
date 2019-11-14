@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>backdrop-filter: Should not filter outside parent stacking context.</title>
+<title>backdrop-filter: isolation isolate should not cause a backdrop root.</title>
 <link rel="author" title="Mason Freed" href="mailto:masonfreed@chromium.org">
 <link rel="help" href="https://drafts.fxtf.org/filter-effects-2/#BackdropFilterProperty">
-<link rel="match"  href="backdrop-filter-isolation-ref.html">
+<link rel="match"  href="backdrop-filter-non-isolation-ref.html">
 
-<div class="outside">
-  <div class="stacking-context">
-    <div class="filter">
+<div>
+  <p>Expected: Two green boxes overlapped by a yellow box. The overlapped region<br>
+  of BOTH green boxes should be inverted (pink).</p>
+</div>
+<div class="box outside">
+  <div class="box stacking-context">
+    <div class="box filter">
     </div>
   </div>
 </div>
 
-
 <style>
-div {
+.box {
   position: absolute;
   width: 100px;
   height: 100px;
   background: green;
 }
 .outside {
-  top: 10px;
+  top: 110px;
   left: 10px;
 }
 .stacking-context {
@@ -34,9 +37,8 @@ div {
   height: 160px;
   top: 30px;
   left: -90px;
-  opacity: 0.3;
   backdrop-filter: invert(1);
-  background: yellow;
+  background: #ff08;
 }
 </style>
 

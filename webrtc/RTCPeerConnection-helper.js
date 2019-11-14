@@ -181,17 +181,185 @@ function exchangeIceCandidates(pc1, pc2) {
   doExchange(pc2, pc1);
 }
 
+// Helper class to exchange ice candidates between
+// two local peer connections
+class CandidateChannel {
+  constructor(source, dest, name) {
+    source.addEventListener('icecandidate', event => {
+      const { candidate } = event;
+      if (candidate && this.activated
+          && this.destination.signalingState !== 'closed') {
+        this.destination.addIceCandidate(candidate);
+      } else if (candidate) {
+        this.queue.push(candidate);
+      }
+    });
+    dest.addEventListener('signalingstatechange', event => {
+      if (this.destination.signalingState == 'stable' && !this.activated) {
+        this.activate();
+      }
+    });
+    this.name = name;
+    this.destination = dest;
+    this.activated = false;
+    this.queue = [];
+  }
+  activate() {
+    this.activated = true;
+    for (const candidate of this.queue) {
+      this.destination.addIceCandidate(candidate);
+    }
+  }
+}
+
+// Alternate function to exchange ICE candidates between two
+// PeerConnections. Unlike exchangeIceCandidates, it will function
+// correctly if candidates are added before descriptions are set.
+function coupleIceCandidates(pc1, pc2) {
+  const ch1 = new CandidateChannel(pc1, pc2, 'forward');
+  const ch2 = new CandidateChannel(pc2, pc1, 'back');
+  return [ch1, ch2];
+}
+
 // Helper function for doing one round of offer/answer exchange
-// betweeen two local peer connections
-function doSignalingHandshake(localPc, remotePc) {
-  return localPc.createOffer()
-  .then(offer => Promise.all([
-    localPc.setLocalDescription(offer),
-    remotePc.setRemoteDescription(offer)]))
-  .then(() => remotePc.createAnswer())
-  .then(answer => Promise.all([
-    remotePc.setLocalDescription(answer),
-    localPc.setRemoteDescription(answer)]))
+// between two local peer connections.
+// Calls setRemoteDescription(offer/answer) before
+// setLocalDescription(offer/answer) to ensure the remote description
+// is set and candidates can be added before the local peer connection
+// starts generating candidates and ICE checks.
+async function doSignalingHandshake(localPc, remotePc, options={}) {
+  let offer = await localPc.createOffer();
+  // Modify offer if callback has been provided
+  if (options.modifyOffer) {
+    offer = await options.modifyOffer(offer);
+  }
+
+  // Apply offer.
+  await remotePc.setRemoteDescription(offer);
+  await localPc.setLocalDescription(offer);
+
+  let answer = await remotePc.createAnswer();
+  // Modify answer if callback has been provided
+  if (options.modifyAnswer) {
+    answer = await options.modifyAnswer(answer);
+  }
+
+  // Apply answer.
+  await localPc.setRemoteDescription(answer);
+  await remotePc.setLocalDescription(answer);
+}
+
+// Returns a promise that resolves when the |transport| gets a
+// 'statechange' event with the value |state|.
+// This should work for RTCSctpTransport, RTCDtlsTransport and RTCIceTransport.
+function waitForState(transport, state) {
+  return new Promise((resolve, reject) => {
+    if (transport.state == state) {
+      resolve();
+    }
+    const eventHandler = () => {
+      if (transport.state == state) {
+        transport.removeEventListener('statechange', eventHandler, false);
+        resolve();
+      }
+    };
+    transport.addEventListener('statechange', eventHandler, false);
+  });
+}
+
+
+// Returns a promise that resolves when |pc.iceConnectionState| is 'connected'
+// or 'completed'.
+function listenToIceConnected(pc) {
+  return new Promise((resolve) => {
+    function isConnected(pc) {
+      return pc.iceConnectionState == 'connected' ||
+            pc.iceConnectionState == 'completed';
+    }
+    if (isConnected(pc)) {
+      resolve();
+      return;
+    }
+    pc.addEventListener('iceconnectionstatechange', () => {
+      if (isConnected(pc))
+        resolve();
+    });
+  });
+}
+
+// Returns a promise that resolves when |pc.iceConnectionState| is in one of the
+// wanted states.
+function waitForIceStateChange(pc, wantedStates) {
+  return new Promise((resolve) => {
+    if (wantedStates.includes(pc.iceConnectionState)) {
+      resolve();
+      return;
+    }
+    pc.addEventListener('iceconnectionstatechange', () => {
+      if (wantedStates.includes(pc.iceConnectionState))
+        resolve();
+    });
+  });
+}
+
+// Returns a promise that resolves when |pc.connectionState| is 'connected'.
+function listenToConnected(pc) {
+  return new Promise((resolve) => {
+    if (pc.connectionState == 'connected') {
+      resolve();
+      return;
+    }
+    pc.onconnectionstatechange = () => {
+      if (pc.connectionState == 'connected')
+        resolve();
+    };
+  });
+}
+
+// Returns a promise that resolves when |pc.connectionState| is in one of the
+// wanted states.
+function waitForConnectionStateChange(pc, wantedStates) {
+  return new Promise((resolve) => {
+    if (wantedStates.includes(pc.connectionState)) {
+      resolve();
+      return;
+    }
+    pc.addEventListener('connectionstatechange', () => {
+      if (wantedStates.includes(pc.connectionState))
+        resolve();
+    });
+  });
+}
+
+// Returns a promise that resolves when |pc.connectionState| is in one of the
+// wanted states.
+function waitForConnectionStateChange(pc, wantedStates) {
+  return new Promise((resolve) => {
+    if (wantedStates.includes(pc.connectionState)) {
+      resolve();
+      return;
+    }
+    pc.addEventListener('connectionstatechange', () => {
+      if (wantedStates.includes(pc.connectionState))
+        resolve();
+    });
+  });
+}
+
+// Resolves when RTP packets have been received.
+function listenForSSRCs(t, receiver) {
+  return new Promise((resolve) => {
+    function listen() {
+      const ssrcs = receiver.getSynchronizationSources();
+      assert_true(ssrcs != undefined);
+      if (ssrcs.length > 0) {
+        resolve(ssrcs);
+        return;
+      }
+      t.step_timeout(listen, 0);
+    };
+    listen();
+  });
 }
 
 // Helper function to create a pair of connected data channel.
@@ -201,62 +369,109 @@ function doSignalingHandshake(localPc, remotePc) {
 // end points to open.
 function createDataChannelPair(
   pc1=new RTCPeerConnection(),
-  pc2=new RTCPeerConnection())
+  pc2=new RTCPeerConnection(),
+  options={})
 {
-  const channel1 = pc1.createDataChannel('');
+  options = Object.assign({}, {
+    channelLabel: '',
+    channelOptions: undefined,
+    doSignaling: true
+  }, options);
 
-  exchangeIceCandidates(pc1, pc2);
+  let channel1Options;
+  let channel2Options = null;
+  if (options.channelOptions instanceof Array) {
+    [channel1Options, channel2Options] = options.channelOptions;
+  } else {
+    channel1Options = options.channelOptions;
+  }
+
+  const channel1 = pc1.createDataChannel(options.channelLabel, channel1Options);
 
   return new Promise((resolve, reject) => {
     let channel2;
     let opened1 = false;
     let opened2 = false;
 
+    function cleanup() {
+      channel1.removeEventListener('open', onOpen1);
+      channel2.removeEventListener('open', onOpen2);
+      channel1.removeEventListener('error', onError);
+      channel2.removeEventListener('error', onError);
+    }
+
     function onBothOpened() {
+      cleanup();
       resolve([channel1, channel2]);
+    }
+
+    function onError(...args) {
+      cleanup();
+      reject(...args);
     }
 
     function onOpen1() {
       opened1 = true;
-      if(opened2) onBothOpened();
+      if (opened2) {
+        onBothOpened();
+      }
     }
 
     function onOpen2() {
       opened2 = true;
-      if(opened1) onBothOpened();
+      if (opened1) {
+        onBothOpened();
+      }
+    }
+
+    function onDataChannelPairFound() {
+      channel2.addEventListener('error', onError, { once: true });
+      const { readyState } = channel2;
+
+      if (readyState === 'open') {
+        onOpen2();
+      } else if (readyState === 'connecting') {
+        channel2.addEventListener('open', onOpen2, { once: true });
+      } else {
+        onError(new Error(`Unexpected ready state ${readyState}`));
+      }
     }
 
     function onDataChannel(event) {
       channel2 = event.channel;
-      channel2.addEventListener('error', reject);
-      const { readyState } = channel2;
-
-      if(readyState === 'open') {
-        onOpen2();
-      } else if(readyState === 'connecting') {
-        channel2.addEventListener('open', onOpen2);
-      } else {
-        reject(new Error(`Unexpected ready state ${readyState}`));
-      }
+      onDataChannelPairFound();
     }
 
-    channel1.addEventListener('open', onOpen1);
-    channel1.addEventListener('error', reject);
+    channel1.addEventListener('open', onOpen1, { once: true });
+    channel1.addEventListener('error', onError, { once: true });
 
-    pc2.addEventListener('datachannel', onDataChannel);
+    if (channel2Options !== null) {
+      channel2 = pc2.createDataChannel(options.channelLabel, channel2Options);
+      onDataChannelPairFound();
+    } else {
+      pc2.addEventListener('datachannel', onDataChannel);
+    }
 
-    doSignalingHandshake(pc1, pc2);
+    if (options.doSignaling) {
+      exchangeIceCandidates(pc1, pc2);
+      doSignalingHandshake(pc1, pc2, options);
+    }
   });
 }
 
 // Wait for RTP and RTCP stats to arrive
 async function waitForRtpAndRtcpStats(pc) {
+  // If remote stats are never reported, return after 5 seconds.
+  const startTime = performance.now();
   while (true) {
     const report = await pc.getStats();
     const stats = [...report.values()].filter(({type}) => type.endsWith("bound-rtp"));
     // Each RTP and RTCP stat has a reference
     // to the matching stat in the other direction
     if (stats.length && stats.every(({localId, remoteId}) => localId || remoteId)) {
+      break;
+    }
+    if (performance.now() > startTime + 5000) {
       break;
     }
   }
@@ -290,23 +505,25 @@ function blobToArrayBuffer(blob) {
   });
 }
 
-// Assert that two ArrayBuffer objects have the same byte values
-function assert_equals_array_buffer(buffer1, buffer2) {
-  assert_true(buffer1 instanceof ArrayBuffer,
-    'Expect buffer to be instance of ArrayBuffer');
+// Assert that two TypedArray or ArrayBuffer objects have the same byte values
+function assert_equals_typed_array(array1, array2) {
+  const [view1, view2] = [array1, array2].map((array) => {
+    if (array instanceof ArrayBuffer) {
+      return new DataView(array);
+    } else {
+      assert_true(array.buffer instanceof ArrayBuffer,
+        'Expect buffer to be instance of ArrayBuffer');
+      return new DataView(array.buffer, array.byteOffset, array.byteLength);
+    }
+  });
 
-  assert_true(buffer2 instanceof ArrayBuffer,
-    'Expect buffer to be instance of ArrayBuffer');
+  assert_equals(view1.byteLength, view2.byteLength,
+    'Expect both arrays to be of the same byte length');
 
-  assert_equals(buffer1.byteLength, buffer2.byteLength,
-    'Expect both array buffers to be of the same byte length');
+  const byteLength = view1.byteLength;
 
-  const byteLength = buffer1.byteLength;
-  const byteArray1 = new Uint8Array(buffer1);
-  const byteArray2 = new Uint8Array(buffer2);
-
-  for(let i=0; i<byteLength; i++) {
-    assert_equals(byteArray1[i], byteArray2[i],
+  for (let i = 0; i < byteLength; ++i) {
+    assert_equals(view1.getUint8(i), view2.getUint8(i),
       `Expect byte at buffer position ${i} to be equal`);
   }
 }
@@ -473,18 +690,45 @@ async function exchangeOfferAndListenToOntrack(t, caller, callee) {
   return ontrackPromise;
 }
 
-// The resolver has a |promise| that can be resolved or rejected using |resolve|
+// The resolver extends a |promise| that can be resolved or rejected using |resolve|
 // or |reject|.
-class Resolver {
-  constructor() {
-    let promiseResolve;
-    let promiseReject;
-    this.promise = new Promise(function(resolve, reject) {
-      promiseResolve = resolve;
-      promiseReject = reject;
+class Resolver extends Promise {
+  constructor(executor) {
+    let resolve, reject;
+    super((resolve_, reject_) => {
+      resolve = resolve_;
+      reject = reject_;
+      if (executor) {
+        return executor(resolve_, reject_);
+      }
     });
-    this.resolve = promiseResolve;
-    this.reject = promiseReject;
+
+    this._done = false;
+    this._resolve = resolve;
+    this._reject = reject;
+  }
+
+  /**
+   * Return whether the promise is done (resolved or rejected).
+   */
+  get done() {
+    return this._done;
+  }
+
+  /**
+   * Resolve the promise.
+   */
+  resolve(...args) {
+    this._done = true;
+    return this._resolve(...args);
+  }
+
+  /**
+   * Reject the promise.
+   */
+  reject(...args) {
+    this._done = true;
+    return this._reject(...args);
   }
 }
 
@@ -507,7 +751,7 @@ function createPeerConnectionWithCleanup(t) {
 async function createTrackAndStreamWithCleanup(t, kind = 'audio') {
   let constraints = {};
   constraints[kind] = true;
-  const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  const stream = await getNoiseStream(constraints);
   const [track] = stream.getTracks();
   t.add_cleanup(() => track.stop());
   return [track, stream];
@@ -520,4 +764,24 @@ function findTransceiverForSender(pc, sender) {
       return transceivers[i];
   }
   return null;
+}
+
+// Contains a set of values and will yell at you if you try to add a value twice.
+class UniqueSet extends Set {
+  constructor(items) {
+    super();
+    if (items !== undefined) {
+      for (const item of items) {
+        this.add(item);
+      }
+    }
+  }
+
+  add(value, message) {
+    if (message === undefined) {
+      message = `Value '${value}' needs to be unique but it is already in the set`;
+    }
+    assert_true(!this.has(value), message);
+    super.add(value);
+  }
 }

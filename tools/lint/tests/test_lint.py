@@ -400,19 +400,36 @@ def test_check_css_globally_unique_ignored_dir(caplog):
 
 def test_all_filesystem_paths():
     with mock.patch(
-            'os.walk',
-            return_value=[('.',
-                           ['dir_a', 'dir_b'],
-                           ['file_a', 'file_b']),
-                          (os.path.join('.', 'dir_a'),
+            'tools.lint.lint.walk',
+            return_value=[('',
+                           [('dir_a', None), ('dir_b', None)],
+                           [('file_a', None), ('file_b', None)]),
+                          ('dir_a',
                            [],
-                           ['file_c', 'file_d'])]
+                           [('file_c', None), ('file_d', None)])]
     ):
         got = list(lint_mod.all_filesystem_paths('.'))
         assert got == ['file_a',
                        'file_b',
                        os.path.join('dir_a', 'file_c'),
                        os.path.join('dir_a', 'file_d')]
+
+
+def test_filesystem_paths_subdir():
+    with mock.patch(
+            'tools.lint.lint.walk',
+            return_value=[('',
+                           [('dir_a', None), ('dir_b', None)],
+                           [('file_a', None), ('file_b', None)]),
+                          ('dir_a',
+                           [],
+                           [('file_c', None), ('file_d', None)])]
+    ):
+        got = list(lint_mod.all_filesystem_paths('.', 'dir'))
+        assert got == [os.path.join('dir', 'file_a'),
+                       os.path.join('dir', 'file_b'),
+                       os.path.join('dir', 'dir_a', 'file_c'),
+                       os.path.join('dir', 'dir_a', 'file_d')]
 
 
 def test_main_with_args():

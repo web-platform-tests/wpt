@@ -873,7 +873,7 @@ def main(**kwargs):
     return lint(repo_root, paths, output_format, ignore_glob)
 
 
-def lint(repo_root, paths, output_format, ignore_glob=None):
+def lint(repo_root, paths, output_format, ignore_glob=""):
     # type: (str, List[str], str, str) -> int
     error_count = defaultdict(int)  # type: Dict[Text, int]
     last = None

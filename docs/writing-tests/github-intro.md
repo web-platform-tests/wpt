@@ -83,6 +83,10 @@ which is commonly referred to as the "upstream" repository. Synchronizing your
 forked repository with the upstream repository will keep your forked local copy
 up-to-date with the latest commits.
 
+In the vast majority of cases the **only** upstream branch that you should need
+to care about is `master`. If you see other branches in the repository, you can
+generally safely ignore them.
+
 1.  On the command line, navigate to to the directory where your forked copy of
     the repository is located.
 

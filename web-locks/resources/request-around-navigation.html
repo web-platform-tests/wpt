@@ -1,18 +1,32 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"></head>
-<body>
+<meta charset="utf-8">
 <script>
 'use strict';
 (async () => {
   const [uuid, phase] = location.search.split('_');
-  const neverSettled = new Promise(() => {});
-  navigator.locks.request(uuid, () => neverSettled);
-  navigator.locks.request(uuid, () => neverSettled);
-  const state = await navigator.locks.query();
+
+  let firstRequestGranted = false;
+  navigator.locks.request(uuid, () => {
+    firstRequestGranted = true;
+    return new Promise(() => {});
+  });
+
+  // This request should never get granted.
+  let secondRequestGranted = false;
+  navigator.locks.request(uuid, () => {
+    secondRequestGranted = true;
+  });
+
+  // Give the lock manager a chance to grant locks by requesting a second
+  // unrelated lock. Wait for this request to be granted, ensuring that the
+  // prior requests have been received and responded to.
+  await new Promise((resolve) => {
+    navigator.locks.request(uuid + '-' + phase, resolve);
+  });
+
   parent.postMessage({
-    held: state.held.filter(lock => lock.name === uuid).length,
-    pending: state.pending.filter(lock => lock.name === uuid).length,
+    result: { firstRequestGranted, secondRequestGranted }
   }, '*');
 
   if (phase === 'first') {
@@ -20,5 +34,3 @@
   }
 })().catch((err) => parent.postMessage(err, '*'));
 </script>
-</body>
-</html>

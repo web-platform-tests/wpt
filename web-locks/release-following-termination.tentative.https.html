@@ -1,13 +1,10 @@
 <!DOCTYPE html>
-<html>
-<head>
 <meta charset=utf-8>
 <title>Web Locks API: Release of locks following termination</title>
 <link rel=help href="https://wicg.github.io/web-locks/">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
-</head>
 <body>
 <script>
 'use strict';
@@ -16,17 +13,21 @@ addEventListener('message', (event) => {
   queue.push(event.data);
 });
 
-function getMessage() {
-  return new Promise((resolve) => {
+async function getMessage(name) {
+  const value = await new Promise(function check(resolve) {
     if (queue.length) {
       resolve(queue.shift());
       return;
     }
 
-    addEventListener('message', (event) => {
-      resolve(queue.shift());
-    }, { once: true });
+    addEventListener('message', () => check(resolve), { once: true });
   });
+
+  if (!('result' in value)) {
+    throw value;
+  }
+
+  return value.result;
 }
 
 promise_test(async () => {
@@ -35,17 +36,16 @@ promise_test(async () => {
   document.body.appendChild(iframe);
 
   {
-    const { held, pending } = await getMessage();
-    assert_equals(held, 1, 'held initially');
-    assert_equals(pending, 1, 'pending initially');
+    const { firstRequestGranted, secondRequestGranted } = await getMessage('1');
+    assert_true(firstRequestGranted, 'before navigation, first request');
+    assert_false(secondRequestGranted, 'before navigation, second request');
   }
 
   {
-    const { held, pending } = await getMessage();
-    assert_equals(held, 1, 'held following naviation');
-    assert_equals(pending, 1, 'pending following naviation');
+    const { firstRequestGranted, secondRequestGranted } = await getMessage('2');
+    assert_true(firstRequestGranted, 'after navigation, first request');
+    assert_false(secondRequestGranted, 'after navigation, second request');
   }
 });
 </script>
 </body>
-</html>

@@ -36,15 +36,6 @@ The most important sources of information and activity are:
 **If you'd like clarification about anything**, don't hesitate to ask in the
 chat room or on the mailing list.
 
-Setting Up the Repo
-===================
-
-Clone or otherwise get https://github.com/web-platform-tests/wpt.
-
-Note: because of the frequent creation and deletion of branches in this
-repo, it is recommended to "prune" stale branches when fetching updates,
-i.e. use `git pull --prune` (or `git fetch -p && git merge`).
-
 Running the Tests
 =================
 

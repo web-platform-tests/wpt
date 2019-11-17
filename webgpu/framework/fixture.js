@@ -4,14 +4,17 @@
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-// A Fixture is a class used to instantiate each test case at run time.
+export class SkipTestCase extends Error {} // A Fixture is a class used to instantiate each test case at run time.
 // A new instance of the Fixture is created for every single test case
 // (i.e. every time the test function is run).
+
 export class Fixture {
   constructor(rec, params) {
     _defineProperty(this, "params", void 0);
 
     _defineProperty(this, "rec", void 0);
+
+    _defineProperty(this, "eventualExpectations", []);
 
     _defineProperty(this, "numOutstandingAsyncExpectations", 0);
 
@@ -24,63 +27,71 @@ export class Fixture {
   async init() {}
 
   debug(msg) {
-    this.rec.debug(msg);
+    this.rec.debug(new Error(msg));
   }
 
-  log(msg) {
-    this.rec.log(msg);
+  skip(msg) {
+    throw new SkipTestCase(msg);
   }
 
   async finalize() {
     if (this.numOutstandingAsyncExpectations !== 0) {
       throw new Error('there were outstanding asynchronous expectations (e.g. shouldReject) at the end of the test');
     }
+
+    await Promise.all(this.eventualExpectations);
   }
 
   warn(msg) {
-    this.rec.warn(msg);
+    this.rec.warn(new Error(msg));
   }
 
   fail(msg) {
-    this.rec.fail(msg);
+    this.rec.fail(new Error(msg));
   }
 
-  ok(msg) {
-    const m = msg ? ': ' + msg : '';
-    this.log('OK' + m);
-  }
-
-  async asyncExpectation(fn) {
+  async immediateAsyncExpectation(fn) {
     this.numOutstandingAsyncExpectations++;
     const ret = await fn();
     this.numOutstandingAsyncExpectations--;
     return ret;
   }
 
-  expectErrorValue(expectedName, ex, m) {
+  eventualAsyncExpectation(fn) {
+    const promise = fn(new Error());
+    this.eventualExpectations.push(promise);
+    return promise;
+  }
+
+  expectErrorValue(expectedName, ex, niceStack) {
     if (!(ex instanceof Error)) {
-      this.fail('THREW NON-ERROR');
+      niceStack.message = 'THREW non-error value, of type ' + typeof ex + niceStack.message;
+      this.rec.fail(niceStack);
       return;
     }
 
     const actualName = ex.name;
 
     if (actualName !== expectedName) {
-      this.fail(`THREW ${actualName} INSTEAD OF ${expectedName}${m}`);
+      niceStack.message = `THREW ${actualName}, instead of ${expectedName}` + niceStack.message;
+      this.rec.fail(niceStack);
     } else {
-      this.ok(`threw ${actualName}${m}`);
+      niceStack.message = 'OK: threw ' + actualName + niceStack.message;
+      this.rec.debug(niceStack);
     }
   }
 
-  async shouldReject(expectedName, p, msg) {
-    this.asyncExpectation(async () => {
+  shouldReject(expectedName, p, msg) {
+    this.eventualAsyncExpectation(async niceStack => {
       const m = msg ? ': ' + msg : '';
 
       try {
         await p;
-        this.fail('DID NOT THROW' + m);
+        niceStack.message = 'DID NOT THROW' + m;
+        this.rec.fail(niceStack);
       } catch (ex) {
-        this.expectErrorValue(expectedName, ex, m);
+        niceStack.message = m;
+        this.expectErrorValue(expectedName, ex, niceStack);
       }
     });
   }
@@ -90,17 +101,18 @@ export class Fixture {
 
     try {
       fn();
-      this.fail('DID NOT THROW' + m);
+      this.rec.fail(new Error('DID NOT THROW' + m));
     } catch (ex) {
-      this.expectErrorValue(expectedName, ex, m);
+      this.expectErrorValue(expectedName, ex, new Error(m));
     }
   }
 
   expect(cond, msg) {
     if (cond) {
-      this.ok(msg);
+      const m = msg ? ': ' + msg : '';
+      this.rec.debug(new Error('expect OK' + m));
     } else {
-      this.rec.fail(msg);
+      this.rec.fail(new Error(msg));
     }
 
     return cond;

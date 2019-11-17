@@ -64,8 +64,8 @@ const test_json_data = {level: 1, score: 100, label: 'Game'};
 const test_url_data = 'https://w3c.github.io/web-nfc/';
 const test_message_origin = 'https://127.0.0.1:8443';
 const test_buffer_data = new ArrayBuffer(test_text_byte_array.length);
-const test_buffer_view =
-    new Uint8Array(test_buffer_data).set(test_text_byte_array);
+const test_buffer_view = new Uint8Array(test_buffer_data);
+test_buffer_view.set(test_text_byte_array);
 const fake_tag_serial_number = 'c0:45:00:02';
 
 const NFCHWStatus = {};
@@ -84,47 +84,61 @@ function createMessage(records) {
   }
 }
 
-function createRecord(recordType, mediaType, data) {
+function createRecord(recordType, data, mediaType, encoding, lang) {
   let record = {};
   if (recordType !== undefined)
     record.recordType = recordType;
   if (mediaType !== undefined)
     record.mediaType = mediaType;
+  if (encoding !== undefined)
+    record.encoding = encoding;
+  if (lang !== undefined)
+    record.lang = lang;
   if (data !== undefined)
     record.data = data;
   return record;
 }
 
-function createTextRecord(text) {
-  return createRecord('text', 'text/plain', text);
+function createTextRecord(data, encoding, lang) {
+  return createRecord('text', data, undefined, encoding, lang);
 }
 
-function createJsonRecord(json) {
-  return createRecord('json', 'application/json', json);
+function createMimeRecordFromJson(json) {
+  return createRecord(
+      'mime', new TextEncoder('utf-8').encode(JSON.stringify(json)),
+      'application/json');
 }
 
-function createOpaqueRecord(buffer) {
-  return createRecord('opaque', 'application/octet-stream', buffer);
+function createMimeRecord(buffer) {
+  return createRecord('mime', buffer, 'application/octet-stream');
 }
 
-function createUrlRecord(url) {
-  return createRecord('url', 'text/plain', url);
+function createUnknownRecord(buffer) {
+  return createRecord('unknown', buffer);
 }
 
-function createNDEFPushOptions(target, timeout, ignoreRead) {
-  return {target, timeout, ignoreRead};
+function createUrlRecord(url, isAbsUrl) {
+  if (isAbsUrl) {
+    return createRecord('absolute-url', url);
+  }
+  return createRecord('url', url);
+}
+
+function createNDEFPushOptions(target, ignoreRead) {
+  return {target, ignoreRead};
 }
 
 // Compares NDEFMessageSource that was provided to the API
 // (e.g. NDEFWriter.push), and NDEFMessage that was received by the
 // mock NFC service.
 function assertNDEFMessagesEqual(providedMessage, receivedMessage) {
-  // If simple data type is passed, e.g. String or ArrayBuffer, convert it
-  // to NDEFMessage before comparing.
+  // If simple data type is passed, e.g. String or ArrayBuffer or
+  // ArrayBufferView, convert it to NDEFMessage before comparing.
   // https://w3c.github.io/web-nfc/#dom-ndefmessagesource
   let provided = providedMessage;
-  if (providedMessage instanceof ArrayBuffer)
-    provided = createMessage([createOpaqueRecord(providedMessage)]);
+  if (providedMessage instanceof ArrayBuffer ||
+      ArrayBuffer.isView(providedMessage))
+    provided = createMessage([createMimeRecord(providedMessage)]);
   else if (typeof providedMessage === 'string')
     provided = createMessage([createTextRecord(providedMessage)]);
 
@@ -152,23 +166,8 @@ function assertWebNDEFMessagesEqual(message, expectedMessage) {
     assert_equals(record.mediaType, expectedRecord.mediaType);
 
     // Compares record data
-    assert_equals(record.text(), expectedRecord.text());
-    assert_array_equals(new Uint8Array(record.arrayBuffer()),
-          new Uint8Array(expectedRecord.arrayBuffer()));
-    let json;
-    try {
-      json = record.json();
-    } catch (e) {
-    }
-    let expectedJson;
-    try {
-      expectedJson = expectedRecord.json();
-    } catch (e) {
-    }
-    if (json === undefined || json === null)
-      assert_equals(json, expectedJson);
-    else
-      assert_object_equals(json, expectedJson);
+    assert_array_equals(new Uint8Array(record.data),
+          new Uint8Array(expectedRecord.data));
   }
 }
 

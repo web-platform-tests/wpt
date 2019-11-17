@@ -2,6 +2,14 @@
 
 export const listing = [
   {
+    "path": "",
+    "description": "WebGPU conformance test suite."
+  },
+  {
+    "path": "buffers/",
+    "description": "GPUBuffer tests."
+  },
+  {
     "path": "buffers/create_mapped",
     "description": ""
   },
@@ -47,7 +55,7 @@ export const listing = [
   },
   {
     "path": "examples",
-    "description": "Examples of writing CTS tests with various features."
+    "description": "Examples of writing CTS tests with various features.\n\nStart here when looking for examples of basic framework usage."
   },
   {
     "path": "fences",
@@ -122,7 +130,7 @@ export const listing = [
     "description": "setViewport validation tests."
   },
   {
-    "path": "validation/vertex_input",
-    "description": "vertexInput validation tests."
+    "path": "validation/vertex_state",
+    "description": "vertexState validation tests."
   }
 ];

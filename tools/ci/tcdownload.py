@@ -13,7 +13,7 @@ logger = logging.getLogger("tc-download")
 # The root URL of the Taskcluster deployment from which to download wpt reports
 # (after https://bugzilla.mozilla.org/show_bug.cgi?id=1574668 lands, this will
 # be https://community-tc.services.mozilla.com)
-TASKCLUSTER_ROOT_URL = 'https://taskcluster.net'
+TASKCLUSTER_ROOT_URL = 'https://community-tc.services.mozilla.com'
 
 def get_parser():
     parser = argparse.ArgumentParser()
@@ -50,6 +50,12 @@ def get(url, dest, name):
     return path
 
 
+# Task names may include the forward slash character ("/"), so any occurrences
+# must be removed if the name is to be used as a file name.
+def sanitize_task_name(task):
+    return task["task"]["metadata"]["name"].replace('/', '_'),
+
+
 def run(*args, **kwargs):
     if not os.path.exists(kwargs["out_dir"]):
         os.mkdir(kwargs["out_dir"])
@@ -66,7 +72,7 @@ def run(*args, **kwargs):
     taskgroups = set()
 
     for status in statuses:
-        if not status.context.startswith("Taskcluster "):
+        if not status.context.startswith("Community-TC "):
             continue
         if status.state == "pending":
             continue
@@ -78,20 +84,15 @@ def run(*args, **kwargs):
         return 1
 
     for taskgroup in taskgroups:
-        if TASKCLUSTER_ROOT_URL == 'https://taskcluster.net':
-            # NOTE: this condition can be removed after November 9, 2019
-            taskgroup_url = "https://queue.taskcluster.net/v1/task-group/%s/list"
-            artifacts_list_url = "https://queue.taskcluster.net/v1/task/%s/artifacts"
-        else:
-            taskgroup_url = TASKCLUSTER_ROOT_URL + "/api/queue/v1/task-group/%s/list"
-            artifacts_list_url = TASKCLUSTER_ROOT_URL + "/api/queue/v1/task/%s/artifacts"
+        taskgroup_url = TASKCLUSTER_ROOT_URL + "/api/queue/v1/task-group/%s/list"
+        artifacts_list_url = TASKCLUSTER_ROOT_URL + "/api/queue/v1/task/%s/artifacts"
         tasks = get_json(taskgroup_url % taskgroup, "tasks")
         for task in tasks:
             task_id = task["status"]["taskId"]
             url = artifacts_list_url % (task_id,)
             for artifact in get_json(url, "artifacts"):
                 if artifact["name"].endswith(kwargs["artifact_name"]):
-                    filename = "%s-%s-%s" % (task["task"]["metadata"]["name"],
+                    filename = "%s-%s-%s" % (sanitize_task_name(task),
                                              task_id,
                                              kwargs["artifact_name"])
                     path = get("%s/%s" % (url, artifact["name"]), kwargs["out_dir"], filename)

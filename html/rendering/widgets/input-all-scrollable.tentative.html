@@ -8,7 +8,29 @@ input { width: 2em; }
 </style>
 <body>
 <script>
-// Test all input types and expect a 'scroll' event for all, for now.
+// Test all input types and expect a 'scroll' event for
+// - "text entry widgets"
+// - image-alt with non-visible overflow
+// This matches what whatwg/html#4840 requires
+// (if we take the "overflow doesn't apply" +
+// no statement to allow or require a scroll container
+// to mean that scrolling shouldn't be supported).
+// TODO(zcorpan) https://github.com/whatwg/html/issues/5099
+function setExpectation(el, t) {
+  if ((el.type === 'text' ||
+       el.type === 'search' ||
+       el.type === 'password' ||
+       el.type === 'tel' ||
+       el.type === 'email' ||
+       el.type === 'url') ||
+      (el.type === 'image' && el.style.overflow !== 'visible')) {
+    el.onscroll = t.step_func_done();
+    t.step_timeout(t.unreached_func("No event"), 4000);
+  } else {
+    el.onscroll = t.unreached_func("Unexpected event");
+    t.step_timeout(t.step_func_done(), 4000);
+  }
+}
 for (var inputType of ['text', 'search', 'password', 'tel', 'email', 'url', 'date', 'month', 'week', 'time', 'datetime-local', 'number', 'range', 'color', 'checkbox', 'radio', 'file', 'button', 'submit', 'reset', 'image']) {
   for (var overflowValue of ['visible', 'hidden', 'scroll']) {
     for (var appearanceValue of ['auto', 'none']) {
@@ -25,9 +47,8 @@ for (var inputType of ['text', 'search', 'password', 'tel', 'email', 'url', 'dat
         el.style.WebkitAppearance = appearanceValue;
         el.style.appearance = appearanceValue;
         document.body.appendChild(el);
-        el.onscroll = t.step_func_done();
+        setExpectation(el, t);
         el.scrollTo(1000, 0);
-        t.step_timeout(t.unreached_func("No event"), 4000);
       }, `scrolling <input type=${inputType}> with overflow:${overflowValue}; appearance: ${appearanceValue}`);
     }
   }

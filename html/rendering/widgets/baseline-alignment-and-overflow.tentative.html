@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<title>HTML: widgets' baseline alignment and interaction with 'overflow'</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+.test {
+  border-collapse: collapse;
+  font-size: 10px;
+}
+.test td {
+  border: none;
+  padding: 0;
+  margin:0;
+  outline: 1px solid silver;
+}
+
+.test td > input,
+.ref td > i,
+.ref td > b,
+.ref td > img,
+.ref td > button {
+  font: inherit;
+  height: 60px;
+  width: 60px;
+  padding: 10px;
+  box-sizing: border-box;
+  margin: 10px 0;
+}
+.ref button img {
+  height: 100%;
+  width: 100%;
+  display: block;
+}
+.ref i {
+  display: inline-grid;
+  border: 2px solid;
+  align-items: center;
+}
+.ref b {
+  display: inline-block;
+}
+.ref td > img.no-margin-bottom {
+  margin-bottom: 0;
+}
+[style*="appearance: none;"] {
+  -webkit-appearance: none; /* TODO(zcorpan) remove this when unprefixed appearance is supported */
+}
+</style>
+<div id="log"></div>
+<h2>refs</h2>
+<table class="test ref">
+  <tr class="ref-text"><td><span>ref</span> <i>text</i>
+  <tr class="ref-checkbox"><td><span>ref checkbox</span> <img class="set-src no-margin-bottom">
+  <tr class="ref-color"><td><span>ref color</span> <button><img class=set-src></button>
+  <tr class="ref-file"><td><span>ref file</span> <b><button>file</button></b>
+  <tr class="ref-image-alt"><td><span>ref image</span> <b>alt</b></b>
+  <tr class="ref-image-src"><td><span>ref image</span> <img class=set-src>
+</table>
+<h2>tests</h2>
+<table class="test" id="test-table"></table>
+<script>
+  "use strict";
+
+  promise_test(async () => {
+    const testTable = document.querySelector('#test-table');
+
+    const imageURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D";
+    for (const img of document.querySelectorAll('img.set-src')) {
+      img.src = imageURL;
+    }
+
+    const inputTypes = [
+      'text',
+      'search',
+      'tel',
+      'url',
+      'email',
+      'password',
+      'date',
+      'month',
+      'week',
+      'time',
+      'datetime-local',
+      'number',
+      'range',
+      'color',
+      'checkbox',
+      'radio',
+      'file',
+      'submit',
+      'image',
+      'image-with-src',
+      'reset',
+      'button',
+    ];
+    for (let inputType of inputTypes) {
+      let src = "data:,broken";
+      if (inputType == "image-with-src") {
+        inputType = "image";
+        src = imageURL;
+      }
+      let inputAtts;
+      if (inputType === 'image') {
+        inputAtts = `src="${src}" alt="x"`;
+      } else {
+        inputAtts = `value="x"`;
+      }
+      for (var appearanceValue of ["auto", "none"]) {
+        for (var overflowValue of ['visible', 'hidden', 'scroll']) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td><span>${inputType}</span> <input type=${inputType} ${inputAtts} style="overflow: ${overflowValue}; appearance: ${appearanceValue};"></td>`;
+          testTable.append(tr);
+        }
+      }
+    }
+
+    // wait for images to load
+    await new Promise(resolve => window.onload = e => resolve());
+    for (const img of document.images) {
+      assert_precondition(img.complete); // either error state or loaded
+    }
+
+    // get layout info from refs
+    const refTextOffsetTop = document.querySelector('.ref-text span').offsetTop;
+    const refCheckboxOffsetTop = document.querySelector('.ref-checkbox span').offsetTop;
+    const refColorOffsetTop = document.querySelector('.ref-color span').offsetTop;
+    const refFileOffsetTop = document.querySelector('.ref-file span').offsetTop;
+    const refImageAltOffsetTop = document.querySelector('.ref-image-alt span').offsetTop;
+    const refImageSrcOffsetTop = document.querySelector('.ref-image-src span').offsetTop;
+
+    function expectedOffsetTop(input) {
+      // TODO(zcorpan) https://github.com/whatwg/html/issues/5065
+      // for now this is intended to match Firefox
+      const style = input.getAttribute('style');
+      const src = input.getAttribute('src');
+      let rv;
+      switch (input.type) {
+        case 'file':
+          rv = refFileOffsetTop; break;
+        case 'range':
+          rv = refImageSrcOffsetTop; break;
+        case 'color':
+          rv = refColorOffsetTop; break;
+        case 'checkbox':
+        case 'radio':
+          if (style.includes('appearance: none;')) {
+            rv = refImageSrcOffsetTop;
+          } else {
+            rv = refCheckboxOffsetTop;
+          }
+          break;
+        case 'file':
+          rv = refFileOffsetTop; break;
+        case 'image':
+          if (src === 'data:,broken' && style.includes('overflow: visible;')) {
+            rv = refImageAltOffsetTop;
+          } else {
+            rv = refImageSrcOffsetTop;
+          }
+          break;
+        default:
+          rv = refTextOffsetTop; break;
+      }
+      return rv;
+    }
+
+    function testName(markup) {
+      return markup.replace(imageURL, 'data:(png)');
+    }
+
+    for (const row of testTable.children) {
+      const input = row.firstChild.lastElementChild;
+      const allowedDelta = 3;
+      promise_test(async () => {
+        assert_precondition(input.type === input.getAttribute('type'), 'input type should be supported')
+        const offsetTopActual = row.firstChild.firstChild.offsetTop;
+        assert_approx_equals(offsetTopActual, expectedOffsetTop(input), allowedDelta, '<span>.offsetTop');
+      }, testName(input.outerHTML));
+    }
+  }, "setup"); // TODO(zcorpan) change to promise_setup()
+</script>

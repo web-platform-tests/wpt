@@ -3,19 +3,19 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#the-link-element">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<link id=link rel=stylesheet
-      onload="t.unreached_func('Sheet should fail to load')">
+<link id=style_link rel=stylesheet>
 <script>
-  const t = async_test("Check if the <link>'s error event fires for each style " +
-                     "sheet it fails to load");
+  async_test(t => {
+    const link = document.querySelector('#style_link');
+    link.onload = t.unreached_func('Sheet should fail to load');
+    link.onerror = t.step_func(() => {
+      link.onerror = t.step_func_done(() => {});
+      link.href = 'nonexistent.css?second';
+    });
 
-  link.onerror = t.step_func(() => {
-    link.onerror = t.step_func_done(() => {});
-    link.href = 'nonexistent.css?second';
-  });
+    link.href = 'nonexistent.css?first';
+  }, "Check if the <link>'s error event fires for each stylesheet it fails to load");
 
-  link.href = 'nonexistent.css?first';
-</script>
-
+  </script>
 </head>
 </html>

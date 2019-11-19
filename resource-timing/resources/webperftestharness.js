@@ -154,13 +154,13 @@ function test_not_equals(value, notequals, msg, properties)
 function test_tao_pass(entry) {
     test_greater_than(entry.redirectStart, 0, 'redirectStart > 0 in cross-origin redirect with Timing-Allow-Origin.');
     test_greater_than(entry.redirectEnd, 0, 'redirectEnd > 0 in cross-origin redirect with Timing-Allow-Origin.');
-    test_greater_than(entry.fetchStart, 0, 'fetchStart > 0 in cross-origin redirect.');
+    test_greater_than(entry.fetchStart, 0, 'fetchStart > 0 in cross-origin redirect with Timing-Allow-Origin.');
     test_greater_than(entry.fetchStart, entry.startTime, 'startTime < fetchStart in cross-origin redirect with Timing-Allow-Origin.');
 }
 
 function test_tao_fail(entry) {
     test_equals(entry.redirectStart, 0, 'redirectStart == 0 in cross-origin redirect with failing Timing-Allow-Origin.');
     test_equals(entry.redirectEnd, 0, 'redirectEnd == 0 in cross-origin redirect with failing Timing-Allow-Origin.');
-    test_greater_than(entry.fetchStart, 0, 'fetchStart > 0 in cross-origin redirect.');
+    test_greater_than(entry.fetchStart, 0, 'fetchStart > 0 in cross-origin redirect with failing Timing-Allow-Origin.');
     test_equals(entry.fetchStart, entry.startTime, 'startTime == fetchStart in cross-origin redirect with failing Timing-Allow-Origin.');
 }

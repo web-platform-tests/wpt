@@ -38,6 +38,7 @@ AUTOMATION_GITHUB_USERS = (
     'autofoolip', 'chromium-wpt-export-bot', 'moz-wptsync-bot',
     'servo-wpt-sync'
 )
+DEPLOYMENT_PREFIX = 'wpt-preview-'
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -60,9 +61,9 @@ def gh_request(method_name, url, body=None, media_type=None):
 
     resp = method(url, **kwargs)
 
-    resp.raise_for_status()
-
     logger.info('Response status code: %s', resp.status_code)
+
+    resp.raise_for_status()
 
     return resp.json()
 
@@ -152,9 +153,9 @@ class Project(object):
         # given Pull Request. Identifying the Deployment by the Pull Request
         # number ensures that GitHub.com automatically responds to new
         # Deployments by designating prior Deployments as "inactive"
-        environment = 'gh-{}'.format(pull_request['number'])
+        environment = DEPLOYMENT_PREFIX + str(pull_request['number'])
 
-        logger.info('Creating Deployment for "%s"', revision)
+        logger.info('Creating Deployment "%s" for "%s"', environment, revision)
 
         return gh_request('POST', url, {
             'ref': revision,
@@ -238,7 +239,7 @@ class Remote(object):
 def is_open(pull_request):
     return not pull_request['closed_at']
 
-def has_label(pull_request):
+def has_mirroring_label(pull_request):
     for label in pull_request['labels']:
         if label['name'] == LABEL:
             return True
@@ -250,13 +251,14 @@ def should_be_mirrored(pull_request):
         is_open(pull_request) and
         pull_request['user']['login'] not in AUTOMATION_GITHUB_USERS and (
             pull_request['author_association'] in TRUSTED_AUTHOR_ASSOCIATIONS or
-            has_label(pull_request)
+            has_mirroring_label(pull_request)
         )
     )
 
 def is_deployed(host, deployment):
+    worktree_name = deployment['environment'][len(DEPLOYMENT_PREFIX):]
     response = requests.get(
-        '{}/.git/worktrees/{}/HEAD'.format(host, deployment['environment'])
+        '{}/.git/worktrees/{}/HEAD'.format(host, worktree_name)
     )
 
     if response.status_code != 200:
@@ -309,7 +311,7 @@ def synchronize(host, github_project, window):
         else:
             logger.info('Pull Request should not be mirrored')
 
-            if not has_label(pull_request) and revision_trusted is not None:
+            if not has_mirroring_label(pull_request) and revision_trusted is not None:
                 remote.delete_ref(refspec_trusted)
 
             if revision_open is not None and not is_open(pull_request):
@@ -329,8 +331,11 @@ def detect(host, github_project, target, timeout):
 
     deployment = data['deployment']
 
-    if not deployment['environment'].startswith('gh-'):
-        logger.info('Deployment environment is unrecognized. Exiting.')
+    if not deployment['environment'].startswith(DEPLOYMENT_PREFIX):
+        logger.info(
+            'Deployment environment "%s" is unrecognized. Exiting.',
+            deployment['environment']
+        )
         return
 
     message = 'Waiting up to {} seconds for Deployment {} to be available on {}'.format(

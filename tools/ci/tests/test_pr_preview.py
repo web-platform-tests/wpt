@@ -146,7 +146,7 @@ class Requests(object):
         '/repos/test-org/test-repo/deployments/24601/statuses',
         {'state':'success'}
     )
-    preview = ('GET', '/.git/worktrees/gh-45/HEAD', {})
+    preview = ('GET', '/.git/worktrees/45/HEAD', {})
 
 
 class Responses(object):
@@ -624,7 +624,7 @@ def test_detect_fail_search_throttled():
     event = {
         'deployment': {
             'id': 24601,
-            'environment': 'gh-45',
+            'environment': 'wpt-preview-45',
             'sha': '3232'
         }
     }
@@ -650,7 +650,7 @@ def test_detect_success():
     event = {
         'deployment': {
             'id': 24601,
-            'environment': 'gh-45',
+            'environment': 'wpt-preview-45',
             'sha': '3232'
         }
     }
@@ -676,7 +676,7 @@ def test_detect_timeout_missing():
     event = {
         'deployment': {
             'id': 24601,
-            'environment': 'gh-45',
+            'environment': 'wpt-preview-45',
             'sha': '3232'
         }
     }
@@ -704,7 +704,7 @@ def test_detect_timeout_wrong_revision():
     event = {
         'deployment': {
             'id': 24601,
-            'environment': 'gh-45',
+            'environment': 'wpt-preview-45',
             'sha': '3232'
         }
     }

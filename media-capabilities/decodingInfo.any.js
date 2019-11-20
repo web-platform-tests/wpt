@@ -1,3 +1,4 @@
+// META: timeout=long
 'use strict';
 
 // Minimal VideoConfiguration that will be allowed per spec. All optional

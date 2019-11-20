@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset="utf-8">
 <title>
 	CSS Grid Layout Test: Grid Item (First) Baseline Alignment Row Cyclic Sizing Exclusions
 </title>
@@ -15,7 +16,7 @@
 		border: solid silver;
 		margin: 1em 0.25em;
 		display: inline-grid;
-		grid-template-columns: repeat(4, max-content);
+		grid-template-columns: repeat(3, auto);
 		font: 20px/1 Ahem;
 		height: 5em;
 	}
@@ -43,7 +44,7 @@
 		align-self: start;
 	}
 	.content.ref > div {
-		algin-content: baseline;
+		align-content: start;
 	}
 </style>
 

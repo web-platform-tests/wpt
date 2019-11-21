@@ -439,7 +439,7 @@ provides two global functions for this purpose, `setup` and `promise_setup`.
 setup(func, properties)
 ```
 
-The one argument versions may omit either argument. `func` is a function to be
+The one argument version may omit either argument. `func` is a function to be
 run synchronously. `setup()` becomes a no-op once any tests have returned
 results. `properties` is an object which specifies global properties of the
 test harness (enumerated in the following section).
@@ -451,14 +451,13 @@ operation has completed. It has the following signature:
 promise_setup(func, properties)
 ```
 
-Here, the `func` argument is required. The harness will defer execution of this
-function until any subtests have completed. The function must return an object
-with a `then` method (e.g. an ECMAScript Promise instance); the harness will
-wait for the fulfillment of this value before executing any additional tests
-defined with the `promise_test` function. If the value is rejected, the harness
-will report an error and cancel the remaining tests. `properties` may
-optionally be provided as an object which specifies global properties of the
-test harness (enumerated in the following section).
+Here, the `func` argument is required. This argument must be a function which
+returns an object with a `then` method (e.g. an ECMAScript Promise instance);
+the harness will wait for the fulfillment of this value before executing any
+additional subtests defined with the `promise_test` function. If the value is
+rejected, the harness will report an error and cancel the remaining tests.
+`properties` may optionally be provided as an object which specifies global
+properties of the test harness (enumerated in the following section).
 
 ### Setup properties ##
 

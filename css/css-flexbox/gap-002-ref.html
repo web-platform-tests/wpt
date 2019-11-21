@@ -2,10 +2,6 @@
 <meta charset="utf-8">
 <title>CSS Flexbox Test: gap - positive number</title>
 <link rel="author" title="Adam Argyle" href="mailto:argyle@google.com">
-<link rel="help" title="The 'gap' property" href="https://www.w3.org/TR/css-align-3/#gaps">
-<link rel="match" href="../reference/TODO">
-<meta name="flags" content="">
-<meta name="assert" content="The 'gap' property enables putting space exclusively between items">
 <style>
   section {
     background-color: red;
@@ -17,6 +13,9 @@
   section > div{
     background-color: green;
     flex: 1 1 auto;
+  }
+  section > div:not(:first-child) {
+    margin-block-start: 20px;
   }
 </style>
 <body>

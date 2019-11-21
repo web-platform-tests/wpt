@@ -292,6 +292,15 @@ nfc_test(async (t, mockNFC) => {
   assertNDEFMessagesEqual(buffer_view, mockNFC.pushedMessage());
 }, "Test that NDEFWriter.push succeeds when message is ArrayBufferView.");
 
+nfc_test(async (t, mockNFC) => {
+  const buffer_view = new Uint8Array(test_buffer_data, 2, 5);
+  const writer = new NDEFWriter();
+  const message = createMessage([createRecord('w3.org:xyz', buffer_view)]);
+  await writer.push(message);
+  assertNDEFMessagesEqual(buffer_view, mockNFC.pushedMessage());
+}, "Test that NDEFWriter.push succeeds when message is ArrayBufferView and \
+recordType is external type.");
+
 nfc_test(async () => {
   const writer = new NDEFWriter();
   await writer.push(createMessage([createRecord('empty')]));

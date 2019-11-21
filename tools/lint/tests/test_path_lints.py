@@ -1,5 +1,8 @@
 from __future__ import unicode_literals
 
+import mock
+import os
+
 from ..lint import check_path
 from .base import check_errors
 import pytest
@@ -30,7 +33,7 @@ def test_forbidden_path_length():
                                                    (".any.worker.html", ".any.js"),
                                                    (".any.html", ".any.js")])
 def test_forbidden_path_endings(path_ending, generated):
-    path = "/test/test" + path_ending
+    path = "test/test" + path_ending
 
     message = ("path ends with %s which collides with generated tests from %s files" %
                (path_ending, generated))
@@ -38,6 +41,17 @@ def test_forbidden_path_endings(path_ending, generated):
     errors = check_path("/foo/", path)
     check_errors(errors)
     assert errors == [("WORKER COLLISION", message, path, None)]
+
+
+def test_file_type():
+    path = "test/test"
+
+    message = "/%s is an unsupported file type (symlink)" % (path,)
+
+    with mock.patch("os.path.islink", returnvalue=True):
+        errors = check_path("/foo/", path)
+
+    assert errors == [("FILE TYPE", message, path, None)]
 
 
 @pytest.mark.parametrize("path", ["ahem.ttf",
@@ -72,6 +86,8 @@ def test_ahem_copy_negative(path):
                                   "elsewhere/resources/webidl2/.gitignore",
                                   "elsewhere/css/tools/apiclient/.gitignore"])
 def test_gitignore_file(path):
+    path = os.path.join(*path.split("/"))
+
     expected_error = ("GITIGNORE",
                       ".gitignore found outside the root",
                       path,
@@ -93,6 +109,8 @@ def test_gitignore_file(path):
                                   "css/tools/apiclient/.gitignore",
                                   "css/tools/apiclient/elsewhere/.gitignore"])
 def test_gitignore_negative(path):
+    path = os.path.join(*path.split("/"))
+
     errors = check_path("/foo/", path)
 
     assert errors == []

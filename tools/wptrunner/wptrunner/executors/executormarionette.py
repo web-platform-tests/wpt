@@ -56,8 +56,8 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
 
-    def execute_script(self, script, async=False):
-        method = self.marionette.execute_async_script if async else self.marionette.execute_script
+    def execute_script(self, script, asynchronous=False):
+        method = self.marionette.execute_async_script if asynchronous else self.marionette.execute_script
         return method(script, new_sandbox=False, sandbox=None)
 
     def set_timeout(self, timeout):
@@ -213,7 +213,7 @@ class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
                 handles = self.marionette.window_handles
                 if len(handles) == 2:
                     test_window = next(iter(set(handles) - {parent}))
-                elif handles[0] == parent and len(handles) > 2:
+                elif len(handles) > 2 and handles[0] == parent:
                     # Hope the first one here is the test window
                     test_window = handles[1]
 
@@ -257,6 +257,25 @@ class MarionettePrefsProtocolPart(PrefsProtocolPart):
                 case prefInterface.PREF_INT:
                     prefInterface.setIntPref(pref, value);
                     break;
+                case prefInterface.PREF_INVALID:
+                    // Pref doesn't seem to be defined already; guess at the
+                    // right way to set it based on the type of value we have.
+                    switch (typeof value) {
+                        case "boolean":
+                            prefInterface.setBoolPref(pref, value);
+                            break;
+                        case "string":
+                            prefInterface.setCharPref(pref, value);
+                            break;
+                        case "number":
+                            prefInterface.setIntPref(pref, value);
+                            break;
+                        default:
+                            throw new Error("Unknown pref value type: " + (typeof value));
+                    }
+                    break;
+                default:
+                    throw new Error("Unknown pref type " + type);
             }
             """ % (name, value)
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
@@ -307,7 +326,7 @@ class MarionetteStorageProtocolPart(StorageProtocolPart):
                                 .newURI(url);
             let ssm = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
                                 .getService(Ci.nsIScriptSecurityManager);
-            let principal = ssm.createCodebasePrincipal(uri, {});
+            let principal = ssm.createContentPrincipal(uri, {});
             let qms = Components.classes["@mozilla.org/dom/quota-manager-service;1"]
                                 .getService(Components.interfaces.nsIQuotaManagerService);
             qms.clearStoragesForPrincipal(principal, "default", null, true);
@@ -366,6 +385,9 @@ class MarionetteSelectorProtocolPart(SelectorProtocolPart):
 
     def elements_by_selector(self, selector):
         return self.marionette.find_elements("css selector", selector)
+
+    def elements_by_selector_and_frame(self, element_selector, frame):
+        return self.marionette.find_elements("css selector", element_selector)
 
 
 class MarionetteClickProtocolPart(ClickProtocolPart):
@@ -716,7 +738,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         protocol.marionette.navigate(url)
         while True:
             result = protocol.base.execute_script(
-                self.script_resume % format_map, async=True)
+                self.script_resume % format_map, asynchronous=True)
             if result is None:
                 # This can happen if we get an content process crash
                 return None
@@ -819,7 +841,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
         return self.convert_result(test, result)
 
     def screenshot(self, test, viewport_size, dpi):
-        # https://github.com/w3c/wptrunner/issues/166
+        # https://github.com/web-platform-tests/wpt/issues/7135
         assert viewport_size is None
         assert dpi is None
 
@@ -836,7 +858,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
     def _screenshot(self, protocol, url, timeout):
         protocol.marionette.navigate(url)
 
-        protocol.base.execute_script(self.wait_script, async=True)
+        protocol.base.execute_script(self.wait_script, asynchronous=True)
 
         screenshot = protocol.marionette.screenshot(full=False)
         # strip off the data:img/png, part of the url

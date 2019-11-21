@@ -14,7 +14,7 @@ here = os.path.split(__file__)[0]
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))
 
 sys.path.insert(0, repo_root)
-from tools import localpaths  # noqa: flake8
+from tools import localpaths  # noqa: F401
 
 from wptserve.handlers import StringHandler
 
@@ -50,9 +50,9 @@ class TestEnvironmentError(Exception):
 
 
 class TestEnvironment(object):
+    """Context manager that owns the test environment i.e. the http and
+    websockets servers"""
     def __init__(self, test_paths, testharness_timeout_multipler, pause_after_test, debug_info, options, ssl_config, env_extras):
-        """Context manager that owns the test environment i.e. the http and
-        websockets servers"""
         self.test_paths = test_paths
         self.server = None
         self.config_ctx = None
@@ -207,8 +207,9 @@ class TestEnvironment(object):
     def ensure_started(self):
         # Pause for a while to ensure that the server has a chance to start
         total_sleep_secs = 30
-        each_sleep_secs = 0.01
-        for _ in xrange(int(total_sleep_secs / each_sleep_secs)):
+        each_sleep_secs = 0.5
+        end_time = time.time() + total_sleep_secs
+        while time.time() < end_time:
             failed = self.test_servers()
             if not failed:
                 return
@@ -223,6 +224,7 @@ class TestEnvironment(object):
             for port, server in servers:
                 if self.test_server_port:
                     s = socket.socket()
+                    s.settimeout(0.1)
                     try:
                         s.connect((host, port))
                     except socket.error:

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-"""Wrapper script for running jobs in TaskCluster
+"""Wrapper script for running jobs in Taskcluster
 
-This is intended for running test jobs in TaskCluster. The script
+This is intended for running test jobs in Taskcluster. The script
 takes a two positional arguments which are the name of the test job
 and the script to actually run.
 
@@ -41,6 +41,9 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
+from socket import error as SocketError  # NOQA: N812
+import errno
 try:
     from urllib2 import urlopen
 except ImportError:
@@ -109,7 +112,7 @@ def get_parser():
 def start_userspace_oom_killer():
     # Start userspace OOM killer: https://github.com/rfjakob/earlyoom
     # It will report memory usage every minute and prefer to kill browsers.
-    start(["sudo", "earlyoom", "-p", "-r", "60" "--prefer=(chrome|firefox)", "--avoid=python"])
+    start(["sudo", "earlyoom", "-p", "-r", "60", "--prefer=(chrome|firefox)", "--avoid=python"])
 
 
 def make_hosts_file():
@@ -138,6 +141,69 @@ def install_chrome(channel):
     run(["sudo", "apt-get", "-qqy", "update"])
     run(["sudo", "gdebi", "-qn", "/tmp/%s" % deb_archive])
 
+def install_webkitgtk_from_apt_repository(channel):
+    # Configure webkitgtk.org/debian repository for $channel and pin it with maximum priority
+    run(["sudo", "apt-key", "adv", "--fetch-keys", "https://webkitgtk.org/debian/apt.key"])
+    with open("/tmp/webkitgtk.list", "w") as f:
+        f.write("deb [arch=amd64] https://webkitgtk.org/apt bionic-wpt-webkit-updates %s\n" % channel)
+    run(["sudo", "mv", "/tmp/webkitgtk.list", "/etc/apt/sources.list.d/"])
+    with open("/tmp/99webkitgtk", "w") as f:
+        f.write("Package: *\nPin: origin webkitgtk.org\nPin-Priority: 1999\n")
+    run(["sudo", "mv", "/tmp/99webkitgtk", "/etc/apt/preferences.d/"])
+    # Install webkit2gtk from the webkitgtk.org/apt repository for $channel
+    run(["sudo", "apt-get", "-qqy", "update"])
+    run(["sudo", "apt-get", "-qqy", "upgrade"])
+    run(["sudo", "apt-get", "-qqy", "-t", "bionic-wpt-webkit-updates", "install", "webkit2gtk-driver"])
+
+
+# Download an URL in chunks and saves it to a file descriptor (truncating it)
+# It doesn't close the descriptor, but flushes it on success.
+# It retries the download in case of ECONNRESET up to max_retries.
+def download_url_to_descriptor(fd, url, max_retries=3):
+    download_succeed = False
+    if max_retries < 0:
+        max_retries = 0
+    for current_retry in range(max_retries+1):
+        try:
+            resp = urlopen(url)
+            # We may come here in a retry, ensure to truncate fd before start writing.
+            fd.seek(0)
+            fd.truncate(0)
+            while True:
+                chunk = resp.read(16*1024)
+                if not chunk:
+                    break  # Download finished
+                fd.write(chunk)
+            fd.flush()
+            download_succeed = True
+            break  # Sucess
+        except SocketError as e:
+            if e.errno != errno.ECONNRESET:
+                raise  # Unknown error
+            if current_retry < max_retries:
+                print("ERROR: Connection reset by peer. Retrying ...")
+                continue  # Retry
+    return download_succeed
+
+
+def install_webkitgtk_from_tarball_bundle(channel):
+    with tempfile.NamedTemporaryFile(suffix=".tar.xz") as temp_tarball:
+        download_url = "https://webkitgtk.org/built-products/nightly/webkitgtk-nightly-build-last.tar.xz"
+        if not download_url_to_descriptor(temp_tarball, download_url):
+            raise RuntimeError("Can't download %s. Aborting" % download_url)
+        run(["sudo", "tar", "xfa", temp_tarball.name, "-C", "/"])
+    # Install dependencies
+    run(["sudo", "apt-get", "-qqy", "update"])
+    run(["sudo", "/opt/webkitgtk/nightly/install-dependencies"])
+
+
+def install_webkitgtk(channel):
+    if channel in ("experimental", "dev", "nightly"):
+        install_webkitgtk_from_tarball_bundle(channel)
+    elif channel in ("beta", "stable"):
+        install_webkitgtk_from_apt_repository(channel)
+    else:
+        raise ValueError("Unrecognized release channel: %s" % channel)
 
 def start_xvfb():
     start(["sudo", "Xvfb", os.environ["DISPLAY"], "-screen", "0",
@@ -150,7 +216,7 @@ def start_xvfb():
 def get_extra_jobs(event):
     body = None
     jobs = set()
-    if "commits" in event:
+    if "commits" in event and event["commits"]:
         body = event["commits"][0]["message"]
     elif "pull_request" in event:
         body = event["pull_request"]["body"]
@@ -210,6 +276,9 @@ def setup_environment(args):
     if "chrome" in args.browser:
         assert args.channel is not None
         install_chrome(args.channel)
+    elif "webkitgtk_minibrowser" in args.browser:
+        assert args.channel is not None
+        install_webkitgtk(args.channel)
 
     if args.xvfb:
         start_xvfb()
@@ -245,14 +314,36 @@ def setup_repository():
         run(["git", "fetch", "--quiet", "origin", "%s:%s" % (branch, branch)])
 
 
+def fetch_event_data():
+    try:
+        task_id = os.environ["TASK_ID"]
+    except KeyError:
+        print("WARNING: Missing TASK_ID environment variable")
+        # For example under local testing
+        return None
+
+    root_url = os.environ['TASKCLUSTER_ROOT_URL']
+    if root_url == 'https://taskcluster.net':
+        queue_base = "https://queue.taskcluster.net/v1/task"
+    else:
+        queue_base = root_url + "/api/queue/v1/task"
+
+
+    resp = urlopen("%s/%s" % (queue_base, task_id))
+
+    task_data = json.load(resp)
+    event_data = task_data.get("extra", {}).get("github_event")
+    if event_data is not None:
+        return json.loads(event_data)
+
+
 def main():
     args = get_parser().parse_args()
-    try:
+
+    if "TASK_EVENT" in os.environ:
         event = json.loads(os.environ["TASK_EVENT"])
-    except KeyError:
-        print("WARNING: Missing TASK_EVENT environment variable")
-        # For example under local testing
-        event = {}
+    else:
+        event = fetch_event_data()
 
     if event:
         set_variables(event)

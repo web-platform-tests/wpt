@@ -2,6 +2,7 @@ import base64
 import hashlib
 from six.moves.http_client import HTTPConnection
 import io
+import json
 import os
 import threading
 import traceback
@@ -57,12 +58,14 @@ def strip_server(url):
 class TestharnessResultConverter(object):
     harness_codes = {0: "OK",
                      1: "ERROR",
-                     2: "TIMEOUT"}
+                     2: "TIMEOUT",
+                     3: "PRECONDITION_FAILED"}
 
     test_codes = {0: "PASS",
                   1: "FAIL",
                   2: "TIMEOUT",
-                  3: "NOTRUN"}
+                  3: "NOTRUN",
+                  4: "PRECONDITION_FAILED"}
 
     def __call__(self, test, result, extra=None):
         """Convert a JSON result into a (TestResult, [SubtestResult]) tuple"""
@@ -128,6 +131,17 @@ class ExecutorException(Exception):
 
 
 class TestExecutor(object):
+    """Abstract Base class for object that actually executes the tests in a
+    specific browser. Typically there will be a different TestExecutor
+    subclass for each test type and method of executing tests.
+
+    :param browser: ExecutorBrowser instance providing properties of the
+                    browser that will be tested.
+    :param server_config: Dictionary of wptserve server configuration of the
+                          form stored in TestEnvironment.config
+    :param timeout_multiplier: Multiplier relative to base timeout to use
+                               when setting test timeout.
+    """
     __metaclass__ = ABCMeta
 
     test_type = None
@@ -137,17 +151,6 @@ class TestExecutor(object):
 
     def __init__(self, browser, server_config, timeout_multiplier=1,
                  debug_info=None, **kwargs):
-        """Abstract Base class for object that actually executes the tests in a
-        specific browser. Typically there will be a different TestExecutor
-        subclass for each test type and method of executing tests.
-
-        :param browser: ExecutorBrowser instance providing properties of the
-                        browser that will be tested.
-        :param server_config: Dictionary of wptserve server configuration of the
-                              form stored in TestEnvironment.config
-        :param timeout_multiplier: Multiplier relative to base timeout to use
-                                   when setting test timeout.
-        """
         self.runner = None
         self.browser = browser
         self.server_config = server_config
@@ -303,6 +306,11 @@ class RefTestImplementation(object):
         assert relation in ("==", "!=")
         if not fuzzy or fuzzy == ((0,0), (0,0)):
             equal = hashes[0] == hashes[1]
+            # sometimes images can have different hashes, but pixels can be identical.
+            if not equal:
+                self.logger.info("Image hashes didn't match, checking pixel differences")
+                max_per_channel, pixels_different = self.get_differences(screenshots)
+                equal = pixels_different == 0 and max_per_channel == 0
         else:
             max_per_channel, pixels_different = self.get_differences(screenshots)
             allowed_per_channel, allowed_different = fuzzy
@@ -497,7 +505,7 @@ class WdspecRun(object):
 
 
 class ConnectionlessBaseProtocolPart(BaseProtocolPart):
-    def execute_script(self, script, async=False):
+    def execute_script(self, script, asynchronous=False):
         pass
 
     def set_timeout(self, timeout):
@@ -591,7 +599,14 @@ class CallbackHandler(object):
             "click": ClickAction(self.logger, self.protocol),
             "send_keys": SendKeysAction(self.logger, self.protocol),
             "action_sequence": ActionSequenceAction(self.logger, self.protocol),
-            "generate_test_report": GenerateTestReportAction(self.logger, self.protocol)
+            "generate_test_report": GenerateTestReportAction(self.logger, self.protocol),
+            "add_virtual_authenticator": AddVirtualAuthenticatorAction(self.logger, self.protocol),
+            "remove_virtual_authenticator": RemoveVirtualAuthenticatorAction(self.logger, self.protocol),
+            "add_credential": AddCredentialAction(self.logger, self.protocol),
+            "get_credentials": GetCredentialsAction(self.logger, self.protocol),
+            "remove_credential": RemoveCredentialAction(self.logger, self.protocol),
+            "remove_all_credentials": RemoveAllCredentialsAction(self.logger, self.protocol),
+            "set_user_verified": SetUserVerifiedAction(self.logger, self.protocol),
         }
 
     def __call__(self, result):
@@ -615,15 +630,16 @@ class CallbackHandler(object):
         except KeyError:
             raise ValueError("Unknown action %s" % action)
         try:
-            action_handler(payload)
+            result = action_handler(payload)
         except Exception:
             self.logger.warning("Action %s failed" % action)
             self.logger.warning(traceback.format_exc())
             self._send_message("complete", "error")
             raise
         else:
-            self.logger.debug("Action %s completed" % action)
-            self._send_message("complete", "success")
+            self.logger.debug("Action %s completed with result %s" % (action, result))
+            return_message = {"result": result}
+            self._send_message("complete", "success", json.dumps(return_message))
 
         return False, None
 
@@ -669,11 +685,11 @@ class ActionSequenceAction(object):
                 for action in actionSequence["actions"]:
                     if (action["type"] == "pointerMove" and
                         isinstance(action["origin"], dict)):
-                        action["origin"] = self.get_element(action["origin"]["selector"])
+                        action["origin"] = self.get_element(action["origin"]["selector"], action["frame"]["frame"])
         self.protocol.action_sequence.send_actions({"actions": actions})
 
-    def get_element(self, selector):
-        element = self.protocol.select.element_by_selector(selector)
+    def get_element(self, element_selector, frame):
+        element = self.protocol.select.element_by_selector(element_selector, frame)
         return element
 
 class GenerateTestReportAction(object):
@@ -685,3 +701,80 @@ class GenerateTestReportAction(object):
         message = payload["message"]
         self.logger.debug("Generating test report: %s" % message)
         self.protocol.generate_test_report.generate_test_report(message)
+
+class AddVirtualAuthenticatorAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("Adding virtual authenticator")
+        config = payload["config"]
+        authenticator_id = self.protocol.virtual_authenticator.add_virtual_authenticator(config)
+        self.logger.debug("Authenticator created with ID %s" % authenticator_id)
+        return authenticator_id
+
+class RemoveVirtualAuthenticatorAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        authenticator_id = payload["authenticator_id"]
+        self.logger.debug("Removing virtual authenticator %s" % authenticator_id)
+        return self.protocol.virtual_authenticator.remove_virtual_authenticator(authenticator_id)
+
+
+class AddCredentialAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        authenticator_id = payload["authenticator_id"]
+        credential = payload["credential"]
+        self.logger.debug("Adding credential to virtual authenticator %s " % authenticator_id)
+        return self.protocol.virtual_authenticator.add_credential(authenticator_id, credential)
+
+class GetCredentialsAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        authenticator_id = payload["authenticator_id"]
+        self.logger.debug("Getting credentials from virtual authenticator %s " % authenticator_id)
+        return self.protocol.virtual_authenticator.get_credentials(authenticator_id)
+
+class RemoveCredentialAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        authenticator_id = payload["authenticator_id"]
+        credential_id = payload["credential_id"]
+        self.logger.debug("Removing credential %s from authenticator %s" % (credential_id, authenticator_id))
+        return self.protocol.virtual_authenticator.remove_credential(authenticator_id, credential_id)
+
+class RemoveAllCredentialsAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        authenticator_id = payload["authenticator_id"]
+        self.logger.debug("Removing all credentials from authenticator %s" % authenticator_id)
+        return self.protocol.virtual_authenticator.remove_all_credentials(authenticator_id)
+
+class SetUserVerifiedAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        authenticator_id = payload["authenticator_id"]
+        uv = payload["uv"]
+        self.logger.debug(
+            "Setting user verified flag on authenticator %s to %s" % (authenticator_id, uv["isUserVerified"]))
+        return self.protocol.virtual_authenticator.set_user_verified(authenticator_id, uv)

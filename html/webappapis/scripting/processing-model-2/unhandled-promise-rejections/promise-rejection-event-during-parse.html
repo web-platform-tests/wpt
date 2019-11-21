@@ -8,10 +8,11 @@
 <p>The script in this test is executed immediately while parsing is ongoing, and
 <a
 href="https://html.spec.whatwg.org/multipage/webappapis.html#clean-up-after-running-script">cleaning
-up after running script</a> involves queueing a task to fire the
-<code>unhandledrejection</code> event. Parsing then completes, immediately
-transitioning the document's readiness state to "interactive," and queuing
-another task to transition the state to "complete."
+up after running script</a> involves queueing a task on the DOM manipulation
+task source to fire the <code>unhandledrejection</code> event. Parsing then
+completes, immediately transitioning the document's readiness state to
+"interactive," and queuing another task on the DOM manipulation task source to
+transition the state to "complete."
 </p>
 <script>
 'use strict';
@@ -20,7 +21,7 @@ setup({ allow_uncaught_exception: true });
 async_test(function(t) {
   var events = [];
   document.addEventListener('readystatechange', t.step_func(function() {
-    events.push('readystatechange');
+    events.push('readystatechange:' + document.readyState);
   }));
   addEventListener('unhandledrejection', t.step_func(function() {
     events.push('unhandledrejection');
@@ -31,7 +32,11 @@ async_test(function(t) {
   addEventListener('load', t.step_func(function() {
     assert_array_equals(
       events,
-      ['readystatechange', 'unhandledrejection', 'readystatechange']
+      [
+        'readystatechange:interactive',
+        'unhandledrejection',
+        'readystatechange:complete'
+      ]
     );
     t.done();
   }));

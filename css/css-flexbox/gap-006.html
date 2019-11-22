@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Flexbox Test: gap - positive number</title>
+<title>CSS Flexbox Test: gap - wrap horizontal</title>
 <link rel="author" title="Adam Argyle" href="mailto:argyle@google.com">
 <link rel="help" href="https://www.w3.org/TR/css-grid-1/#gutters">
 <link rel="help" href="https://www.w3.org/TR/css-align-3/#column-row-gap">
 <link rel="help" href="https://www.w3.org/TR/css-align-3/#gap-legacy">
-<link rel="match" href="gap-001-ref.html">
+<link rel="match" href="gap-006-ref.html">
 <meta name="flags" content="">
 <meta name="assert" content="The 'gap' property enables putting space exclusively between items">
 <style>
   section {
     background-color: red;
-    height: 100px;
-    width: 200px;
+    block-size: 100px;
+    inline-size: 200px;
     display: inline-flex;
     flex-wrap: wrap;
     gap: 20px;

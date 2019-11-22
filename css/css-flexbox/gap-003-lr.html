@@ -2,30 +2,28 @@
 <meta charset="utf-8">
 <title>CSS Flexbox Test: gap - lr rows and columns</title>
 <link rel="author" title="Adam Argyle" href="mailto:argyle@google.com">
+<link rel="help" href="https://www.w3.org/TR/css-grid-1/#gutters">
+<link rel="help" href="https://www.w3.org/TR/css-align-3/#column-row-gap">
+<link rel="help" href="https://www.w3.org/TR/css-align-3/#gap-legacy">
+<link rel="match" href="gap-003-ref.html">
+<meta name="flags" content="">
+<meta name="assert" content="The 'gap' property enables putting space exclusively between items">
 <style>
   body {
-    direction: lr;
+    writing-mode: vertical-lr;
   }
-  
+
   section {
     background-color: red;
     block-size: 100px;
     display: flex;
+    gap: 20px;
     flex-wrap: wrap;
+    flex-direction: column;
   }
   section > div{
     background-color: green;
-  }
-  section > div {
     width: calc(50% - 10px);
-  }
-  section > div:nth-child(1),
-  section > div:nth-child(3) {
-    margin-inline-end: 20px;
-  }
-  section > div:nth-child(3),
-  section > div:nth-child(4) {
-    margin-block-start: 20px;
   }
 </style>
 <body>

@@ -83,7 +83,7 @@ const invalid_type_messages =
       createMessage([createRecord('w3.org:xyz', test_number_data)]),
       createMessage([createRecord('w3.org:xyz', test_json_data)]),
 
-      // https://w3c.github.io/web-nfc/#the-ndefrecordtype-string
+      // https://w3c.github.io/web-nfc/#ndef-record-types
       // The record type is neither a known type ('text', 'mime' etc.) nor a
       // valid custom type for an external type record.
       createMessage([createRecord('unmatched_type', test_buffer_data)])
@@ -126,6 +126,16 @@ promise_test(async t => {
   await Promise.all(promises);
 }, "Test that promise is rejected with SyntaxError if NDEFMessageSource contains\
  invalid records.");
+
+ promise_test(async t => {
+  if (window.testRunner) {
+    // Deny nfc permissions for Chromium testrunner.
+    window.testRunner.setPermission('nfc', 'denied',
+                                    location.origin, location.origin);
+  }
+  const writer = new NDEFWriter();
+  await promise_rejects(t, 'NotAllowedError', writer.push(test_text_data));
+}, 'NDEFWriter.push should fail if user permission is not granted.');
 
 nfc_test(async (t, mockNFC) => {
   const writer = new NDEFWriter();
@@ -171,7 +181,6 @@ nfc_test(async (t, mockNFC) => {
   const writer1 = new NDEFWriter();
   const writer2 = new NDEFWriter();
   const controller = new AbortController();
-  mockNFC.setPendingPushCompleted(false);
   const p1 = writer1.push(test_text_data, { signal: controller.signal });
 
   // Even though push request is grantable,
@@ -220,6 +229,11 @@ promise_test(async () => {
   await new Promise((resolve,reject) => {
     const iframe = document.createElement('iframe');
     iframe.srcdoc = `<script>
+                      if (window.testRunner) {
+                        // Grant nfc permissions for Chromium testrunner.
+                        window.testRunner.setPermission('nfc', 'granted',
+                                                        location.origin, location.origin);
+                      }
                       window.onmessage = message => {
                         if (message.data === "Ready") {
                           const onSuccess = () => {

@@ -397,16 +397,31 @@ not possible to make the test reliable in some other way.</p>
 </div>
 <div class="section" id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
-<p>Sometimes tests require non-trivial setup that may fail. For this purpose
-there is a <code class="docutils literal notranslate"><span class="pre">setup()</span></code> function, that may be called with one or two arguments.
-The two argument version is:</p>
+<p>Sometimes tests require non-trivial setup that may fail. testharness.js
+provides two global functions for this purpose, <code class="docutils literal notranslate"><span class="pre">setup</span></code> and <code class="docutils literal notranslate"><span class="pre">promise_setup</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">setup()</span></code> may be called with one or two arguments. The two argument version is:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">setup</span><span class="p">(</span><span class="nx">func</span><span class="p">,</span> <span class="nx">properties</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The one argument versions may omit either argument.
-func is a function to be run synchronously. <code class="docutils literal notranslate"><span class="pre">setup()</span></code> becomes a no-op once
-any tests have returned results. Properties are global properties of the test
-harness. Currently recognised properties are:</p>
+<p>The one argument version may omit either argument. <code class="docutils literal notranslate"><span class="pre">func</span></code> is a function to be
+run synchronously. <code class="docutils literal notranslate"><span class="pre">setup()</span></code> becomes a no-op once any tests have returned
+results. <code class="docutils literal notranslate"><span class="pre">properties</span></code> is an object which specifies global properties of the
+test harness (enumerated in the following section).</p>
+<p><code class="docutils literal notranslate"><span class="pre">promise_setup()</span></code> allows authors to pause testing until some asynchronous
+operation has completed. It has the following signature:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_setup</span><span class="p">(</span><span class="nx">func</span><span class="p">,</span> <span class="nx">properties</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, the <code class="docutils literal notranslate"><span class="pre">func</span></code> argument is required. This argument must be a function which
+returns an object with a <code class="docutils literal notranslate"><span class="pre">then</span></code> method (e.g. an ECMAScript Promise instance);
+the harness will wait for the fulfillment of this value before executing any
+additional subtests defined with the <code class="docutils literal notranslate"><span class="pre">promise_test</span></code> function. If the value is
+rejected, the harness will report an error and cancel the remaining tests.
+<code class="docutils literal notranslate"><span class="pre">properties</span></code> may optionally be provided as an object which specifies global
+properties of the test harness (enumerated in the following section).</p>
+<div class="section" id="setup-properties">
+<h3>Setup properties<a class="headerlink" href="#setup-properties" title="Permalink to this headline">¶</a></h3>
+<p>Both setup functions recognize the following properties:</p>
 <p><code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> - Wait for an explicit call to done() before declaring all
 tests complete (see below; implicitly true for single page tests)</p>
 <p><code class="docutils literal notranslate"><span class="pre">output_document</span></code> - The document to which results should be logged. By default
@@ -424,6 +439,7 @@ test must not declare any subtests; testharness.js will interpret all events
 which normally influence the harness status (e.g. uncaught exceptions,
 unhandled promise rejections, and timeouts) in terms of a single
 implicitly-defined subtest.</p>
+</div>
 </div>
 <div class="section" id="determining-when-all-tests-are-complete">
 <h2>Determining when all tests are complete<a class="headerlink" href="#determining-when-all-tests-are-complete" title="Permalink to this headline">¶</a></h2>

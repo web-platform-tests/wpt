@@ -398,6 +398,29 @@ def test_check_css_globally_unique_ignored_dir(caplog):
     assert caplog.text == ""
 
 
+def test_ignore_glob(caplog):
+    # Lint two files in the ref/ directory, and pass in ignore_glob to omit one
+    # of them.
+    # When we omit absolute.html, no lint errors appear since the other file is
+    # clean.
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["ref/absolute.html", "ref/existent_relative.html"], "normal", "*solu*")
+            assert rv == 0
+            # Also confirm that only one file is checked
+            assert mocked_check_path.call_count == 1
+            assert mocked_check_file_contents.call_count == 1
+            assert caplog.text == ""
+    # However, linting the same two files without ignore_glob yields lint errors.
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["ref/absolute.html", "ref/existent_relative.html"], "normal")
+            assert rv == 1
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+            assert "ABSOLUTE-URL-REF" in caplog.text
+
+
 def test_all_filesystem_paths():
     with mock.patch(
             'tools.lint.lint.walk',

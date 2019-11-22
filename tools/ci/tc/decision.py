@@ -157,8 +157,11 @@ def build_full_command(event, task):
         options_args.append("--no-hosts")
     else:
         options_args.append("--hosts")
+    # Check out the expected SHA unless it is overridden (e.g. to base_head).
     if options.get("checkout"):
         options_args.append("--checkout=%s" % options["checkout"])
+    else:
+        options_args.append("--checkout=%s" % fetch_sha)
     for browser in options.get("browser", []):
         options_args.append("--browser=%s" % browser)
     if options.get("channel"):

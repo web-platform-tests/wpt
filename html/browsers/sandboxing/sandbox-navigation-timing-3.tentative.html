@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Sandbox Navigation Timing</title>
+    <script src=/resources/testharness.js></script>
+    <script src=/resources/testharnessreport.js></script>
+  </head>
+  <body>
+    <script>
+    const resourcePath =
+        location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1) +
+        'resources/';
+    async_test(t => {
+      const iframe = document.createElement('iframe');
+      iframe.src = resourcePath;
+
+      // Navigation should be initiated here. The value of the sandbox attribute
+      // should be snapshotted.
+      document.body.appendChild(iframe);
+
+      // Change the sandbox flags and start a new navigation. This should cancel
+      // the previous one.
+      iframe.sandbox = 'allow-scripts';
+      iframe.src = resourcePath + 'post-sandbox-state-to-parent.html';
+
+      // Manipulating the sandbox attribute at this point should not affect the
+      // final sandbox flags.
+      iframe.sandbox = '';
+
+      // After navigation, child frame should be sandboxed, but should allow
+      // scripts to run.
+      window.onmessage = t.step_func_done(e => {
+        assert_equals(e.data, 'Sandboxed');
+      });
+    }, "setting sandbox attribute after navigation starts should not affect" +
+       " document in iframe.");
+    </script>
+  </body>
+</html>

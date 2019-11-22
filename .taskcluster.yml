@@ -27,6 +27,10 @@ tasks:
           then: true
           else: false
         else: false
+    rev:
+      $if: 'tasks_for == "github-pull-request"'
+      then: "refs/pull/${event.number}/merge"
+      else: "${event.after}"
   in:
     - $if: run_task
       then:
@@ -53,7 +57,7 @@ tasks:
             - set -ex;
               ~/start.sh
                 ${event.repository.clone_url}
-                ${event.after};
+                ${rev};
               cd ~/web-platform-tests;
               ./wpt tc-decision --tasks-path=/home/test/artifacts/tasks.json
           features :

@@ -118,6 +118,27 @@ promise_test(async t => {
 }, "listeners are called in order their MQLs were created");
 
 promise_test(async t => {
+    const iframe = await createIFrame(t, 200);
+    const media = `(max-height: 150px)`;
+
+    const mql1 = iframe.contentWindow.matchMedia(media);
+    const mql2 = iframe.contentWindow.matchMedia(media);
+
+    let calls = 0;
+    const listener = () => {
+        calls++;
+    };
+
+    mql1.addListener(listener);
+    mql2.removeListener(listener);
+
+    iframe.height = "50"; // 200x200 => 200x50
+    await waitForChangesReported();
+
+    assert_equals(calls, 1);
+}, "removing listener from one MQL doesn't remove it from all MQLs");
+
+promise_test(async t => {
     const mql = await createMQL(t);
     const listener = t.unreached_func("should not be called");
 

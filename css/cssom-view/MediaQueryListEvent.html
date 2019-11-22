@@ -35,4 +35,55 @@ test(() => {
     assert_true(event.bubbles);
     assert_true(event.cancelable);
 }, "init dictionary overrides");
+
+promise_test(async t => {
+    const mql = await createMQL(t);
+
+    let _event;
+    mql.addListener(event => {
+        _event = event;
+    });
+
+    triggerMQLEvent(mql);
+    await waitForChangesReported();
+
+    assert_true(_event instanceof MediaQueryListEvent);
+    assert_equals(_event.type, "change");
+    assert_false(_event.bubbles);
+    assert_false(_event.cancelable);
+}, "argument of addListener");
+
+promise_test(async t => {
+    const mql = await createMQL(t);
+
+    let _event;
+    mql.onchange = event => {
+        _event = event;
+    };
+
+    triggerMQLEvent(mql);
+    await waitForChangesReported();
+
+    assert_true(_event instanceof MediaQueryListEvent);
+    assert_equals(_event.type, "change");
+    assert_false(_event.bubbles);
+    assert_false(_event.cancelable);
+}, "argument of onchange");
+
+promise_test(async t => {
+    const mql = await createMQL(t);
+
+    let _event;
+    mql.addEventListener("change", event => {
+        _event = event;
+    });
+
+    triggerMQLEvent(mql);
+    await waitForChangesReported();
+
+    assert_true(_event instanceof MediaQueryListEvent);
+    assert_equals(_event.type, "change");
+    assert_false(_event.bubbles);
+    assert_false(_event.cancelable);
+}, 'constructor of "change" event');
 </script>

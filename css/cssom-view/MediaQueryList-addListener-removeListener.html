@@ -96,6 +96,28 @@ promise_test(async t => {
 }, "listener that was added twice is called only once");
 
 promise_test(async t => {
+    const iframe = await createIFrame(t, 100);
+    const media = `(min-width: 200px)`;
+
+    const mql1 = iframe.contentWindow.matchMedia(media);
+    const mql2 = iframe.contentWindow.matchMedia(media);
+    const calls = [];
+
+    mql2.addListener(() => {
+        calls.push("mql2");
+    });
+
+    mql1.addListener(() => {
+        calls.push("mql1");
+    });
+
+    iframe.width = "200"; // 100x100 => 200x100
+    await waitForChangesReported();
+
+    assert_equals(calls.join(), "mql1,mql2");
+}, "listeners are called in order their MQLs were created");
+
+promise_test(async t => {
     const mql = await createMQL(t);
     const listener = t.unreached_func("should not be called");
 

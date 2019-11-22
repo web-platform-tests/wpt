@@ -182,6 +182,7 @@ tasks:
             use:
               - wpt-base
               - browser-${vars.browser}
+              - trigger-pr
             description: >-
               Verify that all tests affected by a pull request are stable
               when executed in ${vars.browser}.
@@ -198,6 +199,7 @@ tasks:
               - wpt-base
               - run-options
               - browser-${vars.browser}
+              - trigger-pr
             description: >-
               Collect results for all tests affected by a pull request in
               ${vars.browser}.
@@ -216,6 +218,7 @@ tasks:
               - wpt-base
               - run-options
               - browser-${vars.browser}
+              - trigger-pr
             options:
               checkout: base_head
             description: >-

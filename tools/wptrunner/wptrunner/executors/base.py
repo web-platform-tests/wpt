@@ -700,6 +700,9 @@ class CallbackHandler(object):
             raise ValueError("Unknown action %s" % action)
         try:
             result = action_handler(payload)
+        except NotImplementedError:
+            self.logger.warning("Action %s not implemented" % action)
+            self._send_message("complete", "not-implemented")
         except Exception:
             self.logger.warning("Action %s failed" % action)
             self.logger.warning(traceback.format_exc())

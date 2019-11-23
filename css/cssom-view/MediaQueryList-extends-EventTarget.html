@@ -102,16 +102,17 @@ test(() => {
     let receivedEvent;
     mql.addEventListener("custom", event => {
         receivedEvent = event;
+        event.preventDefault();
     }, true);
 
     const dispatchedEvent = new CustomEvent("custom", {
-        // cancelable: true.
+        cancelable: true,
         detail: {},
     });
 
-    const isCanceled = mql.dispatchEvent(dispatchedEvent);
+    const defaultAction = mql.dispatchEvent(dispatchedEvent);
 
     assert_equals(receivedEvent, dispatchedEvent);
-    assert_true(isCanceled);
+    assert_false(defaultAction);
 }, "dispatchEvent works as expected");
 </script>

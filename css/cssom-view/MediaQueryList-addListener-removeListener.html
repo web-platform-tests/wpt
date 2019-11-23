@@ -75,7 +75,7 @@ promise_test(async t => {
     triggerMQLEvent(mql);
     await waitForChangesReported();
 
-    assert_equals(calls.join(), "1st,2nd");
+    assert_array_equals(calls, ["1st", "2nd"]);
 }, "listeners are called in order they were added");
 
 promise_test(async t => {
@@ -114,7 +114,7 @@ promise_test(async t => {
     iframe.width = "200"; // 100x100 => 200x100
     await waitForChangesReported();
 
-    assert_equals(calls.join(), "mql1,mql2");
+    assert_array_equals(calls, ["mql1", "mql2"]);
 }, "listeners are called in order their MQLs were created");
 
 promise_test(async t => {

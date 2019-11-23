@@ -1,3 +1,5 @@
+"use strict";
+
 const IFRAME_DEFAULT_SIZE = "200";
 const iframes = new WeakMap();
 

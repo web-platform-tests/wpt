@@ -43,6 +43,12 @@ var triggerMQLEvent = mql => {
     iframe.width = iframe.width === IFRAME_DEFAULT_SIZE ? "250" : IFRAME_DEFAULT_SIZE;
 };
 
+var getWindow = mql => {
+    const iframe = iframes.get(mql);
+    assert_not_equals(iframe, undefined, "Passed MQL instance was not created with createMQL");
+    return iframe.contentWindow;
+};
+
 var waitForChangesReported = () => {
     return new Promise(resolve => {
         step_timeout(resolve, 75);

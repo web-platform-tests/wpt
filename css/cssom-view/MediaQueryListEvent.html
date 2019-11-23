@@ -48,7 +48,7 @@ promise_test(async t => {
     triggerMQLEvent(mql);
     await waitForChangesReported();
 
-    assert_true(_event instanceof MediaQueryListEvent);
+    assert_true(_event instanceof getWindow(mql).MediaQueryListEvent);
     assert_equals(_event.type, "change");
     assert_false(_event.bubbles);
     assert_false(_event.cancelable);
@@ -65,7 +65,7 @@ promise_test(async t => {
     triggerMQLEvent(mql);
     await waitForChangesReported();
 
-    assert_true(_event instanceof MediaQueryListEvent);
+    assert_true(_event instanceof getWindow(mql).MediaQueryListEvent);
     assert_equals(_event.type, "change");
     assert_false(_event.bubbles);
     assert_false(_event.cancelable);
@@ -82,7 +82,7 @@ promise_test(async t => {
     triggerMQLEvent(mql);
     await waitForChangesReported();
 
-    assert_true(_event instanceof MediaQueryListEvent);
+    assert_true(_event instanceof getWindow(mql).MediaQueryListEvent);
     assert_equals(_event.type, "change");
     assert_false(_event.bubbles);
     assert_false(_event.cancelable);

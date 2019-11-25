@@ -30,6 +30,9 @@ async_test(t => {
 
   window.onmessage = handler;
   window.postMessage({}, "*");
-  step_timeout(t.step_func_done());
+
+  step_timeout(() => {
+    t.done();
+  }, 50);
 }, 'non-callable "message" handler that is instance of Function');
 </script>

@@ -15,8 +15,8 @@ test(function() {
   xhr.responseType = "document";
   xhr.onload = function() {
     var doc = xhr.responseXML;
-    assert_equal(doc.x, undefined);
-    assert_equal(doc['x'], undefined);
+    assert_equals(doc.x, undefined);
+    assert_equals(doc['x'], undefined);
   };
   xhr.send();
 }, "Named getter is HTML-only");

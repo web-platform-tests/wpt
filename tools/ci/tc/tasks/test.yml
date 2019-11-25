@@ -94,6 +94,14 @@ components:
     install:
       - python3-pip
 
+  tests-affected:
+    options:
+      browser:
+        - ${vars.browser}
+    schedule-if:
+      run-job:
+        - affected_tests
+
 tasks:
   # Run full suites on push
   - $map:
@@ -183,6 +191,7 @@ tasks:
               - wpt-base
               - browser-${vars.browser}
               - trigger-pr
+              - tests-affected
             description: >-
               Verify that all tests affected by a pull request are stable
               when executed in ${vars.browser}.
@@ -200,6 +209,7 @@ tasks:
               - run-options
               - browser-${vars.browser}
               - trigger-pr
+              - tests-affected
             description: >-
               Collect results for all tests affected by a pull request in
               ${vars.browser}.
@@ -219,6 +229,7 @@ tasks:
               - run-options
               - browser-${vars.browser}
               - trigger-pr
+              - tests-affected
             options:
               checkout: base_head
             description: >-

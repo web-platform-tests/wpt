@@ -1,3 +1,4 @@
+<h1>No Scripts</h1>
 <script>
 try {
   // Attempting to access the parent frame's document should throw an exception
@@ -7,4 +8,5 @@ try {
 } catch (e) {
   window.parent.postMessage("Sandboxed", "*");
 }
+document.querySelector('h1').innerText = "Allows scripts"
 </script>

@@ -14,14 +14,14 @@
     async_test(t => {
       const iframe = document.createElement('iframe');
       iframe.src = resourcePath;
-
-      // Navigation should be initiated here. The value of the sandbox attribute
-      // should be snapshotted.
       document.body.appendChild(iframe);
 
       // Change the sandbox flags and start a new navigation. This should cancel
       // the previous one.
       iframe.sandbox = 'allow-scripts';
+
+      // Navigation should be initiated here. The value of the sandbox attribute
+      // should be snapshotted.
       iframe.src = resourcePath + 'post-sandbox-state-to-parent.html';
 
       // Manipulating the sandbox attribute at this point should not affect the

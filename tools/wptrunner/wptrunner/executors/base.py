@@ -702,7 +702,7 @@ class CallbackHandler(object):
             result = action_handler(payload)
         except NotImplementedError:
             self.logger.warning("Action %s not implemented" % action)
-            self._send_message("complete", "not-implemented")
+            self._send_message("complete", "error", "Action %s not implemented" % action)
         except Exception:
             self.logger.warning("Action %s failed" % action)
             self.logger.warning(traceback.format_exc())

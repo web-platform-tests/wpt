@@ -284,6 +284,10 @@ def decide(event):
     triggered_tasks = filter_triggers(event, all_tasks)
     scheduled_tasks = filter_schedule_if(event, triggered_tasks)
 
+    logger.info("UNSCHEDULED TASKS:\n  %s" % "\n  ".join(sorted(set(all_tasks.keys()) -
+                                                            set(scheduled_tasks.keys()))))
+    logger.info("SCHEDULED TASKS:\n  %s" % "\n  ".join(sorted(scheduled_tasks.keys())))
+
     task_id_map = build_task_graph(event, all_tasks, scheduled_tasks)
     return task_id_map
 

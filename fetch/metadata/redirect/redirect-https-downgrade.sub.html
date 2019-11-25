@@ -30,7 +30,7 @@
         let key = "font-https-downgrade";
         fetch("/fetch/metadata/resources/record-header.py?retrieve=true&file=" + key)
           .then(response => response.text())
-          .then(text => assert_no_headers(text, "Https downgrade font => No headers"))
+          .then(text => assert_no_headers(text, expected, "Https downgrade font => No headers"))
           .then(_ => resolve())
           .catch(e => reject(e));
       });
@@ -63,7 +63,7 @@
 <script>
   test(t => {
     t.add_cleanup(_ => { header = null; });
-    assert_no_headers(header, "Https downgrade script => No headers");
+    assert_no_headers(header, expected, "Https downgrade script => No headers");
   }, "Https downgrade script => No headers");
 </script>
 </body>

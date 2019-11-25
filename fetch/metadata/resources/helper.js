@@ -43,9 +43,10 @@ function assert_header_equals(value, expected, tag) {
 
 /**
  * @param {object} value
+ * @param {object} expected
  * @param {string} tag
  **/
-function assert_no_headers(value, tag) {
+function assert_no_headers(value, expected, tag) {
   if (typeof(value) === "string"){
     if (value == "No header has been recorded") return;
     value = JSON.parse(value);

@@ -9,14 +9,14 @@
 "use strict";
 
 test(t => {
-  const el = document.createElement("div");
-  el.onmouseenter = {
-    get handleEvent() {
-      t.step(() => {
-        assert_unreached('"handleEvent" property should not be looked up');
-      });
+  const handler = Object.create(null, {
+    handleEvent: {
+      get: t.unreached_func('"handleEvent" property should not be looked up'),
     },
-  };
+  });
+
+  const el = document.createElement("div");
+  el.onmouseenter = handler;
   el.dispatchEvent(new MouseEvent("mouseenter"));
 }, 'plain object "mouseenter" handler');
 

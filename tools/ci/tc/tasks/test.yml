@@ -98,6 +98,7 @@ components:
     options:
       browser:
         - ${vars.browser}
+      channel: ${vars.channel}
     schedule-if:
       run-job:
         - affected_tests

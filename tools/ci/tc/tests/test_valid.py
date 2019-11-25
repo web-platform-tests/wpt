@@ -9,6 +9,8 @@ import sys
 import yaml
 from jsonschema import validate
 
+from tools.ci.tc import decision
+
 here = os.path.dirname(__file__)
 root = os.path.abspath(os.path.join(here, "..", "..", "..", ".."))
 
@@ -71,3 +73,74 @@ def test_verify_payload():
             except Exception as e:
                 print("Validation failed for task '%s':\n%s" % (name, json.dumps(task_data, indent=2)))
                 raise e
+
+
+@pytest.mark.xfail(sys.version_info.major == 2,
+                   reason="taskcluster library has an encoding bug "
+                   "https://github.com/taskcluster/json-e/issues/338")
+@pytest.mark.parametrize("event_path,is_pr,expected", [
+    ("master_push_event.json", False, {'download-firefox-nightly',
+                                       'wpt-firefox-nightly-testharness-chunk-1',
+                                       'wpt-firefox-nightly-testharness-chunk-2',
+                                       'wpt-firefox-nightly-testharness-chunk-3',
+                                       'wpt-firefox-nightly-testharness-chunk-4',
+                                       'wpt-firefox-nightly-testharness-chunk-5',
+                                       'wpt-firefox-nightly-testharness-chunk-6',
+                                       'wpt-firefox-nightly-testharness-chunk-7',
+                                       'wpt-firefox-nightly-testharness-chunk-8',
+                                       'wpt-firefox-nightly-testharness-chunk-9',
+                                       'wpt-firefox-nightly-testharness-chunk-10',
+                                       'wpt-firefox-nightly-testharness-chunk-11',
+                                       'wpt-firefox-nightly-testharness-chunk-12',
+                                       'wpt-firefox-nightly-testharness-chunk-13',
+                                       'wpt-firefox-nightly-testharness-chunk-14',
+                                       'wpt-firefox-nightly-testharness-chunk-15',
+                                       'wpt-firefox-nightly-testharness-chunk-16',
+                                       'wpt-chrome-dev-testharness-chunk-1',
+                                       'wpt-chrome-dev-testharness-chunk-2',
+                                       'wpt-chrome-dev-testharness-chunk-3',
+                                       'wpt-chrome-dev-testharness-chunk-4',
+                                       'wpt-chrome-dev-testharness-chunk-5',
+                                       'wpt-chrome-dev-testharness-chunk-6',
+                                       'wpt-chrome-dev-testharness-chunk-7',
+                                       'wpt-chrome-dev-testharness-chunk-8',
+                                       'wpt-chrome-dev-testharness-chunk-9',
+                                       'wpt-chrome-dev-testharness-chunk-10',
+                                       'wpt-chrome-dev-testharness-chunk-11',
+                                       'wpt-chrome-dev-testharness-chunk-12',
+                                       'wpt-chrome-dev-testharness-chunk-13',
+                                       'wpt-chrome-dev-testharness-chunk-14',
+                                       'wpt-chrome-dev-testharness-chunk-15',
+                                       'wpt-chrome-dev-testharness-chunk-16',
+                                       'wpt-firefox-nightly-reftest-chunk-1',
+                                       'wpt-firefox-nightly-reftest-chunk-2',
+                                       'wpt-firefox-nightly-reftest-chunk-3',
+                                       'wpt-firefox-nightly-reftest-chunk-4',
+                                       'wpt-firefox-nightly-reftest-chunk-5',
+                                       'wpt-chrome-dev-reftest-chunk-1',
+                                       'wpt-chrome-dev-reftest-chunk-2',
+                                       'wpt-chrome-dev-reftest-chunk-3',
+                                       'wpt-chrome-dev-reftest-chunk-4',
+                                       'wpt-chrome-dev-reftest-chunk-5',
+                                       'wpt-firefox-nightly-wdspec-chunk-1',
+                                       'wpt-chrome-dev-wdspec-chunk-1',
+                                       'lint'}),
+    ("pr_event.json", True, {'download-firefox-nightly',
+                             'wpt-firefox-nightly-stability',
+                             'wpt-firefox-nightly-results',
+                             'wpt-firefox-nightly-results-without-changes',
+                             'wpt-chrome-dev-stability',
+                             'wpt-chrome-dev-results',
+                             'wpt-chrome-dev-results-without-changes',
+                             'lint',
+                             'tools/ unittests (Python 2)',
+                             'tools/ unittests (Python 3)',
+                             'tools/wpt/ tests',
+                             'resources/ tests',
+                             'infrastructure/ tests'})])
+def test_schedule_tasks(event_path, is_pr, expected):
+    with mock.patch("tools.ci.tc.decision.get_fetch_rev", return_value=(is_pr, None)):
+        with open(data_path(event_path)) as event_file:
+            event = json.load(event_file)
+            scheduled = decision.decide(event)
+            assert scheduled.keys() == expected

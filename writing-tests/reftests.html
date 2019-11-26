@@ -122,16 +122,31 @@ leaf nodes.)</p>
 </div>
 <div class="section" id="controlling-when-comparison-occurs">
 <h2>Controlling When Comparison Occurs<a class="headerlink" href="#controlling-when-comparison-occurs" title="Permalink to this headline">¶</a></h2>
-<p>By default reftest screenshots are taken after the <code class="docutils literal notranslate"><span class="pre">load</span></code> event has
-fired, and web fonts (if any) are loaded. In some cases it is
-necessary to delay the screenshot later than this, for example because
-some DOM manipulation is required to set up the desired test
-conditions. To enable this, the test may have a <code class="docutils literal notranslate"><span class="pre">class=&quot;reftest-wait&quot;</span></code>
-attribute specified on the root element. This will cause the
-screenshot to be delayed until the <code class="docutils literal notranslate"><span class="pre">load</span></code> event has fired and the
-<code class="docutils literal notranslate"><span class="pre">reftest-wait</span></code> class has been removed from the root element. Note that
-in neither case is exact timing of the screenshot guaranteed: it is
-only guaranteed to be after those events.</p>
+<p>By default, reftest screenshots are taken after the following
+conditions are met:</p>
+<ul class="simple">
+<li>The <code class="docutils literal notranslate"><span class="pre">load</span></code> event has fired</li>
+<li>Web fonts (if any) are loaded</li>
+<li>Pending paints have completed</li>
+</ul>
+<p>In some cases it is necessary to delay the screenshot later than this,
+for example because some DOM manipulation is required to set up the
+desired test conditions. To enable this, the test may have a
+<code class="docutils literal notranslate"><span class="pre">class=&quot;reftest-wait&quot;</span></code> attribute specified on the root element. In
+this case the harness will run the following sequence of steps:</p>
+<ul class="simple">
+<li>Wait for the <code class="docutils literal notranslate"><span class="pre">load</span></code> event to fire and fonts to load.</li>
+<li>Wait for pending paints to complete.</li>
+<li>Fire an event named <code class="docutils literal notranslate"><span class="pre">TestRendered</span></code> at the root element, with the
+<code class="docutils literal notranslate"><span class="pre">bubbles</span></code> attribute set to true.</li>
+<li>Wait for the <code class="docutils literal notranslate"><span class="pre">reftest-wait</span></code> class to be removed from the root
+element.</li>
+<li>Wait for pending paints to complete.</li>
+<li>Screenshot the viewport.</li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">TestRendered</span></code> event provides a hook for tests to make
+modifications to the test document that are not batched into the
+initial layout/paint.</p>
 </div>
 <div class="section" id="fuzzy-matching">
 <h2>Fuzzy Matching<a class="headerlink" href="#fuzzy-matching" title="Permalink to this headline">¶</a></h2>

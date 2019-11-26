@@ -1,15 +1,14 @@
 <!doctype html>
 <meta name="timeout" content="long">
-<title>Accept-CH-Lifetime test</title>
+<title>Accept-CH test</title>
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
-<script src="resources/accept-ch-lifetime-test.js"></script>
+<script src="resources/accept-ch-test.js"></script>
 
 <script>
 setup({ explicit_done: true });
-
 // Cross-origin header tests
 run_test({ name: "cross origin iframe not setting other origins",
     initial_url: echo,
@@ -53,7 +52,6 @@ run_test({ name: "same origin subresource",
     accept_url: accept,
     expect_url: do_not_expect,
     type: "subresource" });
-
 // Cross-origin http-equiv tests
 run_test({ name: "http-equiv cross origin iframe not setting other origins",
     initial_url: echo,
@@ -97,7 +95,6 @@ run_test({ name: "http-equiv same origin subresource",
     accept_url: httpequiv_accept,
     expect_url: do_not_expect,
     type: "subresource" });
-
 done();
 
 </script>

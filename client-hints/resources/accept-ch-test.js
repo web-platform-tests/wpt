@@ -1,6 +1,6 @@
 const echo = "/client-hints/echo_client_hints_received.py";
-const accept = "/client-hints/resources/accept_ch_lifetime.html";
-const httpequiv_accept = "/client-hints/resources/http_equiv_accept_ch_lifetime.html";
+const accept = "/client-hints/resources/accept_ch.html";
+const httpequiv_accept = "/client-hints/resources/http_equiv_accept_ch.html";
 const expect = "/client-hints/resources/expect_client_hints_headers.html"
 const do_not_expect = "/client-hints/resources/do_not_expect_client_hints_headers.html"
 
@@ -22,7 +22,7 @@ const run_test = test => {
   }, test.name + " precondition: Test that the browser does not have client " +
     "hints preferences cached");
 
-  // Then, attempt to set Accept-CH-Lifetime for 1 second
+  // Then, attempt to set Accept-CH
   promise_test(t => {
     return new Promise(resolve => {
       if (test.type == "navigation") {
@@ -53,7 +53,7 @@ const run_test = test => {
         assert_unreached("unknown test type");
       }
     });
-  }, test.name + " set Accept-CH-Lifetime");
+  }, test.name + " set Accept-CH");
 
   // Finally, verify that CH are actually sent (or not) on requests
   promise_test(t => {

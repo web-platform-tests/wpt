@@ -5,6 +5,10 @@
 Accept-CH header. Fetching this webpage should not cause
 user-agent to persist origin preferences for the client hints
 specified in the Accept-CH header.-->
+<script>
+  window.top.opener.postMessage('Loaded', '*');
+</script>
+
 
 </body>
 </html>

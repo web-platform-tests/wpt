@@ -1,1 +1,2 @@
 Accept-CH: device-memory
+Access-Control-Allow-Origin: *

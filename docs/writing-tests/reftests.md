@@ -96,7 +96,7 @@ leaf nodes.)
 
 ## Controlling When Comparison Occurs
 
-By default reftest screenshots are taken after the follwoing
+By default, reftest screenshots are taken after the following
 conditions are met:
 
 * The `load` event has fired

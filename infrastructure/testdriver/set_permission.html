@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestDriver generate_test_report method</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+async_test(t => {
+  let permission_params = {
+    descriptor: {
+      name: "ambient-light-sensor"
+    },
+    state: "granted",
+    oneRealm: true,
+  };
+  test_driver
+    .set_permission(permission_params)
+    .then(() => t.done())
+    .catch(t.unreached_func("set permission failed"));
+});
+</script>

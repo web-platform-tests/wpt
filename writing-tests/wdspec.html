@@ -70,11 +70,11 @@ command</a>:</p>
 <span class="k">def</span> <span class="nf">test_null_response_value</span><span class="p">(</span><span class="n">session</span><span class="p">):</span>
     <span class="c1"># The high-level API is used to set up a document and locate a click target</span>
     <span class="n">session</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">inline</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;foo&quot;</span><span class="p">)</span>
-    <span class="n">element</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">find</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">element</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">find</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># An HTTP request is explicitly constructed for the &quot;click&quot; command itself</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
-        <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;session/{session_id}/element/{element_id}/click&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;session/</span><span class="si">{session_id}</span><span class="s2">/element/</span><span class="si">{element_id}</span><span class="s2">/click&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">session_id</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">session_id</span><span class="p">,</span>
             <span class="n">element_id</span><span class="o">=</span><span class="n">element</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
 

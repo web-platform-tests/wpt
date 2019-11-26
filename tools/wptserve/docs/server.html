@@ -40,7 +40,7 @@
 <p>The following example creates a server that serves static files from
 the <cite>files</cite> subdirectory of the current directory and causes it to
 run on port 8080 until it is killed:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wptserve</span> <span class="k">import</span> <span class="n">server</span><span class="p">,</span> <span class="n">handlers</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wptserve</span> <span class="kn">import</span> <span class="n">server</span><span class="p">,</span> <span class="n">handlers</span>
 
 <span class="n">httpd</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">WebTestHttpd</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">doc_root</span><span class="o">=</span><span class="s2">&quot;./files/&quot;</span><span class="p">,</span>
                             <span class="n">routes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">handlers</span><span class="o">.</span><span class="n">file_handler</span><span class="p">)])</span>

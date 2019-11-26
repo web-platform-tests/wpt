@@ -13,6 +13,7 @@ from abc import ABCMeta, abstractmethod
 
 from ..testrunner import Stop
 from .protocol import Protocol, BaseProtocolPart
+import webdriver as client
 
 here = os.path.split(__file__)[0]
 
@@ -700,7 +701,7 @@ class CallbackHandler(object):
             raise ValueError("Unknown action %s" % action)
         try:
             result = action_handler(payload)
-        except NotImplementedError:
+        except (NotImplementedError, client.UnknownCommandException):
             self.logger.warning("Action %s not implemented" % action)
             self._send_message("complete", "error", "Action %s not implemented" % action)
         except Exception:

@@ -16,6 +16,7 @@
 #    https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/v2-windows
 
 trigger:
+# These are the branches referenced in some of the jobs that follow.
 - epochs/daily
 - epochs/three_hourly
 - triggers/edge_dev

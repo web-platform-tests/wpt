@@ -312,12 +312,12 @@ class SetPermissionProtocolPart(ProtocolPart):
     name = "set_permission"
 
     @abstractmethod
-    def set_permission(self, name, state, oneRealm=False):
+    def set_permission(self, name, state, one_realm=False):
         """Set permission state.
 
         :param name: The name of the permission to set.
         :param state: The state to set the permission to.
-        :param oneRealm: Whether to set the permission for only one realm."""
+        :param one_realm: Whether to set the permission for only one realm."""
         pass
 
 

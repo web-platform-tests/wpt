@@ -208,15 +208,15 @@ class WebDriverSetPermissionProtocolPart(SetPermissionProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    def set_permission(self, name, state, oneRealm):
+    def set_permission(self, name, state, one_realm):
         permission_params_dict = {
             "descriptor": {
                 "name": name
             },
             "state": state,
         }
-        if oneRealm is not None:
-            permission_params_dict["oneRealm"] = oneRealm
+        if one_realm is not None:
+            permission_params_dict["oneRealm"] = one_realm
         self.webdriver.send_session_command("POST", "permissions", permission_params_dict)
 
 

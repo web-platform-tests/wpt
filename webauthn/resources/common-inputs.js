@@ -1,3 +1,4 @@
+const ES256_ID = -7;
 const CHALLENGE = "climb the mountain";
 
 const PUBLIC_KEY_RP = {
@@ -15,8 +16,8 @@ const PUBLIC_KEY_USER = {
 // ES256.
 const PUBLIC_KEY_PARAMETERS =  [{
     type: "public-key",
-    alg: -7,
-},];
+    alg: ES256_ID,
+}];
 
 const AUTHENTICATOR_SELECTION_CRITERIA = {
     requireResidentKey: false,

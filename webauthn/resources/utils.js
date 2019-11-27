@@ -65,7 +65,7 @@ function coseObjectToJWK(cose) {
     assert_unreached("Unknown type: " + cose.type);
 
   jwk.kty = "EC";
-  if (cose.alg != -7)
+  if (cose.alg != ES256_ID)
     assert_unreached("Unknown alg: " + cose.alg);
 
   if (cose.crv != 1)

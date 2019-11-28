@@ -7,17 +7,11 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <script>
-async_test(t => {
-  let permission_params = {
-    descriptor: {
-      name: "ambient-light-sensor"
-    },
-    state: "granted",
-    oneRealm: true,
-  };
-  test_driver
-    .set_permission(permission_params)
-    .then(() => t.done())
-    .catch(t.unreached_func("set permission failed"));
-});
+promise_test(t => {
+  return test_driver.set_permission("ambient-light-sensor", "granted", true);
+}, "Grant Permission for one realm");
+
+promise_test(t => {
+  return test_driver.set_permission("ambient-light-sensor", "denied");
+}, "Deny Permission, omit one realm");
 </script>

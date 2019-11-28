@@ -769,7 +769,7 @@ class SetPermissionAction(object):
         descriptor = permission_params["descriptor"]
         name = descriptor["name"]
         state = permission_params["state"]
-        one_realm = permission_params["oneRealm"] if "oneRealm" in permission_params else False
+        one_realm = permission_params.get("oneRealm", False)
         self.logger.debug("Setting permission %s to %s, oneRealm=%s" % (name, state, one_realm))
         self.protocol.set_permission.set_permission(name, state, one_realm)
 

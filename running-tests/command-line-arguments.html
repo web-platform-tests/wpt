@@ -41,12 +41,37 @@ with WPT. The functionality is organized into “sub-commands”, and each accep
 a different set of command-line arguments.</p>
 <p>This page documents all of the available sub-commands and associated arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">wpt</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-           <span class="p">{</span><span class="n">tc</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">jobs</span><span class="p">,</span><span class="n">create</span><span class="p">,</span><span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span><span class="p">,</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">run</span><span class="p">,</span><span class="n">rev</span><span class="o">-</span><span class="nb">list</span><span class="p">,</span><span class="n">run</span><span class="p">,</span><span class="n">tests</span><span class="o">-</span><span class="n">affected</span><span class="p">,</span><span class="n">lint</span><span class="p">,</span><span class="n">serve</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">expectations</span><span class="p">,</span><span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">paths</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">decision</span><span class="p">,</span><span class="n">files</span><span class="o">-</span><span class="n">changed</span><span class="p">,</span><span class="n">manifest</span><span class="p">,</span><span class="n">install</span><span class="p">,</span><span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">}</span>
+           <span class="p">{</span><span class="n">rev</span><span class="o">-</span><span class="nb">list</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">run</span><span class="p">,</span><span class="n">install</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">jobs</span><span class="p">,</span><span class="n">create</span><span class="p">,</span><span class="n">lint</span><span class="p">,</span><span class="n">serve</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">expectations</span><span class="p">,</span><span class="n">manifest</span><span class="p">,</span><span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">paths</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">verify</span><span class="p">,</span><span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span><span class="p">,</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">files</span><span class="o">-</span><span class="n">changed</span><span class="p">,</span><span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">tests</span><span class="o">-</span><span class="n">affected</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">run</span><span class="p">}</span>
            <span class="o">...</span>
 </pre></div>
 </div>
 <div class="section" id="Sub-commands:">
 <h2>Sub-commands:<a class="headerlink" href="#Sub-commands:" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="rev-list">
+<h3>rev-list<a class="headerlink" href="#rev-list" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">rev</span><span class="o">-</span><span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">epoch</span> <span class="n">EPOCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">count</span> <span class="n">MAX_COUNT</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--epoch</kbd></td>
+<td><p class="first">regular interval of time selected to get the tagged revisions. Valid values are digits followed by h/d/w (e.x. 9h, 9d, 9w …) where the mimimun selectable interval is one hour (1h)</p>
+<p class="last">Default: 1d</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--max-count</kbd></td>
+<td><p class="first">maximum number of revisions to be returned by the command</p>
+<p class="last">Default: 1</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section" id="tc-download">
 <h3>tc-download<a class="headerlink" href="#tc-download" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tc</span><span class="o">-</span><span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ref</span> <span class="n">REF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">artifact</span><span class="o">-</span><span class="n">name</span> <span class="n">ARTIFACT_NAME</span><span class="p">]</span>
@@ -54,8 +79,8 @@ a different set of command-line arguments.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">out</span><span class="o">-</span><span class="nb">dir</span> <span class="n">OUT_DIR</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat1">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -83,213 +108,6 @@ a different set of command-line arguments.</p>
 <kbd>--out-dir</kbd></td>
 <td><p class="first">Path to save the logfiles</p>
 <p class="last">Default: “.”</p>
-</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="section" id="test-jobs">
-<h3>test-jobs<a class="headerlink" href="#test-jobs" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">test</span><span class="o">-</span><span class="n">jobs</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">all</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">includes</span> <span class="p">[</span><span class="n">INCLUDES</span> <span class="p">[</span><span class="n">INCLUDES</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="n">revish</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="section" id="Positional Arguments">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h4>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>revish</kbd></td>
-<td>Commits to consider. Defaults to the commits on the current branch</td></tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="Named Arguments_repeat1">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this headline">¶</a></h4>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>--all</kbd></td>
-<td><p class="first">List all jobs unconditionally.</p>
-<p class="last">Default: False</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--includes</kbd></td>
-<td>Jobs to check for. Return code is 0 if all jobs are found, otherwise 1</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="section" id="create">
-<h3>create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">create</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">editor</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">EDITOR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">long</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">overwrite</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span>
-           <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">REF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mismatch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">wait</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span>
-           <span class="n">path</span>
-</pre></div>
-</div>
-<div class="section" id="Positional Arguments_repeat1">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat1" title="Permalink to this headline">¶</a></h4>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>path</kbd></td>
-<td>Path to the test file</td></tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="Named Arguments_repeat2">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this headline">¶</a></h4>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>--no-editor</kbd></td>
-<td><p class="first">Don’t try to open the test in an editor</p>
-<p class="last">Default: False</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>-e, --editor</kbd></td>
-<td>Editor to use</td></tr>
-<tr><td class="option-group">
-<kbd>--long-timeout</kbd></td>
-<td><p class="first">Test should be given a long timeout (typically 60s rather than 10s, but varies depending on environment)</p>
-<p class="last">Default: False</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--overwrite</kbd></td>
-<td><p class="first">Allow overwriting an existing test file</p>
-<p class="last">Default: False</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>-r, --reftest</kbd></td>
-<td><p class="first">Create a reftest rather than a testharness (js) test</p>
-<p class="last">Default: False</p>
-</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd>-m, --reference</kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Path to the reference file</td></tr>
-<tr><td class="option-group">
-<kbd>--mismatch</kbd></td>
-<td><p class="first">Create a mismatch reftest</p>
-<p class="last">Default: False</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--wait</kbd></td>
-<td><p class="first">Create a reftest that waits until takeScreenshot() is called</p>
-<p class="last">Default: False</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--tests-root</kbd></td>
-<td><p class="first">Path to the root of the wpt directory</p>
-<p class="last">Default: “/github/workspace/tools/wpt/../..”</p>
-</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="section" id="make-hosts-file">
-<h3>make-hosts-file<a class="headerlink" href="#make-hosts-file" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">address</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="section" id="Positional Arguments_repeat2">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat2" title="Permalink to this headline">¶</a></h4>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>address</kbd></td>
-<td><p class="first">Address that hosts should point at</p>
-<p class="last">Default: “127.0.0.1”</p>
-</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="section" id="manifest-download">
-<h3>manifest-download<a class="headerlink" href="#manifest-download" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">manifest</span><span class="o">-</span><span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="section" id="Named Arguments_repeat3">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>-p, --path</kbd></td>
-<td>Path to manifest file.</td></tr>
-<tr><td class="option-group">
-<kbd>--tests-root</kbd></td>
-<td><p class="first">Path to root of tests.</p>
-<p class="last">Default: /github/workspace</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--force</kbd></td>
-<td><p class="first">Always download, even if the existing manifest is recent</p>
-<p class="last">Default: False</p>
-</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="section" id="docker-run">
-<h3>docker-run<a class="headerlink" href="#docker-run" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">docker</span><span class="o">-</span><span class="n">run</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rebuild</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">checkout</span> <span class="n">CHECKOUT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">privileged</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="section" id="Named Arguments_repeat4">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>--rebuild</kbd></td>
-<td><p class="first">Force rebuild of image</p>
-<p class="last">Default: False</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--checkout</kbd></td>
-<td>Revision to checkout in the image. If this is not supplied we mount the wpt checkout on the host as /home/test/web-platform-tests/</td></tr>
-<tr><td class="option-group">
-<kbd>--privileged</kbd></td>
-<td><p class="first">Run the image in priviledged mode (required for emulators)</p>
-<p class="last">Default: False</p>
-</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="section" id="rev-list">
-<h3>rev-list<a class="headerlink" href="#rev-list" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">rev</span><span class="o">-</span><span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">epoch</span> <span class="n">EPOCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">count</span> <span class="n">MAX_COUNT</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="section" id="Named Arguments_repeat5">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>--epoch</kbd></td>
-<td><p class="first">regular interval of time selected to get the tagged revisions. Valid values are digits followed by h/d/w (e.x. 9h, 9d, 9w …) where the mimimun selectable interval is one hour (1h)</p>
-<p class="last">Default: 1d</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--max-count</kbd></td>
-<td><p class="first">maximum number of revisions to be returned by the command</p>
-<p class="last">Default: 1</p>
 </td></tr>
 </tbody>
 </table>
@@ -358,8 +176,8 @@ a different set of command-line arguments.</p>
         <span class="n">product</span> <span class="p">[</span><span class="n">test_list</span> <span class="p">[</span><span class="n">test_list</span> <span class="o">...</span><span class="p">]]</span>
 </pre></div>
 </div>
-<div class="section" id="Positional Arguments_repeat3">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Positional Arguments">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -373,8 +191,8 @@ a different set of command-line arguments.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat6">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat2">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1000,16 +818,66 @@ a different set of command-line arguments.</p>
 </table>
 </div>
 </div>
-<div class="section" id="tests-affected">
-<h3>tests-affected<a class="headerlink" href="#tests-affected" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tests</span><span class="o">-</span><span class="n">affected</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">rules</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="o">...</span><span class="p">]]]</span>
-                   <span class="p">[</span><span class="o">--</span><span class="n">modified</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">new</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">null</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">--</span><span class="n">metadata</span> <span class="n">METADATA_ROOT</span><span class="p">]</span>
-                   <span class="p">[</span><span class="n">revish</span><span class="p">]</span>
+<div class="section" id="install">
+<h3>install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">install</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">--</span><span class="n">channel</span> <span class="p">{</span><span class="n">nightly</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span><span class="n">experimental</span><span class="p">,</span><span class="n">stable</span><span class="p">,</span><span class="n">release</span><span class="p">,</span><span class="n">canary</span><span class="p">,</span><span class="n">preview</span><span class="p">,</span><span class="n">dev</span><span class="p">}]</span>
+            <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DESTINATION</span><span class="p">]</span>
+            <span class="p">{</span><span class="n">firefox</span><span class="p">,</span><span class="n">chrome</span><span class="p">,</span><span class="n">servo</span><span class="p">}</span> <span class="p">{</span><span class="n">browser</span><span class="p">,</span><span class="n">webdriver</span><span class="p">}</span>
 </pre></div>
 </div>
-<div class="section" id="Positional Arguments_repeat4">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Positional Arguments_repeat1">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat1" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>browser</kbd></td>
+<td><p class="first">Possible choices: firefox, chrome, servo</p>
+<p class="last">name of web browser product</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>component</kbd></td>
+<td><p class="first">Possible choices: browser, webdriver</p>
+<p class="last">name of component</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat3">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--channel</kbd></td>
+<td><p class="first">Possible choices: nightly, beta, experimental, stable, release, canary, preview, dev</p>
+<p>Name of browser release channel. “stable” and “release” are synonyms for the latest browser stable release,”nightly”, “dev”, “experimental”, and “preview” are all synonyms for the latest available development release. For WebDriver installs, we attempt to select an appropriate, compatible, version for the latest browser release on the selected channel.</p>
+<p class="last">Default: “nightly”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--download-only</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Download the selected component but don’t install it</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>-d, --destination</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>filesystem directory to place the component</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="test-jobs">
+<h3>test-jobs<a class="headerlink" href="#test-jobs" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">test</span><span class="o">-</span><span class="n">jobs</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">all</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">includes</span> <span class="p">[</span><span class="n">INCLUDES</span> <span class="p">[</span><span class="n">INCLUDES</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="n">revish</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat2">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1020,41 +888,90 @@ a different set of command-line arguments.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat7">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat4">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>--ignore-rules</kbd></td>
-<td><p class="first">Rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything</p>
-<p class="last">Default: set([‘resources/testharness*’])</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--modified</kbd></td>
-<td><p class="first">Include files under version control that have been modified or staged</p>
+<kbd>--all</kbd></td>
+<td><p class="first">List all jobs unconditionally.</p>
 <p class="last">Default: False</p>
 </td></tr>
 <tr><td class="option-group">
-<kbd>--new</kbd></td>
-<td><p class="first">Include files in the worktree that are not in version control</p>
+<kbd>--includes</kbd></td>
+<td>Jobs to check for. Return code is 0 if all jobs are found, otherwise 1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="create">
+<h3>create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">create</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">editor</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">EDITOR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">long</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">overwrite</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span>
+           <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">REF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mismatch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">wait</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span>
+           <span class="n">path</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat3">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>path</kbd></td>
+<td>Path to the test file</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat5">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--no-editor</kbd></td>
+<td><p class="first">Don’t try to open the test in an editor</p>
 <p class="last">Default: False</p>
 </td></tr>
 <tr><td class="option-group">
-<kbd>--show-type</kbd></td>
-<td><p class="first">Print the test type along with each affected test</p>
+<kbd>-e, --editor</kbd></td>
+<td>Editor to use</td></tr>
+<tr><td class="option-group">
+<kbd>--long-timeout</kbd></td>
+<td><p class="first">Test should be given a long timeout (typically 60s rather than 10s, but varies depending on environment)</p>
 <p class="last">Default: False</p>
 </td></tr>
 <tr><td class="option-group">
-<kbd>--null</kbd></td>
-<td><p class="first">Separate items with a null byte</p>
+<kbd>--overwrite</kbd></td>
+<td><p class="first">Allow overwriting an existing test file</p>
 <p class="last">Default: False</p>
 </td></tr>
 <tr><td class="option-group">
-<kbd>--metadata</kbd></td>
-<td><p class="first">Directory that will contain MANIFEST.json</p>
-<p class="last">Default: “/github/workspace”</p>
+<kbd>-r, --reftest</kbd></td>
+<td><p class="first">Create a reftest rather than a testharness (js) test</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>-m, --reference</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to the reference file</td></tr>
+<tr><td class="option-group">
+<kbd>--mismatch</kbd></td>
+<td><p class="first">Create a mismatch reftest</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--wait</kbd></td>
+<td><p class="first">Create a reftest that waits until takeScreenshot() is called</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--tests-root</kbd></td>
+<td><p class="first">Path to the root of the wpt directory</p>
+<p class="last">Default: “/github/workspace/tools/wpt/../..”</p>
 </td></tr>
 </tbody>
 </table>
@@ -1067,8 +984,8 @@ a different set of command-line arguments.</p>
          <span class="p">[</span><span class="n">paths</span> <span class="p">[</span><span class="n">paths</span> <span class="o">...</span><span class="p">]]</span>
 </pre></div>
 </div>
-<div class="section" id="Positional Arguments_repeat5">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Positional Arguments_repeat4">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1079,8 +996,8 @@ a different set of command-line arguments.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat8">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat6">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1111,8 +1028,8 @@ a different set of command-line arguments.</p>
           <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">h2</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat9">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat7">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1173,8 +1090,8 @@ a different set of command-line arguments.</p>
                         <span class="p">[</span><span class="n">run_log</span> <span class="p">[</span><span class="n">run_log</span> <span class="o">...</span><span class="p">]]</span>
 </pre></div>
 </div>
-<div class="section" id="Positional Arguments_repeat6">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Positional Arguments_repeat5">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1185,8 +1102,8 @@ a different set of command-line arguments.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat10">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat8">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1374,13 +1291,57 @@ a different set of command-line arguments.</p>
 </table>
 </div>
 </div>
+<div class="section" id="manifest">
+<h3>manifest<a class="headerlink" href="#manifest" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">manifest</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">url</span><span class="o">-</span><span class="n">base</span> <span class="n">URL_BASE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">download</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cache</span><span class="o">-</span><span class="n">root</span> <span class="n">CACHE_ROOT</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments_repeat9">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>-p, --path</kbd></td>
+<td>Path to manifest file.</td></tr>
+<tr><td class="option-group">
+<kbd>--tests-root</kbd></td>
+<td><p class="first">Path to root of tests.</p>
+<p class="last">Default: /github/workspace</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-r, --rebuild</kbd></td>
+<td><p class="first">Force a full rebuild of the manifest.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--url-base</kbd></td>
+<td><p class="first">Base url to use as the mount point for tests in this manifest.</p>
+<p class="last">Default: “/”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--no-download</kbd></td>
+<td><p class="first">Never attempt to download the manifest.</p>
+<p class="last">Default: True</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--cache-root</kbd></td>
+<td><p class="first">Path in which to store any caches (default &lt;tests_root&gt;/.wptcache/)</p>
+<p class="last">Default: “/github/workspace/.wptcache”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section" id="install-android-emulator">
 <h3>install-android-emulator<a class="headerlink" href="#install-android-emulator" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat11">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat10">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1401,8 +1362,8 @@ a different set of command-line arguments.</p>
                <span class="n">test_ids</span> <span class="p">[</span><span class="n">test_ids</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Positional Arguments_repeat7">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Positional Arguments_repeat6">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1413,8 +1374,8 @@ a different set of command-line arguments.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat12">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat11">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1456,29 +1417,56 @@ a different set of command-line arguments.</p>
 </table>
 </div>
 </div>
-<div class="section" id="tc-decision">
-<h3>tc-decision<a class="headerlink" href="#tc-decision" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tc</span><span class="o">-</span><span class="n">decision</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">event</span><span class="o">-</span><span class="n">path</span> <span class="n">EVENT_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">tasks</span><span class="o">-</span><span class="n">path</span> <span class="n">TASKS_PATH</span><span class="p">]</span>
+<div class="section" id="tc-verify">
+<h3>tc-verify<a class="headerlink" href="#tc-verify" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tc</span><span class="o">-</span><span class="n">verify</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat13">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="make-hosts-file">
+<h3>make-hosts-file<a class="headerlink" href="#make-hosts-file" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">address</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments_repeat7">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>--event-path</kbd></td>
-<td>Path to file containing serialized GitHub event</td></tr>
+<kbd>address</kbd></td>
+<td><p class="first">Address that hosts should point at</p>
+<p class="last">Default: “127.0.0.1”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="manifest-download">
+<h3>manifest-download<a class="headerlink" href="#manifest-download" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">manifest</span><span class="o">-</span><span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments_repeat12">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
 <tr><td class="option-group">
-<kbd>--dry-run</kbd></td>
-<td><p class="first">Don’t actually create the tasks, just output the tasks that would be created</p>
-<p class="last">Default: False</p>
+<kbd>-p, --path</kbd></td>
+<td>Path to manifest file.</td></tr>
+<tr><td class="option-group">
+<kbd>--tests-root</kbd></td>
+<td><p class="first">Path to root of tests.</p>
+<p class="last">Default: /github/workspace</p>
 </td></tr>
 <tr><td class="option-group">
-<kbd>--tasks-path</kbd></td>
-<td>Path to file in which to write payload for all scheduled tasks</td></tr>
+<kbd>--force</kbd></td>
+<td><p class="first">Always download, even if the existing manifest is recent</p>
+<p class="last">Default: False</p>
+</td></tr>
 </tbody>
 </table>
 </div>
@@ -1502,8 +1490,8 @@ a different set of command-line arguments.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat14">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat13">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1537,56 +1525,32 @@ a different set of command-line arguments.</p>
 </table>
 </div>
 </div>
-<div class="section" id="manifest">
-<h3>manifest<a class="headerlink" href="#manifest" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">manifest</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">url</span><span class="o">-</span><span class="n">base</span> <span class="n">URL_BASE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">download</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cache</span><span class="o">-</span><span class="n">root</span> <span class="n">CACHE_ROOT</span><span class="p">]</span>
+<div class="section" id="start-android-emulator">
+<h3>start-android-emulator<a class="headerlink" href="#start-android-emulator" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat15">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat14">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>-p, --path</kbd></td>
-<td>Path to manifest file.</td></tr>
-<tr><td class="option-group">
-<kbd>--tests-root</kbd></td>
-<td><p class="first">Path to root of tests.</p>
-<p class="last">Default: /github/workspace</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>-r, --rebuild</kbd></td>
-<td><p class="first">Force a full rebuild of the manifest.</p>
+<kbd>--reinstall</kbd></td>
+<td><p class="first">Force reinstall even if the emulator already exists</p>
 <p class="last">Default: False</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--url-base</kbd></td>
-<td><p class="first">Base url to use as the mount point for tests in this manifest.</p>
-<p class="last">Default: “/”</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--no-download</kbd></td>
-<td><p class="first">Never attempt to download the manifest.</p>
-<p class="last">Default: True</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--cache-root</kbd></td>
-<td><p class="first">Path in which to store any caches (default &lt;tests_root&gt;/.wptcache/)</p>
-<p class="last">Default: “/github/workspace/.wptcache”</p>
 </td></tr>
 </tbody>
 </table>
 </div>
 </div>
-<div class="section" id="install">
-<h3>install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">install</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-            <span class="p">[</span><span class="o">--</span><span class="n">channel</span> <span class="p">{</span><span class="n">nightly</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span><span class="n">experimental</span><span class="p">,</span><span class="n">stable</span><span class="p">,</span><span class="n">release</span><span class="p">,</span><span class="n">canary</span><span class="p">,</span><span class="n">preview</span><span class="p">,</span><span class="n">dev</span><span class="p">}]</span>
-            <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DESTINATION</span><span class="p">]</span>
-            <span class="p">{</span><span class="n">firefox</span><span class="p">,</span><span class="n">chrome</span><span class="p">,</span><span class="n">servo</span><span class="p">}</span> <span class="p">{</span><span class="n">browser</span><span class="p">,</span><span class="n">webdriver</span><span class="p">}</span>
+<div class="section" id="tests-affected">
+<h3>tests-affected<a class="headerlink" href="#tests-affected" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tests</span><span class="o">-</span><span class="n">affected</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">rules</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="o">...</span><span class="p">]]]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">modified</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">new</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">null</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">metadata</span> <span class="n">METADATA_ROOT</span><span class="p">]</span>
+                   <span class="p">[</span><span class="n">revish</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="Positional Arguments_repeat9">
@@ -1596,17 +1560,55 @@ a different set of command-line arguments.</p>
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>browser</kbd></td>
-<td><p class="first">Possible choices: firefox, chrome, servo</p>
-<p class="last">name of web browser product</p>
+<kbd>revish</kbd></td>
+<td>Commits to consider. Defaults to the commits on the current branch</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat15">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--ignore-rules</kbd></td>
+<td><p class="first">Rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything</p>
+<p class="last">Default: set([‘resources/testharness*’])</p>
 </td></tr>
 <tr><td class="option-group">
-<kbd>component</kbd></td>
-<td><p class="first">Possible choices: browser, webdriver</p>
-<p class="last">name of component</p>
+<kbd>--modified</kbd></td>
+<td><p class="first">Include files under version control that have been modified or staged</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--new</kbd></td>
+<td><p class="first">Include files in the worktree that are not in version control</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--show-type</kbd></td>
+<td><p class="first">Print the test type along with each affected test</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--null</kbd></td>
+<td><p class="first">Separate items with a null byte</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--metadata</kbd></td>
+<td><p class="first">Directory that will contain MANIFEST.json</p>
+<p class="last">Default: “/github/workspace”</p>
 </td></tr>
 </tbody>
 </table>
+</div>
+</div>
+<div class="section" id="docker-run">
+<h3>docker-run<a class="headerlink" href="#docker-run" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">docker</span><span class="o">-</span><span class="n">run</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rebuild</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">checkout</span> <span class="n">CHECKOUT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">privileged</span><span class="p">]</span>
+</pre></div>
 </div>
 <div class="section" id="Named Arguments_repeat16">
 <h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this headline">¶</a></h4>
@@ -1615,39 +1617,16 @@ a different set of command-line arguments.</p>
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>--channel</kbd></td>
-<td><p class="first">Possible choices: nightly, beta, experimental, stable, release, canary, preview, dev</p>
-<p>Name of browser release channel. “stable” and “release” are synonyms for the latest browser stable release,”nightly”, “dev”, “experimental”, and “preview” are all synonyms for the latest available development release. For WebDriver installs, we attempt to select an appropriate, compatible, version for the latest browser release on the selected channel.</p>
-<p class="last">Default: “nightly”</p>
-</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd>--download-only</kbd></td>
-</tr>
-<tr><td>&#160;</td><td><p class="first">Download the selected component but don’t install it</p>
+<kbd>--rebuild</kbd></td>
+<td><p class="first">Force rebuild of image</p>
 <p class="last">Default: False</p>
 </td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd>-d, --destination</kbd></td>
-</tr>
-<tr><td>&#160;</td><td>filesystem directory to place the component</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="section" id="start-android-emulator">
-<h3>start-android-emulator<a class="headerlink" href="#start-android-emulator" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="section" id="Named Arguments_repeat17">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat17" title="Permalink to this headline">¶</a></h4>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
 <tr><td class="option-group">
-<kbd>--reinstall</kbd></td>
-<td><p class="first">Force reinstall even if the emulator already exists</p>
+<kbd>--checkout</kbd></td>
+<td>Revision to checkout in the image. If this is not supplied we mount the wpt checkout on the host as /home/test/web-platform-tests/</td></tr>
+<tr><td class="option-group">
+<kbd>--privileged</kbd></td>
+<td><p class="first">Run the image in priviledged mode (required for emulators)</p>
 <p class="last">Default: False</p>
 </td></tr>
 </tbody>

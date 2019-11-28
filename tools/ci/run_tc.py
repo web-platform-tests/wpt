@@ -313,6 +313,23 @@ def fetch_event_data():
         return json.loads(event_data)
 
 
+def include_job(job):
+    # Only for supporting pre decision-task PRs
+    # Special case things that unconditionally run on pushes,
+    # assuming a higher layer is filtering the required list of branches
+    if "GITHUB_PULL_REQUEST" not in os.environ:
+        return True
+
+    if (os.environ["GITHUB_PULL_REQUEST"] == "false" and
+        job == "run-all"):
+        return True
+
+    jobs_str = run([os.path.join(root, "wpt"),
+                    "test-jobs"], return_stdout=True)
+    print(jobs_str)
+    return job in set(jobs_str.splitlines())
+
+
 def main():
     args = get_parser().parse_args()
 
@@ -332,6 +349,16 @@ def main():
         set_variables(event)
 
     setup_repository()
+
+    # Hack for backwards compatibility
+    if args.script in ["run-all", "lint", "update_built", "tools_unittest",
+                       "wpt_integration", "resources_unittest",
+                       "wptrunner_infrastructure", "stability", "affected_tests"]:
+        job = args.script
+        if not include_job(job):
+            return
+        args.script = args.script_args[0]
+        args.script_args = args.script_args[1:]
 
     # Run the job
     setup_environment(args)

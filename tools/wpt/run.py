@@ -765,7 +765,7 @@ def run(venv, **kwargs):
                              prompt=prompt,
                              install_browser=install_browser,
                              **kwargs)
-
+    print("Running with kwargs:\n%r" % kwargs)
     rv = run_single(venv, **kwargs) > 0
 
     return rv

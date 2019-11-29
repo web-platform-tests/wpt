@@ -8,16 +8,19 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-test(function() {
-  var url = 'data:text/html,<html xmlns="http://www.w3.org/1999/xhtml"><form name="x"/></html>';
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", url);
-  xhr.responseType = "document";
-  xhr.onload = function() {
-    var doc = xhr.responseXML;
+promise_test(function() {
+  return /** @type {Promise<Document>} */ (new Promise(function (resolve) {
+    var url = 'data:text/html,<html xmlns="http://www.w3.org/1999/xhtml"><form name="x"/></html>';
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.responseType = "document";
+    xhr.onload = function() {
+      resolve(xhr.responseXML);
+    };
+    xhr.send();
+  })).then(function (doc) {
     assert_equals(doc.x, doc.getElementsByTagName("form")[0]);
     assert_equals(doc['x'], doc.getElementsByTagName("form")[0]);
-  };
-  xhr.send();
+  });
 }, "If there is one form, it should be returned (name)");
 </script>

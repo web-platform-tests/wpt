@@ -49,7 +49,7 @@ components:
       --no-fail-on-unexpected
       --this-chunk=${chunks.id}
       --total-chunks=${chunks.total}
-
+      --test-type=${vars.suite}
   trigger-master:
     trigger:
       branch:

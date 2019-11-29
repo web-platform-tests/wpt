@@ -97,51 +97,49 @@ function wait_for_state(test, worker, state) {
     return Promise.reject(new Error(
       'wait_for_state must be passed a ServiceWorker'));
   }
-  if (worker.state === state)
-    return Promise.resolve(state);
-
-  if (state === 'installing') {
-    switch (worker.state) {
-      case 'installed':
-      case 'activating':
-      case 'activated':
-      case 'redundant':
-        return Promise.reject(new Error(
-          'worker is ' + worker.state + ' but waiting for ' + state));
-    }
-  }
-
-  if (state === 'installed') {
-    switch (worker.state) {
-      case 'activating':
-      case 'activated':
-      case 'redundant':
-        return Promise.reject(new Error(
-          'worker is ' + worker.state + ' but waiting for ' + state));
-    }
-  }
-
-  if (state === 'activating') {
-    switch (worker.state) {
-      case 'activated':
-      case 'redundant':
-        return Promise.reject(new Error(
-          'worker is ' + worker.state + ' but waiting for ' + state));
-    }
-  }
-
-  if (state === 'activated') {
-    switch (worker.state) {
-      case 'redundant':
-        return Promise.reject(new Error(
-          'worker is ' + worker.state + ' but waiting for ' + state));
-    }
-  }
-
-  return new Promise(test.step_func(function(resolve) {
+  return new Promise(test.step_func(function(resolve, reject) {
       worker.addEventListener('statechange', test.step_func(function() {
-          if (worker.state === state)
+          if (worker.state === state){
             resolve(state);
+          }
+
+          if (state === 'installing') {
+            switch (worker.state) {
+              case 'installed':
+              case 'activating':
+              case 'activated':
+              case 'redundant':
+                reject(new Error(
+                  'worker is ' + worker.state + ' but waiting for ' + state));
+            }
+          }
+
+          if (state === 'installed') {
+            switch (worker.state) {
+              case 'activating':
+              case 'activated':
+              case 'redundant':
+                reject(new Error(
+                  'worker is ' + worker.state + ' but waiting for ' + state));
+            }
+          }
+
+          if (state === 'activating') {
+            switch (worker.state) {
+              case 'activated':
+              case 'redundant':
+                reject(new Error(
+                  'worker is ' + worker.state + ' but waiting for ' + state));
+            }
+          }
+
+          if (state === 'activated') {
+            switch (worker.state) {
+              case 'redundant':
+                reject(new Error(
+                  'worker is ' + worker.state + ' but waiting for ' + state));
+            }
+          }
         }));
     }));
 }

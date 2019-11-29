@@ -15,8 +15,8 @@ test(function() {
   xhr.responseType = "document";
   xhr.onload = function() {
     var doc = xhr.responseXML;
-    assert_equals(doc.x, doc.getElementsByTagName("form"));
-    assert_equals(doc['x'], doc.getElementsByTagName("form"));
+    assert_equals(doc.x, doc.getElementsByTagName("form")[0]);
+    assert_equals(doc['x'], doc.getElementsByTagName("form")[0]);
   };
   xhr.send();
 }, "If there is one form, it should be returned (name)");

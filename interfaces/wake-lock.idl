@@ -4,23 +4,29 @@
 // Source: Wake Lock API (https://w3c.github.io/wake-lock/)
 
 dictionary WakeLockPermissionDescriptor : PermissionDescriptor {
-  WakeLockType type;
+  required WakeLockType type;
 };
 
 enum WakeLockType { "screen", "system" };
 
-[Constructor(WakeLockType type), SecureContext, Exposed=(DedicatedWorker,Window)]
-interface WakeLock : EventTarget {
-  [Exposed=Window] static Promise<PermissionState> requestPermission(WakeLockType type);
-  readonly attribute WakeLockType type;
-  readonly attribute boolean active;
-  attribute EventHandler onactivechange;
-  Promise<void> request();
-  void abort();
-  static sequence<WakeLock> query(optional WakeLockQueryFilter filter);
+[SecureContext]
+partial interface Navigator {
+  [SameObject] readonly attribute WakeLock wakeLock;
 };
 
-dictionary WakeLockQueryFilter {
-  WakeLockType? type;
-  boolean? active;
+[SecureContext]
+partial interface WorkerNavigator {
+  [SameObject] readonly attribute WakeLock wakeLock;
+};
+
+[SecureContext, Exposed=(DedicatedWorker, Window)]
+interface WakeLock {
+  Promise<WakeLockSentinel> request(WakeLockType type);
+};
+
+[SecureContext, Exposed=(DedicatedWorker, Window)]
+interface WakeLockSentinel : EventTarget {
+  readonly attribute WakeLockType type;
+  Promise<void> release();
+  attribute EventHandler onrelease;
 };

@@ -2,6 +2,7 @@
 <title>Tests passing of data along with portal activation</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/open-blank-host.js"></script>
 <body>
 <canvas id="canvas"></canvas>
 <script>
@@ -12,19 +13,16 @@ function nextMessage(target) {
 }
 
 async function openPortalAndActivate(logic, activateOptions) {
-  const bc = new BroadcastChannel('portal-activate-data');
-  const w = window.open();
+  const w = await openBlankPortalHost();
   try {
     const portal = w.document.createElement('portal');
     portal.src = new URL('resources/portal-activate-data-portal.html?logic=' + encodeURIComponent(logic), location.href);
     w.document.body.appendChild(portal);
-    assert_equals((await nextMessage(bc)).data, 'ready');
-    let replyPromise = nextMessage(bc);
+    assert_equals((await nextMessage(portal)).data, 'ready');
     await portal.activate(activateOptions);
-    return (await replyPromise).data;
+    return (await nextMessage(w.portalHost)).data;
   } finally {
     w.close();
-    bc.close();
   }
 }
 
@@ -71,13 +69,11 @@ promise_test(async () => {
   assert_equals((await replyViaPort).data, 42);
 }, "A message port can be passed through activate data.");
 
-if (window.SharedArrayBuffer) {
-  promise_test(async t => {
-  await promise_rejects(
-      t, 'DataCloneError',
-      openPortalAndActivate('', {data: new SharedArrayBuffer}));
-  }, "A SharedArrayBuffer cannot be passed through activate data.");
-}
+promise_test(async t => {
+await promise_rejects(
+    t, 'DataCloneError',
+    openPortalAndActivate('', {data: new SharedArrayBuffer}));
+}, "A SharedArrayBuffer cannot be passed through activate data.");
 
 promise_test(async t => {
   await promise_rejects(

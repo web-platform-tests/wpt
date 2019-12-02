@@ -289,6 +289,11 @@ def setup_repository():
         # TODO: move this somewhere earlier in the task
         run(["git", "fetch", "--quiet", "origin", "%s:%s" % (branch, branch)])
 
+    refs = run(["git", "for-each-ref", "refs/heads"], return_stdout=True)
+    print("INFO: git refs:\n%s" % refs)
+    print("INFO: checked out commit:\n%s" % run(["git", "rev-parse", "HEAD"],
+                                                return_stdout=True))
+
 
 def fetch_event_data():
     try:

@@ -30,12 +30,9 @@ promise_test(async (test) => {
 
   trusted_click(test, () => {
     // Request fullscreen twice.
-    div.requestFullscreen();
-    assert_equals(document.fullscreenElement, null, "fullscreenElement after first requestFullscreen()");
-    var p = div.requestFullscreen();
-    if (p) {
-      p.then(test.unreached_func("promise unexpectedly resolved"), ()=>{});
-    }
+    div.requestFullscreen().then(test.step_func(() => {
+      div.requestFullscreen().then(test.unreached_func("promise unexpectedly resolved"), ()=>{});
+    }), ()=>{});
   }, document.body);
 
   await Promise.all([

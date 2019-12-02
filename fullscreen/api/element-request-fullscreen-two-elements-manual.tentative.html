@@ -41,11 +41,9 @@ promise_test(async (test) => {
   });
 
   trusted_click(test, () => {
-    b.requestFullscreen();
-    var p = a.requestFullscreen();
-    if (p) {
-      p.then(test.unreached_func("promise unexpectedly resolved"), ()=>{});
-    }
+    b.requestFullscreen().then(test.step_func(() => {
+      a.requestFullscreen().then(test.unreached_func("promise unexpectedly resolved"), ()=>{});
+    }), ()=>{});
   }, document.body);
 
   await Promise.all([

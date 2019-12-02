@@ -51,8 +51,9 @@ promise_test(async (test) => {
     // Now queue a trusted click on frame 'a' to make back-to-back calls.
     setTimeout(() => {
       trusted_click(test, () => {
-        b.contentDocument.body.requestFullscreen();
-        a.contentDocument.body.requestFullscreen().catch(test.step_func_done());
+        b.contentDocument.body.requestFullscreen().then(test.step_func(() => {
+          a.contentDocument.body.requestFullscreen().catch(test.step_func_done());
+        }), ()=>{});
       }, a.contentDocument.body);
     }, 0);
   }, b.contentDocument.body);

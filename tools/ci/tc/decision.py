@@ -182,7 +182,7 @@ def build_full_command(event, task):
 
     return ["/bin/bash",
             "--login",
-            "-c",
+            "-xc",
             """
 ~/start.sh \
   %(repo_url)s \

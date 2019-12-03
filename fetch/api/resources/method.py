@@ -8,4 +8,6 @@ def main(request, response):
         headers.append(("Access-Control-Expose-Headers", "x-request-method"))
 
     headers.append(("x-request-method", request.method))
+    headers.append(("x-request-content-length", request.headers.get("Content-Length", "NO")))
+    headers.append(("x-request-content-type", request.headers.get("Content-Type", "NO")))
     return headers, request.body

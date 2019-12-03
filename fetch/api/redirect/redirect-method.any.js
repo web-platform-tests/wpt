@@ -8,25 +8,37 @@
 // server is expected to echo the request body. The default is the empty string
 // if the request after redirection isn't POST; otherwise it's |opts.body|.
 function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, method, expectedMethod, opts) {
-  var url = redirectUrl;
-  var urlParameters = "?redirect_status=" + redirectStatus;
+  let url = redirectUrl;
+  let urlParameters = "?redirect_status=" + redirectStatus;
   urlParameters += "&location=" + encodeURIComponent(redirectLocation);
 
-  var requestInit = {"method": method, "redirect": "follow"};
+  let requestInit = {"method": method, "redirect": "follow"};
   opts = opts || {};
-  if (opts.body)
+  if (opts.body){
     requestInit.body = opts.body;
+  }
 
   promise_test(function(test) {
     return fetch(url + urlParameters, requestInit).then(function(resp) {
+      let isPostEnded = (expectedMethod == "POST");
+      let expectedBody = "";
+      if (isPostEnded) {
+        expectedBody = opts.expectedBodyAsString || requestInit.body;
+      }
+      let expectedRequestContentLength = isPostEnded ? expectedBody.length.toString() : "NO";
+      let expectedRequestContentType = "NO";
+
+      if (isPostEnded && opts.expectedRequestContentType) {
+        expectedRequestContentType = opts.expectedRequestContentType;
+      }
+
       assert_equals(resp.status, 200, "Response's status is 200");
       assert_equals(resp.type, "basic", "Response's type basic");
       assert_equals(resp.headers.get("x-request-method"), expectedMethod, "Request method after redirection is " + expectedMethod);
+      assert_equals(resp.headers.get("x-request-content-length"), expectedRequestContentLength, "Request Content-Length after redirection is " + expectedRequestContentLength);
+      assert_equals(resp.headers.get("x-request-content-type"), expectedRequestContentType, "Request Content-Type after redirection is " + expectedRequestContentType);
       assert_true(resp.redirected);
       return resp.text().then(function(text) {
-        let expectedBody = "";
-        if (expectedMethod == "POST")
-          expectedBody = opts.expectedBodyAsString || requestInit.body;
         assert_equals(text, expectedBody, "request body");
       });
     });
@@ -61,7 +73,7 @@ redirectMethod("Redirect 303 with POST", redirUrl, locationUrl, 303, "POST", "GE
 redirectMethod("Redirect 303 with HEAD", redirUrl, locationUrl, 303, "HEAD", "HEAD");
 
 redirectMethod("Redirect 307 with GET", redirUrl, locationUrl, 307, "GET", "GET");
-redirectMethod("Redirect 307 with POST (string body)", redirUrl, locationUrl, 307, "POST", "POST", { body: stringBody });
+redirectMethod("Redirect 307 with POST (string body)", redirUrl, locationUrl, 307, "POST", "POST", { body: stringBody , expectedRequestContentType: "text/plain;charset=UTF-8"});
 redirectMethod("Redirect 307 with POST (blob body)", redirUrl, locationUrl, 307, "POST", "POST", { body: blobBody, expectedBodyAsString: blobBodyAsString });
 redirectMethod("Redirect 307 with HEAD", redirUrl, locationUrl, 307, "HEAD", "HEAD");
 

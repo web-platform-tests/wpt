@@ -472,50 +472,6 @@ let kExprI32x4Eq = 0x2c;
 let kExprS1x4AllTrue = 0x75;
 let kExprF32x4Min = 0x9e;
 
-// Compilation hint constants.
-let kCompilationHintStrategyDefault = 0x00;
-let kCompilationHintStrategyLazy = 0x01;
-let kCompilationHintStrategyEager = 0x02;
-let kCompilationHintStrategyLazyBaselineEagerTopTier = 0x03;
-let kCompilationHintTierDefault = 0x00;
-let kCompilationHintTierInterpreter = 0x01;
-let kCompilationHintTierBaseline = 0x02;
-let kCompilationHintTierOptimized = 0x03;
-
-let kTrapUnreachable          = 0;
-let kTrapMemOutOfBounds       = 1;
-let kTrapDivByZero            = 2;
-let kTrapDivUnrepresentable   = 3;
-let kTrapRemByZero            = 4;
-let kTrapFloatUnrepresentable = 5;
-let kTrapFuncInvalid          = 6;
-let kTrapFuncSigMismatch      = 7;
-let kTrapTypeError            = 8;
-let kTrapUnalignedAccess      = 9;
-let kTrapDataSegmentDropped   = 10;
-let kTrapElemSegmentDropped   = 11;
-let kTrapTableOutOfBounds     = 12;
-
-let kTrapMsgs = [
-  "unreachable",
-  "memory access out of bounds",
-  "divide by zero",
-  "divide result unrepresentable",
-  "remainder by zero",
-  "float unrepresentable in integer range",
-  "invalid index into function table",
-  "function signature mismatch",
-  "wasm function signature contains illegal type",
-  "operation does not support unaligned accesses",
-  "data segment has been dropped",
-  "element segment has been dropped",
-  "table access out of bounds"
-];
-
-function assertTraps(trap, code) {
-  assertThrows(code, WebAssembly.RuntimeError, kTrapMsgs[trap]);
-}
-
 class Binary {
   constructor() {
     this.length = 0;
@@ -651,11 +607,6 @@ class WasmFunctionBuilder {
     return this;
   }
 
-  setCompilationHint(strategy, baselineTier, topTier) {
-    this.module.setCompilationHint(strategy, baselineTier, topTier, this.index);
-    return this;
-  }
-
   addBody(body) {
     for (let b of body) {
       if (typeof b !== 'number' || (b & (~0xFF)) !== 0 )
@@ -737,7 +688,6 @@ class WasmModuleBuilder {
     this.tables = [];
     this.exceptions = [];
     this.functions = [];
-    this.compilation_hints = [];
     this.element_segments = [];
     this.data_segments = [];
     this.explicit = [];
@@ -765,17 +715,14 @@ class WasmModuleBuilder {
 
   stringToBytes(name) {
     var result = new Binary();
-    result.emit_u32v(name.length);
-    for (var i = 0; i < name.length; i++) {
-      result.emit_u8(name.charCodeAt(i));
-    }
+    result.emit_string(name);
     return result.trunc_buffer()
   }
 
   createCustomSection(name, bytes) {
     name = this.stringToBytes(name);
     var section = new Binary();
-    section.emit_u8(0);
+    section.emit_u8(kUnknownSectionCode);
     section.emit_u32v(name.length + bytes.length);
     section.emit_bytes(name);
     section.emit_bytes(bytes);
@@ -880,12 +827,6 @@ class WasmModuleBuilder {
 
   addExportOfKind(name, kind, index) {
     this.exports.push({name: name, kind: kind, index: index});
-    return this;
-  }
-
-  setCompilationHint(strategy, baselineTier, topTier, index) {
-    this.compilation_hints[index] = {strategy: strategy, baselineTier:
-      baselineTier, topTier: topTier};
     return this;
   }
 
@@ -1203,40 +1144,6 @@ class WasmModuleBuilder {
       binary.emit_section(kDataCountSectionCode, section => {
         section.emit_u32v(wasm.data_segments.length);
       });
-    }
-
-    // If there are compilation hints add a custom section 'compilationHints'
-    // after the function section and before the code section.
-    if (wasm.compilation_hints.length > 0) {
-      if (debug) print("emitting compilation hints @ " + binary.length);
-      // Build custom section payload.
-      let payloadBinary = new Binary();
-      let implicit_compilation_hints_count = wasm.functions.length;
-      payloadBinary.emit_u32v(implicit_compilation_hints_count);
-
-      // Defaults to the compiler's choice if no better hint was given (0x00).
-      let defaultHintByte = kCompilationHintStrategyDefault |
-          (kCompilationHintTierDefault << 2) |
-          (kCompilationHintTierDefault << 4);
-
-      // Emit hint byte for every function defined in this module.
-      for (let i = 0; i < implicit_compilation_hints_count; i++) {
-        let index = wasm.num_imported_funcs + i;
-        var hintByte;
-        if(index in wasm.compilation_hints) {
-          let hint = wasm.compilation_hints[index];
-          hintByte = hint.strategy | (hint.baselineTier << 2) |
-              (hint.topTier << 4);
-        } else{
-          hintByte = defaultHintByte;
-        }
-        payloadBinary.emit_u8(hintByte);
-      }
-
-      // Finalize as custom section.
-      let name = "compilationHints";
-      let bytes = this.createCustomSection(name, payloadBinary.trunc_buffer());
-      binary.emit_bytes(bytes);
     }
 
     // Add function bodies.

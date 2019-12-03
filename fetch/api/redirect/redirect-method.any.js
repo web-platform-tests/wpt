@@ -14,7 +14,7 @@ function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, met
 
   let requestInit = {"method": method, "redirect": "follow"};
   opts = opts || {};
-  if (opts.body){
+  if (opts.body) {
     requestInit.body = opts.body;
   }
 

@@ -355,6 +355,21 @@
         set_user_verified: function(authenticator_id, uv) {
             return window.test_driver_internal.set_user_verified(authenticator_id, uv);
         },
+
+        /**
+         * Resolves the given specifier, possibly with import maps.
+         * https://wicg.github.io/import-maps/#resolve-a-module-specifier
+         *
+         * @param {String} specifier - the specifier to be resolved.
+         *
+         * @returns {Promise} resolved with serialization of the resulting URL
+         *                    as a {String},
+         *                    or rejected on specifier resolution failures.
+         */
+        resolve_module_specifier: function(specifier) {
+            return window.test_driver_internal.resolve_module_specifier(
+                specifier);
+        },
     };
 
     window.test_driver_internal = {
@@ -567,6 +582,20 @@
          *
          */
         set_user_verified: function(authenticator_id, uv) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        /**
+         * Resolves the given specifier, possibly with import maps.
+         * https://wicg.github.io/import-maps/#resolve-a-module-specifier
+         *
+         * @param {String} specifier - the specifier to be resolved.
+         *
+         * @returns {Promise} resolved with serialization of the resulting URL
+         *                    as a {String},
+         *                    or rejected on specifier resolution failures.
+         */
+        resolve_module_specifier: function(specifier) {
             return Promise.reject(new Error("unimplemented"));
         },
     };

@@ -16,7 +16,11 @@ function parse(importMap, importMapBaseURL) {
       },
       {once: true});
 
+    const host = location.origin;
+
     const testHTML = `
+      <script src="${host}/resources/testdriver.js"></script>
+      <script src="${host}/resources/testdriver-vendor.js"></script>
       <script>
       // Handle errors around fetching, parsing and registering import maps.
       let registrationResult;
@@ -39,20 +43,23 @@ function parse(importMap, importMapBaseURL) {
 
       // Handle specifier resolution requests from the parent frame.
       window.addEventListener('message', event => {
-        try {
-          // URL resolution is tested using Chromium's internals.
-          // TODO(hiroshige): Remove the Chromium-specific dependency.
-          const result = internals.resolveModuleSpecifier(
-              event.data.specifier,
-              event.data.baseURL,
-              document);
-          parent.postMessage({type: 'ResolutionSuccess', result: result}, '*');
-        } catch (e) {
-          // We post error names instead of error objects themselves and
-          // re-create error objects later, to avoid issues around serializing
-          // error objects which is a quite new feature.
-          parent.postMessage({type: 'ResolutionFailure', result: e.name}, '*');
-        }
+        // Override the base URL.
+        const base = document.createElement('base');
+        base.setAttribute('href', event.data.baseURL);
+        document.head.insertBefore(base, document.head.firstChild);
+
+        test_driver.resolve_module_specifier(event.data.specifier)
+          .then(result => {
+              parent.postMessage(
+                  {type: 'ResolutionSuccess', result: result}, '*');
+            })
+          .catch(e => {
+              // We post error names instead of error objects themselves and
+              // re-create error objects later, to avoid issues around
+              // serializing error objects which is a quite new feature.
+              parent.postMessage(
+                  {type: 'ResolutionFailure', result: e.name}, '*');
+            });
       });
       </script>
       <script type="importmap" onerror="onScriptError(event)">
@@ -61,9 +68,11 @@ function parse(importMap, importMapBaseURL) {
     `;
 
     if (new URL(importMapBaseURL).protocol === 'data:') {
-      iframe.src = 'data:text/html;base64,' + btoa(testHTML);
+      iframe.src =
+          `data:text/html;base64,<head></head>${btoa(testHTML)}`;
     } else {
-      iframe.srcdoc = `<base href="${importMapBaseURL}">` + testHTML;
+      iframe.srcdoc =
+          `<head><base href="${importMapBaseURL}"></head>${testHTML}`;
     }
 
     document.body.appendChild(iframe);

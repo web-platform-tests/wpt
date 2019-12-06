@@ -32,7 +32,7 @@ test(t => {
 test(t => {
   const style = document.body.appendChild(document.createElement("style"));
   t.add_cleanup(() => style.remove());
-  const comment =style.appendChild(new Comment());
+  const comment = style.appendChild(new Comment());
   const sheet = style.sheet;
   comment.remove();
   assert_not_equals(sheet, style.sheet);

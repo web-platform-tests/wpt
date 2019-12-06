@@ -33,7 +33,8 @@ from .protocol import (ActionSequenceProtocolPart,
                        TestDriverProtocolPart,
                        CoverageProtocolPart,
                        GenerateTestReportProtocolPart,
-                       VirtualAuthenticatorProtocolPart)
+                       VirtualAuthenticatorProtocolPart,
+                       SetPermissionProtocolPart)
 from ..testrunner import Stop
 from ..webdriver_server import GeckoDriverServer
 
@@ -515,6 +516,13 @@ class MarionetteVirtualAuthenticatorProtocolPart(VirtualAuthenticatorProtocolPar
     def set_user_verified(self, authenticator_id, uv):
         raise NotImplementedError("set_user_verified not yet implemented")
 
+class MarionetteSetPermissionProtocolPart(SetPermissionProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def set_permission(self, name, state, one_realm):
+        raise NotImplementedError("set_permission not yet implemented")
+
 class MarionetteProtocol(Protocol):
     implements = [MarionetteBaseProtocolPart,
                   MarionetteTestharnessProtocolPart,
@@ -528,7 +536,8 @@ class MarionetteProtocol(Protocol):
                   MarionetteAssertsProtocolPart,
                   MarionetteCoverageProtocolPart,
                   MarionetteGenerateTestReportProtocolPart,
-                  MarionetteVirtualAuthenticatorProtocolPart]
+                  MarionetteVirtualAuthenticatorProtocolPart,
+                  MarionetteSetPermissionProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):
         do_delayed_imports()

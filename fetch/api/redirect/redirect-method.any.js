@@ -7,12 +7,23 @@
 // |opts.expectedBodyAsString|: the expected response body as a string. The
 // server is expected to echo the request body. The default is the empty string
 // if the request after redirection isn't POST; otherwise it's |opts.body|.
+// |opts.expectedRequestContentType|: the expected Content-Type of redirected
+// request.
 function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, method, expectedMethod, opts) {
   let url = redirectUrl;
   let urlParameters = "?redirect_status=" + redirectStatus;
   urlParameters += "&location=" + encodeURIComponent(redirectLocation);
 
-  let requestInit = {"method": method, "redirect": "follow"};
+  let requestHeaders = {};
+  if ((redirectStatus != 303 && method == "POST") ||
+      (redirectStatus == 303 && method != "HEAD")) {
+    requestHeaders = {
+      "Content-Encoding": "Identity",
+      "Content-Language": "en-US",
+      "Content-Location": "foo",
+    }
+  };
+  let requestInit = {"method": method, "redirect": "follow", "headers" : requestHeaders};
   opts = opts || {};
   if (opts.body) {
     requestInit.body = opts.body;
@@ -25,18 +36,33 @@ function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, met
       if (isPostEnded) {
         expectedBody = opts.expectedBodyAsString || requestInit.body;
       }
-      let expectedRequestContentLength = isPostEnded ? expectedBody.length.toString() : "NO";
       let expectedRequestContentType = "NO";
-
       if (isPostEnded && opts.expectedRequestContentType) {
         expectedRequestContentType = opts.expectedRequestContentType;
       }
 
       assert_equals(resp.status, 200, "Response's status is 200");
       assert_equals(resp.type, "basic", "Response's type basic");
-      assert_equals(resp.headers.get("x-request-method"), expectedMethod, "Request method after redirection is " + expectedMethod);
-      assert_equals(resp.headers.get("x-request-content-length"), expectedRequestContentLength, "Request Content-Length after redirection is " + expectedRequestContentLength);
-      assert_equals(resp.headers.get("x-request-content-type"), expectedRequestContentType, "Request Content-Type after redirection is " + expectedRequestContentType);
+      assert_equals(
+        resp.headers.get("x-request-method"),
+        expectedMethod,
+        "Request method after redirection is " + expectedMethod);
+      assert_equals(
+        resp.headers.get("x-request-content-type"),
+        expectedRequestContentType,
+        "Request Content-Type after redirection is " + expectedRequestContentType);
+      [
+        "content-length",
+        "content-encoding",
+        "content-language",
+        "content-location"
+      ].forEach(header => {
+        let xHeader = "x-request-" + header;
+        assert_equals(
+          resp.headers.get(xHeader) != "NO",
+          isPostEnded,
+          "Request " + header + " is not handled correctly");
+      });
       assert_true(resp.redirected);
       return resp.text().then(function(text) {
         assert_equals(text, expectedBody, "request body");
@@ -71,6 +97,7 @@ redirectMethod("Redirect 302 with HEAD", redirUrl, locationUrl, 302, "HEAD", "HE
 redirectMethod("Redirect 303 with GET", redirUrl, locationUrl, 303, "GET", "GET");
 redirectMethod("Redirect 303 with POST", redirUrl, locationUrl, 303, "POST", "GET", { body: stringBody });
 redirectMethod("Redirect 303 with HEAD", redirUrl, locationUrl, 303, "HEAD", "HEAD");
+redirectMethod("Redirect 303 with TESTING", redirUrl, locationUrl, 303, "TESTING", "GET");
 
 redirectMethod("Redirect 307 with GET", redirUrl, locationUrl, 307, "GET", "GET");
 redirectMethod("Redirect 307 with POST (string body)", redirUrl, locationUrl, 307, "POST", "POST", { body: stringBody , expectedRequestContentType: "text/plain;charset=UTF-8"});

@@ -44,5 +44,5 @@ test(t => {
   t.add_cleanup(() => style.remove());
   assert_not_equals(sheet, null);
   style.appendChild(new DocumentFragment());
-  assert_not_equals(sheet, style.sheet);
+  assert_equals(sheet, style.sheet);
 }, "Mutating the style element: inserting an empty DocumentFragment node");

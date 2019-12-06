@@ -19,7 +19,7 @@
             result = JSON.parse(data.message).result
             pending_resolve(result);
         } else {
-            pending_reject({ status: data.status, message: data.message });
+            pending_reject(`${data.status}: ${data.message}`);
         }
     });
 

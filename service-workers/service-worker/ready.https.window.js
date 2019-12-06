@@ -166,13 +166,11 @@ promise_test(async t => {
   const matchedScope = 'resources/blank.html?ready-after-resolve';
   const longerMatchedScope = 'resources/blank.html?ready-after-resolve-longer';
   const registration = await service_worker_unregister_and_register(t, url, matchedScope);
-
   t.add_cleanup(() => registration.unregister());
 
   await wait_for_state(t, registration.installing, 'activated');
 
   const frame = await with_iframe(longerMatchedScope);
-
   t.add_cleanup(() => frame.remove());
 
   const readyReg1 = await frame.contentWindow.navigator.serviceWorker.ready;
@@ -184,7 +182,6 @@ promise_test(async t => {
   );
 
   const longerReg = await navigator.serviceWorker.register(url, { scope: longerMatchedScope });
-
   t.add_cleanup(() => longerReg.unregister());
 
   const readyReg2 = await frame.contentWindow.navigator.serviceWorker.ready;
@@ -199,65 +196,25 @@ promise_test(async t => {
 promise_test(async t => {
   const url1 = 'resources/empty-worker.js';
   const url2 = url1 + '?2';
-  const matched_scope = 'resources/blank.html?ready-after-unregister';
-
-  const reg1 = await service_worker_unregister_and_register(t, url1, matched_scope);
+  const matchedScope = 'resources/blank.html?ready-after-unregister';
+  const reg1 = await service_worker_unregister_and_register(t, url1, matchedScope);
   t.add_cleanup(() => reg1.unregister());
 
   await wait_for_state(t, reg1.installing, 'activating');
-  // This registration will resolve all ready promises in clients that match the scope.
-  // But there are no clients.
 
-  const frame = await with_iframe(matched_scope);
+  const frame = await with_iframe(matchedScope);
   t.add_cleanup(() => frame.remove());
 
   await reg1.unregister();
 
-  // Access the ready promise while the registration is unregistering.
+  // Ready promise should be pending, waiting for a new registration to arrive
   const readyPromise = frame.contentWindow.navigator.serviceWorker.ready;
 
-  // Create a new registration.
-  const reg2 = await navigator.serviceWorker.register(url2, { scope: matched_scope });
+  const reg2 = await navigator.serviceWorker.register(url2, { scope: matchedScope });
   t.add_cleanup(() => reg2.unregister());
-  // This registration will resolve all ready promises in clients that match the scope.
-  // That includes frame's client.
 
   const readyReg = await readyPromise;
 
   assert_equals(readyReg.active.scriptURL, reg2.active.scriptURL, 'Resolves with the second registration');
   assert_not_equals(reg1, reg2, 'Registrations should be different');
-}, 'resolve ready after unregistering and reregistering');
-
-promise_test(async function(t) {
-  const url1 = 'resources/empty-worker.js';
-  const url2 = url1 + '?2';
-  const matched_scope = 'resources/blank.html?ready-after-unregister';
-
-  const frame = await with_iframe(matched_scope);
-  t.add_cleanup(() => frame.remove());
-
-  const reg1 = await service_worker_unregister_and_register(t, url1, matched_scope);
-  t.add_cleanup(() => reg1.unregister());
-
-  await wait_for_state(t, reg1.installing, 'activated');
-  // This registration will resolve all ready promises in clients that match the scope.
-  // That includes frame's client.
-
-  const reg1Active = reg1.active;
-
-  await reg1.unregister();
-
-  // Access the ready promise while the registration is unregistering.
-  const readyPromise = frame.contentWindow.navigator.serviceWorker.ready;
-
-  // Create a new registration.
-  const reg2 = await navigator.serviceWorker.register(url2, { scope: matched_scope });
-  t.add_cleanup(() => reg2.unregister());
-  // This registration will resolve all ready promises in clients that match the scope.
-  // That includes frame's client, but its ready promise has already resolved.
-
-  const readyReg = await readyPromise;
-
-  assert_equals(readyReg.active.scriptURL, reg1Active.scriptURL, 'Resolves with the first registration');
-  assert_not_equals(reg1, reg2, 'Registrations should be different');
-}, 'resolve ready before unregistering and reregistering');
+}, 'resolve ready after unregistering');

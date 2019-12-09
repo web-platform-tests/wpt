@@ -9,7 +9,9 @@ import subprocess
 import sys
 
 browser_specific_args = {
-    "firefox": ["--install-browser"]
+    "firefox": ["--install-browser"],
+    "servo": ["--install-browser"]
+
 }
 
 

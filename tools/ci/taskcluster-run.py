@@ -10,8 +10,7 @@ import sys
 
 browser_specific_args = {
     "firefox": ["--install-browser"],
-    "servo": ["--install-browser"]
-
+    "servo": ["--install-browser", "--processes=12"]
 }
 
 

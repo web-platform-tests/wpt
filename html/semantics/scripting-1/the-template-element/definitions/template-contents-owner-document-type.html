@@ -18,7 +18,7 @@ testInIFrame('../resources/template-contents.html', function(context) {
     var template = doc.querySelector('template');
     var content_owner = template.content.ownerDocument;
 
-    assert_class_string(content_owner, 'Document',
+    assert_class_string(content_owner, 'HTMLDocument',
             'Template content owner should be a document');
     assert_equals(content_owner.createElement('DIV').localName, 'div',
             'Template content owner should be an HTML document');
@@ -37,7 +37,7 @@ testInIFrame('../resources/template-contents.html', function(context) {
 
     doc.body.appendChild(template);
 
-    assert_class_string(content_owner, 'Document',
+    assert_class_string(content_owner, 'HTMLDocument',
             'Template content owner should be a document');
     assert_equals(div.localName, 'div',
             'Template content owner should be an HTML document');
@@ -56,7 +56,7 @@ test(function() {
 
     doc.body.appendChild(template);
 
-    assert_class_string(content_owner, 'Document',
+    assert_class_string(content_owner, 'HTMLDocument',
             'Template content owner should be a document');
     assert_equals(div.localName, 'div',
             'Template content owner should be an HTML document');
@@ -71,7 +71,7 @@ test(function() {
     var template = doc.querySelector('template');
     var content_owner = template.content.ownerDocument;
 
-    assert_class_string(content_owner, 'Document',
+    assert_class_string(content_owner, 'HTMLDocument',
             'Template content owner should be a document');
     assert_equals(content_owner.createElement('DIV').localName, 'div',
             'Template content owner should be an HTML document');

@@ -14,14 +14,10 @@ function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, met
   let urlParameters = "?redirect_status=" + redirectStatus;
   urlParameters += "&location=" + encodeURIComponent(redirectLocation);
 
-  let requestHeaders = {};
-  if ((redirectStatus != 303 && method == "POST") ||
-      (redirectStatus == 303 && method != "HEAD")) {
-    requestHeaders = {
-      "Content-Encoding": "Identity",
-      "Content-Language": "en-US",
-      "Content-Location": "foo",
-    }
+  let requestHeaders = {
+    "Content-Encoding": "Identity",
+    "Content-Language": "en-US",
+    "Content-Location": "foo",
   };
   let requestInit = {"method": method, "redirect": "follow", "headers" : requestHeaders};
   opts = opts || {};
@@ -31,13 +27,8 @@ function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, met
 
   promise_test(function(test) {
     return fetch(url + urlParameters, requestInit).then(function(resp) {
-      let isPostEnded = (expectedMethod == "POST");
-      let expectedBody = "";
-      if (isPostEnded) {
-        expectedBody = opts.expectedBodyAsString || requestInit.body;
-      }
       let expectedRequestContentType = "NO";
-      if (isPostEnded && opts.expectedRequestContentType) {
+      if (opts.expectedRequestContentType) {
         expectedRequestContentType = opts.expectedRequestContentType;
       }
 
@@ -47,12 +38,15 @@ function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, met
         resp.headers.get("x-request-method"),
         expectedMethod,
         "Request method after redirection is " + expectedMethod);
+      let hasRequestBodyHeader = true;
+      if (opts.expectedStripRequestBodyHeader) {
+        hasRequestBodyHeader = !opts.expectedStripRequestBodyHeader;
+      }
       assert_equals(
         resp.headers.get("x-request-content-type"),
         expectedRequestContentType,
         "Request Content-Type after redirection is " + expectedRequestContentType);
       [
-        "content-length",
         "content-encoding",
         "content-language",
         "content-location"
@@ -60,11 +54,15 @@ function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, met
         let xHeader = "x-request-" + header;
         assert_equals(
           resp.headers.get(xHeader) != "NO",
-          isPostEnded,
+          hasRequestBodyHeader,
           "Request " + header + " is not handled correctly");
       });
       assert_true(resp.redirected);
       return resp.text().then(function(text) {
+        let expectedBody = "";
+        if (expectedMethod == "POST") {
+          expectedBody = opts.expectedBodyAsString || requestInit.body;
+        }
         assert_equals(text, expectedBody, "request body");
       });
     });
@@ -87,17 +85,17 @@ const blobBody = new Blob(["it's me the blob!", " ", "and more blob!"]);
 const blobBodyAsString = "it's me the blob! and more blob!";
 
 redirectMethod("Redirect 301 with GET", redirUrl, locationUrl, 301, "GET", "GET");
-redirectMethod("Redirect 301 with POST", redirUrl, locationUrl, 301, "POST", "GET", { body: stringBody });
+redirectMethod("Redirect 301 with POST", redirUrl, locationUrl, 301, "POST", "GET", { body: stringBody, expectedStripRequestBodyHeader: true });
 redirectMethod("Redirect 301 with HEAD", redirUrl, locationUrl, 301, "HEAD", "HEAD");
 
 redirectMethod("Redirect 302 with GET", redirUrl, locationUrl, 302, "GET", "GET");
-redirectMethod("Redirect 302 with POST", redirUrl, locationUrl, 302, "POST", "GET", { body: stringBody });
+redirectMethod("Redirect 302 with POST", redirUrl, locationUrl, 302, "POST", "GET", { body: stringBody, expectedStripRequestBodyHeader: true });
 redirectMethod("Redirect 302 with HEAD", redirUrl, locationUrl, 302, "HEAD", "HEAD");
 
 redirectMethod("Redirect 303 with GET", redirUrl, locationUrl, 303, "GET", "GET");
-redirectMethod("Redirect 303 with POST", redirUrl, locationUrl, 303, "POST", "GET", { body: stringBody });
+redirectMethod("Redirect 303 with POST", redirUrl, locationUrl, 303, "POST", "GET", { body: stringBody, expectedStripRequestBodyHeader: true });
 redirectMethod("Redirect 303 with HEAD", redirUrl, locationUrl, 303, "HEAD", "HEAD");
-redirectMethod("Redirect 303 with TESTING", redirUrl, locationUrl, 303, "TESTING", "GET");
+redirectMethod("Redirect 303 with TESTING", redirUrl, locationUrl, 303, "TESTING", "GET", { expectedStripRequestBodyHeader: true });
 
 redirectMethod("Redirect 307 with GET", redirUrl, locationUrl, 307, "GET", "GET");
 redirectMethod("Redirect 307 with POST (string body)", redirUrl, locationUrl, 307, "POST", "POST", { body: stringBody , expectedRequestContentType: "text/plain;charset=UTF-8"});

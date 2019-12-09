@@ -1,28 +1,28 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>Node.appendChild: inserting script and div from a DocumentFragment</title>
-<link rel=help href="https://dom.spec.whatwg.org/#dom-node-appendChild">
-<link rel=help href="https://dom.spec.whatwg.org/#concept-node-insert">
-<link rel=help href="https://github.com/whatwg/dom/issues/575">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <div id="log"></div>
 <script>
-var script = document.createElement("script");
-var div = document.createElement("div");
-
-var scriptRan = false;
-script.textContent = `
-    assert_equals(div.parentNode, script.parentNode, "div does not have same parent as script");
-    scriptRan = true;
+let script = null;
+let scriptParent = null;
+let div = null;
+let divParent = null;
+test(() => {
+  script = document.createElement("script");
+  div = document.createElement("div");
+  script.textContent = `
+    divParent = div.parentNode;
+    scriptParent = script.parentNode;
 `;
-
-var df = document.createDocumentFragment();
-df.appendChild(script);
-df.appendChild(div);
-
-assert_false(scriptRan, "script ran");
-document.head.appendChild(df);
-assert_true(scriptRan, "script did not run");
-done();
+  const df = document.createDocumentFragment();
+  df.appendChild(script);
+  df.appendChild(div);
+  assert_equals(divParent, null);
+  assert_equals(scriptParent, null);
+  document.head.appendChild(df);
+  assert_equals(divParent, scriptParent);
+  assert_equals(divParent, document.head);
+});
 </script>

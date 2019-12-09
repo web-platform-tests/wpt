@@ -1,9 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>Node.appendChild: inserting script and button from a div</title>
-<link rel=help href="https://dom.spec.whatwg.org/#dom-node-appendChild">
-<link rel=help href="https://dom.spec.whatwg.org/#concept-node-insert">
-<link rel=help href="https://github.com/whatwg/dom/issues/575">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <div id="log"></div>
@@ -11,24 +8,20 @@
 <body>
 <form id="form"></form>
 <script>
-var form = document.getElementById("form");
-
-var script = document.createElement("script");
-var scriptRan = false;
-script.textContent = `
-    assert_equals(button.form, form, "button does not have a form owner");
-    scriptRan = true;
+let button = null;
+let buttonForm = null;
+test(() => {
+  const form = document.getElementById("form");
+  const script = document.createElement("script");
+  script.textContent = `
+    buttonForm = button.form;
 `;
-
-var button = document.createElement("button");
-
-var div = document.createElement("div");
-div.appendChild(script);
-div.appendChild(button);
-
-
-assert_false(scriptRan, "script ran");
-form.appendChild(div);
-assert_true(scriptRan, "script has not run");
-done();
+  button = document.createElement("button");
+  const div = document.createElement("div");
+  div.appendChild(script);
+  div.appendChild(button);
+  assert_equals(buttonForm, null);
+  form.appendChild(div);
+  assert_equals(buttonForm, form);
+});
 </script>

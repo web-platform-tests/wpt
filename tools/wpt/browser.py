@@ -1108,7 +1108,7 @@ class Servo(Browser):
 
         _, _, decompress = self.platform_components()
 
-        resp = self._get(dest, channel)
+        resp = self._get(channel)
         decompress(resp.raw, dest=dest)
         path = find_executable("servo", os.path.join(dest, "servo"))
         st = os.stat(path)

@@ -68,6 +68,10 @@ def main(product, commit_range, wpt_args):
     ]
     wpt_args += browser_specific_args.get(product, [])
 
+    # Hack to run servo with one process only for wdspec
+    if product == "servo" and "--test-type=wdspec" in wpt_args:
+        wpt_args = [item for item in wpt_args if not item.startswith("--processes")]
+
     command = ["python", "./wpt", "run"] + wpt_args + [product]
 
     logger.info("Executing command: %s" % " ".join(command))

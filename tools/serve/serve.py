@@ -515,7 +515,7 @@ def start_servers(host, ports, paths, routes, bind_address, config, **kwargs):
         assert len(ports) == {"http": 2}.get(scheme, 1)
 
         # If trying to start HTTP/2.0 server, check compatibility
-        if scheme == 'http2' and not http2_compatible():
+        if scheme == 'h2' and not http2_compatible():
             logger.error('Cannot start HTTP/2.0 server as the environment is not compatible. ' +
                          'Requires Python 2.7.10+ (< 3.0) and OpenSSL 1.0.2+')
             continue
@@ -525,7 +525,7 @@ def start_servers(host, ports, paths, routes, bind_address, config, **kwargs):
                 continue
             init_func = {"http": start_http_server,
                          "https": start_https_server,
-                         "http2": start_http2_server,
+                         "h2": start_http2_server,
                          "ws": start_ws_server,
                          "wss": start_wss_server}[scheme]
 
@@ -709,7 +709,7 @@ def build_config(override_path=None, **kwargs):
     if enable_http2 is None:
         enable_http2 = True
     if enable_http2:
-        rv._default["ports"]["http2"] = [9000]
+        rv._default["ports"]["h2"] = [9000]
 
     if override_path and os.path.exists(override_path):
         with open(override_path) as f:

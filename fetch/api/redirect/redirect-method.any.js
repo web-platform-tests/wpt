@@ -47,15 +47,16 @@ function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, met
         expectedRequestContentType,
         "Request Content-Type after redirection is " + expectedRequestContentType);
       [
-        "content-encoding",
-        "content-language",
-        "content-location"
+        "Content-Encoding",
+        "Content-Language",
+        "Content-Location"
       ].forEach(header => {
-        let xHeader = "x-request-" + header;
+        let xHeader = "x-request-" + header.toLowerCase();
+        let expectedValue = hasRequestBodyHeader ? requestHeaders[header] : "NO";
         assert_equals(
-          resp.headers.get(xHeader) != "NO",
-          hasRequestBodyHeader,
-          "Request " + header + " is not handled correctly");
+          resp.headers.get(xHeader),
+          expectedValue,
+          "Request " + header + " after redirection is " + expectedValue);
       });
       assert_true(resp.redirected);
       return resp.text().then(function(text) {
@@ -63,8 +64,13 @@ function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, met
         if (expectedMethod == "POST") {
           expectedBody = opts.expectedBodyAsString || requestInit.body;
         }
+        let expectedContentLength = expectedBody ? expectedBody.length.toString() : "NO";
         assert_equals(text, expectedBody, "request body");
-      });
+        assert_equals(
+          resp.headers.get("x-request-content-length"),
+          expectedContentLength,
+          "Request Content-Length after redirection is " + expectedContentLength);
+        });
     });
   }, desc);
 }

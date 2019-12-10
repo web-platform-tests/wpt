@@ -150,6 +150,29 @@ between the function being called and the promise settling.</p>
 <p>To send special keys, one must send the respective key’s codepoint. Since this uses the WebDriver protocol, you can find a <a class="reference external" href="https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions">list for code points to special keys in the spec</a>.
 For example, to send the tab key you would send “\uE004”.</p>
 </div>
+<div class="section" id="set-permission">
+<h3>set_permission<a class="headerlink" href="#set-permission" title="Permalink to this headline">¶</a></h3>
+<p>Usage: <code class="docutils literal notranslate"><span class="pre">test-driver.set_permission(descriptor,</span> <span class="pre">state,</span> <span class="pre">one_realm)</span></code></p>
+<ul class="simple">
+<li><em>descriptor</em>: a
+<a class="reference external" href="https://w3c.github.io/permissions/#dictdef-permissiondescriptor">PermissionDescriptor</a>
+or derived object</li>
+<li><em>state</em>: a
+<a class="reference external" href="https://w3c.github.io/permissions/#enumdef-permissionstate">PermissionState</a>
+value</li>
+<li><em>one_realm</em>: a boolean that indicates whether the permission settings
+apply to only one realm</li>
+</ul>
+<p>This function causes permission requests and queries for the status of a
+certain permission type (e.g. “push”, or “background-fetch”) to always
+return <em>state</em>. It returns a Promise that resolves after the permission has
+been set to be overridden with <em>state</em>.</p>
+<p>Example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;background-fetch&quot;</span> <span class="p">},</span> <span class="s2">&quot;denied&quot;</span><span class="p">);</span>
+<span class="nx">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;push&quot;</span><span class="p">,</span> <span class="nx">userVisibleOnly</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span> <span class="s2">&quot;granted&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 

@@ -554,6 +554,12 @@ the associated methods</p>
 <dt id="wptrunner.testrunner.TestRunnerManager">
 <em class="property">class </em><code class="descclassname">wptrunner.testrunner.</code><code class="descname">TestRunnerManager</code><span class="sig-paren">(</span><em>suite_name</em>, <em>test_queue</em>, <em>test_source_cls</em>, <em>browser_cls</em>, <em>browser_kwargs</em>, <em>executor_cls</em>, <em>executor_kwargs</em>, <em>stop_flag</em>, <em>rerun=1</em>, <em>pause_after_test=False</em>, <em>pause_on_unexpected=False</em>, <em>restart_on_unexpected=True</em>, <em>debug_info=None</em>, <em>capture_stdio=True</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.TestRunnerManager" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="wptrunner.testrunner.TestRunnerManager.inject_message">
+<code class="descname">inject_message</code><span class="sig-paren">(</span><em>command</em>, <em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.TestRunnerManager.inject_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inject a message to the command queue (from Executor).</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="wptrunner.testrunner.TestRunnerManager.restart_runner">
 <code class="descname">restart_runner</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.TestRunnerManager.restart_runner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop and restart the TestRunner</p>
@@ -568,6 +574,12 @@ TestRunner updating them on the status of a test. They
 may also have a stop flag set by the main thread indicating
 that the manager should shut down the next time the event loop
 spins.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.testrunner.TestRunnerManager.send_message">
+<code class="descname">send_message</code><span class="sig-paren">(</span><em>command</em>, <em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testrunner.TestRunnerManager.send_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a message to the remote queue (to Executor).</p>
 </dd></dl>
 
 <dl class="method">

@@ -1,6 +1,6 @@
 const cases = {
-  internal: '<script>window.internalScript = true;</script>',
-  external: '<script src="externalScript.js"></script>',
+  internal: '<script>window.internalScript = true;</script>', 
+  external: '<script src="externalScript.js"></script>', 
 };
 
 const loaded = new Promise(resolve => {

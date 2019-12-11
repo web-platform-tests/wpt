@@ -57,7 +57,8 @@ def run(process_queue, request_lock, response_lock):
     process_queue.put(thread_queue.get())
 
 
-@pytest.mark.xfail(sys.platform == "win32",
+@pytest.mark.xfail(sys.platform == "win32" or
+                   sys.platform == "darwin" and sys.version_info >= (3, 8),
                    reason="https://github.com/web-platform-tests/wpt/issues/16938")
 def test_delayed_lock(add_cleanup):
     """Ensure that delays in proxied Lock retrieval do not interfere with
@@ -96,7 +97,8 @@ def test_delayed_lock(add_cleanup):
         "both instances had valid locks")
 
 
-@pytest.mark.xfail(sys.platform == "win32",
+@pytest.mark.xfail(sys.platform == "win32" or
+                   sys.platform == "darwin" and sys.version_info >= (3, 8),
                    reason="https://github.com/web-platform-tests/wpt/issues/16938")
 def test_delayed_dict(add_cleanup):
     """Ensure that delays in proxied `dict` retrieval do not interfere with

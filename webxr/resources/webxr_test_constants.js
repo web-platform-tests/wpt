@@ -28,25 +28,60 @@ const VALID_POSE_TRANSFORM = {
 const VALID_PROJECTION_MATRIX =
     [1, 0, 0, 0, 0, 1, 0, 0, 3, 2, -1, -1, 0, 0, -0.2, 0];
 
+// This is a decomposed version of the above.
+const VALID_FIELD_OF_VIEW = {
+    upDegrees: 71.565,
+    downDegrees: -45,
+    leftDegrees:-63.4349,
+    rightDegrees: 75.9637
+};
+
 // A valid input grip matrix for  when we don't care about specific values
-const VALID_GRIP = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 4, 3, 2, 1];
+const VALID_GRIP = [1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    4, 3, 2, 1];
+
+const VALID_GRIP_TRANSFORM = {
+    position: [4, 3, 2],
+    orientation: [0, 0, 0, 1]
+};
 
 // A valid input pointer offset for  when we don't care about specific values
-const VALID_POINTER_OFFSET = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1];
+const VALID_POINTER_OFFSET = [1, 0, 0, 0,
+                              0, 1, 0, 0,
+                              0, 0, 1, 0,
+                              0, 0, 1, 1];
 
-const VALID_GRIP_WITH_POINTER_OFFSET =
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 4, 3, 3, 1];
+const VALID_POINTER_TRANSFORM = {
+    position: [0, 0, 1],
+    orientation: [0, 0, 0, 1]
+};
 
-const VALID_STAGE_TRANSFORM =
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1.0, 1.65, -1.0, 1];
+const VALID_GRIP_WITH_POINTER_OFFSET = [1, 0, 0, 0,
+                                        0, 1, 0, 0,
+                                        0, 0, 1, 0,
+                                        4, 3, 3, 1];
+
+// A Valid Local to floor matrix/transform for when we don't care about specific
+// values.  Note that these should be identical, just different representations.
+const VALID_FLOOR_ORIGIN_MATRIX = [1, 0,    0,  0,
+                                     0, 1,    0,  0,
+                                     0, 0,    1,  0,
+                                     1, 1.65, -1, 1];
+
+const VALID_FLOOR_ORIGIN = {
+    position: [1.0, 1.65, -1.0],
+    orientation: [0, 0, 0, 1]
+};
 
 const VALID_BOUNDS = [
-    { x: 3.0, y: 0, z: -2.0 },
-    { x: 3.5, y: 0, z: 0.0 },
-    { x: 3.0, y: 0, z: 2.0 },
-    { x: -3.0, y: 0, z: 2.0 },
-    { x: -3.5, y: 0, z: 0.0 },
-    { x: -3.0, y: 0, z: -2.0 }
+    { x: 3.0, z: -2.0 },
+    { x: 3.5, z: 0.0 },
+    { x: 3.0, z: 2.0 },
+    { x: -3.0, z: 2.0 },
+    { x: -3.5, z: 0.0 },
+    { x: -3.0, z: -2.0 }
 ];
 
 const VALID_RESOLUTION = {
@@ -85,14 +120,38 @@ const NON_IMMERSIVE_VIEWS = [{
     }
 ];
 
+const ALL_FEATURES = [
+    "viewer",
+    "local",
+    "local-floor",
+    "bounded-floor",
+    "unbounded",
+];
+
 const TRACKED_IMMERSIVE_DEVICE = {
     supportsImmersive: true,
     views: VALID_VIEWS,
-    viewerOrigin: IDENTITY_TRANSFORM
+    viewerOrigin: IDENTITY_TRANSFORM,
+    supportedFeatures: ALL_FEATURES
 };
 
 const VALID_NON_IMMERSIVE_DEVICE = {
     supportsImmersive: false,
     views: NON_IMMERSIVE_VIEWS,
-    viewerOrigin: IDENTITY_TRANSFORM
+    viewerOrigin: IDENTITY_TRANSFORM,
+    supportedFeatures: ALL_FEATURES
 };
+
+const VALID_CONTROLLER = {
+    handedness: "none",
+    targetRayMode: "tracked-pointer",
+    pointerOrigin: VALID_POINTER_TRANSFORM,
+    profiles: []
+};
+
+const RIGHT_CONTROLLER = {
+    handedness: "right",
+    targetRayMode: "tracked-pointer",
+    pointerOrigin: VALID_POINTER_TRANSFORM,
+    profiles: []
+}

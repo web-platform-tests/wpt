@@ -8,6 +8,7 @@
 <link rel="match" href="reference/white-space-break-spaces-005-ref.html">
 <meta name="assert" content="Preserved white space after forced breaks become leading white-spaces and should not be collapsed, honoring white-space: pre-wrap.">
 
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
 div {
   font: 20px/1 Ahem;
@@ -28,5 +29,5 @@ span { color: green; }
 
 <p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>
 <div class="ref">XX<span>XXX<br>XXX</span>XX<br><span>XXXXX<br>XXXXX<br>XXXXX</span></div>
-<div class="test">XX   
+<div class="test">XX   <!--end of line spaces intentional-->
    XX</div>

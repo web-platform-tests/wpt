@@ -4,7 +4,7 @@
   <script src=/resources/testharnessreport.js></script>
   <script src="resources/webxr_util.js"></script>
   <script src="resources/webxr_test_constants.js"></script>
-  <script src="resources/xr-test-asserts.js"></script>
+  <script src="resources/webxr_test_asserts.js"></script>
   <canvas></canvas>
 
   <script>
@@ -16,7 +16,8 @@
 
     let fakeDeviceInitParams = {
       supportsImmersive: true,
-      views: VALID_VIEWS
+      views: VALID_VIEWS,
+      supportedFeatures: ALL_FEATURES
     };
 
     // A valid pose matrix/transform for  when we don't care about specific values
@@ -54,7 +55,7 @@
 
                 let poseMatrix = pose.transform.matrix;
                 assert_not_equals(poseMatrix, null);
-                assert_matrix_approx_equals(poseMatrix, expectedPoseMatrix, FLOAT_EPSILON);
+                assert_matrix_approx_equals(poseMatrix, expectedPoseMatrix);
               });
 
               // Finished.
@@ -68,7 +69,7 @@
     };
 
     xr_session_promise_test(nonImmersiveTestName, testFunction,
-      fakeDeviceInitParams, 'inline');
+      fakeDeviceInitParams, 'inline', { 'requiredFeatures': ['local'] });
     xr_session_promise_test(immersiveTestName, testFunction,
       fakeDeviceInitParams, 'immersive-vr');
 

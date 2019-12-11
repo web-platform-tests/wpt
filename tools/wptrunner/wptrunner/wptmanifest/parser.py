@@ -16,7 +16,7 @@ from __future__ import unicode_literals
 
 from six import binary_type, text_type, BytesIO
 
-from .node import (AtomNode, BinaryExpressionNode, BinaryOperatorNode,
+from .node import (Node, AtomNode, BinaryExpressionNode, BinaryOperatorNode,
                    ConditionalNode, DataNode, IndexNode, KeyValueNode, ListNode,
                    NumberNode, StringNode, UnaryExpressionNode,
                    UnaryOperatorNode, ValueNode, VariableNode)
@@ -339,7 +339,14 @@ class Tokenizer(object):
                 spaces = 0
                 rv += c
                 self.consume()
-        yield (token_types.string, decode(rv))
+        rv = decode(rv)
+        if rv.startswith("if "):
+            # Hack to avoid a problem where people write
+            # disabled: if foo
+            # and expect that to disable conditionally
+            raise ParseError(self.filename, self.line_number, "Strings starting 'if ' must be quoted "
+                             "(expressions must start on a newline and be indented)")
+        yield (token_types.string, rv)
 
     def comment_state(self):
         while self.char() is not eol:
@@ -520,11 +527,18 @@ class Parser(object):
         self.expr_builders = []
 
     def parse(self, input):
-        self.reset()
-        self.token_generator = self.tokenizer.tokenize(input)
-        self.consume()
-        self.manifest()
-        return self.tree.node
+        try:
+            self.reset()
+            self.token_generator = self.tokenizer.tokenize(input)
+            self.consume()
+            self.manifest()
+            return self.tree.node
+        except Exception as e:
+            if not isinstance(e, ParseError):
+                raise ParseError(self.tokenizer.filename,
+                                 self.tokenizer.line_number,
+                                 str(e))
+            raise
 
     def consume(self):
         self.token = self.token_generator.next()
@@ -691,13 +705,16 @@ class Treebuilder(object):
         self.node = root
 
     def append(self, node):
+        assert isinstance(node, Node)
         self.node.append(node)
         self.node = node
+        assert self.node is not None
         return node
 
     def pop(self):
         node = self.node
         self.node = self.node.parent
+        assert self.node is not None
         return node
 
 

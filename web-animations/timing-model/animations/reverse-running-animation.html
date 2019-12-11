@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="UTF-8">
+<title>reverse running animation</title>
+<link rel="match" href="reverse-running-animation-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style>
+  #box, #overlay {
+    /* Add a border to ensure that anti-aliasing does not leak blue pixels
+       outside of the  element's bounds. */
+    border: 1px solid white;
+    height: 40px;
+    position: absolute;
+    top: 40px;
+    width: 40px;
+  }
+  #box {
+    background: blue;
+    left: 40px;
+    z-index: 1;
+  }
+  #overlay {
+    background: white;
+    left: 140px;
+    z-index: 2;
+  }
+  #notes {
+    position: absolute;
+    left: 0px;
+    top: 100px;
+  }
+  body {
+    backgrond: white;
+  }
+</style>
+
+<body>
+  <div id="box"></div>
+  <div id="overlay"></div>
+  <p id="notes">
+    This test reverses the animation shortly after the box starts moving. If
+    any blue pixels are visible the test has failed.
+  </p>
+</body>
+<script>
+  onload = function() {
+    // Double rAF to ensure that we are not bogged down during initialization
+    // and the compositor is ready.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const elem = document.getElementById('box');
+        const anim = elem.animate([
+            { transform: 'translateX(100px)' },
+            { transform: 'translateX(100px)' },
+            { transform: 'translateX(200px)' },
+            { transform: 'translateX(200px)' }
+          ], {
+            duration: 1000
+          });
+        setTimeout(() => {
+          anim.reverse();
+        }, 500);
+        takeScreenshotDelayed(900);
+      });
+    });
+  };
+</script>

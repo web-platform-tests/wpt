@@ -9,7 +9,8 @@ import subprocess
 import sys
 
 browser_specific_args = {
-    "firefox": ["--install-browser"]
+    "firefox": ["--install-browser"],
+    "servo": ["--install-browser", "--processes=12"]
 }
 
 
@@ -34,7 +35,7 @@ def gzip_file(filename, delete_original=True):
 
 
 def main(product, commit_range, wpt_args):
-    """Invoke the `wpt run` command according to the needs of the TaskCluster
+    """Invoke the `wpt run` command according to the needs of the Taskcluster
     continuous integration service."""
 
     logger = logging.getLogger("tc-run")
@@ -56,8 +57,8 @@ def main(product, commit_range, wpt_args):
         logger.info("Running all tests")
 
     wpt_args += [
-        "--log-tbpl-level=info",
-        "--log-tbpl=-",
+        "--log-mach-level=info",
+        "--log-mach=-",
         "-y",
         "--no-pause",
         "--no-restart-on-unexpected",
@@ -67,11 +68,14 @@ def main(product, commit_range, wpt_args):
     ]
     wpt_args += browser_specific_args.get(product, [])
 
+    # Hack to run servo with one process only for wdspec
+    if product == "servo" and "--test-type=wdspec" in wpt_args:
+        wpt_args = [item for item in wpt_args if not item.startswith("--processes")]
+
     command = ["python", "./wpt", "run"] + wpt_args + [product]
 
     logger.info("Executing command: %s" % " ".join(command))
-
-    retcode = subprocess.call(command)
+    retcode = subprocess.call(command, env=dict(os.environ, TERM="dumb"))
     if retcode != 0:
         sys.exit(retcode)
 

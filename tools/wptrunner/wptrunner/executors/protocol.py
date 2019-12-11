@@ -109,11 +109,11 @@ class BaseProtocolPart(ProtocolPart):
     name = "base"
 
     @abstractmethod
-    def execute_script(self, script, async=False):
+    def execute_script(self, script, asynchronous=False):
         """Execute javascript in the current Window.
 
         :param str script: The js source to execute. This is implicitly wrapped in a function.
-        :param bool async: Whether the script is asynchronous in the webdriver
+        :param bool asynchronous: Whether the script is asynchronous in the webdriver
                            sense i.e. whether the return value is the result of
                            the initial function call or if it waits for some callback.
         :returns: The result of the script execution.
@@ -305,6 +305,22 @@ class GenerateTestReportProtocolPart(ProtocolPart):
         pass
 
 
+class SetPermissionProtocolPart(ProtocolPart):
+    """Protocol part for setting permissions"""
+    __metaclass__ = ABCMeta
+
+    name = "set_permission"
+
+    @abstractmethod
+    def set_permission(self, descriptor, state, one_realm=False):
+        """Set permission state.
+
+        :param descriptor: A PermissionDescriptor object.
+        :param state: The state to set the permission to.
+        :param one_realm: Whether to set the permission for only one realm."""
+        pass
+
+
 class ActionSequenceProtocolPart(ProtocolPart):
     """Protocol part for performing trusted clicks"""
     __metaclass__ = ABCMeta
@@ -364,4 +380,63 @@ class CoverageProtocolPart(ProtocolPart):
     @abstractmethod
     def dump(self):
         """Dump coverage counters"""
+        pass
+
+class VirtualAuthenticatorProtocolPart(ProtocolPart):
+    """Protocol part for creating and manipulating virtual authenticators"""
+    __metaclass__ = ABCMeta
+
+    name = "virtual_authenticator"
+
+    @abstractmethod
+    def add_virtual_authenticator(self, config):
+        """Add a virtual authenticator
+
+        :param config: The Authenticator Configuration"""
+        pass
+
+    @abstractmethod
+    def remove_virtual_authenticator(self, authenticator_id):
+        """Remove a virtual authenticator
+
+        :param str authenticator_id: The ID of the authenticator to remove"""
+        pass
+
+    @abstractmethod
+    def add_credential(self, authenticator_id, credential):
+        """Inject a credential onto an authenticator
+
+        :param str authenticator_id: The ID of the authenticator to add the credential to
+        :param credential: The credential to inject"""
+        pass
+
+    @abstractmethod
+    def get_credentials(self, authenticator_id):
+        """Get the credentials stored in an authenticator
+
+        :param str authenticator_id: The ID of the authenticator
+        :returns: An array with the credentials stored on the authenticator"""
+        pass
+
+    @abstractmethod
+    def remove_credential(self, authenticator_id, credential_id):
+        """Remove a credential stored in an authenticator
+
+        :param str authenticator_id: The ID of the authenticator
+        :param str credential_id: The ID of the credential"""
+        pass
+
+    @abstractmethod
+    def remove_all_credentials(self, authenticator_id):
+        """Remove all the credentials stored in an authenticator
+
+        :param str authenticator_id: The ID of the authenticator"""
+        pass
+
+    @abstractmethod
+    def set_user_verified(self, authenticator_id, uv):
+        """Sets the user verified flag on an authenticator
+
+        :param str authenticator_id: The ID of the authenticator
+        :param bool uv: the user verified flag"""
         pass

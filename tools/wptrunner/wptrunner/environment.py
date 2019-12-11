@@ -14,7 +14,7 @@ here = os.path.split(__file__)[0]
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))
 
 sys.path.insert(0, repo_root)
-from tools import localpaths  # noqa: flake8
+from tools import localpaths  # noqa: F401
 
 from wptserve.handlers import StringHandler
 
@@ -50,9 +50,9 @@ class TestEnvironmentError(Exception):
 
 
 class TestEnvironment(object):
+    """Context manager that owns the test environment i.e. the http and
+    websockets servers"""
     def __init__(self, test_paths, testharness_timeout_multipler, pause_after_test, debug_info, options, ssl_config, env_extras):
-        """Context manager that owns the test environment i.e. the http and
-        websockets servers"""
         self.test_paths = test_paths
         self.server = None
         self.config_ctx = None

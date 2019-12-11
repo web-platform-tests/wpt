@@ -46,6 +46,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     rv["pause_after_test"] = kwargs["pause_after_test"]
     if test_type == "wdspec":
         rv["capabilities"] = {}
+        rv["webdriver_binary"] = kwargs["binary"]
     return rv
 
 
@@ -61,7 +62,7 @@ def env_options():
 
 
 def update_properties():
-    return ["debug", "os", "version", "processor", "bits"], None
+    return ["debug", "os", "processor"], {"os": ["version"], "processor": ["bits"]}
 
 
 class ServoBrowser(NullBrowser):

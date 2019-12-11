@@ -180,6 +180,29 @@ jobs:
       directory: tools/wpt/
       toxenv: py27
 
+- job: wpt_integration_macOS_py3
+  displayName: 'tools/wpt/ tests: macOS (Python 3)'
+  dependsOn: decision
+  condition: dependencies.decision.outputs['test_jobs.wpt_integration']
+  pool:
+    vmImage: 'macOS-10.14'
+  steps:
+  # full checkout required
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.6.x'
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '2.7.x'
+  - template: tools/ci/azure/install_chrome.yml
+  - template: tools/ci/azure/install_firefox.yml
+  - template: tools/ci/azure/update_hosts.yml
+  - template: tools/ci/azure/update_manifest.yml
+  - template: tools/ci/azure/tox_pytest.yml
+    parameters:
+      directory: tools/wpt/
+      toxenv: py36
+
 - job: tools_unittest_win
   displayName: 'tools/ unittests: Windows'
   dependsOn: decision
@@ -206,6 +229,7 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.6.x'
+      addToPath: false
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
@@ -238,6 +262,7 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.6.x'
+      addToPath: false
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
@@ -265,6 +290,33 @@ jobs:
     parameters:
       directory: tools/wpt/
       toxenv: py27
+
+- job: wpt_integration_win_py3
+  displayName: 'tools/wpt/ tests: Windows (Python 3)'
+  dependsOn: decision
+  condition: dependencies.decision.outputs['test_jobs.wpt_integration']
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  # full checkout required
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.6.x'
+      addToPath: false
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '2.7.x'
+      addToPath: true
+  # currently just using the outdated Chrome/Firefox on the VM rather than
+  # figuring out how to install Chrome Dev channel on Windows
+  # - template: tools/ci/azure/install_chrome.yml
+  # - template: tools/ci/azure/install_firefox.yml
+  - template: tools/ci/azure/update_hosts.yml
+  - template: tools/ci/azure/update_manifest.yml
+  - template: tools/ci/azure/tox_pytest.yml
+    parameters:
+      directory: tools/wpt/
+      toxenv: py36
 
 - job: infrastructure_win10
   displayName: 'infrastructure/ tests: Windows 10'

@@ -320,13 +320,35 @@ tasks:
         run-job:
           - tools_unittest
 
-  - tools/wpt/ tests:
+  - tools/wpt/ tests (Python 2):
       description: >-
         Integration tests for wpt commands
       use:
         - wpt-base
         - trigger-pr
         - tox-python2
+      command: ./tools/ci/ci_wpt.sh
+      install:
+        - libnss3-tools
+      options:
+        oom-killer: true
+        browser:
+          - firefox
+          - chrome
+        channel: experimental
+        xvfb: true
+        hosts: true
+      schedule-if:
+        run-job:
+          - wpt_integration
+
+  - tools/wpt/ tests (Python 3):
+      description: >-
+        Integration tests for wpt commands
+      use:
+        - wpt-base
+        - trigger-pr
+        - tox-python3
       command: ./tools/ci/ci_wpt.sh
       install:
         - libnss3-tools

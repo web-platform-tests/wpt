@@ -2,6 +2,7 @@ import argparse
 import sys
 from . import browser
 
+from . import browser
 
 latest_channels = {
     'firefox': 'nightly',

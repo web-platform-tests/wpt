@@ -60,8 +60,8 @@ context (and not therefore in any frame or window opened from it).</p>
 <p>Test authors are encouraged to use the builder API to generate the sequence of actions. The builder
 API can be accessed via the <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">test_driver.Actions()</span></code> object, and actions are defined in <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver-actions.js">testdriver-actions.js</a></p>
 <p>The <code class="docutils literal notranslate"><span class="pre">actions.send()</span></code> function causes the sequence of actions to be sent to the browser. It is based on the <a class="reference external" href="https://w3c.github.io/webdriver/#actions">WebDriver API</a>.
-The action can be a keyboard action, a pointer action or a pause. It returns a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> that
-resolves after the actions have been sent or rejects if an error was thrown.</p>
+The action can be a keyboard action, a pointer action or a pause. It returns a promise that
+resolves after the actions have been sent, or rejects if an error was thrown.</p>
 <p>Example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">text_box</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">);</span>
 
@@ -76,7 +76,7 @@ resolves after the actions have been sent or rejects if an error was thrown.</p>
 <span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>Calling into <code class="docutils literal notranslate"><span class="pre">send()</span></code> is going to dispatch the action sequence (via <code class="docutils literal notranslate"><span class="pre">test_driver.action_sequence</span></code>) and also returns a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> which should be handled however is appropriate in the test. The other functions in the <code class="docutils literal notranslate"><span class="pre">Actions()</span></code> object are going to modify the state of the object by adding a new action in the sequence and return the same object. So the functions can be easily chained as shown in the example above. Here is a list of helper functions in the <code class="docutils literal notranslate"><span class="pre">Actions</span></code> class:</p>
+<p>Calling into <code class="docutils literal notranslate"><span class="pre">send()</span></code> is going to dispatch the action sequence (via <code class="docutils literal notranslate"><span class="pre">test_driver.action_sequence</span></code>) and also returns a promise which should be handled however is appropriate in the test. The other functions in the <code class="docutils literal notranslate"><span class="pre">Actions()</span></code> object are going to modify the state of the object by adding a new action in the sequence and returning the same object. So the functions can be easily chained, as shown in the example above. Here is a list of helper functions in the <code class="docutils literal notranslate"><span class="pre">Actions</span></code> class:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pointerDown</span><span class="p">:</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">pointerDown</span> <span class="n">event</span> <span class="k">for</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">pointer</span> <span class="n">source</span>
 <span class="n">pointerUp</span><span class="p">:</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">pointerUp</span> <span class="n">event</span> <span class="k">for</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">pointer</span> <span class="n">source</span>
 <span class="n">pointerMove</span><span class="p">:</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">move</span> <span class="n">event</span> <span class="k">for</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">pointer</span> <span class="n">source</span>
@@ -95,18 +95,18 @@ resolves after the actions have been sent or rejects if an error was thrown.</p>
 <h3>bless<a class="headerlink" href="#bless" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.bless(intent,</span> <span class="pre">action)</span></code></p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">intent</span></code>: a string describing the motivation for this invocation</li>
-<li><code class="docutils literal notranslate"><span class="pre">action</span></code>: an optional function</li>
+<li><em>intent</em>: a string describing the motivation for this invocation</li>
+<li><em>action</em>: an optional function</li>
 </ul>
 <p>This function simulates <a class="reference external" href="https://html.spec.whatwg.org/multipage/interaction.html#activation">activation</a>, allowing tests to
 perform privileged operations that require user interaction. For
-example, sandboxed iframes with the
+example, sandboxed iframes with
 <code class="docutils literal notranslate"><span class="pre">allow-top-navigation-by-user-activation</span></code> may only navigate their
-parent’s browsing context under these circumstances. The <code class="docutils literal notranslate"><span class="pre">intent</span></code>
+parent’s browsing context under these circumstances. The <em>intent</em>
 string is presented to human operators when the test is not run in
 automation.</p>
 <p>This method returns a promise which is resolved with the result of
-invoking the <code class="docutils literal notranslate"><span class="pre">action</span></code> function. If no such function is provided, the
+invoking the <em>action</em> function. If no such function is provided, the
 promise is resolved with the value <code class="docutils literal notranslate"><span class="pre">undefined</span></code>.</p>
 <p>Example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">mediaElement</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;video&#39;</span><span class="p">);</span>
@@ -121,11 +121,11 @@ promise is resolved with the value <code class="docutils literal notranslate"><s
 <h3>click<a class="headerlink" href="#click" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.click(element)</span></code></p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">element</span></code>: a DOM Element object</li>
+<li><em>element</em>: a DOM Element object</li>
 </ul>
 <p>This function causes a click to occur on the target element (an
 <code class="docutils literal notranslate"><span class="pre">Element</span></code> object), potentially scrolling the document to make it
-possible to click it. It returns a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> that resolves after the
+possible to click it. It returns a promise that resolves after the
 click has occurred or rejects if the element cannot be clicked (for
 example, it is obscured by an element on top of it).</p>
 <p>Note that if the element to be clicked does not have a unique ID, the
@@ -136,15 +136,15 @@ being called and the promise settling.</p>
 <h3>send_keys<a class="headerlink" href="#send-keys" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.send_keys(element,</span> <span class="pre">keys)</span></code></p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">element</span></code>: a DOM Element object</li>
-<li><code class="docutils literal notranslate"><span class="pre">keys</span></code>: string to send to the element</li>
+<li><em>element</em>: a DOM Element object</li>
+<li><em>keys</em>: string to send to the element</li>
 </ul>
-<p>This function causes the string <code class="docutils literal notranslate"><span class="pre">keys</span></code> to be send to the target
+<p>This function causes the string <em>keys</em> to be sent to the target
 element (an <code class="docutils literal notranslate"><span class="pre">Element</span></code> object), potentially scrolling the document to
-make it possible to send keys. It returns a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> that resolves
-after the keys have been send or rejects if the keys cannot be sent
+make it possible to send keys. It returns a promise that resolves
+after the keys have been sent, or rejects if the keys cannot be sent
 to the element.</p>
-<p>Note that if the element that’s keys need to be send to does not have
+<p>Note that if the element that the keys need to be sent to does not have
 a unique ID, the document must not have any DOM mutations made
 between the function being called and the promise settling.</p>
 <p>To send special keys, one must send the respective key’s codepoint. Since this uses the WebDriver protocol, you can find a <a class="reference external" href="https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions">list for code points to special keys in the spec</a>.
@@ -165,7 +165,7 @@ apply to only one realm</li>
 </ul>
 <p>This function causes permission requests and queries for the status of a
 certain permission type (e.g. “push”, or “background-fetch”) to always
-return <em>state</em>. It returns a Promise that resolves after the permission has
+return <em>state</em>. It returns a promise that resolves after the permission has
 been set to be overridden with <em>state</em>.</p>
 <p>Example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;background-fetch&quot;</span> <span class="p">},</span> <span class="s2">&quot;denied&quot;</span><span class="p">);</span>

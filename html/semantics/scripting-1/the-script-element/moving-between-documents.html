@@ -20,138 +20,113 @@
 <script>
 "use strict";
 
-for (const type of ["text/javascript", "module"]) {
-  async_test(t => {
-    window.t = t;
-
-    t.add_cleanup(() => {
-      window.didExecute = undefined;
-      window.t = undefined;
-    });
-
+function createDocument(documentType) {
+  return new Promise((resolve, reject) => {
     const iframe = document.createElement("iframe");
-    iframe.onload = t.step_func(() => {
-      iframe.contentWindow.t = t;
-
-      iframe.contentDocument.write("<streaming-element>");
-      document.body.appendChild(iframe.contentDocument.querySelector("streaming-element"));
-      iframe.contentDocument.write(
-        `<script id="s1" type="${type}"
-                 onload="t.unreached_func('onload')"
-                 onerror="t.unreached_func('onerror')">
-        window.didExecute = true;<` + "/script>"
-      );
-      iframe.contentDocument.write("</streaming-element>");
-
-      iframe.contentDocument.close();
-
-      // Needs a delay to allow any error/load events to fire (and fail the test if they do).
-      t.step_timeout(() => {
-        assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
-        assert_equals(iframe.contentWindow.didExecute, undefined,
-          "The script must not have executed in the iframe window");
-        t.done();
-      }, 1000);
-    });
-
+    iframe.onload = () => {
+      if (documentType === "iframe") {
+        resolve([iframe.contentWindow, iframe.contentDocument]);
+      } else if (documentType === "createHTMLDocument") {
+        resolve([
+            iframe.contentWindow,
+            iframe.contentDocument.implementation.createHTMLDocument("")]);
+      } else {
+        reject("Invalid document type: " + documentType);
+      }
+    };
     document.body.appendChild(iframe);
-  }, `${type}: moving to another document during parsing, inline script`);
-
-  async_test(t => {
-    window.t = t;
-    t.add_cleanup(() => {
-      window.didExecute = undefined;
-      window.t = undefined;
-    });
-
-    const iframe = document.createElement("iframe");
-    iframe.onload = t.step_func(() => {
-      iframe.contentWindow.t = t;
-
-      iframe.contentDocument.write("<streaming-element>");
-      document.body.appendChild(iframe.contentDocument.querySelector("streaming-element"));
-      iframe.contentDocument.write(
-        `<script id="s1" type="${type}" src="resources/flag-setter.js"
-                 onload="t.unreached_func('onload')"
-                 onerror="t.unreached_func('onerror')">
-        <` + "/script>"
-      );
-      iframe.contentDocument.write("</streaming-element>");
-
-      iframe.contentDocument.close();
-
-      // Needs a delay to allow any error/load events to fire (and fail the test if they do).
-      t.step_timeout(() => {
-        assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
-        assert_equals(iframe.contentWindow.didExecute, undefined,
-          "The script must not have executed in the iframe window");
-        t.done();
-      }, 1000);
-    });
-
-    document.body.appendChild(iframe);
-  }, `${type}: moving to another document during parsing, external script`);
-
-  for (const fetchResult of ["successful", "failed"]) {
-    async_test(t => {
-      t.add_cleanup(() => {
-        window.didExecute = undefined;
-      });
-
-      const iframe = document.createElement("iframe");
-      iframe.onload = t.step_func(() => {
-        const s = document.createElement("script");
-        s.type = type;
-        s.onload = t.unreached_func("onload");
-        s.onerror = t.unreached_func("onerror");
-        s.src = "resources/slow-flag-setter.py?result=" + fetchResult;
-
-        // Start the fetch
-        document.body.appendChild(s);
-
-        // Need to delay since the "prepare a script" algorithm also contains related checks; we want to
-        // test the "execute a script block" algorithm for when the fetch comes back.
-        t.step_timeout(() => {
-          iframe.contentDocument.body.appendChild(s);
-        }, 0);
-
-        t.step_timeout(() => {
-          assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
-          assert_equals(iframe.contentWindow.didExecute, undefined,
-            "The script must not have executed in the iframe window");
-          t.done();
-        }, 3000);
-      });
-
-      document.body.appendChild(iframe);
-    }, `${type}: moving to another Window's document during ${fetchResult} fetching`);
-
-    async_test(t => {
-      t.add_cleanup(() => {
-        window.didExecute = undefined;
-      });
-
-      const s = document.createElement("script");
-      s.type = type;
-      s.onload = t.unreached_func("onload");
-      s.onerror = t.unreached_func("onerror");
-      s.src = "resources/slow-flag-setter.py?result=" + fetchResult;
-
-      // Start the fetch
-      document.body.appendChild(s);
-
-      // Need to delay since the "prepare a script" algorithm also contains related checks; we want to
-      // test the "execute a script block" algorithm for when the fetch comes back.
-      t.step_timeout(() => {
-        const doc2 = document.implementation.createHTMLDocument("title");
-        doc2.body.appendChild(s);
-      }, 0);
-
-      t.step_timeout(() => {
-        assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
-        t.done();
-      }, 3000);
-    }, `${type}: moving to a createHTMLDocument document where scripting is disabled during ${fetchResult} fetching`);
-  }
+  });
 }
+
+window.scriptErrorEventFired = false;
+window.didExecute = undefined;
+
+(async function() {
+  for (const during of ["parsing", "successful fetch", "failed fetch"]) {
+    for (const destType of ["iframe", "createHTMLDocument"]) {
+      for (const type of ["text/javascript", "module"]) {
+        const description =
+            `Move during ${during} to ${destType} document: ${type}`;
+        const t = async_test(description + ', script evaluation');
+        const tEvent = async_test(description + ', load/error events');
+
+        const [sourceWindow, sourceDocument] = await createDocument("iframe");
+        const [destWindow, destDocument] = await createDocument(destType);
+
+        let scriptErrorEventFired = false;
+
+        sourceWindow.didExecute = undefined;
+        sourceWindow.tEvent = tEvent;
+        destWindow.didExecute = undefined;
+        destWindow.tEvent = tEvent;
+
+        const shouldErrorEventFired =
+          during === "failed fetch" && destType === "iframe";
+
+        if (during === "parsing") {
+          sourceDocument.write("<streaming-element>");
+          destDocument.body.appendChild(
+            sourceDocument.querySelector("streaming-element"));
+          sourceDocument.write(
+            `<script id="s1" type="${type}"
+                     onload="tEvent.unreached_func('onload')"
+                     onerror="tEvent.unreached_func('onerror')">
+            window.didExecute = true;<` + "/script>"
+          );
+          sourceDocument.write("</streaming-element>");
+          sourceDocument.close();
+        } else { // Move during fetching
+          const s = sourceDocument.createElement("script");
+          s.type = type;
+
+          s.onload = tEvent.unreached_func("onload");
+          if (shouldErrorEventFired) {
+            s.onerror = () => { scriptErrorEventFired = true };
+          } else {
+            s.onerror = tEvent.unreached_func("onerror");
+          }
+
+          if (during === "successful fetch") {
+            s.src = "resources/slow-flag-setter.py?result=successful";
+          } else {
+            s.src = "resources/slow-flag-setter.py?result=failed";
+          }
+          sourceDocument.body.appendChild(s);
+          // Need to delay since the "prepare a script" algorithm also
+          // contains related checks; we want to test the
+          // "execute a script block" algorithm for when the fetch comes back.
+          t.step_timeout(() => {
+            destDocument.body.appendChild(s);
+          }, 0);
+        }
+
+        setTimeout(() => {
+          tEvent.step_func_done(() => {
+            if (shouldErrorEventFired) {
+              assert_true(scriptErrorEventFired,
+                  "error event should be fired");
+            }
+          })();
+          t.step_func_done(() => {
+            assert_equals(sourceWindow.didExecute, undefined,
+              "The script must not have executed in source window");
+            assert_equals(destWindow.didExecute, undefined,
+              "The script must not have executed in destination window");
+          })();
+        }, 2000);
+      }
+    }
+  }
+
+  async_test(t => {
+      t.step_timeout(() => {
+          assert_equals(window.didExecute, undefined,
+            "The script must not have executed in the top-level window");
+          assert_false(window.scriptErrorEventFired,
+            "Top-level window's scriptErrorEventFired should be untouched");
+          t.done();
+        }, 2000);
+    },
+    "Sanity check around top-level Window");
+})();
 </script>

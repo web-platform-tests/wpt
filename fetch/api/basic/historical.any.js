@@ -1,11 +1,10 @@
 test(() => {
-  assert_false("getAll" in new Headers);
+  assert_false("getAll" in new Headers());
   assert_false("getAll" in Headers.prototype);
 }, "Headers object no longer has a getAll() method");
 
 test(() => {
-  const request = new Request("https://domfarolino.com");
-  assert_equals(request.type, undefined);
+  assert_false("type" in new Request("about:blank"));
   assert_false("type" in Request.prototype);
 }, "'type' getter should not exist on Request objects");
 

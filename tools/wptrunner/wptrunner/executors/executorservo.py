@@ -5,6 +5,7 @@ import os
 import subprocess
 import tempfile
 import threading
+import traceback
 import uuid
 
 from mozprocess import ProcessHandler
@@ -13,8 +14,10 @@ from tools.serve.serve import make_hosts_file
 
 from .base import (ConnectionlessProtocol,
                    RefTestImplementation,
+                   crashtest_result_converter,
                    testharness_result_converter,
                    reftest_result_converter,
+                   TimedRunner,
                    WdspecExecutor,
                    WebDriverProtocol)
 from .process import ProcessTestExecutor
@@ -283,3 +286,95 @@ class ServoDriverProtocol(WebDriverProtocol):
 
 class ServoWdspecExecutor(WdspecExecutor):
     protocol_cls = ServoDriverProtocol
+
+
+class ServoTimedRunner(TimedRunner):
+    def run_func(self):
+        try:
+            self.result = True, self.func(self.protocol, self.url, self.timeout)
+        except Exception as e:
+            message = getattr(e, "message", "")
+            if message:
+                message += "\n"
+            message += traceback.format_exc(e)
+            self.result = False, ("INTERNAL-ERROR", message)
+        finally:
+            self.result_flag.set()
+
+    def set_timeout(self):
+        pass
+
+
+class ServoCrashtestExecutor(ProcessTestExecutor):
+    convert_result = crashtest_result_converter
+
+    def __init__(self, browser, server_config, binary=None, timeout_multiplier=1,
+                 screenshot_cache=None, debug_info=None, pause_after_test=False,
+                 **kwargs):
+        ProcessTestExecutor.__init__(self,
+                                     browser,
+                                     server_config,
+                                     timeout_multiplier=timeout_multiplier,
+                                     debug_info=debug_info)
+
+        self.pause_after_test = pause_after_test
+        self.protocol = ConnectionlessProtocol(self, browser)
+        self.tempdir = tempfile.mkdtemp()
+        self.hosts_path = write_hosts_file(server_config)
+
+    def do_test(self, test):
+        timeout = (test.timeout * self.timeout_multiplier if self.debug_info is None
+                   else None)
+
+        test_url = self.test_url(test)
+        self.prefs =  test.environment.get('prefs', {})
+
+        success, data = ServoTimedRunner(self.logger, self.do_crashtest, self.protocol,
+                                         test_url, timeout, self.extra_timeout).run()
+
+        if success:
+            return self.convert_result(test, data)
+
+        return (test.result_cls(*data), [])
+
+    def do_crashtest(self, protocol, url, timeout):
+        env = os.environ.copy()
+        env["HOST_FILE"] = self.hosts_path
+        env["RUST_BACKTRACE"] = "1"
+
+        args = [
+            "--hard-fail", "-u", "Servo/wptrunner",
+            "-x",
+            "-Z", "replace-surrogates", "-z", url,
+        ]
+        for stylesheet in self.browser.user_stylesheets:
+            args += ["--user-stylesheet", stylesheet]
+        for pref, value in self.prefs.iteritems():
+            args += ["--pref", "%s=%s" % (pref, value)]
+        if self.browser.ca_certificate_path:
+            args += ["--certificate-path", self.browser.ca_certificate_path]
+        args += self.browser.binary_args
+        debug_args, command = browser_command(self.binary, args, self.debug_info)
+
+        command = command
+
+        if self.pause_after_test:
+            command.remove("-z")
+
+        command = debug_args + command
+
+
+        if not self.interactive:
+            self.proc = ProcessHandler(command,
+                                       env=env,
+                                       storeOutput=False)
+            self.proc.run()
+        else:
+            self.proc = subprocess.Popen(command, env=env)
+
+        self.proc.wait()
+
+        if self.proc.poll() >= 0:
+            return {"status": "PASS", "message": None}
+
+        return {"status": "CRASH", "message": None}

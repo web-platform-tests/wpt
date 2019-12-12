@@ -50,6 +50,7 @@ async_test(t => {
       const svgDocument = element_to_document(instance);
       svgDocument.domain = svgDocument.domain;
     });
+    instances.forEach(instance => assert_apis(instance, true));
     document.domain = document.domain;
     assert_equals(frame.contentDocument, null);
     instances.forEach(instance => assert_apis(instance, true));

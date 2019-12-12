@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<head>
+  <title>Deferred images with loading='lazy' use the original
+         base URL specified at the parse time</title>
+  <link rel="author" title="Rob Buis" href="mailto:rbuis@igalia.com">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="common.js"></script>
+  <base href='/loading/lazyload/resources/'>
+</head>
+
+<!--
+Marked as tentative until https://github.com/whatwg/html/pull/3752 is landed.
+-->
+
+<script>
+  let has_window_loaded = false;
+
+  async_test(function(t) {
+    const below_viewport_img = new ElementLoadPromise("below_viewport_img");
+
+    // Change the base URL and scroll down to load the deferred elements.
+    window.addEventListener("load", () => {
+      var base = document.getElementsByTagName('base')[0];
+      base.href = '/invalid-url-where-no-subresources-exist/';
+      has_window_loaded = true;
+      below_viewport_img.element().scrollIntoView();
+    });
+
+    below_viewport_img.promise.then(
+      t.step_func_done(function() {
+        assert_true(has_window_loaded);
+        assert_true(below_viewport_img.element().complete);
+        assert_greater_than(below_viewport_img.element().naturalWidth, 0);
+      })
+    ).catch(t.unreached_func("The image load should not fail, trying to" +
+                             " load with invalid base URL."));
+  }, "Test that when deferred img is loaded, it uses the parse time base URL.");
+</script>
+
+<body>
+  <div style="height:110vh"></div>
+  <img id="below_viewport_img" src="image.png" loading="lazy"
+       onload="below_viewport_img.resolve();"
+       onerror="below_viewport_img.reject();">
+</body>

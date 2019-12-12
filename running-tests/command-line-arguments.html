@@ -309,7 +309,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="p">[{</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="o">...</span><span class="p">]]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">crashtest</span><span class="p">}</span> <span class="p">[{</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">crashtest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">manifest</span> <span class="n">INCLUDE_MANIFEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tag</span> <span class="n">TAGS</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">exclude</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debugger</span> <span class="p">[</span><span class="n">DEBUGGER</span><span class="p">]]</span>
@@ -537,9 +537,9 @@ a different set of command-line arguments.</p>
 <tbody valign="top">
 <tr><td class="option-group">
 <kbd>--test-types</kbd></td>
-<td><p class="first">Possible choices: reftest, wdspec, testharness</p>
+<td><p class="first">Possible choices: reftest, wdspec, testharness, crashtest</p>
 <p>Test types to run</p>
-<p class="last">Default: set([‘reftest’, ‘wdspec’, ‘testharness’])</p>
+<p class="last">Default: set([‘reftest’, ‘wdspec’, ‘testharness’, ‘crashtest’])</p>
 </td></tr>
 <tr><td class="option-group">
 <kbd>--include</kbd></td>

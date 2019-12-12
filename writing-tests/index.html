@@ -47,6 +47,7 @@ testing plan</span></a> will help you decide what to write.</p>
 <li class="toctree-l1"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
 <li class="toctree-l1"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="crashtest.html">crashtest tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
@@ -93,6 +94,10 @@ agent on that platform.</li>
 <li><a class="reference internal" href="testharness.html"><span class="doc">testharness.js</span></a> tests should be used (where possible!) for
 testing everything else. They are built with the testharness.js unit testing
 framework, and consist of assertions written in JavaScript.</li>
+<li><a class="reference internal" href="crashtest.html"><span class="doc">Crashtests</span></a> tests are used to check that the browser is
+able to load a given document without crashing or experiencing other
+low-level issues (asserts, leaks, etc.). They pass if the load
+completes without error.</li>
 <li><a class="reference internal" href="wdspec.html"><span class="doc">wdspec</span></a> tests are written in Python using
 <a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a> and test <a class="reference external" href="https://w3c.github.io/webdriver/">the WebDriver browser
 automation protocol</a></li>
@@ -143,6 +148,7 @@ make sure you run the <a class="reference internal" href="lint-tool.html"><span 
 <li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="crashtest.html">crashtest tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>

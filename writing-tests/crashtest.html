@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>The Ahem Font &#8212; web-platform-tests  documentation</title>
+    <title>crashtest tests &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -16,8 +16,8 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Test Assumptions" href="assumptions.html" />
-    <link rel="prev" title="General Test Guidelines" href="general-guidelines.html" />
+    <link rel="next" title="CSS Metadata" href="css-metadata.html" />
+    <link rel="prev" title="Test Assumptions" href="assumptions.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -34,72 +34,25 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="the-ahem-font">
-<h1>The Ahem Font<a class="headerlink" href="#the-ahem-font" title="Permalink to this headline">¶</a></h1>
-<p>A font called <a class="reference external" href="https://www.w3.org/Style/CSS/Test/Fonts/Ahem/README">Ahem</a> has been developed which consists of
-some very well defined glyphs of precise sizes and shapes; it is
-especially useful for testing font and text properties. Installation
-instructions are available in <a class="reference internal" href="../running-tests/from-local-system.html"><span class="doc">Running Tests from the Local
-System</span></a>.</p>
-<p>The font’s em-square is exactly square. Its ascent and descent
-combined is exactly the size of the em square; this means that the
-font’s extent is exactly the same as its line-height, meaning that it
-can be exactly aligned with padding, borders, margins, and so
-forth. Its alphabetic baseline is 0.2em above its bottom, and 0.8em
-below its top.</p>
-<p>The font has four glyphs:</p>
-<ul class="simple">
-<li>X (U+0058):  A square exactly 1em in height and width.</li>
-<li>p (U+0070):  A rectangle exactly 0.2em high, 1em wide, and aligned so
-that its top is flush with the baseline.</li>
-<li>É (U+00C9):  A rectangle exactly 0.8em high, 1em wide, and aligned so
-that its bottom is flush with the baseline.</li>
-<li>[space] (U+0020):  A transparent space exactly 1em high and wide.</li>
-</ul>
-<p>Most other US-ASCII characters in the font have the same glyph as X.</p>
-<div class="section" id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
-<p>Ahem should be loaded in tests as a web font. To simplify this, a test can
-link to the <code class="docutils literal notranslate"><span class="pre">/fonts/ahem.css</span></code> stylesheet:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">link</span> <span class="n">rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/css&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;/fonts/ahem.css&quot;</span> <span class="o">/&gt;</span>
-</pre></div>
-</div>
-<p>If the test uses the Ahem font, make sure its computed font-size is a
-multiple of 5px, otherwise baseline alignment may be rendered
-inconsistently. A minimum computed font-size of 20px is suggested.</p>
-<p>An explicit (i.e., not <code class="docutils literal notranslate"><span class="pre">normal</span></code>) line-height should also always be
-used, with the difference between the computed line-height and
-font-size being divisible by 2. In the common case, having the same
-value for both is desirable.</p>
-<p>Other font properties should make sure they have their default values;
-as such, the <code class="docutils literal notranslate"><span class="pre">font</span></code> shorthand should normally be used.</p>
-<p>As a result, what is typically recommended is:</p>
-<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="nt">div</span> <span class="p">{</span>
-  <span class="k">font</span><span class="p">:</span> <span class="mi">25</span><span class="kt">px</span><span class="o">/</span><span class="mi">1</span> <span class="n">Ahem</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>Some things to avoid:</p>
-<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="nt">div</span> <span class="p">{</span>
-  <span class="k">font</span><span class="p">:</span> <span class="mi">1</span><span class="kt">em</span><span class="o">/</span><span class="mi">1</span><span class="kt">em</span> <span class="n">Ahem</span><span class="p">;</span>  <span class="c">/* computed font-size is typically 16px and potentially</span>
-<span class="c">                          affected by parent elements */</span>
-<span class="p">}</span>
-
-<span class="nt">div</span> <span class="p">{</span>
-  <span class="k">font</span><span class="p">:</span> <span class="mi">20</span><span class="kt">px</span> <span class="n">Ahem</span><span class="p">;</span>  <span class="c">/* computed line-height value is normal */</span>
-<span class="p">}</span>
-
-<span class="nt">div</span> <span class="p">{</span>
-  <span class="c">/* doesn&#39;t use font shorthand; font-weight and font-style are inherited */</span>
-  <span class="k">font-family</span><span class="p">:</span> <span class="n">Ahem</span><span class="p">;</span>
-  <span class="k">font-size</span><span class="p">:</span> <span class="mi">25</span><span class="kt">px</span><span class="p">;</span>
-  <span class="k">line-height</span><span class="p">:</span> <span class="mi">50</span><span class="kt">px</span><span class="p">;</span>  <span class="c">/* the difference between computed line-height and</span>
-<span class="c">                         computed font-size is not divisible by 2</span>
-<span class="c">                         (50 - 25 = 25; 25 / 2 = 12.5). */</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
+  <div class="section" id="crashtest-tests">
+<h1>crashtest tests<a class="headerlink" href="#crashtest-tests" title="Permalink to this headline">¶</a></h1>
+<p>Crash tests are used to ensure that a document can be loaded without
+crashing or experiencing other low-level issues that may be checked by
+implementation-specific tooling (e.g. leaks, asserts, or sanitizer
+failures).</p>
+<p>Crashtests are identified by the string <code class="docutils literal notranslate"><span class="pre">-crash</span></code> in the filename, or
+by being in a directory called <code class="docutils literal notranslate"><span class="pre">crashtests</span></code>.</p>
+<p>The simplest crashtest is a single HTML file with any content. The
+test passes if the load event is reached, and the browser finishes
+painting, without terminating.</p>
+<p>In some cases crashtests may need to perform work after the initial
+page load. In this case the test may specify a <code class="docutils literal notranslate"><span class="pre">class=wait</span></code> attribute
+on the root element. The test will not complete until that attribute
+is removed from the root. At the time when the test would otherwise
+have ended a <code class="docutils literal notranslate"><span class="pre">TestRendered</span></code> event is emitted; test authors can use
+this event to perform modifications that are guaranteed not to be
+batched with the initial paint. This matches the behaviour of
+<a class="reference internal" href="reftests.html"><span class="doc">reftests</span></a>.</p>
 </div>
 
 
@@ -125,9 +78,9 @@ as such, the <code class="docutils literal notranslate"><span class="pre">font</
 <li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">The Ahem Font</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="crashtest.html">crashtest tests</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">crashtest tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="file-names.html">File Name Flags</a></li>
@@ -162,8 +115,8 @@ as such, the <code class="docutils literal notranslate"><span class="pre">font</
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Writing Tests</a><ul>
-      <li>Previous: <a href="general-guidelines.html" title="previous chapter">General Test Guidelines</a></li>
-      <li>Next: <a href="assumptions.html" title="next chapter">Test Assumptions</a></li>
+      <li>Previous: <a href="assumptions.html" title="previous chapter">Test Assumptions</a></li>
+      <li>Next: <a href="css-metadata.html" title="next chapter">CSS Metadata</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -200,7 +153,7 @@ as such, the <code class="docutils literal notranslate"><span class="pre">font</
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/writing-tests/ahem.md.txt"
+      <a href="../_sources/writing-tests/crashtest.md.txt"
           rel="nofollow">Page source</a>
     </div>
 

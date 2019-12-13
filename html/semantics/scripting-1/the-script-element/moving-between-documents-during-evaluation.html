@@ -50,9 +50,9 @@ async_test(t => {
 
   t.step_timeout(() => {
     assert_equals(document.currentScript, null,
-        '[4] After outner script: currentScript of source Document');
+        '[4] After outer script: currentScript of source Document');
     assert_equals(anotherDocument.currentScript, null,
-        '[4] After outner script: currentScript of destination Document');
+        '[4] After outer script: currentScript of destination Document');
     t.done();
   }, 0);
 }, 'Script moved between documents during evaluation');

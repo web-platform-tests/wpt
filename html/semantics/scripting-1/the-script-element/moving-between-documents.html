@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<meta name="timeout" content="long">
 <title>Moving script elements between documents</title>
 <link rel="author" href="mailto:d@domenic.me" title="Domenic Denicola">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#execute-the-script-block">
@@ -14,6 +15,22 @@
 - https://github.com/whatwg/html/issues/2469
 - https://github.com/whatwg/html/pull/2673
 
+For a script, there are four associated Documents that can
+potentially different:
+[1] script's parser document
+[2] script's node document at the beginning of #prepare-a-script
+    == script's preparation-time document
+[3] script's node document at the beginning of
+    #execute-the-script-block
+[4] script's node document at the end of
+    #execute-the-script-block
+
+This file tests cases where [1]/[2]/[3] are different.
+The case where [3]/[4] are different is tested in
+`moving-between-documents-during-evaluation.html`.
+
+[1]==[2] is tested in #prepare-a-script (Step 10).
+[1]==[3] and [2]==[3] is tested in #execute-the-script-block.
 -->
 
 <body>
@@ -42,7 +59,28 @@ window.scriptErrorEventFired = false;
 window.didExecute = undefined;
 
 (async function() {
-  for (const during of ["parsing", "successful fetch", "failed fetch"]) {
+  for (const during of [
+      // An inline <script> is moved during parsing before #prepare-a-script.
+      // [1] != [2] == [3]
+      "parsing",
+
+      // An inline <script> is moved after parsing/#prepare-a-script but
+      // before #execute-the-script-block.
+      // To move such scripts, #has-a-style-sheet-that-is-blocking-scripts
+      // is utilized.
+      // [1] == [2] != [3]
+      "blocked by stylesheet",
+
+      // An inline <script> is moved during parsing, but moved back again
+      // to the original Document.
+      // [1] == [3] != [2]
+      "parsing but moved back",
+
+      // An external <script> is moved after parsing/#prepare-a-script but
+      // before #execute-the-script-block.
+      // [1] == null, [2] != [3]
+      "successful fetch", "failed fetch",
+  ]) {
     for (const hasParseError of [false, true]) {
       for (const destType of ["iframe", "createHTMLDocument"]) {
         for (const type of ["text/javascript", "module"]) {
@@ -82,21 +120,62 @@ window.didExecute = undefined;
           // the current browsers.
           // during === "failed fetch" && destType === "iframe";
 
-          if (during === "parsing") {
+          if (during === "parsing" ||
+              during === "parsing but moved back" ||
+              during === "blocked by stylesheet") {
+
+            // If scripts should be moved after #prepare-a-script before
+            // #execute-the-script-block, we add a style sheet that is
+            // blocking scripts.
+            if (during === "blocked by stylesheet" ||
+                during === "parsing but moved back") {
+              sourceDocument.write(
+                  `<link rel="stylesheet"
+                    href="resources/slow-flag-setter.py?result=css&cache=${Math.random()}">
+                   </link><body></body>`);
+              // Due to https://crbug.com/1034176, Chromium needs
+              // blocking stylesheets also in the destination Documents.
+              destDocument.write(
+                  `<link rel="stylesheet"
+                    href="resources/slow-flag-setter.py?result=css&cache=${Math.random()}">
+                   </link><body></body>`);
+              destDocument.close();
+            }
+
             sourceDocument.write("<streaming-element>");
-            destDocument.body.appendChild(
-              sourceDocument.querySelector("streaming-element"));
+
+            // Move between documents before #prepare-a-script.
+            if (during === "parsing" ||
+                during === "parsing but moved back") {
+              destDocument.body.appendChild(
+                sourceDocument.querySelector("streaming-element"));
+            }
+
             sourceDocument.write(
               `<script id="s1" type="${type}"
                   onload="tScriptLoadEvent.unreached_func('onload')"
                   onerror="tScriptErrorEvent.unreached_func('onerror')">`);
             if (hasParseError) {
-              sourceDocument.write("1=2 parse error<" + "/script>");
+              sourceDocument.write("1=2 parse error");
             } else {
-              sourceDocument.write("window.didExecute = true;<" + "/script>");
+              sourceDocument.write("window.didExecute = true;");
             }
+
+            // #prepare-a-script
+            sourceDocument.write("<" + "/script>");
+
             sourceDocument.write("</streaming-element>");
             sourceDocument.close();
+
+            // Move between documents after #prepare-a-script.
+            if (during === "blocked by stylesheet") {
+              destDocument.body.appendChild(
+                sourceDocument.querySelector("streaming-element"));
+            }
+            else if (during === "parsing but moved back") {
+              sourceDocument.body.appendChild(
+                destDocument.querySelector("streaming-element"));
+            }
           } else { // Move during fetching
             const s = sourceDocument.createElement("script");
             s.type = type;
@@ -145,7 +224,7 @@ window.didExecute = undefined;
               assert_equals(destWindow.didExecute, undefined,
                 "The script must not have executed in destination window");
             })();
-          }, 2000);
+          }, 4000);
         }
       }
     }
@@ -158,7 +237,7 @@ window.didExecute = undefined;
           assert_false(window.scriptErrorEventFired,
             "Top-level window's scriptErrorEventFired should be untouched");
           t.done();
-        }, 2000);
+        }, 4000);
     },
     "Sanity check around top-level Window");
 })();

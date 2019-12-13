@@ -10,6 +10,6 @@ def main(request, response):
     body = "window.didExecute = true;"
   else:
     headers.append(("Transfer-encoding", "chunked"))
-    body = "Invalid\nChunk\n"
+    body = "Invalid\r\nChunk\r\n"
 
   return headers, body

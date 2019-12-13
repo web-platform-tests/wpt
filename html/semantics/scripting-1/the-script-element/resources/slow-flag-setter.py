@@ -6,8 +6,11 @@ def main(request, response):
 
   headers = [("Content-Type", "text/javascript")]
 
-  if request.GET.first("result", "successful") == "successful":
+  result = request.GET.first("result", "successful")
+  if result == "successful":
     body = "window.didExecute = true;"
+  elif result == "parse-error":
+    body = "1=2 parse error;"
   else:
     headers.append(("Transfer-encoding", "chunked"))
     body = "Invalid\r\nChunk\r\n"

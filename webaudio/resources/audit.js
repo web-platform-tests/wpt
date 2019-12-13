@@ -51,6 +51,12 @@ window.Audit = (function() {
     }, message);
   }
 
+  function _logException(message, exception) {
+    test(function() {
+      throw exception;
+    }, message);
+  }
+
   function _throwException(message) {
     throw new Error(message);
   }

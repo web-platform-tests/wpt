@@ -31,7 +31,7 @@ function createDocument(documentType) {
             iframe.contentWindow,
             iframe.contentDocument.implementation.createHTMLDocument("")]);
       } else {
-        reject("Invalid document type: " + documentType);
+        reject(new Error("Invalid document type: " + documentType));
       }
     };
     document.body.appendChild(iframe);

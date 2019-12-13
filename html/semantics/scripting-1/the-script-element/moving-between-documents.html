@@ -100,7 +100,11 @@ window.didExecute = undefined;
           }, 0);
         }
 
-        setTimeout(() => {
+        // As we have two concurrent tests (`tEvent` and `t`),
+        // a single global step_timeout() is used instead of two
+        // `tEvent.step_timeout()` and `t.step_timeout()`,
+        // to avoid potential race conditions between two step_timeout()s.
+        step_timeout(() => {
           tEvent.step_func_done(() => {
             if (shouldErrorEventFired) {
               assert_true(scriptErrorEventFired,

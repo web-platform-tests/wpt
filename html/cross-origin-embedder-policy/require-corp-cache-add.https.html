@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<title> Use cache.add(request) in a Cross-Origin-Embedder-Policy: require-corp context</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script>
+
+/*
+  This document has the header Cross-Origin-Embedder-Policy: require-corp.
+  Cross-Origin Embedder Policy Editor's draft: https://mikewest.github.io/corpp/
+
+  This test using cache.add(request) with different requests and responses.
+*/
+
+function remote(path) {
+  const REMOTE_ORIGIN = get_host_info().HTTPS_REMOTE_ORIGIN;
+  return new URL(path, REMOTE_ORIGIN);
+}
+
+function local(path) {
+  return new URL(path, location.origin);
+}
+
+const image_path = "/images/blue.png?pipe=";
+
+const corp_header = {
+  "corp-undefined": "",
+  "corp-same-origin": "|header(Cross-Origin-Resource-Policy,same-origin)",
+  "corp-cross-origin": "|header(Cross-Origin-Resource-Policy,cross-origin)",
+}
+
+const cors_header = {
+  "cors-disabled": "",
+  "cors-enabled": "|header(Access-Control-Allow-Origin,*)",
+}
+
+let cacheAdd = function(cache, request) {
+  return cache.add(request);
+}
+
+let fetchCachePut = function(cache, request) {
+  return fetch(request).then(response => cache.put(request, response));
+}
+
+cacheAdd.toString = function() { return "'cache.add'";}
+fetchCachePut.toString = function() { return "'fetch & cache.put'";}
+
+function test(
+  // Test parameters:
+  request_origin, cache_add_function, request_mode, response_cors, response_corp,
+  // Test expectations:
+  response_cached) {
+
+  promise_test(async (t) => {
+    // Start from an empty CacheStorage.
+    await caches.delete("v1");
+
+    // Fetch a request and store it into the CacheStorage.
+    const path = image_path +
+      corp_header[response_corp] +
+      cors_header[response_cors];
+    const url = (request_origin == "same-origin" ? local : remote)(path);
+    const request = new Request(url, {mode: request_mode});
+    const cache = await caches.open('v1');
+    let cached = cache_add_function(cache, request);
+
+    if (response_cached) {
+      await cached;
+    } else {
+      await promise_rejects(t, new TypeError(), cached);
+    }
+  }, `${cache_add_function} with a ${request_origin} ${request_mode} request and a ${response_cors} ${response_corp} response.`)
+}
+
+// Responses from a same-origin server.
+{
+  const t = test.bind(this, "same-origin", cacheAdd);
+  t("cors", "cors-disabled", "corp-cross-origin", true);
+  t("cors", "cors-disabled", "corp-same-origin", true);
+  t("cors", "cors-disabled", "corp-undefined", true);
+  t("cors", "cors-enabled", "corp-cross-origin", true);
+  t("cors", "cors-enabled", "corp-same-origin", true);
+  t("cors", "cors-enabled", "corp-undefined", true);
+  t("no-cors", "cors-disabled", "corp-cross-origin", true);
+  t("no-cors", "cors-disabled", "corp-same-origin", true);
+  t("no-cors", "cors-disabled", "corp-undefined", true);
+  t("no-cors", "cors-enabled", "corp-cross-origin", true);
+  t("no-cors", "cors-enabled", "corp-same-origin", true);
+  t("no-cors", "cors-enabled", "corp-undefined", true);
+}
+
+// Responses from a cross-origin server using cache.add.
+{
+  const t = test.bind(this, "cross-origin", cacheAdd);
+  t("cors", "cors-disabled", "corp-cross-origin", false);
+  t("cors", "cors-disabled", "corp-same-origin", false);
+  t("cors", "cors-disabled", "corp-undefined", false);
+  t("cors", "cors-enabled", "corp-cross-origin", true);
+  t("cors", "cors-enabled", "corp-same-origin", true);
+  t("cors", "cors-enabled", "corp-undefined", true);
+  t("no-cors", "cors-disabled", "corp-cross-origin", false);
+  t("no-cors", "cors-disabled", "corp-same-origin", false);
+  t("no-cors", "cors-disabled", "corp-undefined", false);
+  t("no-cors", "cors-enabled", "corp-cross-origin", false);
+  t("no-cors", "cors-enabled", "corp-same-origin", false);
+  t("no-cors", "cors-enabled", "corp-undefined", false);
+}
+
+// Responses from a cross-origin server using fetch + cache.put.
+{
+  const t = test.bind(this, "cross-origin", fetchCachePut);
+  t("cors", "cors-disabled", "corp-cross-origin", false);
+  t("cors", "cors-disabled", "corp-same-origin", false);
+  t("cors", "cors-disabled", "corp-undefined", false);
+  t("cors", "cors-enabled", "corp-cross-origin", true);
+  t("cors", "cors-enabled", "corp-same-origin", true);
+  t("cors", "cors-enabled", "corp-undefined", true);
+  t("no-cors", "cors-disabled", "corp-cross-origin", true);
+  t("no-cors", "cors-disabled", "corp-same-origin", false);
+  t("no-cors", "cors-disabled", "corp-undefined", false);
+  t("no-cors", "cors-enabled", "corp-cross-origin", true);
+  t("no-cors", "cors-enabled", "corp-same-origin", false);
+  t("no-cors", "cors-enabled", "corp-undefined", false);
+}
+
+</script>
+</html>

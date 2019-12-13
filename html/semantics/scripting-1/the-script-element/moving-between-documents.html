@@ -43,81 +43,110 @@ window.didExecute = undefined;
 
 (async function() {
   for (const during of ["parsing", "successful fetch", "failed fetch"]) {
-    for (const destType of ["iframe", "createHTMLDocument"]) {
-      for (const type of ["text/javascript", "module"]) {
-        const description =
-            `Move during ${during} to ${destType} document: ${type}`;
-        const t = async_test(description + ', script evaluation');
-        const tEvent = async_test(description + ', load/error events');
-
-        const [sourceWindow, sourceDocument] = await createDocument("iframe");
-        const [destWindow, destDocument] = await createDocument(destType);
-
-        let scriptErrorEventFired = false;
-
-        sourceWindow.didExecute = undefined;
-        sourceWindow.tEvent = tEvent;
-        destWindow.didExecute = undefined;
-        destWindow.tEvent = tEvent;
-
-        const shouldErrorEventFired =
-          during === "failed fetch" && destType === "iframe";
-
-        if (during === "parsing") {
-          sourceDocument.write("<streaming-element>");
-          destDocument.body.appendChild(
-            sourceDocument.querySelector("streaming-element"));
-          sourceDocument.write(
-            `<script id="s1" type="${type}"
-                     onload="tEvent.unreached_func('onload')"
-                     onerror="tEvent.unreached_func('onerror')">
-            window.didExecute = true;<` + "/script>"
-          );
-          sourceDocument.write("</streaming-element>");
-          sourceDocument.close();
-        } else { // Move during fetching
-          const s = sourceDocument.createElement("script");
-          s.type = type;
-
-          s.onload = tEvent.unreached_func("onload");
-          if (shouldErrorEventFired) {
-            s.onerror = () => { scriptErrorEventFired = true };
-          } else {
-            s.onerror = tEvent.unreached_func("onerror");
+    for (const hasParseError of [false, true]) {
+      for (const destType of ["iframe", "createHTMLDocument"]) {
+        for (const type of ["text/javascript", "module"]) {
+          if (during === "failed fetch" && hasParseError) {
+            // Skip; Parse errors can't occur for failed fetches.
+            continue;
           }
 
-          if (during === "successful fetch") {
-            s.src = "resources/slow-flag-setter.py?result=successful";
-          } else {
-            s.src = "resources/slow-flag-setter.py?result=failed";
-          }
-          sourceDocument.body.appendChild(s);
-          // Need to delay since the "prepare a script" algorithm also
-          // contains related checks; we want to test the
-          // "execute a script block" algorithm for when the fetch comes back.
-          t.step_timeout(() => {
-            destDocument.body.appendChild(s);
-          }, 0);
-        }
+          const description =
+              `Move during ${during}` +
+              (hasParseError ? " with parse error" : "") +
+              ` to ${destType} document: ${type}`;
+          const t = async_test(description + ", script evaluation");
+          const tScriptLoadEvent = async_test(description + ", script load");
+          const tScriptErrorEvent = async_test(description + ", script error");
+          const tWindowErrorEvent = async_test(description + ", window error");
 
-        // As we have two concurrent tests (`tEvent` and `t`),
-        // a single global step_timeout() is used instead of two
-        // `tEvent.step_timeout()` and `t.step_timeout()`,
-        // to avoid potential race conditions between two step_timeout()s.
-        step_timeout(() => {
-          tEvent.step_func_done(() => {
-            if (shouldErrorEventFired) {
-              assert_true(scriptErrorEventFired,
-                  "error event should be fired");
+          const [sourceWindow, sourceDocument] =
+              await createDocument("iframe");
+          const [destWindow, destDocument] = await createDocument(destType);
+
+          let scriptErrorEventFired = false;
+
+          sourceWindow.didExecute = undefined;
+          sourceWindow.tScriptLoadEvent = tScriptLoadEvent;
+          sourceWindow.tScriptErrorEvent = tScriptErrorEvent;
+          sourceWindow.onerror = tWindowErrorEvent.unreached_func(
+              "Window error event shouldn't fired on source window");
+          destWindow.didExecute = undefined;
+          destWindow.tScriptLoadEvent = tScriptLoadEvent;
+          destWindow.tScriptErrorEvent = tScriptErrorEvent;
+          destWindow.onerror = tWindowErrorEvent.unreached_func(
+              "Window error event shouldn't fired on destination window");
+
+          const shouldScriptErrorEventFired = false;
+          // TODO: Temporarily set to false just to test behaviors on
+          // the current browsers.
+          // during === "failed fetch" && destType === "iframe";
+
+          if (during === "parsing") {
+            sourceDocument.write("<streaming-element>");
+            destDocument.body.appendChild(
+              sourceDocument.querySelector("streaming-element"));
+            sourceDocument.write(
+              `<script id="s1" type="${type}"
+                  onload="tScriptLoadEvent.unreached_func('onload')"
+                  onerror="tScriptErrorEvent.unreached_func('onerror')">`);
+            if (hasParseError) {
+              sourceDocument.write("1=2 parse error<" + "/script>");
+            } else {
+              sourceDocument.write("window.didExecute = true;<" + "/script>");
             }
-          })();
-          t.step_func_done(() => {
-            assert_equals(sourceWindow.didExecute, undefined,
-              "The script must not have executed in source window");
-            assert_equals(destWindow.didExecute, undefined,
-              "The script must not have executed in destination window");
-          })();
-        }, 2000);
+            sourceDocument.write("</streaming-element>");
+            sourceDocument.close();
+          } else { // Move during fetching
+            const s = sourceDocument.createElement("script");
+            s.type = type;
+
+            s.onload = tScriptLoadEvent.unreached_func("onload");
+            if (shouldScriptErrorEventFired) {
+              s.onerror = () => { scriptErrorEventFired = true };
+            } else {
+              s.onerror = tScriptErrorEvent.unreached_func("onerror");
+            }
+
+            if (during === "successful fetch") {
+              if (hasParseError) {
+                s.src = "resources/slow-flag-setter.py?result=parse-error";
+              } else {
+                s.src = "resources/slow-flag-setter.py?result=successful";
+              }
+            } else {
+              s.src = "resources/slow-flag-setter.py?result=failed";
+            }
+            sourceDocument.body.appendChild(s);
+            // Need to delay since the "prepare a script" algorithm also
+            // contains related checks; we want to test the
+            // "execute a script block" algorithm for when the fetch comes
+            // back.
+            t.step_timeout(() => {
+              destDocument.body.appendChild(s);
+            }, 0);
+          }
+
+          // As we have concurrent tests, a single global step_timeout() is
+          // used instead of multiple `t.step_timeout()` etc.,
+          // to avoid potential race conditions between `t.step_timeout()`s.
+          step_timeout(() => {
+            tScriptLoadEvent.done();
+            tScriptErrorEvent.step_func_done(() => {
+              if (shouldScriptErrorEventFired) {
+                assert_true(scriptErrorEventFired,
+                    "error event should be fired");
+              }
+            })();
+            tWindowErrorEvent.done();
+            t.step_func_done(() => {
+              assert_equals(sourceWindow.didExecute, undefined,
+                "The script must not have executed in source window");
+              assert_equals(destWindow.didExecute, undefined,
+                "The script must not have executed in destination window");
+            })();
+          }, 2000);
+        }
       }
     }
   }

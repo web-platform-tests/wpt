@@ -121,6 +121,9 @@ def pytest_result_converter(self, test, data):
     return (harness_result, subtest_results)
 
 
+def crashtest_result_converter(self, test, result):
+    return test.result_cls(**result), []
+
 class ExecutorException(Exception):
     def __init__(self, status, message):
         self.status = status
@@ -130,6 +133,7 @@ class ExecutorException(Exception):
 class TimedRunner(object):
     def __init__(self, logger, func, protocol, url, timeout, extra_timeout):
         self.func = func
+        self.logger = logger
         self.result = None
         self.protocol = protocol
         self.url = url
@@ -147,9 +151,10 @@ class TimedRunner(object):
         executor = threading.Thread(target=self.run_func)
         executor.start()
 
-        # Add twice the timeout multiplier since the called function is expected to
+        # Add twice the extra timeout since the called function is expected to
         # wait at least self.timeout + self.extra_timeout and this gives some leeway
-        finished = self.result_flag.wait(self.timeout + 2 * self.extra_timeout)
+        timeout = self.timeout + 2 * self.extra_timeout if self.timeout else None
+        finished = self.result_flag.wait(timeout)
         if self.result is None:
             if finished:
                 # flag is True unless we timeout; this *shouldn't* happen, but
@@ -312,6 +317,10 @@ class RefTestExecutor(TestExecutor):
                               debug_info=debug_info)
 
         self.screenshot_cache = screenshot_cache
+
+
+class CrashtestExecutor(TestExecutor):
+    convert_result = crashtest_result_converter
 
 
 class RefTestImplementation(object):
@@ -571,6 +580,9 @@ class WdspecRun(object):
 
 
 class ConnectionlessBaseProtocolPart(BaseProtocolPart):
+    def load(self, url):
+        pass
+
     def execute_script(self, script, asynchronous=False):
         pass
 
@@ -652,6 +664,8 @@ class CallbackHandler(object):
     WebDriver. Things that are more different to WebDriver may need to create a
     fully custom implementation."""
 
+    unimplemented_exc = (NotImplementedError,)
+
     def __init__(self, logger, protocol, test_window):
         self.protocol = protocol
         self.test_window = test_window
@@ -698,6 +712,9 @@ class CallbackHandler(object):
             raise ValueError("Unknown action %s" % action)
         try:
             result = action_handler(payload)
+        except self.unimplemented_exc:
+            self.logger.warning("Action %s not implemented" % action)
+            self._send_message("complete", "error", "Action %s not implemented" % action)
         except Exception:
             self.logger.warning("Action %s failed" % action)
             self.logger.warning(traceback.format_exc())
@@ -781,7 +798,7 @@ class SetPermissionAction(object):
         state = permission_params["state"]
         one_realm = permission_params.get("oneRealm", False)
         self.logger.debug("Setting permission %s to %s, oneRealm=%s" % (name, state, one_realm))
-        self.protocol.set_permission.set_permission(name, state, one_realm)
+        self.protocol.set_permission.set_permission(descriptor, state, one_realm)
 
 class AddVirtualAuthenticatorAction(object):
     def __init__(self, logger, protocol):

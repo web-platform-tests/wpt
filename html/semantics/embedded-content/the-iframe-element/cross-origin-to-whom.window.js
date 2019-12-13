@@ -11,13 +11,8 @@ async_test(t => {
     const name = instance.localName;
     let priorPossibleDocument = null;
     elements[name].forEach(api => {
-      let possibleDocument = null;
-      if (api == "getSVGDocument") {
-        possibleDocument = instance[api]();
-      } else {
-        possibleDocument = instance[api];
-      }
-      assert_not_equals(possibleDocument, null, `${name}[${api}]`);
+      const possibleDocument = api == "getSVGDocument" ? instance[api]() : instance[api];
+      assert_not_equals(possibleDocument, null, `${name}.${api}`);
       // This needs standardizing still
       // assert_class_string(possibleDocument, "XMLDocument");
 
@@ -31,7 +26,9 @@ async_test(t => {
   }
   frame.onload = t.step_func_done(() => {
     const instances = Object.keys(elements).map(element => frame.contentDocument.querySelector(element));
+    // Everything is same origin and same origin-domain, no sweat
     instances.forEach(instance => assert_apis(instance));
+    // Make the current settings object cross origin-domain (SVG and its container are not affected)
     document.domain = document.domain;
     assert_equals(frame.contentDocument, null);
     instances.forEach(instance => assert_apis(instance));

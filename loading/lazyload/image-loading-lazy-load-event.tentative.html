@@ -39,7 +39,6 @@ Marked as tentative until https://github.com/whatwg/html/pull/3752 is landed.
 
     Promise.all([visible_img.promise, visibility_hidden_img.promise])
       .then(t.step_func_done(function() {
-        console.log("images are done loading");
         assert_true(has_window_loaded,
                     "The window load event fired before the in-viewport " +
                     "loading=lazy images load.");

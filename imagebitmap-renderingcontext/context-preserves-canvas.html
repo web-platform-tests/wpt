@@ -14,6 +14,8 @@ test(function() {
     canvas.height = height;
     var ctx = canvas.getContext('bitmaprenderer');
     var dstCanvas = ctx.canvas;
+    assert_true("canvas" in ctx);
+    assert_object_equals(canvas, ctx.canvas);
     assert_equals(dstCanvas.width, width);
     assert_equals(dstCanvas.height, height);
 }, "Test that ctx.canvas on a ImageBitmapRenderingContext returns the original canvas");

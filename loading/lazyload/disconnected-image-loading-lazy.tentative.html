@@ -20,9 +20,9 @@ async_test(function(t) {
   x.loading = "lazy";
   x.src = "resources/image.png?lazy";
   x.onload = e => {
-    t.step(function() {
-      t.unreached_func("Disconnected image with loading=lazy should be loaded lazily.");
-    });
+    t.step(
+      t.unreached_func("Disconnected image with loading=lazy should be loaded lazily.")
+    );
   };
   t.step_timeout(function() { t.done(); }, 2000);
 }, "loading=lazy for disconnected image");

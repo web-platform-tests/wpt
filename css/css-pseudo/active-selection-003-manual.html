@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and cursor (basic)</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-styling">
+
+  <meta content="interact" name="flags">
+
+  <style>
+  div
+    {
+      cursor: auto;
+      font-size: 300%;
+    }
+
+  div::selection
+    {
+      cursor: url("support/select-custom.cur"), help;
+    }
+
+  img
+    {
+      vertical-align: -1em;
+    }
+  </style>
+
+  <p>Select with mouse dragging "Text sample" or select with text-highlighting (with <kbd>Shift</kbd> and keyboard arrows when keyboard navigation <kbd>F7</kbd> is enabled) "Text sample". Test passes if the cursor becomes <img src="support/select-custom.png" width="32" height="32" alt="Image download support must be enabled"> when hovering anywhere over the selection of "Text sample".
+
+  <p>Reminder: you can select a whole word by double-clicking on it. You can select a whole line by triple-clicking anywhere inside it.
+
+  <div>Text sample</div>

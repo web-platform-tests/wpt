@@ -18,7 +18,7 @@ Marked as tentative until https://github.com/whatwg/html/pull/3752 is landed.
   let has_in_viewport_loaded = false;
   let has_window_load_fired = false;
 
-  const in_viewport_img_onload = t.step_func(function() {
+  const in_viewport_img_onload = t.step_func(() => {
     assert_false(has_in_viewport_loaded,
                  "The in_viewport element should load only once.");
     has_in_viewport_loaded = true;
@@ -30,9 +30,9 @@ Marked as tentative until https://github.com/whatwg/html/pull/3752 is landed.
     has_window_load_fired = true;
   }));
 
-  const below_viewport_img_onload = t.step_func_done(function() {
+  const below_viewport_img_onload = t.step_func_done(() => {
     assert_true(has_in_viewport_loaded,
-                "The below-viewport image does not load until it has been " +
+                "The below-viewport image should not load until it has been " +
                 "scrolled into viewport, after the in-viewport image loads");
     assert_true(has_window_load_fired,
                 "Below-viewport loading=lazy images should not block the " +

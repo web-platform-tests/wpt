@@ -42,28 +42,30 @@ Marked as tentative until https://github.com/whatwg/html/pull/3752 is landed.
   async_test(t => {
     let has_window_loaded = false;
 
-    scroll_trigger_img.promise.then(t.step_func(() => {
-      assert_false(has_window_loaded,
-                   "The scroll_trigger image loads before the window load " +
-                   "event fires");
-      visibility_hidden_img.element().scrollIntoView();
-    }));
+    scroll_trigger_img.promise
+      .then(t.step_func(() => {
+        assert_false(has_window_loaded,
+                     "The scroll_trigger image should load before the window " +
+                     "load event fires");
+        visibility_hidden_img.element().scrollIntoView();
+    }))
+    .catch(t.unreached_func("The scroll_trigger image should load"));
 
     window.addEventListener("load", t.step_func(() => {
       has_window_loaded = true;
     }));
 
     Promise.all([visible_img.promise, visibility_hidden_img.promise])
-      .then(t.step_func_done(function() {
+      .then(t.step_func_done(() => {
         assert_true(has_window_loaded,
-                    "The window load event fired before the below-viewport " +
-                    "loading=lazy images load.");
+                    "The window load event should fire before the " +
+                    "below-viewport loading=lazy images load");
         assert_true(visible_img.element().complete,
                     "The below-viewport loading=lazy visible image is complete");
         assert_true(visibility_hidden_img.element().complete,
                     "The below-viewport loading=lazy visibility:hidden image is complete");
       }))
-      .catch(t.unreached_func("The images should load successfully."));
+      .catch(t.unreached_func("The images should load successfully"));
 
   }, "Below-viewport loading=lazy images do not block the window load event when " +
      "scrolled into viewport");

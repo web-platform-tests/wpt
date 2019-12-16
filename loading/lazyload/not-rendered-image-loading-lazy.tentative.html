@@ -31,20 +31,21 @@ Marked as tentative until https://github.com/whatwg/html/pull/3752 is landed.
   const js_display_none_img = new ElementLoadPromise("js_display_none");
 
   async_test(t => {
-    const kInvisibleImageShouldNotLoadMessage =
-      "Not-rendered loading=lazy images never attempt to load.";
+    const unreached_not_rendered_img_func =
+      t.unreached_func("The not-rendered in-viewport loading=lazy images " +
+                       "do not attempt to load.");
 
     display_none_img.promise
-      .then(t.unreached_func(kInvisibleImageShouldNotLoadMessage))
-      .catch(t.unreached_func(kInvisibleImageShouldNotLoadMessage));
+      .then(unreached_not_rendered_img_func)
+      .catch(unreached_not_rendered_img_func);
 
     attribute_hidden_img.promise
-      .then(t.unreached_func(kInvisibleImageShouldNotLoadMessage))
-      .catch(t.unreached_func(kInvisibleImageShouldNotLoadMessage));
+      .then(unreached_not_rendered_img_func)
+      .catch(unreached_not_rendered_img_func);
 
     js_display_none_img.promise
-      .then(t.unreached_func(kInvisibleImageShouldNotLoadMessage))
-      .catch(t.unreached_func(kInvisibleImageShouldNotLoadMessage));
+      .then(unreached_not_rendered_img_func)
+      .catch(unreached_not_rendered_img_func);
 
     t.step_timeout(t.done, 2000);
   }, "In-viewport loading=lazy not-rendered images should never load");

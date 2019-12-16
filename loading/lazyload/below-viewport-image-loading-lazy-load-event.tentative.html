@@ -11,12 +11,12 @@
 
 <body>
   <!-- When this image loads, we will scroll the below-viewport loading=lazy
-       images into the viewport. This happens beore the window load event is
+       images into the viewport. This happens before the window load event is
        fired -->
   <img id="scroll_trigger"
        src="resources/image.png?scroll-trigger&pipe=trickle(d1)"
        onload="scroll_trigger_img.resolve();" onerror="scroll_trigger_img.reject();">
-  <!-- This image blocks the window load event for 3 seconds -->
+  <!-- This image blocks the window load event for 2 seconds -->
   <img src="resources/image.png?window-load-blocking&pipe=trickle(d2)">
 
   <div style="height:1000vh"></div>

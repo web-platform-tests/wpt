@@ -48,7 +48,8 @@ def test_add_domain_cookie(session, url, server_config):
         "domain": server_config["browser_host"],
         "path": "/",
         "httpOnly": False,
-        "secure": False
+        "secure": False,
+        "samesite": "Strict"
     }
 
     session.url = url("/common/blank.html")
@@ -58,17 +59,20 @@ def test_add_domain_cookie(session, url, server_config):
     assert_success(result)
 
     cookie = session.cookies("hello")
-    assert "domain" in cookie
-    assert isinstance(cookie["domain"], basestring)
     assert "name" in cookie
     assert isinstance(cookie["name"], basestring)
     assert "value" in cookie
     assert isinstance(cookie["value"], basestring)
+    assert "domain" in cookie
+    assert isinstance(cookie["domain"], basestring)
+    assert "samesite" in cookie
+    assert isinstance(cookie["samesite"], basestring)
 
     assert cookie["name"] == "hello"
     assert cookie["value"] == "world"
     assert cookie["domain"] == server_config["browser_host"] or \
         cookie["domain"] == ".%s" % server_config["browser_host"]
+    assert cookie["samesite"] == "Strict"
 
 
 def test_add_cookie_for_ip(session, url, server_config, configuration):
@@ -78,7 +82,8 @@ def test_add_cookie_for_ip(session, url, server_config, configuration):
         "domain": "127.0.0.1",
         "path": "/",
         "httpOnly": False,
-        "secure": False
+        "secure": False,
+        "samesite": "Lax"
     }
 
     session.url = "http://127.0.0.1:%s/common/blank.html" % (server_config["ports"]["http"][0])
@@ -94,10 +99,13 @@ def test_add_cookie_for_ip(session, url, server_config, configuration):
     assert isinstance(cookie["value"], basestring)
     assert "domain" in cookie
     assert isinstance(cookie["domain"], basestring)
+    assert "samesite" in cookie
+    assert isinstance(cookie["samesite"], basestring)
 
     assert cookie["name"] == "hello"
     assert cookie["value"] == "world"
     assert cookie["domain"] == "127.0.0.1"
+    assert cookie["samesite"] == "Lax"
 
 
 def test_add_non_session_cookie(session, url):

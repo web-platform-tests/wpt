@@ -232,7 +232,6 @@
     "remote-outbound-rtp",
     "peer-connection",
     "data-channel",
-    "stream",
     "track",
     "transport",
     "candidate-pair",
@@ -293,16 +292,6 @@
           'Expect video track stats to be found');
 
         assert_equals(videoTrackStats.kind, 'video');
-
-        const mediaStreamStats = findStatsFromReport(statsReport,
-          stats => {
-            return stats.type === 'stream' &&
-              stats.streamIdentifier === mediaStream.id;
-          },
-          'Expect media stream stats to be found');
-
-        assert_true(mediaStreamStats.trackIds.include(audioTrackStats.id));
-        assert_true(mediaStreamStats.trackIds.include(videoTrackStats.id));
       }
 
       const onConnected = t.step_func(() => {

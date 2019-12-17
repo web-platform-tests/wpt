@@ -113,7 +113,8 @@ function test(
       return;
     }
 
-    const response = await cache.match(url);
+    const request = new Request(url, {mode: request_mode});
+    const response = await cache.match(request);
 
     assert_equals(response.type, response_type);
 

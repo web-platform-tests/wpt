@@ -107,7 +107,8 @@ function test(
 
     // 2. Make this document to retrieve it from the CacheStorage.
     const cache = await caches.open('v1');
-    const response = await cache.match(url);
+    const request = new Request(url, {mode: request_mode});
+    const response = await cache.match(request);
 
     assert_equals(response.type, response_type);
 

@@ -23,7 +23,7 @@
   </defs>
 
   <g id="test-body-reference" style="fill:none;stroke:black;stroke-width:2">
-    <circle  cx="120" cy="220" r="80"/>width="160" height="160"/>
+    <circle  cx="120" cy="220" r="80"/>
     <path d="m 200,200 0,20" style="marker-end:url(#End);stroke:none"/>
     <ellipse cx="360" cy="220" rx="100" ry="60"/>
     <path d="m 460,200 0,20" style="marker-end:url(#End);stroke:none"/>

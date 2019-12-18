@@ -23,14 +23,12 @@
   </defs>
 
   <g id="test-body-reference" style="fill:none;stroke:black;stroke-width:2;">
-    <circle  cx="120" cy="220" r="80"/>width="160" height="160"/>
-    <path d="m 200,210  0,10  0,10" style="marker-mid:url(#Mid);stroke:none"/>
+    <circle  cx="120" cy="220" r="80"/>
     <path d="m 130,300 -10,0 -10,0" style="marker-mid:url(#Mid);stroke:none"/>
     <path d="m  40,230 0,-10 0,-10" style="marker-mid:url(#Mid);stroke:none"/>
     <path d="m 110,140  10,0  10,0" style="marker-mid:url(#Mid);stroke:none"/>
 
     <ellipse cx="360" cy="220" rx="100" ry="60"/>
-    <path d="m 460,210  0,10  0,10" style="marker-mid:url(#Mid);stroke:none"/>
     <path d="m 370,280 -10,0 -10,0" style="marker-mid:url(#Mid);stroke:none"/>
     <path d="m 260,230 0,-10 0,-10" style="marker-mid:url(#Mid);stroke:none"/>
     <path d="m 350,160  10,0  10,0" style="marker-mid:url(#Mid);stroke:none"/>

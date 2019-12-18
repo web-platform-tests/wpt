@@ -22,9 +22,20 @@
     </marker>
   </defs>
 
-  <g id="test-body-reference" style="fill:none;stroke:black;stroke-width:2;marker-mid:url(#Mid)">
-    <path d="m 40,180 0,-40 160,0 0,160 -160,0 z"/>
-    <path d="m 280 180 a 40,40 0 0 1 40,-40 l 80,0 a 40,40 0 0 1 40,40 l 0,80 a 40,40 0 0 1 -40,40 l -80,0 a 40,40 0 0 1 -40,-40 l 0,-80 a 40,40 0 0 1 40,-40"/>
+  <g id="test-body-reference" style="fill:none;stroke:black;stroke-width:2">
+    <path d="m 40,140 160,0 0,160 -160,0 z"/>
+    <path d="m 190,130  10,10    10,10" style="stroke:none;marker-mid:url(#Mid)"/>
+    <path d="m 210,290 -10,10   -10,10" style="stroke:none;marker-mid:url(#Mid)"/>
+    <path d="m  50,310 -10,-10 -10,-10" style="stroke:none;marker-mid:url(#Mid)"/>
+
+    <path d="m 280 180 a 40,40 0 0 1 40,-40 l 80,0 a 40,40 0 0 1 40,40 l 0,80 a 40,40 0 0 1 -40,40 l -80,0 a 40,40 0 0 1 -40,-40 l 0,-80 z"/>
+    <path d="m 360,140  40,0    40,0" style="stroke:none;marker-mid:url(#Mid)"/>
+    <path d="m 440,140  0,40    0,40" style="stroke:none;marker-mid:url(#Mid)"/>
+    <path d="m 440,220  0,40    0,40" style="stroke:none;marker-mid:url(#Mid)"/>
+    <path d="m 440,300 -40,0   -40,0" style="stroke:none;marker-mid:url(#Mid)"/>
+    <path d="m 360,300 -40,0   -40,0" style="stroke:none;marker-mid:url(#Mid)"/>
+    <path d="m 280,300 0,-40   0,-40" style="stroke:none;marker-mid:url(#Mid)"/>
+    <path d="m 280,220 0,-40   0,-40" style="stroke:none;marker-mid:url(#Mid)"/>
   </g>
 
 </svg>

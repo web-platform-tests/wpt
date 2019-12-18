@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>CSS Grid Layout Test: grid align baseline vertical</title>
 <link rel="author" title="Rossana Monteriso" href="mailto:rmonteriso@igalia.com">
-<link rel="help" href="https://www.w3.org/TR/css-writing-modes-3/#intro-baselines">
+<link rel="help" href="https://drafts.csswg.org/css-writing-modes-4/#intro-baselines">
 <link rel="help" href="https://drafts.csswg.org/css-align-3/#baseline-rules">
 <link rel="help" href="https://drafts.csswg.org/css-align-3/#baseline-align-self">
 <meta name="assert" content="This test checks that baseline alignment works correctly for align-self properties in vertical-rl writing mode">
@@ -20,7 +20,6 @@
     position: relative;
     writing-mode: vertical-rl;
     text-orientation: sideways-right;
-    -webkit-text-orientation: sideways-right;
     font: 20px/1 Ahem;
 }
 
@@ -81,7 +80,7 @@
   <div data-expected-width="100" data-offset-x="0" class="firstRowFourthColumn" style="width: 100px;"></div>
 </div>
 
-<div class="grid" style="-webkit-writing-mode: vertical-lr">
+<div class="grid" style="writing-mode: vertical-lr">
   <div id="baseline6" data-offset-x="13" class="firstRowFirstColumn alignSelfBaseline">ahem</div>
   <div id="baseline7" data-offset-x="13" class="firstRowSecondColumn alignSelfBaseline"><img src="support/1x1-blue.png" style="width: 50px;"></div>
   <div data-expected-width="50" data-offset-x="25" class="firstRowThirdColumn alignSelfCenter"><img src="support/1x1-blue.png" style="width: 50px; vertical-align: middle;"></div>
@@ -89,7 +88,7 @@
   <div data-expected-width="100" data-offset-x="0" class="firstRowFifthColumn" style="width: 100px;"></div>
 </div>
 
-<div class="grid" style="-webkit-writing-mode: vertical-lr">
+<div class="grid" style="writing-mode: vertical-lr">
   <div id="baseline8" class="firstRowFirstColumn alignSelfBaseline">ahem</div>
   <div id="baseline9" class="firstRowSecondColumn alignSelfBaseline"><br><img src="support/1x1-blue.png" style="width: 50px;"></div>
   <div data-expected-width="50" data-offset-x="0" class="firstRowThirdColumn alignSelfBaseline"><img src="support/1x1-blue.png" style="width: 50px; vertical-align: middle;"></div>

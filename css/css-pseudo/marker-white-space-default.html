@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>::marker has 'white-space: pre' by default</title>
+<link rel="author" title="Oriol Brufau" href="mailto:obrufau@igalia.com" />
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#marker-pseudo">
+<link rel="match" href="marker-white-space-default-ref.html">
+<meta name="assert" content="Checks that markers preserve spaces">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
+<style>
+ol {
+  font: 25px/1 Ahem;
+  margin: 25px 0;
+  padding-left: 200px;
+}
+.decimal {
+  list-style-type: decimal;
+}
+.string {
+  list-style-type: " X  X ";
+}
+.marker::marker {
+  content: " X  X ";
+}
+.inside {
+  list-style-position: inside;
+}
+</style>
+<ol>
+  <li class="decimal">p</li>
+  <li class="string">p</li>
+  <li class="marker">p</li>
+</ol>
+<ol class="inside">
+  <li class="decimal">p</li>
+  <li class="string">p</li>
+  <li class="marker">p</li>
+</ol>

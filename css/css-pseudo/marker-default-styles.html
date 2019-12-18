@@ -30,6 +30,7 @@
 const defaultStyles = [
   ["unicode-bidi", "isolate"],
   ["font-variant-numeric", "tabular-nums"],
+  ["white-space", "pre"],
 ];
 for (const target of document.querySelectorAll("li")) {
   const cs = getComputedStyle(target, "::marker");

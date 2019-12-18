@@ -13,13 +13,15 @@ dictionary NDEFMessageInit {
   required sequence<NDEFRecordInit> records;
 };
 
+typedef (DOMString or BufferSource or NDEFMessageInit) NDEFRecordDataSource;
+
 [Exposed=Window]
 interface NDEFRecord {
   constructor(NDEFRecordInit recordInit);
 
   readonly attribute USVString recordType;
   readonly attribute USVString? mediaType;
-  readonly attribute USVString id;
+  readonly attribute USVString? id;
   readonly attribute DataView? data;
 
   readonly attribute USVString? encoding;
@@ -36,7 +38,7 @@ dictionary NDEFRecordInit {
   USVString encoding;
   USVString lang;
 
-  any data;
+  NDEFRecordDataSource data;
 };
 
 typedef (DOMString or BufferSource or NDEFMessageInit) NDEFMessageSource;
@@ -85,7 +87,7 @@ enum NDEFPushTarget {
 };
 
 dictionary NDEFScanOptions {
-  USVString id = "";
+  USVString id;
   USVString recordType;
   USVString mediaType = "";
   AbortSignal? signal;

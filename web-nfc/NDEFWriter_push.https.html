@@ -30,7 +30,6 @@ const invalid_type_messages =
       // NDEFRecord.data for 'text' record must be either a string,
       // an arrayBuffer, or an arrayBufferView.
       createMessage([createTextRecord(test_json_data)]),
-      createMessage([createTextRecord(test_number_data)]),
 
       // NDEFRecord.encoding for 'text' record must be either "utf-8",
       // "utf-16", "utf-16le" or "utf-16be".
@@ -49,12 +48,10 @@ const invalid_type_messages =
 
       // NDEFRecord.data for 'url' record must be string.
       createMessage([createUrlRecord(test_buffer_data)]),
-      createMessage([createUrlRecord(test_number_data)]),
       createMessage([createUrlRecord(test_json_data)]),
 
       // NDEFRecord.data for 'absolute-url' record must be string.
       createMessage([createUrlRecord(test_buffer_data, true)]),
-      createMessage([createUrlRecord(test_number_data, true)]),
       createMessage([createUrlRecord(test_json_data, true)]),
 
       // https://w3c.github.io/web-nfc/#dfn-map-binary-data-to-ndef
@@ -83,7 +80,7 @@ const invalid_type_messages =
       createMessage([createRecord('w3.org:xyz', test_number_data)]),
       createMessage([createRecord('w3.org:xyz', test_json_data)]),
 
-      // https://w3c.github.io/web-nfc/#the-ndefrecordtype-string
+      // https://w3c.github.io/web-nfc/#ndef-record-types
       // The record type is neither a known type ('text', 'mime' etc.) nor a
       // valid custom type for an external type record.
       createMessage([createRecord('unmatched_type', test_buffer_data)])
@@ -126,6 +123,28 @@ promise_test(async t => {
   await Promise.all(promises);
 }, "Test that promise is rejected with SyntaxError if NDEFMessageSource contains\
  invalid records.");
+
+promise_test(async t => {
+  if (window.testRunner) {
+    // Deny nfc permissions for Chromium testrunner.
+    window.testRunner.setPermission('nfc', 'denied',
+                                    location.origin, location.origin);
+  }
+  const writer = new NDEFWriter();
+  await promise_rejects(t, 'NotAllowedError', writer.push(test_text_data));
+}, 'NDEFWriter.push should fail if user permission is not granted.');
+
+// We do not provide NFC mock here to simulate that there has no available
+// implementation for NFC Mojo interface.
+promise_test(async t => {
+  if (window.testRunner) {
+    // Deny nfc permissions for Chromium testrunner.
+    window.testRunner.setPermission('nfc', 'granted',
+                                    location.origin, location.origin);
+  }
+  const writer = new NDEFWriter();
+  await promise_rejects(t, 'NotSupportedError', writer.push(test_text_data));
+}, 'NDEFWriter.push should fail if no implementation for NFC Mojo interface is available.');
 
 nfc_test(async (t, mockNFC) => {
   const writer = new NDEFWriter();
@@ -171,7 +190,6 @@ nfc_test(async (t, mockNFC) => {
   const writer1 = new NDEFWriter();
   const writer2 = new NDEFWriter();
   const controller = new AbortController();
-  mockNFC.setPendingPushCompleted(false);
   const p1 = writer1.push(test_text_data, { signal: controller.signal });
 
   // Even though push request is grantable,
@@ -203,14 +221,6 @@ promise_test(async t => {
 
 promise_test(async t => {
   const writer = new NDEFWriter();
-  const message = createMessage([createTextRecord(test_text_data)]);
-  message.url = '%00/invalid/ path';
-  await promise_rejects(t, 'SyntaxError', writer.push(message));
-}, "Reject promise with SyntaxError if WebNFC Id cannot be created from \
-provided URL.");
-
-promise_test(async t => {
-  const writer = new NDEFWriter();
   await promise_rejects(
     t, new TypeError(), writer.push(test_text_data, {target: "invalid"}));
 }, "NDEFWriter.push should fail with TypeError when invalid target value is \
@@ -220,6 +230,11 @@ promise_test(async () => {
   await new Promise((resolve,reject) => {
     const iframe = document.createElement('iframe');
     iframe.srcdoc = `<script>
+                      if (window.testRunner) {
+                        // Grant nfc permissions for Chromium testrunner.
+                        window.testRunner.setPermission('nfc', 'granted',
+                                                        location.origin, location.origin);
+                      }
                       window.onmessage = message => {
                         if (message.data === "Ready") {
                           const onSuccess = () => {
@@ -316,18 +331,18 @@ nfc_test(async (t, mockNFC) => {
   const message = createMessage([createTextRecord(test_text_data)]);
   const controller = new AbortController();
   const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
-  const promise = readerWatcher.wait_for("reading").then(event => {
+  await reader.scan({ signal: controller.signal });
+
+  const writer = new NDEFWriter();
+  await writer.push(test_text_data, { ignoreRead: false });
+  assertNDEFMessagesEqual(test_text_data, mockNFC.pushedMessage());
+
+  mockNFC.setReadingMessage(message);
+  await readerWatcher.wait_for("reading").then(event => {
     controller.abort();
     assertWebNDEFMessagesEqual(event.message, new NDEFMessage(message));
   });
 
-  reader.scan({ signal: controller.signal });
-
-  const writer = new NDEFWriter();
-  await writer.push(test_text_data, { ignoreRead: false });
-  mockNFC.setReadingMessage(message);
-  assertNDEFMessagesEqual(test_text_data, mockNFC.pushedMessage());
-  await promise;
 }, "NDEFWriter.push should read data when ignoreRead is false.");
 
 nfc_test(async (t, mockNFC) => {
@@ -335,7 +350,7 @@ nfc_test(async (t, mockNFC) => {
   const message = createMessage([createTextRecord(test_text_data)]);
   // Ignore reading if NDEFPushOptions.ignoreRead is true
   reader.onreading = t.unreached_func("reading event should not be fired.");
-  reader.scan();
+  await reader.scan();
 
   const writer = new NDEFWriter();
   await writer.push(test_text_data, { ignoreRead: true });

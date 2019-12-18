@@ -201,6 +201,7 @@ SET TIMEOUT: shadow-dom/slotchange-event.html
 SET TIMEOUT: trusted-types/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.tentative.html
 SET TIMEOUT: trusted-types/DOMWindowTimers-setTimeout-setInterval.tentative.html
 SET TIMEOUT: user-timing/*
+SET TIMEOUT: web-animations/timing-model/animations/*
 SET TIMEOUT: webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/mediaElementAudioSourceToScriptProcessorTest.html
 SET TIMEOUT: webauthn/*timeout.https.html
 SET TIMEOUT: webdriver/*
@@ -282,6 +283,7 @@ GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/w
 GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/window-named-properties-003.html
 
 # Intentional use of setTimeout
+SET TIMEOUT: common/security-features/resources/common.sub.js
 SET TIMEOUT: css/css-fonts/font-display/font-display.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-change.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-change-ref.html
@@ -304,6 +306,7 @@ SET TIMEOUT: resources/test/tests/functional/worker.js
 SET TIMEOUT: resources/test/tests/functional/worker-uncaught-allow.js
 SET TIMEOUT: resources/test/tests/unit/exceptional-cases.html
 SET TIMEOUT: resources/test/tests/unit/exceptional-cases-timeouts.html
+SET TIMEOUT: resources/test/tests/unit/promise_setup.html
 SET TIMEOUT: resources/testharness.js
 
 # setTimeout use in reftests
@@ -469,6 +472,7 @@ CSS-COLLIDING-SUPPORT-NAME: css/*/LOCK
 # These are all the current "merge mismatch" errors the build system produces
 CSS-COLLIDING-SUPPORT-NAME: css/css-flexbox/support/200x200-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/css-grid/grid-items/support/200x200-green.png
+CSS-COLLIDING-SUPPORT-NAME: css/css-scroll-snap/support/common.css
 CSS-COLLIDING-SUPPORT-NAME: css/css-regions/contentEditable/support/common.css
 CSS-COLLIDING-SUPPORT-NAME: css/css-regions/interactivity/full-screen/support/common.css
 CSS-COLLIDING-SUPPORT-NAME: css/css-backgrounds/support/pattern-grg-rgr-grg.png
@@ -673,8 +677,13 @@ MISSING-LINK: css/filter-effects/*.any.js
 # Tests that use WebKit/Blink testing APIs
 LAYOUTTESTS APIS: css/css-regions/interactivity/*
 LAYOUTTESTS APIS: import-maps/resources/jest-test-helper.js
+LAYOUTTESTS APIS: import-maps/common/resources/common-test-helper.js
 LAYOUTTESTS APIS: resources/chromium/generic_sensor_mocks.js
+LAYOUTTESTS APIS: resources/chromium/nfc-mock.js
 LAYOUTTESTS APIS: resources/chromium/webxr-test.js
+LAYOUTTESTS APIS: web-nfc/NDEFReader-document-hidden-manual.https.html
+LAYOUTTESTS APIS: web-nfc/NDEFReader_scan.https.html
+LAYOUTTESTS APIS: web-nfc/NDEFWriter_push.https.html
 
 # Signed Exchange files have hard-coded URLs in the certUrl field
 WEB-PLATFORM.TEST:signed-exchange/resources/*.sxg
@@ -702,3 +711,42 @@ AHEM SYSTEM FONT: resource-timing/resources/iframe-reload-TAO.sub.html
 AHEM SYSTEM FONT: infrastructure/assumptions/ahem-ref.html
 AHEM SYSTEM FONT: infrastructure/assumptions/ahem.html
 
+# Existing crashtests using testharness
+TESTHARNESS-IN-OTHER-TYPE: 2dcontext/wide-gamut-canvas/imagedata-no-color-settings-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/CSS2/floats-clear/adjoining-float-new-fc-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/CSS2/floats/floats-saturated-position-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/CSS2/linebox/video-needs-layout-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-animations/keyframes-remove-documentElement-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-break/break-before-with-no-fragmentation-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-multicol/abspos-in-multicol-with-spanner-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-multicol/extremely-tall-multicol-with-extremely-tall-child-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-multicol/with-custom-layout-on-same-element-crash.https.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-overflow/outline-with-opacity-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-overflow/shrink-to-fit-auto-overflow-relayout-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-position/position-absolute-in-inline-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-pseudo/first-letter-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-pseudo/first-line-first-letter-insert-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-shapes/shape-outside/supported-shapes/polygon/shape-outside-polygon-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-tables/visibility-collapse-colspan-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-tables/visibility-collapse-rowspan-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-text/overflow-wrap/overflow-wrap-break-word-long-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-text/overflow-wrap/overflow-wrap-break-word-white-space-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-text/text-indent/text-indent-long-line-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-text/white-space/nowrap-wbr-and-space-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-text/white-space/pre-line-br-with-whitespace-child-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-text/white-space/pre-with-whitespace-crash.html
+TESTHARNESS-IN-OTHER-TYPE: css/css-writing-modes/bidi-inline-fragment-crash.html
+TESTHARNESS-IN-OTHER-TYPE: dom/svg-insert-crash.html
+TESTHARNESS-IN-OTHER-TYPE: editing/run/first-letter-crossing-engine-boundary-crash.html
+TESTHARNESS-IN-OTHER-TYPE: html/semantics/embedded-content/the-object-element/block-object-with-ruby-crash.html
+TESTHARNESS-IN-OTHER-TYPE: html/semantics/forms/the-input-element/time-datalist-crash.html
+TESTHARNESS-IN-OTHER-TYPE: html/semantics/forms/the-input-element/type-change-file-to-text-crash.html
+TESTHARNESS-IN-OTHER-TYPE: html/semantics/interactive-elements/the-details-element/display-table-with-rt-crash.html
+TESTHARNESS-IN-OTHER-TYPE: html/semantics/interactive-elements/the-summary-element/display-table-with-rt-crash.html
+TESTHARNESS-IN-OTHER-TYPE: html/semantics/text-level-semantics/the-ruby-element/rt-without-ruby-crash.html
+TESTHARNESS-IN-OTHER-TYPE: portals/portals-no-frame-crash.html
+TESTHARNESS-IN-OTHER-TYPE: quirks/table-replaced-descendant-percentage-height-crash.html
+TESTHARNESS-IN-OTHER-TYPE: svg/extensibility/foreignObject/foreign-object-circular-filter-reference-crash.html
+TESTHARNESS-IN-OTHER-TYPE: svg/extensibility/foreignObject/foreign-object-under-clip-path-crash.html
+TESTHARNESS-IN-OTHER-TYPE: svg/extensibility/foreignObject/foreign-object-under-defs-crash.html
+TESTHARNESS-IN-OTHER-TYPE: svg/svg-in-svg/svg-in-svg-circular-filter-reference-crash.html

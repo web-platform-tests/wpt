@@ -37,7 +37,6 @@ const statsValidatorTable = {
   'csrc': validateContributingSourceStats,
   'peer-connection': validatePeerConnectionStats,
   'data-channel': validateDataChannelStats,
-  'stream': validateMediaStreamStats,
   'track': validateMediaStreamTrackStats,
   'transport': validateTransportStats,
   'candidate-pair': validateIceCandidatePairStats,
@@ -433,37 +432,6 @@ function validatePeerConnectionStats(statsReport, stats) {
   assert_unsigned_int_field(stats, 'dataChannelsClosed');
   assert_optional_unsigned_int_field(stats, 'dataChannelsRequested');
   assert_optional_unsigned_int_field(stats, 'dataChannelsAccepted');
-}
-
-/*
-  [webrtc-stats]
-  7.11. RTCMediaStreamStats dictionary
-    dictionary RTCMediaStreamStats : RTCStats {
-      DOMString           streamIdentifier;
-      sequence<DOMString> trackIds;
-    };
-
-  [webrtc-pc]
-  8.6.  Mandatory To Implement Stats
-    - RTCMediaStreamStats, with attributes streamIdentifer, trackIds
- */
-function validateMediaStreamStats(statsReport, stats) {
-  validateRtcStats(statsReport, stats);
-
-  assert_string_field(stats, 'streamIdentifier');
-  assert_array_field(stats, 'trackIds');
-
-  for(const trackId of stats.trackIds) {
-    assert_equals(typeof trackId, 'string',
-      'Expect trackId elements to be string');
-
-    assert_true(statsReport.has(trackId),
-      `Expect stats report to have stats object with id ${trackId}`);
-
-    const trackStats = statsReport.get(trackId);
-    assert_equals(trackStats.type, 'track',
-      `Expect track stats object to have type 'track'`);
-  }
 }
 
 /*

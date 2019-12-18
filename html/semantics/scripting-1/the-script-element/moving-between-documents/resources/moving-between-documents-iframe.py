@@ -31,8 +31,12 @@ def main(request, response):
   body += """
     </head>
     <body>
-      <streaming-element>
   """
+
+  if inlineOrExternal == "inline" or inlineOrExternal == "external":
+    body += """
+      <streaming-element>
+    """
 
   # Trigger DOM processing
   body += "A" * 100000
@@ -61,6 +65,7 @@ def main(request, response):
 
     body += """
         </script>
+      </streaming-element>
     """
   elif inlineOrExternal == "external":
     time.sleep(1)
@@ -69,6 +74,7 @@ def main(request, response):
                 src="slow-flag-setter.py?result=%s&cache=%s"
                 onload="tScriptLoadEvent.unreached_func('onload')"
                 onerror="scriptOnError(event)"></script>
+      </streaming-element>
     """ % (type, result, random.random())
 
   #        // if readyToEvaluate is false, the script is probably
@@ -76,10 +82,6 @@ def main(request, response):
 
   # Trigger DOM processing
   body += "B" * 100000
-
-  body += """
-      </streaming-element>
-  """
 
   response.writer.write("%x\r\n" % len(body))
   response.writer.write(body)

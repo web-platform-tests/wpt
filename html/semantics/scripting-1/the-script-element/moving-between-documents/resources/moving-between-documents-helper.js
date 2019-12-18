@@ -17,7 +17,6 @@ function createDocument(documentType, result, inlineOrExternal, type, hasBlockin
     document.body.appendChild(iframe);
 
     window.addEventListener('message', (event) => {
-      console.log(event.source.location.href);
       if (documentType === "iframe") {
         resolve([iframe.contentWindow, iframe.contentDocument]);
       } else if (documentType === "createHTMLDocument") {

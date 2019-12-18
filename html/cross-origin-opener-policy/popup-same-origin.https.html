@@ -11,6 +11,7 @@
 let tests = [
   // popup Origin, popup COOP, expect opener
   [SAME_ORIGIN, "", false],
+  [SAME_ORIGIN, "unsafe-none", false],
   [SAME_ORIGIN, "jibberish", false],
   [SAME_ORIGIN, "same-site", false], // historical value
   [SAME_ORIGIN, "same-site unsafe-allow-outgoing", false], // historical value
@@ -19,6 +20,7 @@ let tests = [
   [SAME_ORIGIN, "same-origin-allow-popups", false],
 
   [SAME_SITE, "", false],
+  [SAME_SITE, "unsafe-none", false],
   [SAME_SITE, "jibberish", false],
   [SAME_SITE, "same-site", false], // historical value
   [SAME_SITE, "same-site unsafe-allow-outgoing", false], // historical value
@@ -27,6 +29,7 @@ let tests = [
   [SAME_SITE, "same-origin-allow-popups", false],
 
   [CROSS_ORIGIN, "", false],
+  [CROSS_ORIGIN, "unsafe-none", false],
   [CROSS_ORIGIN, "jibberish", false],
   [CROSS_ORIGIN, "same-site", false], // historical value
   [CROSS_ORIGIN, "same-site unsafe-allow-outgoing", false], // historical value

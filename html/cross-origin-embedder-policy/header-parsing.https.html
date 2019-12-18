@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+'use strict';
+function createIframe(t, values) {
+  const parent = document.createElement('iframe');
+  const child = document.createElement('iframe');
+  const params = new URLSearchParams(values.map((value) => ['value', value]));
+  parent.setAttribute('src', `resources/empty-coep.py?${params}`);
+  document.body.appendChild(parent);
+  t.add_cleanup(() => parent.remove());
+
+  return new Promise((resolve, reject) => {
+      parent.onload = resolve;
+      parent.onerror = reject;
+    })
+    .then(() => {
+        child.setAttribute('src', '/common/blank.html');
+        parent.contentDocument.body.appendChild(child);
+        return new Promise((resolve) => child.onload = resolve);
+      })
+    .then(() => child);
+}
+
+[
+  [],
+  [''],
+  ['jibberish'],
+  ['require\u2014corp'], // non-ASCII character (em dash)
+  ['require-corp;'],
+  ['require-corp\0'],
+  ['Require-corp'],
+  ['require-corp; foo=bar'],
+  ['"require-corp"'], // HTTP structured header "string" item
+  ['*cmVxdWlyZS1jb3Jw*'], // HTTP structured header "byte sequence" item
+  ['require-corp require-corp'],
+  ['require-corp,require-corp'],
+  ['require-corp;require-corp'],
+  ['require-corp', 'require-corp'],
+  ['', 'require-corp'],
+  ['require-corp', ''],
+].forEach((values) => {
+  async_test((t) => {
+    createIframe(t, values)
+      .then((child) => {
+          assert_not_equals(child.contentDocument, null);
+        })
+      .then(t.step_func_done(), t.step_func((reason) => {
+          throw reason;
+        }));
+  }, 'navigation allowed for ' + JSON.stringify(values));
+});
+
+[
+  ['require-corp'],
+  [' \trequire-corp'],
+  ['require-corp\t '],
+].forEach((values) => {
+  async_test((t) => {
+    createIframe(t, values)
+      .then((child) => {
+          assert_equals(child.contentDocument, null);
+        })
+      .then(t.step_func_done(), t.step_func((reason) => {
+          throw reason;
+        }));
+  }, 'navigation blocked for ' + JSON.stringify(values));
+});
+</script>
+</body>
+</html>

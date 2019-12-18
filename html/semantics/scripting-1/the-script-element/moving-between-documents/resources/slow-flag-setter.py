@@ -24,7 +24,6 @@ def main(request, response):
     if result == "parse-error":
       body = "1=2 parse error;"
     if result == "fetch-error":
-      headers.append(("Transfer-encoding", "chunked"))
-      body = "Invalid\r\nChunk\r\n"
+      return 404, [('Content-Type', 'text/plain')], """window.didExecute = "fetch error";"""
 
   return headers, body

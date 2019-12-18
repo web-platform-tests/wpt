@@ -51,6 +51,11 @@ async function doOfferAnswerExchange(t, caller) {
 function validateSenderRtpParameters(param) {
   validateRtpParameters(param);
 
+  assert_array_field(param, 'encodings');
+  for(const encoding of param.encodings) {
+    validateEncodingParameters(encoding);
+  }
+
   assert_not_equals(param.transactionId, undefined,
     'Expect sender param.transactionId to be set');
 
@@ -106,11 +111,6 @@ function validateReceiverRtpParameters(param) {
  */
 function validateRtpParameters(param) {
   assert_optional_string_field(param, 'transactionId');
-
-  assert_array_field(param, 'encodings');
-  for(const encoding of param.encodings) {
-    validateEncodingParameters(encoding);
-  }
 
   assert_array_field(param, 'headerExtensions');
   for(const headerExt of param.headerExtensions) {

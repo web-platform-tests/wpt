@@ -1,7 +1,10 @@
 # Writing Tests
 
-If you haven't already, it's strongly recommended to read
-the [introduction](../index) first, as it introduces the various test types.
+So you'd like to write new tests for WPT? Great! For starters, we recommend
+reading [the introduction](../index) to learn how the tests are organized and
+interpreted. You might already have an idea about what needs testing, but it's
+okay if you don't know where to begin. In either case, [the guide on making a
+testing plan](making-a-testing-plan) will help you decide what to write.
 
 There's also a load of [general guidelines](general-guidelines) that apply to all tests.
 
@@ -12,11 +15,13 @@ There's also a load of [general guidelines](general-guidelines) that apply to al
    general-guidelines
    ahem
    assumptions
+   crashtest
    css-metadata
    css-user-styles
    file-names
    h2tests
    lint-tool
+   making-a-testing-plan
    manual
    reftest-tutorial
    reftests
@@ -24,8 +29,9 @@ There's also a load of [general guidelines](general-guidelines) that apply to al
    server-features
    submission-process
    testdriver
-   testdriver-tutorial
+   testdriver-extension-tutorial
    testharness
+   testharness-tutorial
    tools
    visual
    wdspec
@@ -57,6 +63,11 @@ expectations:
 * [testharness.js](testharness) tests should be used (where possible!) for
   testing everything else. They are built with the testharness.js unit testing
   framework, and consist of assertions written in JavaScript.
+
+* [Crashtests](crashtest) tests are used to check that the browser is
+  able to load a given document without crashing or experiencing other
+  low-level issues (asserts, leaks, etc.). They pass if the load
+  completes without error.
 
 * [wdspec](wdspec) tests are written in Python using
   [pytest](https://docs.pytest.org/en/latest/) and test [the WebDriver browser

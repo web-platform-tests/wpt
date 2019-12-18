@@ -68,6 +68,11 @@ test_6 = """\
   expected: [OK, FAIL]
 """
 
+test_7 = """\
+[7.html]
+  blink_expect_any_subtest_status: yep
+"""
+
 test_fuzzy = """\
 [fuzzy.html]
   fuzzy: fuzzy-ref.html:1;200
@@ -205,6 +210,14 @@ def test_known_intermittent():
 
 @pytest.mark.xfail(sys.version[0] == "3",
                    reason="bytes/text confusion in py3")
+def test_expect_any_subtest_status():
+    test_obj = make_test_object(test_7, "a/7.html", 7, ("test", "a", 8), None, False)
+    assert test_obj.expected() == "OK"
+    assert test_obj.expect_any_subtest_status() is True
+
+
+@pytest.mark.xfail(sys.version[0] == "3",
+                   reason="bytes/text confusion in py3")
 def test_metadata_fuzzy():
     manifest_data = {
         "items": {"reftest": {"a/fuzzy.html": [["a/fuzzy.html",
@@ -212,7 +225,7 @@ def test_metadata_fuzzy():
                                                 {"fuzzy": [[["/a/fuzzy.html", '/a/fuzzy-ref.html', '=='],
                                                             [[2, 3], [10, 15]]]]}]]}},
         "paths": {"a/fuzzy.html": ["0"*40, "reftest"]},
-        "version": 6,
+        "version": 7,
         "url_base": "/"}
     manifest = wptmanifest.Manifest.from_json(".", manifest_data)
     test_metadata = manifestexpected.static.compile(BytesIO(test_fuzzy),

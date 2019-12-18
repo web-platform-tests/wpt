@@ -28,6 +28,24 @@
     }
     on_event(window, "load", windowLoad);
 
+    test(function() {
+        var sequence = [];
+        var outer = document.createElement("div");
+        var inner = document.createElement("div");
+        outer.appendChild(inner);
+        document.body.appendChild(outer);
+        inner.addEventListener("click", function() {
+            sequence.push("inner");
+        }, false);
+
+        on_event(outer, "click", function() {
+            sequence.push("outer");
+        });
+        inner.click();
+
+        assert_array_equals(sequence, ["inner", "outer"]);
+    }, "on_event does not use event capture");
+
     // see the body onload below
     var load_test_attr = async_test("body element fires the onload event set from the attribute");
 </script>
@@ -100,12 +118,6 @@
         assert_array_equals(1, [1], "1 equals [1]?");
     }
     test(assertArrayEqualsNumeric, "assert_array_equals with first param 1");
-
-    function basicAssertObjectEquals()
-    {
-        assert_object_equals([1, 2, [1, 2]], { 0: 1, 1: 2, 2: { 0: 1, 1: 2} }, "array is equal to object")
-    }
-    test(basicAssertObjectEquals, "basic assert_object_equals test");
 
     function basicAssertArrayApproxEquals()
     {
@@ -399,12 +411,6 @@
     },
     {
       "status_string": "PASS",
-      "name": "basic assert_object_equals test",
-      "message": null,
-      "properties": {}
-    },
-    {
-      "status_string": "PASS",
       "name": "body element fires the onload event set from the attribute",
       "message": null,
       "properties": {}
@@ -430,6 +436,12 @@
     {
       "status_string": "PASS",
       "name": "window onload event fires when set from the handler",
+      "message": null,
+      "properties": {}
+    },
+    {
+      "status_string": "PASS",
+      "name": "on_event does not use event capture",
       "message": null,
       "properties": {}
     }

@@ -121,13 +121,15 @@ def list_tests(test_paths, product, **kwargs):
 
 
 def get_pause_after_test(test_loader, **kwargs):
-    total_tests = sum(len(item) for item in test_loader.tests.itervalues())
     if kwargs["pause_after_test"] is None:
         if kwargs["repeat_until_unexpected"]:
             return False
         if kwargs["headless"]:
             return False
-        if kwargs["repeat"] == 1 and kwargs["rerun"] == 1 and total_tests == 1:
+        tests = test_loader.tests
+        is_single_testharness = (sum(len(item) for item in tests.itervalues()) == 1 and
+                                 len(tests.get("testharness", [])) == 1)
+        if kwargs["repeat"] == 1 and kwargs["rerun"] == 1 and is_single_testharness:
             return True
         return False
     return kwargs["pause_after_test"]
@@ -340,6 +342,7 @@ def start(**kwargs):
     handler = handlers.LogLevelFilter(logged_critical, "CRITICAL")
     logger.add_handler(handler)
 
+    rv = False
     try:
         if kwargs["list_test_groups"]:
             list_test_groups(**kwargs)
@@ -348,11 +351,12 @@ def start(**kwargs):
         elif kwargs["list_tests"]:
             list_tests(**kwargs)
         elif kwargs["verify"] or kwargs["stability"]:
-            return check_stability(**kwargs) or logged_critical.has_log
+            rv = check_stability(**kwargs) or logged_critical.has_log
         else:
-            return not run_tests(**kwargs) or logged_critical.has_log
+            rv = not run_tests(**kwargs) or logged_critical.has_log
     finally:
         logger.remove_handler(handler)
+    return rv
 
 
 def main():

@@ -1,3 +1,4 @@
+name: manifest
 on:
   push:
     branches:
@@ -5,7 +6,6 @@ on:
   pull_request:
     paths:
       - 'tools/**'
-name: manifest
 jobs:
   build-and-tag:
     runs-on: ubuntu-18.04
@@ -19,6 +19,8 @@ jobs:
         sudo apt-get -qqy install zstd
         pip install -r tools/wpt/requirements.txt
     - name: Run manifest_build.py
+      # Use a conditional step instead of a conditional job to work around #20700.
+      if: github.repository == 'web-platform-tests/wpt'
       run: tools/docker/retry.py --delay 60 python tools/ci/manifest_build.py
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -6,7 +6,7 @@ from six import iteritems, iterkeys, itervalues, string_types, binary_type, text
 
 from . import vcs
 from .item import (ConformanceCheckerTest, ManifestItem, ManualTest, RefTest, RefTestNode,
-                   SupportFile, TestharnessTest, VisualTest, WebDriverSpecTest)
+                   SupportFile, TestharnessTest, VisualTest, WebDriverSpecTest, CrashTest)
 from .log import get_logger
 from .sourcefile import SourceFile
 from .utils import from_os_path, to_os_path
@@ -36,7 +36,7 @@ try:
 except ImportError:
     fast_json = json  # type: ignore
 
-CURRENT_VERSION = 6
+CURRENT_VERSION = 7
 
 
 class ManifestError(Exception):
@@ -50,6 +50,7 @@ class ManifestVersionMismatch(ManifestError):
 item_classes = {"testharness": TestharnessTest,
                 "reftest": RefTest,
                 "reftest_node": RefTestNode,
+                "crashtest": CrashTest,
                 "manual": ManualTest,
                 "wdspec": WebDriverSpecTest,
                 "conformancechecker": ConformanceCheckerTest,
@@ -251,18 +252,18 @@ class Manifest(object):
         self.url_base = url_base  # type: Text
 
     def __iter__(self):
-        # type: () -> Iterable[Tuple[str, Text, Set[ManifestItem]]]
+        # type: () -> Iterator[Tuple[str, Text, Set[ManifestItem]]]
         return self.itertypes()
 
     def itertypes(self, *types):
-        # type: (*str) -> Iterable[Tuple[str, Text, Set[ManifestItem]]]
+        # type: (*str) -> Iterator[Tuple[str, Text, Set[ManifestItem]]]
         for item_type in (types or sorted(self._data.keys())):
             for path in sorted(self._data[item_type]):
                 tests = self._data[item_type][path]
                 yield item_type, path, tests
 
     def iterpath(self, path):
-        # type: (Text) -> Iterable[ManifestItem]
+        # type: (Text) -> Iterator[ManifestItem]
         for type_tests in self._data.values():
             i = type_tests.get(path, set())
             assert i is not None
@@ -270,7 +271,7 @@ class Manifest(object):
                 yield test
 
     def iterdir(self, dir_name):
-        # type: (Text) -> Iterable[ManifestItem]
+        # type: (Text) -> Iterator[ManifestItem]
         if not dir_name.endswith(os.path.sep):
             dir_name = dir_name + os.path.sep
         for type_tests in self._data.values():
@@ -470,14 +471,6 @@ class Manifest(object):
         self._path_hash = {to_os_path(k): v for k, v in iteritems(obj["paths"])}
 
         for test_type, type_paths in iteritems(obj["items"]):
-            # Drop "stub" items, which are no longer supported but may be
-            # present when doing an incremental manifest update.
-            # See https://github.com/web-platform-tests/rfcs/pull/27 for background.
-            #
-            # TODO(MANIFESTv7): remove this condition
-            if test_type == "stub":
-                continue
-
             if test_type not in item_classes:
                 raise ManifestError
 

@@ -11,8 +11,6 @@ default_standing.matrix = [1, 0, 0, 0,
                            0, 1.65, 0, 1];
 const default_stage_parameters = {
   standingTransform: default_standing,
-  sizeX: 0,
-  sizeZ: 0,
   bounds: null
 };
 
@@ -144,9 +142,20 @@ class MockVRService {
       // Find and return the first successful result.
       for (let i = 0; i < results.length; i++) {
         if (results[i].session) {
+          // Construct a dummy metrics recorder
+          let metricsRecorderPtr = new device.mojom.XRSessionMetricsRecorderPtr();
+          let metricsRecorderRequest = mojo.makeRequest(metricsRecorderPtr);
+          let metricsRecorderBinding = new mojo.Binding(
+              device.mojom.XRSessionMetricsRecorder, new MockXRSessionMetricsRecorder(), metricsRecorderRequest);
+
+          let success = {
+            session: results[i].session,
+            metricsRecorder: metricsRecorderPtr,
+          };
+
           return {
             result: {
-              session : results[i].session,
+              success : success,
               $tag :  0
             }
           };
@@ -161,6 +170,10 @@ class MockVRService {
         }
       };
     });
+  }
+
+  exitPresent() {
+    return Promise.resolve();
   }
 
   supportsSession(sessionOptions) {
@@ -203,7 +216,7 @@ class MockRuntime {
     this.pose_ = null;
     this.next_frame_id_ = 0;
     this.bounds_ = null;
-    this.send_pose_reset_ = false;
+    this.send_mojo_space_reset_ = false;
 
     this.service_ = service;
 
@@ -357,7 +370,7 @@ class MockRuntime {
   }
 
   simulateResetPose() {
-    this.send_pose_reset_ = true;
+    this.send_mojo_space_reset_ = true;
   }
 
   simulateInputSourceConnection(fakeInputSourceInit) {
@@ -501,22 +514,22 @@ class MockRuntime {
 
   // XRFrameDataProvider implementation.
   getFrameData() {
+    let mojo_space_reset = this.send_mojo_space_reset_;
+    this.send_mojo_space_reset_ = false;
     if (this.pose_) {
       this.pose_.poseIndex++;
-      this.pose_.poseReset = this.send_pose_reset_;
-      this.send_pose_reset_ = false;
 
-      // Setting the input_state to null tests a slightly different path than
-      // the browser tests where if the last input source is removed, the device
-      // code always sends up an empty array, but it's also valid mojom to send
-      // up a null array.
-      if (this.input_sources_.length > 0) {
-        this.pose_.inputState = [];
-        for (let i = 0; i < this.input_sources_.length; i++) {
-          this.pose_.inputState.push(this.input_sources_[i].getInputSourceState());
-        }
-      } else {
-        this.pose_.inputState = null;
+    }
+
+    // Setting the input_state to null tests a slightly different path than
+    // the browser tests where if the last input source is removed, the device
+    // code always sends up an empty array, but it's also valid mojom to send
+    // up a null array.
+    let input_state = null;
+    if (this.input_sources_.length > 0) {
+      input_state = [];
+      for (let i = 0; i < this.input_sources_.length; i++) {
+        input_state.push(this.input_sources_[i].getInputSourceState());
       }
     }
 
@@ -529,6 +542,8 @@ class MockRuntime {
     return Promise.resolve({
       frameData: {
         pose: this.pose_,
+        mojoSpaceReset: mojo_space_reset,
+        inputState: input_state,
         timeDelta: {
           microseconds: now,
         },
@@ -624,6 +639,12 @@ class MockRuntime {
   };
 }
 
+class MockXRSessionMetricsRecorder {
+  reportFeatureUsed(feature) {
+    // Do nothing
+  }
+}
+
 class MockXRInputSource {
   constructor(fakeInputSourceInit, id, pairedDevice) {
     this.source_id_ = id;
@@ -643,7 +664,7 @@ class MockXRInputSource {
       this.primary_input_clicked_ = fakeInputSourceInit.selectionClicked;
     }
 
-    this.grip_ = null;
+    this.mojo_from_input_ = null;
     if (fakeInputSourceInit.gripOrigin != null) {
       this.setGripOrigin(fakeInputSourceInit.gripOrigin);
     }
@@ -676,22 +697,22 @@ class MockXRInputSource {
   }
 
   setGripOrigin(transform, emulatedPosition = false) {
-    this.grip_ = new gfx.mojom.Transform();
-    this.grip_.matrix = getMatrixFromTransform(transform);
+    this.mojo_from_input_ = new gfx.mojom.Transform();
+    this.mojo_from_input_.matrix = getMatrixFromTransform(transform);
     this.emulated_position_ = emulatedPosition;
   }
 
   clearGripOrigin() {
-    if (this.grip_ != null) {
-      this.grip_ = null;
+    if (this.mojo_from_input_ != null) {
+      this.mojo_from_input_ = null;
       this.emulated_position_ = false;
     }
   }
 
   setPointerOrigin(transform, emulatedPosition = false) {
     this.desc_dirty_ = true;
-    this.pointer_offset_ = new gfx.mojom.Transform();
-    this.pointer_offset_.matrix = getMatrixFromTransform(transform);
+    this.input_from_pointer_ = new gfx.mojom.Transform();
+    this.input_from_pointer_.matrix = getMatrixFromTransform(transform);
     this.emulated_position_ = emulatedPosition;
   }
 
@@ -810,7 +831,7 @@ class MockXRInputSource {
     input_state.primaryInputPressed = this.primary_input_pressed_;
     input_state.primaryInputClicked = this.primary_input_clicked_;
 
-    input_state.grip = this.grip_;
+    input_state.mojoFromInput = this.mojo_from_input_;
 
     input_state.gamepad = this.gamepad_;
 
@@ -840,7 +861,7 @@ class MockXRInputSource {
           break;
       }
 
-      input_desc.pointerOffset = this.pointer_offset_;
+      input_desc.inputFromPointer = this.input_from_pointer_;
 
       input_desc.profiles = this.profiles_;
 

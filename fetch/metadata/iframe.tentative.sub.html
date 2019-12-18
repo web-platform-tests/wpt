@@ -15,7 +15,8 @@
         "site": "",
         "user": "",
         "mode": "",
-      });
+        "dest": ""
+      }, "Non-secure same-origin iframe => No headers");
       t.done();
     }));
 
@@ -33,7 +34,8 @@
         "site": "",
         "user": "",
         "mode": "",
-      });
+        "dest": ""
+      }, "Non-secure same-site iframe => No headers");
       t.done();
     }));
 
@@ -51,7 +53,8 @@
         "site": "",
         "user": "",
         "mode": "",
-      });
+        "dest": ""
+      }, "Non-secure cross-site iframe => No headers.");
       t.done();
     }));
 
@@ -68,8 +71,9 @@
       assert_header_equals(e.data, {
         "site": "cross-site",
         "user": "",
-        "mode": "nested-navigate",
-      });
+        "mode": "navigate",
+        "dest": "iframe"
+      }, "Secure, cross-site (cross-scheme, same-host) iframe");
       t.done();
     }));
 

@@ -106,7 +106,7 @@ otherwise install OpenSSL and ensure that it's on your $PATH.""")
 
 
 def check_environ(product):
-    if product not in ("android_webview", "chrome", "chrome_android", "firefox", "firefox_android", "servo"):
+    if product not in ("android_weblayer", "android_webview", "chrome", "chrome_android", "firefox", "firefox_android", "servo"):
         config_builder = serve.build_config(os.path.join(wpt_root, "config.json"))
         # Override the ports to avoid looking for free ports
         config_builder.ssl = {"type": "none"}
@@ -347,6 +347,10 @@ class Chrome(BrowserSetup):
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
             # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
             kwargs["webdriver_args"].append("--disable-build-check")
+        if os.getenv("TASKCLUSTER_ROOT_URL"):
+            # We are on Taskcluster, where our Docker container does not have
+            # enough capabilities to run Chrome with sandboxing. (gh-20133)
+            kwargs["binary_args"].append("--no-sandbox")
 
 
 class ChromeAndroid(BrowserSetup):
@@ -354,6 +358,8 @@ class ChromeAndroid(BrowserSetup):
     browser_cls = browser.ChromeAndroid
 
     def setup_kwargs(self, kwargs):
+        if kwargs.get("device_serial"):
+            self.browser.device_serial = kwargs["device_serial"]
         browser_channel = kwargs["browser_channel"]
         if kwargs["package_name"] is None:
             kwargs["package_name"] = self.browser.find_binary(
@@ -393,11 +399,38 @@ class ChromeiOS(BrowserSetup):
             raise WptrunError("Unable to locate or install chromedriver binary")
 
 
+class AndroidWeblayer(BrowserSetup):
+    name = "android_weblayer"
+    browser_cls = browser.AndroidWeblayer
+
+    def setup_kwargs(self, kwargs):
+        if kwargs.get("device_serial"):
+            self.browser.device_serial = kwargs["device_serial"]
+        if kwargs["webdriver_binary"] is None:
+            webdriver_binary = self.browser.find_webdriver()
+
+            if webdriver_binary is None:
+                install = self.prompt_install("chromedriver")
+
+                if install:
+                    logger.info("Downloading chromedriver")
+                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path)
+            else:
+                logger.info("Using webdriver binary %s" % webdriver_binary)
+
+            if webdriver_binary:
+                kwargs["webdriver_binary"] = webdriver_binary
+            else:
+                raise WptrunError("Unable to locate or install chromedriver binary")
+
+
 class AndroidWebview(BrowserSetup):
     name = "android_webview"
     browser_cls = browser.AndroidWebview
 
     def setup_kwargs(self, kwargs):
+        if kwargs.get("device_serial"):
+            self.browser.device_serial = kwargs["device_serial"]
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = self.browser.find_webdriver()
 
@@ -468,8 +501,8 @@ class EdgeChromium(BrowserSetup):
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
                 raise WptrunError("Unable to locate or install msedgedriver binary")
-        if browser_channel == "dev":
-            logger.info("Automatically turning on experimental features for Edge Dev")
+        if browser_channel in ("dev", "canary"):
+            logger.info("Automatically turning on experimental features for Edge Dev/Canary")
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
 
 
@@ -630,6 +663,7 @@ class Epiphany(BrowserSetup):
 
 
 product_setup = {
+    "android_weblayer": AndroidWeblayer,
     "android_webview": AndroidWebview,
     "firefox": Firefox,
     "firefox_android": FirefoxAndroid,

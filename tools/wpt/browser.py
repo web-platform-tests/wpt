@@ -17,6 +17,10 @@ from utils import call, get, untar, unzip
 
 uname = platform.uname()
 
+# the rootUrl for the firefox-ci deployment of Taskcluster
+# (after November 9, https://firefox-ci-tc.services.mozilla.com/)
+FIREFOX_CI_ROOT_URL = 'https://taskcluster.net'
+
 
 def _get_fileversion(binary, logger=None):
     command = "(Get-Item '%s').VersionInfo.FileVersion" % binary.replace("'", "''")
@@ -42,6 +46,11 @@ class Browser(object):
 
     def __init__(self, logger):
         self.logger = logger
+
+    @abstractmethod
+    def download(self, dest=None, channel=None):
+        """Download a package or installer for the browser"""
+        return NotImplemented
 
     @abstractmethod
     def install(self, dest=None):
@@ -87,7 +96,6 @@ class Firefox(Browser):
 
     product = "firefox"
     binary = "browsers/firefox/firefox"
-    platform_ini = "browsers/firefox/platform.ini"
     requirements = "requirements_firefox.txt"
 
     platform = {
@@ -113,11 +121,19 @@ class Firefox(Browser):
 
         return "%s%s" % (self.platform, bits)
 
-    def install(self, dest=None, channel="nightly"):
-        """Install Firefox."""
+    def _get_dest(self, dest, channel):
+        if dest is None:
+            # os.getcwd() doesn't include the venv path
+            dest = os.path.join(os.getcwd(), "_venv")
 
-        import mozinstall
+        dest = os.path.join(dest, "browsers", channel)
 
+        if not os.path.exists(dest):
+            os.makedirs(dest)
+
+        return dest
+
+    def download(self, dest=None, channel="nightly"):
         product = {
             "nightly": "firefox-nightly-latest-ssl",
             "beta": "firefox-beta-latest-ssl",
@@ -133,20 +149,14 @@ class Firefox(Browser):
         }
         os_key = (self.platform, uname[4])
 
+        if dest is None:
+            dest = self._get_dest(None, channel)
+
         if channel not in product:
             raise ValueError("Unrecognised release channel: %s" % channel)
 
         if os_key not in os_builds:
             raise ValueError("Unsupported platform: %s %s" % os_key)
-
-        if dest is None:
-            # os.getcwd() doesn't include the venv path
-            dest = os.path.join(os.getcwd(), "_venv")
-
-        dest = os.path.join(dest, "browsers", channel)
-
-        if not os.path.exists(dest):
-            os.makedirs(dest)
 
         url = "https://download.mozilla.org/?product=%s&os=%s&lang=en-US" % (product[channel],
                                                                              os_builds[os_key])
@@ -171,6 +181,18 @@ class Firefox(Browser):
 
         with open(installer_path, "wb") as f:
             f.write(resp.content)
+
+        return installer_path
+
+    def install(self, dest=None, channel="nightly"):
+        """Install Firefox."""
+        import mozinstall
+
+        dest = self._get_dest(dest, channel)
+
+        filename = os.path.basename(dest)
+
+        installer_path = self.download(dest, channel)
 
         try:
             mozinstall.install(installer_path, dest)
@@ -419,12 +441,17 @@ class FirefoxAndroid(Browser):
     product = "firefox_android"
     requirements = "requirements_firefox.txt"
 
-    def install(self, dest=None, channel=None):
+    def download(self, dest=None, channel=None):
         if dest is None:
             dest = os.pwd
 
-        TC_QUEUE_BASE = "https://queue.taskcluster.net/v1/"
-        TC_INDEX_BASE = "https://index.taskcluster.net/v1/"
+        if FIREFOX_CI_ROOT_URL == 'https://taskcluster.net':
+            # NOTE: this condition can be removed after November 9, 2019
+            TC_QUEUE_BASE = "https://queue.taskcluster.net/v1/"
+            TC_INDEX_BASE = "https://index.taskcluster.net/v1/"
+        else:
+            TC_QUEUE_BASE = FIREFOX_CI_ROOT_URL + "/api/queue/v1/"
+            TC_INDEX_BASE = FIREFOX_CI_ROOT_URL + "/api/index/v1/"
 
 
         resp = requests.get(TC_INDEX_BASE +
@@ -443,6 +470,9 @@ class FirefoxAndroid(Browser):
             f.write(resp.content)
 
         return apk_path
+
+    def install(self, dest=None, channel=None):
+        return self.download(dest, channel)
 
     def install_prefs(self, binary, dest=None, channel=None):
         fx_browser = Firefox(self.logger)
@@ -469,6 +499,9 @@ class Chrome(Browser):
 
     product = "chrome"
     requirements = "requirements_chrome.txt"
+
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError
@@ -623,6 +656,10 @@ class ChromeAndroidBase(Browser):
 
     def __init__(self, logger):
         super(ChromeAndroidBase, self).__init__(logger)
+        self.device_serial = None
+
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError
@@ -646,7 +683,10 @@ class ChromeAndroidBase(Browser):
             self.logger.warning("No package name provided.")
             return None
 
-        command = ['adb', 'shell', 'dumpsys', 'package', binary]
+        command = ['adb']
+        if self.device_serial:
+            command.extend(['-s', self.device_serial])
+        command.extend(['shell', 'dumpsys', 'package', binary])
         try:
             output = call(*command)
         except (subprocess.CalledProcessError, OSError):
@@ -672,6 +712,20 @@ class ChromeAndroid(ChromeAndroidBase):
         return "com.android.chrome"
 
 
+#TODO(aluo): This is largely copied from the AndroidWebView implementation.
+#            Tests are not running for weblayer yet (crbug/1019521), this
+#            initial implementation will help to reproduce and debug any issues.
+class AndroidWeblayer(ChromeAndroidBase):
+    """Weblayer-specific interface for Android."""
+
+    product = "android_weblayer"
+    # TODO(aluo): replace this with weblayer version after tests are working.
+    requirements = "requirements_android_webview.txt"
+
+    def find_binary(self, venv_path=None, channel=None):
+        return "org.chromium.weblayer.shell"
+
+
 class AndroidWebview(ChromeAndroidBase):
     """Webview-specific interface for Android.
 
@@ -687,7 +741,10 @@ class AndroidWebview(ChromeAndroidBase):
         # For WebView, it is not trivial to change the WebView provider, so
         # we will just grab whatever is available.
         # https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/channels.md
-        command = ['adb', 'shell', 'dumpsys', 'webviewupdate']
+        command = ['adb']
+        if self.device_serial:
+            command.extend(['-s', self.device_serial])
+        command.extend(['shell', 'dumpsys', 'webviewupdate'])
         try:
             output = call(*command)
         except (subprocess.CalledProcessError, OSError):
@@ -708,6 +765,9 @@ class ChromeiOS(Browser):
 
     product = "chrome_ios"
     requirements = "requirements_chrome_ios.txt"
+
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError
@@ -741,6 +801,9 @@ class Opera(Browser):
         # TODO Windows, Mac?
         self.logger.warning("Unable to find the browser binary.")
         return None
+
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError
@@ -811,6 +874,9 @@ class EdgeChromium(Browser):
     edgedriver_name = "msedgedriver"
     requirements = "requirements_edge_chromium.txt"
 
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
+
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
@@ -867,10 +933,12 @@ class EdgeChromium(Browser):
         if os.path.isfile(edgedriver_path):
             # remove read-only attribute
             os.chmod(edgedriver_path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
+            print("Delete %s file" % edgedriver_path)
             os.remove(edgedriver_path)
-            driver_notes_path = os.path.join(dest, "Driver_notes")
-            if os.path.isdir(driver_notes_path):
-                shutil.rmtree(driver_notes_path, ignore_errors=False, onerror=handle_remove_readonly)
+        driver_notes_path = os.path.join(dest, "Driver_notes")
+        if os.path.isdir(driver_notes_path):
+            print("Delete %s folder" % driver_notes_path)
+            shutil.rmtree(driver_notes_path, ignore_errors=False, onerror=handle_remove_readonly)
 
         self.logger.info("Downloading MSEdgeDriver from %s" % url)
         unzip(get(url).raw, dest)
@@ -905,6 +973,9 @@ class Edge(Browser):
     product = "edge"
     requirements = "requirements_edge.txt"
 
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
+
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
@@ -936,6 +1007,9 @@ class InternetExplorer(Browser):
     product = "ie"
     requirements = "requirements_ie.txt"
 
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
+
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
@@ -960,6 +1034,9 @@ class Safari(Browser):
 
     product = "safari"
     requirements = "requirements_safari.txt"
+
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError
@@ -1020,17 +1097,33 @@ class Servo(Browser):
 
         return (platform, extension, decompress)
 
-    def install(self, dest=None, channel="nightly"):
-        """Install latest Browser Engine."""
+    def _get(self, channel="nightly"):
         if channel != "nightly":
             raise ValueError("Only nightly versions of Servo are available")
+
+        platform, extension, _ = self.platform_components()
+        url = "https://download.servo.org/nightly/%s/servo-latest%s" % (platform, extension)
+        return get(url)
+
+    def download(self, dest=None, channel="nightly"):
         if dest is None:
             dest = os.pwd
 
-        platform, extension, decompress = self.platform_components()
-        url = "https://download.servo.org/nightly/%s/servo-latest%s" % (platform, extension)
+        resp = self._get(dest, channel)
+        _, extension, _ = self.platform_components()
 
-        decompress(get(url).raw, dest=dest)
+        with open(os.path.join(dest, "servo-latest%s" % (extension,)), "w") as f:
+            f.write(resp.content)
+
+    def install(self, dest=None, channel="nightly"):
+        """Install latest Browser Engine."""
+        if dest is None:
+            dest = os.pwd
+
+        _, _, decompress = self.platform_components()
+
+        resp = self._get(channel)
+        decompress(resp.raw, dest=dest)
         path = find_executable("servo", os.path.join(dest, "servo"))
         st = os.stat(path)
         os.chmod(path, st.st_mode | stat.S_IEXEC)
@@ -1066,6 +1159,9 @@ class Sauce(Browser):
     product = "sauce"
     requirements = "requirements_sauce.txt"
 
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
+
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
@@ -1087,6 +1183,9 @@ class WebKit(Browser):
 
     product = "webkit"
     requirements = "requirements_webkit.txt"
+
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError
@@ -1150,6 +1249,9 @@ class Epiphany(Browser):
 
     product = "epiphany"
     requirements = "requirements_epiphany.txt"
+
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError

@@ -6,7 +6,7 @@ from collections import defaultdict
 from .wptmanifest.parser import atoms
 
 atom_reset = atoms["Reset"]
-enabled_tests = {"testharness", "reftest", "wdspec"}
+enabled_tests = {"testharness", "reftest", "wdspec", "crashtest"}
 
 
 class Result(object):
@@ -47,12 +47,12 @@ class SubtestResult(object):
 
 class TestharnessResult(Result):
     default_expected = "OK"
-    statuses = {"OK", "ERROR", "INTERNAL-ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT", "CRASH"}
+    statuses = {"OK", "ERROR", "INTERNAL-ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT", "CRASH", "PRECONDITION_FAILED"}
 
 
 class TestharnessSubtestResult(SubtestResult):
     default_expected = "PASS"
-    statuses = {"PASS", "FAIL", "TIMEOUT", "NOTRUN"}
+    statuses = {"PASS", "FAIL", "TIMEOUT", "NOTRUN", "PRECONDITION_FAILED"}
 
 
 class ReftestResult(Result):
@@ -69,6 +69,12 @@ class WdspecResult(Result):
 class WdspecSubtestResult(SubtestResult):
     default_expected = "PASS"
     statuses = {"PASS", "FAIL", "ERROR"}
+
+
+class CrashtestResult(Result):
+    default_expected = "PASS"
+    statuses = {"PASS", "ERROR", "INTERNAL-ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT",
+                "CRASH"}
 
 
 def get_run_info(metadata_root, product, **kwargs):
@@ -164,7 +170,13 @@ class Test(object):
         self.environment = {"protocol": protocol, "prefs": self.prefs}
 
     def __eq__(self, other):
+        if not isinstance(other, Test):
+            return False
         return self.id == other.id
+
+    # Python 2 does not have this delegation, while Python 3 does.
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def update_metadata(self, metadata=None):
         if metadata is None:
@@ -346,6 +358,17 @@ class Test(object):
             return []
         except KeyError:
             return []
+
+    def expect_any_subtest_status(self):
+        metadata = self._get_metadata()
+        if metadata is None:
+            return False
+        try:
+            # This key is used by the Blink CI to ignore subtest statuses
+            metadata.get("blink_expect_any_subtest_status")
+            return True
+        except KeyError:
+            return False
 
     def __repr__(self):
         return "<%s.%s %s>" % (self.__module__, self.__class__.__name__, self.id)
@@ -529,7 +552,6 @@ class ReftestTest(Test):
 
 
 class WdspecTest(Test):
-
     result_cls = WdspecResult
     subtest_result_cls = WdspecSubtestResult
     test_type = "wdspec"
@@ -538,10 +560,16 @@ class WdspecTest(Test):
     long_timeout = 180  # 3 minutes
 
 
+class CrashTest(Test):
+    result_cls = CrashtestResult
+    test_type = "crashtest"
+
+
 manifest_test_cls = {"reftest": ReftestTest,
                      "testharness": TestharnessTest,
                      "manual": ManualTest,
-                     "wdspec": WdspecTest}
+                     "wdspec": WdspecTest,
+                     "crashtest": CrashTest}
 
 
 def from_manifest(manifest_file, manifest_test, inherit_metadata, test_metadata):

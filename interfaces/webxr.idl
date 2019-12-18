@@ -18,7 +18,8 @@ partial interface Navigator {
 
 enum XRSessionMode {
   "inline",
-  "immersive-vr"
+  "immersive-vr",
+  "immersive-ar"
 };
 
 dictionary XRSessionInit {
@@ -49,10 +50,13 @@ enum XRVisibilityState {
 
   // Events
   attribute EventHandler onend;
-  attribute EventHandler onselect;
   attribute EventHandler oninputsourceschange;
+  attribute EventHandler onselect;
   attribute EventHandler onselectstart;
   attribute EventHandler onselectend;
+  attribute EventHandler onsqueeze;
+  attribute EventHandler onsqueezestart;
+  attribute EventHandler onsqueezeend;
   attribute EventHandler onvisibilitychange;
 };
 
@@ -189,7 +193,7 @@ interface XRWebGLLayer {
   readonly attribute boolean antialias;
   readonly attribute boolean ignoreDepthValues;
 
-  [SameObject] readonly attribute WebGLFramebuffer framebuffer;
+  [SameObject] readonly attribute WebGLFramebuffer? framebuffer;
   readonly attribute unsigned long framebufferWidth;
   readonly attribute unsigned long framebufferHeight;
 
@@ -201,11 +205,11 @@ interface XRWebGLLayer {
 };
 
 partial dictionary WebGLContextAttributes {
-    boolean xrCompatible = null;
+    boolean xrCompatible = false;
 };
 
 partial interface mixin WebGLRenderingContextBase {
-    Promise<void> makeXRCompatible();
+    [NewObject] Promise<void> makeXRCompatible();
 };
 
 [SecureContext, Exposed=Window]

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-"""Wrapper script for running jobs in TaskCluster
+"""Wrapper script for running jobs in Taskcluster
 
-This is intended for running test jobs in TaskCluster. The script
+This is intended for running test jobs in Taskcluster. The script
 takes a two positional arguments which are the name of the test job
 and the script to actually run.
 
@@ -38,7 +38,6 @@ the serialization of a GitHub event payload.
 import argparse
 import json
 import os
-import re
 import subprocess
 import sys
 import tempfile
@@ -49,9 +48,6 @@ try:
 except ImportError:
     # Python 3 case
     from urllib.request import urlopen
-
-
-QUEUE_BASE = "https://queue.taskcluster.net/v1/task"
 
 
 root = os.path.abspath(
@@ -102,8 +98,16 @@ def get_parser():
                    help="Start xvfb")
     p.add_argument("--checkout",
                    help="Revision to checkout before starting job")
-    p.add_argument("job",
-                   help="Name of the job associated with the current event")
+    p.add_argument("--install-certificates", action="store_true", default=None,
+                   help="Install web-platform.test certificates to UA store")
+    p.add_argument("--no-install-certificates", action="store_false", default=None,
+                   help="Don't install web-platform.test certificates to UA store")
+    p.add_argument("--ref",
+                   help="Git ref for the commit that should be run")
+    p.add_argument("--head-rev",
+                   help="Commit at the head of the branch when the decision task ran")
+    p.add_argument("--merge-rev",
+                   help="Provisional merge commit for PR when the decision task ran")
     p.add_argument("script",
                    help="Script to run for the job")
     p.add_argument("script_args",
@@ -119,20 +123,22 @@ def start_userspace_oom_killer():
 
 
 def make_hosts_file():
-    subprocess.check_call(["sudo", "sh", "-c", "./wpt make-hosts-file >> /etc/hosts"])
+    run(["sudo", "sh", "-c", "./wpt make-hosts-file >> /etc/hosts"])
 
 
 def checkout_revision(rev):
-    subprocess.check_call(["git", "checkout", "--quiet", rev])
+    run(["git", "checkout", "--quiet", rev])
+
+
+def install_certificates():
+    run(["sudo", "cp", "tools/certs/cacert.pem",
+         "/usr/local/share/ca-certificates/cacert.crt"])
+    run(["sudo", "update-ca-certificates"])
 
 
 def install_chrome(channel):
-    deb_prefix = "https://dl.google.com/linux/direct/"
     if channel in ("experimental", "dev", "nightly"):
-        # Pinned to 78 as 79 consistently fails reftests. TODO(foolip).
-        # See https://github.com/web-platform-tests/wpt/issues/19297.
-        deb_archive = "google-chrome-unstable_78.0.3904.17-1_amd64.deb"
-        deb_prefix = "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-unstable/"
+        deb_archive = "google-chrome-unstable_current_amd64.deb"
     elif channel == "beta":
         deb_archive = "google-chrome-beta_current_amd64.deb"
     elif channel == "stable":
@@ -141,7 +147,7 @@ def install_chrome(channel):
         raise ValueError("Unrecognized release channel: %s" % channel)
 
     dest = os.path.join("/tmp", deb_archive)
-    resp = urlopen(deb_prefix + deb_archive)
+    resp = urlopen("https://dl.google.com/linux/direct/%s" % deb_archive)
     with open(dest, "w") as f:
         f.write(resp.read())
 
@@ -220,29 +226,6 @@ def start_xvfb():
     start(["sudo", "fluxbox", "-display", os.environ["DISPLAY"]])
 
 
-def get_extra_jobs(event):
-    body = None
-    jobs = set()
-    if "commits" in event and event["commits"]:
-        body = event["commits"][0]["message"]
-    elif "pull_request" in event:
-        body = event["pull_request"]["body"]
-
-    if not body:
-        return jobs
-
-    regexp = re.compile(r"\s*tc-jobs:(.*)$")
-
-    for line in body.splitlines():
-        m = regexp.match(line)
-        if m:
-            items = m.group(1)
-            for item in items.split(","):
-                jobs.add(item.strip())
-            break
-    return jobs
-
-
 def set_variables(event):
     # Set some variables that we use to get the commits on the current branch
     ref_prefix = "refs/heads/"
@@ -263,22 +246,12 @@ def set_variables(event):
         os.environ["GITHUB_BRANCH"] = branch
 
 
-def include_job(job):
-    # Special case things that unconditionally run on pushes,
-    # assuming a higher layer is filtering the required list of branches
-    if (os.environ["GITHUB_PULL_REQUEST"] == "false" and
-        job == "run-all"):
-        return True
-
-    jobs_str = run([os.path.join(root, "wpt"),
-                    "test-jobs"], return_stdout=True)
-    print(jobs_str)
-    return job in set(jobs_str.splitlines())
-
-
 def setup_environment(args):
     if args.hosts_file:
         make_hosts_file()
+
+    if args.install_certificates:
+        install_certificates()
 
     if "chrome" in args.browser:
         assert args.channel is not None
@@ -293,13 +266,66 @@ def setup_environment(args):
     if args.oom_killer:
         start_userspace_oom_killer()
 
-    if args.checkout:
-        checkout_revision(args.checkout)
 
+def setup_repository(args):
+    is_pr = os.environ.get("GITHUB_PULL_REQUEST", "false") != "false"
 
-def setup_repository():
+    # Initially task_head points at the same commit as the ref we want to test.
+    # However that may not be the same commit as we actually want to test if
+    # the branch changed since the decision task ran. The branch may have
+    # changed because someone has pushed more commits (either to the PR
+    # or later commits to the branch), or because someone has pushed to the
+    # base branch for the PR.
+    #
+    # In that case we take a different approach depending on whether this is a
+    # PR or a push to a branch.
+    # If this is a push to a branch, and the original commit is still fetchable,
+    # we try to fetch that (it may not be in the case of e.g. a force push).
+    # If it's not fetchable then we fail the run.
+    # For a PR we are testing the provisional merge commit. If that's changed it
+    # could be that the PR branch was updated or the base branch was updated. In the
+    # former case we fail the run because testing an old commit is a waste of
+    # resources. In the latter case we assume it's OK to use the current merge
+    # instead of the one at the time the decision task ran.
+
+    if args.ref:
+        if is_pr:
+            assert args.ref.endswith("/merge")
+            expected_head = args.merge_rev
+        else:
+            expected_head = args.head_rev
+
+        task_head = run(["git", "rev-parse", "task_head"], return_stdout=True).strip()
+
+        if task_head != expected_head:
+            if not is_pr:
+                try:
+                    run(["git", "fetch", "origin", expected_head])
+                    run(["git", "reset", "--hard", expected_head])
+                except subprocess.CalledProcessError:
+                    print("CRITICAL: task_head points at %s, expected %s and "
+                          "unable to fetch expected commit.\n"
+                          "This may be because the branch was updated" % (task_head, expected_head))
+                    sys.exit(1)
+            else:
+                # Convert the refs/pulls/<id>/merge to refs/pulls/<id>/head
+                head_ref = args.ref.rsplit("/", 1)[0] + "/head"
+                try:
+                    remote_head = run(["git", "ls-remote", "origin", head_ref],
+                                      return_stdout=True).split("\t")[0]
+                except subprocess.CalledProcessError:
+                    print("CRITICAL: Failed to read remote ref %s" % head_ref)
+                    sys.exit(1)
+                if remote_head != args.head_rev:
+                    print("CRITICAL: task_head points at %s, expected %s. "
+                          "This may be because the branch was updated" % (task_head, expected_head))
+                    sys.exit(1)
+                print("INFO: Merge commit changed from %s to %s due to base branch changes. "
+                      "Running task anyway." % (expected_head, task_head))
+
     if os.environ.get("GITHUB_PULL_REQUEST", "false") != "false":
-        parents = run(["git", "show", "--no-patch", "--format=%P", "task_head"], return_stdout=True).strip().split()
+        parents = run(["git", "rev-parse", "task_head^@"],
+                      return_stdout=True).strip().split()
         if len(parents) == 2:
             base_head = parents[0]
             pr_head = parents[1]
@@ -309,7 +335,8 @@ def setup_repository():
         else:
             print("ERROR: Pull request HEAD wasn't a 2-parent merge commit; "
                   "expected to test the merge of PR into the base")
-            commit = run(["git", "show", "--no-patch", "--format=%H", "task_head"], return_stdout=True).strip()
+            commit = run(["git", "rev-parse", "task_head"],
+                         return_stdout=True).strip()
             print("HEAD: %s" % commit)
             print("Parents: %s" % ", ".join(parents))
             sys.exit(1)
@@ -320,6 +347,14 @@ def setup_repository():
         # TODO: move this somewhere earlier in the task
         run(["git", "fetch", "--quiet", "origin", "%s:%s" % (branch, branch)])
 
+    checkout_rev = args.checkout if args.checkout is not None else "task_head"
+    checkout_revision(checkout_rev)
+
+    refs = run(["git", "for-each-ref", "refs/heads"], return_stdout=True)
+    print("INFO: git refs:\n%s" % refs)
+    print("INFO: checked out commit:\n%s" % run(["git", "rev-parse", "HEAD"],
+                                                return_stdout=True))
+
 
 def fetch_event_data():
     try:
@@ -329,12 +364,36 @@ def fetch_event_data():
         # For example under local testing
         return None
 
-    resp = urlopen("%s/%s" % (QUEUE_BASE, task_id))
+    root_url = os.environ['TASKCLUSTER_ROOT_URL']
+    if root_url == 'https://taskcluster.net':
+        queue_base = "https://queue.taskcluster.net/v1/task"
+    else:
+        queue_base = root_url + "/api/queue/v1/task"
+
+
+    resp = urlopen("%s/%s" % (queue_base, task_id))
 
     task_data = json.load(resp)
     event_data = task_data.get("extra", {}).get("github_event")
     if event_data is not None:
         return json.loads(event_data)
+
+
+def include_job(job):
+    # Only for supporting pre decision-task PRs
+    # Special case things that unconditionally run on pushes,
+    # assuming a higher layer is filtering the required list of branches
+    if "GITHUB_PULL_REQUEST" not in os.environ:
+        return True
+
+    if (os.environ["GITHUB_PULL_REQUEST"] == "false" and
+        job == "run-all"):
+        return True
+
+    jobs_str = run([os.path.join(root, "wpt"),
+                    "test-jobs"], return_stdout=True)
+    print(jobs_str)
+    return job in set(jobs_str.splitlines())
 
 
 def main():
@@ -348,26 +407,17 @@ def main():
     if event:
         set_variables(event)
 
-    setup_repository()
+    setup_repository(args)
 
-    extra_jobs = get_extra_jobs(event)
-
-    job = args.job
-
-    print("Job %s" % job)
-
-    run_if = [(lambda: job == "all", "job set to 'all'"),
-              (lambda:"all" in extra_jobs, "Manually specified jobs includes 'all'"),
-              (lambda:job in extra_jobs, "Manually specified jobs includes '%s'" % job),
-              (lambda:include_job(job), "CI required jobs includes '%s'" % job)]
-
-    for fn, msg in run_if:
-        if fn():
-            print(msg)
-            break
-    else:
-        print("Job not scheduled for this push")
-        return
+    # Hack for backwards compatibility
+    if args.script in ["run-all", "lint", "update_built", "tools_unittest",
+                       "wpt_integration", "resources_unittest",
+                       "wptrunner_infrastructure", "stability", "affected_tests"]:
+        job = args.script
+        if not include_job(job):
+            return
+        args.script = args.script_args[0]
+        args.script_args = args.script_args[1:]
 
     # Run the job
     setup_environment(args)

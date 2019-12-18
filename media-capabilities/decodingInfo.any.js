@@ -1,3 +1,4 @@
+// META: timeout=long
 'use strict';
 
 // Minimal VideoConfiguration that will be allowed per spec. All optional
@@ -14,6 +15,12 @@ var minimalVideoConfiguration = {
 // properties are missing.
 var minimalAudioConfiguration = {
   contentType: 'audio/webm; codecs="opus"',
+};
+
+// AudioConfiguration with optional spatialRendering param.
+var audioConfigurationWithSpatialRendering = {
+  contentType: 'audio/webm; codecs="opus"',
+  spatialRendering: true,
 };
 
 promise_test(t => {
@@ -129,7 +136,7 @@ promise_test(t => {
 }, "Test that decodingInfo rejects if the video configuration contentType has one parameter that isn't codecs");
 
 promise_test(t => {
-  return navigator.mediaCapabilities.decodingInfo({
+  return promise_rejects(t, new TypeError(), navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
       contentType: 'video/webm; codecs="vp09.00.10.08"',
@@ -138,8 +145,8 @@ promise_test(t => {
       bitrate: 3000,
       framerate: '24000/1001',
     }
-  });
-}, "Test that decodingInfo() accepts framerate in the form of x/y");
+  }));
+}, "Test that decodingInfo() rejects framerate in the form of x/y");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
@@ -205,32 +212,6 @@ promise_test(t => {
     }
   }));
 }, "Test that decodingInfo() rejects framerate in the form of x/");
-
-promise_test(t => {
-  return navigator.mediaCapabilities.decodingInfo({
-    type: 'file',
-    video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
-      width: 800,
-      height: 600,
-      bitrate: 3000,
-      framerate: '24000/1e4',
-    }
-  });
-}, "Test that decodingInfo() accepts framerate with 'e'");
-
-promise_test(t => {
-  return navigator.mediaCapabilities.decodingInfo({
-    type: 'file',
-    video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
-      width: 800,
-      height: 600,
-      bitrate: 3000,
-      framerate: '24/1.0001',
-    }
-  });
-}, "Test that decodingInfo() accepts framerate as fraction with decimals");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
@@ -321,3 +302,15 @@ async_test(t => {
     }
   }), t.unreached_func('Promise.all should not reject for valid types'));
 }, "Test that decodingInfo rejects if the MediaConfiguration does not have a valid type");
+
+promise_test(t => {
+  return navigator.mediaCapabilities.decodingInfo({
+    type: 'file',
+    audio: audioConfigurationWithSpatialRendering,
+  }).then(ability => {
+    assert_equals(typeof ability.supported, "boolean");
+    assert_equals(typeof ability.smooth, "boolean");
+    assert_equals(typeof ability.powerEfficient, "boolean");
+    assert_equals(typeof ability.keySystemAccess, "object");
+  });
+}, "Test that decodingInfo with spatialRendering set returns a valid MediaCapabilitiesInfo objects");

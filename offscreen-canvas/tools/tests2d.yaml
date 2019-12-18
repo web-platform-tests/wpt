@@ -9361,15 +9361,6 @@
     @assert ctx.canvas === d;
     t.done();
 
-- name: 2d.getcontext.exists
-  desc: The 2D context is implemented
-  testing:
-    - context.2d
-  code: |
-    var offscreenCanvas2 = new OffscreenCanvas(100, 50);
-    @assert offscreenCanvas2.getContext('2d') !== null;
-    t.done();
-
 - name: 2d.getcontext.extraargs
   desc: The 2D context ignores extra getContext arguments
   testing:

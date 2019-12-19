@@ -215,6 +215,9 @@ promise_test(async t => {
 
   const readyReg = await readyPromise;
 
+  // Wait for registration update, since it comes from another global, the states are racy.
+  await wait_for_state(t, reg2.installing || reg2.waiting || reg2.active, 'activated');
+
   assert_equals(readyReg.active.scriptURL, reg2.active.scriptURL, 'Resolves with the second registration');
   assert_not_equals(reg1, reg2, 'Registrations should be different');
 }, 'resolve ready after unregistering');

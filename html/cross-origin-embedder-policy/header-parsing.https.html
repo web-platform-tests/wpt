@@ -39,6 +39,9 @@ function createIframe(t, values) {
   ['require\u2014corp'], // non-ASCII character (em dash)
   ['require-corp;'],
   ['require-corp\0'],
+  ['\u000brequire-corp\u000b'], // vertical tab
+  ['\u000crequire-corp\u000c'], // form feed
+  ['\u000drequire-corp\u000d'], // carriage return
   ['Require-corp'],
   ['require-corp; foo=bar'],
   ['"require-corp"'], // HTTP structured header "string" item

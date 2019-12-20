@@ -86,39 +86,19 @@ single test, it is recommended to use the test name with a suffix of
 <code class="docutils literal notranslate"><span class="pre">-ref</span></code> as their filename; e.g., <code class="docutils literal notranslate"><span class="pre">test.html</span></code> would have <code class="docutils literal notranslate"><span class="pre">test-ref.html</span></code>
 as a reference.</p>
 </div>
-<div class="section" id="complex-pass-conditions">
-<h2>Complex Pass Conditions<a class="headerlink" href="#complex-pass-conditions" title="Permalink to this headline">¶</a></h2>
-<p>Sometimes it is desirable for a file to match multiple references or,
-in rare cases, to allow it to match more than one possible reference.</p>
-<p>References can have links to other references (through the same <code class="docutils literal notranslate"><span class="pre">link</span></code>
-element relation), and in this case for the test to pass the test must
-render identically (assuming a <code class="docutils literal notranslate"><span class="pre">match</span></code> relation) to the reference, and
-the reference must render identically to its reference (again,
-assuming a <code class="docutils literal notranslate"><span class="pre">match</span></code> relation). Note that this can continue indefinitely
-to require tests to match an arbitrary number of references; also that
-<code class="docutils literal notranslate"><span class="pre">match</span></code> is used here purely for explanatory reasons: both <code class="docutils literal notranslate"><span class="pre">match</span></code> and
-<code class="docutils literal notranslate"><span class="pre">mismatch</span></code> can be used (and mixed on one sequence of references). This
-can be thought of as an AND operator!</p>
-<p>Similarly, multiple references can be linked from a single file to
-implement alternates and allow multiple renderings. In this case, the
-file passes if it matches one of the references provided (and that
-reference likewise matches any references, etc.). This can be thought
-of as an OR operator!</p>
-<p>These two techniques can be combined to build up arbitrarily complex
-pass conditions with boolean logic. For example, consider when:</p>
+<div class="section" id="multiple-references">
+<h2>Multiple References<a class="headerlink" href="#multiple-references" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes, a test’s pass condition cannot be captured in a single
+reference.</p>
+<p>If a test has multiple links, then the test passes if:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">a.html</span></code> has <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=match</span> <span class="pre">href=b.html&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=match</span> <span class="pre">href=c.html&gt;</span></code>,</li>
-<li><code class="docutils literal notranslate"><span class="pre">b.html</span></code> has <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=match</span> <span class="pre">href=b1.html&gt;</span></code>, and</li>
-<li><code class="docutils literal notranslate"><span class="pre">c.html</span></code> has <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=mismatch</span> <span class="pre">href=c1.html&gt;</span></code>.</li>
+<li>If there are any match references, at least one must match, and</li>
+<li>If there are any mismatch references, all must mismatch.</li>
 </ul>
-<p>Or, graphically:</p>
-<p><img src="../_static/reftest_graph_example.svg"
-alt="diagram of the above reftest graph as a directed graph"></p>
-<p>In this case, to pass we must either have <code class="docutils literal notranslate"><span class="pre">a.html</span></code>, <code class="docutils literal notranslate"><span class="pre">b.html</span></code> and
-<code class="docutils literal notranslate"><span class="pre">b1.html</span></code> all rendering identically, or <code class="docutils literal notranslate"><span class="pre">a.html</span></code> and <code class="docutils literal notranslate"><span class="pre">c.html</span></code>
-rendering identically with <code class="docutils literal notranslate"><span class="pre">c1.html</span></code> rendering differently. (These
-are, in terms of the graph, all the paths from the source nodes to
-leaf nodes.)</p>
+<p>If you need multiple matches to succeed, these can be turned into
+multiple tests (for example, by just having a reference be a test
+itself!). If this seems like an unreasonable restriction, please file
+a bug and let us know!</p>
 </div>
 <div class="section" id="controlling-when-comparison-occurs">
 <h2>Controlling When Comparison Occurs<a class="headerlink" href="#controlling-when-comparison-occurs" title="Permalink to this headline">¶</a></h2>

@@ -63,12 +63,12 @@ If a test has multiple links, then the test passes if:
 
  * If there are any match references, at least one must match, and
  * If there are any mismatch references, all must mismatch.
- 
+
  If you need multiple matches to succeed, these can be turned into
  multiple tests (for example, by just having a reference be a test
  itself!). If this seems like an unreasonable restriction, please file
  a bug and let us know!
- 
+
 ## Controlling When Comparison Occurs
 
 By default, reftest screenshots are taken after the following

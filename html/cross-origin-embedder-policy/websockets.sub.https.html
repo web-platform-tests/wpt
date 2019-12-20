@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<title>COEP does not influence WebSocket handshake</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+'use strict';
+
+function createIframe(t, hasCoep) {
+  const url = 'resources/empty-coep.py' +
+    (hasCoep ? '?value=require-corp' : '');
+  const iframe = document.createElement('iframe');
+  iframe.src = url;
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+
+  return new Promise((resolve, reject) => {
+    iframe.onload = () => resolve(iframe);
+    iframe.onerror = () => {
+      reject(new Error('failed to load iframe at ' + iframe.src));
+    };
+  });
+}
+
+function createWs(t, WS, params) {
+  return new Promise((resolve, reject) => {
+    const url = 'wss://{{hosts[alt][]}}:{{ports[wss][0]}}/set-co-policies' +
+      params;
+    const websocket = new WS(url);
+
+    websocket.onopen = () => resolve();
+    websocket.onerror = () => {
+      reject(new Error('failed to open WebSocket at ' + url));
+    };
+    t.add_cleanup(() => websocket.close());
+  });
+}
+
+promise_test((t) => {
+  return createIframe(t, false)
+    .then((iframe) => {
+      return createWs(t, iframe.contentWindow.WebSocket, '?corp=same-origin');
+    });
+}, 'request client: (default COEP), response: (default COEP)');
+
+promise_test((t) => {
+  return createIframe(t, false)
+    .then((iframe) => {
+      return createWs(
+        t, iframe.contentWindow.WebSocket, '?corp=same-origin&coep=require-corp'
+      );
+    });
+}, 'request client: (default COEP), response: "require-corp"');
+
+promise_test((t) => {
+  return createIframe(t, true)
+    .then((iframe) => {
+      return createWs(t, iframe.contentWindow.WebSocket, '?corp=same-origin');
+    });
+}, 'request client: "require-corp", response: (default COEP)');
+
+promise_test((t) => {
+  return createIframe(t, true)
+    .then((iframe) => {
+      return createWs(
+        t, iframe.contentWindow.WebSocket, '?corp=same-origin&coep=require-corp'
+      );
+    });
+}, 'request client: "require-corp", response: "require-corp"');
+</script>
+</body>

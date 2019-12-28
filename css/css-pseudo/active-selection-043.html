@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and image</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-painting">
+  <link rel="match" href="reference/ref-filled-green-100px-square.xht">
+
+  <meta content="" name="flags">
+  <meta name="assert" content="In this test, a filled green image is selected. Since there is no 'background-color' specified for the overlaid, then the background color must remain transparent. A 'color' declaration alone should have no rendering effect on elements (like &lt;hr&gt;, &lt;br&gt;) which are, by definition, with no content. Therefore, there should be no red in this test.">
+
+  <style>
+  div
+    {
+      font-size: 300%;
+    }
+
+  img
+    {
+      vertical-align: top;
+    }
+
+  /*
+  "
+  For replaced content, the associated overlay must
+  cover at least the entire replaced object, and may
+  extend outward to include the element's entire
+  content box.
+
+  The overlay may also include other other areas
+  within the border-box of an element; in this
+  case, those areas belong to the innermost such
+  element that contains the area.
+  "
+  coming from
+  https://www.w3.org/TR/css-pseudo-4/#highlight-bounds
+
+  Chromium 80+ will highlight space
+  below and above content box while
+  Firefox 72+ only highlights the image itself.
+  Therefore this 'vertical-align: top' declaration
+  to work around this possible behavior.
+  */
+
+  img::selection
+    {
+      color: red;
+    }
+  </style>
+
+  <script>
+  function startTest()
+  {
+  var targetRange = document.createRange();
+  /* We first create an empty range */
+  targetRange.selectNodeContents(document.getElementById("test"));
+  /* Then we set the range boundaries to the children of div#test */
+  window.getSelection().addRange(targetRange);
+  /* Finally, we now select such range of content */
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.
+
+  <div id="test"><img src="support/60x60-green.png" width="100" height="100" alt="Image download support must be enabled"></div>

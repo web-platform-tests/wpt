@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and image</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-painting">
+  <link rel="match" href="active-selection-041-ref.html">
+
+  <meta content="should" name="flags">
+  <meta name="assert" content="In this test, a filled red image is selected and is overlaid with a blue background color. The specification states that, for replaced content, the UA should create a semi-transparent wash to coat the content. This test checks precisely this.">
+
+  <!--
+  "
+  (...) for replaced content, the UA should create
+  a semi-transparent wash to coat the content so
+  that it can show through the selection.
+  "
+  coming from
+  https://www.w3.org/TR/css-pseudo-4/#highlight-painting
+  -->
+
+  <style>
+  div
+    {
+      font-size: 300%;
+    }
+
+  img
+    {
+      vertical-align: top;
+    }
+
+  /*
+  "
+  For replaced content, the associated overlay must
+  cover at least the entire replaced object, and may
+  extend outward to include the element's entire
+  content box.
+
+  The overlay may also include other other areas
+  within the border-box of an element; in this
+  case, those areas belong to the innermost such
+  element that contains the area.
+  "
+  coming from
+  https://www.w3.org/TR/css-pseudo-4/#highlight-bounds
+
+  Chromium 80+ will highlight space
+  below and above content box while
+  Firefox 72+ only highlights the image itself.
+  Therefore this 'vertical-align: top' declaration
+  to work around this possible behavior.
+  */
+
+  img::selection
+    {
+      background-color: blue; /* equivalent to rgb(0, 0, 255) or rgb(0%, 0%, 100%) or rgba(0, 0, 255, 1) or #0000FF */
+    }
+  </style>
+
+  <script>
+  function startTest()
+  {
+  var targetRange = document.createRange();
+  /* We first create an empty range */
+  targetRange.selectNodeContents(document.getElementById("test"));
+  /* Then we set the range boundaries to the children of div#test */
+  window.getSelection().addRange(targetRange);
+  /* Finally, we now select such range of content */
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>Test passes if there is a filled purple square and <strong>no red</strong>.
+
+  <div id="test"><img src="support/60x60-red.png" width="100" height="100" alt="Image download support must be enabled"></div>

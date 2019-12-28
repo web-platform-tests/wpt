@@ -6,30 +6,29 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-painting">
-  <link rel="match" href="highlight-z-index-001-ref.html">
+  <link rel="match" href="highlight-z-index-002-ref.html">
 
   <meta content="" name="flags">
-  <meta name="assert" content="In this test, the ::selection pseudo-element must be drawn below its positioned descendant.">
+  <meta name="assert" content="In this test, the ::selection pseudo-element must be drawn below positioned descendant.">
 
   <style>
   div
     {
-      display: inline-block;
       font-size: 48px;
-    }
-
-  div#test::selection
-    {
-      background-color: red;
-      color: yellow;
+      line-height: 1.25; /* computes to 60px */
     }
 
   div#positioned-child
     {
       background-color: yellow;
       color: green;
-      left: 8px;
       position: absolute;
+    }
+
+  div#test::selection
+    {
+      background-color: red;
+      color: yellow;
     }
   </style>
 
@@ -49,4 +48,6 @@
 
   <p>Test passes if "Text sample" is green and if its background color is yellow.
 
-  <div id="test">Test sample<div id="positioned-child">Test sample</div></div>
+  <div id="positioned-child">Test sample</div>
+
+  <div id="test">Test sample</div>

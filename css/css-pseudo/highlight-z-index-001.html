@@ -9,13 +9,13 @@
   <link rel="match" href="highlight-z-index-001-ref.html">
 
   <meta content="" name="flags">
-  <meta name="assert" content="In this test, the ::selection pseudo-element must be drawn below its positioned descendant.">
+  <meta name="assert" content="In this test, the ::selection pseudo-element must be drawn below positioned descendant.">
 
   <style>
   div
     {
-      display: inline-block;
       font-size: 48px;
+      line-height: 1.25; /* computes to 60px */
     }
 
   div#test::selection
@@ -28,8 +28,9 @@
     {
       background-color: yellow;
       color: green;
+      display: inline-block;
       position: relative;
-      right: 50%;
+      top: 1.25em;
     }
   </style>
 
@@ -49,4 +50,6 @@
 
   <p>Test passes if "Text sample" is green and if its background color is yellow.
 
-  <div id="test">Test sample<div id="positioned-child">Test sample</div></div>
+  <div id="positioned-child">Test sample</div>
+
+  <div id="test">Test sample</div>

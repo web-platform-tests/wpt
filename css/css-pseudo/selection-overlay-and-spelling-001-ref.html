@@ -11,18 +11,24 @@
   <style>
   div
     {
+      background-color: rgba(255, 255, 0, 0.5); /* semi-transparent yellow color */
       color: green;
+      display: inline;
       font-size: 300%;
+    }
+
+  span
+    {
+      text-decoration: underline;
     }
   </style>
 
-
   <p>PREREQUISITE: User agent needs to have an enabled and capable spelling error module. If it does not, then this test does not apply to such user agent.
 
-  <p>Test passes if each glyph of "Txet sample" is green and <strong>not red</strong>.
+  <p>Test passes if each glyph of "Txet sample" is green and <strong>not red</strong> and if "Txet" is underlined.
 
   <!--
   The bad spelling of Txet is intentional and part of this test
   -->
 
-  <div>Txet sample</div>
+  <div><span>Txet</span> sample</div>

@@ -17,9 +17,9 @@
       color: yellow;
       font-family: monospace;
       font-size: 48px;
-      line-height: 52px;
+      line-height: 56px;
       padding: 0px;
-      width: 11ch;
+      width: 13ch;
     }
 
   input::selection
@@ -32,17 +32,12 @@
   <script>
   function startTest()
   {
-  var targetRange = document.createRange();
-  /* We first create an empty range */
-  targetRange.selectNodeContents(document.getElementById("test"));
-  /* Then we set the range boundaries to the children of div#test */
-  window.getSelection().addRange(targetRange);
-  /* Finally, we now select such range of content */
+  document.getElementById("test").select();
   }
   </script>
 
   <body onload="startTest();">
 
-  <p>Test passes if each glyph of "Text sample" is green with a yellow background and if there is <strong>no red</strong>.
+  <p>Test passes if each glyph of "Selected Text" is green with a yellow background and if there is <strong>no red</strong>.
 
-  <div><input type="text" value="Text sample" id="test"></div>
+  <div><input type="text" value="Selected Text" id="test"></div>

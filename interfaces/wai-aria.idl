@@ -3,12 +3,12 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Accessible Rich Internet Applications (WAI-ARIA) 1.2 (https://rawgit.com/w3c/aria/master/)
 
-interface mixin AccessibilityRole {
+WebIDLinterface mixin AccessibilityRole {
   attribute DOMString? role;
 };
 Element includes AccessibilityRole;
 
-interface mixin AriaAttributes {
+WebIDLinterface mixin AriaAttributes {
   attribute Element? ariaActiveDescendantElement;
   attribute DOMString? ariaAtomic;
   attribute DOMString? ariaAutoComplete;

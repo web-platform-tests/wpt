@@ -3,7 +3,7 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Resource Timing Level 2 (https://w3c.github.io/resource-timing/)
 
-[Exposed=(Window,Worker)]
+WebIDL[Exposed=(Window,Worker)]
 interface PerformanceResourceTiming : PerformanceEntry {
     readonly        attribute DOMString           initiatorType;
     readonly        attribute DOMString           nextHopProtocol;
@@ -25,7 +25,7 @@ interface PerformanceResourceTiming : PerformanceEntry {
     [Default] object toJSON();
 };
 
-partial interface Performance {
+WebIDLpartial interface Performance {
   void clearResourceTimings ();
   void setResourceTimingBufferSize (unsigned long maxSize);
               attribute EventHandler onresourcetimingbufferfull;

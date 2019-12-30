@@ -3,27 +3,27 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Media Capture Depth Stream Extensions (https://w3c.github.io/mediacapture-depth/)
 
-partial dictionary MediaTrackSupportedConstraints {
+WebIDLpartial dictionary MediaTrackSupportedConstraints {
     // Applies to both depth stream track and color stream track:
     boolean videoKind = true;
 };
 
-partial dictionary MediaTrackCapabilities {
+WebIDLpartial dictionary MediaTrackCapabilities {
     // Applies to both depth stream track and color stream track:
     DOMString videoKind;
 };
 
-partial dictionary MediaTrackConstraintSet {
+WebIDLpartial dictionary MediaTrackConstraintSet {
     // Applies to both depth stream track and color stream track:
     ConstrainDOMString videoKind;
 };
 
-partial dictionary MediaTrackSettings {
+WebIDLpartial dictionary MediaTrackSettings {
     // Applies to both depth stream track and color stream track:
     DOMString           videoKind;
 };
 
-enum VideoKindEnum {
+WebIDLenum VideoKindEnum {
     "color",
     "depth"
 };

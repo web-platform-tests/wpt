@@ -1,14 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:h="http://www.w3.org/1999/xhtml">
-  <metadata>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/paths.html#TheDProperty"/>
-    <h:meta name="assert" content="computed d is serialized using absolute commands"/>
-  </metadata>
-  <path id="target"></path>
-  <h:script src="/resources/testharness.js"/>
-  <h:script src="/resources/testharnessreport.js"/>
-  <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml"><metadata><h:link href="https://svgwg.org/svg2-draft/paths.html#TheDProperty" rel="help"/><h:meta content="computed d is serialized using absolute commands" name="assert"/></metadata><path id="target"/><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><script><![CDATA[
   test(function() {
     var target = document.getElementById('target');
 
@@ -32,5 +22,4 @@
     assert_equals(target.style.d, 'path("m 10 20 a 10 20 30 1 0 40 50 a 110 120 30 1 1 140 50")');
     assert_equals(getComputedStyle(target).d, 'path("M 10 20 A 10 20 30 1 0 50 70 A 110 120 30 1 1 190 120")');
   });
-  ]]></script>
-</svg>
+  ]]></script></svg>

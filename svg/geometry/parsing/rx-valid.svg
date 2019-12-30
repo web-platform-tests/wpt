@@ -1,17 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:h="http://www.w3.org/1999/xhtml"
-     width="800px" height="8000px">
-  <title>SVG Geometry Properties: parsing rx with valid values</title>
-  <metadata>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/geometry.html#RX"/>
-    <h:meta name="assert" content="rx supports the full grammar '&lt;length-percentage&gt; | auto'."/>
-  </metadata>
-  <g id="target"></g>
-  <h:script src="/resources/testharness.js"/>
-  <h:script src="/resources/testharnessreport.js"/>
-  <h:script src="/css/support/parsing-testcommon.js"/>
-  <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml" width="800" height="8000"><title>SVG Geometry Properties: parsing rx with valid values</title><metadata><h:link href="https://svgwg.org/svg2-draft/geometry.html#RX" rel="help"/><h:meta content="rx supports the full grammar '&lt;length-percentage&gt; | auto'." name="assert"/></metadata><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><h:script src="/css/support/parsing-testcommon.js"/><script><![CDATA[
 
 test_valid_value("rx", "auto");
 
@@ -21,5 +8,4 @@ test_valid_value("rx", "calc(2em + 3ex)");
 test_valid_value("rx", "4%");
 test_valid_value("rx", "5vw");
 
-  ]]></script>
-</svg>
+  ]]></script></svg>

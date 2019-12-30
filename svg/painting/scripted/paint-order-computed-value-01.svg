@@ -1,9 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml">
-  <title>'paint-order' computed style serialization</title>
-  <h:script src="/resources/testharness.js"/>
-  <h:script src="/resources/testharnessreport.js"/>
-  <text id="text" x="100" y="100"/>
-  <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml"><title>&apos;paint-order&apos; computed style serialization</title><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><script><![CDATA[
     'use strict';
 
     function make_tests(check, type) {
@@ -57,6 +52,4 @@
       text.removeAttribute("paint-order");
       assert_equals(actual, expected, value);
     }, "presentation attribute");
-  ]]>
-  </script>
-</svg>
+  ]]></script></svg>

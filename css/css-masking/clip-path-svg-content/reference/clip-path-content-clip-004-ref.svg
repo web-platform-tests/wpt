@@ -1,8 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>CSS Reference</title>
-    <html:link rel="author" title="Cameron McCormack" href="mailto:cam@mcc.id.au"/>
-    <metadata class="flags">svg</metadata>
-  </g>
-  <rect width="100" height="100" fill="green"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml"><g id="testmeta"><title>CSS Reference</title><html:link href="mailto:cam@mcc.id.au" rel="author" title="Cameron McCormack"/><metadata class="flags">svg</metadata></g><rect width="100" height="100" fill="green"/></svg>

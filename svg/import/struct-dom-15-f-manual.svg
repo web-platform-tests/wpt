@@ -1,49 +1,4 @@
-<svg id="svg-root" width="100%" height="100%"
-  viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink" onload="runTest()">
-  <!--======================================================================-->
-  <!--=  Copyright 2008 World Wide Web Consortium, (Massachusetts          =-->
-  <!--=  Institute of Technology, European Research Consortium for         =-->
-  <!--=  Informatics and Mathematics (ERCIM), Keio University).            =-->
-  <!--=  All Rights Reserved.                                              =-->
-  <!--=  See http://www.w3.org/Consortium/Legal/.                          =-->
-  <!--======================================================================-->
-  <d:SVGTestCase xmlns:d="http://www.w3.org/2000/02/svg/testsuite/description/"
-    template-version="1.4" reviewer="SVGWG" author="ED" status="accepted"
-    version="$Revision: 1.3 $" testname="$RCSfile: struct-dom-15-f.svg,v $">
-    <d:testDescription xmlns="http://www.w3.org/1999/xhtml" href="http://www.w3.org/TR/SVG11/struct.html#InterfaceSVGElementInstance">
-      <p>
-        Test SVGElementInstance and EventTarget.dispatchEvent.
-      </p>
-    </d:testDescription>
-    <d:operatorScript xmlns="http://www.w3.org/1999/xhtml">
-      <p>
-        Run the test. No interaction required.
-      </p>
-    </d:operatorScript>
-    <d:passCriteria xmlns="http://www.w3.org/1999/xhtml">
-      <p>
-        The test is passed if there are three green circles visible, and no red.
-      </p>
-    </d:passCriteria>
-  </d:SVGTestCase>
-  <title id="test-title">$RCSfile: struct-dom-15-f.svg,v $</title>
-  <defs>
-    <font-face
-      font-family="SVGFreeSansASCII"
-      unicode-range="U+0-7F">
-      <font-face-src>
-        <font-face-uri xlink:href="../resources/SVGFreeSans.svg#ascii"/>
-      </font-face-src>
-    </font-face>
-  </defs>
-  <g id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18">
-
-    <defs>
-      <circle id="defscircle1" cx="240" cy="180" r="25" onclick="verifyDefs1(evt)" fill="red"/>
-      <circle id="defscircle2" cx="240" cy="180" r="25" onclick="verifyDefs2(evt)" fill="red"/>
-
-      <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="svg-root" width="100%" height="100%" onload="runTest()" viewBox="0 0 480 360"><d:SVGTestCase xmlns:d="http://www.w3.org/2000/02/svg/testsuite/description/" author="ED" reviewer="SVGWG" status="accepted" template-version="1.4" testname="$RCSfile: struct-dom-15-f.svg,v $" version="$Revision: 1.3 $"><d:testDescription xmlns="http://www.w3.org/1999/xhtml" href="http://www.w3.org/TR/SVG11/struct.html#InterfaceSVGElementInstance"><p>Test SVGElementInstance and EventTarget.dispatchEvent.</p></d:testDescription><d:operatorScript xmlns="http://www.w3.org/1999/xhtml"><p>Run the test. No interaction required.</p></d:operatorScript><d:passCriteria xmlns="http://www.w3.org/1999/xhtml"><p>The test is passed if there are three green circles visible, and no red.</p></d:passCriteria></d:SVGTestCase><title id="test-title">$RCSfile: struct-dom-15-f.svg,v $</title><defs><font-face font-family="SVGFreeSansASCII" unicode-range="U+0-7F"><font-face-src><font-face-uri xlink:href="../resources/SVGFreeSans.svg#ascii"/></font-face-src></font-face></defs><g id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18"><defs><circle id="defscircle1" cx="240" cy="180" r="25" fill="red" onclick="verifyDefs1(evt)"/><circle id="defscircle2" cx="240" cy="180" r="25" fill="red" onclick="verifyDefs2(evt)"/><script><![CDATA[
         function verifyDefs1(e)
         {
           var dc = document.getElementById("defscircle1");
@@ -116,24 +71,4 @@
             dispatchMouseClick(circle);
           } catch(e) {}
         }
-      ]]></script>
-    </defs>
-
-    <circle id="circle" cx="240" cy="180" r="25" onclick="verify(evt)" fill="red"/>
-
-    <use id="use1" xlink:href="#defscircle1" transform="translate(80,0)"/>
-    <use id="use2" xlink:href="#defscircle2" transform="translate(-80,0)"/>
-    <use id="use3" xlink:href="#defsg1"/>
-  </g>
-  <g font-family="SVGFreeSansASCII,sans-serif" font-size="32">
-    <text id="revision" x="10" y="340" stroke="none"
-      fill="black">$Revision: 1.3 $</text>
-  </g>
-  <rect id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000"/>
-  <!-- comment out this watermark once the test is approved -->
-  <!--<g id="draft-watermark">
-    <rect x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1"/>
-    <text font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240"
-      text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white">DRAFT</text>
-  </g>-->
-</svg>
+      ]]></script></defs><circle id="circle" cx="240" cy="180" r="25" fill="red" onclick="verify(evt)"/><use id="use1" transform="translate(80,0)" xlink:href="#defscircle1"/><use id="use2" transform="translate(-80,0)" xlink:href="#defscircle2"/><use id="use3" xlink:href="#defsg1"/></g><g font-family="SVGFreeSansASCII,sans-serif" font-size="32"><text id="revision" x="10" y="340" fill="#000" stroke="none">$Revision: 1.3 $</text></g><rect id="test-frame" width="478" height="358" x="1" y="1" fill="none" stroke="#000"/></svg>

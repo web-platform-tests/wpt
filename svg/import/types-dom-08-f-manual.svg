@@ -1,74 +1,4 @@
-<svg id="svg-root" width="100%" height="100%"
-  viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink">
-  <!--======================================================================-->
-  <!--=  Copyright 2008 World Wide Web Consortium, (Massachusetts          =-->
-  <!--=  Institute of Technology, European Research Consortium for         =-->
-  <!--=  Informatics and Mathematics (ERCIM), Keio University).            =-->
-  <!--=  All Rights Reserved.                                              =-->
-  <!--=  See http://www.w3.org/Consortium/Legal/.                          =-->
-  <!--======================================================================-->
-  <d:SVGTestCase xmlns:d="http://www.w3.org/2000/02/svg/testsuite/description/"
-    template-version="1.4" reviewer="[reviewer]" author="ED" status="created"
-    version="$Revision: 1.1 $" testname="$RCSfile: types-dom-08-f.svg,v $">
-    <d:testDescription xmlns="http://www.w3.org/1999/xhtml" href="http://www.w3.org/TR/SVG11/types.html#InterfaceSVGLocatable">
-      <p>
-        This test draws a few basic shapes and checks for correct values from getBBox().
-      </p>
-    </d:testDescription>
-    <d:operatorScript xmlns="http://www.w3.org/1999/xhtml">
-      <p>
-        Run the test. No interaction required.
-      </p>
-    </d:operatorScript>
-    <d:passCriteria xmlns="http://www.w3.org/1999/xhtml">
-      <p>
-        To pass, each returned bounding box must be correct (indicated by printing the values in green), and when this happens the text in the rect with blue stroke changes from 'failed' to 'passed'.
-      </p>
-    </d:passCriteria>
-  </d:SVGTestCase>
-  <title id="test-title">$RCSfile: types-dom-08-f.svg,v $</title>
-  <defs>
-    <font-face
-      font-family="SVGFreeSansASCII"
-      unicode-range="U+0-7F">
-      <font-face-src>
-        <font-face-uri xlink:href="../resources/SVGFreeSans.svg#ascii"/>
-      </font-face-src>
-    </font-face>
-  </defs>
-  <g id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18">
-    <defs>
-      <rect id="myRect" x="0" y="0" width="60" height="40"/>
-    </defs>
-
-    <g id="body">
-      <g id="wrap" transform="translate(300,100)">
-        <g id="group1" transform="translate(10, 20)" fill="#ff0">
-          <rect id="rect1" transform="scale(2)" x="10" y="10" width="50" height="50"/>
-          <rect id="rect2" x="10" y="10" width="100" height="100"/>
-          <g id="group2" transform="translate(10, 20)">
-            <rect id="rect3" x="0" y="10" width="150" height="50"/>
-            <circle id="circle1" cx="20" cy="20" r="100" />
-          </g>
-        </g>
-        <rect id="rect4" x="10" y="10" width="400" height="0"/>
-        <use id="myUse" xlink:href="#myRect" x="-30" y="-20" fill="#ff0"/>
-        <g id="emptyG"/>
-        <line id="thickLine" stroke-width="10" x2="100" y2="0" stroke="#ff0"/>
-      </g>
-
-      <circle id="circle2" cx="20" cy="20" r="100" />
-
-      <text  x="240" y="40" text-anchor="middle" >SVGLocatable.getBBox() - basic test</text>
-
-      <rect x="330" y="315" width="130" height="40" stroke="blue" fill="none"/>
-      <g fill="black">
-        <text id="TestStatus" x="333" y="350" font-size="40">failed</text>
-      </g>
-    </g>
-
-        <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="svg-root" width="100%" height="100%" viewBox="0 0 480 360"><d:SVGTestCase xmlns:d="http://www.w3.org/2000/02/svg/testsuite/description/" author="ED" reviewer="[reviewer]" status="created" template-version="1.4" testname="$RCSfile: types-dom-08-f.svg,v $" version="$Revision: 1.1 $"><d:testDescription xmlns="http://www.w3.org/1999/xhtml" href="http://www.w3.org/TR/SVG11/types.html#InterfaceSVGLocatable"><p>This test draws a few basic shapes and checks for correct values from getBBox().</p></d:testDescription><d:operatorScript xmlns="http://www.w3.org/1999/xhtml"><p>Run the test. No interaction required.</p></d:operatorScript><d:passCriteria xmlns="http://www.w3.org/1999/xhtml"><p>To pass, each returned bounding box must be correct (indicated by printing the values in green), and when this happens the text in the rect with blue stroke changes from &apos;failed&apos; to &apos;passed&apos;.</p></d:passCriteria></d:SVGTestCase><title id="test-title">$RCSfile: types-dom-08-f.svg,v $</title><defs><font-face font-family="SVGFreeSansASCII" unicode-range="U+0-7F"><font-face-src><font-face-uri xlink:href="../resources/SVGFreeSans.svg#ascii"/></font-face-src></font-face></defs><g id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18"><defs><rect id="myRect" width="60" height="40" x="0" y="0"/></defs><g id="body"><g id="wrap" transform="translate(300,100)"><g id="group1" fill="#ff0" transform="translate(10, 20)"><rect id="rect1" width="50" height="50" x="10" y="10" transform="scale(2)"/><rect id="rect2" width="100" height="100" x="10" y="10"/><g id="group2" transform="translate(10, 20)"><rect id="rect3" width="150" height="50" x="0" y="10"/><circle id="circle1" cx="20" cy="20" r="100"/></g></g><rect id="rect4" width="400" height="0" x="10" y="10"/><use id="myUse" x="-30" y="-20" fill="#ff0" xlink:href="#myRect"/><line id="thickLine" x2="100" y2="0" stroke="#ff0" stroke-width="10"/></g><circle id="circle2" cx="20" cy="20" r="100"/><text x="240" y="40" text-anchor="middle">SVGLocatable.getBBox() - basic test</text><rect width="130" height="40" x="330" y="315" fill="none" stroke="#00f"/><g fill="#000"><text id="TestStatus" x="333" y="350" font-size="40">failed</text></g></g><script><![CDATA[
       var svg_ns = "http://www.w3.org/2000/svg";
       var xlink_ns = "http://www.w3.org/1999/xlink";
 
@@ -172,17 +102,4 @@
         status.firstChild.nodeValue = "passed" ;
         status.setAttribute( "fill", "green");
       }
- ]]></script>
-  </g>
-  <g font-family="SVGFreeSansASCII,sans-serif" font-size="32">
-    <text id="revision" x="10" y="340" stroke="none"
-      fill="black">$Revision: 1.1 $</text>
-  </g>
-  <rect id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000"/>
-  <!-- comment out this watermark once the test is approved -->
-  <g id="draft-watermark">
-    <rect x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1"/>
-    <text font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240"
-      text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white">DRAFT</text>
-  </g>
-</svg>
+ ]]></script></g><g font-family="SVGFreeSansASCII,sans-serif" font-size="32"><text id="revision" x="10" y="340" fill="#000" stroke="none">$Revision: 1.1 $</text></g><rect id="test-frame" width="478" height="358" x="1" y="1" fill="none" stroke="#000"/><g id="draft-watermark"><rect width="478" height="20" x="1" y="1" fill="red" stroke="#000" stroke-width="1"/><text x="240" y="18" fill="#fff" stroke="#000" stroke-width=".5" font-family="SVGFreeSansASCII,sans-serif" font-size="20" font-weight="bold" text-anchor="middle">DRAFT</text></g></svg>

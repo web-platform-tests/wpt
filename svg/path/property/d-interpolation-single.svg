@@ -1,17 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:h="http://www.w3.org/1999/xhtml">
-  <metadata>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/paths.html#TheDProperty"/>
-    <h:meta name="assert" content="Each path command interpolates."/>
-  </metadata>
-
-  <g id="container"/>
-
-  <h:script src="/resources/testharness.js"/>
-  <h:script src="/resources/testharnessreport.js"/>
-  <h:script src="resources/interpolation-test-common.js"/>
-  <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml"><metadata><h:link href="https://svgwg.org/svg2-draft/paths.html#TheDProperty" rel="help"/><h:meta content="Each path command interpolates." name="assert"/></metadata><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><h:script src="resources/interpolation-test-common.js"/><script><![CDATA[
       'use strict';
 
       // Exercise each segment type
@@ -241,5 +228,4 @@
         {at: 1, expect: 'path("M 20 26 T 61 51")'},
         {at: 2, expect: 'path("M 28 18 T 77 35")'},
       ]);
-  ]]></script>
-</svg>
+  ]]></script></svg>

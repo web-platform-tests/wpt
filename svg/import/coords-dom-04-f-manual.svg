@@ -1,51 +1,4 @@
-<svg id="svg-root" width="100%" height="100%"
-  viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink" onload="test()">
-  <!--======================================================================-->
-  <!--=  Copyright 2008 World Wide Web Consortium, (Massachusetts          =-->
-  <!--=  Institute of Technology, European Research Consortium for         =-->
-  <!--=  Informatics and Mathematics (ERCIM), Keio University).            =-->
-  <!--=  All Rights Reserved.                                              =-->
-  <!--=  See http://www.w3.org/Consortium/Legal/.                          =-->
-  <!--======================================================================-->
-  <d:SVGTestCase xmlns:d="http://www.w3.org/2000/02/svg/testsuite/description/"
-    template-version="1.4" reviewer="CL" author="ED" status="accepted"
-    version="$Revision: 1.5 $" testname="$RCSfile: coords-dom-04-f.svg,v $">
-    <d:testDescription xmlns="http://www.w3.org/1999/xhtml" href="http://www.w3.org/TR/SVG11/coords.html#InterfaceSVGTransformList">
-      <p>
-      The test checks the SVGTransformList.consolidate method.
-      </p>
-    </d:testDescription>
-    <d:operatorScript xmlns="http://www.w3.org/1999/xhtml">
-      <p>
-        Run the test. No interaction required.
-      </p>
-    </d:operatorScript>
-    <d:passCriteria xmlns="http://www.w3.org/1999/xhtml">
-      <p>
-    There must be 13 green rectangles visible.
-    The text next to the first rectangle must say "Scripting enabled".
-    The other 12 lines must each say "Passed subtest #n" where n is the subtest number 1..12.
-    If anything red shows, the test has failed.
-      </p>
-    </d:passCriteria>
-  </d:SVGTestCase>
-  <title id="test-title">$RCSfile: coords-dom-04-f.svg,v $</title>
-  <defs>
-    <font-face
-      font-family="SVGFreeSansASCII"
-      unicode-range="U+0-7F">
-      <font-face-src>
-        <font-face-uri xlink:href="../resources/SVGFreeSans.svg#ascii"/>
-      </font-face-src>
-    </font-face>
-  </defs>
-  <g id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18">
-  <defs>
-    <style>
-      #test-body-content rect { stroke: black; }
-    </style>
-    <script type="text/ecmascript"><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="svg-root" width="100%" height="100%" onload="test()" viewBox="0 0 480 360"><d:SVGTestCase xmlns:d="http://www.w3.org/2000/02/svg/testsuite/description/" author="ED" reviewer="CL" status="accepted" template-version="1.4" testname="$RCSfile: coords-dom-04-f.svg,v $" version="$Revision: 1.5 $"><d:testDescription xmlns="http://www.w3.org/1999/xhtml" href="http://www.w3.org/TR/SVG11/coords.html#InterfaceSVGTransformList"><p>The test checks the SVGTransformList.consolidate method.</p></d:testDescription><d:operatorScript xmlns="http://www.w3.org/1999/xhtml"><p>Run the test. No interaction required.</p></d:operatorScript><d:passCriteria xmlns="http://www.w3.org/1999/xhtml"><p>There must be 13 green rectangles visible. The text next to the first rectangle must say &quot;Scripting enabled&quot;. The other 12 lines must each say &quot;Passed subtest #n&quot; where n is the subtest number 1..12. If anything red shows, the test has failed.</p></d:passCriteria></d:SVGTestCase><title id="test-title">$RCSfile: coords-dom-04-f.svg,v $</title><defs><font-face font-family="SVGFreeSansASCII" unicode-range="U+0-7F"><font-face-src><font-face-uri xlink:href="../resources/SVGFreeSans.svg#ascii"/></font-face-src></font-face></defs><g id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18"><defs><style>#test-body-content rect{stroke:#000}</style><script type="text/ecmascript"><![CDATA[
     var pos = { "x": 20, "y": 40 };
     var subtestCounter = 1;
     var passed = true;
@@ -140,27 +93,4 @@
       document.getElementById("scriptstatus").textContent = "Scripting enabled";
     }
 
-  ]]></script>
-  </defs>
-
-  <g transform="translate(20 -10)">
-    <g id="subteststatus" transform="translate(0,40)">
-      <rect id="status" y="5" width="15" height="15" fill="red"/>
-      <text id="scriptstatus" y="20" x="20" >Scripting disabled</text>
-    </g>
-
-    <polyline id="r" fill="none" stroke="green" display="none" transform="translate(10 10) rotate(90)" points="0 0 30 40 80 -20" stroke-width="10"/>
-  </g>
-  </g>
-  <g font-family="SVGFreeSansASCII,sans-serif" font-size="32">
-    <text id="revision" x="10" y="340" stroke="none"
-      fill="black">$Revision: 1.5 $</text>
-  </g>
-  <rect id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000"/>
-  <!-- comment out this watermark once the test is approved --><!--
-  <g id="draft-watermark">
-    <rect x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1"/>
-    <text font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240"
-      text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white">DRAFT</text>
-  </g>-->
-</svg>
+  ]]></script></defs><g transform="translate(20 -10)"><g id="subteststatus" transform="translate(0,40)"><rect id="status" width="15" height="15" y="5" fill="red"/><text id="scriptstatus" x="20" y="20">Scripting disabled</text></g><polyline id="r" fill="none" stroke="green" stroke-width="10" points="0 0 30 40 80 -20" display="none" transform="translate(10 10) rotate(90)"/></g></g><g font-family="SVGFreeSansASCII,sans-serif" font-size="32"><text id="revision" x="10" y="340" fill="#000" stroke="none">$Revision: 1.5 $</text></g><rect id="test-frame" width="478" height="358" x="1" y="1" fill="none" stroke="#000"/></svg>

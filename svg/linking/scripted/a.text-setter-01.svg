@@ -1,26 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:h="http://www.w3.org/1999/xhtml">
-  <title>SVGAElement.text setting</title>
-  <metadata>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/linking.html#InterfaceSVGAElement"/>
-  </metadata>
-  <g id="test">
-    <a href="a">a b c</a>
-    <a href="b">a <!--b--> c</a>
-    <a href="c">a <b>b</b> c</a>
-    <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml"><title>SVGAElement.text setting</title><metadata><h:link href="https://svgwg.org/svg2-draft/linking.html#InterfaceSVGAElement" rel="help"/></metadata><g id="test"><a href="a">a b c</a><a href="b">ac</a><a href="c">a<b>b</b>c</a><script><![CDATA[
         var d = document.getElementById("test")
                         .appendChild(document.createElementNS("http://www.w3.org/2000/svg","a"));
         d.href.baseVal = "d";
         d.appendChild(document.createTextNode("a "));
         d.appendChild(document.createTextNode("b "));
         d.appendChild(document.createTextNode("c "));
-    ]]></script>
-  </g>
-  <h:script src="/resources/testharness.js"/>
-  <h:script src="/resources/testharnessreport.js"/>
-  <script><![CDATA[
+    ]]></script></g><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><script><![CDATA[
     test(function() {
         var list = document.getElementById("test")
                             .getElementsByTagName("a");
@@ -40,5 +25,4 @@
             }, "Test for anchor " + i);
         }
     });
-  ]]></script>
-</svg>
+  ]]></script></svg>

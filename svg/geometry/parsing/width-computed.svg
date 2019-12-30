@@ -1,54 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml">
-  <title>SVG Geometry Properties: getComputedStyle().width</title>
-  <metadata>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/geometry.html#Sizing"/>
-    <h:link rel="help" href="https://drafts.csswg.org/cssom/#resolved-values"/>
-  </metadata>
-  <h:script src="/resources/testharness.js"/>
-  <h:script src="/resources/testharnessreport.js"/>
-  <svg width="200" height="100" id="test-content">
-    <rect/>
-    <rect width="100" height="200"/>
-    <rect height="42" style="width: 40%"/>
-    <rect height="42" style="width: auto"/>
-    <rect height="42" style="width: 20px"/>
-    <rect height="42" style="width: 42%; display: none"/>
-
-    <g><rect width="100" height="100"/></g>
-    <g width="100" height="42px"><rect width="100" height="100"/></g>
-    <g style="width: 10%; height: auto"><rect width="100" height="100"/></g>
-    <g style="width: auto; height: 20px"><rect width="100" height="100"/></g>
-    <g style="width: 20px; height: 10%"><rect width="100" height="100"/></g>
-
-    <image/>
-    <image width="100"/>
-    <image height="42" style="width: 25%"/>
-    <image height="42" style="width: auto"/>
-    <image height="42" style="width: 230px"/>
-    <image height="42" style="width: 25%; display: none"/>
-
-    <foreignObject>Some content</foreignObject>
-    <foreignObject width="100">Some content</foreignObject>
-    <foreignObject style="width: 50%">Some content</foreignObject>
-    <foreignObject style="width: auto">Some content</foreignObject>
-    <foreignObject style="width: 75px">Some content</foreignObject>
-    <foreignObject style="width: auto; display: none">Some content</foreignObject>
-
-    <svg/>
-    <svg width="100"/>
-    <svg style="width: auto"/>
-    <svg style="width: 200px"/>
-    <svg style="width: 50%"/>
-    <svg style="width: auto; display: none"/>
-
-    <text>Text1</text>
-    <text width="100px" height="42">Text2</text>
-    <text style="width: 30%; height: auto">Text3</text>
-    <text style="width: auto; height: 20px">Text3</text>
-    <text style="width: 20px; height: 30%">Text3</text>
-  </svg>
-  <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml"><title>SVG Geometry Properties: getComputedStyle().width</title><metadata><h:link href="https://svgwg.org/svg2-draft/geometry.html#Sizing" rel="help"/><h:link href="https://drafts.csswg.org/cssom/#resolved-values" rel="help"/></metadata><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><svg id="test-content" width="200" height="100"><rect/><rect width="100" height="200"/><rect height="42" style="width:40%"/><rect height="42" style="width:auto"/><rect height="42" style="width:20px"/><rect height="42" display="none" style="width:42%"/><g><rect width="100" height="100"/></g><g width="100" height="42"><rect width="100" height="100"/></g><g style="width:10%;height:auto"><rect width="100" height="100"/></g><g style="width:auto;height:20px"><rect width="100" height="100"/></g><g style="width:20px;height:10%"><rect width="100" height="100"/></g><image/><image width="100"/><image height="42" style="width:25%"/><image height="42" style="width:auto"/><image height="42" style="width:230px"/><image height="42" display="none" style="width:25%"/><foreignObject>Some content</foreignObject><foreignObject width="100">Some content</foreignObject><foreignObject style="width:50%">Some content</foreignObject><foreignObject style="width:auto">Some content</foreignObject><foreignObject style="width:75px">Some content</foreignObject><foreignObject style="width:auto" display="none">Some content</foreignObject><svg/><svg width="100"/><svg style="width:auto"/><svg style="width:200px"/><svg style="width:50%"/><svg style="width:auto" display="none"/><text>Text1</text><text width="100" height="42">Text2</text><text style="width:30%;height:auto">Text3</text><text style="width:auto;height:20px">Text3</text><text style="width:20px;height:30%">Text3</text></svg><script><![CDATA[
 [
   // Cases where computed 'width' return the used value.
   {
@@ -126,5 +76,4 @@
     }, document.title + ', <' + entry.element + '> ' + expected.description);
   });
 });
-  ]]></script>
-</svg>
+  ]]></script></svg>

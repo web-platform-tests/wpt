@@ -1,16 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:h="http://www.w3.org/1999/xhtml">
-  <metadata>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/styling.html#RequiredProperties"/>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/propidx.html"/>
-    <h:meta name="assert" content="All required properties are supported"/>
-    <!-- Note: This test does not verify that the properties are actually applied to SVG rendering. -->
-  </metadata>
-  <g id="target"></g>
-  <h:script src="/resources/testharness.js"/>
-  <h:script src="/resources/testharnessreport.js"/>
-  <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml"><metadata><h:link href="https://svgwg.org/svg2-draft/styling.html#RequiredProperties" rel="help"/><h:link href="https://svgwg.org/svg2-draft/propidx.html" rel="help"/><h:meta content="All required properties are supported" name="assert"/></metadata><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><script><![CDATA[
   var properties = [
     // Properties listed in https://svgwg.org/svg2-draft/propidx.html
     "alignment-baseline",
@@ -142,5 +130,4 @@
       assert_true(property in target.style);
     }, 'Property "' + property + '" is supported');
   }
-  ]]></script>
-</svg>
+  ]]></script></svg>

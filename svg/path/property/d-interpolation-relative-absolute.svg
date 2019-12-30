@@ -1,17 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:h="http://www.w3.org/1999/xhtml">
-  <metadata>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/paths.html#TheDProperty"/>
-    <h:meta name="assert" content="d can interpolate between absolute and relative paths."/>
-  </metadata>
-
-  <g id="container"/>
-
-  <h:script src="/resources/testharness.js"/>
-  <h:script src="/resources/testharnessreport.js"/>
-  <h:script src="resources/interpolation-test-common.js"/>
-  <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml"><metadata><h:link href="https://svgwg.org/svg2-draft/paths.html#TheDProperty" rel="help"/><h:meta content="d can interpolate between absolute and relative paths." name="assert"/></metadata><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><h:script src="resources/interpolation-test-common.js"/><script><![CDATA[
       'use strict';
 
       // Mix relative and non-relative
@@ -118,5 +105,4 @@
         {at: 1, expect: 'path("M 18 12 A 50 100 70 0 1 90 110 A 150 160 70 0 1 70 80")'},
         {at: 2, expect: 'path("M 26 4 A 90 180 110 0 1 130 150 A 190 200 110 0 1 -50 40")'}
       ]);
-  ]]></script>
-</svg>
+  ]]></script></svg>

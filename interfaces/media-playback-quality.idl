@@ -3,11 +3,11 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Media Playback Quality (https://w3c.github.io/media-playback-quality/)
 
-partial interface HTMLVideoElement {
+WebIDLpartial interface HTMLVideoElement {
   VideoPlaybackQuality getVideoPlaybackQuality();
 };
 
-[Exposed=Window]
+WebIDL[Exposed=Window]
 interface VideoPlaybackQuality {
   readonly attribute DOMHighResTimeStamp creationTime;
   readonly attribute unsigned long droppedVideoFrames;

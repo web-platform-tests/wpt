@@ -3,12 +3,12 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Push API (https://w3c.github.io/push-api/)
 
-[SecureContext]
+WebIDL[SecureContext]
 partial interface ServiceWorkerRegistration {
   readonly attribute PushManager pushManager;
 };
 
-[Exposed=(Window,Worker), SecureContext]
+WebIDL[Exposed=(Window,Worker), SecureContext]
 interface PushManager {
   [SameObject] static readonly attribute FrozenArray<DOMString> supportedContentEncodings;
 
@@ -17,18 +17,18 @@ interface PushManager {
   Promise<PushPermissionState> permissionState(optional PushSubscriptionOptionsInit options = {});
 };
 
-[Exposed=(Window,Worker), SecureContext]
+WebIDL[Exposed=(Window,Worker), SecureContext]
 interface PushSubscriptionOptions {
   readonly attribute boolean userVisibleOnly;
   [SameObject] readonly attribute ArrayBuffer? applicationServerKey;
 };
 
-dictionary PushSubscriptionOptionsInit {
+WebIDLdictionary PushSubscriptionOptionsInit {
   boolean userVisibleOnly = false;
   (BufferSource or DOMString)? applicationServerKey = null;
 };
 
-[Exposed=(Window,Worker), SecureContext]
+WebIDL[Exposed=(Window,Worker), SecureContext]
 interface PushSubscription {
   readonly attribute USVString endpoint;
   readonly attribute DOMTimeStamp? expirationTime;
@@ -45,12 +45,12 @@ dictionary PushSubscriptionJSON {
   record<DOMString, USVString> keys;
 };
 
-enum PushEncryptionKeyName {
+WebIDLenum PushEncryptionKeyName {
   "p256dh",
   "auth"
 };
 
-[Exposed=ServiceWorker, SecureContext]
+WebIDL[Exposed=ServiceWorker, SecureContext]
 interface PushMessageData {
   ArrayBuffer arrayBuffer();
   Blob blob();
@@ -58,37 +58,37 @@ interface PushMessageData {
   USVString text();
 };
 
-[Exposed=ServiceWorker, SecureContext]
+WebIDL[Exposed=ServiceWorker, SecureContext]
 partial interface ServiceWorkerGlobalScope {
   attribute EventHandler onpush;
   attribute EventHandler onpushsubscriptionchange;
 };
 
-[Exposed=ServiceWorker, SecureContext]
+WebIDL[Exposed=ServiceWorker, SecureContext]
 interface PushEvent : ExtendableEvent {
   constructor(DOMString type, optional PushEventInit eventInitDict = {});
   readonly attribute PushMessageData? data;
 };
 
-typedef (BufferSource or USVString) PushMessageDataInit;
+WebIDLtypedef (BufferSource or USVString) PushMessageDataInit;
 
 dictionary PushEventInit : ExtendableEventInit {
   PushMessageDataInit data;
 };
 
-[Exposed=ServiceWorker, SecureContext]
+WebIDL[Exposed=ServiceWorker, SecureContext]
 interface PushSubscriptionChangeEvent : ExtendableEvent {
   constructor(DOMString type, optional PushSubscriptionChangeEventInit eventInitDict = {});
   readonly attribute PushSubscription? newSubscription;
   readonly attribute PushSubscription? oldSubscription;
 };
 
-dictionary PushSubscriptionChangeEventInit : ExtendableEventInit {
+WebIDLdictionary PushSubscriptionChangeEventInit : ExtendableEventInit {
   PushSubscription newSubscription = null;
   PushSubscription oldSubscription = null;
 };
 
-enum PushPermissionState {
+WebIDLenum PushPermissionState {
   "denied",
   "granted",
   "prompt",

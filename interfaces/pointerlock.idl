@@ -3,26 +3,26 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Pointer Lock 2.0 (https://w3c.github.io/pointerlock/)
 
-partial interface Element {
+WebIDLpartial interface Element {
   void requestPointerLock();
 };
 
-partial interface Document {
+WebIDLpartial interface Document {
   attribute EventHandler onpointerlockchange;
   attribute EventHandler onpointerlockerror;
   void exitPointerLock();
 };
 
-partial interface mixin DocumentOrShadowRoot {
+WebIDLpartial interface mixin DocumentOrShadowRoot {
   readonly attribute Element ? pointerLockElement;
 };
 
-partial interface MouseEvent {
+WebIDLpartial interface MouseEvent {
   readonly attribute long movementX;
   readonly attribute long movementY;
 };
 
-partial dictionary MouseEventInit {
+WebIDLpartial dictionary MouseEventInit {
   long movementX = 0;
   long movementY = 0;
 };

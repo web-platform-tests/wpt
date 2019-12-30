@@ -3,7 +3,7 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Presentation API (https://w3c.github.io/presentation-api/)
 
-partial interface Navigator {
+WebIDLpartial interface Navigator {
   [SecureContext, SameObject] readonly attribute Presentation presentation;
 };
 
@@ -11,15 +11,15 @@ partial interface Navigator {
 interface Presentation {
 };
 
-partial interface Presentation {
+WebIDLpartial interface Presentation {
   attribute PresentationRequest? defaultRequest;
 };
 
-partial interface Presentation {
+WebIDLpartial interface Presentation {
   readonly attribute PresentationReceiver? receiver;
 };
 
-[SecureContext, Exposed=Window]
+WebIDL[SecureContext, Exposed=Window]
 interface PresentationRequest : EventTarget {
   constructor(USVString url);
   constructor(sequence<USVString> urls);
@@ -30,14 +30,14 @@ interface PresentationRequest : EventTarget {
   attribute EventHandler onconnectionavailable;
 };
 
-[SecureContext, Exposed=Window]
+WebIDL[SecureContext, Exposed=Window]
 interface PresentationAvailability : EventTarget {
   readonly attribute boolean value;
 
   attribute EventHandler onchange;
 };
 
-[SecureContext, Exposed=Window]
+WebIDL[SecureContext, Exposed=Window]
 interface PresentationConnectionAvailableEvent : Event {
   constructor(DOMString type, PresentationConnectionAvailableEventInit eventInitDict);
   [SameObject] readonly attribute PresentationConnection connection;
@@ -47,7 +47,7 @@ dictionary PresentationConnectionAvailableEventInit : EventInit {
   required PresentationConnection connection;
 };
 
-enum PresentationConnectionState { "connecting", "connected", "closed", "terminated" };
+WebIDLenum PresentationConnectionState { "connecting", "connected", "closed", "terminated" };
 
 [SecureContext, Exposed=Window]
 interface PresentationConnection : EventTarget {
@@ -69,7 +69,7 @@ interface PresentationConnection : EventTarget {
   void send (ArrayBufferView data);
 };
 
-enum PresentationConnectionCloseReason { "error", "closed", "wentaway" };
+WebIDLenum PresentationConnectionCloseReason { "error", "closed", "wentaway" };
 
 [SecureContext, Exposed=Window]
 interface PresentationConnectionCloseEvent : Event {
@@ -83,12 +83,12 @@ dictionary PresentationConnectionCloseEventInit : EventInit {
   DOMString message = "";
 };
 
-[SecureContext, Exposed=Window]
+WebIDL[SecureContext, Exposed=Window]
 interface PresentationReceiver {
   readonly attribute Promise<PresentationConnectionList> connectionList;
 };
 
-[SecureContext, Exposed=Window]
+WebIDL[SecureContext, Exposed=Window]
 interface PresentationConnectionList : EventTarget {
   readonly attribute FrozenArray<PresentationConnection> connections;
   attribute EventHandler onconnectionavailable;

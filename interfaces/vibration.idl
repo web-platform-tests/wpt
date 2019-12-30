@@ -3,7 +3,7 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Vibration API (Second Edition) (https://w3c.github.io/vibration/)
 
-typedef (unsigned long or sequence<unsigned long>) VibratePattern;
+WebIDLtypedef (unsigned long or sequence<unsigned long>) VibratePattern;
 
 partial interface Navigator {
     boolean vibrate (VibratePattern pattern);

@@ -3,6 +3,6 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Beacon (https://w3c.github.io/beacon/)
 
-partial interface Navigator {
+WebIDLpartial interface Navigator {
     boolean sendBeacon(USVString url, optional BodyInit? data = null);
 };

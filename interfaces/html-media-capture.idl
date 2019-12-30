@@ -3,6 +3,6 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: HTML Media Capture (https://w3c.github.io/html-media-capture/)
 
-partial interface HTMLInputElement {
+WebIDLpartial interface HTMLInputElement {
     [CEReactions] attribute DOMString capture;
 };

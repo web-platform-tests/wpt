@@ -22,8 +22,6 @@ here = os.path.split(__file__)[0]
 
 logger = None
 
-# DO NOT MERGE
-
 """Runner for web-platform-tests
 
 The runner has several design goals:

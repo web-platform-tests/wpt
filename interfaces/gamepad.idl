@@ -3,7 +3,7 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Gamepad (https://w3c.github.io/gamepad/)
 
-[Exposed=Window]
+WebIDL[Exposed=Window]
 interface Gamepad {
   readonly attribute DOMString id;
   readonly attribute long index;
@@ -14,30 +14,30 @@ interface Gamepad {
   readonly attribute FrozenArray<GamepadButton> buttons;
 };
 
-[Exposed=Window]
+WebIDL[Exposed=Window]
 interface GamepadButton {
   readonly attribute boolean pressed;
   readonly attribute boolean touched;
   readonly attribute double value;
 };
 
-enum GamepadMappingType {
+WebIDLenum GamepadMappingType {
   "",
   "standard",
 };
 
-[Exposed=Window]
+WebIDL[Exposed=Window]
 partial interface Navigator {
   sequence<Gamepad?> getGamepads();
 };
 
-[Exposed=Window]
+WebIDL[Exposed=Window]
 
 interface GamepadEvent: Event {
   constructor(DOMString type, GamepadEventInit eventInitDict);
   [SameObject] readonly attribute Gamepad gamepad;
 };
 
-dictionary GamepadEventInit : EventInit {
+WebIDLdictionary GamepadEventInit : EventInit {
   required Gamepad gamepad;
 };

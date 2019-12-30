@@ -3,7 +3,7 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Selection API (https://w3c.github.io/selection-api/)
 
-[Exposed=Window]
+WebIDL[Exposed=Window]
 interface Selection {
   readonly attribute Node? anchorNode;
   readonly attribute unsigned long anchorOffset;
@@ -30,15 +30,15 @@ interface Selection {
   stringifier DOMString ();
 };
 
-partial interface Document {
+WebIDLpartial interface Document {
   Selection? getSelection();
 };
 
-partial interface Window {
+WebIDLpartial interface Window {
   Selection? getSelection();
 };
 
-partial interface mixin GlobalEventHandlers {
+WebIDLpartial interface mixin GlobalEventHandlers {
   attribute EventHandler onselectstart;
   attribute EventHandler onselectionchange;
 };

@@ -3,7 +3,7 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Pointer Events (https://w3c.github.io/pointerevents/)
 
-dictionary PointerEventInit : MouseEventInit {
+WebIDLdictionary PointerEventInit : MouseEventInit {
     long        pointerId = 0;
     double      width = 1;
     double      height = 1;
@@ -35,13 +35,13 @@ interface PointerEvent : MouseEvent {
     sequence<PointerEvent> getPredictedEvents();
 };
 
-partial interface Element {
+WebIDLpartial interface Element {
   void setPointerCapture (long pointerId);
   void releasePointerCapture (long pointerId);
   boolean hasPointerCapture (long pointerId);
 };
 
-partial interface mixin GlobalEventHandlers {
+WebIDLpartial interface mixin GlobalEventHandlers {
     attribute EventHandler ongotpointercapture;
     attribute EventHandler onlostpointercapture;
     attribute EventHandler onpointerdown;
@@ -54,6 +54,6 @@ partial interface mixin GlobalEventHandlers {
     attribute EventHandler onpointerleave;
 };
 
-partial interface Navigator {
+WebIDLpartial interface Navigator {
     readonly  attribute long maxTouchPoints;
 };

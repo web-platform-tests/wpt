@@ -3,7 +3,7 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Navigation Timing Level 2 (https://w3c.github.io/navigation-timing/)
 
-[Exposed=Window]
+WebIDL[Exposed=Window]
 interface PerformanceNavigationTiming : PerformanceResourceTiming {
     readonly        attribute DOMHighResTimeStamp unloadEventStart;
     readonly        attribute DOMHighResTimeStamp unloadEventEnd;
@@ -18,14 +18,14 @@ interface PerformanceNavigationTiming : PerformanceResourceTiming {
     [Default] object toJSON();
 };
 
-enum NavigationType {
+WebIDLenum NavigationType {
     "navigate",
     "reload",
     "back_forward",
     "prerender"
 };
 
-[Exposed=Window]
+WebIDL[Exposed=Window]
 interface PerformanceTiming {
   readonly attribute unsigned long long navigationStart;
   readonly attribute unsigned long long unloadEventStart;
@@ -51,7 +51,7 @@ interface PerformanceTiming {
   [Default] object toJSON();
 };
 
-[Exposed=Window]
+WebIDL[Exposed=Window]
 interface PerformanceNavigation {
   const unsigned short TYPE_NAVIGATE = 0;
   const unsigned short TYPE_RELOAD = 1;
@@ -62,7 +62,7 @@ interface PerformanceNavigation {
   [Default] object toJSON();
 };
 
-[Exposed=Window]
+WebIDL[Exposed=Window]
 partial interface Performance {
   [SameObject]
   readonly attribute PerformanceTiming timing;

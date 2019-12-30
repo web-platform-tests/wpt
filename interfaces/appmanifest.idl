@@ -3,7 +3,7 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Web App Manifest (https://w3c.github.io/manifest/)
 
-[Exposed=Window]
+WebIDL[Exposed=Window]
 interface BeforeInstallPromptEvent : Event {
   constructor(DOMString type, optional EventInit eventInitDict = {});
   Promise<PromptResponseObject> prompt();
@@ -18,12 +18,12 @@ enum AppBannerPromptOutcome {
   "dismissed"
 };
 
-partial interface Window {
+WebIDLpartial interface Window {
   attribute EventHandler onappinstalled;
   attribute EventHandler onbeforeinstallprompt;
 };
 
-dictionary WebAppManifest {
+WebIDLdictionary WebAppManifest {
    TextDirectionType dir = "auto";
    DOMString lang;
    USVString name;
@@ -44,16 +44,16 @@ dictionary WebAppManifest {
    sequence<ShortcutItem> shortcuts;
 };
 
-enum TextDirectionType { "ltr", "rtl", "auto" };
+WebIDLenum TextDirectionType { "ltr", "rtl", "auto" };
 
-enum DisplayModeType {
+WebIDLenum DisplayModeType {
   "fullscreen",
   "standalone",
   "minimal-ui",
   "browser"
 };
 
-dictionary ImageResource {
+WebIDLdictionary ImageResource {
   required USVString src;
   DOMString sizes;
   USVString type;
@@ -61,7 +61,7 @@ dictionary ImageResource {
   USVString platform;
 };
 
-dictionary ShortcutItem {
+WebIDLdictionary ShortcutItem {
   required USVString name;
   USVString short_name;
   USVString description;
@@ -69,7 +69,7 @@ dictionary ShortcutItem {
   sequence<ImageResource> icons;
 };
 
-dictionary ExternalApplicationResource {
+WebIDLdictionary ExternalApplicationResource {
   required USVString platform;
   USVString url;
   DOMString id;
@@ -77,7 +77,7 @@ dictionary ExternalApplicationResource {
   sequence<Fingerprint> fingerprints;
 };
 
-dictionary Fingerprint {
+WebIDLdictionary Fingerprint {
   USVString type;
   USVString value;
 };

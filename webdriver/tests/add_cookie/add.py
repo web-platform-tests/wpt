@@ -49,7 +49,7 @@ def test_add_domain_cookie(session, url, server_config):
         "path": "/",
         "httpOnly": False,
         "secure": False,
-        "samesite": "Strict"
+        "sameSite": "Strict"
     }
 
     session.url = url("/common/blank.html")
@@ -65,14 +65,14 @@ def test_add_domain_cookie(session, url, server_config):
     assert isinstance(cookie["value"], basestring)
     assert "domain" in cookie
     assert isinstance(cookie["domain"], basestring)
-    assert "samesite" in cookie
-    assert isinstance(cookie["samesite"], basestring)
+    assert "sameSite" in cookie
+    assert isinstance(cookie["sameSite"], basestring)
 
     assert cookie["name"] == "hello"
     assert cookie["value"] == "world"
     assert cookie["domain"] == server_config["browser_host"] or \
         cookie["domain"] == ".%s" % server_config["browser_host"]
-    assert cookie["samesite"] == "Strict"
+    assert cookie["sameSite"] == "Strict"
 
 
 def test_add_cookie_for_ip(session, url, server_config, configuration):
@@ -83,7 +83,7 @@ def test_add_cookie_for_ip(session, url, server_config, configuration):
         "path": "/",
         "httpOnly": False,
         "secure": False,
-        "samesite": "Lax"
+        "sameSite": "Lax"
     }
 
     session.url = "http://127.0.0.1:%s/common/blank.html" % (server_config["ports"]["http"][0])
@@ -99,13 +99,13 @@ def test_add_cookie_for_ip(session, url, server_config, configuration):
     assert isinstance(cookie["value"], basestring)
     assert "domain" in cookie
     assert isinstance(cookie["domain"], basestring)
-    assert "samesite" in cookie
-    assert isinstance(cookie["samesite"], basestring)
+    assert "sameSite" in cookie
+    assert isinstance(cookie["sameSite"], basestring)
 
     assert cookie["name"] == "hello"
     assert cookie["value"] == "world"
     assert cookie["domain"] == "127.0.0.1"
-    assert cookie["samesite"] == "Lax"
+    assert cookie["sameSite"] == "Lax"
 
 
 def test_add_non_session_cookie(session, url):

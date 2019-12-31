@@ -77,7 +77,7 @@
 <div class="grid">
     <div id="baseline4" class="firstRowFirstColumn alignSelfBaseline">ahem</div>
     <div id="baseline5" class="firstRowSecondColumn alignSelfBaseline"><br><img src="support/1x1-blue.png" style="height: 50px;"></div>
-    <div id="baseline6" data-expected-height="50" data-offset-y="0" class="firstRowThirdColumn alignSelfBaseline"><img src="support/1x1-blue.png" style="height: 50px; vertical-align: middle"></div>
+    <div data-expected-height="50" data-offset-y="0" class="firstRowThirdColumn alignSelfBaseline"><img src="support/1x1-blue.png" style="height: 50px; vertical-align: middle"></div>
     <div data-expected-height="100" data-offset-y="0" class="firstRowFourthColumn" style="height: 100px;"></div>
 </div>
 
@@ -89,12 +89,11 @@
   var baseline3 = document.getElementById("baseline3");
   var baseline4 = document.getElementById("baseline4");
   var baseline5 = document.getElementById("baseline5");
-  var baseline6 = document.getElementById("baseline6");
 
   test(() => {assert_equals(baseline1.offsetTop + baseline1.offsetHeight, baseline2.offsetTop + baseline2.offsetHeight, "baseline1 and baseline2 should have the same baseline;")},
               "Additional Check 1");
   test(() => {assert_less_than(baseline3.offsetTop, 25, "baseline3 should be above the center align-selfed item;")}, "Additional Check 2");
   test(() => {assert_equals(baseline4.offsetTop, baseline5.offsetTop, "baseline4 and baseline5 should be top aligned with each other;")}, "Additional Check 3");
-  test(() => {assert_greater_than(baseline4.offsetTop, 0, "baseline4 and baseline5 should be below baseline6;")}, "Additional Check 4");
+  test(() => {assert_greater_than(baseline4.offsetTop, 0, "baseline4 and baseline5 should be below the dominant baseline;")}, "Additional Check 4");
 
 </script>

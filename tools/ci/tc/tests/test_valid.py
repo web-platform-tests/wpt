@@ -130,8 +130,10 @@ def test_verify_payload():
      {'lint',
       'tools/ unittests (Python 2)',
       'tools/ unittests (Python 3)',
+      'tools/ unittests (Python 3.8)',
       'tools/wpt/ tests (Python 2)',
       'tools/wpt/ tests (Python 3)',
+      'tools/wpt/ tests (Python 3.8)',
       'resources/ tests',
       'infrastructure/ tests'}),
     # More tests are affected in the actual PR but it shouldn't affect the scheduled tasks

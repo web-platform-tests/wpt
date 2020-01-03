@@ -80,7 +80,7 @@ test(() => {
   sheet2.deleteRule(0);
   assert_equals(sheet2.cssRules.length, 0);
 
-const sheet3 = new CSSStyleSheet();
+  const sheet3 = new CSSStyleSheet();
   assert_equals(sheet3.title, null);
   assert_equals(sheet3.ownerNode, null);
   assert_equals(sheet3.ownerRule, null);

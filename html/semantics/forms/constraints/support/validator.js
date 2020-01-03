@@ -390,22 +390,22 @@ var validator = {
     // Iterate over normal, disabled, readonly, and both.
     var ctlDisabled = ctl.cloneNode(true);
     this.set_conditions(ctlDisabled, data.conditions);
-    ctlDisabled.disabled = true;
     if (data.dirty)
       this.set_dirty(ctlDisabled);
+    ctlDisabled.disabled = true;
 
     var ctlReadonly = ctl.cloneNode(true);
     this.set_conditions(ctlReadonly, data.conditions);
-    ctlReadonly.readonly = true;
     if (data.dirty)
       this.set_dirty(ctlReadonly);
+    ctlReadonly.readonly = true;
 
     var ctlBoth = ctl.cloneNode(true);
     this.set_conditions(ctlBoth, data.conditions);
-    ctlBoth.disabled = true;
-    ctlBoth.readonly = true;
     if (data.dirty)
       this.set_dirty(ctlBoth);
+    ctlBoth.disabled = true;
+    ctlBoth.readonly = true;
 
     ctl = ctl.cloneNode(true);
     this.set_conditions(ctl, data.conditions);

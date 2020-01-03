@@ -17,7 +17,7 @@ async_test(t => {
     assert_true(innerLocation.expandosForever);
     assert_equals(frame.contentWindow, innerSelf);
     assert_equals(frame.contentDocument, innerDocument);
-    innerSelf.haha();
+    innerSelf.setDocumentDomain();
     assert_throws("SecurityError", () => innerSelf.expandosForever);
     assert_throws("SecurityError", () => innerLocation.expandosForever);
     assert_throws("SecurityError", () => innerLocation.host);

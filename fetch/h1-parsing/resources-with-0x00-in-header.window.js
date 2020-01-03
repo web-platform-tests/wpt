@@ -24,7 +24,7 @@ async_test(t => {
 async_test(t => {
   const img = document.createElement("img");
   t.add_cleanup(() => img.remove());
-  img.src = "resources//blue-with-0x00-in-a-header.asis";
+  img.src = "resources/blue-with-0x00-in-a-header.asis";
   img.onerror = t.step_func_done();
   img.onload = t.unreached_func();
   document.body.append(img);

@@ -9,7 +9,7 @@ var windows = [];
 var expected_window_1 =
     {visibilityState: 'visible', focused: false, lifecycleState: "frozen", url: new URL(scope + '#1', location).toString(), type: 'window', frameType: 'top-level'};
 var expected_window_2 =
-    {visibilityState: 'visible', focused: false, lifecycleState: "active", url: new URL(scope + '#2', location).toString(), type: 'window', frameType: 'top-level'};
+    {visibilityState: 'visible', focused: true, lifecycleState: "active", url: new URL(scope + '#2', location).toString(), type: 'window', frameType: 'top-level'};
 function with_window(url, name) {
   return new Promise(function(resolve) {
     var child = window.open(url, name);

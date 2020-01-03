@@ -68,5 +68,67 @@
     });
     await new Promise(r => t.step_timeout(r, 500));
   }, "test that a x-origin iframe inside an adopted portal cannot steal focus");
+
+  promise_test(async t => {
+    let win = await openBlankPortalHost();
+    let doc = win.document;
+    win.focus();
+    let portal = await createPortal(doc, new URL("resources/simple-portal-adopts-predecessor.html", location.href));
+    let winBlurPromise = new Promise(r => win.onblur = r);
+    await portal.activate();
+    await winBlurPromise;
+  }, "test that page loses focus after activating a portal");
+
+  promise_test(async t => {
+    let win = await openBlankPortalHost();
+    let doc = win.document;
+    win.focus();
+    let portal = await createPortal(doc, new URL("resources/simple-portal-adopts-predecessor.html", location.href));
+
+    let button = doc.createElement("button");
+    doc.body.appendChild(button);
+    var focusPromise = new Promise(r => button.onfocus = r);
+    button.focus();
+    await focusPromise;
+
+    var blurPromise = new Promise(r => button.onblur = r);
+    await portal.activate();
+    await blurPromise;
+  }, "test that blur event is dispatched on element after activation");
+
+  promise_test(async t => {
+    let win = await openBlankPortalHost();
+    let doc = win.document;
+
+    let portal = await createPortal(doc, new URL("resources/focus-page-with-button.html", location.href));
+    await portal.activate();
+    doc.body.removeChild(portal);
+    assert_true(!!win.portalHost);
+
+    win.portalHost.postMessage("focus", "*");
+    return new Promise(r => {
+      win.portalHost.onmessage = e => {
+        assert_true(e.data.focused, "button inside activated page should be able to focus");
+        r();
+      };
+    });
+  }, "test that a button inside an activated page can be focused");
+
+  promise_test(async t => {
+    let win = await openBlankPortalHost();
+    let doc = win.document;
+
+    let portal = await createPortal(doc, new URL("resources/focus-page-with-x-origin-iframe.sub.html", location.href));
+    await portal.activate();
+    doc.body.removeChild(portal);
+
+    win.portalHost.postMessage("focus", "*");
+    return new Promise(r => {
+      win.portalHost.onmessage = e => {
+        assert_true(e.data.focused, "button inside x-origin iframe in activated page should be able to focus");
+        r();
+      };
+    });
+  }, "test that an x-origin frame inside an activated page can take focus");
 </script>
 </body>

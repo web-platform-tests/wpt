@@ -172,6 +172,8 @@ var validator = {
           assert_true(
               ctl.validity.customError,
               'The validity.customError attribute should be true' + condStr);
+          // validationMessage returns the empty string if ctl is barred from
+          // constraint validation, which happens if ctl is disabled.
           if (ctl.disabled) {
             assert_equals(
                 ctl.validationMessage, '',

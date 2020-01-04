@@ -43,16 +43,17 @@ test(function() {
 }, 'charset');
 
 test(function() {
-    var url = document.URL;
-    assert_equals(doc.documentURI, url,
-                  'The document must have a URL value equal to the URL of the active document.');
-    assert_equals(doc.URL, url,
-                  'The document must have a URL value equal to the URL of the active document.');
-}, 'URL value');
+    assert_equals(doc.compatMode, "BackCompat")
+}, 'compatMode');
 
 test(function() {
-    assert_equals(doc.baseURI, document.URL);
-}, 'baseURI value');
+    var parser = new DOMParser();
+    var input = '<!DOCTYPE html><html id="root"><head></head><body></body></html>';
+    doc = parser.parseFromString(input, 'text/html');
+    assert_equals(doc.compatMode, "CSS1Compat")
+}, 'compatMode for a proper DOCTYPE');
+
+// URL-related stuff tested separately.
 
 test(function() {
     assert_equals(doc.location, null,

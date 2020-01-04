@@ -40,4 +40,6 @@ product_list = ["android_weblayer",
                 "opera",
                 "webkit",
                 "webkitgtk_minibrowser",
-                "epiphany"]
+                "epiphany",
+                "operapresto"
+]

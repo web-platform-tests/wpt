@@ -472,6 +472,14 @@ class Opera(BrowserSetup):
                 raise WptrunError("Unable to locate or install operadriver binary")
 
 
+class OperaPresto(BrowserSetup):
+    name = "operapresto"
+    browser_cls = browser.OperaPresto
+
+    def setup_kwargs(self, kwargs):
+        return
+
+
 class EdgeChromium(BrowserSetup):
     name = "MicrosoftEdge"
     browser_cls = browser.EdgeChromium
@@ -674,6 +682,7 @@ product_setup = {
     "edge": Edge,
     "edge_webdriver": EdgeWebDriver,
     "ie": InternetExplorer,
+    "operapresto": OperaPresto,
     "safari": Safari,
     "servo": Servo,
     "servodriver": ServoWebDriver,

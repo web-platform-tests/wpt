@@ -1274,3 +1274,31 @@ class Epiphany(Browser):
             # Tech Preview output looks like "Web 3.31.3-88-g97db4f40f"
             return output.split()[1]
         return None
+
+
+class OperaPresto(Browser):
+    """OperaPresto-specific interface.
+
+    Includes installation, webdriver installation, and wptrunner setup methods.
+    """
+
+    product = "operapresto"
+    requirements = "requirements_operapresto.txt"
+
+    def download(self, dest=None, channel=None):
+        raise NotImplementedError
+
+    def install(self, dest=None, channel=None):
+        raise NotImplementedError
+
+    def find_binary(self, venv_path=None, channel=None):
+        raise NotImplementedError
+
+    def find_webdriver(self, channel=None):
+        raise NotImplementedError
+
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
+        raise NotImplementedError
+
+    def version(self, binary=None, webdriver_binary=None):
+        return None

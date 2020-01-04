@@ -31,18 +31,6 @@ test(function() {
 }, 'contentType');
 
 test(function() {
-    assert_equals(doc.characterSet, "UTF-8")
-}, 'characterSet');
-
-test(function() {
-    assert_equals(doc.inputEncoding, "UTF-8")
-}, 'inputEncoding');
-
-test(function() {
-    assert_equals(doc.charset, "UTF-8")
-}, 'charset');
-
-test(function() {
     assert_equals(doc.compatMode, "BackCompat")
 }, 'compatMode');
 
@@ -53,7 +41,7 @@ test(function() {
     assert_equals(doc.compatMode, "CSS1Compat")
 }, 'compatMode for a proper DOCTYPE');
 
-// URL-related stuff tested separately.
+// URL- and encoding-related stuff tested separately.
 
 test(function() {
     assert_equals(doc.location, null,

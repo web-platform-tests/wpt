@@ -1,10 +1,13 @@
 <html>
 <body>
 
-<!-- An empty webpage whose response headers include only the
-Accept-CH header. Fetching this webpage should not cause
-user-agent to persist origin preferences for the client hints
+<!-- An empty webpage whose response headers include Accept-CH header. Fetching
+this webpage should cause user-agent to persist origin preferences for the client hints
 specified in the Accept-CH header.-->
+<script>
+  window.top.opener.postMessage('Loaded', '*');
+</script>
+
 
 </body>
 </html>

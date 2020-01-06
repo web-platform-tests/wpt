@@ -1,1 +1,2 @@
-Accept-CH: device-memory
+Accept-CH: device-memory, DPR
+Access-Control-Allow-Origin: *

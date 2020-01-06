@@ -8,8 +8,8 @@
 // echo_client_hints_received.py sets the response headers depending on the set
 // of client hints it receives in the request headers.
 
-fetch("../echo_client_hints_received.py").then(r => {
-  if(r.status == 200 && !r.headers.has("device-memory-received")) {
+fetch("echo_client_hints_received.py").then(r => {
+  if(r.status == 200 && !r.headers.has("device-memory-received") && !r.headers.has("viewport-width-received")) {
     window.top.opener.postMessage('PASS', '*');
   }
   else {

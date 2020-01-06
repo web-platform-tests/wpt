@@ -1006,7 +1006,15 @@ policies and contribution forms [3].
             seen.push(val);
         }
         if (Array.isArray(val)) {
-            return "[" + val.map(function(x) {return format_value(x, seen);}).join(", ") + "]";
+            let output = "[";
+            if (val.beginEllipsis !== undefined) {
+                output += "…, ";
+            }
+            output += val.map(function(x) {return format_value(x, seen);}).join(", ");
+            if (val.endEllipsis !== undefined) {
+                output += ", …";
+            }
+            return output + "]"
         }
 
         switch (typeof val) {
@@ -1178,22 +1186,22 @@ policies and contribution forms [3].
 
     function assert_array_equals(actual, expected, description)
     {
-        const stringify_array_length_limit = 20;
-        function stringify_array(arr) {
-            let output = "[";
+        const shorter_array_length_limit = 20;
+        function shorten_array(arr, offset = 0) {
             // Make ", …" only show up when it would likely reduce the length, not accounting for
             // fonts.
-            const length = (arr.length < stringify_array_length_limit + 2) ? arr.length : stringify_array_length_limit;
-            for (let i = 0; i < length; i++) {
-                output += arr[i];
-                if (i < length - 1) {
-                    output += ", ";
-                }
+            if (arr.length < shorter_array_length_limit + 2) {
+                return arr;
             }
-            if (length < arr.length) {
-                output += ", …";
+            const shorterArrayEnd = shorter_array_length_limit + offset;
+            const shorterArray = arr.slice(offset, shorterArrayEnd);
+            if (offset !== 0) {
+                shorterArray.beginEllipsis = true;
             }
-            return output + "]";
+            if (arr.length > shorterArrayEnd) {
+                shorterArray.endEllipsis = true;
+            }
+            return shorterArray;
         }
 
         assert(typeof actual === "object" && actual !== null && "length" in actual,
@@ -1203,7 +1211,7 @@ policies and contribution forms [3].
         assert(actual.length === expected.length,
                "assert_array_equals", description,
                "lengths differ, expected array ${expected} got ${actual}",
-               {expected:stringify_array(expected), actual:stringify_array(actual)});
+               {expected:shorten_array(expected), actual:shorten_array(actual)});
 
         for (var i = 0; i < actual.length; i++) {
             assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i),
@@ -1211,12 +1219,12 @@ policies and contribution forms [3].
                    "expected property ${i} to be ${expected} but was ${actual} (expected array ${arrayExpected} got ${arrayActual})",
                    {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
                    actual:actual.hasOwnProperty(i) ? "present" : "missing",
-                   arrayExpected:stringify_array(expected), arrayActual:stringify_array(actual)});
+                   arrayExpected:shorten_array(expected, i), arrayActual:shorten_array(actual, i)});
             assert(same_value(expected[i], actual[i]),
                    "assert_array_equals", description,
                    "expected property ${i} to be ${expected} but got ${actual} (expected array ${arrayExpected} got ${arrayActual})",
                    {i:i, expected:expected[i], actual:actual[i],
-                   arrayExpected:stringify_array(expected), arrayActual:stringify_array(actual)});
+                   arrayExpected:shorten_array(expected, i), arrayActual:shorten_array(actual, i)});
         }
     }
     expose(assert_array_equals, "assert_array_equals");

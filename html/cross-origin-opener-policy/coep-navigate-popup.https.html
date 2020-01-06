@@ -30,24 +30,12 @@
     "coop": "",
     "coep": "",
     "opener": false
-  },
-  {
-    "title": "coop unsafe-inherit/coep",
-    "coop": "unsafe-inherit",
-    "coep": "require-corp",
-    "opener": true
-  },
-  {
-    "title": "coop unsafe-inherit/no coep",
-    "coop": "unsafe-inherit",
-    "coep": "",
-    "opener": false
   }
 ].forEach(variant => {
   ["same-origin", "same-site"].forEach(site => {
     const title = `Popup navigating to ${site} with ${variant.title}`;
     const channel = title.replace(/ /g,"-");
-    const navigateHost = site === "same-origin" ? SAME_ORIGIN : SAME_SITE;
+    const navigateHost = site === "same-origin" ? SAME_ORIGIN : CROSS_ORIGIN;
     const navigateURL = `${navigateHost.origin}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=${variant.coop}&coep=${variant.coep}&channel=${channel}`;
     const opener = site === "same-origin" ? variant.opener : false;
 

@@ -13,18 +13,6 @@
     "opener": true
   },
   {
-    "title": "popup with coop unsafe-inherit/coep",
-    "coop": "unsafe-inherit",
-    "coep": "require-corp",
-    "opener": true
-  },
-  {
-    "title": "popup with coop unsafe-inherit without coep",
-    "coop": "unsafe-inherit",
-    "coep": "",
-    "opener": false
-  },
-  {
     "title": "popup without coep",
     "coop": "same-origin",
     "coep": "",
@@ -35,10 +23,9 @@
     coop_coep_test(t, SAME_ORIGIN, variant.coop, variant.coep, variant.title.replace(/ /g,"-"), variant.opener);
   }, `Same-origin ${variant.title}`);
 
-  // This seems useful to test, CROSS_SITE is probably too redundant though.
   async_test(t => {
-    coop_coep_test(t, SAME_SITE, variant.coop, variant.coep, `same-site-${variant.title.replace(/ /g,"-")}`, false);
-  }, `Same-site ${variant.title}`);
+    coop_coep_test(t, CROSS_ORIGIN, variant.coop, variant.coep, `cross-origin-${variant.title.replace(/ /g,"-")}`, false);
+  }, `Cross-origin ${variant.title}`);
 });
 
 test(() => {

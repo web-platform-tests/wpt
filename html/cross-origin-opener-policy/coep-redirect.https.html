@@ -39,22 +39,6 @@ const coopCOEPPath = new URL("resources/coop-coep.py", window.location).pathname
     "coop": "same-origin",
     "coep": "require-corp",
     "opener": false
-  },
-  {
-    "title": "coop unsafe-inherit/coep to coop/coep",
-    "redirectCOOP": "unsafe-inherit",
-    "redirectCOEP": "require-corp",
-    "coop": "same-origin",
-    "coep": "require-corp",
-    "opener": true
-  },
-  {
-    "title": "coop unsafe-inherit/coep to coop unsafe-inherit/coep",
-    "redirectCOOP": "unsafe-inherit",
-    "redirectCOEP": "require-corp",
-    "coop": "unsafe-inherit",
-    "coep": "require-corp",
-    "opener": true
   }
 ].forEach(variant => {
   const title = `Redirect from ${variant.title}`;

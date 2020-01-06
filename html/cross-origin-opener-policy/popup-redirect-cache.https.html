@@ -62,11 +62,6 @@ let tests = [
   [CROSS_ORIGIN, SAME_ORIGIN, true, false, false],
   [CROSS_ORIGIN, SAME_ORIGIN, false, true, false],
   [CROSS_ORIGIN, SAME_ORIGIN, true, true, false],
-
-  // Origin A->B->C
-  [SAME_SITE, CROSS_ORIGIN, true, false, false],
-  [SAME_SITE, CROSS_ORIGIN, false, true, false],
-  [SAME_SITE, CROSS_ORIGIN, true, true, false],
 ];
 
 run_redirect_cache_tests("same-origin", tests);

@@ -1014,7 +1014,7 @@ policies and contribution forms [3].
             if (val.endEllipsis !== undefined) {
                 output += ", …";
             }
-            return output + "]"
+            return output + "]";
         }
 
         switch (typeof val) {

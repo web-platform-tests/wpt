@@ -1178,6 +1178,24 @@ policies and contribution forms [3].
 
     function assert_array_equals(actual, expected, description)
     {
+        const stringify_array_length_limit = 20;
+        function stringify_array(arr) {
+            let output = "[";
+            // Make ", …" only show up when it would likely reduce the length, not accounting for
+            // fonts.
+            const length = (arr.length < stringify_array_length_limit + 2) ? arr.length : stringify_array_length_limit;
+            for (let i = 0; i < length; i++) {
+                output += arr[i];
+                if (i < length - 1) {
+                    output += ", ";
+                }
+            }
+            if (length < arr.length) {
+                output += ", …";
+            }
+            return output + "]";
+        }
+
         assert(typeof actual === "object" && actual !== null && "length" in actual,
                "assert_array_equals", description,
                "value is ${actual}, expected array",
@@ -1185,20 +1203,20 @@ policies and contribution forms [3].
         assert(actual.length === expected.length,
                "assert_array_equals", description,
                "lengths differ, expected array ${expected} got ${actual}",
-               {expected:expected, actual:actual});
+               {expected:stringify_array(expected), actual:stringify_array(actual)});
 
         for (var i = 0; i < actual.length; i++) {
             assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i),
                    "assert_array_equals", description,
                    "expected property ${i} to be ${expected} but was ${actual} (expected array ${arrayExpected} got ${arrayActual})",
                    {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
-                   actual:actual.hasOwnProperty(i) ? "present" : "missing", arrayExpected:expected,
-                   arrayActual:actual});
+                   actual:actual.hasOwnProperty(i) ? "present" : "missing",
+                   arrayExpected:stringify_array(expected), arrayActual:stringify_array(actual)});
             assert(same_value(expected[i], actual[i]),
                    "assert_array_equals", description,
                    "expected property ${i} to be ${expected} but got ${actual} (expected array ${arrayExpected} got ${arrayActual})",
-                   {i:i, expected:expected[i], actual:actual[i], arrayExpected:expected,
-                   arrayActual:actual});
+                   {i:i, expected:expected[i], actual:actual[i],
+                   arrayExpected:stringify_array(expected), arrayActual:stringify_array(actual)});
         }
     }
     expose(assert_array_equals, "assert_array_equals");

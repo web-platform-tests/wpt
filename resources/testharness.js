@@ -1184,19 +1184,21 @@ policies and contribution forms [3].
                {actual:actual});
         assert(actual.length === expected.length,
                "assert_array_equals", description,
-               "lengths differ, expected ${expected} got ${actual}",
-               {expected:expected.length, actual:actual.length});
+               "lengths differ, expected array ${expected} got ${actual}",
+               {expected:expected, actual:actual});
 
         for (var i = 0; i < actual.length; i++) {
             assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i),
                    "assert_array_equals", description,
-                   "property ${i}, property expected to be ${expected} but was ${actual}",
+                   "expected property ${i} to be ${expected} but was ${actual} (expected array ${arrayExpected} got ${arrayActual})",
                    {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
-                   actual:actual.hasOwnProperty(i) ? "present" : "missing"});
+                   actual:actual.hasOwnProperty(i) ? "present" : "missing", arrayExpected:expected,
+                   arrayActual:actual});
             assert(same_value(expected[i], actual[i]),
                    "assert_array_equals", description,
-                   "property ${i}, expected ${expected} but got ${actual}",
-                   {i:i, expected:expected[i], actual:actual[i]});
+                   "expected property ${i} to be ${expected} but got ${actual} (expected array ${arrayExpected} got ${arrayActual})",
+                   {i:i, expected:expected[i], actual:actual[i], arrayExpected:expected,
+                   arrayActual:actual});
         }
     }
     expose(assert_array_equals, "assert_array_equals");

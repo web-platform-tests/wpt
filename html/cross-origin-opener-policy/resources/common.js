@@ -8,7 +8,10 @@ function url_test(t, url, channelName, hasOpener, openerDOMAccess) {
     const payload = event.data;
     assert_equals(payload.name, hasOpener ? channelName : "", 'name');
     assert_equals(payload.opener, hasOpener, 'opener');
-    assert_equals(payload.openerDOMAccess, openerDOMAccess, 'openerDOMAccess');
+    // TODO(zcorpan): add openerDOMAccess expectations to all tests
+    if (openerDOMAccess !== undefined) {
+      assert_equals(payload.openerDOMAccess, openerDOMAccess, 'openerDOMAccess');
+    }
   });
 
   const w = window.open(url, channelName);

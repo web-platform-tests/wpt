@@ -16,6 +16,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 WPT_ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 HARNESS = os.path.join(HERE, 'harness.html')
 TEST_TYPES = ('functional', 'unit')
+DEFAULT_VARIANTS = ["?default"]
 
 
 def pytest_addoption(parser):
@@ -115,7 +116,7 @@ class HTMLItem(pytest.Item, pytest.Collector):
             if not includes_variants_script:
                 raise ValueError('No variants script found in file: %s' % filename)
             if len(self.variants) == 0:
-                raise ValueError('No test variants specified in file %s' % filename)
+                self.variants = DEFAULT_VARIANTS
         elif self.type == 'unit' and self.expected:
             raise ValueError('Unit tests must not specify expected report data')
 

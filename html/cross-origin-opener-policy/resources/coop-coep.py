@@ -27,23 +27,21 @@ def main(request, response):
   const navigate = params.get("navigate");
   // Need to wait until the page is fully loaded before navigating
   // so that it creates a history entry properly.
-  async function fullyLoaded() {
-    return new Promise((resolve, reject) => {
-      addEventListener('load', () => {
+  const fullyLoaded = new Promise((resolve, reject) => {
+    addEventListener('load', () => {
+      requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            resolve();
-          });
+          resolve();
         });
       });
-    })
-  }
+    });
+  });
   if (navHistory !== null) {
-    fullyLoaded().then(() => {
+    fullyLoaded.then(() => {
       history.go(Number(navHistory));
     });
   } else if (navigate !== null && (history.length === 1 || !avoidBackAndForth)) {
-    fullyLoaded().then(() => {
+    fullyLoaded.then(() => {
       self.location = navigate;
     });
   } else {

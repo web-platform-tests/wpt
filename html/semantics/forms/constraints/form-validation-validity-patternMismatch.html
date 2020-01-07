@@ -22,6 +22,7 @@
         {conditions: {pattern: "[A-Z]+", value: "ABC123"}, expected: true, name: "[target] The value attribute mismatches the pattern attribute even when a subset matches"},
         {conditions: {pattern: "(abc", value: "de"}, expected: false, name: "[target] Invalid regular expression gets ignored"},
         {conditions: {pattern: "a)(b", value: "de"}, expected: false, name: "[target] The pattern attribute tries to escape a group"},
+        {conditions: {pattern: "a\\u{10FFFF}", value: "a\u{10FFFF}"}, expected: false, name: "[target] The pattern attribute uses Unicode features"},
       ]
     }
   ];

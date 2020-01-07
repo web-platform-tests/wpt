@@ -42,7 +42,7 @@ const coopCOEPPath = new URL("resources/coop-coep.py", window.location).pathname
   },
   {
     "title": "coop unsafe-inherit/coep to coop/coep",
-    "redirectCOOP": "unsafe-inherit",
+    "redirectCOOP": "unsafe-inherit", // historical value, equivalent to "unsafe-none"
     "redirectCOEP": "require-corp",
     "coop": "same-origin",
     "coep": "require-corp",
@@ -50,9 +50,9 @@ const coopCOEPPath = new URL("resources/coop-coep.py", window.location).pathname
   },
   {
     "title": "coop unsafe-inherit/coep to coop unsafe-inherit/coep",
-    "redirectCOOP": "unsafe-inherit",
+    "redirectCOOP": "unsafe-inherit", // historical value, equivalent to "unsafe-none"
     "redirectCOEP": "require-corp",
-    "coop": "unsafe-inherit",
+    "coop": "unsafe-inherit", // historical value, equivalent to "unsafe-none"
     "coep": "require-corp",
     "opener": true
   }

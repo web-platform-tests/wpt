@@ -9,10 +9,9 @@ async_test(t => {
   t.add_cleanup(() => {
     popup.close();
   });
-  window.functionCalledByOpenee = () => {
+  window.functionCalledByOpenee = t.step_func_done(() => {
     assert_false(popup.closed);
-    t.done();
-  }
+  });
   assert_equals(window, popup.opener);
 }, "Cross-Origin-Opener-Policy only works over secure contexts");
 

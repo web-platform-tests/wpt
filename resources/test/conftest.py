@@ -109,12 +109,13 @@ class HTMLItem(pytest.Item, pytest.Collector):
                         raise ValueError('Could not resolve path "%s" from %s' % (src, filename))
 
         if not name:
-            raise ValueError('No name found in file: %s' % filename)
+            raise ValueError('No name found in %s add a <title> element' % filename)
         elif self.type == 'functional':
             if not self.expected:
                 raise ValueError('Functional tests must specify expected report data')
             if not includes_variants_script:
-                raise ValueError('No variants script found in file: %s' % filename)
+                raise ValueError('No variants script found in file %s add '
+                                 '\'<script src="../../variants.js"></script>\'' % filename)
             if len(self.variants) == 0:
                 self.variants = DEFAULT_VARIANTS
         elif self.type == 'unit' and self.expected:

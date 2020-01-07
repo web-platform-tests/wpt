@@ -25,7 +25,6 @@ def main(request, response):
   const navHistory = params.get("navHistory");
   const avoidBackAndForth = params.get("avoidBackAndForth");
   const navigate = params.get("navigate");
-  const openerDOMAccess = params.get("openerDOMAccess");
   // Need to wait until the page is fully loaded before navigating
   // so that it creates a history entry properly.
   async function fullyLoaded() {

@@ -6,9 +6,9 @@ function url_test(t, url, channelName, hasOpener, openerDOMAccess) {
   const bc = new BroadcastChannel(channelName);
   bc.onmessage = t.step_func_done(event => {
     const payload = event.data;
-    assert_equals(payload.name, hasOpener ? channelName : "");
-    assert_equals(payload.opener, hasOpener);
-    assert_equals(payload.openerDOMAccess, openerDOMAccess);
+    assert_equals(payload.name, hasOpener ? channelName : "", 'name');
+    assert_equals(payload.opener, hasOpener, 'opener');
+    assert_equals(payload.openerDOMAccess, openerDOMAccess, 'openerDOMAccess');
   });
 
   const w = window.open(url, channelName);
@@ -19,7 +19,7 @@ function url_test(t, url, channelName, hasOpener, openerDOMAccess) {
 }
 
 function coop_coep_test(t, host, coop, coep, channelName, hasOpener, openerDOMAccess) {
-  url_test(t, `${host.origin}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=${encodeURIComponent(coop)}&coep=${coep}&channel=${channelName}&openerDOMAccess=${openerDOMAccess}`, channelName, hasOpener, openerDOMAccess);
+  url_test(t, `${host.origin}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=${encodeURIComponent(coop)}&coep=${coep}&channel=${channelName}`, channelName, hasOpener, openerDOMAccess);
 }
 
 function coop_test(t, host, coop, channelName, hasOpener) {

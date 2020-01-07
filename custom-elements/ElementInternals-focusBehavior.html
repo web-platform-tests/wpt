@@ -7,14 +7,14 @@
 class MyElement extends HTMLElement {
   constructor() {
     super();
-    this.internals = this.attachInternals();
+    this.i = this.attachInternals();
   }
 }
 customElements.define('my-element', MyElement);
 
 test(() => {
   const element = document.createElement('my-element');
-  assert_equals(element.internals.focusBehavior, 'default');
+  assert_equals(element.i.focusBehavior, 'default');
   document.body.appendChild(element);
   element.focus();
   assert_not_equals(document.activeElement, element);
@@ -22,8 +22,8 @@ test(() => {
 
 test(() => {
   const element = document.createElement('my-element');
-  element.internals.focusBehavior = 'default';
-  assert_equals(element.internals.focusBehavior, 'default');
+  element.i.focusBehavior = 'default';
+  assert_equals(element.i.focusBehavior, 'default');
   document.body.appendChild(element);
   element.focus();
   assert_not_equals(document.activeElement, element);
@@ -31,8 +31,8 @@ test(() => {
 
 test(() => {
   const element = document.createElement('my-element');
-  element.internals.focusBehavior = 'default';
-  assert_equals(element.internals.focusBehavior, 'default');
+  element.i.focusBehavior = 'default';
+  assert_equals(element.i.focusBehavior, 'default');
   element.tabIndex = 0;
   document.body.appendChild(element);
   element.focus();
@@ -41,8 +41,8 @@ test(() => {
 
 test(() => {
   const element = document.createElement('my-element');
-  element.internals.focusBehavior = 'focusable';
-  assert_equals(element.internals.focusBehavior, 'focusable');
+  element.i.focusBehavior = 'focusable';
+  assert_equals(element.i.focusBehavior, 'focusable');
   document.body.appendChild(element);
   element.focus();
   assert_equals(document.activeElement, element);
@@ -50,8 +50,8 @@ test(() => {
 
 test(() => {
   const element = document.createElement('my-element');
-  element.internals.focusBehavior = 'simple-control';
-  assert_equals(element.internals.focusBehavior, 'simple-control');
+  element.i.focusBehavior = 'simple-control';
+  assert_equals(element.i.focusBehavior, 'simple-control');
   document.body.appendChild(element);
   element.focus();
   assert_equals(document.activeElement, element);
@@ -59,8 +59,8 @@ test(() => {
 
 test(() => {
   const element = document.createElement('my-element');
-  element.internals.focusBehavior = 'anchor';
-  assert_equals(element.internals.focusBehavior, 'focusable');
+  element.i.focusBehavior = 'anchor';
+  assert_equals(element.i.focusBehavior, 'focusable');
   document.body.appendChild(element);
   element.focus();
   assert_equals(document.activeElement, element);

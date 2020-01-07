@@ -181,14 +181,14 @@ describe('Mapped using the "imports" key only (no scopes)', () => {
       expect(resolveUnderTest('../dotdotrelative/foo.mjs')).toMatchURL('https://example.com/lib/dotdot.mjs');
     });
 
-    it('should fail for URLs that remap to empty arrays', () => {
-      expect(() => resolveUnderTest('https://example.com/lib/no.mjs')).toThrow(TypeError);
-      expect(() => resolveUnderTest('/lib/no.mjs')).toThrow(TypeError);
-      expect(() => resolveUnderTest('../lib/no.mjs')).toThrow(TypeError);
+    it('should ignore entries that remap to empty arrays', () => {
+      expect(resolveUnderTest('https://example.com/lib/no.mjs')).toMatchURL('https://example.com/lib/slash-only/lib/no.mjs');
+      expect(resolveUnderTest('/lib/no.mjs')).toMatchURL('https://example.com/lib/slash-only/lib/no.mjs');
+      expect(resolveUnderTest('../lib/no.mjs')).toMatchURL('https://example.com/lib/slash-only/lib/no.mjs');
 
-      expect(() => resolveUnderTest('https://example.com/app/dotrelative/no.mjs')).toThrow(TypeError);
-      expect(() => resolveUnderTest('/app/dotrelative/no.mjs')).toThrow(TypeError);
-      expect(() => resolveUnderTest('../app/dotrelative/no.mjs')).toThrow(TypeError);
+      expect(resolveUnderTest('https://example.com/app/dotrelative/no.mjs')).toMatchURL('https://example.com/lib/dotslash-only/dotrelative/no.mjs');
+      expect(resolveUnderTest('/app/dotrelative/no.mjs')).toMatchURL('https://example.com/lib/dotslash-only/dotrelative/no.mjs');
+      expect(resolveUnderTest('../app/dotrelative/no.mjs')).toMatchURL('https://example.com/lib/dotslash-only/dotrelative/no.mjs');
     });
 
     it('should remap URLs that are just composed from / and .', () => {
@@ -261,9 +261,9 @@ describe('Mapped using the "imports" key only (no scopes)', () => {
       expect(resolveUnderTest('a')).toMatchURL('https://example.com/1');
       expect(resolveUnderTest('a/')).toMatchURL('https://example.com/2/');
       expect(resolveUnderTest('a/x')).toMatchURL('https://example.com/2/x');
-      expect(() => resolveUnderTest('a/b')).toThrow(TypeError);
-      expect(() => resolveUnderTest('a/b/')).toThrow(TypeError);
-      expect(() => resolveUnderTest('a/b/c')).toThrow(TypeError);
+      expect(resolveUnderTest('a/b')).toMatchURL('https://example.com/2/b');
+      expect(resolveUnderTest('a/b/')).toMatchURL('https://example.com/2/b/');
+      expect(resolveUnderTest('a/b/c')).toMatchURL('https://example.com/2/b/c');
       expect(resolveUnderTest('a/x/c')).toMatchURL('https://example.com/2/x/c');
     });
   });

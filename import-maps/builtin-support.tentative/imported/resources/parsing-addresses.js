@@ -28,9 +28,6 @@ describe('Relative URL-like addresses', () => {
       }`,
       'data:text/html,test',
       {
-        dotSlash: [],
-        dotDotSlash: [],
-        slash: []
       },
       [
         `Invalid address "./foo" for the specifier key "dotSlash".`,
@@ -69,13 +66,6 @@ describe('Relative URL-like addresses', () => {
       }`,
       'https://base.example/path1/path2/path3',
       {
-        dotSlash1: [],
-        dotDotSlash1: [],
-        dotSlash2: [],
-        dotDotSlash2: [],
-        slash2: [],
-        dotSlash3: [],
-        dotDotSlash3: []
       },
       [
         `Invalid address "%2E/" for the specifier key "dotSlash1".`,
@@ -110,7 +100,6 @@ describe('Built-in module addresses', () => {
       }`,
       'https://base.example/path1/path2/path3',
       {
-        foo: []
       },
       [`Invalid address "${encodeURIComponent(BUILT_IN_MODULE_SCHEME + ':')}foo" for the specifier key "foo".`]
     );
@@ -160,10 +149,6 @@ describe('Absolute URL addresses', () => {
         http: [expect.toMatchURL('http://good/')],
         https: [expect.toMatchURL('https://good/')],
         ftp: [expect.toMatchURL('ftp://good/')],
-        import: [],
-        mailto: [],
-        javascript: [],
-        wss: []
       },
       [
         `Invalid address "import:bad" for the specifier key "import".`,
@@ -200,10 +185,6 @@ describe('Absolute URL addresses', () => {
         http: [expect.toMatchURL('http://good/')],
         https: [expect.toMatchURL('https://good/')],
         ftp: [expect.toMatchURL('ftp://good/')],
-        import: [],
-        mailto: [],
-        javascript: [],
-        wss: []
       },
       [
         `Invalid address "import:bad" for the specifier key "import".`,
@@ -228,9 +209,6 @@ describe('Absolute URL addresses', () => {
       }`,
       'https://base.example/path1/path2/path3',
       {
-        unparseable1: [],
-        unparseable2: [],
-        unparseable3: [],
         invalidButParseable1: [expect.toMatchURL('https://example.org/')],
         invalidButParseable2: [expect.toMatchURL('https://example.com///')],
         prettyNormal: [expect.toMatchURL('https://example.net/')],
@@ -259,9 +237,6 @@ describe('Absolute URL addresses', () => {
       }`,
       'https://base.example/path1/path2/path3',
       {
-        unparseable1: [],
-        unparseable2: [],
-        unparseable3: [],
         invalidButParseable1: [expect.toMatchURL('https://example.org/')],
         invalidButParseable2: [expect.toMatchURL('https://example.com///')],
         prettyNormal: [expect.toMatchURL('https://example.net/')],
@@ -286,8 +261,6 @@ describe('Failing addresses: mismatched trailing slashes', () => {
       }`,
       'https://base.example/path1/path2/path3',
       {
-        'trailer/': [],
-        [`${BUILT_IN_MODULE_SCHEME}:trailer/`]: []
       },
       [
         `Invalid address "https://base.example/notrailer" for package specifier key "trailer/". Package addresses must end with "/".`,
@@ -304,8 +277,6 @@ describe('Failing addresses: mismatched trailing slashes', () => {
       }`,
       'https://base.example/path1/path2/path3',
       {
-        'trailer/': [],
-        [`${BUILT_IN_MODULE_SCHEME}:trailer/`]: []
       },
       [
         `Invalid address "https://base.example/notrailer" for package specifier key "trailer/". Package addresses must end with "/".`,
@@ -342,7 +313,6 @@ describe('Other invalid addresses', () => {
         }`,
         'https://base.example/path1/path2/path3',
         {
-          foo: []
         },
         [`Invalid address "${bad}" for the specifier key "foo".`]
       );

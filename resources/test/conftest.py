@@ -1,4 +1,4 @@
-import io
+import copy
 import json
 import os
 import ssl
@@ -153,7 +153,9 @@ class HTMLItem(pytest.Item, pytest.Collector):
             'runTest("%s", "foo", arguments[0])' % self.url
         )
 
-        summarized = self._summarize(actual)
+        summarized = self._summarize(copy.deepcopy(actual))
+
+        print(json.dumps(summarized, indent=2))
 
         assert summarized[u'summarized_status'][u'status_string'] == u'OK', summarized[u'summarized_status'][u'message']
         for test in summarized[u'summarized_tests']:
@@ -173,12 +175,15 @@ class HTMLItem(pytest.Item, pytest.Collector):
         test_url = self.url + variant
         actual = driver.execute_async_script('runTest("%s", "foo", arguments[0])' % test_url)
 
+        summarized = self._summarize(copy.deepcopy(actual))
+
+        print(json.dumps(summarized, indent=2))
+
         # Test object ordering is not guaranteed. This weak assertion verifies
         # that the indices are unique and sequential
         indices = [test_obj.get('index') for test_obj in actual['tests']]
         self._assert_sequence(indices)
 
-        summarized = self._summarize(actual)
         self.expected[u'summarized_tests'].sort(key=lambda test_obj: test_obj.get('name'))
 
         assert summarized == self.expected

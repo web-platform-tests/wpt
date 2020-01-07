@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<link rel="help" content="https://html.spec.whatwg.org/C/#dom-elementinternals-focusbehavior">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+class MyElement extends HTMLElement {
+  constructor() {
+    super();
+    this.internals = this.attachInternals();
+  }
+}
+customElements.define('my-element', MyElement);
+
+test(() => {
+  const element = document.createElement('my-element');
+  assert_equals(element.internals.focusBehavior, 'default');
+  document.body.appendChild(element);
+  element.focus();
+  assert_not_equals(document.activeElement, element);
+}, 'Behavior without setting focusBehavior');
+
+test(() => {
+  const element = document.createElement('my-element');
+  element.internals.focusBehavior = 'default';
+  assert_equals(element.internals.focusBehavior, 'default');
+  document.body.appendChild(element);
+  element.focus();
+  assert_not_equals(document.activeElement, element);
+}, 'Behavior with focusBehavior="default"');
+
+test(() => {
+  const element = document.createElement('my-element');
+  element.internals.focusBehavior = 'default';
+  assert_equals(element.internals.focusBehavior, 'default');
+  element.tabIndex = 0;
+  document.body.appendChild(element);
+  element.focus();
+  assert_equals(document.activeElement, element);
+}, 'Tabindex overrides focusBehavior="default"');
+
+test(() => {
+  const element = document.createElement('my-element');
+  element.internals.focusBehavior = 'focusable';
+  assert_equals(element.internals.focusBehavior, 'focusable');
+  document.body.appendChild(element);
+  element.focus();
+  assert_equals(document.activeElement, element);
+}, 'Behavior with focusBehavior="focusable"');
+
+test(() => {
+  const element = document.createElement('my-element');
+  element.internals.focusBehavior = 'simple-control';
+  assert_equals(element.internals.focusBehavior, 'simple-control');
+  document.body.appendChild(element);
+  element.focus();
+  assert_equals(document.activeElement, element);
+}, 'Behavior with focusBehavior="simple-control"');
+
+test(() => {
+  const element = document.createElement('my-element');
+  element.internals.focusBehavior = 'anchor';
+  assert_equals(element.internals.focusBehavior, 'focusable');
+  document.body.appendChild(element);
+  element.focus();
+  assert_equals(document.activeElement, element);
+}, 'Behavior with focusBehavior=<unknown keyword>');
+</script>
+</body>
+

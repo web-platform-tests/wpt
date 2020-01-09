@@ -7,20 +7,24 @@
 <script>
 'use strict';
 
-const WORKER =
-  'resources/fetch-event-respond-with-custom-response-worker.js';
-const SCOPE =
-  'resources/blank.html';
+const WORKER = 'resources/fetch-event-respond-with-custom-response-worker.js';
+const SCOPE = 'resources/blank.html';
 
 // Register a service worker, then create an iframe at url.
 function iframeTest(url, callback, name) {
   return promise_test(async t => {
-    const reg = await service_worker_unregister_and_register(t, WORKER, SCOPE);
-    add_completion_callback(() => reg.unregister());
-    await wait_for_state(t, reg.installing, 'activated');
+    t.add_cleanup(async () => {
+      if (iframe) iframe.remove();
+      if (registration) await registration.unregister();
+    });
+    const registration = await service_worker_unregister_and_register(
+      t,
+      WORKER,
+      SCOPE
+    );
+    await wait_for_state(t, registration.installing, 'activated');
     const iframe = await with_iframe(url);
     const iwin = iframe.contentWindow;
-    t.add_cleanup(() => iframe.remove());
     await callback(t, iwin);
   }, name);
 }

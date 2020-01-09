@@ -19,11 +19,11 @@
   const popup = window.open("resources/coop-coep.py?coop=same-origin&coep=&channel=${channel.name}");
   <\/script>`;
     document.body.append(frame);
-    window.onload = t.step_func(() => {
+    addEventListener('load', t.step_func(() => {
       t.step_timeout(() => {
         t.done()
       }, 1500);
-    });
+    }));
   }, `<iframe sandbox="${sandboxValue}"> ${document.title}`);
 });
 </script>

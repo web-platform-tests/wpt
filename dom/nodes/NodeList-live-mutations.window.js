@@ -76,3 +76,4 @@ testNodeList("NodeList ownPropertyNames", {
     assert_object_equals(Object.getOwnPropertyNames(list), ["0", "1"]);
   }
 });
+

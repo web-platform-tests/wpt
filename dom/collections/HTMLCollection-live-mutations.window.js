@@ -90,3 +90,4 @@ testHTMLCollection("HTMLCollection ownPropertyNames", {
     assert_object_equals(Object.getOwnPropertyNames(list), ["0", "div2"]);
   }
 });
+

@@ -16,6 +16,6 @@ def main(request, response):
 <script>
   const params = new URL(location).searchParams;
   params.delete("sandbox");
-  window.open(`${get_host_info().HTTPS_ORIGIN}/html/cross-origin-opener-policy/resources/coop-coep.py?${params}`)
+  window.open(`${get_host_info().HTTPS_ORIGIN}/html/cross-origin-opener-policy/resources/coop-coep.py?${params}`);
 </script>
 """

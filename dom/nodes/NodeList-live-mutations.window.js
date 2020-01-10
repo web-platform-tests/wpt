@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>NodeList live mutations</title>
-<link rel="help" href="https://dom.spec.whatwg.org/#ref-for-concept-collection-live">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
-"use strict";
-
 function testNodeList(name, hooks) {
   test(() => {
     const nodes = {
@@ -86,4 +76,3 @@ testNodeList("NodeList ownPropertyNames", {
     assert_object_equals(Object.getOwnPropertyNames(list), ["0", "1"]);
   }
 });
-</script>

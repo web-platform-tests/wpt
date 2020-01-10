@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>HTMLCollection live mutations</title>
-<link rel="help" href="https://dom.spec.whatwg.org/#ref-for-concept-collection-live">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
-"use strict";
-
 function testHTMLCollection(name, hooks) {
   test(() => {
     const nodes = {
@@ -100,4 +90,3 @@ testHTMLCollection("HTMLCollection ownPropertyNames", {
     assert_object_equals(Object.getOwnPropertyNames(list), ["0", "div2"]);
   }
 });
-</script>

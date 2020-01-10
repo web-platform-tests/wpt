@@ -4,7 +4,7 @@ function createDocument(documentType, result, inlineOrExternal, type, hasBlockin
   return new Promise((resolve, reject) => {
     const iframe = document.createElement("iframe");
     iframe.src =
-      "resources/moving-between-documents-iframe.py" + 
+      "resources/moving-between-documents-iframe.py" +
       "?result=" + result +
       "&inlineOrExternal=" + inlineOrExternal +
       "&type=" + type +
@@ -74,7 +74,7 @@ async function runTest(timing, destType, result, inlineOrExternal, type) {
   }
 
   const description =
-      `Move ${result} ${inlineOrExternal} ${type} script ` + 
+      `Move ${result} ${inlineOrExternal} ${type} script ` +
       `to ${destType} ${timing}`;
 
   const t = async_test("Eval: " + description);

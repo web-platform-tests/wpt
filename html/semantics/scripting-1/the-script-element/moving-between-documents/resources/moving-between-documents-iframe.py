@@ -2,7 +2,7 @@ import random
 import time
 
 """
-This script serves 
+This script serves
 """
 
 def main(request, response):

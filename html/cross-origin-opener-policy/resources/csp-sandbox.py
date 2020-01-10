@@ -12,10 +12,9 @@ def main(request, response):
     response.content = """
 <!doctype html>
 <meta charset=utf-8>
-<script src="/common/get-host-info.sub.js"></script>
 <script>
   const params = new URL(location).searchParams;
   params.delete("sandbox");
-  window.open(`${get_host_info().HTTPS_ORIGIN}/html/cross-origin-opener-policy/resources/coop-coep.py?${params}`);
+  window.open(`/html/cross-origin-opener-policy/resources/coop-coep.py?${params}`);
 </script>
 """

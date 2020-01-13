@@ -1,10 +1,20 @@
-async_test(t => {
-  const popup = window.open(`data:text/html,<script>alert(1)</script>`);
-  // TODO
-}, "Navigating a popup to a data: URL");
+// META: timeout=long
 
-async_test(t => {
-  const dataURL = encodeURIComponent(`data:text/html,<script>alert(1)</script>`);
-  const popup = window.open(`resources/redirect.py?location=${dataURL}`);
-  // TODO
-}, "Navigating a popup to a data: URL via a redirect");
+const dataURL = `data:text/html,...`;
+const encodedDataURL = encodeURIComponent(dataURL);
+
+[dataURL, `resources/redirect.py?location=${encodedDataURL}`].forEach(url => {
+  [undefined, "opener", "noopener", "noreferrer"].forEach(opener => {
+    async_test(t => {
+      const popup = window.open(url, "", opener);
+      t.step_timeout(() => {
+        if (opener === "noopener" || opener == "noreferrer") {
+          assert_equals(popup, null);
+        } else {
+          assert_true(popup.closed);
+        }
+        t.done();
+      }, 1500);
+    }, `Navigating a popup using window.open("${url}", "", "${opener}")`);
+  });
+});

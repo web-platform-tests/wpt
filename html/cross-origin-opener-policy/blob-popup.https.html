@@ -18,12 +18,12 @@ async_test(t => {
   });
 
   const blobContents = `<script>
-const furtherPopup = window.open("${get_host_info().HTTPS_REMOTE_ORIGIN}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=x&coep=x&channel=${bc.name}", "${bc.name}");
-window.opener.furtherPopup = furtherPopup;
+const w = window.open("${get_host_info().HTTPS_REMOTE_ORIGIN}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=x&coep=x&channel=${bc.name}", "${bc.name}");
+window.opener.furtherPopup = w;
 
 // w will be closed by its postback iframe. When out of process,
 // window.close() does not work.
-window.opener.test.add_cleanup(() => furtherPopup.close());
+window.opener.test.add_cleanup(() => w.close());
 <\/script>`;
   const blob = new Blob([blobContents], { type: "text/html" });
   const blobURL = URL.createObjectURL(blob);

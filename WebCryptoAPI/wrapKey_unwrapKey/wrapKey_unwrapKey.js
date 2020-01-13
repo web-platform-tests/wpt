@@ -234,8 +234,9 @@ function run_test() {
     // RSA-OAEP can only wrap relatively small payloads. AES-KW can only
     // wrap payloads a multiple of 8 bytes long.
     //
-    // Note that JWK payloads will be converted to ArrayBuffer for wrapping,
-    // and should automatically be padded if needed for AES-KW.
+    // Note that the way JWK is converted to ArrayBuffer is not mandated
+    // by the specification. Therefore, there is no guarantees if AES-KW
+    // would accept a given JWK.
     function wrappingIsPossible(exportedKey, algorithmName) {
         if ("byteLength" in exportedKey && algorithmName === "AES-KW") {
             return exportedKey.byteLength % 8 === 0;
@@ -247,6 +248,10 @@ function run_test() {
             // a 4096 bit modulus and SHA-256, that comes to
             // 4096/8 - 2*(256/8) - 1 = 512 - 2*32 - 1 = 447 bytes.
             return exportedKey.byteLength <= 446;
+        }
+
+        if ("kty" in exportedKey && algorithmName === "AES-KW") {
+            return false;
         }
 
         if ("kty" in exportedKey && algorithmName === "RSA-OAEP") {

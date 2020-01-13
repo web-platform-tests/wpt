@@ -1946,6 +1946,7 @@ interface mixin WindowEventHandlers {
   attribute EventHandler onpopstate;
   attribute EventHandler onrejectionhandled;
   attribute EventHandler onstorage;
+  attribute EventHandler ontimezonechange;
   attribute EventHandler onunhandledrejection;
   attribute EventHandler onunload;
 };
@@ -2239,6 +2240,7 @@ interface WorkerGlobalScope : EventTarget {
   attribute EventHandler onoffline;
   attribute EventHandler ononline;
   attribute EventHandler onrejectionhandled;
+  attribute EventHandler ontimezonechange;
   attribute EventHandler onunhandledrejection;
 };
 

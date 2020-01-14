@@ -12,6 +12,7 @@ function url_test(t, url, channelName, hasOpener, openerDOMAccess) {
     if (openerDOMAccess !== undefined) {
       assert_equals(payload.openerDOMAccess, openerDOMAccess, 'openerDOMAccess');
     }
+    assert_equals(w.closed, !hasOpener, 'Openee window proxy closed');
   });
 
   const w = window.open(url, channelName);

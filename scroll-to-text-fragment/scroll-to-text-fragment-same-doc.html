@@ -29,18 +29,9 @@ function runTest() {
       checkScroll(resolve);
     });
   }).then(position => {
-    assert_equals(position, 'top');
-    assert_equals(window.location.href.indexOf(':~:'), -1, 'Expected fragment directive to be stripped from the URL.');
-  }), 'Test that a text fragment directive cannot be activated on a same-document navigation');
-
-  promise_test(t => new Promise(resolve => {
-    window.location.href = "#text";
-    requestAnimationFrame(function() {
-      checkScroll(resolve);
-    });
-  }).then(position => {
     assert_equals(position, 'text');
-  }), 'Sanity check that the text element can be navigated by element ID');
+    assert_equals(window.location.href.indexOf(':~:'), -1, 'Expected fragment directive to be stripped from the URL.');
+  }), 'Test that a text fragment directive is activated on a same-document navigation');
 }
 </script>
 <style>

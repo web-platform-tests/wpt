@@ -120,7 +120,7 @@ class Manifest(object):
 
     def iterdir(self, dir_name):
         # type: (Text) -> Iterable[ManifestItem]
-        tpath = dir_name.split(os.path.sep)
+        tpath = tuple(dir_name.split(os.path.sep))
         tpath_len = len(tpath)
 
         for type_tests in self._data.values():

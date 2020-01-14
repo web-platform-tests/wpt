@@ -3,6 +3,7 @@ from mock import Mock
 
 from manifest import manifest as wptmanifest
 from manifest.item import TestharnessTest, RefTest
+from manifest.utils import to_os_path
 from .. import manifestexpected, wpttest
 
 dir_ini_0 = b"""\
@@ -217,7 +218,7 @@ def test_metadata_fuzzy():
                                                     test_path="a/fuzzy.html",
                                                     url_base="/")
 
-    test = next(manifest.iterpath("a/fuzzy.html"))
+    test = next(manifest.iterpath(to_os_path("a/fuzzy.html")))
     test_obj = wpttest.from_manifest(manifest, test, [], test_metadata.get_test(test.id))
 
     assert test_obj.fuzzy == {('/a/fuzzy.html', '/a/fuzzy-ref.html', '=='): [[2, 3], [10, 15]]}

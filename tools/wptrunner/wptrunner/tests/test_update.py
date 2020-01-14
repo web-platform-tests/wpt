@@ -73,6 +73,7 @@ def update(tests, *logs, **kwargs):
     expected_data = {}
     metadata.load_expected = lambda _, __, test_path, *args: expected_data.get(test_path)
     for test_path, test_ids, test_type, manifest_str in tests:
+        test_path = utils.to_os_path(test_path)
         expected_data[test_path] = manifestupdate.compile(BytesIO(manifest_str),
                                                           test_path,
                                                           "/",

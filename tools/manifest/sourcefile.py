@@ -401,7 +401,7 @@ class SourceFile(object):
         # files.
         rel_dir_tree = self.rel_path_parts
         return (((rel_dir_tree[0] == "webdriver" and len(rel_dir_tree) > 1) or
-                 (rel_dir_tree[:2] == ["infrastructure", "webdriver"] and
+                 (rel_dir_tree[:2] == ("infrastructure", "webdriver") and
                   len(rel_dir_tree) > 2)) and
                 self.filename not in ("__init__.py", "conftest.py") and
                 fnmatch(self.filename, wd_pattern))

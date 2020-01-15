@@ -3,22 +3,24 @@
 <title>Incumbent settings object for promise jobs</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<!-- https://github.com/whatwg/html/pull/5212 -->
-<!-- https://github.com/whatwg/html/issues/1426 -->
 
-<!-- This is the entry page -->
+<!-- This is the entry page. -->
 
 <iframe src="resources/promise-job-incumbent-incumbent.html"></iframe>
+<iframe src="resources/promise-job-incumbent-resolver.html"></iframe>
 
 <script>
 setup({ explicit_done: true });
 
+// postMessage should pick the incumbent page as its .source value to set on the MessageEvent, even
+// inside promise jobs.
 const expectedURL = (new URL("resources/promise-job-incumbent-incumbent.html", location.href)).href;
 
 let testId = 0;
 
 window.onload = () => {
   const relevantWindow = frames[0].document.querySelector("#r").contentWindow;
+  const runInResolver = frames[1].runWhatYouGiveMe;
 
   function setupTest(t) {
     ++testId;
@@ -60,6 +62,10 @@ window.onload = () => {
     });
   }, "Rejection handler on rejected promise");
 
+  // The following two test that we derive the incumbent settings object at promise-job time from
+  // the incumbent realm at the time the handler was added, not at the time the resolve()/reject()
+  // was done. See https://github.com/whatwg/html/issues/5213 for the spec side of this issue.
+
   async_test(t => {
     const thisTestId = setupTest(t);
 
@@ -70,7 +76,9 @@ window.onload = () => {
       frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
     }));
 
-    t.step_timeout(resolve, 0);
+    t.step_timeout(() => {
+      runInResolver(resolve);
+    }, 0);
   }, "Fulfillment handler on pending-then-fulfilled promise");
 
   async_test(t => {
@@ -83,7 +91,9 @@ window.onload = () => {
       frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
     }));
 
-    t.step_timeout(reject, 0);
+    t.step_timeout(() => {
+      runInResolver(reject);
+    }, 0);
   }, "Rejection handler on pending-then-rejected promise");
 
   async_test(t => {

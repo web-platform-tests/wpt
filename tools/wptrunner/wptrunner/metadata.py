@@ -542,11 +542,10 @@ def create_test_tree(metadata_path, test_manifest):
         while True:
             dir_meta_path = os.path.join(dir_path, "__dir__")
             dir_id = (test_manifest.url_base + dir_meta_path.replace(os.path.sep, "/")).lstrip("/")
-            dir_id = intern(dir_id.encode("utf8"))
             if dir_id in id_test_map:
                 break
 
-            test_file_data = TestFileData(intern(test_manifest.url_base.encode("utf8")),
+            test_file_data = TestFileData(intern(test_manifest.url_base),
                                           None,
                                           metadata_path,
                                           dir_meta_path,

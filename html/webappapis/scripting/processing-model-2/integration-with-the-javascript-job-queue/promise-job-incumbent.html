@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Incumbent settings object for promise jobs</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<!-- https://github.com/whatwg/html/pull/5212 -->
+<!-- https://github.com/whatwg/html/issues/1426 -->
+
+<!-- This is the entry page -->
+
+<iframe src="resources/promise-job-incumbent-incumbent.html"></iframe>
+
+<script>
+setup({ explicit_done: true });
+
+const expectedURL = (new URL("resources/promise-job-incumbent-incumbent.html", location.href)).href;
+
+let testId = 0;
+
+window.onload = () => {
+  const relevantWindow = frames[0].document.querySelector("#r").contentWindow;
+
+  function setupTest(t) {
+    ++testId;
+    const thisTestId = testId;
+
+    relevantWindow.addEventListener("messagereceived", t.step_func(e => {
+      const [recievedTestId, recievedSourceURL] = e.detail;
+
+      if (recievedTestId !== thisTestId) {
+        return;
+      }
+
+      assert_equals(recievedSourceURL, expectedURL);
+      t.done();
+    }));
+
+    return thisTestId;
+  }
+
+  async_test(t => {
+    const thisTestId = setupTest(t);
+
+    frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
+  }, "Sanity check: this all works as expected with no promises involved");
+
+  async_test(t => {
+    const thisTestId = setupTest(t);
+
+    Promise.resolve().then(() => {
+      frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
+    });
+  }, "Fulfillment handler on fulfilled promise");
+
+  async_test(t => {
+    const thisTestId = setupTest(t);
+
+    Promise.reject().catch(() => {
+      frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
+    });
+  }, "Rejection handler on rejected promise");
+
+  async_test(t => {
+    const thisTestId = setupTest(t);
+
+    let resolve;
+    const p = new Promise(r => { resolve = r; });
+
+    p.then(t.step_func(() => {
+      frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
+    }));
+
+    t.step_timeout(resolve, 0);
+  }, "Fulfillment handler on pending-then-fulfilled promise");
+
+  async_test(t => {
+    const thisTestId = setupTest(t);
+
+    let reject;
+    const p = new Promise((_, r) => { reject = r; });
+
+    p.catch(t.step_func(() => {
+      frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
+    }));
+
+    t.step_timeout(reject, 0);
+  }, "Rejection handler on pending-then-rejected promise");
+
+  async_test(t => {
+    const thisTestId = setupTest(t);
+
+    const thenable = {
+      then: t.step_func((f) => {
+        frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
+      })
+    };
+
+    Promise.resolve(thenable);
+  }, "Thenable resolution");
+
+  done();
+};
+</script>

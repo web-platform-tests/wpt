@@ -434,10 +434,12 @@ tasks:
   - infrastructure/ tests:
       description: >-
         Smoketests for wptrunner
+      vars:
+        channel: nightly
       use:
         - wpt-base
         - trigger-pr
-        - tox-python2
+        - browser-firefox
       command: ./tools/ci/ci_wptrunner_infrastructure.sh
       install:
         - libnss3-tools

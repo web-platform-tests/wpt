@@ -8,7 +8,7 @@ cd $WPT_ROOT
 test_infrastructure() {
     local ARGS="";
     if [ $PRODUCT == "firefox" ]; then
-        ARGS="--install-browser"
+        ARGS="--binary=~/build/firefox/firefox"
     else
         ARGS=$1
     fi

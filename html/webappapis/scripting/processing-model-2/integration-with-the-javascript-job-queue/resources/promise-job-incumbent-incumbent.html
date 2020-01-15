@@ -11,4 +11,16 @@
   window.runWindowPostMessageVeryIndirectly = (...args) => {
     return current.contentWindow.postMessage.call(relevant.contentWindow, ...args);
   };
+
+  // This tests the backup incumbent settings object stack scenario, by avoiding putting user code on the stack.
+  window.runWindowPostMessageVeryIndirectlyWithNoUserCode = (promise, promiseMethod, ...args) => {
+    const runWindowPostMessage = current.contentWindow.postMessage.bind(relevant.contentWindow, ...args);
+    promise[promiseMethod](runWindowPostMessage);
+  };
+
+  window.resolveThenableThatRunsWindowPostMessageVeryIndirectlyWithNoUserCode = (...args) => {
+    Promise.resolve({
+      then: current.contentWindow.postMessage.bind(relevant.contentWindow, ...args)
+    });
+  };
 </script>

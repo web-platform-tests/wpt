@@ -17,9 +17,13 @@ function url_test(t, url, channelName, hasOpener, openerDOMAccess) {
 
   const w = window.open(url, channelName);
 
-  // w will be closed by its postback iframe. When out of process,
-  // window.close() does not work.
-  t.add_cleanup(() => w.close());
+  // Close the popup once the test is complete.
+  // The window proxy might be closed hence use the broadcast channel
+  // to trigger the closure.
+  t.add_cleanup(() => {
+    bc.onmessage = null;
+    bc.postMessage( "close" );
+  });
 }
 
 function coop_coep_test(t, host, coop, coep, channelName, hasOpener, openerDOMAccess) {

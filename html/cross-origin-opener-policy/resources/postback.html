@@ -3,6 +3,13 @@
 <script>
 const channelName = new URL(location).searchParams.get("channel");
 const bc = new BroadcastChannel(channelName);
+
+bc.onmessage = event => {
+  if( event.data == "close" ) {
+    parent.close();
+  }
+};
+
 window.addEventListener("message", event => {
   bc.postMessage(event.data);
 });

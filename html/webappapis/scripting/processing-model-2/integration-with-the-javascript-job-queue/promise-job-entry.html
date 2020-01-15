@@ -26,36 +26,39 @@ window.onload = () => {
   }, "Sanity check: this all works as expected with no promises involved");
 
   async_test(t => {
-    Promise.resolve().then(t.step_func(() => {
+    // No t.step_func because that could change the realms
+    Promise.resolve().then(() => {
       const w = frames[0].runWindowOpenVeryIndirectly(relativeURL);
       w.onload = t.step_func_done(() => {
         t.add_cleanup(() => w.close());
         assert_equals(w.location.href, expectedURL);
       });
-    }));
+    });
   }, "Fulfillment handler on fulfilled promise");
 
   async_test(t => {
-    Promise.reject().catch(t.step_func(() => {
+    // No t.step_func because that could change the realms
+    Promise.reject().catch(() => {
       const w = frames[0].runWindowOpenVeryIndirectly(relativeURL);
       w.onload = t.step_func_done(() => {
         t.add_cleanup(() => w.close());
         assert_equals(w.location.href, expectedURL);
       });
-    }));
+    });
   }, "Rejection handler on rejected promise");
 
   async_test(t => {
     let resolve;
     const p = new Promise(r => { resolve = r; });
 
-    p.then(t.step_func(() => {
+    // No t.step_func because that could change the realms
+    p.then(() => {
       const w = frames[0].runWindowOpenVeryIndirectly(relativeURL);
       w.onload = t.step_func_done(() => {
         t.add_cleanup(() => w.close());
         assert_equals(w.location.href, expectedURL);
       });
-    }));
+    });
 
     t.step_timeout(resolve, 0);
   }, "Fulfillment handler on pending-then-fulfilled promise");
@@ -64,26 +67,28 @@ window.onload = () => {
     let reject;
     const p = new Promise((_, r) => { reject = r; });
 
-    p.catch(t.step_func(() => {
+    // No t.step_func because that could change the realms
+    p.catch(() => {
       const w = frames[0].runWindowOpenVeryIndirectly(relativeURL);
       w.onload = t.step_func_done(() => {
         t.add_cleanup(() => w.close());
         assert_equals(w.location.href, expectedURL);
       });
-    }));
+    });
 
     t.step_timeout(reject, 0);
   }, "Rejection handler on pending-then-rejected promise");
 
   async_test(t => {
     const thenable = {
-      then: t.step_func((f) => {
+      // No t.step_func because that could change the realms
+      then(f) {
         const w = frames[0].runWindowOpenVeryIndirectly(relativeURL);
         w.onload = t.step_func_done(() => {
           t.add_cleanup(() => w.close());
           assert_equals(w.location.href, expectedURL);
         });
-      })
+      }
     };
 
     Promise.resolve(thenable);

@@ -49,6 +49,7 @@ window.onload = () => {
   async_test(t => {
     const thisTestId = setupTest(t);
 
+    // No t.step_func because that could change the realms
     Promise.resolve().then(() => {
       frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
     });
@@ -57,6 +58,7 @@ window.onload = () => {
   async_test(t => {
     const thisTestId = setupTest(t);
 
+    // No t.step_func because that could change the realms
     Promise.reject().catch(() => {
       frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
     });
@@ -72,9 +74,10 @@ window.onload = () => {
     let resolve;
     const p = new Promise(r => { resolve = r; });
 
-    p.then(t.step_func(() => {
+    // No t.step_func because that could change the realms
+    p.then(() => {
       frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
-    }));
+    });
 
     t.step_timeout(() => {
       runInResolver(resolve);
@@ -87,9 +90,10 @@ window.onload = () => {
     let reject;
     const p = new Promise((_, r) => { reject = r; });
 
-    p.catch(t.step_func(() => {
+    // No t.step_func because that could change the realms
+    p.catch(() => {
       frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
-    }));
+    });
 
     t.step_timeout(() => {
       runInResolver(reject);
@@ -100,9 +104,10 @@ window.onload = () => {
     const thisTestId = setupTest(t);
 
     const thenable = {
-      then: t.step_func((f) => {
+      // No t.step_func because that could change the realms
+      then(f) {
         frames[0].runWindowPostMessageVeryIndirectly(thisTestId, "*");
-      })
+      }
     };
 
     Promise.resolve(thenable);

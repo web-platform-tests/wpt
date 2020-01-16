@@ -175,7 +175,7 @@ function referrerPolicyTestString(referrerPolicy, destination) {
       "name": "cross-origin",
       "expectedOrigin": testObj.expectedOriginForCrossOrigin
     }
-  ].forEach({name, expectedOrigin} => {
+  ].forEach(({name, expectedOrigin}) => {
     // Test form POST navigation
     promise_test(navigationReferrerPolicy(testObj.policy,
                                           name,

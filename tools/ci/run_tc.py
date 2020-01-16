@@ -181,6 +181,7 @@ def download_url_to_descriptor(fd, url, max_retries=3):
         max_retries = 0
     for current_retry in range(max_retries+1):
         try:
+            print("INFO: Downloading %s Try %d/%d" % (url, current_retry + 1, max_retries))
             resp = urlopen(url)
             # We may come here in a retry, ensure to truncate fd before start writing.
             fd.seek(0)
@@ -269,6 +270,7 @@ def download_artifacts(artifacts):
             artifact_list_by_task[artifact["task"]] = artifacts_data
 
         artifacts_data = artifact_list_by_task[artifact["task"]]
+        print("DEBUG: Got artifacts %s" % artifacts_data)
         found = False
         for candidate in artifacts_data["artifacts"]:
             print("DEBUG: candidate: %s glob: %s" % (candidate["name"], artifact["glob"]))

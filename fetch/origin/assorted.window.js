@@ -175,28 +175,29 @@ function referrerPolicyTestString(referrerPolicy, destination) {
       "name": "cross-origin",
       "expectedOrigin": testObj.expectedOriginForCrossOrigin
     }
-  ].forEach(destination => {
+  ].forEach({name, expectedOrigin} => {
     // Test form POST navigation
     promise_test(navigationReferrerPolicy(testObj.policy,
-                                          destination.name,
-                                          destination.expectedOrigin),
+                                          name,
+                                          expectedOrigin),
                  referrerPolicyTestString(testObj.policy,
-                                          destination.name + " navigation"));
+                                          name + " navigation"));
     // Test fetch
     promise_test(fetchReferrerPolicy(testObj.policy,
-                                     destination.name,
+                                     name,
                                      "no-cors",
-                                     destination.expectedOrigin),
+                                     expectedOrigin),
                  referrerPolicyTestString(testObj.policy,
-                                          destination.name + " fetch no-cors mode"));
+                                          name + " fetch no-cors mode"));
 
-    // When we're dealing with CORS (mode is "cors"), we shouldn't take the
+    // When the response tainting is "cors" we shouldn't take the
     // Referrer-Policy into account
-    promise_test(fetchReferrerPolicy(testObj.policy,
-                                     destination.name,
-                                     "cors",
-                                     origins.HTTP_ORIGIN),
-                 referrerPolicyTestString(testObj.policy,
-                                          destination.name + " fetch cors mode"));
+    promise_test(
+        fetchReferrerPolicy(
+            testObj.policy,
+            name,
+            "cors",
+            name === "same-origin" ? expectedOrigin : origins.HTTP_ORIGIN),
+        referrerPolicyTestString(testObj.policy, name + " fetch cors mode"));
   });
 });

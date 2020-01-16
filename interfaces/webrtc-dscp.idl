@@ -3,6 +3,22 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: WebRTC DSCP Control API (https://w3c.github.io/webrtc-dscp-exp/)
 
+enum RTCPriorityType {
+  "very-low",
+  "low",
+  "medium",
+  "high"
+};
+
 partial dictionary RTCRtpEncodingParameters {
-    RTCPriorityType networkPriority;  // Note: No default
+  RTCPriorityType priority;
+  RTCPriorityType networkPriority;
+};
+
+partial interface RTCDataChannel {
+  readonly attribute RTCPriorityType priority;
+};
+
+partial dictionary RTCDataChannelInit {
+  RTCPriorityType priority;
 };

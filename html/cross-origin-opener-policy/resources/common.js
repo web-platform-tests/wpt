@@ -48,7 +48,15 @@ function run_coop_test_iframe (documentTitle, iframe_origin, popup_origin, popup
   const name = iframe_origin.name + "_iframe_opening_" + popup_origin.name + "_popup_with_coop_" + popup_coop;
   async_test(t => {
       const frame = document.createElement("iframe");
-      t.add_cleanup(() => { frame.remove(); });
+
+      // Close the popup and remove the frame once the test is
+      // complete. The window proxy might be closed hence use the
+      // broadcast channel to trigger the closure.
+      t.add_cleanup(() => {
+        frame.remove();
+        bc.onmessage = null;
+        bc.postMessage( "close" );
+      });
 
       const origin = CROSS_ORIGIN.origin;
       const path = new URL("resources/iframe-popup.sub.html", window.location).pathname;

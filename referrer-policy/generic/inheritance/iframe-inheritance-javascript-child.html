@@ -37,4 +37,34 @@
     });
   });
 });
+
+[
+  {
+    srcDocPolicy: ``,
+    expected: self.origin + "/"
+  },
+  {
+    srcDocPolicy: `<meta name="referrer" content="no-referrer">`,
+    expected: undefined
+  }
+].forEach(({ srcDocPolicy, expected }) => {
+  promise_test(t => {
+    return new Promise(resolve => {
+      window.addEventListener("message", t.step_func(msg => {
+        assert_equals(msg.data.referrer, expected);
+        resolve();
+      }), { once:true });
+
+      const iframe = document.createElement("iframe");
+      t.add_cleanup(() => iframe.remove());
+      iframe.srcdoc = `${srcDocPolicy}<body><h1>Outer iframe</h1></body>`;
+      iframe.onload = t.step_func(() => {
+        iframe.onload = null;
+        iframe.contentWindow.location = `javascript:'${createScriptString(get_host_info().REMOTE_ORIGIN)}'`;
+      });
+      document.body.appendChild(iframe);
+    });
+  });
+});
+
 </script>

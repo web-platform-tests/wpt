@@ -19,6 +19,7 @@ trigger:
 # These are all the branches referenced in the jobs that follow.
 - epochs/daily
 - epochs/three_hourly
+- triggers/edge_stable
 - triggers/edge_dev
 - triggers/edge_canary
 - triggers/safari_stable

@@ -9,17 +9,71 @@
 <div id=log></div>
 <script>
 [
-[SAME_ORIGIN, SAME_ORIGIN, "same-origin", false, false],
-[SAME_SITE, SAME_ORIGIN, "same-origin", false, false],
-[CROSS_ORIGIN, SAME_ORIGIN, "same-origin", false, false],
-[SAME_ORIGIN, SAME_SITE, "same-origin", false, false],
-[SAME_SITE, SAME_SITE, "same-origin", false, false],
-[CROSS_ORIGIN, SAME_SITE, "same-origin", false, false],
-[SAME_ORIGIN, CROSS_ORIGIN, "same-origin", false, false],
-[SAME_SITE, CROSS_ORIGIN, "same-origin", false, false],
-[CROSS_ORIGIN, CROSS_ORIGIN, "same-origin", false, false],
+{
+  iframe_origin: SAME_ORIGIN,
+  popup_origin: SAME_ORIGIN,
+  popup_coop: "same-origin",
+  expects_opener: false,
+  expects_name: false
+},
+{
+  iframe_origin: SAME_SITE,
+  popup_origin: SAME_ORIGIN,
+  popup_coop: "same-origin",
+  expects_opener: false,
+  expects_name: false
+},
+{
+  iframe_origin: CROSS_ORIGIN,
+  popup_origin: SAME_ORIGIN,
+  popup_coop: "same-origin",
+  expects_opener: false,
+  expects_name: false
+},
+{
+  iframe_origin: SAME_ORIGIN,
+  popup_origin: SAME_SITE,
+  popup_coop: "same-origin",
+  expects_opener: false,
+  expects_name: false
+},
+{
+  iframe_origin: SAME_SITE,
+  popup_origin: SAME_SITE,
+  popup_coop: "same-origin",
+  expects_opener: false,
+  expects_name: false
+},
+{
+  iframe_origin: CROSS_ORIGIN,
+  popup_origin: SAME_SITE,
+  popup_coop: "same-origin",
+  expects_opener: false,
+  expects_name: false
+},
+{
+  iframe_origin: SAME_ORIGIN,
+  popup_origin: CROSS_ORIGIN,
+  popup_coop: "same-origin",
+  expects_opener: false,
+  expects_name: false
+},
+{
+  iframe_origin: SAME_SITE,
+  popup_origin: CROSS_ORIGIN,
+  popup_coop: "same-origin",
+  expects_opener: false,
+  expects_name: false
+},
+{
+  iframe_origin: CROSS_ORIGIN,
+  popup_origin: CROSS_ORIGIN,
+  popup_coop: "same-origin",
+  expects_opener: false,
+  expects_name: false
+},
 ].forEach( value => {
-    run_coop_test_iframe("same-origin-allow-popups", value[0], value[1], value[2], value[3], value[4]);
+    run_coop_test_iframe("same-origin-allow-popups", value.iframe_origin, value.popup_origin,  value.popup_coop, value.expects_opener, value.expects_name);
 });
 
 

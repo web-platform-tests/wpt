@@ -86,6 +86,15 @@ class ManifestData(ManifestDataType):
                 rv.add(os.path.sep.join(item))
         return rv
 
+    def types(self):
+        # type: () -> Dict[Tuple[Text, ...], str]
+        rv = dict()
+        for item_type, item_data in iteritems(self):
+            for item in item_data:
+                rv[item] = item_type
+        return rv
+        
+
 
 class Manifest(object):
     def __init__(self, tests_root=None, url_base="/"):
@@ -144,18 +153,16 @@ class Manifest(object):
 
         # Create local variable references to these dicts so we avoid the
         # attribute access in the hot loop below
-        path_hash = self._path_hash  # type: Dict[Text, Tuple[Text, Text]]
         data = self._data
 
         prev_files = data.paths()  # type: Set[Text]
+        types = data.types()
 
         for source_file, update in tree:
             if not update:
                 assert isinstance(source_file, (binary_type, text_type))
                 rel_path = source_file  # type: Text
                 seen_files.add(rel_path)
-                assert rel_path in path_hash
-                old_hash, old_type = path_hash[rel_path]  # type: Tuple[Text, Text]
             else:
                 assert not isinstance(source_file, bytes)
                 rel_path = source_file.rel_path
@@ -165,18 +172,19 @@ class Manifest(object):
 
                 file_hash = source_file.hash  # type: Text
 
-                is_new = rel_path not in path_hash  # type: bool
+                is_new = rel_path not in prev_files  # type: bool
                 hash_changed = False  # type: bool
 
                 if not is_new:
-                    old_hash, old_type = path_hash[rel_path]
+                    old_type = types[rel_path_parts]
+                    old_hash = data[old_type].hashes[rel_path_parts]
                     if old_hash != file_hash:
                         hash_changed = True
 
                 if is_new or hash_changed:
                     new_type, manifest_items = source_file.manifest_items()
                     data[new_type][rel_path_parts] = set(manifest_items)
-                    path_hash[rel_path] = (file_hash, new_type)
+                    data[new_type].hashes[rel_path_parts] = file_hash
                     if hash_changed and new_type != old_type:
                         del data[old_type][rel_path_parts]
                     changed = True
@@ -185,15 +193,10 @@ class Manifest(object):
         if deleted:
             changed = True
             for rel_path in deleted:
-                if rel_path in path_hash:
-                    _, old_type = path_hash[rel_path]
-                    del path_hash[rel_path]
-                    del data[old_type][tuple(rel_path.split(u"/"))]
-                else:
-                    assert False, "unreachable"
-                    for test_data in itervalues(data):
-                        if rel_path_parts in test_data:
-                            del test_data[rel_path_parts]
+                rel_path_parts = tuple(rel_path.split(os.path.sep))
+                for test_data in itervalues(data):
+                    if rel_path_parts in test_data:
+                        del test_data[rel_path_parts]
 
         return changed
 

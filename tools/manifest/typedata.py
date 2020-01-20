@@ -25,8 +25,10 @@ if MYPY:
 
 if MYPY:
     TypeDataType = MutableMapping[Tuple[Text, ...], Set[item.ManifestItem]]
+    PathHashType = MutableMapping[Tuple[Text, ...], Text]
 else:
     TypeDataType = MutableMapping
+    PathHashType = MutableMapping
 
 
 class TypeData(TypeDataType):
@@ -46,6 +48,8 @@ class TypeData(TypeDataType):
         self._type_cls = type_cls  # type: Type[item.ManifestItem]
         self._json_data = {}  # type: Dict[Text, Any]
         self._data = {}  # type: Dict[Text, Any]
+        self._hashes = {}  # type: Dict[Tuple[Text, ...], Text]
+        self.hashes = PathHash(self)
 
     def _delete_node(self, data, key):
         # type: (Dict[Text, Any], Tuple[Text, ...]) -> None
@@ -96,9 +100,11 @@ class TypeData(TypeDataType):
         if not isinstance(node, list):
             raise KeyError(key)
 
+        self._hashes[key] = node[0]
+        
         data = set()
         path = "/".join(key)
-        for test in node:
+        for test in node[1:]:
             manifest_item = self._type_cls.from_json(self._manifest, path, test)
             data.add(manifest_item)
 
@@ -134,6 +140,11 @@ class TypeData(TypeDataType):
             self._delete_node(self._data, key)
         except KeyError:
             self._delete_node(self._json_data, key)
+        else:
+            try:
+                del self._hashes[key]
+            except KeyError:
+                pass
 
     def __iter__(self):
         # type: () -> Iterator[Tuple[Text, ...]]
@@ -219,6 +230,7 @@ class TypeData(TypeDataType):
         # much, much simpler/quicker than that defined in MutableMapping
         self._json_data.clear()
         self._data.clear()
+        self._hashes.clear()
 
     def set_json(self, json_data):
         # type: (Dict[Text, Any]) -> None
@@ -231,13 +243,73 @@ class TypeData(TypeDataType):
         # type: () -> Dict[Text, Any]
         json_rv = deepcopy(self._json_data)
 
-        stack = [(self._data, json_rv)]
+        stack = [(self._data, json_rv, tuple())]
         while stack:
-            data_node, json_node = stack.pop()
+            data_node, json_node, par_full_key = stack.pop()
             for k, v in iteritems(data_node):
+                full_key = par_full_key + (k,)
                 if isinstance(v, set):
-                    json_node[k] = [t for t in sorted(test.to_json() for test in v)]
+                    assert full_key in self._hashes
+                    json_node[k] = [self._hashes.get(full_key)] + [t for t in sorted(test.to_json() for test in v)]
                 else:
-                    stack.append((v, json_node.setdefault(k, {})))
+                    stack.append((v, json_node.setdefault(k, {}), full_key))
 
         return json_rv
+
+
+class PathHash(PathHashType):
+    def __init__(self, data):
+        # type: (TypeData) -> None
+        self._data = data
+
+    def __getitem__(self, k):
+        # type: (Tuple[Text, ...]) -> Text
+        if k not in self._data:
+            raise KeyError
+        
+        if k in self._data._hashes:
+            return self._data._hashes[k]
+
+        node = self._data._json_data
+        for pathseg in k:
+            if pathseg in node:
+                node = node[pathseg]
+            else:
+                break
+        else:
+            return node[0]  # type: ignore
+
+        assert False, "unreachable"
+        raise KeyError
+
+    def __setitem__(self, k, v):
+        # type: (Tuple[Text, ...], Text) -> None
+        if k not in self._data:
+            raise KeyError
+
+        if k in self._data._hashes:
+            self._data._hashes[k] = v
+
+        node = self._data._json_data
+        for pathseg in k:
+            if pathseg in node:
+                node = node[pathseg]
+            else:
+                break
+        else:
+            node[0] = v  # type: ignore
+            return
+
+        self._data._hashes[k] = v
+
+    def __delitem__(self, k):
+        # type: (Tuple[Text, ...]) -> None
+        raise ValueError("keys here must match underlying data")
+
+    def __iter__(self):
+        # type: () -> Iterator[Tuple[Text, ...]]
+        return iter(self._data)
+
+    def __len__(self):
+        # type: () -> int
+        return len(self._data)

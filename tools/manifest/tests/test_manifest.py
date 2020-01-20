@@ -219,9 +219,7 @@ def test_no_update_delete():
 
     test1 = s1.manifest_items()[1][0]
 
-    s1_1 = SourceFileWithTest("test1", "1"*40, item.ManualTest)
-
-    m.update([(s1_1.rel_path, False)])
+    m.update([(s1.rel_path, False)])
 
     assert list(m) == [("testharness", test1.path, {test1})]
 

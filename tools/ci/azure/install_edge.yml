@@ -7,7 +7,7 @@ steps:
 - ${{ if eq(parameters.channel, 'stable') }}:
   - powershell: |
       $edgeInstallerName = 'MicrosoftEdgeSetup.exe'
-      # Link to Canary channel installer
+      # Link to Stable channel installer
       Start-BitsTransfer -Source 'https://go.microsoft.com/fwlink/?linkid=2108834&Channel=Stable&language=en' -Destination MicrosoftEdgeSetup.exe
       if (-not (Test-Path $edgeInstallerName)) {
         Throw "Failed to download Edge installer to $edgeInstallerName."
@@ -16,7 +16,7 @@ steps:
       $edgePath = "$env:systemdrive\Program Files (x86)\Microsoft\Edge\Application"
       if (Test-Path $edgePath) {
         Write-Host "##vso[task.prependpath]$edgePath"
-        Write-Host "Edge Canary installed at $edgePath."
+        Write-Host "Edge Stable installed at $edgePath."
         (Get-Item -Path "$edgePath\msedge.exe").VersionInfo | Format-List
       } else {
         Copy-Item -Path "$env:temp\*edge*.log" -Destination $(Build.ArtifactStagingDirectory)  -Force

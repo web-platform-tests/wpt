@@ -155,27 +155,26 @@ class Manifest(object):
         # attribute access in the hot loop below
         data = self._data
 
-        prev_files = data.paths()  # type: Set[Text]
         types = data.types()
+        deleted = set(types)
 
         for source_file, update in tree:
             if not update:
                 assert isinstance(source_file, (binary_type, text_type))
-                rel_path = source_file  # type: Text
-                seen_files.add(rel_path)
+                deleted.remove(tuple(source_file.split(os.path.sep)))
             else:
                 assert not isinstance(source_file, bytes)
-                rel_path = source_file.rel_path
-                seen_files.add(rel_path)
+                rel_path = source_file.rel_path  # type: Text
                 rel_path_parts = source_file.rel_path_parts
                 assert isinstance(rel_path_parts, tuple)
 
                 file_hash = source_file.hash  # type: Text
 
-                is_new = rel_path not in prev_files  # type: bool
+                is_new = rel_path_parts not in deleted  # type: bool
                 hash_changed = False  # type: bool
 
                 if not is_new:
+                    deleted.remove(rel_path_parts)
                     old_type = types[rel_path_parts]
                     old_hash = data[old_type].hashes[rel_path_parts]
                     if old_hash != file_hash:
@@ -189,11 +188,9 @@ class Manifest(object):
                         del data[old_type][rel_path_parts]
                     changed = True
 
-        deleted = prev_files - seen_files
         if deleted:
             changed = True
-            for rel_path in deleted:
-                rel_path_parts = tuple(rel_path.split(os.path.sep))
+            for rel_path_parts in deleted:
                 for test_data in itervalues(data):
                     if rel_path_parts in test_data:
                         del test_data[rel_path_parts]

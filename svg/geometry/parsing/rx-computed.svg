@@ -1,21 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:h="http://www.w3.org/1999/xhtml"
-     width="800px" height="8000px">
-  <title>SVG Geometry Properties: getComputedStyle().rx</title>
-  <metadata>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/geometry.html#RX"/>
-  </metadata>
-  <g id="target"></g>
-  <style>
-    #target {
-      font-size: 40px;
-    }
-  </style>
-  <h:script src="/resources/testharness.js"/>
-  <h:script src="/resources/testharnessreport.js"/>
-  <h:script src="/css/support/computed-testcommon.js"/>
-  <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml" width="800" height="8000"><title>SVG Geometry Properties: getComputedStyle().rx</title><metadata><h:link href="https://svgwg.org/svg2-draft/geometry.html#RX" rel="help"/></metadata><style>#target{font-size:40px}</style><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><h:script src="/css/support/computed-testcommon.js"/><script><![CDATA[
 
 test_computed_value("rx", "auto");
 
@@ -26,5 +9,4 @@ test_computed_value("rx", "calc(10px - 0.5em)", "0px");
 test_computed_value("rx", "40%");
 test_computed_value("rx", "calc(50% + 60px)");
 
-  ]]></script>
-</svg>
+  ]]></script></svg>

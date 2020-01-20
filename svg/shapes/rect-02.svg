@@ -1,9 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <metadata>
-    <link xmlns="http://www.w3.org/1999/xhtml" rel="author" title="Cameron McCormack" href="mailto:cam@mcc.id.au"/>
-    <link xmlns="http://www.w3.org/1999/xhtml" rel="help" href="http://www.w3.org/TR/SVG2/shapes.html#RectElement"/>
-    <link xmlns="http://www.w3.org/1999/xhtml" rel="match" href="rect-02-ref.html"/>
-    <meta xmlns="http://www.w3.org/1999/xhtml" name="assert" content="rect element with stroke renders correctly."/>
-  </metadata>
-  <rect x="10" y="10" width="50" height="50" fill="none" stroke="blue" stroke-width="4"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg"><metadata><link xmlns="http://www.w3.org/1999/xhtml" href="mailto:cam@mcc.id.au" rel="author" title="Cameron McCormack"/><link xmlns="http://www.w3.org/1999/xhtml" href="http://www.w3.org/TR/SVG2/shapes.html#RectElement" rel="help"/><link xmlns="http://www.w3.org/1999/xhtml" href="rect-02-ref.html" rel="match"/><meta xmlns="http://www.w3.org/1999/xhtml" content="rect element with stroke renders correctly." name="assert"/></metadata><rect width="50" height="50" x="10" y="10" fill="none" stroke="#00f" stroke-width="4"/></svg>

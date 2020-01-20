@@ -1,14 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:h="http://www.w3.org/1999/xhtml">
-    <title>Autofocus attribute</title>
-    <metadata>
-        <h:link rel="help" href="https://svgwg.org/svg2-draft/struct.html#autofocusattribute"/>
-    </metadata>
-    <h:script src="/resources/testharness.js"/>
-    <h:script src="/resources/testharnessreport.js"/>
-    <h:script src="/html/interaction/focus/the-autofocus-attribute/resources/utils.js"/>
-    <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml"><title>Autofocus attribute</title><metadata><h:link href="https://svgwg.org/svg2-draft/struct.html#autofocusattribute" rel="help"/></metadata><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><h:script src="/html/interaction/focus/the-autofocus-attribute/resources/utils.js"/><script><![CDATA[
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 promise_test(async t => {
@@ -50,5 +40,4 @@ promise_test(async t => {
   //    element.
   assert_equals(w.document.activeElement.tagName, 'svg');
 }, 'Never-rendered element with tabindex should not support autofocus');
-]]></script>
-</svg>
+]]></script></svg>

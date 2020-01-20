@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs>
-	<clipPath id="clip-path-ref-userSpaceOnUse-001">
-		<rect x="50" y="50" width="150px" height="100" />
-	</clipPath>
-</defs>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><clipPath id="clip-path-ref-userSpaceOnUse-001"><rect width="150" height="100" x="50" y="50"/></clipPath></defs></svg>

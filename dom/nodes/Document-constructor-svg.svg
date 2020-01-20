@@ -1,12 +1,4 @@
-<?xml version="1.0" encoding="windows-1252"?>
-<!-- Using windows-1252 to ensure that new Document() doesn't inherit utf-8
-     from the parent document. -->
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml"
-  width="100%" height="100%" viewBox="0 0 800 600">
-<title>Document constructor</title>
-<html:script src="/resources/testharness.js"></html:script>
-<html:script src="/resources/testharnessreport.js"></html:script>
-<html:script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml" width="100%" height="100%" viewBox="0 0 800 600"><title>Document constructor</title><html:script src="/resources/testharness.js"/><html:script src="/resources/testharnessreport.js"/><html:script><![CDATA[
 test(function() {
   var doc = new Document();
   assert_true(doc instanceof Node, "Should be a Node");
@@ -42,6 +34,4 @@ test(function() {
   assert_equals(doc.charset, "UTF-8", "charset");
   assert_equals(doc.inputEncoding, "UTF-8", "inputEncoding");
 }, "new Document(): characterSet aliases")
-]]></html:script>
-</svg>
-
+]]></html:script></svg>

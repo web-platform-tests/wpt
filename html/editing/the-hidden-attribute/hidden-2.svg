@@ -1,12 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20">
-<metadata>
-  <link xmlns="http://www.w3.org/1999/xhtml" rel="match" href="hidden-2-ref.svg" />
-  <link xmlns="http://www.w3.org/1999/xhtml" rel="author" title="Ms2ger"
-        href="mailto:Ms2ger@gmail.com"/>
-  <link xmlns="http://www.w3.org/1999/xhtml" rel="help"
-        href="https://html.spec.whatwg.org/multipage/#the-hidden-attribute"/>
-  <link xmlns="http://www.w3.org/1999/xhtml" rel="help"
-        href="https://html.spec.whatwg.org/multipage/#hidden-elements"/>
-</metadata>
-<rect hidden="" height="20" width="20"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><metadata><link xmlns="http://www.w3.org/1999/xhtml" href="hidden-2-ref.svg" rel="match"/><link xmlns="http://www.w3.org/1999/xhtml" href="mailto:Ms2ger@gmail.com" rel="author" title="Ms2ger"/><link xmlns="http://www.w3.org/1999/xhtml" href="https://html.spec.whatwg.org/multipage/#the-hidden-attribute" rel="help"/><link xmlns="http://www.w3.org/1999/xhtml" href="https://html.spec.whatwg.org/multipage/#hidden-elements" rel="help"/></metadata><rect width="20" height="20"/></svg>

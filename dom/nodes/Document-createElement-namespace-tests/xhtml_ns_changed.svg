@@ -1,7 +1,1 @@
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head><script>
-    var newRoot = document.createElementNS("http://www.w3.org/2000/svg", "abc");
-    document.removeChild(document.documentElement);
-    document.appendChild(newRoot);
-  </script></head>
-</html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><script>var newRoot = document.createElementNS(&quot;http://www.w3.org/2000/svg&quot;, &quot;abc&quot;); document.removeChild(document.documentElement); document.appendChild(newRoot);</script></head></html>

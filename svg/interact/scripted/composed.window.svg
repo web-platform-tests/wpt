@@ -1,14 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:h="http://www.w3.org/1999/xhtml">
-    <title>Focus events are composed</title>
-    <metadata>
-        <h:link rel="help" href="https://svgwg.org/svg2-draft/interact.html#Focus"/>
-    </metadata>
-    <a id="a1" href="#"></a>
-    <h:script src="/resources/testharness.js"/>
-    <h:script src="/resources/testharnessreport.js"/>
-    <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml"><title>Focus events are composed</title><metadata><h:link href="https://svgwg.org/svg2-draft/interact.html#Focus" rel="help"/></metadata><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><script><![CDATA[
     async_test(t => {
         const anchor = document.getElementById("a1");
         let happened = false;
@@ -25,5 +15,4 @@
         });
         anchor.blur();
     }, "Focus events are composed");
-    ]]></script>
-</svg>
+    ]]></script></svg>

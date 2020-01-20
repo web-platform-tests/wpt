@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <!-- pattern inherits fill color via currentcolor -->
-  <circle stroke="black" fill="limegreen" cx="50" cy="50" r="40" />
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#32cd32" stroke="#000"/></svg>

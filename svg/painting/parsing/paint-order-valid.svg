@@ -1,18 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:h="http://www.w3.org/1999/xhtml"
-     width="800px" height="800px">
-  <title>SVG Painting: parsing paint-order with valid values</title>
-  <metadata>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/painting.html#PaintOrderProperty"/>
-    <h:meta name="assert" content="paint-order supports the full grammar 'normal | [ fill || stroke || markers ]'."/>
-    <h:meta name="assert" content="paint-order uses the shortest serialization."/>
-  </metadata>
-  <g id="target"></g>
-  <h:script src="/resources/testharness.js"/>
-  <h:script src="/resources/testharnessreport.js"/>
-  <h:script src="/css/support/parsing-testcommon.js"/>
-  <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml" width="800" height="800"><title>SVG Painting: parsing paint-order with valid values</title><metadata><h:link href="https://svgwg.org/svg2-draft/painting.html#PaintOrderProperty" rel="help"/><h:meta content="paint-order supports the full grammar 'normal | [ fill || stroke || markers ]'." name="assert"/><h:meta content="paint-order uses the shortest serialization." name="assert"/></metadata><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><h:script src="/css/support/parsing-testcommon.js"/><script><![CDATA[
 
 test_valid_value("paint-order", "normal");
 
@@ -34,5 +20,4 @@ test_valid_value("paint-order", "stroke markers fill", "stroke markers");
 test_valid_value("paint-order", "markers fill stroke", "markers");
 test_valid_value("paint-order", "markers stroke fill", "markers stroke");
 
-  ]]></script>
-</svg>
+  ]]></script></svg>

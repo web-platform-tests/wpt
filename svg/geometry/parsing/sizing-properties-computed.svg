@@ -1,23 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:h="http://www.w3.org/1999/xhtml"
-     width="800px" height="800px">
-  <title>SVG Geometry Properties: getComputedStyle().width</title>
-  <metadata>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/geometry.html#Sizing"/>
-    <h:link rel="help" href="https://drafts.csswg.org/css-sizing-3/#preferred-size-properties"/>
-    <h:link rel="help" href="https://drafts.csswg.org/cssom/#resolved-values"/>
-  </metadata>
-  <rect id="target"></rect>
-  <style>
-    #target {
-      font-size: 40px;
-    }
-  </style>
-  <h:script src="/resources/testharness.js"/>
-  <h:script src="/resources/testharnessreport.js"/>
-  <h:script src="/css/support/computed-testcommon.js"/>
-  <script><![CDATA[
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml" width="800" height="800"><title>SVG Geometry Properties: getComputedStyle().width</title><metadata><h:link href="https://svgwg.org/svg2-draft/geometry.html#Sizing" rel="help"/><h:link href="https://drafts.csswg.org/css-sizing-3/#preferred-size-properties" rel="help"/><h:link href="https://drafts.csswg.org/cssom/#resolved-values" rel="help"/></metadata><rect id="target"/><style>#target{font-size:40px}</style><h:script src="/resources/testharness.js"/><h:script src="/resources/testharnessreport.js"/><h:script src="/css/support/computed-testcommon.js"/><script><![CDATA[
 
 test_computed_value("width", "10px");
 test_computed_value("width", "0.5em", "20px");
@@ -51,6 +32,4 @@ test(() => {
   target.style.display = '';
 }, "resolved value is computed value when display is contents");
 
-  ]]></script>
-}
-</svg>
+  ]]></script>}</svg>

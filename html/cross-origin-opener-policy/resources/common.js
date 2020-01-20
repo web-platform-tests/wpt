@@ -21,7 +21,6 @@ function url_test(t, url, channelName, hasOpener, openerDOMAccess) {
   // The window proxy might be closed hence use the broadcast channel
   // to trigger the closure.
   t.add_cleanup(() => {
-    bc.onmessage = null;
     bc.postMessage( "close" );
   });
 }
@@ -54,7 +53,6 @@ function run_coop_test_iframe (documentTitle, iframe_origin, popup_origin, popup
       // broadcast channel to trigger the closure.
       t.add_cleanup(() => {
         frame.remove();
-        bc.onmessage = null;
         bc.postMessage( "close" );
       });
 

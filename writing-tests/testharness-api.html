@@ -180,8 +180,12 @@ test fails if the returned promise rejects.</p>
 <p>In the example above, <code class="docutils literal notranslate"><span class="pre">foo()</span></code> returns a Promise that resolves with the string
 “foo”. The <code class="docutils literal notranslate"><span class="pre">test_function</span></code> passed into <code class="docutils literal notranslate"><span class="pre">promise_test</span></code> invokes <code class="docutils literal notranslate"><span class="pre">foo</span></code> and attaches
 a resolve reaction that verifies the returned value.</p>
-<p>Note that in the promise chain constructed in <code class="docutils literal notranslate"><span class="pre">test_function</span></code> assertions don’t
-need to be wrapped in <code class="docutils literal notranslate"><span class="pre">step</span></code> or <code class="docutils literal notranslate"><span class="pre">step_func</span></code> calls.</p>
+<p>Note that in the promise chain constructed in <code class="docutils literal notranslate"><span class="pre">test_function</span></code>
+assertions don’t need to be wrapped in <code class="docutils literal notranslate"><span class="pre">step</span></code> or <code class="docutils literal notranslate"><span class="pre">step_func</span></code>
+calls. However when mixing event handlers and <code class="docutils literal notranslate"><span class="pre">promise_test</span></code>, the
+event handler callback functions <em>do</em> need to be wrapped since an
+exception in these functions does not cause the promise chain to
+reject.</p>
 <p>Unlike Asynchronous Tests, Promise Tests don’t start running until after the
 previous Promise Test finishes. <a class="reference external" href="https://github.com/web-platform-tests/wpt/pull/17924">Under rare
 circumstances</a>, the next

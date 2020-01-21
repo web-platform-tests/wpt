@@ -194,16 +194,24 @@ class Manifest(object):
         if to_update:
             changed = True
 
+        def popping_iter(l):
+            while True:
+                try:
+                    yield l.pop()
+                except IndexError:
+                    break
+
         if len(to_update) > 25:
             pool = Pool()
             results = pool.imap_unordered(compute_manifest_items,
-                                          to_update,
+                                          popping_iter(to_update),
                                           chunksize=max(1, len(to_update) // 10000)
                                           )  # type: Iterator[Tuple[Tuple[unicode, ...], Text, Set[ManifestItem], Text]]
-        elif PY3:
-            results = map(compute_manifest_items, to_update)
         else:
-            results = itertools.imap(compute_manifest_items, to_update)
+            if PY3:
+                results = map(compute_manifest_items, popping_iter(to_update))
+            else:
+                results = itertools.imap(compute_manifest_items, popping_iter(to_update))
 
         for result in results:
             rel_path_parts, new_type, manifest_items, file_hash = result

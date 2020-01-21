@@ -789,6 +789,8 @@ class SourceFile(object):
         if self.items_cache:
             return self.items_cache
 
+        drop_cached = "root" not in self.__dict__
+
         if self.name_is_non_test:
             rv = "support", [
                 SupportFile(
@@ -960,5 +962,12 @@ class SourceFile(object):
         assert len(rv[1]) == len(set(rv[1]))
 
         self.items_cache = rv
+
+        if drop_cached and "__cached_properties__" in self.__dict__:
+            cached_properties = self.__dict__["__cached_properties__"]
+            for key in cached_properties:
+                if key in self.__dict__:
+                    del self.__dict__[key]
+            del self.__dict__["__cached_properties__"]
 
         return rv

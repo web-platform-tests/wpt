@@ -1,6 +1,9 @@
 parameters:
   directory: ''
   toxenv: 'ALL'
+  
+variables:
+  HYPOTHESIS_PROFILE: ci
 
 steps:
 - template: pip_install.yml
@@ -9,8 +12,6 @@ steps:
 
 - script: tox -c ${{ parameters.directory }} -e ${{ parameters.toxenv }} -- --junitxml=results.xml
   displayName: 'Run tests'
-  variables:
-    HYPOTHESIS_PROFILE: ci
 
 - task: PublishTestResults@2
   inputs:

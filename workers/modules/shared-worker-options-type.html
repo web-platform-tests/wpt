@@ -12,36 +12,36 @@ promise_test(() => {
 
 promise_test(() => {
   const worker = new SharedWorker('resources/post-message-on-load-worker.js',
-                                  { type: 'classic' });
+                            { type: 'classic' });
   return new Promise(resolve => worker.port.onmessage = resolve)
       .then(msg_event => assert_equals(msg_event.data, 'LOADED'));
 }, 'Test worker construction with the "classic" worker type.');
 
 promise_test(() => {
   const worker = new SharedWorker('resources/post-message-on-load-worker.js',
-                                  { type: 'module' });
+                            { type: 'module' });
   return new Promise(resolve => worker.port.onmessage = resolve)
       .then(msg_event => assert_equals(msg_event.data, 'LOADED'));
 }, 'Test worker construction with the "module" worker type.');
 
 test(() => {
-  assert_throws(
-      new TypeError(),
-      () => {
-        new SharedWorker('resources/post-message-on-load-worker.js',
-                         {type : ''});
-      },
-      'Worker construction with an empty type should throw an exception');
+  try {
+    new SharedWorker('resources/post-message-on-load-worker.js', { type: '' });
+    assert_unreached(
+        'Worker construction with an empty type should throw an exception');
+  } catch (e) {
+    assert_equals(e.name, 'TypeError');
+  }
 }, 'Test worker construction with an empty worker type.');
 
 test(() => {
-  assert_throws(
-      new TypeError(),
-      () => {
-        new SharedWorker('resources/post-message-on-load-worker.js',
-                         {type : 'unknown'});
-      },
-      'Worker construction with an unknown type should throw an exception');
+  try {
+    new SharedWorker('resources/post-message-on-load-worker.js', { type: 'unknown' });
+    assert_unreached(
+        'Worker construction with an unknown type should throw an exception');
+  } catch (e) {
+    assert_equals(e.name, 'TypeError');
+  }
 }, 'Test worker construction with an unknown worker type.');
 
 </script>

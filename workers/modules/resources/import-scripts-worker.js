@@ -3,8 +3,7 @@ try {
   if ('DedicatedWorkerGlobalScope' in self &&
       self instanceof DedicatedWorkerGlobalScope) {
     postMessage('LOADED');
-  } else if (
-      'SharedWorkerGlobalScope' in self &&
+  } else if ('SharedWorkerGlobalScope' in self &&
       self instanceof SharedWorkerGlobalScope) {
     onconnect = e => {
       e.ports[0].postMessage('LOADED');
@@ -23,11 +22,10 @@ try {
   if ('DedicatedWorkerGlobalScope' in self &&
       self instanceof DedicatedWorkerGlobalScope) {
     postMessage(e.name);
-  } else if (
-      'SharedWorkerGlobalScope' in self &&
+  } else if ('SharedWorkerGlobalScope' in self &&
       self instanceof SharedWorkerGlobalScope) {
-    onconnect = connectEvent => {
-      connectEvent.ports[0].postMessage(e.name);
+    onconnect = ee => {
+      ee.ports[0].postMessage(e.name);
     };
   }
 }

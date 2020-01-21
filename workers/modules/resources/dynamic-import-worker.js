@@ -6,14 +6,12 @@ const sourcePromise = new Promise(resolve => {
     self.onmessage = e => {
       resolve(e.target);
     };
-  } else if (
-      'SharedWorkerGlobalScope' in self &&
+  } else if ('SharedWorkerGlobalScope' in self &&
       self instanceof SharedWorkerGlobalScope) {
     self.onconnect = e => {
       resolve(e.ports[0]);
     };
-  } else if (
-      'ServiceWorkerGlobalScope' in self &&
+  } else if ('ServiceWorkerGlobalScope' in self &&
       self instanceof ServiceWorkerGlobalScope) {
     self.onmessage = e => {
       resolve(e.source);

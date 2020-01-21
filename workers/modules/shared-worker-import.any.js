@@ -6,7 +6,7 @@
 // |testCase.expectation|.
 function import_test(testCase) {
   promise_test(async () => {
-    const worker = new SharedWorker(testCase.scriptURL, {type: 'module'});
+    const worker = new SharedWorker(testCase.scriptURL, { type: 'module' });
     worker.port.postMessage('Send message for tests from main script.');
     const msgEvent = await new Promise((resolve, reject) => {
       worker.port.onmessage = resolve;

@@ -22,9 +22,9 @@ const w = window.open("${get_host_info().HTTPS_REMOTE_ORIGIN}/html/cross-origin-
 window.opener.furtherPopup = w;
 
 // Close the popup once the test is complete.
-// The window proxy is closed hence use the broadcast channel to trigger the closure.
+// The browsing context is closed hence use the broadcast channel to trigger the closure.
 window.opener.test.add_cleanup(() => {
-  bc.postMessage( "close" );
+  bc.postMessage("close");
 });
 <\/script>`;
   const blob = new Blob([blobContents], { type: "text/html" });

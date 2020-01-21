@@ -13,10 +13,10 @@ async_test(t => {
   const popupName = token();
   const popup = window.open(noCOOP, popupName);
   // Close the popup once the test is complete.
-  // The window proxy is closed after the navigation hence use the broadcast channel
+  // The browsing context is closed after the navigation hence use the broadcast channel
   // to trigger the closure.
   t.add_cleanup(() => {
-    bc.postMessage( "close" );
+    bc.postMessage("close");
   });
   popup.onload = t.step_func(() => {
     assert_equals(popup.name, popupName);

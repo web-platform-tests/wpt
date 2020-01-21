@@ -12,16 +12,16 @@ function url_test(t, url, channelName, hasOpener, openerDOMAccess) {
     if (openerDOMAccess !== undefined) {
       assert_equals(payload.openerDOMAccess, openerDOMAccess, 'openerDOMAccess');
     }
-    assert_equals(w.closed, !hasOpener, 'Openee window proxy closed');
+    assert_equals(w.closed, !hasOpener, 'Openee browsing context closed');
   });
 
   const w = window.open(url, channelName);
 
   // Close the popup once the test is complete.
-  // The window proxy might be closed hence use the broadcast channel
+  // The browsing context might be closed hence use the broadcast channel
   // to trigger the closure.
   t.add_cleanup(() => {
-    bc.postMessage( "close" );
+    bc.postMessage("close");
   });
 }
 
@@ -49,11 +49,11 @@ function run_coop_test_iframe (documentTitle, iframe_origin, popup_origin, popup
       const frame = document.createElement("iframe");
 
       // Close the popup and remove the frame once the test is
-      // complete. The window proxy might be closed hence use the
+      // complete. The browsing context might be closed hence use the
       // broadcast channel to trigger the closure.
       t.add_cleanup(() => {
         frame.remove();
-        bc.postMessage( "close" );
+        bc.postMessage("close");
       });
 
       const origin = CROSS_ORIGIN.origin;

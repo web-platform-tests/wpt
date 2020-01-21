@@ -53,7 +53,7 @@ def main(request, response):
     // Handle the response from the frame, closing the popup once the
     // test completes.
     addEventListener("message", event => {
-      if( event.data == "close" ) {
+      if (event.data == "close") {
         close();
       }
     });

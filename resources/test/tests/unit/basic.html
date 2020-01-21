@@ -38,7 +38,7 @@
         try {
             let i = new IdlArray();
             i.add_untested_idls(`interface C {};`);
-            i.assert_throws('Anything', i => i.test());
+            i.assert_throws_dom('Anything', i => i.test());
         } catch (e) {
             assert_true(e instanceof IdlHarnessError);
         }

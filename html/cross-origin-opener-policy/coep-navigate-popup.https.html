@@ -1,11 +1,12 @@
 <!doctype html>
 <title>Cross-Origin-Opener-Policy and Cross-Origin-Embedder-Policy: a navigating popup</title>
 <meta name=timeout content=long>
-<meta name=variant content=?0,1>
-<meta name=variant content=?2,3>
-<meta name=variant content=?4,5>
+<meta name=variant content=?0-1>
+<meta name=variant content=?2-3>
+<meta name=variant content=?4-last>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script src="/common/subset-tests.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="resources/common.js"></script>
 <script>
@@ -49,7 +50,7 @@
 ].forEach((variant, i) => {
   ["same-origin", "same-site"].forEach(site => {
     // Only run specified variants
-    if (!window.location.search.substr(1).split(",").includes(i.toString())) {
+    if (!shouldRunSubTest(i)) {
       return;
     }
 

@@ -48,13 +48,12 @@
     "opener": false
   }
 ].forEach((variant, i) => {
-  ["same-origin", "same-site"].forEach(site => {
-    // Only run specified variants
-    if (!shouldRunSubTest(i)) {
-      return;
-    }
+  // Only run specified variants
+  if (!shouldRunSubTest(i)) {
+    return;
+  }
 
-    // Test setup and test
+  ["same-origin", "same-site"].forEach(site => {
     const title = `Popup navigating to ${site} with ${variant.title}`;
     const channel = title.replace(/ /g,"-");
     const navigateHost = site === "same-origin" ? SAME_ORIGIN : SAME_SITE;

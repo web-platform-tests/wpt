@@ -142,13 +142,11 @@ def test_manifest_to_json_forwardslash():
     assert m.update([(s, True)]) is True
 
     assert m.to_json() == {
-        'paths': {
-            'a/b': ('0000000000000000000000000000000000000000', 'testharness')
-        },
         'version': 8,
         'url_base': '/',
         'items': {
             'testharness': {'a': {'b': [
+                '0000000000000000000000000000000000000000',
                 (None, {})
             ]}},
         }
@@ -257,9 +255,10 @@ def test_update_from_json_modified():
     m.update([(s2, True)])
     json_str = m.to_json()
     assert json_str == {
-        'items': {'testharness': {'test1': [(None, {'timeout': 'long'})]}},
-        'paths': {'test1': ('1111111111111111111111111111111111111111',
-                            'testharness')},
+        'items': {'testharness': {'test1': [
+            "1"*40,
+            (None, {'timeout': 'long'})
+        ]}},
         'url_base': '/',
         'version': 8
     }

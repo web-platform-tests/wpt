@@ -100,7 +100,6 @@ class Manifest(object):
     def __init__(self, tests_root=None, url_base="/"):
         # type: (Optional[str], Text) -> None
         assert url_base is not None
-        self._path_hash = {}  # type: Dict[Text, Tuple[Text, Text]]
         self._data = ManifestData(self)  # type: ManifestData
         self.tests_root = tests_root  # type: Optional[str]
         self.url_base = url_base  # type: Text
@@ -203,7 +202,6 @@ class Manifest(object):
             for test_type, type_paths in iteritems(self._data) if type_paths
         }
         rv = {"url_base": self.url_base,
-              "paths": {from_os_path(k): v for k, v in iteritems(self._path_hash)},
               "items": out_items,
               "version": CURRENT_VERSION}  # type: Dict[Text, Any]
         return rv
@@ -216,10 +214,8 @@ class Manifest(object):
             raise ManifestVersionMismatch
 
         self = cls(tests_root, url_base=obj.get("url_base", "/"))
-        if not hasattr(obj, "items") and hasattr(obj, "paths"):
+        if not hasattr(obj, "items"):
             raise ManifestError
-
-        self._path_hash = {to_os_path(k): v for k, v in iteritems(obj["paths"])}
 
         for test_type, type_paths in iteritems(obj["items"]):
             if test_type not in item_classes:

@@ -243,7 +243,7 @@ class TypeData(TypeDataType):
         # type: () -> Dict[Text, Any]
         json_rv = deepcopy(self._json_data)
 
-        stack = [(self._data, json_rv, tuple())]
+        stack = [(self._data, json_rv, tuple())]  # type: List[Tuple[Dict[Text, Any], Dict[Text, Any], Tuple[Text, ...]]]
         while stack:
             data_node, json_node, par_full_key = stack.pop()
             for k, v in iteritems(data_node):

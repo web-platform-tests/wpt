@@ -1,6 +1,8 @@
+import itertools
 import json
 import os
-from six import iteritems, itervalues, string_types, binary_type, text_type
+from multiprocessing import Pool
+from six import PY3, iteritems, itervalues, string_types, binary_type, text_type
 
 from . import vcs
 from .item import (ConformanceCheckerTest, ManifestItem, ManualTest, RefTest, SupportFile,
@@ -53,6 +55,13 @@ item_classes = {"testharness": TestharnessTest,
                 "visual": VisualTest,
                 "support": SupportFile}  # type: Dict[str, Type[ManifestItem]]
 
+
+def compute_manifest_items(source_file):
+    # type: (SourceFile) -> Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]
+    rel_path_parts = source_file.rel_path_parts
+    new_type, manifest_items = source_file.manifest_items()
+    file_hash = source_file.hash
+    return rel_path_parts, new_type, set(manifest_items), file_hash
 
 if MYPY:
     ManifestDataType = Dict[Any, TypeData]
@@ -156,17 +165,16 @@ class Manifest(object):
         types = data.types()
         deleted = set(types)
 
+        to_update = []
+
         for source_file, update in tree:
             if not update:
                 assert isinstance(source_file, (binary_type, text_type))
                 deleted.remove(tuple(source_file.split(os.path.sep)))
             else:
                 assert not isinstance(source_file, bytes)
-                rel_path = source_file.rel_path  # type: Text
                 rel_path_parts = source_file.rel_path_parts
                 assert isinstance(rel_path_parts, tuple)
-
-                file_hash = source_file.hash  # type: Text
 
                 is_new = rel_path_parts not in deleted  # type: bool
                 hash_changed = False  # type: bool
@@ -175,16 +183,32 @@ class Manifest(object):
                     deleted.remove(rel_path_parts)
                     old_type = types[rel_path_parts]
                     old_hash = data[old_type].hashes[rel_path_parts]
+                    file_hash = source_file.hash  # type: Text
                     if old_hash != file_hash:
                         hash_changed = True
+                        del data[old_type][rel_path_parts]
 
                 if is_new or hash_changed:
-                    new_type, manifest_items = source_file.manifest_items()
-                    data[new_type][rel_path_parts] = set(manifest_items)
-                    data[new_type].hashes[rel_path_parts] = file_hash
-                    if hash_changed and new_type != old_type:
-                        del data[old_type][rel_path_parts]
-                    changed = True
+                    to_update.append(source_file)
+
+        if to_update:
+            changed = True
+
+        if len(to_update) > 25:
+            pool = Pool()
+            results = pool.imap_unordered(compute_manifest_items,
+                                          to_update,
+                                          chunksize=max(1, len(to_update) // 10000)
+                                          )  # type: Iterator[Tuple[Tuple[unicode, ...], Text, Set[ManifestItem], Text]]
+        elif PY3:
+            results = map(compute_manifest_items, to_update)
+        else:
+            results = itertools.imap(compute_manifest_items, to_update)
+
+        for result in results:
+            rel_path_parts, new_type, manifest_items, file_hash = result
+            data[new_type][rel_path_parts] = manifest_items
+            data[new_type].hashes[rel_path_parts] = file_hash
 
         if deleted:
             changed = True

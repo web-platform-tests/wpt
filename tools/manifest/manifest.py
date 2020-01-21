@@ -10,7 +10,6 @@ from .item import (ConformanceCheckerTest, ManifestItem, ManualTest, RefTest, Su
 from .log import get_logger
 from .sourcefile import SourceFile
 from .typedata import TypeData
-from .utils import from_os_path, to_os_path
 
 MYPY = False
 if MYPY:

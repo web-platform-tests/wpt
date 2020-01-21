@@ -2,9 +2,6 @@ parameters:
   directory: ''
   toxenv: 'ALL'
   
-variables:
-  HYPOTHESIS_PROFILE: ci
-
 steps:
 - template: pip_install.yml
   parameters:

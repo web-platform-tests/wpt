@@ -1,7 +1,7 @@
 import itertools
 import json
 import os
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 from six import PY3, iteritems, itervalues, string_types, binary_type, text_type
 
 from . import vcs
@@ -194,7 +194,7 @@ class Manifest(object):
         if to_update:
             changed = True
 
-        if len(to_update) > 25:
+        if len(to_update) > 25 and cpu_count() > 1:
             pool = Pool()
             results = pool.imap_unordered(compute_manifest_items,
                                           to_update,

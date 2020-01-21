@@ -101,7 +101,7 @@ class TypeData(TypeDataType):
             raise KeyError(key)
 
         self._hashes[key] = node[0]
-        
+
         data = set()
         path = "/".join(key)
         for test in node[1:]:
@@ -266,7 +266,7 @@ class PathHash(PathHashType):
         # type: (Tuple[Text, ...]) -> Text
         if k not in self._data:
             raise KeyError
-        
+
         if k in self._data._hashes:
             return self._data._hashes[k]
 

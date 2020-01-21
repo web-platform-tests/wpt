@@ -93,7 +93,7 @@ class ManifestData(ManifestDataType):
             for item in item_data:
                 rv[item] = item_type
         return rv
-        
+
 
 
 class Manifest(object):
@@ -147,7 +147,6 @@ class Manifest(object):
         unusual API is designed as an optimistaion meaning that SourceFile items need not be
         constructed in the case we are not updating a path, but the absence of an item from
         the iterator may be used to remove defunct entries from the manifest."""
-        seen_files = set()  # type: Set[Text]
 
         changed = False
 

@@ -1,5 +1,4 @@
 import os.path
-from copy import copy
 from inspect import isabstract
 from six import iteritems, with_metaclass
 from six.moves.urllib.parse import urljoin, urlparse

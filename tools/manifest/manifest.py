@@ -119,7 +119,7 @@ class Manifest(object):
     def itertypes(self, *types):
         # type: (*str) -> Iterator[Tuple[str, Text, Set[ManifestItem]]]
         for item_type in (types or sorted(self._data.keys())):
-            for path in sorted(self._data[item_type]):
+            for path in self._data[item_type]:
                 str_path = os.sep.join(path)
                 tests = self._data[item_type][path]
                 yield item_type, str_path, tests

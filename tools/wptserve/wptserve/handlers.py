@@ -96,14 +96,14 @@ class DirectoryHandler(object):
             yield ("""<li class="dir"><a href="%(link)s">%(name)s</a></li>""" %
                    {"link": link, "name": ".."})
         items = []
-        last_item = None
+        prev_item = None
         for item in sorted(os.listdir(path)):
-            if last_item and last_item + ".headers" == item:
+            if prev_item and prev_item + ".headers" == item:
                 items[-1][1] = item
-                last_item = None
+                prev_item = None
                 continue
             items.append([item, None])
-            last_item = item
+            prev_item = item
         for item, dot_headers in items:
             link = html.escape(quote(item))
             dot_headers_markup = ""

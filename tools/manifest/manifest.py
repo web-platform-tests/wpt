@@ -1,6 +1,7 @@
 import itertools
 import json
 import os
+from copy import deepcopy
 from multiprocessing import Pool, cpu_count
 from six import PY3, iteritems, itervalues, string_types, binary_type, text_type
 
@@ -219,20 +220,24 @@ class Manifest(object):
 
         return changed
 
-    def to_json(self):
-        # type: () -> Dict[Text, Any]
+    def to_json(self, super_dangerous_mode_do_not_use=False):
+        # type: (bool) -> Dict[Text, Any]
         out_items = {
             test_type: type_paths.to_json()
             for test_type, type_paths in iteritems(self._data) if type_paths
         }
+
+        if not super_dangerous_mode_do_not_use:
+            out_items = deepcopy(out_items)
+
         rv = {"url_base": self.url_base,
               "items": out_items,
               "version": CURRENT_VERSION}  # type: Dict[Text, Any]
         return rv
 
     @classmethod
-    def from_json(cls, tests_root, obj, types=None):
-        # type: (str, Dict[Text, Any], Optional[Container[Text]]) -> Manifest
+    def from_json(cls, tests_root, obj, types=None, callee_owns_obj=True):
+        # type: (str, Dict[Text, Any], Optional[Container[Text]], bool) -> Manifest
         version = obj.get("version")
         if version != CURRENT_VERSION:
             raise ManifestVersionMismatch
@@ -247,6 +252,9 @@ class Manifest(object):
 
             if types and test_type not in types:
                 continue
+
+            if callee_owns_obj:
+                type_paths = deepcopy(type_paths)
 
             self._data[test_type].set_json(type_paths)
 
@@ -285,7 +293,8 @@ def _load(logger,  # type: Logger
             with open(manifest, "rb") as f:
                 rv = Manifest.from_json(tests_root,
                                         fast_json.load(f),
-                                        types=types)
+                                        types=types,
+                                        callee_owns_obj=False)
         except IOError:
             return None
         except ValueError:
@@ -294,7 +303,8 @@ def _load(logger,  # type: Logger
     else:
         rv = Manifest.from_json(tests_root,
                                 fast_json.load(manifest),
-                                types=types)
+                                types=types,
+                                callee_owns_obj=False)
 
     if allow_cached:
         __load_cache[manifest_path] = rv
@@ -355,6 +365,6 @@ def write(manifest, manifest_path):
     with open(manifest_path, "wb") as f:
         # Use ',' instead of the default ', ' separator to prevent trailing
         # spaces: https://docs.python.org/2/library/json.html#json.dump
-        json.dump(manifest.to_json(), f,
+        json.dump(manifest.to_json(super_dangerous_mode_do_not_use=True), f,
                   sort_keys=True, indent=1, separators=(',', ': '))
         f.write("\n")

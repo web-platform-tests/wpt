@@ -1,5 +1,4 @@
 from collections import MutableMapping
-from copy import deepcopy
 
 from six import itervalues, iteritems
 
@@ -234,14 +233,28 @@ class TypeData(TypeDataType):
 
     def set_json(self, json_data):
         # type: (Dict[Text, Any]) -> None
+        """Provide the object with a raw JSON blob
+
+        Note that this object graph is assumed to be owned by the TypeData
+        object after the call, so the caller must not mutate any part of the
+        graph.
+        """
         if self._json_data:
             raise ValueError("set_json call when JSON data is not empty")
 
-        self._json_data = deepcopy(json_data)
+        self._json_data = json_data
 
     def to_json(self):
         # type: () -> Dict[Text, Any]
-        json_rv = deepcopy(self._json_data)
+        """Convert the current data to JSON
+
+        Note that the returned object may contain references to the internal
+        data structures, and is only guaranteed to be valid until the next
+        __getitem__, __setitem__, __delitem__ call, so the caller must not
+        mutate any part of the returned object graph.
+
+        """
+        json_rv = self._json_data.copy()
 
         stack = [(self._data, json_rv, tuple())]  # type: List[Tuple[Dict[Text, Any], Dict[Text, Any], Tuple[Text, ...]]]
         while stack:
@@ -249,10 +262,11 @@ class TypeData(TypeDataType):
             for k, v in iteritems(data_node):
                 full_key = par_full_key + (k,)
                 if isinstance(v, set):
-                    assert full_key in self._hashes
+                    assert k not in json_node
                     json_node[k] = [self._hashes.get(full_key)] + [t for t in sorted(test.to_json() for test in v)]
                 else:
-                    stack.append((v, json_node.setdefault(k, {}), full_key))
+                    json_node[k] = json_node.get(k, {}).copy()
+                    stack.append((v, json_node[k], full_key))
 
         return json_rv
 

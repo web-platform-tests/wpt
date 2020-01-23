@@ -25,6 +25,11 @@ trigger:
 - triggers/safari_stable
 - triggers/safari_preview
 
+# Uncomment this to enable safaridriver diagnostics. The logs won't appear in
+# `./wpt run` output but will be uploaded as a separate artifact.
+#variables:
+#  safaridriver_diagnose: true
+
 jobs:
 # The affected tests jobs are unconditional for speed, as most PRs have one or
 # more affected tests: https://github.com/web-platform-tests/wpt/issues/13936.
@@ -99,11 +104,7 @@ jobs:
     displayName: 'Run tests (Firefox Nightly)'
   - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel preview safari infrastructure/
     displayName: 'Run tests (Safari Technology Preview)'
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish results'
-    inputs:
-      artifactName: 'infrastructure'
-    condition: always()
+  - template: tools/ci/azure/publish_logs.yml
 
 - job: tools_unittest_macOS
   displayName: 'tools/ unittests: macOS'
@@ -377,6 +378,7 @@ jobs:
     displayName: 'Publish results'
     inputs:
       artifactName: 'safari-results'
+  - template: tools/ci/azure/publish_logs.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari
@@ -409,6 +411,7 @@ jobs:
     displayName: 'Publish results'
     inputs:
       artifactName: 'safari-preview-results'
+  - template: tools/ci/azure/publish_logs.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari_preview

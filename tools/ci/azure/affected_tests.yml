@@ -22,3 +22,4 @@ steps:
   inputs:
     artifactName: '${{ parameters.artifactName }}'
   condition: succeededOrFailed()
+- template: publish_logs.yml

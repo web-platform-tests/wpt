@@ -106,7 +106,7 @@ class DirectoryHandler(object):
             items.append([item, None])
             prev_item = item
         for item, dot_headers in items:
-            link = html.escape(quote(item))
+            link = escape(quote(item))
             dot_headers_markup = ""
             if dot_headers is not None:
                 dot_headers_markup = (""" (<a href="%(link)s">.headers</a>)""" %

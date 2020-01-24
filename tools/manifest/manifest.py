@@ -200,11 +200,10 @@ class Manifest(object):
                                           to_update,
                                           chunksize=max(1, len(to_update) // 10000)
                                           )  # type: Iterator[Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]]
+        elif PY3:
+            results = map(compute_manifest_items, to_update)
         else:
-            if PY3:
-                results = map(compute_manifest_items, to_update)
-            else:
-                results = itertools.imap(compute_manifest_items, to_update)
+            results = itertools.imap(compute_manifest_items, to_update)
 
         for result in results:
             rel_path_parts, new_type, manifest_items, file_hash = result

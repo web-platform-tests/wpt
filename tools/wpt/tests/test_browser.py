@@ -44,11 +44,11 @@ def test_webkitgtk_minibrowser_version(mocked_check_output):
     webkitgtk_minibrowser = browser.WebKitGTKMiniBrowser(logger)
 
     # stable version
-    mocked_check_output.return_value = 'WebKitGTK 2.26.1\n'
+    mocked_check_output.return_value = b'WebKitGTK 2.26.1\n'
     assert webkitgtk_minibrowser.version(binary='MiniBrowser') == '2.26.1'
 
     # nightly version
-    mocked_check_output.return_value = 'WebKitGTK 2.27.1 (r250823)\n'
+    mocked_check_output.return_value = b'WebKitGTK 2.27.1 (r250823)\n'
     assert webkitgtk_minibrowser.version(binary='MiniBrowser') == '2.27.1 (r250823)'
 
 @mock.patch('subprocess.check_output')
@@ -59,11 +59,11 @@ def test_webkitgtk_minibrowser_version_errors(mocked_check_output):
     assert webkitgtk_minibrowser.version() is None
 
     # `MiniBrowser --version` return gibberish
-    mocked_check_output.return_value = 'gibberish'
+    mocked_check_output.return_value = b'gibberish'
     assert webkitgtk_minibrowser.version(binary='MiniBrowser') is None
 
     # `MiniBrowser --version` fails (as it does for MiniBrowser <= 2.26.0)
-    mocked_check_output.return_value = 'dummy'
+    mocked_check_output.return_value = b'dummy'
     mocked_check_output.side_effect = subprocess.CalledProcessError(1, 'cmd')
     assert webkitgtk_minibrowser.version(binary='MiniBrowser') is None
 
@@ -93,11 +93,11 @@ def test_webkitgtk_minibrowser_find_binary(mocked_os_path_isfile):
     # Found on the default Debian path for AMD64 (gcc available but gives an error)
     debian_minibrowser_path_amd64 = '/usr/lib/x86_64-linux-gnu/webkit2gtk-4.0/MiniBrowser'
     mocked_os_path_isfile.side_effect = lambda path: path in [debian_minibrowser_path_amd64, '/usr/bin/gcc']
-    with mock.patch('subprocess.check_output', return_value = 'error', side_effect = subprocess.CalledProcessError(1, 'cmd')):
+    with mock.patch('subprocess.check_output', return_value = b'error', side_effect = subprocess.CalledProcessError(1, 'cmd')):
         assert webkitgtk_minibrowser.find_binary() == debian_minibrowser_path_amd64
 
         # Found on the default Debian path for ARM64 (gcc available)
         debian_minibrowser_path_arm64 = '/usr/lib/aarch64-linux-gnu/webkit2gtk-4.0/MiniBrowser'
         mocked_os_path_isfile.side_effect = lambda path: path in [debian_minibrowser_path_arm64, '/usr/bin/gcc']
-        with mock.patch('subprocess.check_output', return_value = 'aarch64-linux-gnu'):
+        with mock.patch('subprocess.check_output', return_value = b'aarch64-linux-gnu'):
             assert webkitgtk_minibrowser.find_binary() == debian_minibrowser_path_arm64

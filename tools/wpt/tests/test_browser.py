@@ -15,11 +15,11 @@ def test_safari_version(mocked_check_output):
     safari = browser.Safari(logger)
 
     # Safari
-    mocked_check_output.return_value = 'Included with Safari 12.1 (14607.1.11)'
+    mocked_check_output.return_value = b'Included with Safari 12.1 (14607.1.11)'
     assert safari.version(webdriver_binary="safaridriver") == '12.1 (14607.1.11)'
 
     # Safari Technology Preview
-    mocked_check_output.return_value = 'Included with Safari Technology Preview (Release 67, 13607.1.9.0.1)'
+    mocked_check_output.return_value = b'Included with Safari Technology Preview (Release 67, 13607.1.9.0.1)'
     assert safari.version(webdriver_binary="safaridriver") == 'Technology Preview (Release 67, 13607.1.9.0.1)'
 
 @mock.patch('subprocess.check_output')
@@ -30,11 +30,11 @@ def test_safari_version_errors(mocked_check_output):
     assert safari.version() is None
 
     # `safaridriver --version` return gibberish
-    mocked_check_output.return_value = 'gibberish'
+    mocked_check_output.return_value = b'gibberish'
     assert safari.version(webdriver_binary="safaridriver") is None
 
     # `safaridriver --version` fails (as it does for Safari <=12.0)
-    mocked_check_output.return_value = 'dummy'
+    mocked_check_output.return_value = b'dummy'
     mocked_check_output.side_effect = subprocess.CalledProcessError(1, 'cmd')
     assert safari.version(webdriver_binary="safaridriver") is None
 

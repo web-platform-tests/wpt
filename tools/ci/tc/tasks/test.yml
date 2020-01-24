@@ -315,9 +315,9 @@ tasks:
         run-job:
           - tools_unittest
 
-  - tools/ unittests (Python 3):
+  - tools/ unittests (Python 3.6):
       description: >-
-        Unit tests for tools running under Python 3, excluding wptrunner
+        Unit tests for tools running under Python 3.6, excluding wptrunner
       use:
         - wpt-base
         - trigger-pr
@@ -365,7 +365,7 @@ tasks:
         run-job:
           - wpt_integration
 
-  - tools/wpt/ tests (Python 3):
+  - tools/wpt/ tests (Python 3.6):
       description: >-
         Integration tests for wpt commands
       use:

@@ -119,7 +119,7 @@ jobs:
       toxenv: py27
 
 - job: tools_unittest_macOS_py3
-  displayName: 'tools/ unittests: macOS (Python 3)'
+  displayName: 'tools/ unittests: macOS (Python 3.6)'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.tools_unittest']
   pool:
@@ -164,7 +164,7 @@ jobs:
       toxenv: py27
 
 - job: wptrunner_unittest_macOS_py3
-  displayName: 'tools/wptrunner/ unittests: macOS (Python 3)'
+  displayName: 'tools/wptrunner/ unittests: macOS (Python 3.6)'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
   pool:
@@ -213,7 +213,7 @@ jobs:
       toxenv: py27
 
 - job: wpt_integration_macOS_py3
-  displayName: 'tools/wpt/ tests: macOS (Python 3)'
+  displayName: 'tools/wpt/ tests: macOS (Python 3.6)'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wpt_integration']
   pool:
@@ -275,7 +275,7 @@ jobs:
       toxenv: py27
 
 - job: tools_unittest_win_py3
-  displayName: 'tools/ unittests: Windows (Python 3)'
+  displayName: 'tools/ unittests: Windows (Python 3.6)'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.tools_unittest']
   pool:
@@ -325,7 +325,7 @@ jobs:
       toxenv: py27
 
 - job: wptrunner_unittest_win_py3
-  displayName: 'tools/wptrunner/ unittests: Windows (Python 3)'
+  displayName: 'tools/wptrunner/ unittests: Windows (Python 3.6)'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
   pool:
@@ -381,7 +381,7 @@ jobs:
       toxenv: py27
 
 - job: wpt_integration_win_py3
-  displayName: 'tools/wpt/ tests: Windows (Python 3)'
+  displayName: 'tools/wpt/ tests: Windows (Python 3.6)'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wpt_integration']
   pool:

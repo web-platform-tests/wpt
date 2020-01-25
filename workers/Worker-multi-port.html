@@ -39,18 +39,18 @@ async_test(function(t) {
 test(() => {
   var worker = new Worker("support/Worker-thread-multi-port.js");
   assert_throws_js(TypeError,
-                function() { worker.postMessage(); },
-                'Empty postMessage should throw exception.');
+                   function() { worker.postMessage(); },
+                   'Empty postMessage should throw exception.');
 }, 'Test empty postMessage throws exception.');
 
 test(() => {
   var worker = new Worker("support/Worker-thread-multi-port.js");
   var channel = new MessageChannel();
   assert_throws_js(TypeError,
-                function() { worker.postMessage("null port",
-                                                [channel.port1, null,
-                                                 channel.port2]); },
-                'postMessage with null ports should throw exception.');
+                   function() { worker.postMessage("null port",
+                                                   [channel.port1, null,
+                                                    channel.port2]); },
+                   'postMessage with null ports should throw exception.');
 }, 'Test postMessage with null ports throws exception.');
 
 test(() => {

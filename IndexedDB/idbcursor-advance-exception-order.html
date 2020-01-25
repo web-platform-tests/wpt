@@ -49,8 +49,8 @@ indexeddb_test(
 
       setTimeout(t.step_func(() => {
         assert_throws_dom('TransactionInactiveError', () => { cursor.advance(1); },
-                      '"not active" check (TransactionInactiveError) ' +
-                      'should precede "deleted" check (InvalidStateError)');
+                          '"not active" check (TransactionInactiveError) ' +
+                          'should precede "deleted" check (InvalidStateError)');
         t.done();
       }), 0);
     });
@@ -78,8 +78,8 @@ indexeddb_test(
 
       setTimeout(t.step_func(() => {
         assert_throws_dom('TransactionInactiveError', () => { cursor.advance(1); },
-                      '"not active" check (TransactionInactiveError) ' +
-                      'should precede "got value" check (InvalidStateError)');
+                          '"not active" check (TransactionInactiveError) ' +
+                          'should precede "got value" check (InvalidStateError)');
         t.done();
       }), 0);
     });

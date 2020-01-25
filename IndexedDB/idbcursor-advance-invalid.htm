@@ -39,10 +39,10 @@ indexeddb_test(
 
       // Second try
       assert_throws_dom('InvalidStateError',
-                    function() { cursor.advance(1); }, 'second advance');
+                        function() { cursor.advance(1); }, 'second advance');
 
       assert_throws_dom('InvalidStateError',
-                    function() { cursor.advance(3); }, 'third advance');
+                        function() { cursor.advance(3); }, 'third advance');
 
       count++;
     });

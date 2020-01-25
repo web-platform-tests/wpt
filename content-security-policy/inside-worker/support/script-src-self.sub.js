@@ -11,12 +11,12 @@ test(t => {
 
 test(t => {
   assert_throws_js(EvalError,
-                _ => eval("1 + 1"),
-                "`eval()` should throw 'EvalError'.");
+                   _ => eval("1 + 1"),
+                   "`eval()` should throw 'EvalError'.");
 
   assert_throws_js(EvalError,
-                _ => new Function("1 + 1"),
-                "`new Function()` should throw 'EvalError'.");
+                   _ => new Function("1 + 1"),
+                   "`new Function()` should throw 'EvalError'.");
 }, "`eval()` blocked in " + self.location.protocol + self.location.search);
 
 async_test(t => {

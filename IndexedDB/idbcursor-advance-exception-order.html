@@ -24,8 +24,8 @@ indexeddb_test(
 
       setTimeout(t.step_func(() => {
         assert_throws_js(TypeError, () => { cursor.advance(0); },
-                      '"zero" check (TypeError) should precede ' +
-                      '"not active" check (TransactionInactiveError)');
+                         '"zero" check (TypeError) should precede ' +
+                         '"not active" check (TransactionInactiveError)');
         t.done();
       }), 0);
     });

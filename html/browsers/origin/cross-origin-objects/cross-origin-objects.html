@@ -376,9 +376,9 @@ addTest(function(win) {
  */
 addTest(function(win) {
   assert_throws_js(TypeError, function() { Object.preventExtensions(win) },
-                "preventExtensions on cross-origin Window should throw");
+                   "preventExtensions on cross-origin Window should throw");
   assert_throws_js(TypeError, function() { Object.preventExtensions(win.location) },
-                "preventExtensions on cross-origin Location should throw");
+                   "preventExtensions on cross-origin Location should throw");
 }, "[[PreventExtensions]] should throw for cross-origin objects");
 
 /*

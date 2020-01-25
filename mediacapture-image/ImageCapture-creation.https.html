@@ -83,12 +83,12 @@ var testParameter = test(function() {
     true
   ];
   assert_throws_js(TypeError,
-                function() { var capturer = new ImageCapture(); },
-               'an ImageCapturer can not be created with no parameter');
+                   function() { var capturer = new ImageCapture(); },
+                   'an ImageCapturer cannot be created with no parameter');
   invalidParameters.map(parameter => {
     assert_throws_js(TypeError,
-                  function() { var capturer = new ImageCapture(parameter); },
-                 `an ImageCapturer can not be created with a ${parameter} parameter`);
+                     function() { var capturer = new ImageCapture(parameter); },
+                     `an ImageCapturer cannot be created with a ${parameter} parameter`);
   });
 }, 'throw "TypeError" if parameter is not MediaStreamTrack.');
 

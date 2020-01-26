@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and color (basic)</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-styling">
+
+  <meta content="interact" name="flags">
+
+  <style>
+  div
+    {
+      color: red;
+      font-size: 300%;
+    }
+
+  div::selection
+    {
+      color: green;
+    }
+  </style>
+
+  <p>Instructions: select a few (or all) characters from the red words "Text sample". Select them with mouse dragging (leftwardedly or rightwardedly) or text-highlighting them with <kbd>Shift</kbd> and keyboard arrows when keyboard navigation (also called caret browsing) is enabled.
+
+  <p>Reminder: you can select a whole word by double-clicking on it. You can select a whole line by triple-clicking anywhere inside it.
+
+  <p>Test passes if the selected characters become green and if there is no background color for the characters selection.
+
+  <div>Text sample</div>

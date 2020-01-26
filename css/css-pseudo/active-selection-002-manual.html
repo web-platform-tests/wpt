@@ -2,7 +2,7 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Pseudo-Elements Test: active selection and cursor (basic)</title>
+  <title>CSS Pseudo-Elements Test: active selection and background-color (basic)</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
@@ -13,25 +13,29 @@
   <style>
   div
     {
-      cursor: auto;
+      background-color: red;
+      display: inline;
       font-size: 300%;
     }
 
   div::selection
     {
-      cursor: url("support/select-custom.cur"), help;
+      background-color: green;
     }
 
-  img
-    {
-      vertical-align: -1em;
-    }
+  /*
+  Chromium 77.0.3855.0 creates a background-color #334C00 or rgb(51, 76, 0)
+  and not a green (#008000 or rgb(0, 128, 0)) background color.
+
+  Issue 1018450: background-color of ::selection should be painted as specified
+  https://bugs.chromium.org/p/chromium/issues/detail?id=1018450
+  */
   </style>
 
   <p>Instructions: select a few (or all) characters from the words "Text sample". Select them with mouse dragging (leftwardedly or rightwardedly) or text-highlighting them with <kbd>Shift</kbd> and keyboard arrows when keyboard navigation (also called caret browsing) is enabled.
 
   <p>Reminder: you can select a whole word by double-clicking on it. You can select a whole line by triple-clicking anywhere inside it.
 
-  <p>Test passes if the cursor becomes <img src="support/select-custom.png" width="32" height="32" alt="Image download support must be enabled"> when hovering anywhere over the selection of "Text sample". Also the background color and color of the selected sample text must be using the UA default background color and color for selection. In other words, the background color and color of the selected sample text must also match the same background color and color of the instructions if you were to highlight them.
+  <p>Test passes if the background color of selected characters become green and if the text color of the characters selection remains black.
 
   <div>Text sample</div>

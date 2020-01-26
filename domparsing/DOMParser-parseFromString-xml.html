@@ -66,8 +66,6 @@ allowedTypes.forEach(function(type) {
     assert_equals(doc.x, undefined, "script must not be executed on the inner document");
     assert_equals(document.x, undefined, "script must not be executed on the outer document");
 
-    console.log(doc.documentElement.outerHTML);
-
     const body = doc.documentElement.children[1];
     assert_equals(body.localName, "body");
     assert_equals(body.children[1].localName, "noscript");

@@ -4,7 +4,7 @@
  * importWorklet(CSS.paintWorklet, {url: 'script.js'});
  * importWorklet(CSS.paintWorklet, '(javascript string)');
  *
- * @param {PaintWorklet} worklet
+ * @param {Worklet} worklet
  * @param {(Object|string)} code
  */
 function importWorklet(worklet, code) {
@@ -35,7 +35,7 @@ async function workletPainted() {
  * requestAnimationFrame. In the second frame, we take a screenshot, that makes
  * sure that we already have a full frame.
  *
- * @param {PaintWorklet} worklet
+ * @param {Worklet} worklet
  * @param {(Object|string)} code
  */
 async function importWorkletAndTerminateTestAfterAsyncPaint(worklet, code) {

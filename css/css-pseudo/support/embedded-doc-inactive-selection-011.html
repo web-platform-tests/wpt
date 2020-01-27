@@ -7,22 +7,23 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
 
   <style>
-  div
+  textarea
     {
       color: red;
-      font-size: 300%;
+      font-size: 48px;
     }
 
-  div::inactive-selection
+  textarea::inactive-selection
     {
-      color: green;
+      background-color: green;
+      color: yellow;
     }
 
-  div::selection
+  textarea::selection
     {
       background-color: yellow;
       color: purple;
     }
   </style>
 
-  <div>Select This Text</div>
+  <div><textarea cols="16" rows="1" readonly>Select This Text</textarea></div>

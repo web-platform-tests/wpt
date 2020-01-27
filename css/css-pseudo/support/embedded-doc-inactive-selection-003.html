@@ -7,21 +7,23 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
 
   <style>
-  input
+  div
     {
       color: red;
       font-size: 300%;
     }
 
-  input::selection
+  div::inactive-selection
     {
-      color: orange;
+      background-color: green;
+      color: yellow;
     }
 
-  input::inactive-selection
+  div::selection
     {
-      color: green;
+      background-color: yellow;
+      color: purple;
     }
   </style>
 
-  <div><input readonly size="12" value="Text sample"></div>
+  <div>Select This Text</div>

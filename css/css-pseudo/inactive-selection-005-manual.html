@@ -2,7 +2,7 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Pseudo-Elements Test: inactive selection with &lt;textarea&gt; in an &lt;iframe&gt;</title>
+  <title>CSS Pseudo-Elements Test: inactive selection with &lt;input&gt; in an &lt;iframe&gt;</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
@@ -15,12 +15,14 @@
     {
       border: black solid medium;
       padding: 20px;
-      width: 500px;
+      width: 520px;
     }
   </style>
 
-  <p>Test passes if the red glyphs of "Text sample" become orange when selecting (with mouse dragging) them or text-highlighting (with keyboard arrows when keyboard navigation <kbd>F7</kbd> is enabled) them and then if such selected orange <strong>glyphs become green</strong> when the focus switches outside the black-bordered rectangle.
+  <p>Instructions: select a few (or all) characters from the red words "Select This Text". Select them with mouse dragging (leftwardedly or rightwardedly) or text-highlighting them with <kbd>Shift</kbd> and keyboard arrows when keyboard navigation (also called caret browsing) is enabled.
 
   <p>Reminder: you can select a whole word by double-clicking on it. You can select a whole line by triple-clicking anywhere inside it.
+
+  <p>Test passes if the red glyphs of "Select This Text" become purple on a yellow background color when selecting them and then if such selected purple <strong>glyphs become green</strong> with still a yellow background color when the focus switches outside the black-bordered rectangle.
 
   <div><iframe src="support/embedded-doc-inactive-selection-005.html" type="text/html">This test requires a browser with capability to embed an HTML document thanks to the HTML &lt;iframe&gt; element.</iframe></div>

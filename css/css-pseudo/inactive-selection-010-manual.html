@@ -2,7 +2,7 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Pseudo-Elements Test: inactive selection with &lt;input&gt; in an &lt;iframe&gt;</title>
+  <title>CSS Pseudo-Elements Test: inactive selection with &lt;textarea&gt; in an &lt;object&gt;</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
@@ -11,7 +11,7 @@
   <meta content="interact" name="flags">
 
   <style>
-  iframe
+  object
     {
       border: black solid medium;
       padding: 20px;
@@ -23,6 +23,6 @@
 
   <p>Reminder: you can select a whole word by double-clicking on it. You can select a whole line by triple-clicking anywhere inside it.
 
-  <p>Test passes if the red glyphs of "Select This Text" become purple on a yellow background color when selecting them and then if such selected purple <strong>glyphs become yellow on a green background color</strong> when the focus switches outside the black-bordered rectangle.
+  <p>Test passes if the red glyphs of "Select This Text" become purple on a yellow background color when selecting them and then if such selected purple <strong>glyphs become green</strong> with still a yellow background color when the focus switches outside the black-bordered rectangle.
 
-  <div><iframe src="support/embedded-doc-inactive-selection-007.html" type="text/html">This test requires a browser with capability to embed an HTML document thanks to the HTML &lt;iframe&gt; element.</iframe></div>
+  <div><object data="support/embedded-doc-inactive-selection-009.html" type="text/html">This test requires a browser with capability to embed an HTML document thanks to the HTML &lt;object&gt; element.</object></div>

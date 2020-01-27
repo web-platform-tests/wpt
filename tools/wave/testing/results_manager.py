@@ -16,7 +16,7 @@ from ..data.exceptions.duplicate_exception import DuplicateException
 from .wpt_report import generate_report, generate_multi_report
 from ..data.session import COMPLETED
 
-WAVE_SRC_DIR = "./tools/wptserve/wptserve/wave"
+WAVE_SRC_DIR = "./tools/wave"
 
 class ResultsManager(object):
     def initialize(

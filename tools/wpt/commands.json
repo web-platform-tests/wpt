@@ -5,8 +5,13 @@
     "parser": "create_parser",
     "help": "Run tests in a browser",
     "virtualenv": true,
-    "install": ["requests"],
-    "requirements": ["../wptrunner/requirements.txt"]
+    "install": [
+	    "requests",
+	    "zstandard"
+    ],
+    "requirements": [
+	    "../wptrunner/requirements.txt"
+    ]
   },
   "create": {
     "path": "create.py",
@@ -20,8 +25,12 @@
     "parser": "create_parser_update",
     "help": "Update expectations files from raw logs.",
     "virtualenv": true,
-    "install": ["requests"],
-    "requirements": ["../wptrunner/requirements.txt"]
+    "install": [
+	    "requests"
+    ],
+    "requirements": [
+	    "../wptrunner/requirements.txt"
+    ]
   },
   "files-changed": {
     "path": "testfiles.py",
@@ -42,7 +51,10 @@
     "script": "run",
     "parser": "get_parser",
     "help": "Install browser components",
-    "install": ["mozdownload", "mozinstall"]
+    "install": [
+	    "mozdownload",
+	    "mozinstall"
+    ]
   },
   "branch-point": {
     "path": "testfiles.py",
@@ -50,5 +62,32 @@
     "parser": null,
     "help": "Print branch point from master",
     "virtualenv": false
+  },
+  "rev-list": {
+    "path": "revlist.py",
+    "script": "run_rev_list",
+    "parser": "get_parser",
+    "help": "List tagged revisions at regular intervals",
+    "virtualenv": false
+  },
+  "install-android-emulator": {
+    "path": "android.py",
+    "script": "run_install",
+    "parser": "get_parser_install",
+    "help": "Setup the x86 android emulator",
+    "virtualenv": true,
+    "install": [
+      "requests"
+    ]
+  },
+  "start-android-emulator": {
+    "path": "android.py",
+    "script": "run_start",
+    "parser": "get_parser_start",
+    "help": "Start the x86 android emulator",
+    "virtualenv": true,
+    "install": [
+      "requests"
+    ]
   }
 }

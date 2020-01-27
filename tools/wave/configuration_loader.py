@@ -3,7 +3,7 @@ import json
 import os
 from io import open
 
-DEFAULT_CONFIGURATION_FILE_PATH = u"./tools/wptserve/wptserve/wave/config.default.json"
+DEFAULT_CONFIGURATION_FILE_PATH = u"./tools/wave/config.default.json"
 
 
 def load(configuration_file_path):

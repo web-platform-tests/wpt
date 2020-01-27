@@ -7,7 +7,7 @@ from io import open
 class StaticHandler(object):
     def __init__(self, web_root, http_port, https_port):
         self.static_dir = os.path.join(
-            os.getcwd(), u"tools/wptserve/wptserve/wave/www")
+            os.getcwd(), u"tools/wave/www")
         self._web_root = web_root
         self._http_port = http_port
         self._https_port = https_port

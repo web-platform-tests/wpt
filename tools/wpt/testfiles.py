@@ -341,7 +341,8 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
 
 def get_parser():
     # type: () -> argparse.ArgumentParser
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(epilog="This command supports python3 and thus could be "
+                                            "executed with the --py3 argument.")
     parser.add_argument("revish", default=None, help="Commits to consider. Defaults to the "
                         "commits on the current branch", nargs="?")
     # TODO: Consolidate with `./wpt run --affected`:
@@ -396,7 +397,8 @@ def run_changed_files(**kwargs):
     separator = "\0" if kwargs["null"] else "\n"
 
     for item in sorted(changed):
-        sys.stdout.write(os.path.relpath(item.encode("utf8"), wpt_root) + separator)
+        assert isinstance(item, six.text_type)
+        sys.stdout.write(os.path.relpath(item, wpt_root) + separator)
 
 
 def run_tests_affected(**kwargs):

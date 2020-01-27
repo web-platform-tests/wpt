@@ -44,7 +44,7 @@ function get_host_info() {
 
 /**
  * When a default port is used, location.port returns the empty string.
- * To compare with wptserve `ports` substitution we need a port...
+ * This function attempts to provide an exact port, assuming we are running under wptserve.
  * @param {*} loc - can be Location/<a>/<area>/URL, but assumes http/https only.
  * @returns {string} The port number.
  */

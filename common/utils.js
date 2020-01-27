@@ -1,5 +1,5 @@
 /**
- * Create an absolute URL from `options` and defaulting things to `window.location`.
+ * Create an absolute URL from `options` and defaulting unspecified properties to `window.location`.
  * @param {Object} options - a `Location`-like object
  * @param {string} options.hostname
  * @param {string} options.subdomain - prepend subdomain to the hostname

@@ -10,7 +10,7 @@ function takeScreenshot() {
 }
 
 /**
- * Call `takeScreenshot()` after a timeout.
+ * Call `takeScreenshot()` after a delay of at least |timeout| milliseconds.
  * @param {number} timeout - milliseconds
  */
 function takeScreenshotDelayed(timeout) {

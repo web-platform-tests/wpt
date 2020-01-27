@@ -4,18 +4,9 @@
         <title>CSS Test: The 'border-image' shorthand property</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/css3-background/#the-border-image-shorthand" />
-        <link rel="match" href="border-image-shorthand-001-ref.htm" />
         <meta name="flags" content="image" />
         <meta name="assert" content="This test checks that setting 'border-image-source', 'border-image-slice', 'border-image-width', 'border-image-outset' and 'border-image-repeat' properties in the shorthand notation produces the same border image as setting individual properties with the same values." />
         <style type="text/css">
-            #test
-            {
-                border: 10px double red;
-                border-image: url("../support/border81x81.png") 30 / 4 / 2 round stretch;
-                height: 150px;
-                margin: 50px;
-                width: 150px;
-            }
             #reference
             {
                 border: 10px double red;
@@ -32,7 +23,7 @@
     </head>
     <body>
         <p>Test passes if there are two identical images visible on the page.</p>
-        <div id="test"></div>
+        <div id="reference"></div>
         <div id="reference"></div>
     </body>
 </html>

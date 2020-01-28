@@ -13,6 +13,10 @@ function assertEncoding(doc) {
   assert_equals(doc.inputEncoding, "UTF-8", "document.characterSet");
 }
 
+setup(() => {
+  assert_precondition(document.characterSet === "windows-1252", "the meta charset must be in effect, making the main document windows-1252");
+});
+
 test(() => {
   const parser = new DOMParser();
   const doc = parser.parseFromString("", "text/html");

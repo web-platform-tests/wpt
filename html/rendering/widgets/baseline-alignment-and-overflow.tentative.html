@@ -60,57 +60,53 @@ The sibling element is there to control where the baseline for the line box will
   <tr class="ref-image-alt"><td><span>ref for image alt</span> <span class=inline-block>x</span>
   <tr class="ref-image-src"><td><span>ref for image src</span> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D">
 </table>
+<h2>template table</h2>
+<!--
+Each row in this table will be cloned into #test-table for each combination of styles to test.
+-->
+<table id="template-table">
+  <tr><td><span>text</span> <input type=text value=x></td></tr>
+  <tr><td><span>search</span> <input type=search value=x></td></tr>
+  <tr><td><span>tel</span> <input type=tel value=x></td></tr>
+  <tr><td><span>url</span> <input type=url value="data:,x"></td></tr>
+  <tr><td><span>email</span> <input type=email value=x></td></tr>
+  <tr><td><span>password</span> <input type=password value=x></td></tr>
+  <tr><td><span>date</span> <input type=date value="2020-01-01"></td></tr>
+  <tr><td><span>month</span> <input type=month value="2020-01"></td></tr>
+  <tr><td><span>week</span> <input type=week value="2020-W01"></td></tr>
+  <tr><td><span>time</span> <input type=time value="00:00"></td></tr>
+  <tr><td><span>datetime-local</span> <input type=datetime-local value="2020-01-01T00:00"></td></tr>
+  <tr><td><span>number</span> <input type=number value=0></td></tr>
+  <tr><td><span>range</span> <input type=range></td></tr>
+  <tr><td><span>color</span> <input type=color value=#000000></td></tr>
+  <tr><td><span>checkbox</span> <input type=checkbox></td></tr>
+  <tr><td><span>radio</span> <input type=radio></td></tr>
+  <tr><td><span>file</span> <input type=file></td></tr>
+  <tr><td><span>submit</span> <input type=submit value=x></td></tr>
+  <tr><td><span>image</span> <input type=image src="data:,broken" alt="x"></td></tr>
+  <tr><td><span>image-with-src</span> <input type=image src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D" alt="x"></td></tr>
+  <tr><td><span>reset</span> <input type=reset value=x></td></tr>
+  <tr><td><span>button</span> <input type=button value=x></td></tr>
+</table>
 <h2>tests</h2>
-<table class="test" id="test-table"></table>
+<!--
+This table gets populated by the script.
+-->
+<table class="test" id="test-table"><tbody></tbody></table>
 <script>
   "use strict";
 
   promise_setup(async () => {
-    const testTable = document.querySelector('#test-table');
+    const templateTable = document.querySelector('#template-table');
+    const testTBody = document.querySelector('#test-table tbody');
 
-    const imageURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D";
-
-    const inputTypes = [
-      'text',
-      'search',
-      'tel',
-      'url',
-      'email',
-      'password',
-      'date',
-      'month',
-      'week',
-      'time',
-      'datetime-local',
-      'number',
-      'range',
-      'color',
-      'checkbox',
-      'radio',
-      'file',
-      'submit',
-      'image',
-      'image-with-src',
-      'reset',
-      'button',
-    ];
-    for (let inputType of inputTypes) {
-      let src = "data:,broken";
-      if (inputType == "image-with-src") {
-        inputType = "image";
-        src = imageURL;
-      }
-      let inputAtts;
-      if (inputType === 'image') {
-        inputAtts = `src="${src}" alt="x"`;
-      } else {
-        inputAtts = `value="x"`;
-      }
+    const templateRows = templateTable.querySelectorAll('tr');
+    for (let templateRow of templateRows) {
       for (var appearanceValue of ["auto", "none"]) {
         for (var overflowValue of ['visible', 'hidden', 'scroll']) {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td><span>${inputType}</span> <input type=${inputType} ${inputAtts} style="overflow: ${overflowValue}; appearance: ${appearanceValue};"></td>`;
-          testTable.append(tr);
+          const clonedRow = templateRow.cloneNode(true);
+          clonedRow.querySelector('input').setAttribute('style', `overflow: ${overflowValue}; appearance: ${appearanceValue};`);
+          testTBody.append(clonedRow);
         }
       }
     }
@@ -153,10 +149,10 @@ The sibling element is there to control where the baseline for the line box will
     }
 
     function testName(markup) {
-      return markup.replace(imageURL, 'data:(png)');
+      return markup.replace(/data:image\/png[^"]+/, 'data:(png)');
     }
 
-    for (const row of testTable.children) {
+    for (const row of testTBody.children) {
       const input = row.firstChild.lastElementChild;
       const allowedDelta = 3;
       promise_test(async () => {

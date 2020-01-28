@@ -54,11 +54,11 @@ The sibling element is there to control where the baseline for the line box will
 -->
 <table class="test ref">
   <tr class="ref-text"><td><span>ref for text</span> <span class=fake-input-text>x</i>
-  <tr class="ref-checkbox"><td><span>ref for checkbox</span> <img class="set-src no-margin-bottom">
-  <tr class="ref-color"><td><span>ref for color</span> <button><img class=set-src></button>
+  <tr class="ref-checkbox"><td><span>ref for checkbox</span> <img class=no-margin-bottom src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D">
+  <tr class="ref-color"><td><span>ref for color</span> <button><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D"></button>
   <tr class="ref-file"><td><span>ref for file</span> <span class=inline-block><button>x</button></span>
   <tr class="ref-image-alt"><td><span>ref for image alt</span> <span class=inline-block>x</span>
-  <tr class="ref-image-src"><td><span>ref for image src</span> <img class=set-src>
+  <tr class="ref-image-src"><td><span>ref for image src</span> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D">
 </table>
 <h2>tests</h2>
 <table class="test" id="test-table"></table>
@@ -69,9 +69,6 @@ The sibling element is there to control where the baseline for the line box will
     const testTable = document.querySelector('#test-table');
 
     const imageURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D";
-    for (const img of document.querySelectorAll('img.set-src')) {
-      img.src = imageURL;
-    }
 
     const inputTypes = [
       'text',

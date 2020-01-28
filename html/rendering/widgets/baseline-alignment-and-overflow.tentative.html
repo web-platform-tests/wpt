@@ -137,35 +137,22 @@ The sibling element is there to control where the baseline for the line box will
       // for now this is intended to match Firefox
       const style = input.getAttribute('style');
       const src = input.getAttribute('src');
-      let rv;
       switch (input.type) {
         case 'file':
-          rv = refFileOffsetTop; break;
+          return refFileOffsetTop;
         case 'range':
-          rv = refImageSrcOffsetTop; break;
+          return refImageSrcOffsetTop;
         case 'color':
-          rv = refColorOffsetTop; break;
+          return refColorOffsetTop;
         case 'checkbox':
         case 'radio':
-          if (style.includes('appearance: none;')) {
-            rv = refImageSrcOffsetTop;
-          } else {
-            rv = refCheckboxOffsetTop;
-          }
-          break;
+          return (style.includes('appearance: none;')) ? refImageSrcOffsetTop : refCheckboxOffsetTop;
         case 'file':
-          rv = refFileOffsetTop; break;
+          return refFileOffsetTop;
         case 'image':
-          if (src === 'data:,broken' && style.includes('overflow: visible;')) {
-            rv = refImageAltOffsetTop;
-          } else {
-            rv = refImageSrcOffsetTop;
-          }
-          break;
-        default:
-          rv = refTextOffsetTop; break;
+          return (src === 'data:,broken' && style.includes('overflow: visible;')) ? refImageAltOffsetTop : refImageSrcOffsetTop;
       }
-      return rv;
+      return refTextOffsetTop;
     }
 
     function testName(markup) {

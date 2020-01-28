@@ -7,14 +7,14 @@
     writing-mode: vertical-rl;
   }
   section {
-    background-color: red;
+    background-color: green;
     block-size: 100px;
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
   }
   section > div{
-    background-color: green;
+    background-color: grey;
   }
   section > div {
     width: calc(50% - 10px);
@@ -29,7 +29,7 @@
   }
 </style>
 <body>
-  <p>Test passes if there are <strong> 20px red lines between boxes</strong>.</p>
+  <p>Test passes if there are <strong> green lines between boxes</strong>.</p>
   <section>
     <div></div>
     <div></div>

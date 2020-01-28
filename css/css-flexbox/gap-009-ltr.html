@@ -10,19 +10,19 @@
 <meta name="assert" content="The 'gap' property enables putting space exclusively between items">
 <style>
   section {
-    background-color: red;
+    background-color: green;
     block-size: 100px;
     display: flex;
     gap: 50% 1rem;
     flex-wrap: wrap;
   }
   section > div{
-    background-color: green;
+    background-color: grey;
     width: calc(50% - .5rem);
   }
 </style>
 <body>
-  <p>Test passes if there are <strong> 1rem horizontal red lines and 50% vertical red lines between boxes</strong>.</p>
+  <p>Test passes if there are <strong> 50% horizontal green line and 1rem vertical green line between boxes</strong>.</p>
   <section>
     <div></div>
     <div></div>

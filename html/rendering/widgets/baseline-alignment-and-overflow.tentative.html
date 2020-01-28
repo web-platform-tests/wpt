@@ -15,8 +15,8 @@
 }
 
 .test td > input,
-.ref td > i,
-.ref td > b,
+.ref td > .fake-input-text,
+.ref td > .inline-block,
 .ref td > img,
 .ref td > button {
   font: inherit;
@@ -31,12 +31,12 @@
   width: 100%;
   display: block;
 }
-.ref i {
+.ref .fake-input-text {
   display: inline-grid;
   border: 2px solid;
   align-items: center;
 }
-.ref b {
+.ref .inline-block {
   display: inline-block;
 }
 .ref td > img.no-margin-bottom {
@@ -48,13 +48,17 @@
 </style>
 <div id="log"></div>
 <h2>refs</h2>
+<!--
+The first span's offsetTop is what we want to compare with the corresponding test's span's offsetTop.
+The sibling element is there to control where the baseline for the line box will be.
+-->
 <table class="test ref">
-  <tr class="ref-text"><td><span>ref</span> <i>text</i>
-  <tr class="ref-checkbox"><td><span>ref checkbox</span> <img class="set-src no-margin-bottom">
-  <tr class="ref-color"><td><span>ref color</span> <button><img class=set-src></button>
-  <tr class="ref-file"><td><span>ref file</span> <b><button>file</button></b>
-  <tr class="ref-image-alt"><td><span>ref image</span> <b>alt</b>
-  <tr class="ref-image-src"><td><span>ref image</span> <img class=set-src>
+  <tr class="ref-text"><td><span>ref for text</span> <span class=fake-input-text>x</i>
+  <tr class="ref-checkbox"><td><span>ref for checkbox</span> <img class="set-src no-margin-bottom">
+  <tr class="ref-color"><td><span>ref for color</span> <button><img class=set-src></button>
+  <tr class="ref-file"><td><span>ref for file</span> <span class=inline-block><button>x</button></span>
+  <tr class="ref-image-alt"><td><span>ref for image alt</span> <span class=inline-block>x</span>
+  <tr class="ref-image-src"><td><span>ref for image src</span> <img class=set-src>
 </table>
 <h2>tests</h2>
 <table class="test" id="test-table"></table>

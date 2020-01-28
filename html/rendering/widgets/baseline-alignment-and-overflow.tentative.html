@@ -65,7 +65,7 @@ The sibling element is there to control where the baseline for the line box will
 <script>
   "use strict";
 
-  promise_test(async () => {
+  promise_setup(async () => {
     const testTable = document.querySelector('#test-table');
 
     const imageURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D";
@@ -181,5 +181,5 @@ The sibling element is there to control where the baseline for the line box will
         assert_approx_equals(offsetTopActual, expectedOffsetTop(input), allowedDelta, '<span>.offsetTop');
       }, testName(input.outerHTML));
     }
-  }, "setup"); // TODO(zcorpan) change to promise_setup()
+  });
 </script>

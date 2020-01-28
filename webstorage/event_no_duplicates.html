@@ -84,6 +84,7 @@ function tests(storageName) {
         })
       .then(e => {
           assert_equals(e.storageArea, iframeStorage);
+          assert_equals(e.newValue, null);
           assert_equals(e.key, null);
           assert_equals(e.oldValue, null);
           assert_equals(e.newValue, null);

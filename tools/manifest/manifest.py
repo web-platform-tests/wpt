@@ -95,9 +95,9 @@ class ManifestData(ManifestDataType):
                 rv.add(os.path.sep.join(item))
         return rv
 
-    def types(self):
+    def type_by_path(self):
         # type: () -> Dict[Tuple[Text, ...], str]
-        rv = dict()
+        rv = {}
         for item_type, item_data in iteritems(self):
             for item in item_data:
                 rv[item] = item_type
@@ -162,7 +162,7 @@ class Manifest(object):
         # attribute access in the hot loop below
         data = self._data
 
-        types = data.types()
+        types = data.type_by_path()
         deleted = set(types)
 
         to_update = []

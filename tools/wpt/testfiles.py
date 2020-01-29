@@ -51,7 +51,7 @@ def get_git_cmd(repo_path):
         full_cmd = [u"git", cmd] + list(item.decode("utf8") if isinstance(item, bytes) else item for item in args)  # type: List[Text]
         try:
             logger.debug(" ".join(full_cmd))
-            return subprocess.check_output(full_cmd, cwd=repo_path).decode("utf8").strip()
+            return six.ensure_str(subprocess.check_output(full_cmd, cwd=repo_path).decode("utf8")).strip()
         except subprocess.CalledProcessError as e:
             logger.critical("Git command exited with status %i" % e.returncode)
             logger.critical(e.output)
@@ -341,8 +341,7 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
 
 def get_parser():
     # type: () -> argparse.ArgumentParser
-    parser = argparse.ArgumentParser(epilog="This command supports python3 and thus could be "
-                                            "executed with the --py3 argument.")
+    parser = argparse.ArgumentParser()
     parser.add_argument("revish", default=None, help="Commits to consider. Defaults to the "
                         "commits on the current branch", nargs="?")
     # TODO: Consolidate with `./wpt run --affected`:
@@ -397,7 +396,6 @@ def run_changed_files(**kwargs):
     separator = "\0" if kwargs["null"] else "\n"
 
     for item in sorted(changed):
-        assert isinstance(item, six.text_type)
         sys.stdout.write(os.path.relpath(item, wpt_root) + separator)
 
 

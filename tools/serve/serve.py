@@ -21,7 +21,6 @@ from itertools import chain, product
 from multiprocessing import Process, Event
 
 import re
-import functools
 from subprocess import Popen, PIPE, STDOUT
 
 from localpaths import repo_root
@@ -325,9 +324,9 @@ rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl
 
 class RoutesBuilder(object):
     def __init__(self):
-        self.forbidden_override = [ ("GET", "/tools/runner/*", handlers.file_handler),
-                                    ("POST", "/tools/runner/update_manifest.py",
-                                     handlers.python_script_handler)]
+        self.forbidden_override = [("GET", "/tools/runner/*", handlers.file_handler),
+                                   ("POST", "/tools/runner/update_manifest.py",
+                                    handlers.python_script_handler)]
 
         self.forbidden = [("*", "/_certs/*", handlers.ErrorHandler(404)),
                           ("*", "/tools/*", handlers.ErrorHandler(404)),
@@ -417,8 +416,8 @@ def build_routes(aliases, wave_cfg=None):
         builder.add_handler("*", "/wave*", wave_handler)
         # serving wave specifc testharnessreport.js
         builder.add_static(
-            "tools/wave/resources/testharnessreport.js", 
-            {}, 
+            "tools/wave/resources/testharnessreport.js",
+            {},
             "text/javascript;charset=utf8",
             "/resources/testharnessreport.js")
     return builder.get_routes()
@@ -788,6 +787,7 @@ def build_config(override_path=None, **kwargs):
 def _make_subdomains_product(s, depth=2):
     return {u".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth+1)))}
 
+
 _subdomains = {u"www",
                u"www1",
                u"www2",
@@ -845,8 +845,8 @@ class ConfigBuilder(config.ConfigBuilder):
         # wave specific configuration parameters
         "results": "./results",
         "timeouts": {
-          "automatic": 60000,
-          "manual": 300000
+            "automatic": 60000,
+            "manual": 300000
         },
         "enable_results_import": False,
         "web_root": "/wave",
@@ -964,19 +964,17 @@ def run(**kwargs):
             signal.signal(signal.SIGTERM, handle_signal)
             signal.signal(signal.SIGINT, handle_signal)
 
-            try:
-                while all(item.is_alive() for item in iter_procs(servers)) and not received_signal.is_set():
-                    for item in iter_procs(servers):
-                        item.join(1)
-                exited = [item for item in iter_procs(servers) if not item.is_alive()]
-                subject = "subprocess" if len(exited) == 1 else "subprocesses"
-
-                logger.info("%s %s exited:" % (len(exited), subject))
-
+            while all(item.is_alive() for item in iter_procs(servers)) and not received_signal.is_set():
                 for item in iter_procs(servers):
-                    logger.info("Status of %s:\t%s" % (item.name, "running" if item.is_alive() else "not running"))
-            except KeyboardInterrupt:
-                logger.info("Shutting down")
+                    item.join(1)
+            exited = [item for item in iter_procs(servers) if not item.is_alive()]
+            subject = "subprocess" if len(exited) == 1 else "subprocesses"
+
+            logger.info("%s %s exited:" % (len(exited), subject))
+
+            for item in iter_procs(servers):
+                logger.info("Status of %s:\t%s" % (item.name, "running" if item.is_alive() else "not running"))
+
 
 # Set command is_wave and start venv wit necessary dependencies
 def run_wave(venv=None, **kwargs):
@@ -1010,7 +1008,7 @@ def is_semver(prefix, line):
 
 # execute wptreport version check
 def is_wptreport_installed():
-    report_p = Popen("wptreport --version", shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)  
+    report_p = Popen("wptreport --version", shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     for line in report_p.stdout:
         if line and not line.isspace():
             if not is_semver("wptreport", line):

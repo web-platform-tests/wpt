@@ -10,12 +10,13 @@ from ...data.session import PAUSED, COMPLETED, ABORTED, PENDING, RUNNING
 DEFAULT_LAST_COMPLETED_TESTS_COUNT = 5
 DEFAULT_LAST_COMPLETED_TESTS_STATUS = [u"ALL"]
 
+
 class TestsApiHandler(ApiHandler):
     def __init__(
-        self, 
-        wpt_port, 
-        wpt_ssl_port, 
-        tests_manager, 
+        self,
+        wpt_port,
+        wpt_ssl_port,
+        tests_manager,
         sessions_manager,
         hostname,
         web_root,
@@ -41,7 +42,7 @@ class TestsApiHandler(ApiHandler):
         if session is None:
             response.status = 404
             return
-        
+
         data = serialize_session(session)
         tests = {
             u"token": token,
@@ -50,7 +51,6 @@ class TestsApiHandler(ApiHandler):
         }
         self.send_json(tests, response)
 
-    
     def read_next_test(self, request, response):
         try:
             uri_parts = self.parse_uri(request)
@@ -87,11 +87,12 @@ class TestsApiHandler(ApiHandler):
                 )
                 self.send_json({u"next_test": url}, response)
                 return
-            
+
             test = self._tests_manager.next_test(session)
 
             if test is None:
-                if session.status != RUNNING: return
+                if session.status != RUNNING:
+                    return
                 url = self._generate_wave_url(
                     hostname=hostname,
                     uri=u"/wave/finish.html",
@@ -101,21 +102,22 @@ class TestsApiHandler(ApiHandler):
                 self._sessions_manager.complete_session(token)
                 return
 
-            test_timeout = self._tests_manager.get_test_timeout(test=test, session=session)
+            test_timeout = self._tests_manager.get_test_timeout(
+                test=test, session=session)
             url = self._generate_test_url(
                 test=test,
                 token=token,
                 test_timeout=test_timeout,
-                hostname=hostname
-            )
+                hostname=hostname)
 
             self.send_json({
                 u"next_test": url
             }, response)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to read next test: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to read next test: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def read_last_completed(self, request, response):
@@ -124,7 +126,7 @@ class TestsApiHandler(ApiHandler):
             token = uri_parts[3]
             query = self.parse_query_parameters(request)
             count = None
-            if u"count" in query: 
+            if u"count" in query:
                 count = query[u"count"]
             else:
                 count = DEFAULT_LAST_COMPLETED_TESTS_COUNT
@@ -135,7 +137,8 @@ class TestsApiHandler(ApiHandler):
             else:
                 status = DEFAULT_LAST_COMPLETED_TESTS_STATUS
 
-            completed_tests = self._tests_manager.read_last_completed_tests(token, count)
+            completed_tests = self._tests_manager.read_last_completed_tests(
+                token, count)
             tests = {}
             for one_status in status:
                 one_status = one_status.lower()
@@ -154,24 +157,26 @@ class TestsApiHandler(ApiHandler):
                     tests[u"timeout"] = completed_tests[u"timeout"]
                     break
             self.send_json(data=tests, response=response)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to read last completed tests: " + info[0].__name__ + u": " + unicode(info[1].args[0])
+            print(u"Failed to read last completed tests: "
+                + info[0].__name__ + u": " + str(info[1].args[0]))
             response.status = 500
 
     def read_malfunctioning(self, request, response):
         try:
             uri_parts = self.parse_uri(request)
             token = uri_parts[3]
-            
-            malfunctioning_tests = self._tests_manager.read_malfunctioning_tests(token)
+            tm = self._tests_manager
+            malfunctioning_tests = tm.read_malfunctioning_tests(token)
 
             self.send_json(data=malfunctioning_tests, response=response)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to read malfunctioning tests: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to read malfunctioning tests: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def update_malfunctioning(self, request, response):
@@ -183,24 +188,25 @@ class TestsApiHandler(ApiHandler):
             body = request.body.decode(u"utf-8")
             if body != u"":
                 data = json.loads(body)
-            
+
             self._tests_manager.update_malfunctioning_tests(token, data)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to read malfunctioning tests: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to read malfunctioning tests: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def read_available_apis(self, request, response):
         try:
             apis = self._test_loader.get_apis()
             self.send_json(apis, response)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to read malfunctioning tests: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to read malfunctioning tests: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
-
 
     def handle_request(self, request, response):
         method = request.method
@@ -208,13 +214,13 @@ class TestsApiHandler(ApiHandler):
         uri_parts = uri_parts[3:]
 
         # /api/tests
-        if len(uri_parts) == 0:         
+        if len(uri_parts) == 0:
             if method == u"GET":
                 self.read_tests(response)
                 return
 
         # /api/tests/<token>
-        if len(uri_parts) == 1:         
+        if len(uri_parts) == 1:
             if method == u"GET":
                 if uri_parts[0] == "apis":
                     self.read_available_apis(request, response)
@@ -239,7 +245,6 @@ class TestsApiHandler(ApiHandler):
                 if function == u"malfunctioning":
                     self.update_malfunctioning(request, response)
                     return
-
 
         response.status = 404
 
@@ -274,6 +279,12 @@ class TestsApiHandler(ApiHandler):
             query=query
         )
 
-    def _generate_url(self, hostname, port=80, uri=u"/", query=u"", protocol=u"http"):
-        if not uri.startswith(u"/"): uri = u"/" + uri
+    def _generate_url(self,
+                      hostname,
+                      port=80,
+                      uri=u"/",
+                      query=u"",
+                      protocol=u"http"):
+        if not uri.startswith(u"/"):
+            uri = u"/" + uri
         return u"{}://{}:{}{}{}".format(protocol, hostname, port, uri, query)

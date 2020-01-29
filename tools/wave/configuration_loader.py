@@ -22,8 +22,10 @@ def load(configuration_file_path):
 
     web_root = configuration.get(
         "web_root", default_configuration["web_root"])
-    if not web_root.startswith("/"): web_root = web_root + "/"
-    if not web_root.endswith("/"): web_root += "/"
+    if not web_root.startswith("/"):
+        web_root = web_root + "/"
+    if not web_root.endswith("/"):
+        web_root += "/"
     configuration["web_root"] = web_root
 
     configuration[u"results_directory_path"] = configuration.get(
@@ -41,7 +43,8 @@ def load(configuration_file_path):
         u"browser_host", default_configuration[u"browser_host"])
 
     configuration[u"import_enabled"] = configuration.get(
-        u"enable_results_import", default_configuration[u"enable_results_import"])
+        u"enable_results_import",
+        default_configuration[u"enable_results_import"])
 
     configuration[u"persisting_interval"] = configuration.get(
         u"persisting_interval", default_configuration[u"persisting_interval"])
@@ -54,7 +57,8 @@ def load(configuration_file_path):
     configuration[u"database_directory_path"] = os.path.join(
         os.getcwdu(), u"tools/wave/data")
 
-    configuration[u"api_titles"] = configuration.get(u"api_titles", default_configuration[u"api_titles"])
+    configuration[u"api_titles"] = configuration.get(
+        u"api_titles", default_configuration[u"api_titles"])
 
     return configuration
 

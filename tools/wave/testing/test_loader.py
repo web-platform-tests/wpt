@@ -8,6 +8,7 @@ MANUAL = u"manual"
 
 TEST_TYPES = [AUTOMATIC, MANUAL]
 
+
 class TestLoader(object):
     def initialize(
         self,
@@ -51,7 +52,8 @@ class TestLoader(object):
                     continue
                 self._tests[AUTOMATIC][api].remove(test_path)
 
-                if not self._is_valid_test(test_path, include_list=include_list):
+                if not self._is_valid_test(test_path,
+                                           include_list=include_list):
                     continue
 
                 if api not in self._tests[MANUAL]:
@@ -62,7 +64,8 @@ class TestLoader(object):
         loaded_tests = {}
         for test in tests:
             test_path = tests[test][0][0]
-            if not test_path.startswith("/"): test_path = "/" + test_path
+            if not test_path.startswith("/"):
+                test_path = "/" + test_path
             if self._is_valid_test(test_path, exclude_list, include_list):
                 api_name = self._parse_api_name(test_path)
                 if api_name not in loaded_tests:
@@ -134,9 +137,11 @@ class TestLoader(object):
                 continue
             for api in self._tests[test_type]:
                 for test_path in self._tests[test_type][api]:
-                    if not self._is_valid_test(test_path, exclude_list, include_list):
+                    if not self._is_valid_test(test_path, exclude_list,
+                                               include_list):
                         continue
-                    if reference_results is not None and test_path not in reference_results[api]:
+                    if reference_results is not None and \
+                       test_path not in reference_results[api]:
                         continue
                     if api not in loaded_tests:
                         loaded_tests[api] = []
@@ -152,7 +157,8 @@ class TestLoader(object):
                     if item["path"] == "/" + api:
                         in_list = True
                         break
-                if in_list: continue
+                if in_list:
+                    continue
                 title = None
                 for item in self._api_titles:
                     if item["path"] == "/" + api:

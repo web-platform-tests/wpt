@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from ..testing.test_loader import AUTOMATIC, MANUAL
+from ..testing.test_loader import MANUAL
 
 PAUSED = u"paused"
 RUNNING = u"running"
@@ -7,6 +7,7 @@ COMPLETED = u"completed"
 ABORTED = u"aborted"
 PENDING = u"pending"
 UNKNOWN = u"unknown"
+
 
 class Session(object):
     def __init__(

@@ -22,6 +22,7 @@ def parse_user_agent(user_agent_string):
         u"version": version
     }
 
+
 def abbreviate_browser_name(name):
     short_names = {
         u"Chrome": u"Ch",

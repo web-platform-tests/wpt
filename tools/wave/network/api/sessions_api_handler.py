@@ -13,6 +13,7 @@ from ...data.http_polling_client import HttpPollingClient
 
 TOKEN_LENGTH = 36
 
+
 class SessionsApiHandler(ApiHandler):
     def __init__(self, sessions_manager, results_manager, event_dispatcher):
         self._sessions_manager = sessions_manager
@@ -60,16 +61,18 @@ class SessionsApiHandler(ApiHandler):
             )
 
             self.send_json({u"token": session.token}, response)
-        except InvalidDataException as e:
+        except InvalidDataException:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to create session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to create session: " + info[0].__name__ + u": "
+                + info[1].args[0])
             self.send_json({u"error": info[1].args[0]}, response, 400)
 
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to create session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to create session: " + info[0].__name__ + u": "
+                + info[1].args[0])
             response.status = 500
 
     def read_session(self, request, response):
@@ -94,10 +97,11 @@ class SessionsApiHandler(ApiHandler):
             del data[u"status"]
 
             self.send_json(data, response)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to read session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to read session: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def read_session_status(self, request, response):
@@ -127,10 +131,11 @@ class SessionsApiHandler(ApiHandler):
             del data[u"webhook_urls"]
 
             self.send_json(data, response)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to read session status: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to read session status: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def read_public_sessions(self, request, response):
@@ -138,10 +143,11 @@ class SessionsApiHandler(ApiHandler):
             session_tokens = self._sessions_manager.read_public_sessions()
 
             self.send_json(session_tokens, response)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to read public session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to read public session: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def update_session_configuration(self, request, response):
@@ -180,12 +186,13 @@ class SessionsApiHandler(ApiHandler):
                 webhook_urls
             )
         except NotFoundException as e:
-            print u"Failed to update session: " + e.args[0]
+            print(u"Failed to update session: " + e.args[0])
             response.status = 404
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to update session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to update session: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def update_labels(self, request, response):
@@ -201,10 +208,11 @@ class SessionsApiHandler(ApiHandler):
                     labels = labels[u"labels"]
 
             self._sessions_manager.update_labels(token=token, labels=labels)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to update labels: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to update labels: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def delete_session(self, request, response):
@@ -219,10 +227,11 @@ class SessionsApiHandler(ApiHandler):
 
             self._sessions_manager.delete_session(token)
             self._results_manager.delete_results(token)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to delete session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to delete session: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def start_session(self, request, response):
@@ -231,10 +240,11 @@ class SessionsApiHandler(ApiHandler):
             token = uri_parts[3]
 
             self._sessions_manager.start_session(token)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to start session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to start session: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def pause_session(self, request, response):
@@ -243,10 +253,11 @@ class SessionsApiHandler(ApiHandler):
             token = uri_parts[3]
 
             self._sessions_manager.pause_session(token)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to pause session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to pause session: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def stop_session(self, request, response):
@@ -255,10 +266,11 @@ class SessionsApiHandler(ApiHandler):
             token = uri_parts[3]
 
             self._sessions_manager.stop_session(token)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to stop session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to stop session: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def resume_session(self, request, response):
@@ -272,12 +284,12 @@ class SessionsApiHandler(ApiHandler):
                 resume_token = json.loads(body)[u"resume_token"]
 
             self._sessions_manager.resume_session(token, resume_token)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to stop session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to stop session: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
-
 
     def find_session(self, request, response):
         try:
@@ -287,12 +299,12 @@ class SessionsApiHandler(ApiHandler):
             if token is None:
                 response.status = 404
                 return
-
             self.send_json({"token": token}, response)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to find session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to find session: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def register_event_listener(self, request, response):
@@ -308,10 +320,11 @@ class SessionsApiHandler(ApiHandler):
 
             message = http_polling_client.message
             self.send_json(data=message, response=response)
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to find session: " + info[0].__name__ + u": " + info[1].args[0]
+            print(u"Failed to find session: "
+                + info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def handle_request(self, request, response):
@@ -320,14 +333,14 @@ class SessionsApiHandler(ApiHandler):
         uri_parts = uri_parts[3:]
 
         # /api/sessions
-        if len(uri_parts) == 0:         
+        if len(uri_parts) == 0:
             if method == u"POST":
                 self.create_session(request, response)
                 return
 
         # /api/sessions/<token>
         if len(uri_parts) == 1:
-            function = uri_parts[0]     
+            function = uri_parts[0]
             if method == u"GET":
                 if function == u"public":
                     self.read_public_sessions(request, response)

@@ -16,13 +16,16 @@ from .testing.event_dispatcher import EventDispatcher
 
 
 class WaveServer(object):
-    def initialize(self, configuration_file_path=u".", application_directory_path=u"", reports_enabled=False):
+    def initialize(self,
+                   configuration_file_path=u".",
+                   application_directory_path=u"",
+                   reports_enabled=False):
         sys.stdout.write(u"Loading configuration ...")
         sys.stdout.flush()
 
         configuration = configuration_loader.load(configuration_file_path)
 
-        print u" done."
+        print(u" done.")
 
         # Initialize Managers
         event_dispatcher = EventDispatcher()
@@ -49,13 +52,12 @@ class WaveServer(object):
         )
 
         tests_manager.initialize(
-            test_loader, 
-            results_manager=results_manager, 
+            test_loader,
+            results_manager=results_manager,
             sessions_manager=sessions_manager,
             event_dispatcher=event_dispatcher
         )
 
-        # Load Tests
         exclude_list_file_path = os.path.abspath(u"./excluded.json")
         include_list_file_path = os.path.abspath(u"./included.json")
         manifest_file_path = os.path.abspath(u"./MANIFEST.json")
@@ -70,17 +72,17 @@ class WaveServer(object):
 
         # Initialize HTTP handlers
         static_handler = StaticHandler(
-                web_root=configuration["web_root"],
-                http_port=configuration["wpt_port"],
-                https_port=configuration["wpt_ssl_port"]
+            web_root=configuration["web_root"],
+            http_port=configuration["wpt_port"],
+            https_port=configuration["wpt_ssl_port"]
         )
         sessions_api_handler = SessionsApiHandler(
-            sessions_manager=sessions_manager, 
+            sessions_manager=sessions_manager,
             results_manager=results_manager,
             event_dispatcher=event_dispatcher
         )
         tests_api_handler = TestsApiHandler(
-            tests_manager=tests_manager, 
+            tests_manager=tests_manager,
             sessions_manager=sessions_manager,
             wpt_port=configuration[u"wpt_port"],
             wpt_ssl_port=configuration[u"wpt_ssl_port"],

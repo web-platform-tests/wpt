@@ -2,10 +2,11 @@ import httplib
 import sys
 import traceback
 
+
 class HttpHandler(object):
     def __init__(
-        self, 
-        static_handler=None, 
+        self,
+        static_handler=None,
         sessions_api_handler=None,
         tests_api_handler=None,
         results_api_handler=None,
@@ -31,7 +32,7 @@ class HttpHandler(object):
         for index, part in enumerate(request.request_path.split(u"/")):
             if index > 2:
                 break
-            if part == u"" or part == None or index != 2:
+            if part == u"" or part is None or index != 2:
                 continue
             if part != u"api":
                 continue
@@ -52,13 +53,13 @@ class HttpHandler(object):
         for index, part in enumerate(request.request_path.split(u"/")):
             if index > 3:
                 break
-            if part == u"" or part == None or index != 3:
+            if part == u"" or part is None or index != 3:
                 continue
             api_name = part.replace("?", "")
 
         if api_name is None:
             return
-        
+
         if api_name == u"sessions":
             self.sessions_api_handler.handle_request(request, response)
             return
@@ -88,27 +89,9 @@ class HttpHandler(object):
             response.headers = proxy_response.getheaders()
             response.status = proxy_response.status
 
-        except IOError as e:
+        except IOError:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print u"Failed to perform proxy request: " + info[0].__name__ + u": " + unicode(info[1].args[0])
+            print(u"Failed to perform proxy request: "
+                + info[0].__name__ + u": " + str(info[1].args[0]))
             response.status = 500
-
-
-# Request Object Attributes
-# auth
-# body
-# cookies
-# doc_root
-# headers
-# method
-# protocol_version
-# raw_headers
-# raw_input
-# request_line
-# request_path
-# route_match
-# server
-# url
-# url_base
-# url_parts

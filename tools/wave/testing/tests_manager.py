@@ -8,12 +8,13 @@ from .event_dispatcher import TEST_COMPLETED_EVENT
 from ..data.exceptions.not_found_exception import NotFoundException
 from ..data.session import COMPLETED, ABORTED
 
+
 class TestsManager(object):
     def initialize(
-        self, 
-        test_loader, 
-        sessions_manager, 
-        results_manager, 
+        self,
+        test_loader,
+        sessions_manager,
+        results_manager,
         event_dispatcher
     ):
         self._test_loader = test_loader
@@ -24,7 +25,8 @@ class TestsManager(object):
         self._timeouts = []
 
     def next_test(self, session):
-        if session.status == COMPLETED or session.status == ABORTED: return None
+        if session.status == COMPLETED or session.status == ABORTED:
+            return None
 
         pending_tests = session.pending_tests
         running_tests = session.running_tests
@@ -35,8 +37,12 @@ class TestsManager(object):
             session.pending_tests = pending_tests
             self._sessions_manager.update_session(session)
 
+        if running_tests is None:
+            running_tests = {}
+
         test = self._get_next_test_from_list(pending_tests)
-        if test is None: return None
+        if test is None:
+            return None
 
         pending_tests = self.remove_test_from_list(pending_tests, test)
         running_tests = self.add_test_to_list(running_tests, test)
@@ -67,12 +73,12 @@ class TestsManager(object):
             results_tests[api] = []
             for result in results[api]:
                 results_tests[api].append(result[u"test"])
-            
+
         sorted_results_tests = self._sort_tests_by_execution(results_tests)
         sorted_results_tests.reverse()
 
         tests = {u"pass": [], u"fail": [], u"timeout": []}
-        
+
         for test in sorted_results_tests:
             api = None
             for part in test.split(u"/"):
@@ -102,7 +108,8 @@ class TestsManager(object):
                 tests[u"pass"].append(result[u"test"])
             if not passes and len(tests[u"fail"]) < count:
                 tests[u"fail"].append(result[u"test"])
-            if len(tests[u"pass"]) == count and len(tests[u"fail"]) == count and len(tests[u"timeout"]) == count:
+            if len(tests[u"pass"]) == count and len(tests[u"fail"]) == count \
+               and len(tests[u"timeout"]) == count:
                 return tests
         return tests
 
@@ -131,10 +138,12 @@ class TestsManager(object):
                 micro_test_list[api_a] = [test_a]
                 micro_test_list[api_b] = [test_b]
             next_test = tests_manager._get_next_test_from_list(micro_test_list)
-            if next_test == test_a: return -1
+            if next_test == test_a:
+                return -1
             return 1
 
-        sorted_tests.sort(cmp=lambda test_a, test_b: compare(self, test_a, test_b))
+        sorted_tests.sort(cmp=lambda test_a,
+                          test_b: compare(self, test_a, test_b))
         return sorted_tests
 
     def _get_next_test_from_list(self, tests):
@@ -152,7 +161,8 @@ class TestsManager(object):
             tests[api].sort(key=lambda api: api.replace(u"/", u"").lower())
 
         while test is None:
-            if len(apis) <= current_api: return None
+            if len(apis) <= current_api:
+                return None
             api = apis[current_api]
 
             if len(tests[api]) <= current_test:
@@ -174,21 +184,25 @@ class TestsManager(object):
                         continue
 
                     return None
-                
+
                 test = None
                 continue
             test = tests[api][current_test]
 
-            if u"manual" in test and u"https" not in test: return test
+            if u"manual" in test and u"https" not in test:
+                return test
 
             if u"manual" in test and u"https" in test:
-                if not has_http: return test
+                if not has_http:
+                    return test
 
             if u"manual" not in test and u"https" not in test:
-                if not has_manual: return test
+                if not has_manual:
+                    return test
 
             if u"manual" not in test and u"https" in test:
-                if not has_manual and not has_http: return test
+                if not has_manual and not has_http:
+                    return test
 
             current_test = current_test + 1
             test = None
@@ -205,8 +219,9 @@ class TestsManager(object):
         current_api = "___"
         for test in remaining_tests:
             if not test.startswith("/" + current_api) and \
-                not test.startswith(current_api):
-                current_api = next((p for p in test.split(u"/") if p != u""), None)
+               not test.startswith(current_api):
+                current_api = next((p for p in test.split(u"/") if p != u""),
+                                   None)
                 if current_api not in remaining_tests_by_api:
                     remaining_tests_by_api[current_api] = []
             remaining_tests_by_api[current_api].append(test)
@@ -215,11 +230,14 @@ class TestsManager(object):
     def remove_test_from_list(self, test_list, test):
         api = None
         for part in test.split(u"/"):
-            if part is None or part == u"": continue
+            if part is None or part == u"":
+                continue
             api = part
             break
-        if api not in test_list: return test_list
-        if test not in test_list[api]: return test_list
+        if api not in test_list:
+            return test_list
+        if test not in test_list[api]:
+            return test_list
         test_list[api].remove(test)
         if len(test_list[api]) == 0:
             del test_list[api]
@@ -229,18 +247,21 @@ class TestsManager(object):
     def add_test_to_list(self, test_list, test):
         api = None
         for part in test.split(u"/"):
-            if part is None or part == u"": continue
+            if part is None or part == u"":
+                continue
             api = part
             break
-        if api in test_list and test in test_list[api]: return test_list
-        if api not in test_list: test_list[api] = []
+        if api in test_list and test in test_list[api]:
+            return test_list
+        if api not in test_list:
+            test_list[api] = []
         test_list[api].append(test)
         return test_list
 
     def get_test_timeout(self, test, session):
         timeouts = session.timeouts
         test_timeout = None
-        
+
         for path in list(timeouts.keys()):
             pattern = re.compile(u"^" + path.replace(u".", u""))
             if pattern.match(test.replace(u".", u"")) is not None:
@@ -270,7 +291,6 @@ class TestsManager(object):
 
         self._results_manager.create_result(token, data)
 
-
     def read_tests(self):
         return self._test_loader.get_tests()
 
@@ -285,7 +305,7 @@ class TestsManager(object):
         self._timeouts.remove(timeout)
 
         self.update_tests(
-            running_tests=running_tests, 
+            running_tests=running_tests,
             session=session
         )
 
@@ -296,9 +316,9 @@ class TestsManager(object):
         )
 
     def update_tests(
-        self, 
-        pending_tests=None, 
-        running_tests=None, 
+        self,
+        pending_tests=None,
+        running_tests=None,
         session=None
     ):
         if pending_tests is not None:
@@ -309,25 +329,27 @@ class TestsManager(object):
 
         self._sessions_manager.update_session(session)
 
-
     def calculate_test_files_count(self, tests):
         count = {}
         for api in tests:
             count[api] = len(tests[api])
         return count
 
-
     def read_malfunctioning_tests(self, token):
         session = self._sessions_manager.read_session(token)
         return session.malfunctioning_tests
 
     def update_malfunctioning_tests(self, token, tests):
-        if token is None: return
-        if tests is None: return
+        if token is None:
+            return
+        if tests is None:
+            return
 
         session = self._sessions_manager.read_session(token)
-        if session is None: raise NotFoundException("Could not find session using token: " + token)
-        if session.is_public: return
+        if session is None:
+            raise NotFoundException("Could not find session using token: " + token)
+        if session.is_public:
+            return
         session.malfunctioning_tests = tests
         self._sessions_manager.update_session(session)
 

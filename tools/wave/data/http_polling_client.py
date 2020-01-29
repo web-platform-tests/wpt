@@ -1,5 +1,6 @@
 from client import Client
 
+
 class HttpPollingClient(Client):
     def __init__(self, session_token, event):
         super(HttpPollingClient, self).__init__(session_token)

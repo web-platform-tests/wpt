@@ -16,7 +16,9 @@ class ApiHandler(object):
         response.status = status
 
     def send_file(self, blob, file_name, response):
-        self.set_headers(response, [("Content-Disposition", "attachment;filename=" + file_name)])
+        self.set_headers(response,
+                         [("Content-Disposition",
+                           "attachment;filename=" + file_name)])
         response.content = blob
 
     def send_zip(self, data, file_name, response):
@@ -35,9 +37,11 @@ class ApiHandler(object):
         return uri_parts
 
     def parse_query_parameters(self, request):
-        if u"?" not in request.request_path: return {}
+        if u"?" not in request.request_path:
+            return {}
         query = request.request_path.split(u"?")[1]
-        if query == u"": return {}
+        if query == u"":
+            return {}
         key_value_pairs = []
         if u"&" in query:
             key_value_pairs = query.split(u"&")
@@ -53,5 +57,3 @@ class ApiHandler(object):
             parsed_parameters[key] = value
 
         return parsed_parameters
-
-

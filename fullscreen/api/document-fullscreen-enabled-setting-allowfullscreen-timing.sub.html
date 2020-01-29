@@ -23,7 +23,7 @@ async_test((t) => {
 
   document.body.appendChild(iframe);
 
-  setTimeout(() => {
+  t.step_timeout(() => {
     iframe.allowFullscreen = true;
   }, 10);
 });

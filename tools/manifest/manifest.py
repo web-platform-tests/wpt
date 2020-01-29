@@ -195,7 +195,14 @@ class Manifest(object):
             changed = True
 
         if len(to_update) > 25 and cpu_count() > 1:
+            # 25 derived experimentally (2020-01) to be approximately
+            # the point at which it is quicker to create Pool and
+            # parallelize this
             pool = Pool()
+
+            # chunksize set > 1 when more than 10000 tests, because
+            # chunking is a net-gain once we get to very large numbers
+            # of items
             results = pool.imap_unordered(compute_manifest_items,
                                           to_update,
                                           chunksize=max(1, len(to_update) // 10000)
@@ -219,14 +226,24 @@ class Manifest(object):
 
         return changed
 
-    def to_json(self, super_dangerous_mode_do_not_use=False):
+    def to_json(self, caller_owns_obj=True):
         # type: (bool) -> Dict[Text, Any]
+        """Dump a manifest into a object which can be serialized as JSON
+
+        If caller_owns_obj is False, then the return value remains
+        owned by the manifest; it is _vitally important_ that _no_
+        (even read) operation is done on the manifest, as otherwise
+        objects within the object graph rooted at the return value can
+        be mutated. This essentially makes this mode very dangerous
+        and only to be used under extreme care.
+
+        """
         out_items = {
             test_type: type_paths.to_json()
             for test_type, type_paths in iteritems(self._data) if type_paths
         }
 
-        if not super_dangerous_mode_do_not_use:
+        if caller_owns_obj:
             out_items = deepcopy(out_items)
 
         rv = {"url_base": self.url_base,
@@ -235,8 +252,20 @@ class Manifest(object):
         return rv
 
     @classmethod
-    def from_json(cls, tests_root, obj, types=None, callee_owns_obj=True):
+    def from_json(cls, tests_root, obj, types=None, callee_owns_obj=False):
         # type: (str, Dict[Text, Any], Optional[Container[Text]], bool) -> Manifest
+        """Load a manifest from a JSON object
+
+        This loads a manifest for a given local test_root path from an
+        object obj, potentially partially loading it to only load the
+        types given by types.
+
+        If callee_owns_obj is True, then ownership of obj transfers
+        to this function when called, and the caller must never mutate
+        the obj or anything referred to in the object graph rooted at
+        obj.
+
+        """
         version = obj.get("version")
         if version != CURRENT_VERSION:
             raise ManifestVersionMismatch
@@ -252,7 +281,7 @@ class Manifest(object):
             if types and test_type not in types:
                 continue
 
-            if callee_owns_obj:
+            if not callee_owns_obj:
                 type_paths = deepcopy(type_paths)
 
             self._data[test_type].set_json(type_paths)
@@ -293,7 +322,7 @@ def _load(logger,  # type: Logger
                 rv = Manifest.from_json(tests_root,
                                         fast_json.load(f),
                                         types=types,
-                                        callee_owns_obj=False)
+                                        callee_owns_obj=True)
         except IOError:
             return None
         except ValueError:
@@ -303,7 +332,7 @@ def _load(logger,  # type: Logger
         rv = Manifest.from_json(tests_root,
                                 fast_json.load(manifest),
                                 types=types,
-                                callee_owns_obj=False)
+                                callee_owns_obj=True)
 
     if allow_cached:
         __load_cache[manifest_path] = rv
@@ -364,6 +393,6 @@ def write(manifest, manifest_path):
     with open(manifest_path, "wb") as f:
         # Use ',' instead of the default ', ' separator to prevent trailing
         # spaces: https://docs.python.org/2/library/json.html#json.dump
-        json.dump(manifest.to_json(super_dangerous_mode_do_not_use=True), f,
+        json.dump(manifest.to_json(caller_owns_obj=True), f,
                   sort_keys=True, indent=1, separators=(',', ': '))
         f.write("\n")

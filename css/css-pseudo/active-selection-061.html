@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and preserved &amp;NewLine; character</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+  <link rel="match" href="reference/ref-nothing-below.xht">
+
+  <!--
+
+  Issue 1018465: [CSS4-Pseudo] Active selection and hard wrap (or hard return)
+  line break: ::selection should not select <br>
+  https://bugs.chromium.org/p/chromium/issues/detail?id=1018465
+
+  -->
+
+  <meta content="" name="flags">
+  <meta name="assert" content="The &amp;NewLine; character reference is an empty element. Its background color can not be painted because it is (and it serves as) a line break control character. Therefore, in this test, nothing should be painted or viewable. The fact that the line break at preserved newline characters thanks to 'white-space: pre' does not and must not change that.">
+
+  <style>
+  div
+    {
+      background-color: transparent; /* or initial or unset */
+      font-size: 100px;
+      white-space: pre; /* or pre-line or pre-wrap or break-spaces */
+    }
+
+  div::selection
+    {
+      background-color: red;
+    }
+  </style>
+
+  <script>
+  function startTest()
+  {
+  var targetRange = document.createRange();
+  /* We first create an empty range */
+  targetRange.selectNodeContents(document.getElementById("test"));
+  /* Then we set the range boundaries to the children of div#test */
+  window.getSelection().addRange(targetRange);
+  /* Finally, we now select such range of content */
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>Test passes if there is nothing below.</p>
+
+  <div id="test">&NewLine;&NewLine;</div>

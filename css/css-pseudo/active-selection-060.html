@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and &lt;hr&gt; element</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+  <link rel="match" href="reference/ref-filled-green-100px-square.xht">
+
+  <meta content="" name="flags">
+  <meta name="assert" content="This test checks that an &lt;hr&gt; element, although an empty element in this test, can be selected and its background can be painted.">
+
+  <style>
+  hr
+    {
+      background-color: transparent; /* or initial or unset */
+      border: none 0px;
+      height: 100px;
+      width: 100px;
+    }
+
+  hr::selection
+    {
+      background-color: green;
+      color: red;
+    }
+  </style>
+
+  <script>
+  function startTest()
+  {
+  var targetRange = document.createRange();
+  /* We first create an empty range */
+  targetRange.selectNodeContents(document.getElementById("test"));
+  /* Then we set the range boundaries to the children of div#test */
+  window.getSelection().addRange(targetRange);
+  /* Finally, we now select such range of content */
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.
+
+  <hr id="test">

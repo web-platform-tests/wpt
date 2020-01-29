@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: active selection and &lt;hr&gt; element</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+  <link rel="match" href="reference/ref-nothing-below.xht">
+
+  <meta content="" name="flags">
+  <meta name="assert" content="The &lt;hr&gt; element is an empty element. Its background color can be painted but specifying its color should generate no rendering effect of any kind. Since the 'background-color' has not been specified, then it defaults as 'transparent'. Therefore nothing should be painted or viewable in this test.">
+
+  <style>
+  hr
+    {
+      background-color: transparent; /* or initial or unset */
+      border: none 0px;
+      height: 100px;
+    }
+
+  hr::selection
+    {
+      color: red;
+    }
+  </style>
+
+  <script>
+  function startTest()
+  {
+  var targetRange = document.createRange();
+  /* We first create an empty range */
+  targetRange.selectNodeContents(document.getElementById("test"));
+  /* Then we set the range boundaries to the children of div#test */
+  window.getSelection().addRange(targetRange);
+  /* Finally, we now select such range of content */
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>Test passes if there is nothing below.</p>
+
+  <hr id="test">

@@ -19,15 +19,46 @@ CSS has the following behavior regarding baselines (this is non-normative, also 
   - 'visible': the baseline is the same as the baseline for the last line box in the inline-block.
   - otherwise: the baseline is like replaced elements.
 
-The baselines for different widgets, as implemented in Firefox, can be:
+The baselines for different widgets, as implemented in Firefox, are as follows:
 
-* like inline-block
-* like replaced elements
-* at the content-box edge
-* at the border-box edge
+<input type=text>
+<input type=search>
+<input type=tel>
+<input type=email>
+<input type=password>
+<input type=date>
+<input type=month>
+<input type=week>
+<input type=time>
+<input type=datetime-local>
+<input type=number>
+<input type=submit>
+<input type=reset>
+<input type=button>
+   Like inline-block but 'overflow' is forced to 'visible' and text inside is vertically centered.
 
-Since baseline at border-box edge isn't a behavior CSS has normally, we fake it in the references
-with the 'no-margin-bottom' class.
+<input type=checkbox> with 'appearance: auto'
+<input type=radio> with 'appearance: auto'
+   At the border-box edge. (Since baseline at border-box edge isn't a behavior CSS has normally, we
+   fake it in the references with the 'no-margin-bottom' class.)
+
+<input type=color>
+   At the content-box edge.
+
+<input type=file>
+   Like inline-block but 'overflow' is forced to to 'visible' and it contains a button; the button
+   can affect where the baseline is.
+
+<input type=image> showing alt text, with 'overflow: visible'
+   Like inline-block.
+
+<input type=image> showing an image
+<input type=image> showing alt text, with 'overflow' something other than 'visible'
+<input type=range>
+<input type=checkbox> with 'appearance: none'
+<input type=radio> with 'appearance: none'
+   Like replaced elements.
+
 -->
 <style>
 .test {

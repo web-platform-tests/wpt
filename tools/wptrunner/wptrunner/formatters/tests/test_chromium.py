@@ -442,3 +442,4 @@ def test_flaky_test_unexpected(capfd):
     # one of the expected ones
     assert test_obj["is_regression"] is True
     assert test_obj["is_unexpected"] is True
+

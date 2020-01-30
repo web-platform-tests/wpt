@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script nonce="abc" src="/resources/testharness.js"></script>
+  <script nonce="abc" src="/resources/testharnessreport.js"></script>
+  <script nonce="abc" src="support/helper.sub.js"></script>
+  <meta http-equiv="Content-Security-Policy" content="trusted-types *">
+</head>
+<body>
+<script>
+  function makePushAndPass(recordedSinkNames) {
+    return (type) => {
+      return (value, sinkName) => {
+        recordedSinkNames.push(`${type}: ${sinkName}`);
+        return value;
+      };
+    };
+  }
+
+  test(t => {
+    const recordedSinkNames = [];
+    const pushAndPass = makePushAndPass(recordedSinkNames);
+
+    TrustedTypes.createPolicy("default", {
+      createHTML: pushAndPass("HTML"),
+      createURL: pushAndPass("URL"),
+      createScript: pushAndPass("Script"),
+      createScriptURL: pushAndPass("ScriptURL"),
+    });
+
+    const a = document.createElement("a");
+    a.innerHTML = "<p>Some content</p>";
+    a.href = "relative/link";
+
+    const s = document.createElement("script");
+    s.innerText = "alert(1);"
+    s.src = "relative/script";
+
+    assert_array_equals(recordedSinkNames, [
+      "HTML: Element.innerHTML",
+      "URL: HTMLAnchorElement.href",
+      "Script: HTMLElement.innerText",
+      "ScriptURL: HTMLScriptElement.src",
+    ]);
+  }, "Sink names are correctly passed to the default policy functions.");
+
+  test(t => {
+    const recordedSinkNames = [];
+    const pushAndPass = makePushAndPass(recordedSinkNames);
+
+    const explicit = TrustedTypes.createPolicy("explicit", {
+      createHTML: pushAndPass("HTML"),
+      createURL: pushAndPass("URL"),
+      createScript: pushAndPass("Script"),
+      createScriptURL: pushAndPass("ScriptURL"),
+    });
+
+    explicit.createHTML("<p>Some content</p>");
+    explicit.createURL("relative/link");
+    explicit.createScript("alert(1);");
+    explicit.createScriptURL("relative/script");
+
+    assert_array_equals(recordedSinkNames, [
+      "HTML: TrustedTypePolicy.createHTML",
+      "URL: TrustedTypePolicy.createURL",
+      "Script: TrustedTypePolicy.createScript",
+      "ScriptURL: TrustedTypePolicy.createScriptURL",
+    ]);
+  }, "Sink names are correctly passed to an explicit policy functions.");
+</script>

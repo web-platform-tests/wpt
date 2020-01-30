@@ -2,6 +2,33 @@
 <title>HTML: widgets' baseline alignment and interaction with 'overflow'</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<!--
+This test tests where the baseline is for different widgets.
+This isn't yet specified, see https://github.com/whatwg/html/issues/5065
+
+Where the baseline is affects where *other* things on the same linebox are positioned. So this test
+makes assertions about the offsetTop for a previous sibling <span>, and compares it to a reference
+that has equivalent setup but using a styled <span> instead of an actual widget (where possible) so
+we can control where its baseline will be (assuming a correct CSS implementation).
+
+CSS has the following behavior regarding baselines (this is non-normative, also read the spec):
+
+* for a normal inline containing text, the baseline is the same as the text's baseline.
+* for replaced elements (like images), the baseline is at the bottom margin-box edge.
+* for an inline-block, it depends on its 'overflow':
+  - 'visible': the baseline is the same as the baseline for the last line box in the inline-block.
+  - otherwise: the baseline is like replaced elements.
+
+The baselines for different widgets, as implemented in Firefox, can be:
+
+* like inline-block
+* like replaced elements
+* at the content-box edge
+* at the border-box edge
+
+Since baseline at border-box edge isn't a behavior CSS has normally, we fake it in the references
+with the 'no-margin-bottom' class.
+-->
 <style>
 .test {
   border-collapse: collapse;
@@ -25,15 +52,17 @@
   padding: 10px;
   box-sizing: border-box;
   margin: 10px 0;
+  /* Note: a border is not specified because that would imply 'appearance: none' for some widgets */
 }
 .ref button img {
   height: 100%;
   width: 100%;
   display: block;
 }
+/* Use inline-grid instead of inline-block here to more easily center the text inside */
 .ref .fake-input-text {
   display: inline-grid;
-  border: 2px solid;
+  border: 2px solid; /* Matches UA default style */
   align-items: center;
 }
 .ref .inline-block {
@@ -53,7 +82,7 @@ The first span's offsetTop is what we want to compare with the corresponding tes
 The sibling element is there to control where the baseline for the line box will be.
 -->
 <table class="test ref">
-  <tr class="ref-text"><td><span>ref for text</span> <span class=fake-input-text>x</i>
+  <tr class="ref-text"><td><span>ref for text</span> <span class=fake-input-text>x</span>
   <tr class="ref-checkbox"><td><span>ref for checkbox</span> <img class=no-margin-bottom src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D">
   <tr class="ref-color"><td><span>ref for color</span> <button><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D"></button>
   <tr class="ref-file"><td><span>ref for file</span> <span class=inline-block><button>x</button></span>
@@ -140,12 +169,11 @@ This table gets populated by the script.
         case 'checkbox':
         case 'radio':
           return (style.includes('appearance: none;')) ? refImageSrcOffsetTop : refCheckboxOffsetTop;
-        case 'file':
-          return refFileOffsetTop;
         case 'image':
           return (src === 'data:,broken' && style.includes('overflow: visible;')) ? refImageAltOffsetTop : refImageSrcOffsetTop;
+        default:
+          return refTextOffsetTop;
       }
-      return refTextOffsetTop;
     }
 
     function testName(markup) {
@@ -155,6 +183,7 @@ This table gets populated by the script.
     for (const row of testTBody.children) {
       const input = row.firstChild.lastElementChild;
       const allowedDelta = 3;
+      // This is not using test() because promise_setup() only allows promise_test().
       promise_test(async () => {
         assert_precondition(input.type === input.getAttribute('type'), 'input type should be supported')
         const offsetTopActual = row.firstChild.firstChild.offsetTop;

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>contenteditable="plaintext-only" should exist</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="txt" contenteditable="plaintext-only"></div>
+<script>
+test(function() {
+    const txt = document.getElementById('txt');
+    assert_true(txt.isContentEditable);
+    assert_equals(txt.contentEditable, 'plaintext-only');
+});
+</script>

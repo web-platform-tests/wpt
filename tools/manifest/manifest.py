@@ -146,8 +146,8 @@ class Manifest(object):
                     for test in tests:
                         yield test
 
-    def update(self, tree):
-        # type: (Iterable[Tuple[Union[SourceFile, bytes], bool]]) -> bool
+    def update(self, tree, parallel=True):
+        # type: (Iterable[Tuple[Union[SourceFile, bytes], bool]], bool) -> bool
         """Update the manifest given an iterable of items that make up the updated manifest.
 
         The iterable must either generate tuples of the form (SourceFile, True) for paths
@@ -194,7 +194,7 @@ class Manifest(object):
         if to_update:
             changed = True
 
-        if len(to_update) > 25 and cpu_count() > 1:
+        if parallel and len(to_update) > 25 and cpu_count() > 1:
             # 25 derived experimentally (2020-01) to be approximately
             # the point at which it is quicker to create Pool and
             # parallelize this
@@ -202,7 +202,7 @@ class Manifest(object):
 
             # chunksize set > 1 when more than 10000 tests, because
             # chunking is a net-gain once we get to very large numbers
-            # of items
+            # of items (again, experimentally, 2020-01)
             results = pool.imap_unordered(compute_manifest_items,
                                           to_update,
                                           chunksize=max(1, len(to_update) // 10000)
@@ -349,7 +349,8 @@ def load_and_update(tests_root,  # type: bytes
                     working_copy=True,  # type: bool
                     types=None,  # type: Optional[Container[Text]]
                     write_manifest=True,  # type: bool
-                    allow_cached=True  # type: bool
+                    allow_cached=True,  # type: bool
+                    parallel=True  # type: bool
                     ):
     # type: (...) -> Manifest
     logger = get_logger()
@@ -377,7 +378,7 @@ def load_and_update(tests_root,  # type: bytes
     if rebuild or update:
         tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
                             working_copy, rebuild)
-        changed = manifest.update(tree)
+        changed = manifest.update(tree, parallel)
         if write_manifest and changed:
             write(manifest, manifest_path)
         tree.dump_caches()

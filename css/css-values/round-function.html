@@ -16,11 +16,11 @@ function testRound(testString, expectedString, {base="0px", msg}={}) {
         testEl.style.width = base;
         testEl.style.width = testString;
         const usedValue = getComputedStyle(testEl).width;
-        assert_not_equal(usedValue, base);
+        assert_not_equals(usedValue, base);
         testEl.style.width = base;
         testEl.style.width = expectedString;
         const expectedValue = getComputedStyle(testEl).width;
-        assert_not_equal(expectedValue, base)
+        assert_not_equals(expectedValue, base)
         assert_equal(usedValue, expectedValue);
     }, msg || `${testString} should round to ${expectedString}`);
 }

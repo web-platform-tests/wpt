@@ -398,7 +398,7 @@ function wrapResult(server_data) {
   requestViaPicture                3        -        Y       -
   requestViaScript                 2        Y        Y       -
   requestViaSendBeacon             3        -        Y       -
-  requestViaSharedWorker           2        Y        -       -
+  requestViaSharedWorker           2        Y        -       Y
   requestViaVideo                  3        -        Y       -
   requestViaWebSocket              3        -        Y       -
   requestViaWorklet                3        -        Y       Y
@@ -542,10 +542,10 @@ function requestViaDedicatedWorker(url, options) {
     .then(event => wrapResult(event.data));
 }
 
-function requestViaSharedWorker(url) {
+function requestViaSharedWorker(url, options) {
   var worker;
   try {
-    worker = new SharedWorker(url);
+    worker = new SharedWorker(url, options);
   } catch(e) {
     return Promise.reject(e);
   }
@@ -918,7 +918,16 @@ const subresourceMap = {
   },
   "sharedworker-classic": {
     path: "/common/security-features/subresource/shared-worker.py",
-    invoker: requestViaSharedWorker,
+    invoker: url => requestViaSharedWorker(url),
+  },
+  "sharedworker-module": {
+    path: "/common/security-features/subresource/shared-worker.py",
+    invoker: url => requestViaSharedWorker(url, {type: "module"}),
+  },
+  "sharedworker-import-data": {
+    path: "/common/security-features/subresource/shared-worker.py",
+    invoker: url =>
+        requestViaSharedWorker(workerUrlThatImports(url), {type: "module"}),
   },
 
   "websocket": {

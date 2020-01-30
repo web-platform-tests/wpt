@@ -8,42 +8,42 @@
 
   test(() => {
     assert_equals(NDEFRecord.length, 1);
-    assert_throws(new TypeError, () => new NDEFRecord());
+    assert_throws_js(TypeError, () => new NDEFRecord());
   }, 'NDEFRecord constructor without init dict');
 
   test(() => {
-    assert_throws(new TypeError, () => new NDEFRecord(null),
+    assert_throws_js(TypeError, () => new NDEFRecord(null),
         'NDEFRecordInit#recordType is a required field.');
   }, 'NDEFRecord constructor with null init dict');
 
   test(() => {
-    assert_throws(new TypeError, () => new NDEFRecord({id: test_record_id, data: test_text_data}),
+    assert_throws_js(TypeError, () => new NDEFRecord({id: test_record_id, data: test_text_data}),
         'NDEFRecordInit#recordType is a required field.');
   }, 'NDEFRecord constructor without NDEFRecordInit#recordType field');
 
   test(() => {
-    assert_throws(new TypeError, () => new NDEFRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(
           createRecord('empty', test_text_data, test_record_id)),
         'id does not apply for empty record type.');
   }, 'NDEFRecord constructor with empty record type and id');
 
   test(() => {
-    assert_throws(new TypeError, () => new NDEFRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(
           createRecord('empty', test_text_data, test_record_id, 'text/plain')),
         'mediaType does not apply for empty record type.');
-    assert_throws(new TypeError, () => new NDEFRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(
           createRecord('text', test_text_data, test_record_id, 'text/plain')),
         'mediaType does not apply for text record type.');
-    assert_throws(new TypeError, () => new NDEFRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(
           createRecord('url', test_url_data, test_record_id, 'text/plain')),
         'mediaType does not apply for url record type.');
-    assert_throws(new TypeError, () => new NDEFRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(
           createRecord('absolute-url', test_url_data, test_record_id, 'text/plain')),
         'mediaType does not apply for absolute-url record type.');
-    assert_throws(new TypeError, () => new NDEFRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(
           createRecord('unknown', test_buffer_data, test_record_id, 'application/octet-stream')),
         'mediaType does not apply for unknown record type.');
-    assert_throws(new TypeError, () => new NDEFRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(
           createRecord('foo.example.com:bar', test_buffer_data, test_record_id, 'application/octet-stream')),
         'mediaType does not apply for external record type.');
   }, 'NDEFRecord constructor should only accept mediaType for mime record type');
@@ -82,7 +82,7 @@
     assert_equals(record.encoding, null, 'encoding');
     assert_equals(record.lang, null, 'lang');
     assert_equals(record.data, null, 'data');
-    assert_throws('NotSupportedError', () => record.toRecords(),
+    assert_throws_dom('NotSupportedError', () => record.toRecords(),
         'Only smart-poster records and external type records could have embedded records.');
   }, 'NDEFRecord constructor with empty record type');
 
@@ -96,7 +96,7 @@
     const decoder = new TextDecoder();
     assert_equals(decoder.decode(record.data), test_text_data,
         'data has the same content with the original dictionary');
-    assert_throws('NotSupportedError', () => record.toRecords(),
+    assert_throws_dom('NotSupportedError', () => record.toRecords(),
         'Only smart-poster records and external type records could have embedded records.');
   }, 'NDEFRecord constructor with text record type and string data');
 
@@ -107,12 +107,13 @@
     assert_equals(record.recordType, 'text', 'recordType');
     assert_equals(record.mediaType, null, 'mediaType');
     assert_equals(record.id, test_record_id, 'id');
+    // By default, 'utf-8'.
     assert_equals(record.encoding, 'utf-8', 'encoding');
     assert_equals(record.lang, 'en', 'lang');
     const decoder = new TextDecoder();
     assert_equals(decoder.decode(record.data), test_text_data,
         'data has the same content with the original dictionary');
-    assert_throws('NotSupportedError', () => record.toRecords(),
+    assert_throws_dom('NotSupportedError', () => record.toRecords(),
         'Only smart-poster records and external type records could have embedded records.');
   }, 'NDEFRecord constructor with text record type and arrayBuffer data');
 
@@ -123,28 +124,43 @@
     assert_equals(record.recordType, 'text', 'recordType');
     assert_equals(record.mediaType, null, 'mediaType');
     assert_equals(record.id, test_record_id, 'id');
+    // By default, 'utf-8'.
     assert_equals(record.encoding, 'utf-8', 'encoding');
     assert_equals(record.lang, 'en', 'lang');
     const decoder = new TextDecoder();
     assert_equals(decoder.decode(record.data), test_text_data,
         'data has the same content with the original dictionary');
-    assert_throws('NotSupportedError', () => record.toRecords(),
+    assert_throws_dom('NotSupportedError', () => record.toRecords(),
         'Only smart-poster records and external type records could have embedded records.');
   }, 'NDEFRecord constructor with text record type and arrayBufferView data');
 
   test(() => {
+    assert_throws_js(TypeError, () => new NDEFRecord(createTextRecord(
+            test_text_data, 'random-encoding')));
+    assert_throws_js(TypeError, () => new NDEFRecord(createTextRecord(
+            test_text_data, 'utf-16')));
+    // Only 'utf-8' is OK for a DOMString data source.
+    const record = new NDEFRecord(createTextRecord(test_text_data, 'utf-8', 'fr'));
+    assert_equals(record.recordType, 'text', 'recordType');
+    assert_equals(record.encoding, 'utf-8', 'encoding');
+    assert_equals(record.lang, 'fr', 'lang');
+    const decoder = new TextDecoder();
+    assert_equals(decoder.decode(record.data), test_text_data,
+        'data has the same content with the original text');
+
+    assert_throws_js(TypeError, () => new NDEFRecord(createTextRecord(
+            encodeTextToArrayBuffer(test_text_data, 'utf-8'), 'random-encoding')));
+    // The encoding list valid for a BufferSource data source.
     const encodings = ['utf-8', 'utf-16', 'utf-16be', 'utf-16le'];
     for (const encoding of encodings) {
-      const lang = 'fr';
-      const record = new NDEFRecord(createTextRecord(test_text_data, encoding, lang));
+      const record = new NDEFRecord(createTextRecord(encodeTextToArrayBuffer(
+              test_text_data, encoding), encoding, 'fr'));
       assert_equals(record.recordType, 'text', 'recordType');
-      assert_equals(record.mediaType, null, 'mediaType');
-    assert_equals(record.id, test_record_id, 'id');
       assert_equals(record.encoding, encoding, 'encoding');
-      assert_equals(record.lang, lang, 'lang');
-      const decoder = new TextDecoder();
+      assert_equals(record.lang, 'fr', 'lang');
+      const decoder = new TextDecoder(record.encoding);
       assert_equals(decoder.decode(record.data), test_text_data,
-          'data has the same content with the original dictionary');
+          'data has the same content with the original text. encoding: ' + encoding);
     }
   }, 'NDEFRecord constructor with text record type, encoding, and lang');
 
@@ -174,7 +190,7 @@
     const decoder = new TextDecoder();
     assert_equals(decoder.decode(record.data), test_url_data,
         'data has the same content with the original dictionary');
-    assert_throws('NotSupportedError', () => record.toRecords(),
+    assert_throws_dom('NotSupportedError', () => record.toRecords(),
         'Only smart-poster records and external type records could have embedded records.');
   }, 'NDEFRecord constructor with url record type');
 
@@ -186,12 +202,12 @@
     const decoder = new TextDecoder();
     assert_equals(decoder.decode(record.data), test_url_data,
         'data has the same content with the original dictionary');
-    assert_throws('NotSupportedError', () => record.toRecords(),
+    assert_throws_dom('NotSupportedError', () => record.toRecords(),
         'Only smart-poster records and external type records could have embedded records.');
   }, 'NDEFRecord constructor with absolute-url record type');
 
   test(() => {
-    assert_throws(new TypeError, () => new NDEFRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(
           createMimeRecord("A string is not a BufferSource")),
         'Only BufferSource is allowed to be the record data.');
 
@@ -205,7 +221,7 @@
       assert_equals(record.id, test_record_id, 'id');
       assert_array_equals(new Uint8Array(record.data.buffer), [1, 2, 3, 4],
           'data has the same content with the original buffer');
-      assert_throws('NotSupportedError', () => record.toRecords(),
+      assert_throws_dom('NotSupportedError', () => record.toRecords(),
           'Only smart-poster records and external type records could have embedded records.');
     }
     // Feed ArrayBufferView.
@@ -216,7 +232,7 @@
       assert_equals(record.id, test_record_id, 'id');
       assert_array_equals(new Uint8Array(record.data.buffer), [2, 3, 4],
           'data has the same content with the original buffer view');
-      assert_throws('NotSupportedError', () => record.toRecords(),
+      assert_throws_dom('NotSupportedError', () => record.toRecords(),
           'Only smart-poster records and external type records could have embedded records.');
     }
   }, 'NDEFRecord constructor with mime record type and stream data');
@@ -229,12 +245,12 @@
     assert_object_equals(JSON.parse(new TextDecoder().decode(record.data)),
         test_json_data,
         'data has the same content with the original json');
-    assert_throws('NotSupportedError', () => record.toRecords(),
+    assert_throws_dom('NotSupportedError', () => record.toRecords(),
         'Only smart-poster records and external type records could have embedded records.');
   }, 'NDEFRecord constructor with mime record type and json data');
 
   test(() => {
-    assert_throws(new TypeError, () => new NDEFRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(
           createUnknownRecord("A string is not a BufferSource")),
         'Only BufferSource is allowed to be the record data.');
 
@@ -247,7 +263,7 @@
       assert_equals(record.id, test_record_id, 'id');
       assert_array_equals(new Uint8Array(record.data.buffer), [1, 2, 3, 4],
           'data has the same content with the original buffer');
-      assert_throws('NotSupportedError', () => record.toRecords(),
+      assert_throws_dom('NotSupportedError', () => record.toRecords(),
           'Only smart-poster records and external type records could have embedded records.');
     }
     // Feed ArrayBufferView.
@@ -258,13 +274,13 @@
       assert_equals(record.id, test_record_id, 'id');
       assert_array_equals(new Uint8Array(record.data.buffer), [2, 3, 4],
           'data has the same content with the original buffer view');
-      assert_throws('NotSupportedError', () => record.toRecords(),
+      assert_throws_dom('NotSupportedError', () => record.toRecords(),
           'Only smart-poster records and external type records could have embedded records.');
     }
   }, 'NDEFRecord constructor with unknown record type');
 
   test(() => {
-    assert_throws(new TypeError, () => new NDEFRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(
         createRecord('foo.eXamPle.com:bAr*-', "A string is not a BufferSource or NDEFMessageInit")),
         'Only BufferSource and NDEFMessageInit are allowed to be the record data.');
 
@@ -315,20 +331,20 @@
   }, 'NDEFRecord constructor with external record type');
 
   test(() => {
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord('EMptY')),
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord('EMptY')),
         'Unknown record type.');
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord('TeXt', test_text_data)),
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord('TeXt', test_text_data)),
         'Unknown record type.');
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord('uRL', test_url_data)),
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord('uRL', test_url_data)),
         'Unknown record type.');
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord('Mime', test_buffer_data)),
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord('Mime', test_buffer_data)),
         'Unknown record type.');
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord('sMart-PosTER', test_url_data)),
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord('sMart-PosTER', test_url_data)),
         'Unknown record type.');
   }, 'NDEFRecord constructor with record type string being treated as case sensitive');
 
   test(() => {
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord(
         'example.com:hellö', test_buffer_data)),
         'The external type must be an ASCII string.');
 
@@ -336,21 +352,21 @@
     const record = new NDEFRecord(createRecord(
         [...Array(251)].map(_ => 'a').join('') + ':xyz', test_buffer_data));
     // Exceeding 255, Throws.
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord(
         [...Array(252)].map(_ => 'a').join('') + ':xyz', test_buffer_data)),
         'The external type should not be longer than 255.');
 
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord(
         'xyz', test_buffer_data)), 'The external type must have a \':\'.');
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord(
         ':xyz', test_buffer_data)), 'The domain should not be empty.');
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord(
         'example.com:', test_buffer_data)), 'The type should not be empty.');
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord(
         'example.com:xyz[', test_buffer_data)), 'The type should not contain \'[\'.');
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord(
         'example.com:xyz~', test_buffer_data)), 'The type should not contain \'~\'.');
-    assert_throws(new TypeError, () => new NDEFRecord(createRecord(
+    assert_throws_js(TypeError, () => new NDEFRecord(createRecord(
         'example.com:xyz/', test_buffer_data)), 'The type should not contain \'/\'.');
   }, 'NDEFRecord constructor with invalid external record type');
 

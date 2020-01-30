@@ -50,16 +50,16 @@ promise_test(async () => {
 promise_test(async () => {
   const wss = new WebSocketStream(ECHOURL);
   await wss.connection;
-  assert_throws(new TypeError(), () => wss.close(true),
-                'close should throw a TypeError');
+  assert_throws_js(TypeError, () => wss.close(true),
+                   'close should throw a TypeError');
 }, 'close(true) should throw a TypeError');
 
 promise_test(async () => {
   const wss = new WebSocketStream(ECHOURL);
   await wss.connection;
   const reason = '.'.repeat(124);
-  assert_throws('SyntaxError', () => wss.close({ reason }),
-                'close should throw a TypeError');
+  assert_throws_dom('SyntaxError', () => wss.close({ reason }),
+                    'close should throw a TypeError');
 }, 'close() with an overlong reason should throw');
 
 promise_test(t => {
@@ -76,8 +76,8 @@ for (const invalidCode of [999, 1001, 2999, 5000]) {
   promise_test(async () => {
     const wss = new WebSocketStream(ECHOURL);
     await wss.connection;
-    assert_throws('InvalidAccessError', () => wss.close({ code: invalidCode }),
-                  'close should throw a TypeError');
+    assert_throws_dom('InvalidAccessError', () => wss.close({ code: invalidCode }),
+                      'close should throw a TypeError');
   }, `close() with invalid code ${invalidCode} should throw`);
 }
 

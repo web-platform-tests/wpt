@@ -12,13 +12,17 @@ function url_test(t, url, channelName, hasOpener, openerDOMAccess) {
     if (openerDOMAccess !== undefined) {
       assert_equals(payload.openerDOMAccess, openerDOMAccess, 'openerDOMAccess');
     }
+    assert_equals(w.closed, !hasOpener, 'Openee browsing context closed');
   });
 
   const w = window.open(url, channelName);
 
-  // w will be closed by its postback iframe. When out of process,
-  // window.close() does not work.
-  t.add_cleanup(() => w.close());
+  // Close the popup once the test is complete.
+  // The browsing context might be closed hence use the broadcast channel
+  // to trigger the closure.
+  t.add_cleanup(() => {
+    bc.postMessage("close");
+  });
 }
 
 function coop_coep_test(t, host, coop, coep, channelName, hasOpener, openerDOMAccess) {
@@ -37,4 +41,31 @@ function run_coop_tests(documentCOOPValueTitle, testArray) {
                 test[2]);
     }, `${documentCOOPValueTitle} document opening popup to ${test[0].origin} with COOP: "${test[1]}"`);
   }
+}
+
+function run_coop_test_iframe (documentTitle, iframe_origin, popup_origin, popup_coop, expects_opener, expects_name) {
+  const name = iframe_origin.name + "_iframe_opening_" + popup_origin.name + "_popup_with_coop_" + popup_coop;
+  async_test(t => {
+      const frame = document.createElement("iframe");
+
+      // Close the popup and remove the frame once the test is
+      // complete. The browsing context might be closed hence use the
+      // broadcast channel to trigger the closure.
+      t.add_cleanup(() => {
+        frame.remove();
+        bc.postMessage("close");
+      });
+
+      const origin = CROSS_ORIGIN.origin;
+      const path = new URL("resources/iframe-popup.sub.html", window.location).pathname;
+      const bc = new BroadcastChannel(name);
+      frame.src = `${iframe_origin.origin}${path}?popup_origin=${popup_origin.origin}&popup_coop=${popup_coop}&channel=${name}`;
+
+      bc.onmessage = t.step_func_done(event => {
+              const payload = event.data;
+              assert_equals(payload.opener, expects_opener, 'opener');
+              assert_equals(payload.name, expects_name? name:"", 'name');
+      });
+      document.body.append(frame);
+  }, `${documentTitle} with ${iframe_origin.name} iframe opening popup a ${popup_origin.name} with COOP: ${popup_coop}`);
 }

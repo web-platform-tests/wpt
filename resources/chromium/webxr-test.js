@@ -4,7 +4,7 @@
 // https://github.com/immersive-web/webxr-test-api
 
 
-let default_standing = new gfx.mojom.Transform();
+const default_standing = new gfx.mojom.Transform();
 default_standing.matrix = [1, 0, 0, 0,
                            0, 1, 0, 0,
                            0, 0, 1, 0,
@@ -15,26 +15,26 @@ const default_stage_parameters = {
 };
 
 function getMatrixFromTransform(transform) {
-  let x = transform.orientation[0];
-  let y = transform.orientation[1];
-  let z = transform.orientation[2];
-  let w = transform.orientation[3];
+  const x = transform.orientation[0];
+  const y = transform.orientation[1];
+  const z = transform.orientation[2];
+  const w = transform.orientation[3];
 
-  let m11 = 1.0 - 2.0 * (y * y + z * z);
-  let m21 = 2.0 * (x * y + z * w);
-  let m31 = 2.0 * (x * z - y * w);
+  const m11 = 1.0 - 2.0 * (y * y + z * z);
+  const m21 = 2.0 * (x * y + z * w);
+  const m31 = 2.0 * (x * z - y * w);
 
-  let m12 = 2.0 * (x * y - z * w);
-  let m22 = 1.0 - 2.0 * (x * x + z * z);
-  let m32 = 2.0 * (y * z + x * w);
+  const m12 = 2.0 * (x * y - z * w);
+  const m22 = 1.0 - 2.0 * (x * x + z * z);
+  const m32 = 2.0 * (y * z + x * w);
 
-  let m13 = 2.0 * (x * z + y * w);
-  let m23 = 2.0 * (y * z - x * w);
-  let m33 = 1.0 - 2.0 * (x * x + y * y);
+  const m13 = 2.0 * (x * z + y * w);
+  const m23 = 2.0 * (y * z - x * w);
+  const m33 = 1.0 - 2.0 * (x * x + y * y);
 
-  let m14 = transform.position[0];
-  let m24 = transform.position[1];
-  let m34 = transform.position[2];
+  const m14 = transform.position[0];
+  const m24 = transform.position[1];
+  const m34 = transform.position[2];
 
   // Column-major linearized order is expected.
   return [m11, m21, m31, 0,
@@ -44,7 +44,7 @@ function getMatrixFromTransform(transform) {
 }
 
 function composeGFXTransform(fakeTransformInit) {
-  let transform = new gfx.mojom.Transform();
+  const transform = new gfx.mojom.Transform();
   transform.matrix = getMatrixFromTransform(fakeTransformInit);
   return transform;
 }
@@ -64,7 +64,7 @@ class ChromeXRTest {
   }
 
   simulateUserActivation(callback) {
-    let button = document.createElement('button');
+    const button = document.createElement('button');
     button.textContent = 'click to continue test';
     button.style.display = 'block';
     button.style.fontSize = '20px';
@@ -95,7 +95,7 @@ class MockVRService {
 
   // Test methods
   addRuntime(fakeDeviceInit) {
-    let runtime = new MockRuntime(fakeDeviceInit, this);
+    const runtime = new MockRuntime(fakeDeviceInit, this);
     this.runtimes_.push(runtime);
 
     if (this.client_) {
@@ -114,7 +114,7 @@ class MockVRService {
   }
 
   removeRuntime(device) {
-    let index = this.runtimes_.indexOf(device);
+    const index = this.runtimes_.indexOf(device);
     if (index >= 0) {
       this.runtimes_.splice(index, 1);
       if (this.client_) {
@@ -132,7 +132,7 @@ class MockVRService {
   }
 
   requestSession(sessionOptions, was_activation) {
-    let requests = [];
+    const requests = [];
     // Request a session from all the runtimes.
     for (let i = 0; i < this.runtimes_.length; i++) {
       requests[i] = this.runtimes_[i].requestRuntimeSession(sessionOptions);
@@ -143,12 +143,12 @@ class MockVRService {
       for (let i = 0; i < results.length; i++) {
         if (results[i].session) {
           // Construct a dummy metrics recorder
-          let metricsRecorderPtr = new device.mojom.XRSessionMetricsRecorderPtr();
-          let metricsRecorderRequest = mojo.makeRequest(metricsRecorderPtr);
-          let metricsRecorderBinding = new mojo.Binding(
+          const metricsRecorderPtr = new device.mojom.XRSessionMetricsRecorderPtr();
+          const metricsRecorderRequest = mojo.makeRequest(metricsRecorderPtr);
+          const metricsRecorderBinding = new mojo.Binding(
               device.mojom.XRSessionMetricsRecorder, new MockXRSessionMetricsRecorder(), metricsRecorderRequest);
 
-          let success = {
+          const success = {
             session: results[i].session,
             metricsRecorder: metricsRecorderPtr,
           };
@@ -177,7 +177,7 @@ class MockVRService {
   }
 
   supportsSession(sessionOptions) {
-    let requests = [];
+    const requests = [];
     // Check supports on all the runtimes.
     for (let i = 0; i < this.runtimes_.length; i++) {
       requests[i] = this.runtimes_[i].runtimeSupportsSession(sessionOptions);
@@ -194,7 +194,7 @@ class MockVRService {
       // If there were no successful results, returns false.
       return {supportsSession: false};
     });
-  };
+  }
 }
 
 // Implements XRFrameDataProvider and XRPresentationProvider. Maintains a mock
@@ -207,7 +207,9 @@ class MockRuntime {
     "local": device.mojom.XRSessionFeature.REF_SPACE_LOCAL,
     "local-floor": device.mojom.XRSessionFeature.REF_SPACE_LOCAL_FLOOR,
     "bounded-floor": device.mojom.XRSessionFeature.REF_SPACE_BOUNDED_FLOOR,
-    "unbounded": device.mojom.XRSessionFeature.REF_SPACE_UNBOUNDED };
+    "unbounded": device.mojom.XRSessionFeature.REF_SPACE_UNBOUNDED,
+    "hit-test": device.mojom.XRSessionFeature.HIT_TEST,
+  };
 
   static sessionModeToMojoMap = {
     "inline": device.mojom.XRSessionMode.kInline,
@@ -231,21 +233,26 @@ class MockRuntime {
     this.input_sources_ = new Map();
     this.next_input_source_index_ = 1;
 
+    // Currently active hit test subscriptons.
+    this.hitTestSubscriptions_ = new Map();
+    // ID of the next subscription to be assigned.
+    this.next_hit_test_id_ = 1;
+
     let supportedModes = [];
     if (fakeDeviceInit.supportedModes) {
       supportedModes = fakeDeviceInit.supportedModes.slice();
-      if(fakeDeviceInit.supportedModes.length === 0) {
+      if (fakeDeviceInit.supportedModes.length === 0) {
         supportedModes = ["inline"];
       }
     } else {
       // Back-compat mode.
       console.warn("Please use `supportedModes` to signal which modes are supported by this device.");
-      if(fakeDeviceInit.supportsImmersive == null) {
+      if (fakeDeviceInit.supportsImmersive == null) {
         throw new TypeError("'supportsImmersive' must be set");
       }
 
       supportedModes = ["inline"];
-      if(fakeDeviceInit.supportsImmersive) {
+      if (fakeDeviceInit.supportsImmersive) {
         supportedModes.push("immersive-vr");
       }
     }
@@ -254,8 +261,8 @@ class MockRuntime {
 
     // Initialize DisplayInfo first to set the defaults, then override with
     // anything from the deviceInit
-    if(this.supportedModes_.includes(device.mojom.XRSessionMode.kImmersiveVr)
-    || this.supportedModes_.includes(device.mojom.XRSessionMode.kImmersiveAr)) {
+    if (this.supportedModes_.includes(device.mojom.XRSessionMode.kImmersiveVr)
+     || this.supportedModes_.includes(device.mojom.XRSessionMode.kImmersiveAr)) {
       this.displayInfo_ = this.getImmersiveDisplayInfo();
     } else if (this.supportedModes_.includes(device.mojom.XRSessionMode.kInline)) {
       this.displayInfo_ = this.getNonImmersiveDisplayInfo();
@@ -287,8 +294,9 @@ class MockRuntime {
   }
 
   _convertModeToEnum(sessionMode) {
-    if(sessionMode in MockRuntime.sessionModeToMojoMap)
+    if (sessionMode in MockRuntime.sessionModeToMojoMap) {
       return MockRuntime.sessionModeToMojoMap[sessionMode];
+    }
 
     throw new TypeError("Unrecognized value for XRSessionMode enum: " + sessionMode);
   }
@@ -328,8 +336,8 @@ class MockRuntime {
   }
 
   setViewerOrigin(origin, emulatedPosition = false) {
-    let p = origin.position;
-    let q = origin.orientation;
+    const p = origin.position;
+    const q = origin.orientation;
     this.pose_ = {
       orientation: { x: q[0], y: q[1], z: q[2], w: q[3] },
       position: { x: p[0], y: p[1], z: p[2] },
@@ -349,7 +357,7 @@ class MockRuntime {
 
   simulateVisibilityChange(visibilityState) {
     let mojoState = null;
-    switch(visibilityState) {
+    switch (visibilityState) {
       case "visible":
         mojoState = device.mojom.XRVisibilityState.VISIBLE;
         break;
@@ -417,17 +425,17 @@ class MockRuntime {
   }
 
   simulateInputSourceConnection(fakeInputSourceInit) {
-    let index = this.next_input_source_index_;
+    const index = this.next_input_source_index_;
     this.next_input_source_index_++;
 
-    let source = new MockXRInputSource(fakeInputSourceInit, index, this);
+    const source = new MockXRInputSource(fakeInputSourceInit, index, this);
     this.input_sources_.set(index, source);
     return source;
   }
 
   // Helper methods
   getNonImmersiveDisplayInfo() {
-    let displayInfo = this.getImmersiveDisplayInfo();
+    const displayInfo = this.getImmersiveDisplayInfo();
 
     displayInfo.capabilities.canPresent = false;
     displayInfo.leftEye = null;
@@ -492,16 +500,16 @@ class MockRuntime {
         rightDegrees: fakeXRViewInit.fieldOfView.rightDegrees
       };
     } else {
-      let m = fakeXRViewInit.projectionMatrix;
+      const m = fakeXRViewInit.projectionMatrix;
 
       function toDegrees(tan) {
         return Math.atan(tan) * 180 / Math.PI;
       }
 
-      let leftTan = (1 - m[8]) / m[0];
-      let rightTan = (1 + m[8]) / m[0];
-      let upTan = (1 + m[9]) / m[5];
-      let downTan = (1 - m[9]) / m[5];
+      const leftTan = (1 - m[8]) / m[0];
+      const rightTan = (1 + m[8]) / m[0];
+      const upTan = (1 + m[9]) / m[5];
+      const downTan = (1 - m[9]) / m[5];
 
       fov = {
         upDegrees: toDegrees(upTan),
@@ -531,7 +539,7 @@ class MockRuntime {
     this.supportedFeatures_ = [];
 
     for (let i = 0; i < supportedFeatures.length; i++) {
-      let feature = convertFeatureToMojom(supportedFeatures[i]);
+      const feature = convertFeatureToMojom(supportedFeatures[i]);
       if (feature !== device.mojom.XRSessionFeature.INVALID) {
         this.supportedFeatures_.push(feature);
       }
@@ -540,7 +548,7 @@ class MockRuntime {
 
   // These methods are intended to be used by MockXRInputSource only.
   addInputSource(source) {
-    if(!this.input_sources_.has(source.source_id_)) {
+    if (!this.input_sources_.has(source.source_id_)) {
       this.input_sources_.set(source.source_id_, source);
     }
   }
@@ -549,11 +557,16 @@ class MockRuntime {
     this.input_sources_.delete(source.source_id_);
   }
 
+  // Extension point for non-standard modules.
+
+  _injectAdditionalFrameData(options, frameData) {
+  }
+
   // Mojo function implementations.
 
   // XRFrameDataProvider implementation.
-  getFrameData() {
-    let mojo_space_reset = this.send_mojo_space_reset_;
+  getFrameData(options) {
+    const mojo_space_reset = this.send_mojo_space_reset_;
     this.send_mojo_space_reset_ = false;
     if (this.pose_) {
       this.pose_.poseIndex++;
@@ -566,29 +579,35 @@ class MockRuntime {
     let input_state = null;
     if (this.input_sources_.size > 0) {
       input_state = [];
-      for (let input_source of this.input_sources_.values()) {
+      for (const input_source of this.input_sources_.values()) {
         input_state.push(input_source.getInputSourceState());
       }
     }
 
     // Convert current document time to monotonic time.
     let now = window.performance.now() / 1000.0;
-    let diff = now - internals.monotonicTimeToZeroBasedDocumentTime(now);
+    const diff = now - internals.monotonicTimeToZeroBasedDocumentTime(now);
     now += diff;
     now *= 1000000;
 
+    const frameData = {
+      pose: this.pose_,
+      mojoSpaceReset: mojo_space_reset,
+      inputState: input_state,
+      timeDelta: {
+        microseconds: now,
+      },
+      frameId: this.next_frame_id_++,
+      bufferHolder: null,
+      bufferSize: {},
+    };
+
+    this._calculateHitTestResults(frameData);
+
+    this._injectAdditionalFrameData(options, frameData);
+
     return Promise.resolve({
-      frameData: {
-        pose: this.pose_,
-        mojoSpaceReset: mojo_space_reset,
-        inputState: input_state,
-        timeDelta: {
-          microseconds: now,
-        },
-        frameId: this.next_frame_id_++,
-        bufferHolder: null,
-        bufferSize: {}
-      }
+      frameData: frameData,
     });
   }
 
@@ -614,11 +633,56 @@ class MockRuntime {
     // do not have any use for this data at present.
   }
 
+  // XREnvironmentIntegrationProvider implementation:
+  subscribeToHitTest(nativeOriginInformation, entityTypes, ray) {
+    if (!this.supportedModes_.includes(device.mojom.XRSessionMode.kImmersiveAr)) {
+      // Reject outside of AR.
+      return Promise.resolve({
+        result : device.mojom.SubscribeToHitTestResult.FAILED,
+        subscriptionId : 0
+      });
+    }
+
+    if (nativeOriginInformation.$tag == device.mojom.XRNativeOriginInformation.Tags.inputSourceId) {
+      if (!this.input_sources_.has(nativeOriginInformation.inputSourceId)) {
+        // Reject - unknown input source ID.
+        return Promise.resolve({
+          result : device.mojom.SubscribeToHitTestResult.FAILED,
+          subscriptionId : 0
+        });
+      }
+    } else if (nativeOriginInformation.$tag == device.mojom.XRNativeOriginInformation.Tags.referenceSpaceCategory) {
+      // Bounded_floor & unbounded ref spaces are not yet supported for AR:
+      if (nativeOriginInformation.referenceSpaceCategory == device.mojom.XRReferenceSpaceCategory.UNBOUNDED
+       || nativeOriginInformation.referenceSpaceCategory == device.mojom.XRReferenceSpaceCategory.BOUNDED_FLOOR) {
+        return Promise.resolve({
+          result : device.mojom.SubscribeToHitTestResult.FAILED,
+          subscriptionId : 0
+        });
+      }
+    } else {
+      // Planes and anchors are not yet supported by the mock interface.
+      return Promise.resolve({
+        result : device.mojom.SubscribeToHitTestResult.FAILED,
+        subscriptionId : 0
+      });
+    }
+
+    // Store the subscription information as-is:
+    const id = this.next_hit_test_id_++;
+    this.hitTestSubscriptions_.set(id, { nativeOriginInformation, entityTypes, ray });
+
+    return Promise.resolve({
+      result : device.mojom.SubscribeToHitTestResult.SUCCESS,
+      subscriptionId : id
+    });
+  }
+
   // Utility function
   requestRuntimeSession(sessionOptions) {
     return this.runtimeSupportsSession(sessionOptions).then((result) => {
       // The JavaScript bindings convert c_style_names to camelCase names.
-      let options = new device.mojom.XRPresentationTransportOptions();
+      const options = new device.mojom.XRPresentationTransportOptions();
       options.transportMethod =
           device.mojom.XRPresentationTransportMethod.SUBMIT_AS_MAILBOX_HOLDER;
       options.waitForTransferNotification = true;
@@ -632,15 +696,15 @@ class MockRuntime {
           transportOptions: options
         };
 
-        let dataProviderPtr = new device.mojom.XRFrameDataProviderPtr();
-        let dataProviderRequest = mojo.makeRequest(dataProviderPtr);
+        const dataProviderPtr = new device.mojom.XRFrameDataProviderPtr();
+        const dataProviderRequest = mojo.makeRequest(dataProviderPtr);
         this.dataProviderBinding_ = new mojo.Binding(
             device.mojom.XRFrameDataProvider, this, dataProviderRequest);
 
-        let clientReceiver = mojo.makeRequest(this.sessionClient_);
+        const clientReceiver = mojo.makeRequest(this.sessionClient_);
 
-        let enabled_features = [];
-        for(let i = 0; i < sessionOptions.requiredFeatures.length; i++) {
+        const enabled_features = [];
+        for (let i = 0; i < sessionOptions.requiredFeatures.length; i++) {
           if (this.supportedFeatures_.indexOf(sessionOptions.requiredFeatures[i]) !== -1) {
             enabled_features.push(sessionOptions.requiredFeatures[i]);
           } else {
@@ -673,6 +737,245 @@ class MockRuntime {
     return Promise.resolve({
       supportsSession: this.supportedModes_.includes(options.mode)
     });
+  }
+
+  // Private functions - hit test implementation:
+
+  // Modifies passed in frameData to add hit test results.
+  _calculateHitTestResults(frameData) {
+    if (!this.supportedModes_.includes(device.mojom.XRSessionMode.kImmersiveAr)) {
+      return;
+    }
+
+    frameData.hitTestSubscriptionResults = new device.mojom.XRHitTestSubscriptionResultsData();
+    frameData.hitTestSubscriptionResults.results = [];
+    frameData.hitTestSubscriptionResults.transientInputResults = [];
+
+    if (!this.world_) {
+      return;
+    }
+
+    // Non-transient hit test:
+    for (const [id, subscription] of this.hitTestSubscriptions_) {
+      const mojo_from_native_origin = this._getMojoFromNativeOrigin(subscription.nativeOriginInformation);
+      if (!mojo_from_native_origin) continue;
+
+      const ray_origin = {x: subscription.ray.origin.x, y: subscription.ray.origin.y, z: subscription.ray.origin.z, w: 1};
+      const ray_direction = {x: subscription.ray.direction.x, y: subscription.ray.direction.y, z: subscription.ray.direction.z, w: 0};
+
+      const mojo_ray_origin = XRMathHelper.transform_by_matrix(mojo_from_native_origin, ray_origin);
+      const mojo_ray_direction = XRMathHelper.transform_by_matrix(mojo_from_native_origin, ray_direction);
+
+      const results = this._hitTestWorld(mojo_ray_origin, mojo_ray_direction, subscription.entityTypes);
+
+      const result = new device.mojom.XRHitTestSubscriptionResultData();
+      result.subscriptionId = id;
+      result.hitTestResults = results;
+
+      frameData.hitTestSubscriptionResults.results.push(result);
+    }
+  }
+
+  // Hit tests the passed in ray (expressed as origin and direction) against the mocked world data.
+  _hitTestWorld(origin, direction, entityTypes) {
+    let result = [];
+
+    for (const region of this.world_.hitTestRegions) {
+      const partial_result = this._hitTestRegion(
+        region,
+        origin, direction,
+        entityTypes);
+
+      result = result.concat(partial_result);
+    }
+
+    return result.sort((lhs, rhs) => lhs.distance - rhs.distance);
+  }
+
+  // Hit tests the passed in ray (expressed as origin and direction) against world region.
+  // |entityTypes| is a set of FakeXRRegionTypes.
+  // |region| is FakeXRRegion.
+  // Returns array of XRHitResults, each entry will be decorated with the distance from the ray origin (along the ray).
+  _hitTestRegion(region, origin, direction, entityTypes) {
+    const regionNameToMojoEnum = {
+      "point":device.mojom.EntityTypeForHitTest.POINT,
+      "plane":device.mojom.EntityTypeForHitTest.PLANE,
+      "mesh":null
+    };
+
+    if (!entityTypes.includes(regionNameToMojoEnum[region.type])) {
+      return [];
+    }
+
+    const result = [];
+    for (const face of region.faces) {
+      const maybe_hit = this._hitTestFace(face, origin, direction);
+      if (maybe_hit) {
+        result.push(maybe_hit);
+      }
+    }
+
+    // The results should be sorted by distance and there should be no 2 entries with
+    // the same distance from ray origin - that would mean they are the same point.
+    // This situation is possible when a ray intersects the region through an edge shared
+    // by 2 faces.
+    return result.sort((lhs, rhs) => lhs.distance - rhs.distance)
+                 .filter((val, index, array) => index === 0 || val.distance !== array[index - 1].distance);
+  }
+
+  // Hit tests the passed in ray (expressed as origin and direction) against a single face.
+  // |face|, |origin|, and |direction| are specified in world (aka mojo) coordinates.
+  // |face| is an array of DOMPointInits.
+  // Returns null if the face does not intersect with the ray, otherwise the result is
+  // an XRHitResult with matrix describing the pose of the intersection point.
+  _hitTestFace(face, origin, direction) {
+    const add = XRMathHelper.add;
+    const sub = XRMathHelper.sub;
+    const mul = XRMathHelper.mul;
+    const normalize = XRMathHelper.normalize;
+    const dot = XRMathHelper.dot;
+    const cross = XRMathHelper.cross;
+    const neg = XRMathHelper.neg;
+
+    //1. Calculate plane normal in world coordinates.
+    const point_A = face[0];
+    const point_B = face[1];
+    const point_C = face[2];
+
+    const edge_AB = sub(point_B, point_A);
+    const edge_AC = sub(point_C, point_A);
+
+    const normal = normalize(cross(edge_AB, edge_AC));
+
+    const numerator = dot(sub(point_A, origin), normal);
+    const denominator = dot(direction, normal);
+
+    if (Math.abs(denominator) < 0.0001) {
+      // Planes are nearly parallel - there's either infinitely many intersection points or 0.
+      // Both cases signify a "no hit" for us.
+      return null;
+    } else {
+      // Single intersection point between the infinite plane and the line (*not* ray).
+      // Need to calculate the hit test matrix taking into account the face vertices.
+      const distance = numerator / denominator;
+      if (distance < 0) {
+        // Line - plane intersection exists, but not the half-line - plane does not.
+        return null;
+      } else {
+        const intersection_point = add(origin, mul(distance, direction));
+        // Since we are treating the face as a solid, flip the normal so that its
+        // half-space will contain the ray origin.
+        const y_axis = denominator > 0 ? neg(normal) : normal;
+
+        let z_axis = null;
+        const cos_direction_and_y_axis = dot(direction, y_axis);
+        if (Math.abs(cos_direction_and_y_axis) > 0.9999) {
+          // Ray and the hit test normal are co-linear - try using the 'up' or 'right' vector's projection on the face plane as the Z axis.
+          // Note: this edge case is currently not covered by the spec.
+          const up = {x: 0.0, y: 1.0, z: 0.0, w: 0.0};
+          const right = {x:1.0, y: 0.0, z: 0.0, w: 0.0};
+
+          z_axis = Math.abs(dot(up, y_axis)) > 0.9999
+                        ? sub(up, mul(dot(right, y_axis), y_axis))  // `up is also co-linear with hit test normal, use `right`
+                        : sub(up, mul(dot(up, y_axis), y_axis));    // `up` is not co-linear with hit test normal, use it
+        } else {
+          // Project the ray direction onto the plane, negate it and use as a Z axis.
+          z_axis = neg(sub(direction, mul(cos_direction_and_y_axis, y_axis))); // Z should point towards the ray origin, not away.
+        }
+
+        const x_axis = normalize(cross(y_axis, z_axis));
+
+        // Filter out the points not in polygon.
+        if (!XRMathHelper.pointInFace(intersection_point, face)) {
+          return null;
+        }
+
+        const hitResult = new device.mojom.XRHitResult();
+        hitResult.hitMatrix = new gfx.mojom.Transform();
+
+        hitResult.distance = distance;  // Extend the object with additional information used by higher layers.
+                                        // It will not be serialized over mojom.
+
+        hitResult.hitMatrix.matrix = new Array(16);
+
+        hitResult.hitMatrix.matrix[0] = x_axis.x;
+        hitResult.hitMatrix.matrix[1] = x_axis.y;
+        hitResult.hitMatrix.matrix[2] = x_axis.z;
+        hitResult.hitMatrix.matrix[3] = 0;
+
+        hitResult.hitMatrix.matrix[4] = y_axis.x;
+        hitResult.hitMatrix.matrix[5] = y_axis.y;
+        hitResult.hitMatrix.matrix[6] = y_axis.z;
+        hitResult.hitMatrix.matrix[7] = 0;
+
+        hitResult.hitMatrix.matrix[8] = z_axis.x;
+        hitResult.hitMatrix.matrix[9] = z_axis.y;
+        hitResult.hitMatrix.matrix[10] = z_axis.z;
+        hitResult.hitMatrix.matrix[11] = 0;
+
+        hitResult.hitMatrix.matrix[12] = intersection_point.x;
+        hitResult.hitMatrix.matrix[13] = intersection_point.y;
+        hitResult.hitMatrix.matrix[14] = intersection_point.z;
+        hitResult.hitMatrix.matrix[15] = 1;
+
+        return hitResult;
+      }
+    }
+  }
+
+  _getMojoFromNativeOrigin(nativeOriginInformation) {
+    const identity = function() {
+      return [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+      ];
+    };
+
+    if (nativeOriginInformation.$tag == device.mojom.XRNativeOriginInformation.Tags.inputSourceId) {
+      if (!this.input_sources_.has(nativeOriginInformation.inputSourceId)) {
+        return null;
+      } else {
+        const inputSource = this.input_sources_.get(nativeOriginInformation.inputSourceId);
+        return inputSource.mojo_from_input_.matrix;
+      }
+    } else if (nativeOriginInformation.$tag == device.mojom.XRNativeOriginInformation.Tags.referenceSpaceCategory) {
+      switch (nativeOriginInformation.referenceSpaceCategory) {
+        case device.mojom.XRReferenceSpaceCategory.LOCAL:
+          return identity();
+        case device.mojom.XRReferenceSpaceCategory.LOCAL_FLOOR:
+          if (this.displayInfo_ == null || this.displayInfo_.stageParameters == null
+           || this.displayInfo_.stageParameters.standingTransform == null) {
+            console.warn("Standing transform not available.");
+            return null;
+          }
+          // this.displayInfo_.stageParameters.standingTransform = floor_from_mojo aka native_origin_from_mojo
+          return XRMathHelper.inverse(this.displayInfo_.stageParameters.standingTransform.matrix);
+        case device.mojom.XRReferenceSpaceCategory.VIEWER:
+          const transform = {
+            position: [
+              this.pose_.position.x,
+              this.pose_.position.y,
+              this.pose_.position.z],
+            orientation: [
+              this.pose_.orientation.x,
+              this.pose_.orientation.y,
+              this.pose_.orientation.z,
+              this.pose_.orientation.w],
+          };
+          return getMatrixFromTransform(transform);  // this.pose_ = mojo_from_viewer
+        case device.mojom.XRReferenceSpaceCategory.BOUNDED_FLOOR:
+          return null;
+        case device.mojom.XRReferenceSpaceCategory.UNBOUNDED:
+          return null;
+        default:
+          throw new TypeError("Unrecognized XRReferenceSpaceCategory!");
+      }
+    } else {
+      // Anchors & planes are not yet supported for hit test.
+      return null;
+    }
   }
 }
 
@@ -799,10 +1102,10 @@ class MockXRInputSource {
       return;
     }
 
-    let supported_button_map = {};
+    const supported_button_map = {};
     this.gamepad_ = this.getEmptyGamepad();
     for (let i = 0; i < supportedButtons.length; i++) {
-      let buttonType = supportedButtons[i].buttonType;
+      const buttonType = supportedButtons[i].buttonType;
       this.supported_buttons_.push(buttonType);
       supported_button_map[buttonType] = supportedButtons[i];
     }
@@ -829,7 +1132,7 @@ class MockXRInputSource {
           pressed: false,
           touched: false,
           value: 0
-        }
+        };
       }
     }
 
@@ -845,8 +1148,8 @@ class MockXRInputSource {
       throw new Error("Tried to update state on an unsupported button");
     }
 
-    let buttonIndex = this.getButtonIndex(buttonState.buttonType);
-    let axesStartIndex = this.getAxesStartIndex(buttonState.buttonType);
+    const buttonIndex = this.getButtonIndex(buttonState.buttonType);
+    const axesStartIndex = this.getAxesStartIndex(buttonState.buttonType);
 
     if (buttonIndex == -1) {
       throw new Error("Unknown Button Type!");
@@ -864,7 +1167,7 @@ class MockXRInputSource {
 
   // Helpers for Mojom
   getInputSourceState() {
-    let input_state = new device.mojom.XRInputSourceState();
+    const input_state = new device.mojom.XRInputSourceState();
 
     input_state.sourceId = this.source_id_;
 
@@ -882,7 +1185,7 @@ class MockXRInputSource {
     input_state.emulatedPosition = this.emulated_position_;
 
     if (this.desc_dirty_) {
-      let input_desc = new device.mojom.XRInputSourceDescription();
+      const input_desc = new device.mojom.XRInputSourceDescription();
 
       switch (this.target_ray_mode_) {
         case 'gaze':
@@ -925,7 +1228,7 @@ class MockXRInputSource {
   getEmptyGamepad() {
     // Mojo complains if some of the properties on Gamepad are null, so set
     // everything to reasonable defaults that tests can override.
-    let gamepad = new device.mojom.Gamepad();
+    const gamepad = new device.mojom.Gamepad();
     gamepad.connected = true;
     gamepad.id = "";
     gamepad.timestamp = 0;
@@ -954,8 +1257,8 @@ class MockXRInputSource {
       return;
     }
 
-    let buttonIndex = this.getButtonIndex(buttonState.buttonType);
-    let axesStartIndex = this.getAxesStartIndex(buttonState.buttonType);
+    const buttonIndex = this.getButtonIndex(buttonState.buttonType);
+    const axesStartIndex = this.getAxesStartIndex(buttonState.buttonType);
 
     if (buttonIndex == -1) {
       throw new Error("Unknown Button Type!");
@@ -1016,8 +1319,8 @@ class MockXRPresentationProvider {
   }
 
   bindProvider(request) {
-    let providerPtr = new device.mojom.XRPresentationProviderPtr();
-    let providerRequest = mojo.makeRequest(providerPtr);
+    const providerPtr = new device.mojom.XRPresentationProviderPtr();
+    const providerRequest = mojo.makeRequest(providerPtr);
 
     this.binding_.close();
 
@@ -1058,7 +1361,7 @@ class MockXRPresentationProvider {
 // This is a temporary workaround for the fact that spinning up webxr before
 // the mojo interceptors are created will cause the interceptors to not get
 // registered, so we have to create this before we query xr;
-let XRTest = new ChromeXRTest();
+const XRTest = new ChromeXRTest();
 
 // This test API is also used to run Chrome's internal legacy VR tests; however,
 // those fail if navigator.xr has been used. Those tests will set a bool telling

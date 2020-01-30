@@ -8,6 +8,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/validator.js"></script>
 <div id="log"></div>
+<form>
+  <input id="messagetest" type="checkbox" required="" disabled="">
+</form>
+
 <script>
   var testElements = [
     {
@@ -23,6 +27,10 @@
       tag: "input",
       types: ["datetime-local"],
       testData: [
+        // Note that several of these datetime strings use a ' ' separator, which
+        // is questionably spec-compliant. See:
+        //   - crbug.com/521871
+        //   - https://github.com/whatwg/html/issues/2276
         {conditions: {required: false, value: ""}, expected: false, name: "[target] The required attribute is not set"},
         {conditions: {required: true, value: "2000-12-10T12:00:00"}, expected: false, name: "[target] Valid local date and time string(2000-12-10T12:00:00)"},
         {conditions: {required: true, value: "2000-12-10 12:00"}, expected: false, name: "[target] Valid local date and time string(2000-12-10 12:00)"},
@@ -166,4 +174,8 @@
   ];
 
   validator.run_test(testElements, "valueMissing");
+
+  test(() => {
+    assert_equals(document.getElementById("messagetest").validationMessage, '');
+  }, 'validationMessage should return empty string when willValidate is false and valueMissing is true');
 </script>

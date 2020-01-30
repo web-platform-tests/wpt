@@ -12,17 +12,17 @@
 <script>
 const testEl = document.querySelector("div");
 function testRound(test, expected, {base="0px", msg}={}) {
-	test(()=>{
-		testEl.style.width = base;
-		testEl.style.width = test;
-		const usedValue = getComputedStyle(testEl).width;
-		assert_not_equal(usedValue, base);
-		testEl.style.width = base;
-		testEl.style.width = expected;
-		const expectedValue = getComputedStyle(testEl).width;
-		assert_not_equal(expectedValue, base)
-		assert_equal(usedValue, expectedValue);
-	}, msg || `${test} should round to ${expected}`);
+    test(()=>{
+        testEl.style.width = base;
+        testEl.style.width = test;
+        const usedValue = getComputedStyle(testEl).width;
+        assert_not_equal(usedValue, base);
+        testEl.style.width = base;
+        testEl.style.width = expected;
+        const expectedValue = getComputedStyle(testEl).width;
+        assert_not_equal(expectedValue, base)
+        assert_equal(usedValue, expectedValue);
+    }, msg || `${test} should round to ${expected}`);
 }
 
 // No-op round should be same as nearest

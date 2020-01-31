@@ -93,7 +93,7 @@ The baselines for different widgets, as implemented in Firefox, are as follows:
 /* Use inline-grid instead of inline-block here to more easily center the text inside */
 .ref .fake-input-text {
   display: inline-grid;
-  border: 2px solid; /* Matches UA default style */
+  border: 2px solid; /* 2px matches UA default style */
   align-items: center;
 }
 .ref .inline-block {
@@ -113,12 +113,12 @@ The first span's offsetTop is what we want to compare with the corresponding tes
 The sibling element is there to control where the baseline for the line box will be.
 -->
 <table class="test ref">
-  <tr class="ref-text"><td><span>ref for text</span> <span class=fake-input-text>x</span>
-  <tr class="ref-checkbox"><td><span>ref for checkbox</span> <img class=no-margin-bottom src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D">
-  <tr class="ref-color"><td><span>ref for color</span> <button><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D"></button>
-  <tr class="ref-file"><td><span>ref for file</span> <span class=inline-block><button>x</button></span>
-  <tr class="ref-image-alt"><td><span>ref for image alt</span> <span class=inline-block>x</span>
-  <tr class="ref-image-src"><td><span>ref for image src</span> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D">
+  <tr class="ref-text-input-like"><td><span>ref-text-input-like</span> <span class=fake-input-text>x</span>
+  <tr class="ref-checkbox-input-appearance-auto-like"><td><span>ref-checkbox-input-appearance-auto-like</span> <img class=no-margin-bottom src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D">
+  <tr class="ref-color-input-like"><td><span>ref-color-input-like</span> <button><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D"></button>
+  <tr class="ref-file-input-like"><td><span>ref-file-input-like</span> <span class=inline-block><button>x</button></span>
+  <tr class="ref-image-input-showing-alt-overflow-visible-like"><td><span>ref-image-input-showing-alt-overflow-visible-like</span> <span class=inline-block>x</span>
+  <tr class="ref-image-input-showing-image-like"><td><span>ref-image-input-showing-image-like</span> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAIAAAD3UuoiAAAAGklEQVQoz2Nk%2BP%2BfgRqAiYFKYNSgUYOGp0EA%2BQMCFrJdTgsAAAAASUVORK5CYII%3D">
 </table>
 <h2>template table</h2>
 <!--
@@ -161,9 +161,9 @@ This table gets populated by the script.
     const testTBody = document.querySelector('#test-table tbody');
 
     const templateRows = templateTable.querySelectorAll('tr');
-    for (let templateRow of templateRows) {
-      for (var appearanceValue of ["auto", "none"]) {
-        for (var overflowValue of ['visible', 'hidden', 'scroll']) {
+    for (const templateRow of templateRows) {
+      for (const appearanceValue of ["auto", "none"]) {
+        for (const overflowValue of ['visible', 'hidden', 'scroll']) {
           const clonedRow = templateRow.cloneNode(true);
           clonedRow.querySelector('input').setAttribute('style', `overflow: ${overflowValue}; appearance: ${appearanceValue};`);
           testTBody.append(clonedRow);
@@ -178,12 +178,12 @@ This table gets populated by the script.
     }
 
     // get layout info from refs
-    const refTextOffsetTop = document.querySelector('.ref-text span').offsetTop;
-    const refCheckboxOffsetTop = document.querySelector('.ref-checkbox span').offsetTop;
-    const refColorOffsetTop = document.querySelector('.ref-color span').offsetTop;
-    const refFileOffsetTop = document.querySelector('.ref-file span').offsetTop;
-    const refImageAltOffsetTop = document.querySelector('.ref-image-alt span').offsetTop;
-    const refImageSrcOffsetTop = document.querySelector('.ref-image-src span').offsetTop;
+    const refTextInputLikeOffsetTop = document.querySelector('.ref-text-input-like span').offsetTop;
+    const refCheckboxInputAppearanceAutoLikeOffsetTop = document.querySelector('.ref-checkbox-input-appearance-auto-like span').offsetTop;
+    const refColorInputLikeOffsetTop = document.querySelector('.ref-color-input-like span').offsetTop;
+    const refFileInputLikeOffsetTop = document.querySelector('.ref-file-input-like span').offsetTop;
+    const refImageInputShowingAltOverflowVisibleLikeOffsetTop = document.querySelector('.ref-image-input-showing-alt-overflow-visible-like span').offsetTop;
+    const refImageInputShowingImageLikeOffsetTop = document.querySelector('.ref-image-input-showing-image-like span').offsetTop;
 
     function expectedOffsetTop(input) {
       // TODO(zcorpan) https://github.com/whatwg/html/issues/5065
@@ -192,18 +192,18 @@ This table gets populated by the script.
       const src = input.getAttribute('src');
       switch (input.type) {
         case 'file':
-          return refFileOffsetTop;
+          return refFileInputLikeOffsetTop;
         case 'range':
-          return refImageSrcOffsetTop;
+          return refImageInputShowingImageLikeOffsetTop;
         case 'color':
-          return refColorOffsetTop;
+          return refColorInputLikeOffsetTop;
         case 'checkbox':
         case 'radio':
-          return (style.includes('appearance: none;')) ? refImageSrcOffsetTop : refCheckboxOffsetTop;
+          return (style.includes('appearance: none;')) ? refImageInputShowingImageLikeOffsetTop : refCheckboxInputAppearanceAutoLikeOffsetTop;
         case 'image':
-          return (src === 'data:,broken' && style.includes('overflow: visible;')) ? refImageAltOffsetTop : refImageSrcOffsetTop;
+          return (src === 'data:,broken' && style.includes('overflow: visible;')) ? refImageInputShowingAltOverflowVisibleLikeOffsetTop : refImageInputShowingImageLikeOffsetTop;
         default:
-          return refTextOffsetTop;
+          return refTextInputLikeOffsetTop;
       }
     }
 

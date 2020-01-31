@@ -1545,6 +1545,7 @@ a different set of command-line arguments.</p>
 <h3>manifest<a class="headerlink" href="#manifest" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">manifest</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span><span class="o">-</span><span class="n">root</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">url</span><span class="o">-</span><span class="n">base</span> <span class="n">URL_BASE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">download</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cache</span><span class="o">-</span><span class="n">root</span> <span class="n">CACHE_ROOT</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">parallel</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="Named Arguments_repeat15">
@@ -1580,6 +1581,11 @@ a different set of command-line arguments.</p>
 <kbd>--cache-root</kbd></td>
 <td><p class="first">Path in which to store any caches (default &lt;tests_root&gt;/.wptcache/)</p>
 <p class="last">Default: “/github/workspace/.wptcache”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--no-parallel</kbd></td>
+<td><p class="first">Do not parallelize building the manifest</p>
+<p class="last">Default: True</p>
 </td></tr>
 </tbody>
 </table>

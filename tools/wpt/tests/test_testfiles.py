@@ -1,7 +1,7 @@
 import os.path
 from mock import patch
 
-from tools.manifest import manifest
+from tools.manifest.manifest import Manifest
 from tools.wpt import testfiles
 
 
@@ -33,8 +33,8 @@ def test_affected_testfiles():
         "url_base": "/",
         "version": 7,
     }
-    mfst = manifest.Manifest.from_json("/", manifest_json)
-    with patch("tools.wpt.testfiles.load_manifest", return_value=mfst):
+    manifest = Manifest.from_json("/", manifest_json)
+    with patch("tools.wpt.testfiles.load_manifest", return_value=manifest):
         # Dependent affected tests are determined by walking the filesystem,
         # which doesn't work in our test setup. We would need to refactor
         # testfiles.affected_testfiles or have a more complex test setup to

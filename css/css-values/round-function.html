@@ -76,17 +76,21 @@ testRound("round(-18px, -10px)", "-20px");
 // Extreme cases:
 
 // 0 step is NaN
-testRound("round(5px, 0px)", "calc(NaN)");
+testRound("round(5px, 0px)", "calc(NaN * 1px)");
 // both infinite is NaN
-testRound("round(1px/0, 1px/0)", "calc(NaN)");
+testRound("round(1px/0, 1px/0)", "calc(NaN * 1px)");
+
 // infinite value with finite step is the same infinity
 testRound("round(1px/0, 5px)", "calc(infinity * 1px)");
 testRound("round(1px/0, -5px)", "calc(infinity * 1px)");
 testRound("round(-1px/0, 5px)", "calc(-infinity * 1px)");
 testRound("round(-1px/0, -5px)", "calc(-infinity * 1px)");
+
 // finite value with infinite step is same-sign 0
-testRound("calc(1/round(5px, 1px/0))", "calc(infinity * 1px)");
-testRound("calc(1/round(5px, -1px/0))", "calc(infinity * 1px)");
-testRound("calc(1/round(-5px, 1px/0))", "calc(-infinity * 1px)");
-testRound("calc(1/round(-5px, -1px/0))", "calc(-infinity * 1px)");
+// Since I can't tell +0 and -0 apart normally,
+// invert them so they become distinguishable infinities
+testRound("calc(1px / round(5, infinity))", "calc(infinity * 1px)");
+testRound("calc(1px / round(5, -infinity))", "calc(infinity * 1px)");
+testRound("calc(1px / round(-5, infinity))", "calc(-infinity * 1px)");
+testRound("calc(1px / round(-5, -infinity))", "calc(-infinity * 1px)");
 </script>

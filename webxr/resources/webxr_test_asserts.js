@@ -5,7 +5,7 @@
 // |p1|, |p2| - objects with x, y, z, w components that are floating point numbers
 // |epsilon| - float specifying precision
 // |prefix| - string used as a prefix for logging
-let assert_point_approx_equals = function(p1, p2, epsilon = FLOAT_EPSILON, prefix = "") {
+const assert_point_approx_equals = function(p1, p2, epsilon = FLOAT_EPSILON, prefix = "") {
   if (p1 == null && p2 == null) {
     return;
   }
@@ -30,10 +30,50 @@ let assert_point_approx_equals = function(p1, p2, epsilon = FLOAT_EPSILON, prefi
   }
 };
 
+// |p1|, |p2| - objects with x, y, z, w components that are floating point numbers
+// |epsilon| - float specifying precision
+// |prefix| - string used as a prefix for logging
+const assert_point_significantly_not_equals = function(p1, p2, epsilon = FLOAT_EPSILON, prefix = "") {
+
+  assert_not_equals(p1, null, prefix + "p1 must be non-null");
+  assert_not_equals(p2, null, prefix + "p2 must be non-null");
+
+  let mismatched_component = null;
+  for (const v of ['x', 'y', 'z', 'w']) {
+    if (Math.abs(p1[v] - p2[v]) > epsilon) {
+      mismatched_component = v;
+      break;
+    }
+  }
+
+  if (mismatched_component === null) {
+    let error_message = prefix + ' Point comparison failed.\n';
+    error_message += ` p1: {x: ${p1.x}, y: ${p1.y}, z: ${p1.z}, w: ${p1.w}}\n`;
+    error_message += ` p2: {x: ${p2.x}, y: ${p2.y}, z: ${p2.z}, w: ${p2.w}}\n`;
+    error_message += ` Difference in components did not exceeded the given epsilon.\n`;
+    assert_unreached(error_message);
+  }
+};
+
+// |t1|, |t2| - objects containing position and orientation.
+// |epsilon| - float specifying precision
+// |prefix| - string used as a prefix for logging
+const assert_transform_approx_equals = function(t1, t2, epsilon = FLOAT_EPSILON, prefix = "") {
+  if (t1 == null && t2 == null) {
+    return;
+  }
+
+  assert_not_equals(t1, null, prefix + "t1 must be non-null");
+  assert_not_equals(t2, null, prefix + "t2 must be non-null");
+
+  assert_point_approx_equals(t1.position, t2.position, epsilon, prefix + "positions must be equal");
+  assert_point_approx_equals(t1.orientation, t2.orientation, epsilon, prefix + "orientations must be equal");
+};
+
 // |m1|, |m2| - arrays of floating point numbers
 // |epsilon| - float specifying precision
 // |prefix| - string used as a prefix for logging
-let assert_matrix_approx_equals = function(m1, m2, epsilon = FLOAT_EPSILON, prefix = "") {
+const assert_matrix_approx_equals = function(m1, m2, epsilon = FLOAT_EPSILON, prefix = "") {
   if (m1 == null && m2 == null) {
     return;
   }
@@ -64,13 +104,12 @@ let assert_matrix_approx_equals = function(m1, m2, epsilon = FLOAT_EPSILON, pref
         m1[mismatched_element], m2[mismatched_element], epsilon,
         error_message);
   }
-}
-
+};
 
 // |m1|, |m2| - arrays of floating point numbers
 // |epsilon| - float specifying precision
 // |prefix| - string used as a prefix for logging
-let assert_matrix_significantly_not_equals = function(m1, m2, epsilon = FLOAT_EPSILON, prefix = "") {
+const assert_matrix_significantly_not_equals = function(m1, m2, epsilon = FLOAT_EPSILON, prefix = "") {
   if (m1 == null && m2 == null) {
     return;
   }
@@ -108,13 +147,13 @@ let assert_matrix_significantly_not_equals = function(m1, m2, epsilon = FLOAT_EP
 
     assert_unreached(error_message);
   }
-}
+};
 
 // |r1|, |r2| - XRRay objects
 // |epsilon| - float specifying precision
 // |prefix| - string used as a prefix for logging
-let assert_ray_approx_equals = function(r1, r2, epsilon = FLOAT_EPSILON, prefix = "") {
+const assert_ray_approx_equals = function(r1, r2, epsilon = FLOAT_EPSILON, prefix = "") {
   assert_point_approx_equals(r1.origin, r2.origin, epsilon, prefix + "origin:");
   assert_point_approx_equals(r1.direction, r2.direction, epsilon, prefix + "direction:");
   assert_matrix_approx_equals(r1.matrix, r2.matrix, epsilon, prefix + "matrix:");
-}
+};

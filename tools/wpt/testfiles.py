@@ -51,10 +51,10 @@ def get_git_cmd(repo_path):
         full_cmd = [u"git", cmd] + list(item.decode("utf8") if isinstance(item, bytes) else item for item in args)  # type: List[Text]
         try:
             logger.debug(" ".join(full_cmd))
-            return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT).decode("utf8").strip()
+            return subprocess.check_output(full_cmd, cwd=repo_path).decode("utf8").strip()
         except subprocess.CalledProcessError as e:
-            logger.error("Git command exited with status %i" % e.returncode)
-            logger.error(e.output)
+            logger.critical("Git command exited with status %i" % e.returncode)
+            logger.critical(e.output)
             sys.exit(1)
     return git
 
@@ -247,7 +247,7 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
     nontests_changed = set(files_changed)
     wpt_manifest = load_manifest(manifest_path, manifest_update)
 
-    test_types = ["testharness", "reftest", "wdspec"]
+    test_types = ["crashtest", "testharness", "reftest", "wdspec"]
     support_files = {os.path.join(wpt_root, path)
                      for _, path, _ in wpt_manifest.itertypes("support")}
     wdspec_test_files = {os.path.join(wpt_root, path)

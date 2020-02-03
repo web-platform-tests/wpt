@@ -8,6 +8,8 @@ import traceback
 
 import mozprocess
 
+from .process import cast_env
+
 
 __all__ = ["SeleniumServer", "ChromeDriverServer", "CWTChromeDriverServer",
            "EdgeChromiumDriverServer", "OperaDriverServer", "GeckoDriverServer",
@@ -55,7 +57,7 @@ class WebDriverServer(object):
         self._proc = mozprocess.ProcessHandler(
             self._cmd,
             processOutputLine=self.on_output,
-            env=self.env,
+            env=cast_env(self.env),
             storeOutput=False)
 
         self.logger.debug("Starting WebDriver: %s" % ' '.join(self._cmd))
@@ -81,8 +83,12 @@ class WebDriverServer(object):
             self._proc.wait()
 
     def stop(self, force=False):
+        self.logger.debug("Stopping WebDriver")
         if self.is_alive:
-            return self._proc.kill()
+            kill_result = self._proc.kill()
+            if force and kill_result != 0:
+                return self._proc.kill(9)
+            return kill_result
         return not self.is_alive
 
     @property
@@ -180,7 +186,11 @@ class GeckoDriverServer(WebDriverServer):
                  host="127.0.0.1", port=None, args=None):
         env = os.environ.copy()
         env["RUST_BACKTRACE"] = "1"
-        WebDriverServer.__init__(self, logger, binary, host=host, port=port, env=env, args=args)
+        WebDriverServer.__init__(self, logger, binary,
+                                 host=host,
+                                 port=port,
+                                 env=cast_env(env),
+                                 args=args)
         self.marionette_port = marionette_port
 
     def make_command(self):
@@ -205,7 +215,11 @@ class ServoDriverServer(WebDriverServer):
                  port=None, args=None):
         env = os.environ.copy()
         env["RUST_BACKTRACE"] = "1"
-        WebDriverServer.__init__(self, logger, binary, host=host, port=port, env=env, args=args)
+        WebDriverServer.__init__(self, logger, binary,
+                                 host=host,
+                                 port=port,
+                                 env=cast_env(env),
+                                 args=args)
         self.binary_args = binary_args
 
     def make_command(self):

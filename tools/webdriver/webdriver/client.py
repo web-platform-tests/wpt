@@ -1,10 +1,9 @@
-import urlparse
-
-import error
-import protocol
-import transport
+from . import error
+from . import protocol
+from . import transport
 
 from six import string_types
+from six.moves.urllib import parse as urlparse
 
 
 def command(func):
@@ -737,6 +736,10 @@ class Element(object):
     @command
     def selected(self):
         return self.send_element_command("GET", "selected")
+
+    @command
+    def screenshot(self):
+        return self.send_element_command("GET", "screenshot")
 
     @command
     def attribute(self, name):

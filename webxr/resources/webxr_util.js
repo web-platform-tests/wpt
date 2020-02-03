@@ -16,6 +16,15 @@ function xr_promise_test(name, func, properties) {
       await loadChromiumResources;
     }
 
+    // Ensure that any devices are disconnected when done. If this were done in
+    // a .then() for the success case, a test that expected failure would
+    // already be marked done at the time that runs and the shutdown would
+    // interfere with the next test.
+    t.add_cleanup(async () => {
+      // Ensure system state is cleaned up.
+      await navigator.xr.test.disconnectAllDevices();
+    });
+
     return func(t);
   }, name, properties);
 }
@@ -44,19 +53,16 @@ function xr_session_promise_test(
   xr_promise_test(
       name,
       (t) => {
-          // Ensure that any pending sessions are ended and devices are
-          // disconnected when done. This needs to use a cleanup function to
-          // ensure proper sequencing. If this were done in a .then() for the
-          // success case, a test that expected failure would already be marked
-          // done at the time that runs, and the shutdown would interfere with
-          // the next test which may have started already.
+          // Ensure that any pending sessions are ended when done. This needs to
+          // use a cleanup function to ensure proper sequencing. If this were
+          // done in a .then() for the success case, a test that expected
+          // failure would already be marked done at the time that runs, and the
+          // shutdown would interfere with the next test which may have started.
           t.add_cleanup(async () => {
-                // If a session was created, end it.
-                if (testSession) {
-                  await testSession.end().catch(() => {});
-                }
-                // Cleanup system state.
-                await navigator.xr.test.disconnectAllDevices();
+            // If a session was created, end it.
+            if (testSession) {
+              await testSession.end().catch(() => {});
+            }
           });
 
           return navigator.xr.test.simulateDeviceConnection(fakeDeviceInit)
@@ -93,6 +99,18 @@ function xr_session_promise_test(
               }));
       },
       properties);
+}
+
+
+// This function wraps the provided function in a
+// simulateUserActivation() call, and resolves the promise with the
+// result of func(), or an error if one is thrown
+function promise_simulate_user_activation(func) {
+  return new Promise((resolve, reject) => {
+    navigator.xr.test.simulateUserActivation(() => {
+      try { let a = func(); resolve(a); } catch(e) { reject(e); }
+    });
+  });
 }
 
 // This functions calls a callback with each API object as specified
@@ -139,6 +157,7 @@ let loadChromiumResources = Promise.resolve().then(() => {
     '/gen/ui/gfx/mojom/gpu_fence_handle.mojom.js',
     '/gen/ui/gfx/mojom/transform.mojom.js',
     '/gen/device/vr/public/mojom/vr_service.mojom.js',
+    '/resources/chromium/webxr-test-math-helper.js',
     '/resources/chromium/webxr-test.js',
     '/resources/testdriver.js',
     '/resources/testdriver-vendor.js',

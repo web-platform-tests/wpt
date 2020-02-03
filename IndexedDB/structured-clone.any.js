@@ -65,7 +65,7 @@ function cloneFailureTest(value) {
     });
     const tx = db.transaction('store', 'readwrite');
     const store = tx.objectStore('store');
-    assert_throws('DataCloneError', () => store.put(value, 'key'));
+    assert_throws_dom('DataCloneError', () => store.put(value, 'key'));
   }, 'Not serializable: ' + describe(value));
 }
 
@@ -288,8 +288,6 @@ cloneObjectTest(
     assert_equals(orig.type, clone.type);
     assert_equals(orig.name, clone.name);
     assert_equals(orig.lastModified, clone.lastModified);
-    assert_equals(String(orig.lastModifiedDate),
-                  String(clone.lastModifiedDate));
     assert_equals(await orig.text(), await clone.text());
   });
 

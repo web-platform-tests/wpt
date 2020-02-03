@@ -78,13 +78,13 @@ testRound("round(-18px, -10px)", "-20px");
 // 0 step is NaN
 testRound("round(5px, 0px)", "calc(NaN * 1px)");
 // both infinite is NaN
-testRound("round(1px/0, 1px/0)", "calc(NaN * 1px)");
+testRound("round(infinity * 1px, infinity * 1px)", "calc(NaN * 1px)");
 
 // infinite value with finite step is the same infinity
-testRound("round(1px/0, 5px)", "calc(infinity * 1px)");
-testRound("round(1px/0, -5px)", "calc(infinity * 1px)");
-testRound("round(-1px/0, 5px)", "calc(-infinity * 1px)");
-testRound("round(-1px/0, -5px)", "calc(-infinity * 1px)");
+testRound("round(infinity * 1px, 5px)", "calc(infinity * 1px)");
+testRound("round(infinity * 1px, -5px)", "calc(infinity * 1px)");
+testRound("round(-infinity * 1px, 5px)", "calc(-infinity * 1px)");
+testRound("round(-infinity * 1px, -5px)", "calc(-infinity * 1px)");
 
 // finite value with infinite step is same-sign 0
 // Since I can't tell +0 and -0 apart normally,

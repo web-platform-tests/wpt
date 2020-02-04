@@ -86,11 +86,17 @@ function equalsPosZero(testString) {
 function equalsNegZero(testString) {
     testRound(`calc(1px / ${testString})`, "calc(-infinity * 1px)");
 }
+function equalsNaN(testString) {
+    // Make sure that it's NaN, not an infinity,
+    // by making sure that it's the same value both pos and neg.
+    testRound(`calc(1px * ${testString})`, "calc(NaN * 1px)");
+    testRound(`calc(-1px * ${testString})`, "calc(NaN * 1px)");
+}
 
 // 0 step is NaN
-testRound("round(5px, 0px)", "calc(NaN * 1px)");
+equalsNaN("round(5, 0)");
 // both infinite is NaN
-testRound("round(infinity * 1px, infinity * 1px)", "calc(NaN * 1px)");
+equalsNaN("round(infinity, infinity)");
 
 // infinite value with finite step is the same infinity
 equalsPosInfinity("round(infinity, 5)");

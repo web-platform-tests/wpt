@@ -74,6 +74,18 @@ testRound("round(-13px, -10px)", "-10px");
 testRound("round(-18px, -10px)", "-20px");
 
 // Extreme cases:
+function equalsPosInfinity(testString) {
+    testRound(`calc(1px * ${testString})`, "calc(infinity * 1px)");
+}
+function equalsNegInfinity(testString) {
+    testRound(`calc(1px * ${testString})`, "calc(-infinity * 1px)");
+}
+function equalsPosZero(testString) {
+    testRound(`calc(1px / ${testString})`, "calc(infinity * 1px)");
+}
+function equalsNegZero(testString) {
+    testRound(`calc(1px / ${testString})`, "calc(-infinity * 1px)");
+}
 
 // 0 step is NaN
 testRound("round(5px, 0px)", "calc(NaN * 1px)");
@@ -81,16 +93,29 @@ testRound("round(5px, 0px)", "calc(NaN * 1px)");
 testRound("round(infinity * 1px, infinity * 1px)", "calc(NaN * 1px)");
 
 // infinite value with finite step is the same infinity
-testRound("round(infinity * 1px, 5px)", "calc(infinity * 1px)");
-testRound("round(infinity * 1px, -5px)", "calc(infinity * 1px)");
-testRound("round(-infinity * 1px, 5px)", "calc(-infinity * 1px)");
-testRound("round(-infinity * 1px, -5px)", "calc(-infinity * 1px)");
+equalsPosInfinity("round(infinity, 5)");
+equalsPosInfinity("round(infinity, -5)");
+equalsNegInfinity("round(-infinity, 5)");
+equalsNegInfinity("round(-infinity, -5)");
 
-// finite value with infinite step is same-sign 0
-// Since I can't tell +0 and -0 apart normally,
-// invert them so they become distinguishable infinities
-testRound("calc(1px / round(5, infinity))", "calc(infinity * 1px)");
-testRound("calc(1px / round(5, -infinity))", "calc(infinity * 1px)");
-testRound("calc(1px / round(-5, infinity))", "calc(-infinity * 1px)");
-testRound("calc(1px / round(-5, -infinity))", "calc(-infinity * 1px)");
+// Finite value with infinite step depends on rounding strategy.
+// 'nearest' and 'to-zero': pos and +0 go to +0, neg and -0 go to -0
+equalsPosZero("round(5, infinity)");
+equalsPosZero("round(5, -infinity)");
+equalsNegZero("round(-5, infinity)");
+equalsNegZero("round(-5, -infinity)");
+equalsPosZero("round(to-zero, 5, infinity)");
+equalsPosZero("round(to-zero, 5, -infinity)");
+equalsNegZero("round(to-zero, -5, infinity)");
+equalsNegZero("round(to-zero, -5, -infinity)");
+// 'up': pos goes to +inf, 0+ goes to 0+, else 0-
+equalsPosInfinity("round(up, 1, infinity)");
+equalsPosZero("round(up, 0, infinity)");
+equalsNegZero("round(up, -1 * 0, infinity");
+equalsNegZero("round(up, -1, infinity");
+// 'down': neg goes to -inf, -0 goes to -0, else 0+
+equalsNegInfinity("round(down, -1, infinity)");
+equalsNegZero("round(down, -1 * 0, infinity)");
+equalsPosZero("round(down, 0, infinity)");
+equalsPosZero("round(down, 1, infinity)");
 </script>

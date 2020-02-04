@@ -1108,7 +1108,7 @@ a different set of command-line arguments.</p>
 <h3>serve<a class="headerlink" href="#serve" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">serve</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">latency</span> <span class="n">LATENCY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG_PATH</span><span class="p">]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">doc_root</span> <span class="n">DOC_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ws_doc_root</span> <span class="n">WS_DOC_ROOT</span><span class="p">]</span>
-          <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">h2</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">h2</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="Named Arguments_repeat9">
@@ -1133,10 +1133,8 @@ a different set of command-line arguments.</p>
 <kbd>--alias_file</kbd></td>
 <td>File with entries for aliases/multiple doc roots. In form of <cite>/ALIAS_NAME/, DOC_ROOTn</cite></td></tr>
 <tr><td class="option-group">
-<kbd>--h2</kbd></td>
-<td><p class="first">Flag for enabling the HTTP/2.0 server</p>
-<p class="last">Default: False</p>
-</td></tr>
+<kbd>--no-h2</kbd></td>
+<td>Disable the HTTP/2.0 server</td></tr>
 </tbody>
 </table>
 </div>

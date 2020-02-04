@@ -24,7 +24,7 @@ def test_affected_testfiles():
                         "c": {
                             "foo-crash.html": [
                                 "acdefgh123456",
-                                [ "null", {} ],
+                                ["null", {}],
                             ]
                         }
                     }

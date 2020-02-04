@@ -124,7 +124,8 @@ class Project(object):
         return data['items']
 
     @guard('core')
-    def pull_request_is_from_fork(self, pr_number):
+    def pull_request_is_from_fork(self, pull_request):
+        pr_number = pull_request['number']
         url = '{}/repos/{}/pulls/{}'.format(
             self._host, self._github_project, pr_number
         )
@@ -266,7 +267,7 @@ def has_mirroring_label(pull_request):
 
     return False
 
-def should_be_mirrored(pull_request, project):
+def should_be_mirrored(project, pull_request):
     return (
         is_open(pull_request) and
         pull_request['user']['login'] not in AUTOMATION_GITHUB_USERS and (
@@ -274,7 +275,7 @@ def should_be_mirrored(pull_request, project):
             has_mirroring_label(pull_request)
         ) and
         # Query this last as it requires another API call to verify
-        not project.pull_request_is_from_fork(pull_request['number'])
+        not project.pull_request_is_from_fork(pull_request)
     )
 
 def is_deployed(host, deployment):
@@ -313,7 +314,7 @@ def synchronize(host, github_project, window):
         revision_trusted = remote.get_revision(refspec_trusted)
         revision_open = remote.get_revision(refspec_open)
 
-        if should_be_mirrored(pull_request, project):
+        if should_be_mirrored(project, pull_request):
             logger.info('Pull Request should be mirrored')
 
             if revision_trusted is None:

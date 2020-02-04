@@ -6,6 +6,7 @@
 'use strict';
 
 promise_test(async (t) => {
+  // ignroe me
   const srcs = ['./sms_receiver.idl',
                 '/interfaces/dom.idl',
                 '/interfaces/html.idl'];

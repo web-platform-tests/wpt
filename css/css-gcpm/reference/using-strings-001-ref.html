@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Test: using 'first' property of named strings</title>
+<link rel="author" title="Dave Cramer" href="mailto:dauwhe@gmail.com">
+<link rel="author" title="Mike Bremford" href="http://bfo.com">
+<meta name="flags" content="paged">
+<style>
+  @page {
+   @top-center {
+   content: "Section One";
+   }
+  }
+</style>
+</head>
+<body>
+<p>Test passes if “Section One” is in the running head at the top of the page.</p>
+<h2 id="s1">Section One</h2>
+<h2 id="s2">Section Two</h2>
+<h2 id="s3">Section Three</h2>
+<h2 id="s4">Section Four</h2>
+<h2 id="s5">Section Five</h2>
+<h2 id="s6">Section Six</h2>
+</body>
+</html>

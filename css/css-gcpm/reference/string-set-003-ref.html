@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Test: GCPM String-set with content(text)</title>
+<link rel="author" title="Dave Cramer" href="mailto:dauwhe@gmail.com">
+<link rel="author" title="Mike Bremford" href="http://bfo.com">
+<meta name="flags" content="paged">
+<style type="text/css">
+  @page {
+   @top-center {
+   content: "Chapter Title";
+   }
+  }
+</style>
+</head>
+<body>
+<h1>Chapter Title</h1>
+<p>Test passes if the text “Chapter Title” appears in the running head at the top of the page.</p>
+<!--AH errors out with content(text) rather than content()-->
+</body>
+</html>

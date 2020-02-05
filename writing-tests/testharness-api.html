@@ -206,7 +206,7 @@ with a TypeError:</p>
 <span class="p">}</span>
 
 <span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nx">promise_rejects</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(),</span> <span class="nx">bar</span><span class="p">());</span>
+  <span class="k">return</span> <span class="nx">promise_rejects_js</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">TypeError</span><span class="p">,</span> <span class="nx">bar</span><span class="p">());</span>
 <span class="p">},</span> <span class="s2">&quot;Another example&quot;</span><span class="p">);</span>
 </pre></div>
 </div>

@@ -5,11 +5,13 @@
 <title>CSS Test: GCPM String-set with counter(page)</title>
 <link rel="author" title="Dave Cramer" href="mailto:dauwhe@gmail.com">
 <link rel="help" href="http://www.w3.org/TR/css-gcpm-3/#setting-named-strings-the-string-set-pro">
+<link rel="match" href="reference/string-set-005-ref.html"/>
 
 <meta name="flags" content="paged">
 <meta name="assert" content="Test checks that a named string can be set to the value of the page counter">
 <style>
   @page {
+   margin: 72px;
    @top-center {
    content: string(title);
    }

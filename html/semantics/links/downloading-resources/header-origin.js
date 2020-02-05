@@ -1,17 +1,15 @@
 const RESOURCES_DIR = "/html/semantics/links/downloading-resources/resources/";
 
-function testOriginHeader(expectedOrigin) {
-  var id = self.token();
-  let testUrl = RESOURCES_DIR + "inspect-header.py?header=origin&cmd=put&id=" + id;
+let id = self.token();
+let testUrl = RESOURCES_DIR + "inspect-header.py?header=origin&cmd=put&id=" + id;
+const anchor = document.getElementById("a");
 
-  promise_test(function(test) {
-    const anchor = document.getElementById("a");
-    anchor.setAttribute("ping", testUrl);
-    anchor.click();
-    return pollResult(id) .then(result => {
-      assert_equals(result, expectedOrigin, "Correct origin header result");
-    });
-  }, "Test origin header " + RESOURCES_DIR);
+function testOriginHeader(expectedOrigin) {
+  anchor.setAttribute("ping", testUrl);
+  anchor.click();
+  return pollResult(id) .then(result => {
+    assert_equals(result, expectedOrigin, "Correct origin header result");
+  });
 }
 
 // Sending a ping is an asynchronous and non-blocking request to a web server.

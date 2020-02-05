@@ -2,9 +2,20 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Ping attribute Origin no Referrer Policy</title>
+    <meta name="variant" content="?include=default">
+    <meta name="variant" content="?include=no-referrer">
+    <meta name="variant" content="?include=no-referrer-when-downgrade">
+    <meta name="variant" content="?include=origin">
+    <meta name="variant" content="?include=origin-when-crossorigin">
+    <meta name="variant" content="?include=same-origin">
+    <meta name="variant" content="?include=strict-origin">
+    <meta name="variant" content="?include=strict-origin-when-crossorigin">
+    <meta name="variant" content="?include=unsafe-url">
+    <title>Ping attribute and Origin Header give referrer policy</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/common/subset-tests-by-key.js"></script>
+    <meta id="referrer" name="referrer" content="">
   </head>
   <body>
     <a id="a" href="#">
@@ -13,7 +24,51 @@
     <script src="/resources/chromium/enable-hyperlink-auditing.js"></script>
     <script src="header-origin.js"></script>
     <script>
-      testOriginHeader(self.location.origin);
+      let referrer = document.getElementById('referrer');
+
+      subsetTestByKey("default", test, function(test) {
+        testOriginHeader(self.location.origin);
+      }, 'Ping attribute no Origin Header given');
+
+      subsetTestByKey("no-referrer", test, function(test) {
+        referrer.setAttribute("content", "no-referrer");
+        testOriginHeader("null");
+      }, "Ping attribute Origin Header No Referrer Policy");
+
+      subsetTestByKey("no-referrer-when-downgrade", test, function(test) {
+        referrer.setAttribute("content", "no-referrer-when-downgrade");
+        testOriginHeader(self.location.origin);
+      }, "Ping attribute Origin Header No Referrer When Downgrade Policy");
+
+      subsetTestByKey("origin", test, function(test) {
+        referrer.setAttribute("content", "origin");
+        testOriginHeader(self.location.origin);
+      }, "Ping attribute Origin Header Origin Policy");
+
+      subsetTestByKey("origin-when-cross-origin", test, function(test) {
+        referrer.setAttribute("content", "origin-when-cross-origin");
+        testOriginHeader(self.location.origin);
+      }, "Ping attribute Origin Header Origin When Cross Origin Policy");
+
+      subsetTestByKey("same-origin", test, function(test) {
+        referrer.setAttribute("content", "same-origin");
+        testOriginHeader(self.location.origin);
+      }, "Ping attribute Origin Header Same Origin Policy");
+
+     subsetTestByKey("strict-origin", test, function(test) {
+        referrer.setAttribute("content", "strict-origin");
+        testOriginHeader(self.location.origin);
+      }, "Ping attribute Origin Header Strict Origin Policy");
+
+      subsetTestByKey("strict-origin-when-cross-origin", test, function(test) {
+        referrer.setAttribute("content", "strict-origin-when-cross-origin");
+        testOriginHeader(self.location.origin);
+      }, "Ping attribute Origin Header Strict Origin When Cross Origin Policy");
+
+      subsetTestByKey("unsafeurl", test, function(test) {
+        referrer.setAttribute("content", "unsafe-url");
+        testOriginHeader(self.location.origin);
+      }, 'Ping attribute Origin Header Unsafe Url Policy');
     </script>
   </body>
 </html>

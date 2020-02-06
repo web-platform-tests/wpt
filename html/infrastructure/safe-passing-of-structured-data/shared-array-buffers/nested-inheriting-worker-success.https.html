@@ -14,19 +14,70 @@ promise_test(t => {
   const worker = new Worker("${url.href}resources/incrementer-worker.js");
 
   return testSharingViaIncrementerScript(t, worker, "parent worker", worker, "sub-worker");
-}, "postMessaging to a dedicated sub-worker allows them to see each others' modifications");
+}, "blob worker: postMessaging to a dedicated HTTP sub-worker allows them to see each others' modifications");
+
+test(() => {
+  assert_equals(self.origin, self.location.origin);
+}, "blob worker: self.origin");
+
 
 test(() => {
   assert_true(self.crossOriginIsolated);
-}, "Bonus: self.crossOriginIsolated");
+}, "blob worker: self.crossOriginIsolated");
+
+test(() => {
+  assert_true(self.isSecureContext);
+}, "blob worker: self.isSecureContext");
 
 done();
 `;
 
 fetch_tests_from_worker(new Worker(URL.createObjectURL(new Blob([workerScript], { type: "text/javascript" }))));
 
-// First test times out?
-// data: shouldn't be cross-origin isolated, maybe?
-// fetch_tests_from_worker(new Worker(`data:,${workerScript}`));
+const dataWorkerScript = `
+importScripts("${url.origin}/resources/testharness.js");
+
+promise_test(t => {
+  const worker = new Worker(URL.createObjectURL(new Blob([\`
+const view = new Uint8Array(new SharedArrayBuffer(1));
+self.onmessage = () => {
+  const succeeded = (view[0] === 1);
+  self.postMessage({ succeeded });
+};
+self.postMessage({ origin: self.origin, view });
+\`], { type: "text/javascript" })));
+
+  return new Promise((resolve, reject) => {
+    worker.onmessage = t.step_func(({ data }) => {
+      if ("succeeded" in data) {
+        assert_true(data.succeeded);
+        resolve();
+      } else {
+        assert_equals(data.origin, "null");
+        assert_equals(data.view[0], 0);
+        data.view[0] = 1;
+        worker.postMessage("continue");
+      }
+    });
+    worker.onmessageerror = reject;
+  });
+}, "data worker: postMessaging to a dedicated blob sub-worker allows them to see each others' modifications");
+
+test(() => {
+  assert_equals(self.origin, "null");
+}, "data worker: self.origin");
+
+test(() => {
+  assert_true(self.crossOriginIsolated);
+}, "data worker: self.crossOriginIsolated");
+
+test(() => {
+  assert_true(self.isSecureContext);
+}, "data worker: self.isSecureContext");
+
+done();
+`;
+
+fetch_tests_from_worker(new Worker(`data:,${dataWorkerScript}`));
 
 </script>

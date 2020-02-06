@@ -31,7 +31,7 @@ def test_affected_testfiles():
             ]
         },
         "url_base": "/",
-        "version": 8,
+        "version": 7,
     }
     manifest = Manifest.from_json("/", manifest_json)
     with patch("tools.wpt.testfiles.load_manifest", return_value=manifest):

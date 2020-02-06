@@ -22,12 +22,12 @@ function test_math_used(testString, expectedString, {base="123px", msg, prop="le
         testEl.style[prop] = base;
         testEl.style[prop] = testString;
         const usedValue = getComputedStyle(testEl)[prop];
-        assert_not_equals(usedValue, base);
+        assert_not_equals(usedValue, base, `${testString} isn't valid in '${prop}'; got the default value instead.`);
         testEl.style[prop] = base;
         testEl.style[prop] = expectedString;
         const expectedValue = getComputedStyle(testEl)[prop];
-        assert_not_equals(expectedValue, base)
-        assert_equal(usedValue, expectedValue);
+        assert_not_equals(expectedValue, base, `${testString} isn't valid in '${prop}'; got the default value instead.`)
+        assert_equals(usedValue, expectedValue, `${testString} and ${expectedString} serialize to the same thing in used values.`);
     }, msg || `${testString} should be used-value-equivalent to ${expectedString}`);
 }
 

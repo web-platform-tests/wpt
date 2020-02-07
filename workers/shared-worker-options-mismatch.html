@@ -2,7 +2,6 @@
 <title>SharedWorker: type or credentials mismatch failure</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script> setup({allow_uncaught_exception: true}); </script>
 <script>
 
 const mismatch_test = (testName, firstOptions, secondOptions) => {
@@ -23,68 +22,38 @@ mismatch_test('module to default', { type: 'module' }, {});
 mismatch_test('classic to module', { type: 'classic' }, { type: 'module' });
 mismatch_test('module to classic', { type: 'module' }, { type: 'classic' });
 
-// Tests different credentials in classic.
-mismatch_test('default to omit in classic',
-              { type: 'classic' },
-              { type: 'classic', credentials: 'omit' });
-mismatch_test('default to include in classic',
-              { type: 'classic' },
-              { type: 'classic', credentials: 'include' });
-mismatch_test('omit to default in classic',
-              { type: 'classic', credentials: 'omit' },
-              { type: 'classic' });
-mismatch_test('omit to same-origin in classic',
-              { type: 'classic', credentials: 'omit' },
-              { type: 'classic', credentials: 'same-origin' });
-mismatch_test('omit to include in classic',
-              { type: 'classic', credentials: 'omit' },
-              { type: 'classic', credentials: 'include' });
-mismatch_test('same-origin to omit in classic',
-              { type: 'classic', credentials: 'same-origin'},
-              { type: 'classic', credentials: 'omit' });
-mismatch_test('same-origin to include in classic',
-              { type: 'classic', credentials: 'same-origin'},
-              { type: 'classic', credentials: 'include' });
-mismatch_test('include to default in classic',
-              { type: 'classic', credentials: 'include' },
-              { type: 'classic' });
-mismatch_test('include to omit in classic',
-              { type: 'classic', credentials: 'include' },
-              { type: 'classic', credentials: 'omit' });
-mismatch_test('include to same-origin in classic',
-              { type: 'classic', credentials: 'include' },
-              { type: 'classic', credentials: 'same-origin' });
-
-// Tests different credentials in module.
-mismatch_test('default to omit in module',
-              { type: 'module' },
-              { type: 'module', credentials: 'omit' });
-mismatch_test('default to include in module',
-              { type: 'module' },
-              { type: 'module', credentials: 'include' });
-mismatch_test('omit to default in module',
-              { type: 'module', credentials: 'omit' },
-              { type: 'module' });
-mismatch_test('omit to same-origin in module',
-              { type: 'module', credentials: 'omit' },
-              { type: 'module', credentials: 'same-origin' });
-mismatch_test('omit to include in module',
-              { type: 'module', credentials: 'omit' },
-              { type: 'module', credentials: 'include' });
-mismatch_test('same-origin to omit in module',
-              { type: 'module', credentials: 'same-origin'},
-              { type: 'module', credentials: 'omit' });
-mismatch_test('same-origin to include in module',
-              { type: 'module', credentials: 'same-origin'},
-              { type: 'module', credentials: 'include' });
-mismatch_test('include to default in module',
-              { type: 'module', credentials: 'include' },
-              { type: 'module' });
-mismatch_test('include to omit in module',
-              { type: 'module', credentials: 'include' },
-              { type: 'module', credentials: 'omit' });
-mismatch_test('include to same-origin in module',
-              { type: 'module', credentials: 'include' },
-              { type: 'module', credentials: 'same-origin' });
+// Tests different credentials in classic and module.
+['classic', 'module'].forEach(type => {
+  mismatch_test('default to omit in ' + type,
+                { type },
+                { type, credentials: 'omit' });
+  mismatch_test('default to include in ' + type,
+                { type },
+                { type, credentials: 'include' });
+  mismatch_test('omit to default in ' + type,
+                { type, credentials: 'omit' },
+                { type });
+  mismatch_test('omit to same-origin in ' + type,
+                { type, credentials: 'omit' },
+                { type, credentials: 'same-origin' });
+  mismatch_test('omit to include in ' + type,
+                { type, credentials: 'omit' },
+                { type, credentials: 'include' });
+  mismatch_test('same-origin to omit in ' + type,
+                { type, credentials: 'same-origin'},
+                { type, credentials: 'omit' });
+  mismatch_test('same-origin to include in ' + type,
+                { type, credentials: 'same-origin'},
+                { type, credentials: 'include' });
+  mismatch_test('include to default in ' + type,
+                { type, credentials: 'include' },
+                { type });
+  mismatch_test('include to omit in ' + type,
+                { type, credentials: 'include' },
+                { type, credentials: 'omit' });
+  mismatch_test('include to same-origin in ' + type,
+                { type, credentials: 'include' },
+                { type, credentials: 'same-origin' });
+});
 
 </script>

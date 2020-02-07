@@ -22,18 +22,61 @@
     margin-left: 100px;
   }
 }
+@keyframes opacity50 {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 0.5;
+  }
+}
+@keyframes opacity100 {
+  from {
+    opacity: 1.0;
+  }
+  to {
+    opacity: 1.0;
+  }
+}
 </style>
 <div id="log"</div>
 <script>
 'use strict';
 
-promise_test(async t => {
+test(t => {
   const div = addDiv(t);
   div.style.animation = 'margin100 100s';
-  assert_equals(getComputedStyle(div).marginLeft, '100px');
+  assert_equals(getComputedStyle(div).marginLeft, '100px', "Initial animation.");
   div.style.animation = 'margin50 100s, margin100 100s';
-  // The margin should be unaffected by margin50 since it is named earlier
-  // in the animation list.
-  assert_equals(getComputedStyle(div).marginLeft, '100px');
+  assert_equals(getComputedStyle(div).marginLeft, '100px',
+                "A higher-priority animation is not overriden by a more recent one.");
 }, "Animations are composited by their order in the animation-name property.");
+
+test(t => {
+  const div = addDiv(t);
+  div.style.animation = 'opacity100 100s';
+  assert_equals(getComputedStyle(div).opacity, '1', "Initial animation.");
+  div.style.animation = 'opacity50 100s, opacity100 100s';
+  assert_equals(getComputedStyle(div).opacity, '1',
+                "A higher-priority animation is not overriden by a more recent one.");
+}, "Opacity animations are composited by their order in the animation-name property.");
+
+test(t => {
+  const div = addDiv(t);
+  div.animate({margin: ["100px","100px"]}, 100000);
+  assert_equals(getComputedStyle(div).marginLeft, '100px', "Initial animation.");
+  div.style.animation = 'margin50 100s';
+  assert_equals(getComputedStyle(div).marginLeft, '100px',
+                "A higher-priority animation is not overriden by a more recent one.");
+}, "CSSAnimations are composited before WebAnimations.");
+
+test(t => {
+  const div = addDiv(t);
+  div.animate({opacity: [1,1]}, 100000);
+  assert_equals(getComputedStyle(div).opacity, '1', "Initial animation.");
+  div.style.animation = 'opacity50 100s';
+  assert_equals(getComputedStyle(div).opacity, '1',
+                "A higher-priority animation is not overriden by a more recent one.");
+}, "Opacity CSSAnimations are composited before WebAnimations.");
+
 </script>

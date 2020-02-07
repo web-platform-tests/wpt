@@ -1,7 +1,4 @@
-import sys
-
 import mock
-import pytest
 from tools.wpt import revlist
 
 

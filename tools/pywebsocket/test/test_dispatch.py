@@ -118,7 +118,7 @@ class DispatcherTest(unittest.TestCase):
             dispatch.DispatchException, dispatch._source_handler_file, 'def')
         self.assertRaises(
             dispatch.DispatchException, dispatch._source_handler_file, '1/0')
-        self.failUnless(dispatch._source_handler_file(
+        self.assertTrue(dispatch._source_handler_file(
                 'def web_socket_do_extra_handshake(request):pass\n'
                 'def web_socket_transfer_data(request):pass\n'))
 
@@ -140,9 +140,9 @@ class DispatcherTest(unittest.TestCase):
                     _TEST_HANDLERS_DIR, 'sub', 'wrong_transfer_sig_wsh.py')) +
                  ': web_socket_transfer_data is not defined.'),
                 ]
-        self.assertEquals(4, len(warnings))
+        self.assertEqual(4, len(warnings))
         for expected, actual in zip(expected_warnings, warnings):
-            self.assertEquals(expected, actual)
+            self.assertEqual(expected, actual)
 
     def test_do_extra_handshake(self):
         dispatcher = dispatch.Dispatcher(_TEST_HANDLERS_DIR, None)
@@ -156,7 +156,7 @@ class DispatcherTest(unittest.TestCase):
             dispatcher.do_extra_handshake(request)
             self.fail('Could not catch HandshakeException with 403 status')
         except handshake.HandshakeException as e:
-            self.assertEquals(403, e.status)
+            self.assertEqual(403, e.status)
         except Exception as e:
             self.fail('Unexpected exception: %r' % e)
 
@@ -213,7 +213,7 @@ class DispatcherTest(unittest.TestCase):
                 dispatcher.transfer_data(request)
                 self.fail()
             except dispatch.DispatchException as e:
-                self.failUnless(str(e).find('No handler') != -1)
+                self.assertTrue(str(e).find('No handler') != -1)
             except Exception:
                 self.fail()
 
@@ -226,7 +226,7 @@ class DispatcherTest(unittest.TestCase):
             dispatcher.transfer_data(request)
             self.fail()
         except Exception as e:
-            self.failUnless(str(e).find('Intentional') != -1,
+            self.assertTrue(str(e).find('Intentional') != -1,
                             'Unexpected exception: %s' % e)
 
     def test_abort_transfer_data(self):
@@ -239,28 +239,28 @@ class DispatcherTest(unittest.TestCase):
     def test_scan_dir(self):
         disp = dispatch.Dispatcher(_TEST_HANDLERS_DIR, None)
         self.assertEqual(4, len(disp._handler_suite_map))
-        self.failUnless('/origin_check' in disp._handler_suite_map)
-        self.failUnless(
+        self.assertTrue('/origin_check' in disp._handler_suite_map)
+        self.assertTrue(
             '/sub/exception_in_transfer' in disp._handler_suite_map)
-        self.failUnless('/sub/plain' in disp._handler_suite_map)
+        self.assertTrue('/sub/plain' in disp._handler_suite_map)
 
     def test_scan_sub_dir(self):
         disp = dispatch.Dispatcher(_TEST_HANDLERS_DIR, _TEST_HANDLERS_SUB_DIR)
         self.assertEqual(2, len(disp._handler_suite_map))
-        self.failIf('/origin_check' in disp._handler_suite_map)
-        self.failUnless(
+        self.assertFalse('/origin_check' in disp._handler_suite_map)
+        self.assertTrue(
             '/sub/exception_in_transfer' in disp._handler_suite_map)
-        self.failUnless('/sub/plain' in disp._handler_suite_map)
+        self.assertTrue('/sub/plain' in disp._handler_suite_map)
 
     def test_scan_sub_dir_as_root(self):
         disp = dispatch.Dispatcher(_TEST_HANDLERS_SUB_DIR,
                                    _TEST_HANDLERS_SUB_DIR)
         self.assertEqual(2, len(disp._handler_suite_map))
-        self.failIf('/origin_check' in disp._handler_suite_map)
-        self.failIf('/sub/exception_in_transfer' in disp._handler_suite_map)
-        self.failIf('/sub/plain' in disp._handler_suite_map)
-        self.failUnless('/exception_in_transfer' in disp._handler_suite_map)
-        self.failUnless('/plain' in disp._handler_suite_map)
+        self.assertFalse('/origin_check' in disp._handler_suite_map)
+        self.assertFalse('/sub/exception_in_transfer' in disp._handler_suite_map)
+        self.assertFalse('/sub/plain' in disp._handler_suite_map)
+        self.assertTrue('/exception_in_transfer' in disp._handler_suite_map)
+        self.assertTrue('/plain' in disp._handler_suite_map)
 
     def test_scan_dir_must_under_root(self):
         dispatch.Dispatcher('a/b', 'a/b/c')  # OK
@@ -272,11 +272,11 @@ class DispatcherTest(unittest.TestCase):
         disp = dispatch.Dispatcher(_TEST_HANDLERS_DIR, None)
         disp.add_resource_path_alias('/', '/origin_check')
         self.assertEqual(5, len(disp._handler_suite_map))
-        self.failUnless('/origin_check' in disp._handler_suite_map)
-        self.failUnless(
+        self.assertTrue('/origin_check' in disp._handler_suite_map)
+        self.assertTrue(
             '/sub/exception_in_transfer' in disp._handler_suite_map)
-        self.failUnless('/sub/plain' in disp._handler_suite_map)
-        self.failUnless('/' in disp._handler_suite_map)
+        self.assertTrue('/sub/plain' in disp._handler_suite_map)
+        self.assertTrue('/' in disp._handler_suite_map)
         self.assertRaises(dispatch.DispatchException,
                           disp.add_resource_path_alias, '/alias', '/not-exist')
 

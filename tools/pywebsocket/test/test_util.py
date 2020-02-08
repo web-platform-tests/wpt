@@ -56,8 +56,8 @@ class UtilTest(unittest.TestCase):
             a = 1 / 0  # Intentionally raise exception.
         except Exception:
             trace = util.get_stack_trace()
-            self.failUnless(trace.startswith('Traceback'))
-            self.failUnless(trace.find('ZeroDivisionError') != -1)
+            self.assertTrue(trace.startswith('Traceback'))
+            self.assertTrue(trace.find('ZeroDivisionError') != -1)
 
     def test_prepend_message_to_exception(self):
         exc = Exception('World')

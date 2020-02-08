@@ -461,7 +461,7 @@ class DeflateFrameTest(unittest.TestCase):
         extension = common.ExtensionParameter(common.DEFLATE_FRAME_EXTENSION)
         request = _create_request_from_rawdata(
             '', deflate_frame_request=extension)
-        self.assertEquals(1, len(request.ws_extension_processors))
+        self.assertEqual(1, len(request.ws_extension_processors))
         deflate_frame_processor = request.ws_extension_processors[0]
         deflate_frame_processor.set_bfinal(True)
         msgutil.send_message(request, 'Hello')
@@ -494,7 +494,7 @@ class DeflateFrameTest(unittest.TestCase):
         extension = common.ExtensionParameter(common.DEFLATE_FRAME_EXTENSION)
         request = _create_request_from_rawdata(
             '', deflate_frame_request=extension)
-        self.assertEquals(1, len(request.ws_extension_processors))
+        self.assertEqual(1, len(request.ws_extension_processors))
         deflate_frame_processor = request.ws_extension_processors[0]
         msgutil.send_message(request, 'Hello')
         deflate_frame_processor.disable_outgoing_compression()
@@ -972,7 +972,7 @@ class PerMessageDeflateTest(unittest.TestCase):
                 common.PERMESSAGE_DEFLATE_EXTENSION)
         request = _create_request_from_rawdata(
                 '', permessage_deflate_request=extension)
-        self.assertEquals(1, len(request.ws_extension_processors))
+        self.assertEqual(1, len(request.ws_extension_processors))
         request.ws_extension_processors[0].set_bfinal(True)
         msgutil.send_message(request, 'Hello', end=False)
         msgutil.send_message(request, 'World', end=True)

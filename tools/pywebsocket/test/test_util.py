@@ -39,7 +39,7 @@ import random
 import sys
 import unittest
 
-import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
+from . import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
 
 from mod_pywebsocket import util
 

@@ -35,7 +35,7 @@
 
 import unittest
 
-import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
+from . import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
 
 from mod_pywebsocket.common import ExtensionParameter
 from mod_pywebsocket.common import ExtensionParsingException

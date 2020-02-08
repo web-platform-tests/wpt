@@ -36,7 +36,7 @@
 import os
 import unittest
 
-import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
+from . import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
 
 from mod_pywebsocket import dispatch
 from mod_pywebsocket import handshake

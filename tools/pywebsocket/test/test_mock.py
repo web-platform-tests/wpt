@@ -37,7 +37,7 @@ import Queue
 import threading
 import unittest
 
-import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
+from . import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
 
 from test import mock
 

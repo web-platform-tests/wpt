@@ -39,8 +39,10 @@ NOTE: This code is far from robust like client_for_testing.py.
 """
 
 
-
-import Queue
+try:
+    import queue  # Python3
+except ImportError:
+    import Queue as queue  # Python2
 import base64
 import collections
 import email
@@ -348,7 +350,7 @@ class _InnerFrame(object):
 
 class _LogicalChannelData(object):
     def __init__(self):
-        self.queue = Queue.Queue()
+        self.queue = queue.Queue()
         self.send_quota = 0
         self.receive_quota = 0
 

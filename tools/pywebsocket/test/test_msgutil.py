@@ -35,7 +35,10 @@ from __future__ import print_function
 
 
 import array
-import Queue
+try:
+    import queue
+except ImportError:
+    import Queue as queue
 import random
 import struct
 import unittest
@@ -1243,7 +1246,7 @@ class MessageReceiverTest(unittest.TestCase):
         self.assertEqual('Hello!', receiver.receive())
 
     def test_onmessage(self):
-        onmessage_queue = Queue.Queue()
+        onmessage_queue = queue.Queue()
 
         def onmessage_handler(message):
             onmessage_queue.put(message)
@@ -1268,7 +1271,7 @@ class MessageReceiverHixie75Test(unittest.TestCase):
         self.assertEqual('Hello!', receiver.receive())
 
     def test_onmessage(self):
-        onmessage_queue = Queue.Queue()
+        onmessage_queue = queue.Queue()
 
         def onmessage_handler(message):
             onmessage_queue.put(message)
@@ -1294,7 +1297,7 @@ class MessageSenderTest(unittest.TestCase):
         # Use a queue to check the bytes written by MessageSender.
         # request.connection.written_data() cannot be used here because
         # MessageSender runs in a separate thread.
-        send_queue = Queue.Queue()
+        send_queue = queue.Queue()
 
         def write(bytes):
             send_queue.put(bytes)
@@ -1324,7 +1327,7 @@ class MessageSenderHixie75Test(unittest.TestCase):
         # Use a queue to check the bytes written by MessageSender.
         # request.connection.written_data() cannot be used here because
         # MessageSender runs in a separate thread.
-        send_queue = Queue.Queue()
+        send_queue = queue.Queue()
 
         def write(bytes):
             send_queue.put(bytes)

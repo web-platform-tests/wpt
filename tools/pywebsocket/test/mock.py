@@ -31,8 +31,11 @@
 """Mocks for testing.
 """
 
+try:
+    import queue  # Python3
+except ImportError:
+    import Queue as queue  # Python2
 
-import Queue
 import threading
 
 from mod_pywebsocket import common
@@ -113,7 +116,7 @@ class MockBlockingConn(_MockConnBase):
 
     def __init__(self):
         _MockConnBase.__init__(self)
-        self._queue = Queue.Queue()
+        self._queue = queue.Queue()
 
     def readline(self):
         """Override mod_python.apache.mp_conn.readline."""

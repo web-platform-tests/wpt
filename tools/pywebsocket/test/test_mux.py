@@ -32,7 +32,6 @@
 
 """Tests for mux module."""
 
-import Queue
 import copy
 import logging
 import optparse

@@ -32,8 +32,10 @@
 
 """Tests for mock module."""
 
-
-import Queue
+try:
+    import queue
+except ImportError:
+    import Queue as queue
 import threading
 import unittest
 
@@ -100,11 +102,11 @@ class MockBlockingConnTest(unittest.TestCase):
                     self._queue.put(data)
 
         conn = mock.MockBlockingConn()
-        queue = Queue.Queue()
-        reader = LineReader(conn, queue)
-        self.failUnless(queue.empty())
+        reader_queue = queue.Queue()
+        reader = LineReader(conn, reader_queue)
+        self.assertTrue(reader_queue.empty())
         conn.put_bytes('Foo bar\r\n')
-        read = queue.get()
+        read = reader_queue.get()
         self.assertEqual('Foo bar\r\n', read)
 
 

@@ -4,7 +4,7 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="support/helper.sub.js"></script>
-  <meta http-equiv="Content-Security-Policy" content="trusted-types *">
+  <meta http-equiv="Content-Security-Policy" content="trusted-types *; require-trusted-types-for 'script';">
 </head>
 <body>
 <div id="container"></div>
@@ -57,7 +57,7 @@
           var test_fn = _ => { setter.apply(inner, args); };
           var expected;
           if (should_fail) {
-            assert_throws(new TypeError(), test_fn, "This should throw.");
+            assert_throws_js(TypeError, test_fn, "This should throw.");
             expected = "";
           } else {
             test_fn();
@@ -74,7 +74,7 @@
           var test_fn = _ => { setter.apply(outer, args); };
           var expected;
           if (should_fail) {
-            assert_throws(new TypeError(), test_fn, "This should throw.");
+            assert_throws_js(TypeError, test_fn, "This should throw.");
             expected = "";
           } else {
             test_fn();

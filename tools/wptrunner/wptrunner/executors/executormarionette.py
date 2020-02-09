@@ -3,8 +3,9 @@ import os
 import threading
 import time
 import traceback
-import urlparse
 import uuid
+
+from six.moves.urllib.parse import urljoin
 
 errors = None
 marionette = None
@@ -132,8 +133,7 @@ class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
         # Check if we previously had a test window open, and if we did make sure it's closed
         if self.runner_handle:
             self._close_windows()
-        url = urlparse.urljoin(self.parent.executor.server_url(url_protocol),
-                               "/testharness_runner.html")
+        url = urljoin(self.parent.executor.server_url(url_protocol), "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
         try:
             self.dismiss_alert(lambda: self.marionette.navigate(url))
@@ -893,7 +893,7 @@ class InternalRefTestImplementation(RefTestImplementation):
     def setup(self, screenshot="unexpected"):
         data = {"screenshot": screenshot}
         if self.executor.group_metadata is not None:
-            data["urlCount"] = {urlparse.urljoin(self.executor.server_url(key[0]), key[1]):value
+            data["urlCount"] = {urljoin(self.executor.server_url(key[0]), key[1]):value
                                 for key, value in self.executor.group_metadata.get("url_count", {}).iteritems()
                                 if value > 1}
         self.executor.protocol.marionette.set_context(self.executor.protocol.marionette.CONTEXT_CHROME)
@@ -991,15 +991,16 @@ class MarionetteCrashtestExecutor(CrashtestExecutor):
         if not success:
             status = data[0]
 
+        extra = None
         if self.debug and (success or status not in ("CRASH", "INTERNAL-ERROR")):
             assertion_count = self.protocol.asserts.get()
             if assertion_count is not None:
-                data["extra"] = {"assertion_count": assertion_count}
+                extra = {"assertion_count": assertion_count}
 
         if success:
             return self.convert_result(test, data)
 
-        return (test.result_cls(**data), [])
+        return (test.result_cls(extra=extra, *data), [])
 
     def do_crashtest(self, protocol, url, timeout):
         if self.protocol.coverage.is_enabled:

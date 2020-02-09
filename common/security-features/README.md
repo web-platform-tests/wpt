@@ -39,27 +39,24 @@ project-directory/ (e.g. referrer-policy/)
 ├── spec.src.json
 ├── generic/
 │   ├── test-case.sub.js - Per-project test helper
-│   └── tools/
-│       └── generator.py - Per-project generator script
+│   ├── sanity-checker.js (Used by debug target only)
+│   └── spec_json.js (Used by debug target only)
 └── gen/ - generated tests
 ```
 
-Invoking `project-directory/generic/tools/generate.py` will parse the spec JSON and determine which tests to generate (or skip) while using templates.
-
 ## Generating the tests
 
-The repository already contains generated tests, so if you're making changes, see the [Removing all generated tests](#removing-all-generated-tests) section below, on how to remove them before you start generating tests which include your changes.
+Note: When the repository already contains generated tests, [remove all generated tests](#removing-all-generated-tests) first.
 
 ```bash
-# Chdir into the project directory.
-cd ~/web-platform-tests/project-directory
-
 # Generate the test files under gen/ (HTMLs and .headers files).
-./generic/tools/generate.py
+path/to/common/security-features/tools/generate.py --spec path/to/project-directory/
 
 # Add all generated tests to the repo.
-git add gen/ && git commit -m "Add generated tests"
+git add path/to/project-directory/gen/ && git commit -m "Add generated tests"
 ```
+
+This will parse the spec JSON (`project-directory/spec.src.json`) and determine which tests to generate (or skip) while using templates.
 
 During the generation, the spec is validated by ```common/security-features/tools/spec_validator.py```. This is specially important when you're making changes to  `spec.src.json`. Make sure it's a valid JSON (no comments or trailing commas). The validator reports specific errors (missing keys etc.), if any.
 
@@ -68,24 +65,55 @@ During the generation, the spec is validated by ```common/security-features/tool
 Simply remove all files under `project-directory/gen/`.
 
 ```bash
-# Chdir into the project directory.
-cd ~/web-platform-tests/project-directory
-
-# Remove all generated tests.
-rm -r gen/
+rm -r path/to/project-directory/gen/
 ```
 
 ### Options for generating tests
 
 Note: this section is currently obsolete. Only the release template is working.
 
-The generator script ```./generic/tools/generate.py``` has two targets: ```release``` and ```debug```.
+The generator script has two targets: ```release``` and ```debug```.
 
 * Using **release** for the target will produce tests using a template for optimizing size and performance. The release template is intended for the official web-platform-tests and possibly other test suites. No sanity checking is done in release mode. Use this option whenever you're checking into web-platform-tests.
 
 * When generating for ```debug```, the produced tests will contain more verbosity and sanity checks. Use this target to identify problems with the test suites when making changes locally. Make sure you don't check in tests generated with the debug target.
 
 Note that **release** is the default target when invoking ```generate.py```.
+
+
+## Sub projects
+
+Projects can be nested, for example to reuse a single `spec.src.json` across similar but slightly different sets of generated tests.
+The directory structure would look like:
+
+```
+project-directory/ (e.g. referrer-policy/)
+├── spec.src.json - Parent project's spec JSON
+├── generic/
+│   └── test-case.sub.js - Parent project's test helper
+├── gen/ - parent project's generated tests
+└── sub-project-directory/ (e.g. 4K)
+    ├── spec.src.json - Child project's spec JSON
+    ├── generic/
+    │   └── test-case.sub.js - Child project's test helper
+    └── gen/ - child project's generated tests
+```
+
+`generate.py --spec project-directory/sub-project-directory` generates test files under `project-directory/sub-project-directory/gen`, based on `project-directory/spec.src.json` and `project-directory/sub-project-directory/spec.src.json`.
+
+- The child project's `spec.src.json` is merged into parent project's `spec.src.json`.
+    - Two spec JSON objects are merged recursively.
+    - If a same key exists in both objects, the child's value overwrites the parent's value.
+        - If both (child's and parent's) values are arrays, then the child's value is concatenated to the parent's value.
+    - For debugging, `generate.py` dumps the merged spec JSON object as `generic/debug-output.spec.src.json`.
+- The child project's generated tests include both of the parent and child project's `test-case.sub.js`:
+  ```html
+  <script src="project-directory/test-case.sub.js"></script>
+  <script src="project-directory/sub-project-directory/test-case.sub.js"></script>
+  <script>
+    TestCase(...);
+  </script>
+  ```
 
 
 ## Updating the tests
@@ -143,7 +171,7 @@ For examples of spec JSON files, see [referrer-policy/spec.src.json](../../refer
 
 * **`excluded_tests`**
 
-  List of ```test_expansion``` patterns expanding into selections which get skipped when generating the tests (aka. blacklisting/suppressing)
+  List of ```test_expansion``` patterns expanding into selections which get skipped when generating the tests (aka. blocklisting/suppressing)
 
 * **`test_expansion_schema`**
 
@@ -188,9 +216,9 @@ A **selection** is a single **test instance** (scenario) with explicit values th
 
 Taking the spec JSON, the generator follows this algorithm:
 
-* Expand all ```excluded_tests``` to create a blacklist of selections
+* Expand all ```excluded_tests``` to create a blocklist of selections
 
-* For each specification requirement: Expand the ```test_expansion``` pattern into selections and check each against the blacklist, if not marked as suppresed, generate the test resources for the selection
+* For each specification requirement: Expand the ```test_expansion``` pattern into selections and check each against the blocklist, if not marked as suppresed, generate the test resources for the selection
 
 
 ### Source Contexts

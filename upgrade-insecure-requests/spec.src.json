@@ -1,4 +1,8 @@
 {
+  "selection_pattern": "%(source_context_list)s.%(delivery_type)s/%(delivery_value)s/%(subresource)s/%(origin)s.%(redirection)s.%(source_scheme)s",
+  "test_file_path_pattern": "gen/%(source_context_list)s.%(delivery_type)s/%(delivery_value)s/%(subresource)s/%(origin)s.%(redirection)s.%(source_scheme)s.html",
+  "test_description_template": "Upgrade-Insecure-Requests: Expects %(expectation)s for %(subresource)s to %(origin)s origin and %(redirection)s redirection from %(source_scheme)s context.",
+  "test_page_title_template": "Upgrade-Insecure-Requests: %(title)s",
   "specification": [
     {
       "name": "No upgrade-insecure-request",
@@ -104,7 +108,8 @@
       "subresource": [
         "worker-classic",
         "worker-module",
-        "sharedworker-classic"
+        "sharedworker-classic",
+        "sharedworker-module"
       ],
       "origin": [
         "cross-https",
@@ -162,6 +167,8 @@
         "worker-module",
         "worker-import-data",
         "sharedworker-classic",
+        "sharedworker-module",
+        "sharedworker-import-data",
         "worklet-animation",
         "worklet-audio",
         "worklet-layout",
@@ -239,6 +246,8 @@
       "worker-module": [],
       "worker-import-data": [],
       "sharedworker-classic": [],
+      "sharedworker-module": [],
+      "sharedworker-import-data": [],
       "worklet-animation": [],
       "worklet-audio": [],
       "worklet-layout": [],
@@ -359,6 +368,8 @@
       "worker-module",
       "worker-import-data",
       "sharedworker-classic",
+      "sharedworker-module",
+      "sharedworker-import-data",
       "worklet-animation",
       "worklet-audio",
       "worklet-layout",

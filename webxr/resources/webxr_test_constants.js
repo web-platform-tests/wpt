@@ -121,22 +121,34 @@ const NON_IMMERSIVE_VIEWS = [{
 ];
 
 const ALL_FEATURES = [
-    "viewer",
-    "local",
-    "local-floor",
-    "bounded-floor",
-    "unbounded",
+  'viewer',
+  'local',
+  'local-floor',
+  'bounded-floor',
+  'unbounded',
+  'hit-test',
+  'dom-overlay',
 ];
 
 const TRACKED_IMMERSIVE_DEVICE = {
     supportsImmersive: true,
+    supportedModes: [ "inline", "immersive-vr"],
     views: VALID_VIEWS,
     viewerOrigin: IDENTITY_TRANSFORM,
     supportedFeatures: ALL_FEATURES
 };
 
+const IMMERSIVE_AR_DEVICE = {
+  supportsImmersive: true,
+  supportedModes: [ "inline", "immersive-ar"],
+  views: VALID_VIEWS,
+  viewerOrigin: IDENTITY_TRANSFORM,
+  supportedFeatures: ALL_FEATURES
+};
+
 const VALID_NON_IMMERSIVE_DEVICE = {
     supportsImmersive: false,
+    supportedModes: ["inline"],
     views: NON_IMMERSIVE_VIEWS,
     viewerOrigin: IDENTITY_TRANSFORM,
     supportedFeatures: ALL_FEATURES
@@ -154,4 +166,11 @@ const RIGHT_CONTROLLER = {
     targetRayMode: "tracked-pointer",
     pointerOrigin: VALID_POINTER_TRANSFORM,
     profiles: []
-}
+};
+
+const SCREEN_CONTROLLER = {
+    handedness: "none",
+    targetRayMode: "screen",
+    pointerOrigin: VALID_POINTER_TRANSFORM,
+    profiles: []
+};

@@ -8,7 +8,9 @@ from .base import (get_free_port,
                    cmd_arg,
                    browser_command)
 from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # noqa: F401
-                                            MarionetteRefTestExecutor)  # noqa: F401
+                                            MarionetteRefTestExecutor,  # noqa: F401
+                                            MarionetteCrashtestExecutor)  # noqa: F401
+from ..process import cast_env
 from .firefox import (get_timeout_multiplier,  # noqa: F401
                       run_info_extras as fx_run_info_extras,
                       update_properties,  # noqa: F401
@@ -20,7 +22,8 @@ __wptrunner__ = {"product": "firefox_android",
                  "check_args": "check_args",
                  "browser": "FirefoxAndroidBrowser",
                  "executor": {"testharness": "MarionetteTestharnessExecutor",
-                              "reftest": "MarionetteRefTestExecutor"},
+                              "reftest": "MarionetteRefTestExecutor",
+                              "crashtest": "MarionetteCrashtestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -51,6 +54,7 @@ def browser_kwargs(test_type, run_info_data, config, **kwargs):
             "timeout_multiplier": get_timeout_multiplier(test_type,
                                                          run_info_data,
                                                          **kwargs),
+            "e10s": run_info_data["e10s"],
             # desktop only
             "leak_check": False,
             "stylo_threads": kwargs["stylo_threads"],
@@ -121,6 +125,9 @@ class FirefoxAndroidBrowser(FirefoxBrowser):
             "network.preload": True,
         })
 
+        if self.e10s:
+            self.profile.set_preferences({"browser.tabs.remote.autostart": True})
+
         if self.test_type == "reftest":
             self.logger.info("Setting android reftest preferences")
             self.profile.set_preferences({
@@ -157,7 +164,7 @@ class FirefoxAndroidBrowser(FirefoxBrowser):
         self.runner = FennecEmulatorRunner(app=self.package_name,
                                            profile=self.profile,
                                            cmdargs=cmd[1:],
-                                           env=env,
+                                           env=cast_env(env),
                                            symbols_path=self.symbols_path,
                                            serial=self.device_serial,
                                            # TODO - choose appropriate log dir

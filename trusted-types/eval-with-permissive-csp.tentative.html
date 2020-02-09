@@ -7,14 +7,14 @@
 
   <!-- Note: Trusted Types enforcement, and a CSP that allows all eval. -->
   <meta http-equiv="Content-Security-Policy"
-        content="script-src 'nonce-abc' 'unsafe-eval'; trusted-types *">
+        content="script-src 'nonce-abc' 'unsafe-eval'; trusted-types *; require-trusted-types-for 'script'">
 </head>
 <body>
 <script nonce="abc">
   let p = createScript_policy(window, 1);
   test(t => {
     let a = 0;
-    assert_throws(new EvalError(), _ => {
+    assert_throws_js(EvalError, _ => {
       eval('a="hello there"');
     });
     assert_equals(a, 0);

@@ -23,10 +23,10 @@ self.templatedRSEmpty = (label, factory) => {
   test(() => {
     const rs = factory();
 
-    assert_throws(new RangeError(), () => rs.getReader({ mode: '' }), 'empty string mode should throw');
-    assert_throws(new RangeError(), () => rs.getReader({ mode: null }), 'null mode should throw');
-    assert_throws(new RangeError(), () => rs.getReader({ mode: 'asdf' }), 'asdf mode should throw');
-    assert_throws(new TypeError(), () => rs.getReader(null), 'null should throw');
+    assert_throws_js(RangeError, () => rs.getReader({ mode: '' }), 'empty string mode should throw');
+    assert_throws_js(RangeError, () => rs.getReader({ mode: null }), 'null mode should throw');
+    assert_throws_js(RangeError, () => rs.getReader({ mode: 'asdf' }), 'asdf mode should throw');
+    assert_throws_js(TypeError, () => rs.getReader(null), 'null should throw');
 
   }, label + ': calling getReader with invalid arguments should throw appropriate errors');
 };
@@ -83,8 +83,8 @@ self.templatedRSClosed = (label, factory) => {
 
     rs.getReader();
 
-    assert_throws(new TypeError(), () => rs.getReader(), 'getting a second reader should throw');
-    assert_throws(new TypeError(), () => rs.getReader(), 'getting a third reader should throw');
+    assert_throws_js(TypeError, () => rs.getReader(), 'getting a second reader should throw');
+    assert_throws_js(TypeError, () => rs.getReader(), 'getting a third reader should throw');
 
   }, label + ': should not be able to acquire a second reader if we don\'t release the first one');
 };
@@ -142,8 +142,8 @@ self.templatedRSErroredSyncOnly = (label, factory, error) => {
     const rs = factory();
     rs.getReader();
 
-    assert_throws(new TypeError(), () => rs.getReader(), 'getting a second reader should throw a TypeError');
-    assert_throws(new TypeError(), () => rs.getReader(), 'getting a third reader should throw a TypeError');
+    assert_throws_js(TypeError, () => rs.getReader(), 'getting a second reader should throw a TypeError');
+    assert_throws_js(TypeError, () => rs.getReader(), 'getting a third reader should throw a TypeError');
 
   }, label + ': should not be able to obtain additional readers if we don\'t release the first lock');
 
@@ -244,7 +244,7 @@ self.templatedRSEmptyReader = (label, factory) => {
   test(() => {
 
     const stream = factory().stream;
-    assert_throws(new TypeError(), () => stream.getReader(), 'stream.getReader() should throw a TypeError');
+    assert_throws_js(TypeError, () => stream.getReader(), 'stream.getReader() should throw a TypeError');
 
   }, label + ': getReader() again on the stream should fail');
 
@@ -269,7 +269,7 @@ self.templatedRSEmptyReader = (label, factory) => {
       t.unreached_func('closed should not reject')
     );
 
-    assert_throws(new TypeError(), () => reader.releaseLock(), 'releaseLock should throw a TypeError');
+    assert_throws_js(TypeError, () => reader.releaseLock(), 'releaseLock should throw a TypeError');
 
     assert_true(stream.locked, 'the stream should still be locked');
 
@@ -283,8 +283,8 @@ self.templatedRSEmptyReader = (label, factory) => {
     reader.releaseLock();
 
     return Promise.all([
-      promise_rejects(t, new TypeError(), reader.read()),
-      promise_rejects(t, new TypeError(), reader.read())
+      promise_rejects_js(t, TypeError, reader.read()),
+      promise_rejects_js(t, TypeError, reader.read())
     ]);
 
   }, label + ': releasing the lock should cause further read() calls to reject with a TypeError');
@@ -299,7 +299,7 @@ self.templatedRSEmptyReader = (label, factory) => {
 
     assert_equals(closedBefore, closedAfter, 'the closed promise should not change identity');
 
-    return promise_rejects(t, new TypeError(), closedBefore);
+    return promise_rejects_js(t, TypeError, closedBefore);
 
   }, label + ': releasing the lock should cause closed calls to reject with a TypeError');
 
@@ -328,7 +328,7 @@ self.templatedRSEmptyReader = (label, factory) => {
   promise_test(t => {
 
     const stream = factory().stream;
-    return promise_rejects(t, new TypeError(), stream.cancel());
+    return promise_rejects_js(t, TypeError, stream.cancel());
 
   }, label + ': canceling via the stream should fail');
 };
@@ -391,7 +391,7 @@ self.templatedRSClosedReader = (label, factory) => {
 
     return Promise.all([
       closedBefore.then(v => assert_equals(v, undefined, 'reader.closed acquired before release should fulfill')),
-      promise_rejects(t, new TypeError(), closedAfter)
+      promise_rejects_js(t, TypeError, closedAfter)
     ]);
 
   }, label + ': releasing the lock should cause closed to reject and change identity');
@@ -436,7 +436,7 @@ self.templatedRSErroredReader = (label, factory, error) => {
       const closedAfter = reader.closed;
       assert_not_equals(closedBefore, closedAfter, 'the closed promise should change identity');
 
-      return promise_rejects(t, new TypeError(), closedAfter);
+      return promise_rejects_js(t, TypeError, closedAfter);
     });
 
   }, label + ': releasing the lock should cause closed to reject and change identity');
@@ -599,9 +599,9 @@ self.templatedRSTwoChunksClosedReader = function (label, factory, chunks) {
     reader.releaseLock();
 
     return Promise.all([
-      promise_rejects(t, new TypeError(), reader.read()),
-      promise_rejects(t, new TypeError(), reader.read()),
-      promise_rejects(t, new TypeError(), reader.read())
+      promise_rejects_js(t, TypeError, reader.read()),
+      promise_rejects_js(t, TypeError, reader.read()),
+      promise_rejects_js(t, TypeError, reader.read())
     ]);
 
   }, label + ': releasing the lock should cause further read() calls to reject with a TypeError');

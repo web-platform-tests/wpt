@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 import argparse
 import os
 import sys
@@ -16,9 +16,9 @@ def abs_path(path):
 
 
 def url_or_path(path):
-    import urlparse
+    from six.moves.urllib.parse import urlparse
 
-    parsed = urlparse.urlparse(path)
+    parsed = urlparse(path)
     if len(parsed.scheme) > 2:
         return path
     else:
@@ -37,7 +37,7 @@ def require_arg(kwargs, name, value_func=None):
 def create_parser(product_choices=None):
     from mozlog import commandline
 
-    import products
+    from . import products
 
     if product_choices is None:
         config_data = config.load()

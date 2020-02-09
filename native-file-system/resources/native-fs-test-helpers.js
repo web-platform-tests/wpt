@@ -12,9 +12,13 @@ const directory_promise = (async () => {
     window.addEventListener('DOMContentLoaded', resolve);
   });
 
+  // Small delay to give chrome's test automation a chance to actually install
+  // itself.
+  await new Promise(resolve => step_timeout(resolve, 100))
+
   await window.test_driver.bless(
       'show a file picker.<br />Please select an empty directory');
-  const entries = await self.chooseFileSystemEntries({type: 'openDirectory'});
+  const entries = await self.chooseFileSystemEntries({type: 'open-directory'});
   assert_true(entries instanceof FileSystemHandle);
   assert_true(entries instanceof FileSystemDirectoryHandle);
   for await (const entry of entries.getEntries()) {

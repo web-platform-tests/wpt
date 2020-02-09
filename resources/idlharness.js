@@ -93,7 +93,7 @@ function throwOrReject(a_test, operation, fn, obj, args, message, cb)
         cb();
     } else {
         try {
-            promise_rejects(a_test, new TypeError(), fn.apply(obj, args), message).then(cb, cb);
+            promise_rejects_js(a_test, TypeError, fn.apply(obj, args), message).then(cb, cb);
         } catch (e){
             a_test.step(function() {
                 assert_unreached("Throws \"" + e + "\" instead of rejecting promise");
@@ -1188,6 +1188,10 @@ IdlArray.prototype.assert_type_is = function(value, type)
         case "USVString":
             assert_equals(typeof value, "string");
             assert_regexp_match(value, /^([\x00-\ud7ff\ue000-\uffff]|[\ud800-\udbff][\udc00-\udfff])*$/);
+            return;
+
+        case "DataView":
+            assert_equals(typeof value, "DataView");
             return;
 
         case "object":
@@ -2344,7 +2348,7 @@ IdlInterface.prototype.test_member_attribute = function(member)
                     // do, since it will call done() on a_test.
                     this.do_interface_attribute_asserts(this.get_interface_object().prototype, member, a_test);
                 } else {
-                    promise_rejects(a_test, new TypeError(),
+                    promise_rejects_js(a_test, TypeError,
                                     this.get_interface_object().prototype[member.name])
                         .then(function() {
                             // do_interface_attribute_asserts must be the last
@@ -3014,7 +3018,7 @@ IdlInterface.prototype.do_interface_attribute_asserts = function(obj, member, a_
                 }.bind(this), "calling getter on wrong object type must throw TypeError");
             } else {
                 pendingPromises.push(
-                    promise_rejects(a_test, new TypeError(), desc.get.call({}),
+                    promise_rejects_js(a_test, TypeError, desc.get.call({}),
                                     "calling getter on wrong object type must reject the return promise with TypeError"));
             }
         } else {

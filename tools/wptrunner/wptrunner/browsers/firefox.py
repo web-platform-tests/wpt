@@ -25,6 +25,7 @@ from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # no
                                             MarionetteRefTestExecutor,  # noqa: F401
                                             MarionetteWdspecExecutor,  # noqa: F401
                                             MarionetteCrashtestExecutor)  # noqa: F401
+from ..process import cast_env
 
 
 here = os.path.join(os.path.split(__file__)[0])
@@ -63,6 +64,8 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
     # https://bugzilla.mozilla.org/show_bug.cgi?id=1538725
     elif run_info_data["os"] == "win" and run_info_data["processor"] == "aarch64":
         return 4
+    elif run_info_data.get("ccov"):
+        return 2
     return 1
 
 
@@ -168,17 +171,13 @@ def run_info_extras(**kwargs):
           "wasm": kwargs.get("wasm", True),
           "verify": kwargs["verify"],
           "headless": kwargs.get("headless", False) or "MOZ_HEADLESS" in os.environ,
+          "sw-e10s": True,
           "fission": get_bool_pref("fission.autostart")}
 
     # The value of `sw-e10s` defaults to whether the "parent_intercept"
     # implementation is enabled for the current build. This value, however,
     # can be overridden by explicitly setting the pref with the `--setpref` CLI
-    # flag, which is checked here. If not supplied, the default value of
-    # `sw-e10s` will be filled in in `RunInfo`'s constructor.
-    #
-    # We can't capture the default value right now because (currently), it
-    # defaults to the value of `nightly_build`, which isn't known until
-    # `RunInfo`'s constructor.
+    # flag, which is checked here.
     sw_e10s_override = get_bool_pref_if_exists("dom.serviceWorkers.parent_intercept")
     if sw_e10s_override is not None:
         rv["sw-e10s"] = sw_e10s_override
@@ -336,7 +335,7 @@ class FirefoxBrowser(Browser):
         self.runner = FirefoxRunner(profile=self.profile,
                                     binary=cmd[0],
                                     cmdargs=cmd[1:],
-                                    env=env,
+                                    env=cast_env(env),
                                     process_class=ProcessHandler,
                                     process_args={"processOutputLine": [self.on_output]})
 
@@ -490,7 +489,7 @@ class FirefoxBrowser(Browser):
             cmd = [self.certutil_binary] + list(args)
             self.logger.process_output("certutil",
                                        subprocess.check_output(cmd,
-                                                               env=env,
+                                                               env=cast_env(env),
                                                                stderr=subprocess.STDOUT),
                                        " ".join(cmd))
 

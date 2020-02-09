@@ -5,7 +5,7 @@
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 import { getGPU } from '../../framework/gpu/implementation.js';
-import { Fixture } from '../../framework/index.js';
+import { Fixture, assert, unreachable } from '../../framework/index.js';
 let glslangInstance;
 export class GPUTest extends Fixture {
   constructor(...args) {
@@ -34,7 +34,7 @@ export class GPUTest extends Fixture {
 
     try {
       await this.device.popErrorScope();
-      throw new Error('There was an error scope on the stack at the beginning of the test');
+      unreachable('There was an error scope on the stack at the beginning of the test');
     } catch (ex) {}
 
     this.device.pushErrorScope('out-of-memory');
@@ -49,14 +49,14 @@ export class GPUTest extends Fixture {
       const gpuValidationError = await this.device.popErrorScope();
 
       if (gpuValidationError !== null) {
-        if (!(gpuValidationError instanceof GPUValidationError)) throw new Error();
+        assert(gpuValidationError instanceof GPUValidationError);
         this.fail(`Unexpected validation error occurred: ${gpuValidationError.message}`);
       }
 
       const gpuOutOfMemoryError = await this.device.popErrorScope();
 
       if (gpuOutOfMemoryError !== null) {
-        if (!(gpuOutOfMemoryError instanceof GPUOutOfMemoryError)) throw new Error();
+        assert(gpuOutOfMemoryError instanceof GPUOutOfMemoryError);
         this.fail('Unexpected out-of-memory error occurred');
       }
     }
@@ -91,27 +91,28 @@ export class GPUTest extends Fixture {
   }
 
   makeShaderModuleFromGLSL(stage, glsl) {
-    if (!glslangInstance) {
-      throw new Error('GLSL compiler is not instantiated. Run `await t.initGLSL()` first');
-    }
-
+    assert(glslangInstance !== undefined, 'GLSL compiler is not instantiated. Run `await t.initGLSL()` first');
     const code = glslangInstance.compileGLSL(glsl, stage, false);
     return this.device.createShaderModule({
       code
     });
-  } // TODO: add an expectContents for textures, which logs data: uris on failure
+  }
 
-
-  expectContents(src, expected) {
-    const exp = new Uint8Array(expected.buffer, expected.byteOffset, expected.byteLength);
-    const size = expected.buffer.byteLength;
+  createCopyForMapRead(src, size) {
     const dst = this.device.createBuffer({
-      size: expected.buffer.byteLength,
+      size,
       usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST
     });
     const c = this.device.createCommandEncoder();
     c.copyBufferToBuffer(src, 0, dst, 0, size);
     this.queue.submit([c.finish()]);
+    return dst;
+  } // TODO: add an expectContents for textures, which logs data: uris on failure
+
+
+  expectContents(src, expected) {
+    const exp = new Uint8Array(expected.buffer, expected.byteOffset, expected.byteLength);
+    const dst = this.createCopyForMapRead(src, expected.buffer.byteLength);
     this.eventualAsyncExpectation(async niceStack => {
       const actual = new Uint8Array((await dst.mapReadAsync()));
       const check = this.checkBuffer(actual, exp);
@@ -153,7 +154,21 @@ export class GPUTest extends Fixture {
         failedPixels++;
         lines.push(`at [${i}], expected ${exp[i]}, got ${actual[i]}`);
       }
-    }
+    } // TODO: Could make a more convenient message, which could look like e.g.:
+    //
+    //   Starting at offset 48,
+    //              got 22222222 ABCDABCD 99999999
+    //     but expected 22222222 55555555 99999999
+    //
+    // or
+    //
+    //   Starting at offset 0,
+    //              got 00000000 00000000 00000000 00000000 (... more)
+    //     but expected 00FF00FF 00FF00FF 00FF00FF 00FF00FF (... more)
+    //
+    // Or, maybe these diffs aren't actually very useful (given we have the prints just above here),
+    // and we should remove them. More important will be logging of texture data in a visual format.
+
 
     if (size <= 256 && failedPixels > 0) {
       const expHex = Array.from(exp).map(x => x.toString(16).padStart(2, '0')).join('');

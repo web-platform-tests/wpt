@@ -7,6 +7,7 @@ import tempfile
 import threading
 import traceback
 import uuid
+from six import ensure_str, iteritems
 
 from mozprocess import ProcessHandler
 
@@ -22,7 +23,9 @@ from .base import (ConnectionlessProtocol,
                    WebDriverProtocol)
 from .process import ProcessTestExecutor
 from ..browsers.base import browser_command
+from ..process import cast_env
 from ..webdriver_server import ServoDriverServer
+
 
 pytestrunner = None
 webdriver = None
@@ -45,7 +48,7 @@ def build_servo_command(test, test_url_func, browser, binary, pause_after_test, 
         args += ["-Z", debug_opts]
     for stylesheet in browser.user_stylesheets:
         args += ["--user-stylesheet", stylesheet]
-    for pref, value in test.environment.get('prefs', {}).iteritems():
+    for pref, value in iteritems(test.environment.get('prefs', {})):
         args += ["--pref", "%s=%s" % (pref, value)]
     if browser.ca_certificate_path:
         args += ["--certificate-path", browser.ca_certificate_path]
@@ -100,11 +103,11 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
             self.proc = ProcessHandler(self.command,
                                        processOutputLine=[self.on_output],
                                        onFinish=self.on_finish,
-                                       env=env,
+                                       env=cast_env(env),
                                        storeOutput=False)
             self.proc.run()
         else:
-            self.proc = subprocess.Popen(self.command, env=env)
+            self.proc = subprocess.Popen(self.command, env=cast_env(env))
 
         try:
             timeout = test.timeout * self.timeout_multiplier
@@ -231,7 +234,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             if not self.interactive:
                 self.proc = ProcessHandler(self.command,
                                            processOutputLine=[self.on_output],
-                                           env=env)
+                                           env=cast_env(env))
 
 
                 try:
@@ -243,7 +246,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
                     raise
             else:
                 self.proc = subprocess.Popen(self.command,
-                                             env=env)
+                                             env=cast_env(env))
                 try:
                     rv = self.proc.wait()
                 except KeyboardInterrupt:
@@ -257,10 +260,10 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             if rv != 0 or not os.path.exists(output_path):
                 return False, ("CRASH", None)
 
-            with open(output_path) as f:
+            with open(output_path, "rb") as f:
                 # Might need to strip variable headers or something here
                 data = f.read()
-                return True, base64.b64encode(data)
+                return True, ensure_str(base64.b64encode(data))
 
     def do_test(self, test):
         result = self.implementation.run_test(test)
@@ -350,11 +353,11 @@ class ServoCrashtestExecutor(ProcessTestExecutor):
 
         if not self.interactive:
             self.proc = ProcessHandler(command,
-                                       env=env,
+                                       env=cast_env(env),
                                        storeOutput=False)
             self.proc.run()
         else:
-            self.proc = subprocess.Popen(command, env=env)
+            self.proc = subprocess.Popen(command, env=cast_env(env))
 
         self.proc.wait()
 

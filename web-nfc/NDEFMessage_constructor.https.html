@@ -8,13 +8,23 @@
 
   test(() => {
     assert_equals(NDEFMessage.length, 1);
-    assert_throws(new TypeError, () => new NDEFMessage());
+    assert_throws_js(TypeError, () => new NDEFMessage());
   }, 'NDEFMessage constructor without init dict');
 
   test(() => {
-    const message = new NDEFMessage(null);
-    assert_equals(message.records.length, 0, 'empty records');
+    assert_throws_js(TypeError, () => new NDEFMessage(null),
+        'NDEFMessageInit#records is a required field.');
   }, 'NDEFMessage constructor with null init dict');
+
+  test(() => {
+    assert_throws_js(TypeError, () => new NDEFMessage({dummy_key: 'dummy_value'}),
+        'NDEFMessageInit#records is a required field.');
+  }, 'NDEFMessage constructor without NDEFMessageInit#records field');
+
+  test(() => {
+    assert_throws_js(TypeError, () => new NDEFMessage({records: []}),
+        'NDEFMessageInit#records should not be empty.');
+  }, 'NDEFMessage constructor with NDEFMessageInit#records being empty');
 
   test(() => {
     const message = new NDEFMessage(

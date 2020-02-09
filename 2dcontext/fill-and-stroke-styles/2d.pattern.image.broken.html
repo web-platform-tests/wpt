@@ -18,12 +18,14 @@
 <script>
 var t = async_test("");
 _addTest(function(canvas, ctx) {
-
-var img = document.getElementById('broken.png');
-assert_throws_dom("INVALID_STATE_ERR", function() { ctx.createPattern(img, 'repeat'); });
-
-
+  var img = document.createElement("img");
+  var imageSource = document.createElement("canvas");
+  imageSource.width = 0;
+  imageSource.height = 0;
+  var src = imageSource.toDataURL();
+  img.onload = img.onerror = function handleImageLoadAndError() {
+    assert_throws_dom("InvalidStateError", function() { ctx.createPattern(img, 'repeat'); });
+  }
+  img.src = src;
 });
 </script>
-<img src="/images/broken.png" id="broken.png" class="resource">
-

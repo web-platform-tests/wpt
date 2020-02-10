@@ -3,6 +3,7 @@ parameters:
 
 steps:
 - script: |
+    pip --version
     if [ `which pip` = '/usr/bin/pip' ]; then
       # `sudo pip install` is not used because some packages (e.g. tox) depend on
       # system packages (e.g. setuptools) which cannot be upgraded due to System

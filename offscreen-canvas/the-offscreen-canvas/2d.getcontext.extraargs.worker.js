@@ -18,6 +18,11 @@ var ctx = offscreenCanvas.getContext('2d');
 
 var offscreenCanvas2 = new OffscreenCanvas(100, 50);
 _assertDifferent(offscreenCanvas2.getContext('2d', false, {}, [], 1, "2"), null, "offscreenCanvas2.getContext('2d', false, {}, [], 1, \"2\")", "null");
+_assertDifferent(offscreenCanvas2.getContext('2d', 123), null, "offscreenCanvas2.getContext('2d', 123)", "null");
+_assertDifferent(offscreenCanvas2.getContext('2d', "test"), null, "offscreenCanvas2.getContext('2d', \"test\")", "null");
+_assertDifferent(offscreenCanvas2.getContext('2d', undefined), null, "offscreenCanvas2.getContext('2d', undefined)", "null");
+_assertDifferent(offscreenCanvas2.getContext('2d', null), null, "offscreenCanvas2.getContext('2d', null)", "null");
+_assertDifferent(offscreenCanvas2.getContext('2d', Symbol.hasInstance), null, "offscreenCanvas2.getContext('2d', Symbol.hasInstance)", "null");
 t.done();
 
 });

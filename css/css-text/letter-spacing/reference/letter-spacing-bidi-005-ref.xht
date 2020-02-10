@@ -5,10 +5,13 @@
     <style>
       .control {
           font: 50px/1 monospace;
-          margin: 0;
-          width: 14ch;
           font-kerning: none;
           white-space: pre;
+      }
+      .red {
+          color: red;
+          position: absolute;
+          z-index: -1;
       }
       .control span {
           background: green;
@@ -16,8 +19,9 @@
     </style>
  </head>
  <body>
-  <p>Test passes if no red is visible and the green rectangle does not extend beyond B to C.</p>
+  <p>Test passes if no red is visible except for anti-aliasing differences, and the green rectangle does not extend beyond B to C.</p>
   <!-- A <ls> <ls> <bg>B <ls> bet <ls> alef <ls> C</bg> <ls> D <gap> -->
+  <div class="control red">A  <span>B &#x5d0; &#x5d1; C</span>  D</div>
   <div class="control">A  <span>B &#x5d0; &#x5d1; C</span>  D</div>
   </body>
 </html>

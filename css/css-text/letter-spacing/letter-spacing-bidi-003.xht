@@ -10,7 +10,6 @@
     <style>
       .test, .control {
           font: 50px/1 monospace;
-          margin: 0;
           width: 14ch;
           font-kerning: none;
           border: 1px solid black;
@@ -21,14 +20,9 @@
           z-index: -1;
           white-space: pre;
       }
-      .rtl {
-          direction: rtl;
-      }
       .justify {
           text-align-last: justify;
-      }
-      span {
-          background-color: #eee;
+          text-justify: inter-word;
       }
       .narrow {
           letter-spacing: 1ch;
@@ -36,13 +30,13 @@
     </style>
  </head>
  <body>
-  <p>Test passes if no red is visible.</p>
+  <p>Test passes if no red is visible except for anti-aliasing differences.</p>
   <!-- bet <ls> alef <ls> <space stretched from justification> A <ls> B -->
   <div class="control">&#x5d0; &#x5d1;<div style="float: right">A B</div></div>
   <div class="test narrow justify">&#x5d0;&#x5d1; AB</div>
 
   <!-- A <ls> B <ls> <space stretched from justification> alef <ls> bet -->
   <div class="control">A B<div style="float: right">&#x5d0; &#x5d1;</div></div>
-  <div class="test narrow justify rtl">&#x5d0;&#x5d1; AB</div>
+  <div dir="rtl" class="test narrow justify">&#x5d0;&#x5d1; AB</div>
   </body>
 </html>

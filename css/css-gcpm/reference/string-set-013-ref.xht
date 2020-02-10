@@ -1,15 +1,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
-  <title>CSS Test: string-set start element can be an inline</title>
   <link rel="author" title="Mike Bremford" href="http://bfo.com"/>
-  <link rel="help" href="https://drafts.csswg.org/css-gcpm-3/#using-named-strings"/>
-  <link rel="match" href="reference/string-set-013-ref.xht"/>
   <meta name="flags" content="paged" />
-  <meta name="assert" content="The first element on the page can be an inline element"/>
   <style>
-  /* Note to Matt: the widows/orphans are the issue here, each fragment must be
-     one line high, but widows/orphans are 2 so it crashes. Set to 1 and it passes
-  */
   @page :first {
       @top-center {
           content: none;
@@ -21,21 +14,13 @@
           content: "This should say pass: PASS";
       }
   }
-  body {
-      orphans: 1;
-      widows: 1;
-  }
-  img {
-      width: 400px;
-      height: 500px;
+  div {
+      break-before: page;
   }
   </style>
  </head>
  <body>
   <p>This test has two pages. This page has no other content</p>
-  <div>
-   <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="/>
-   <img class="set" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="/>
-  </div>
+  <div></div>
  </body>
 </html>

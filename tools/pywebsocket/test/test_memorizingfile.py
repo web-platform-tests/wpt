@@ -33,7 +33,7 @@
 """Tests for memorizingfile module."""
 
 
-import StringIO
+from six.moves import StringIO
 import unittest
 
 import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
@@ -76,23 +76,23 @@ class UtilTest(unittest.TestCase):
             self.assertEqual(expected, read)
 
     def test_get_memorized_lines(self):
-        memorizing_file = memorizingfile.MemorizingFile(StringIO.StringIO(
+        memorizing_file = memorizingfile.MemorizingFile(StringIO(
                 'Hello\nWorld\nWelcome'))
         self.check(memorizing_file, 3, ['Hello\n', 'World\n', 'Welcome'])
 
     def test_get_memorized_lines_limit_memorized_lines(self):
-        memorizing_file = memorizingfile.MemorizingFile(StringIO.StringIO(
+        memorizing_file = memorizingfile.MemorizingFile(StringIO(
                 'Hello\nWorld\nWelcome'), 2)
         self.check(memorizing_file, 3, ['Hello\n', 'World\n'])
 
     def test_get_memorized_lines_empty_file(self):
-        memorizing_file = memorizingfile.MemorizingFile(StringIO.StringIO(
+        memorizing_file = memorizingfile.MemorizingFile(StringIO(
                 ''))
         self.check(memorizing_file, 10, [])
 
     def test_get_memorized_lines_with_size(self):
         for size in range(1, 10):
-            memorizing_file = memorizingfile.MemorizingFile(StringIO.StringIO(
+            memorizing_file = memorizingfile.MemorizingFile(StringIO(
                 'Hello\nWorld\nWelcome'))
             self.check_with_size(memorizing_file, size,
                                  ['Hello\n', 'World\n', 'Welcome'])

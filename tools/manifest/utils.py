@@ -60,11 +60,13 @@ def git(path):
         # type: (bytes, *bytes) -> bytes
         full_cmd = ["git", cmd] + list(args)
         try:
-            return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT)
+            return subprocess.check_output(
+                full_cmd, cwd=path, stderr=subprocess.STDOUT).decode('utf-8')
         except Exception as e:
             if platform.uname()[0] == "Windows" and isinstance(e, WindowsError):
                 full_cmd[0] = "git.bat"
-                return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT)
+                return subprocess.check_output(
+                    full_cmd, cwd=path, stderr=subprocess.STDOUT).decode('utf-8')
             else:
                 raise
 

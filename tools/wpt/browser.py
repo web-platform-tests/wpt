@@ -290,7 +290,7 @@ class Firefox(Browser):
 
     def get_version_and_channel(self, binary):
         version_string = call(binary, "--version").strip()
-        m = re.match(r"Mozilla Firefox (\d+\.\d+(?:\.\d+)?)(a|b)?", version_string.decode('utf-8'))
+        m = re.match(r"Mozilla Firefox (\d+\.\d+(?:\.\d+)?)(a|b)?", version_string)
         if not m:
             return None, "nightly"
         version, status = m.groups()
@@ -445,7 +445,7 @@ class Firefox(Browser):
     def version(self, binary=None, webdriver_binary=None):
         """Retrieve the release version of the installed browser."""
         version_string = call(binary, "--version").strip()
-        m = re.match(r"Mozilla Firefox (.*)", version_string.decode('utf-8'))
+        m = re.match(r"Mozilla Firefox (.*)", version_string)
         if not m:
             return None
         return m.group(1)
@@ -656,7 +656,7 @@ class Chrome(Browser):
         except subprocess.CalledProcessError:
             self.logger.warning("Failed to call %s" % binary)
             return None
-        m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string.decode('utf-8'))
+        m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string)
         if not m:
             self.logger.warning("Failed to extract version from: %s" % version_string)
             return None
@@ -877,7 +877,7 @@ class Opera(Browser):
         except subprocess.CalledProcessError:
             self.logger.warning("Failed to call %s" % binary)
             return None
-        m = re.search(r"[0-9\.]+( [a-z]+)?$", output.decode('utf-8').strip())
+        m = re.search(r"[0-9\.]+( [a-z]+)?$", output.strip())
         if m:
             return m.group(0)
 
@@ -976,7 +976,7 @@ class EdgeChromium(Browser):
             except subprocess.CalledProcessError:
                 self.logger.warning("Failed to call %s" % binary)
                 return None
-            m = re.match(r"Microsoft Edge (.*) ", version_string.decode('utf-8'))
+            m = re.match(r"Microsoft Edge (.*) ", version_string)
             if not m:
                 self.logger.warning("Failed to extract version from: %s" % version_string)
                 return None
@@ -1166,7 +1166,7 @@ class Servo(Browser):
     def version(self, binary=None, webdriver_binary=None):
         """Retrieve the release version of the installed browser."""
         output = call(binary, "--version")
-        m = re.search(r"Servo ([0-9\.]+-[a-f0-9]+)?(-dirty)?$", output.decode('utf-8').strip())
+        m = re.search(r"Servo ([0-9\.]+-[a-f0-9]+)?(-dirty)?$", output.strip())
         if m:
             return m.group(0)
 

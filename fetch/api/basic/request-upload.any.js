@@ -1,7 +1,7 @@
 // META: script=../resources/utils.js
 
 function testUpload(desc, url, method, createBody, expectedBody) {
-  var requestInit = {"method": method}
+  const requestInit = {"method": method}
   promise_test(function(test){
     const body = createBody();
     if (body) {

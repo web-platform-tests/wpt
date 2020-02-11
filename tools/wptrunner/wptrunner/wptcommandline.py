@@ -539,7 +539,8 @@ def check_args(kwargs):
 
     if kwargs['extra_prefs']:
         # If a single pref is passed in as a string, make it a list
-        if type(kwargs['extra_prefs']) in (str, unicode):
+        from six import text_type
+        if isinstance(kwargs['extra_prefs'], text_type):
             kwargs['extra_prefs'] = [kwargs['extra_prefs']]
         missing = any('=' not in prefarg for prefarg in kwargs['extra_prefs'])
         if missing:

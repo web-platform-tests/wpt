@@ -2,87 +2,113 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="./support/helper.js"></script>
+
 <body>
-<script>
-  async_test(t => {
-    var i = document.createElement('iframe');
-    i.src = "./support/xfo.py?value=SAMEORIGIN&value2=SAMEORIGIN";
+  <script>
 
-    wait_for_message_from(i, t)
-      .then(t.step_func_done(e => {
-        assert_equals(e.data, "Loaded");
-        i.remove();
-      }));
+    let allow_tests = [
+      {
+        v1: "SAMEORIGIN",
+        v2: "SAMEORIGIN",
+        msg: "`XFO: SAMEORIGIN; XFO: SAMEORIGIN` allows same-origin framing."
+      },
+      {
+        v1: "INVALID",
+        v2: "SAMEORIGIN",
+        msg: "`XFO: INVALID; XFO: SAMEORIGIN` allows same-origin framing."
+      },
+      {
+        v1: "SAMEORIGIN",
+        v2: "INVALID",
+        msg: "`XFO: SAMEORIGIN; XFO: INVALID` allows same-origin framing."
+      },
+        // same combinations as above, but with a single header and comma-separation
+        {
+        v1: "SAMEORIGIN,SAMEORIGIN",
+        msg: "`XFO: SAMEORIGIN,SAMEORIGIN` allows same-origin framing."
+      },
+      {
+        v1: "INVALID,SAMEORIGIN",
+        msg: "`XFO: INVALID,SAMEORIGIN` allows same-origin framing."
+      },
+      {
+        v1: "SAMEORIGIN,INVALID",
+        msg: "`XFO: SAMEORIGIN,INVALID` allows same-origin framing."
+      },
+    ];
 
-    document.body.appendChild(i);
-  }, "`XFO: SAMEORIGIN; XFO: SAMEORIGIN` allows same-origin framing.");
+    let disallow_tests = [
+      {
+        v1: "SAMEORIGIN",
+        v2: "DENY",
+        msg: "`XFO: SAMEORIGIN; XFO: DENY` blocks same-origin framing."
+      },
+      {
+        v1: "DENY",
+        v2: "SAMEORIGIN",
+        msg: "`XFO: DENY; XFO: SAMEORIGIN` blocks same-origin framing."
+      },
+      {
+        url: "http://{{domains[www]}}:{{ports[http][0]}}/x-frame-options/support/xfo.py?value=SAMEORIGIN&value2=SAMEORIGIN",
+        msg: "`XFO: SAMEORIGIN; XFO: SAMEORIGIN` blocks cross-origin framing."
+      },
+        // same combinations as above, but with a single header and comma-separation
+        {
+        v1: "SAMEORIGIN,DENY",
+        msg: "`XFO: SAMEORIGIN,DENY` blocks same-origin framing."
+      },
+      {
+        v1: "DENY,SAMEORIGIN",
+        msg: "`XFO: DENY,SAMEORIGIN` blocks same-origin framing."
+      },
+      {
+        url: "http://{{domains[www]}}:{{ports[http][0]}}/x-frame-options/support/xfo.py?value=SAMEORIGIN,SAMEORIGIN",
+        msg: "`XFO: SAMEORIGIN,SAMEORIGIN` blocks cross-origin framing."
+      }
+    ];
 
-  async_test(t => {
-    var i = document.createElement('iframe');
-    i.src = "./support/xfo.py?value=INVALID&value2=SAMEORIGIN";
+    for (let test of allow_tests) {
+      async_test(t => {
+        var i = document.createElement('iframe');
+        let url = `./support/xfo.py?value=${test.v1}`
+        if (test.v2) {
+          url += `&value2=${test.v2}`;
+        }
+        i.src = url;
 
-    wait_for_message_from(i, t)
-      .then(t.step_func_done(e => {
-        assert_equals(e.data, "Loaded");
-        i.remove();
-      }));
+        wait_for_message_from(i, t)
+          .then(t.step_func_done(e => {
+            assert_equals(e.data, "Loaded");
+            i.remove();
+          }));
 
-    document.body.appendChild(i);
-  }, "`XFO: INVALID; XFO: SAMEORIGIN` allows same-origin framing.");
+        document.body.appendChild(i);
+      }, test.msg);
+    }
 
-  async_test(t => {
-    var i = document.createElement('iframe');
-    i.src = "./support/xfo.py?value=SAMEORIGIN&value2=INVALID";
+    for (let test of disallow_tests) {
+      async_test(t => {
+        var i = document.createElement('iframe');
+        let url;
+        if (test.v1) {
+          url = `./support/xfo.py?value=${test.v1}`
+          if (test.v2) {
+            url += `&value2=${test.v2}`;
+          }
+        } else {
+          url = test.url;
+        }
+        i.src = url;
 
-    wait_for_message_from(i, t)
-      .then(t.step_func_done(e => {
-        assert_equals(e.data, "Loaded");
-        i.remove();
-      }));
+        assert_no_message_from(i, t);
 
-    document.body.appendChild(i);
-  }, "`XFO: SAMEORIGIN; XFO: INVALID` allows same-origin framing.");
+        i.onload = t.step_func_done(_ => {
+          assert_equals(i.contentDocument, null);
+          i.remove();
+        });
 
-  async_test(t => {
-    var i = document.createElement('iframe');
-    i.src = "./support/xfo.py?value=SAMEORIGIN&value2=DENY";
+        document.body.appendChild(i);
+      }, test.msg);
+    }
 
-    assert_no_message_from(i, t);
-
-    i.onload = t.step_func_done(_ => {
-      assert_equals(i.contentDocument, null);
-      i.remove();
-    });
-
-    document.body.appendChild(i);
-  }, "`XFO: SAMEORIGIN; XFO: DENY` blocks same-origin framing.");
-
-  async_test(t => {
-    var i = document.createElement('iframe');
-    i.src = "./support/xfo.py?value=DENY&value2=SAMEORIGIN";
-
-    assert_no_message_from(i, t);
-
-    i.onload = t.step_func_done(_ => {
-      assert_equals(i.contentDocument, null);
-      i.remove();
-    });
-
-    document.body.appendChild(i);
-  }, "`XFO: DENY; XFO: SAMEORIGIN` blocks same-origin framing.");
-
-
-  async_test(t => {
-    var i = document.createElement('iframe');
-    i.src = "http://{{domains[www]}}:{{ports[http][0]}}/x-frame-options/support/xfo.py?value=SAMEORIGIN&value2=SAMEORIGIN";
-
-    assert_no_message_from(i, t);
-
-    i.onload = t.step_func_done(_ => {
-      assert_equals(i.contentDocument, null);
-      i.remove();
-    });
-
-    document.body.appendChild(i);
-  }, "`XFO: SAMEORIGIN; XFO: SAMEORIGIN` blocks cross-origin framing.");
-</script>
+  </script>

@@ -15,7 +15,7 @@ and so it needs to be in the document.
 By default, assumes testString evaluates to a <length>.
 If this isn't true, override {base, prop} accordingly.
 */
-function test_math_used(testString, expectedString, {base="123px", msg, msgExtra="", prop="left"}={}) {
+function test_math_used(testString, expectedString, {base="123px", msg, msgExtra="", prop="margin-left"}={}) {
     const testEl = document.getElementById('target');
     if(testEl == null) throw "Couldn't find #target element to run tests on.";
     if(!msg) {

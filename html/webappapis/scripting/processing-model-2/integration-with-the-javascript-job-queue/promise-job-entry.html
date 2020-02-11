@@ -16,9 +16,11 @@ setup({ explicit_done: true });
 const relativeURL = "resources/window-to-open.html";
 const expectedURL = (new URL(relativeURL, location.href)).href;
 
+const incumbentWindow = frames[0];
+
 window.onload = () => {
   async_test(t => {
-    const w = frames[0].runWindowOpenVeryIndirectly(relativeURL);
+    const w = incumbentWindow.runWindowOpenVeryIndirectly(relativeURL);
     w.onload = t.step_func_done(() => {
       t.add_cleanup(() => w.close());
       assert_equals(w.location.href, expectedURL);
@@ -28,7 +30,7 @@ window.onload = () => {
   async_test(t => {
     // No t.step_func because that could change the realms
     Promise.resolve().then(() => {
-      const w = frames[0].runWindowOpenVeryIndirectly(relativeURL);
+      const w = incumbentWindow.runWindowOpenVeryIndirectly(relativeURL);
       w.onload = t.step_func_done(() => {
         t.add_cleanup(() => w.close());
         assert_equals(w.location.href, expectedURL);
@@ -39,7 +41,7 @@ window.onload = () => {
   async_test(t => {
     // No t.step_func because that could change the realms
     Promise.reject().catch(() => {
-      const w = frames[0].runWindowOpenVeryIndirectly(relativeURL);
+      const w = incumbentWindow.runWindowOpenVeryIndirectly(relativeURL);
       w.onload = t.step_func_done(() => {
         t.add_cleanup(() => w.close());
         assert_equals(w.location.href, expectedURL);
@@ -53,7 +55,7 @@ window.onload = () => {
 
     // No t.step_func because that could change the realms
     p.then(() => {
-      const w = frames[0].runWindowOpenVeryIndirectly(relativeURL);
+      const w = incumbentWindow.runWindowOpenVeryIndirectly(relativeURL);
       w.onload = t.step_func_done(() => {
         t.add_cleanup(() => w.close());
         assert_equals(w.location.href, expectedURL);
@@ -69,7 +71,7 @@ window.onload = () => {
 
     // No t.step_func because that could change the realms
     p.catch(() => {
-      const w = frames[0].runWindowOpenVeryIndirectly(relativeURL);
+      const w = incumbentWindow.runWindowOpenVeryIndirectly(relativeURL);
       w.onload = t.step_func_done(() => {
         t.add_cleanup(() => w.close());
         assert_equals(w.location.href, expectedURL);
@@ -83,7 +85,7 @@ window.onload = () => {
     const thenable = {
       // No t.step_func because that could change the realms
       then(f) {
-        const w = frames[0].runWindowOpenVeryIndirectly(relativeURL);
+        const w = incumbentWindow.runWindowOpenVeryIndirectly(relativeURL);
         w.onload = t.step_func_done(() => {
           t.add_cleanup(() => w.close());
           assert_equals(w.location.href, expectedURL);

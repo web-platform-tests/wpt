@@ -27,13 +27,13 @@ window.onload = () => {
     const thisTestId = testId;
 
     relevantWindow.addEventListener("messagereceived", t.step_func(e => {
-      const [recievedTestId, recievedSourceURL] = e.detail;
+      const [receivedTestId, receivedSourceURL] = e.detail;
 
-      if (recievedTestId !== thisTestId) {
+      if (receivedTestId !== thisTestId) {
         return;
       }
 
-      assert_equals(recievedSourceURL, expectedURL);
+      assert_equals(receivedSourceURL, expectedURL);
       t.done();
     }));
 
@@ -78,7 +78,7 @@ window.onload = () => {
     frames[0].runWindowPostMessageVeryIndirectlyWithNoUserCode(p, "catch", thisTestId, "*");
   }, "Rejection handler on rejected promise, using backup incumbent settings object stack");
 
-  // The following test that we derive the incumbent settings object at promise-job time from
+  // The following tests test that we derive the incumbent settings object at promise-job time from
   // the incumbent realm at the time the handler was added, not at the time the resolve()/reject()
   // was done. See https://github.com/whatwg/html/issues/5213 for the spec side of this issue.
 

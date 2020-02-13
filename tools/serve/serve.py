@@ -366,6 +366,7 @@ class RoutesBuilder(object):
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.worker.js", AnyWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
+            ("GET", "/.well-known/origin-policy", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
         ]

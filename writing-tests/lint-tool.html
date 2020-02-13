@@ -64,6 +64,10 @@ below to fix all errors reported.</p>
 <dd>Don’t add extra copies of Ahem, use /fonts/Ahem.ttf</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">AHEM</span> <span class="pre">SYSTEM</span> <span class="pre">FONT</span></code></dt>
 <dd>Don’t use Ahem as a system font, use /fonts/ahem.css</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ASSERT_THROWS</span></code></dt>
+<dd><p class="first">Test-file line has an <code class="docutils literal notranslate"><span class="pre">assert_throws(...)</span></code> call</p>
+<strong>To fix:</strong><p class="last">Replace with <code class="docutils literal notranslate"><span class="pre">assert_throws_dom</span></code> or <code class="docutils literal notranslate"><span class="pre">assert_throws_js</span></code></p>
+</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">BROKEN-GLOBAL-METADATA</span></code></dt>
 <dd>Invalid global metadata: %s</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">BROKEN-METADATA</span></code></dt>
@@ -170,6 +174,10 @@ with the <code class="docutils literal notranslate"><span class="pre">.html</spa
 <dd><p class="first">A server-side python support file contains a <code class="docutils literal notranslate"><span class="pre">print</span></code> statement</p>
 <strong>To fix:</strong><p class="last">remove the <code class="docutils literal notranslate"><span class="pre">print</span></code> statement or replace it with something else that
 achieves the intended effect (e.g., a logging call)</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PROMISE_REJECTS</span></code></dt>
+<dd><p class="first">Test-file line has a <code class="docutils literal notranslate"><span class="pre">promise_rejects(...)</span></code> call</p>
+<strong>To fix:</strong><p class="last">Replace with promise_rejects_dom or promise_rejects_js</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">SAME-FILE-REF</span></code></dt>
 <dd>Reference test which points at itself as a reference</dd>

@@ -193,12 +193,16 @@ test may begin to execute before the returned promise has settled. Use
 <a class="reference external" href="#cleanup">add_cleanup</a> to register any necessary cleanup actions such as
 resetting global state that need to happen consistently before the next test
 starts.</p>
-<p><code class="docutils literal notranslate"><span class="pre">promise_rejects</span></code> can be used to test Promises that need to reject:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_rejects</span><span class="p">(</span><span class="nx">test_object</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span>
+<p><code class="docutils literal notranslate"><span class="pre">promise_rejects_dom</span></code>, <code class="docutils literal notranslate"><span class="pre">promise_rejects_js</span></code>, and <code class="docutils literal notranslate"><span class="pre">promise_rejects_exactly</span></code> can
+be used to test Promises that need to reject:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_rejects_dom</span><span class="p">(</span><span class="nx">test_object</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span>
+<span class="nx">promise_rejects_js</span><span class="p">(</span><span class="nx">test_object</span><span class="p">,</span> <span class="nx">constructor</span><span class="p">,</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span>
+<span class="nx">promise_rejects_exactly</span><span class="p">(</span><span class="nx">test_object</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">code</span></code> argument is equivalent to the same argument to the <code class="docutils literal notranslate"><span class="pre">assert_throws</span></code>
-function.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">code</span></code>, <code class="docutils literal notranslate"><span class="pre">constructor</span></code>, and <code class="docutils literal notranslate"><span class="pre">value</span></code> arguments are equivalent to the same
+argument to the <code class="docutils literal notranslate"><span class="pre">assert_throws_dom</span></code>, <code class="docutils literal notranslate"><span class="pre">assert_throws_js</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">assert_throws_exactly</span></code> functions.</p>
 <p>Here’s an example where the <code class="docutils literal notranslate"><span class="pre">bar()</span></code> function returns a Promise that rejects
 with a TypeError:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
@@ -799,8 +803,8 @@ attribute attribute_name following the conditions specified by WebIDL</p>
 <h3><code class="docutils literal notranslate"><span class="pre">assert_readonly(object,</span> <span class="pre">property_name,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-readonly-object-property-name-description" title="Permalink to this headline">¶</a></h3>
 <p>assert that property <code class="docutils literal notranslate"><span class="pre">property_name</span></code> on object is readonly</p>
 </div>
-<div class="section" id="assert-throws-code-func-description">
-<h3><code class="docutils literal notranslate"><span class="pre">assert_throws(code,</span> <span class="pre">func,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-throws-code-func-description" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="assert-throws-dom-code-func-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_throws_dom(code,</span> <span class="pre">func,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-throws-dom-code-func-description" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">code</span></code> - the expected exception. This can take several forms:</p>
 <ul class="simple">
 <li>string - asserts that the thrown exception must be a DOMException
@@ -808,10 +812,21 @@ with the given name, e.g., “TimeoutError”. (For
 compatibility with existing tests, the name of a
 DOMException constant can also be given, e.g.,
 “TIMEOUT_ERR”)</li>
-<li>object - asserts that the thrown exception must be any other kind
-of exception, with a property called “name” that matches
-<code class="docutils literal notranslate"><span class="pre">code.name</span></code>.</li>
+<li>number - asserts that the thrown exception must be a DOMException
+with the fiven code value (e.g. DOMException.TIMEOUT_ERR).</li>
 </ul>
+<p><code class="docutils literal notranslate"><span class="pre">func</span></code> - a function that should throw</p>
+</div>
+<div class="section" id="assert-throws-js-constructor-func-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_throws_js(constructor,</span> <span class="pre">func,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-throws-js-constructor-func-description" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">constructor</span></code> - the expected exception. This is the constructor object
+that the exception should have as its .constructor.  For example,
+<code class="docutils literal notranslate"><span class="pre">TypeError</span></code> or <code class="docutils literal notranslate"><span class="pre">someOtherWindow.RangeError</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">func</span></code> - a function that should throw</p>
+</div>
+<div class="section" id="assert-throws-exactly-value-func-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_throws_exactly(value,</span> <span class="pre">func,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-throws-exactly-value-func-description" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">valie</span></code> - the exact value that <code class="docutils literal notranslate"><span class="pre">func</span></code> is expected to throw if called.</p>
 <p><code class="docutils literal notranslate"><span class="pre">func</span></code> - a function that should throw</p>
 </div>
 <div class="section" id="assert-unreached-description">

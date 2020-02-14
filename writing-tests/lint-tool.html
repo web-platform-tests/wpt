@@ -66,7 +66,7 @@ below to fix all errors reported.</p>
 <dd>Don’t use Ahem as a system font, use /fonts/ahem.css</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">ASSERT_THROWS</span></code></dt>
 <dd><p class="first">Test-file line has an <code class="docutils literal notranslate"><span class="pre">assert_throws(...)</span></code> call</p>
-<strong>To fix:</strong><p class="last">Replace with <code class="docutils literal notranslate"><span class="pre">assert_throws_dom</span></code> or <code class="docutils literal notranslate"><span class="pre">assert_throws_js</span></code></p>
+<strong>To fix:</strong><p class="last">Replace with <code class="docutils literal notranslate"><span class="pre">assert_throws_dom</span></code> or <code class="docutils literal notranslate"><span class="pre">assert_throws_js</span></code> or <code class="docutils literal notranslate"><span class="pre">assert_throws_exactly</span></code></p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">BROKEN-GLOBAL-METADATA</span></code></dt>
 <dd>Invalid global metadata: %s</dd>
@@ -177,7 +177,7 @@ achieves the intended effect (e.g., a logging call)</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">PROMISE_REJECTS</span></code></dt>
 <dd><p class="first">Test-file line has a <code class="docutils literal notranslate"><span class="pre">promise_rejects(...)</span></code> call</p>
-<strong>To fix:</strong><p class="last">Replace with promise_rejects_dom or promise_rejects_js</p>
+<strong>To fix:</strong><p class="last">Replace with promise_rejects_dom or promise_rejects_js or <code class="docutils literal notranslate"><span class="pre">promise_rejects_exactly</span></code></p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">SAME-FILE-REF</span></code></dt>
 <dd>Reference test which points at itself as a reference</dd>

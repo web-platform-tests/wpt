@@ -10,10 +10,11 @@ They rely on a #target element existing in the document,
 as this might rely on layout to resolve styles,
 and so it needs to be in the document.
 
-Two main functions are defined, with the same signatures:
-test_math_used() (for testing used values)
-and test_math_computed() (for testing computed values).
-Signature for both is:
+Three main functions are defined, with the same signatures:
+test_math_used() (for testing used values),
+test_math_computed() (for testing computed values),
+and test_math_specified() (for testing specified values).
+Signature for all is:
 
 test_math_X(
     testString, // A numeric value; required.
@@ -43,7 +44,7 @@ to test that a given value is ±∞, ±0, or NaN:
 
 
 
-function test_math_used(testString, expectedString, {base, msg, msgExtra, prop, type, extraStyle={}}={}) {
+function test_math_used(testString, expectedString, {base, msg, msgExtra, type, prop, extraStyle={}}={}) {
     if(type === undefined) type = "length";
     let prefix, suffix;
     if(!prop) {
@@ -73,8 +74,9 @@ function test_math_used(testString, expectedString, {base, msg, msgExtra, prop, 
     _test_math({stage:'used', testString, expectedString, base, msg, msgExtra, prop, prefix, suffix, extraStyle});
 }
 
-function test_math_computed(testString, expectedString, {base, msg, msgExtra, type}={}) {
+function test_math_computed(testString, expectedString, {base, msg, msgExtra, type, prop, extraStyle={}}={}) {
     if(type === undefined) type = "length";
+    let prefix, suffix;
     if(!prop) {
         switch(type) {
             case "number":     prop = "transform"; prefix="scale("; suffix=")"; break;
@@ -100,6 +102,72 @@ function test_math_computed(testString, expectedString, {base, msg, msgExtra, ty
         }
     }
     _test_math({stage:'computed', testString, expectedString, base, msg, msgExtra, prop, prefix, suffix, extraStyle});
+}
+
+function test_math_specified(testString, expectedString, {base, msg, msgExtra, type, prop, extraStyle={}}={}) {
+    if(type === undefined) type = "length";
+    let prefix, suffix;
+    const stage = "specified";
+    if(!prop) {
+        switch(type) {
+            case "number":     prop = "transform"; prefix="scale("; suffix=")"; break;
+            case "integer":    prop = "z-index"; extraStyle.position="absolute"; break;
+            case "length":     prop = "flex-basis"; break;
+            case "angle":      prop = "transform"; prefix="rotate("; suffix=")"; break;
+            case "time":       prop = "transition-delay"; break;
+            case "resolution": prop = "image-resolution"; break;
+            case "flex":       prop = "grid-template-rows"; break;
+            default: throw Exception(`Value type '${type}' isn't capable of math.`);
+        }
+
+    }
+    if(!base) {
+        switch(type) {
+            case "number":     base = "1.23"; break;
+            case "integer":    base = "123"; break;
+            case "length":     base = "123px"; break;
+            case "angle":      base = "123deg"; break;
+            case "time":       base = "123s"; break;
+            case "resolution": base = "123dpi"; break;
+            case "flex":       base = "123fr"; break;
+        }
+    }
+    // Find the test element
+    const testEl = document.getElementById('target');
+    if(testEl == null) throw "Couldn't find #target element to run tests on.";
+    // Then reset its styles
+    testEl.style = "";
+    for(const p in extraStyle) {
+        testEl.style[p] = extraStyle[p];
+    }
+    if(!msg) {
+        msg = `${testString} should be ${stage}-value-equivalent to ${expectedString}`;
+        if(msgExtra) msg += "; " + msgExtra;
+    }
+    let t = testString;
+    let e = expectedString;
+    let b = base;
+    if(prefix) {
+        t = prefix + t;
+        e = prefix + e;
+        b = prefix + b;
+    }
+    if(suffix) {
+        t += suffix;
+        e += suffix;
+        b += suffix;
+    }
+    test(()=>{
+        testEl.style[prop] = base;
+        testEl.style[prop] = t;
+        const usedValue = testEl.style[prop];
+        assert_not_equals(usedValue, base, `${testString} isn't valid in '${prop}'; got the default value instead.`);
+        testEl.style[prop] = base;
+        testEl.style[prop] = e;
+        const expectedValue = testEl.style[prop];
+        assert_not_equals(expectedValue, base, `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
+        assert_equals(usedValue, expectedValue, `${testString} and ${expectedString} serialize to the same thing in ${stage} values.`);
+    }, msg || `${testString} should be ${stage}-value-equivalent to ${expectedString}`);
 }
 
 /*

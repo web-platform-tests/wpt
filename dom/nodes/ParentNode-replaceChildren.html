@@ -1,0 +1,59 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>ParentNode.replaceChildren</title>
+<link rel=help href=https://dom.spec.whatwg.org/#dom-parentnode-replacechildren>
+<link rel=help href=https://dom.spec.whatwg.org/#concept-node-remove>
+<link rel=help href=https://dom.spec.whatwg.org/#concept-node-replace-all>
+<link rel=help href=https://dom.spec.whatwg.org/#converting-nodes-into-a-node>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
+<section id=parent>
+<!-- How to rehydrate? or do we even need to?... -->
+  <article></article>
+  <article></article>
+  <article></article>
+</section>
+
+<script>
+/*
+// TODO: Remove stub impl. for smoke tests
+
+HTMLElement.prototype.replaceChildren = function (nodes) {
+  this.innerHTML = '';
+  this.append(nodes);
+}
+*/
+
+test(() => {
+  var string = 'Web Platform Test';
+  var parent = document.getElementById('parent');
+
+  parent.replaceChildren(string); // should this return replaced nodes?
+
+  assert_true (parent.childNodes[0] instanceof Text);
+  assert_equals (string, parent.childNodes[0].nodeValue);
+
+}, 'ParentNode.replaceChildren with a string');
+
+
+test(() => {
+  var text   = new Text('Web Platform Test');
+  var parent = document.getElementById('parent');
+
+  parent.replaceChildren(text); // should this return replaced nodes?
+
+  assert_true (text === parent.childNodes[0]);
+
+}, 'ParentNode.replaceChildren with a single Text node');
+
+test(() => { }, 'ParentNode.replaceChildren with no arguments');
+test(() => { }, 'ParentNode.replaceChildren with null');
+test(() => { }, 'ParentNode.replaceChildren with a single node');
+test(() => { }, 'ParentNode.replaceChildren with multiple nodes');
+test(() => { }, 'ParentNode.replaceChildren with non-node & non-text'); // stringify?
+test(() => { }, 'ParentNode.replaceChildren with document fragment'); // redundant?
+test(() => { }, 'ParentNode.replaceChildren with heterogenous tuple of nodes and strings');
+test(() => { }, 'ParentNode.replaceChildren CEReactions'); // necessary?
+
+</script>

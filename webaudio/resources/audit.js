@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Wondering why audit.js exists? TL;DR: it's a legacy thing...
+// https://github.com/web-platform-tests/wpt/issues/12781
 
 /**
  * @fileOverview  WebAudio layout test utility library. Built around W3C's

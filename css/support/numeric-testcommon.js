@@ -79,26 +79,22 @@ function test_math_computed(testString, expectedString, {base, msg, msgExtra, ty
 All of these expect the testString to evaluate to a <number>.
 */
 function test_plus_infinity(testString) {
-    test_math_used(`calc(1px * ${testString})`, "calc(infinity * 1px)",
-        {msg:`${testString} should equal +Infinity.`});
+    test_math_used(testString, "calc(infinity)", {type:"number"});
 }
 function test_minus_infinity(testString) {
-    test_math_used(`calc(1px * ${testString})`, "calc(-infinity * 1px)",
-        {msg:`${testString} should equal -Infinity.`});
+    test_math_used(testString, "calc(-infinity)", {type:"number"});
 }
 function test_plus_zero(testString) {
-    test_math_used(`calc(1px / ${testString})`, "calc(infinity * 1px)",
-        {msg:`${testString} should equal 0⁺.`});
+    test_math_used(`calc(1 / ${testString})`, "calc(infinity)", {type:"number"});
 }
 function test_minus_zero(testString) {
-    test_math_used(`calc(1px / ${testString})`, "calc(-infinity * 1px)",
-        {msg:`${testString} should equal 0⁻.`});
+    test_math_used(`calc(1 / ${testString})`, "calc(-infinity)", {type:"number"});
 }
 function test_nan(testString) {
     // Make sure that it's NaN, not an infinity,
     // by making sure that it's the same value both pos and neg.
-    test_math_used(`calc(1px * ${testString})`, "calc(NaN * 1px)");
-    test_math_used(`calc(-1px * ${testString})`, "calc(NaN * 1px)");
+    test_math_used(testString, "calc(NaN)", {type:"number"});
+    test_math_used(`calc(-1 * ${testString})`, "calc(NaN)", {type:"number"});
 }
 
 

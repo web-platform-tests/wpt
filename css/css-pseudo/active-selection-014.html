@@ -10,6 +10,7 @@
   <link rel="match" href="active-selection-014-ref.html">
 
   <meta content="" name="flags">
+  <meta name="assert" content="This test checks that 'text-decoration' applies to highlight pseudo-element. Since neither 'color' nor 'background-color' has been specified by the pseudo-element selector in this test, then OS-default highlight colors must be used. The consequence of this is that the highlight color determines also the color of the underline.">
 
   <style>
   div
@@ -22,6 +23,17 @@
       text-decoration: underline;
     }
   </style>
+
+  <!--
+  "
+  The element's own text decorations (both line decorations
+  and emphasis marks) are thus drawn in the pseudo-element's
+  own color when that is not currentColor, regardless of
+  their original color or fill specifications.
+  "
+  coming from
+  https://www.w3.org/TR/css-pseudo-4/#highlight-painting
+  -->
 
   <script>
   function startTest()
@@ -37,6 +49,6 @@
 
   <body onload="startTest();">
 
-  <p>Test passes if each glyph of "Selected Text" is underlined.
+  <p>Test passes if each glyph of "Selected Text" is underlined and if color and background color of "Selected Text" are the OS-default highlight colors. The underline color must also be the same as the highlight color of "Selected Text".
 
   <div id="test">Selected Text</div>

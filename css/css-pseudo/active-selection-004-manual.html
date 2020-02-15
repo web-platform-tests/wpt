@@ -18,14 +18,19 @@
 
   div::selection
     {
-      text-decoration: underline dotted fuchsia;
+      text-decoration: fuchsia underline dotted;
     }
   </style>
 
-  <p>Instructions: select a few (or all) characters from the words "Text sample". Select them with mouse dragging (leftwardedly or rightwardedly) or text-highlighting them with <kbd>Shift</kbd> and keyboard arrows when keyboard navigation (also called caret browsing) is enabled.
+  <p>Instructions: Select a few or all characters from the words "Text sample" using a variety of methods:
 
-  <p>Reminder: you can select a whole word by double-clicking on it. You can select a whole line by triple-clicking anywhere inside it.
+  <ul>
+    <li>Select by dragging (leftwardedly or rightwardedly) the mouse across the characters.
+    <li>Select by using shift + keyboard arrows when keyboard navigation / caret browsing is enabled.
+    <li>Double click a word to select it.
+    <li>Triple click the text to select it.
+  </ul>
 
-  <p>Test passes if the selected glyphs of "Text sample" are underlined with a fuchsia dotted line. Also, the background color and color of the selected sample text must be using the UA default background color and color for selection. In other words, the background color and color of the selected sample text must also match the same background color and color of the instructions if you were to highlight them.
+  <p>Test passes if, in every case, the selected glyphs of "Text sample" are underlined with a fuchsia dotted line <em>and</em> if the background color and color of the selected text are the same as when selecting text from these instructions.
 
   <div>Text sample</div>

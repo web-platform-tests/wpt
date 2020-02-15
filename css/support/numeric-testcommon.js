@@ -60,18 +60,7 @@ function test_math_used(testString, expectedString, {base, msg, msgExtra, type, 
         }
 
     }
-    if(!base) {
-        switch(type) {
-            case "number":     base = "1.23"; break;
-            case "integer":    base = "123"; break;
-            case "length":     base = "123px"; break;
-            case "angle":      base = "123deg"; break;
-            case "time":       base = "123s"; break;
-            case "resolution": base = "123dpi"; break;
-            case "flex":       base = "123fr"; break;
-        }
-    }
-    _test_math({stage:'used', testString, expectedString, base, msg, msgExtra, prop, prefix, suffix, extraStyle});
+    _test_math({stage:'used', testString, expectedString, type, base, msg, msgExtra, prop, prefix, suffix, extraStyle});
 }
 
 function test_math_computed(testString, expectedString, {base, msg, msgExtra, type, prop, extraStyle={}}={}) {
@@ -90,18 +79,7 @@ function test_math_computed(testString, expectedString, {base, msg, msgExtra, ty
         }
 
     }
-    if(!base) {
-        switch(type) {
-            case "number":     base = "1.23"; break;
-            case "integer":    base = "123"; break;
-            case "length":     base = "123px"; break;
-            case "angle":      base = "123deg"; break;
-            case "time":       base = "123s"; break;
-            case "resolution": base = "123dpi"; break;
-            case "flex":       base = "123fr"; break;
-        }
-    }
-    _test_math({stage:'computed', testString, expectedString, base, msg, msgExtra, prop, prefix, suffix, extraStyle});
+    _test_math({stage:'computed', testString, expectedString, type, base, msg, msgExtra, prop, prefix, suffix, extraStyle});
 }
 
 function test_math_specified(testString, expectedString, {base, msg, msgExtra, type, prop, extraStyle={}}={}) {
@@ -121,17 +99,6 @@ function test_math_specified(testString, expectedString, {base, msg, msgExtra, t
         }
 
     }
-    if(!base) {
-        switch(type) {
-            case "number":     base = "1.23"; break;
-            case "integer":    base = "123"; break;
-            case "length":     base = "123px"; break;
-            case "angle":      base = "123deg"; break;
-            case "time":       base = "123s"; break;
-            case "resolution": base = "123dpi"; break;
-            case "flex":       base = "123fr"; break;
-        }
-    }
     // Find the test element
     const testEl = document.getElementById('target');
     if(testEl == null) throw "Couldn't find #target element to run tests on.";
@@ -146,7 +113,7 @@ function test_math_specified(testString, expectedString, {base, msg, msgExtra, t
     }
     let t = testString;
     let e = expectedString;
-    let b = base;
+    let b = base || _baseFromType(type);
     if(prefix) {
         t = prefix + t;
         e = prefix + e;
@@ -193,7 +160,7 @@ function test_nan(testString) {
 }
 
 
-function _test_math({stage, testEl, testString, expectedString, base, msg, msgExtra, prop, prefix, suffix, extraStyle}={}) {
+function _test_math({stage, testEl, testString, expectedString, type, base, msg, msgExtra, prop, prefix, suffix, extraStyle}={}) {
     // Find the test element
     if(!testEl) testEl = document.getElementById('target');
     if(testEl == null) throw "Couldn't find #target element to run tests on.";
@@ -208,7 +175,7 @@ function _test_math({stage, testEl, testString, expectedString, base, msg, msgEx
     }
     let t = testString;
     let e = expectedString;
-    let b = base;
+    let b = base || _baseFromType(type);
     if(prefix) {
         t = prefix + t;
         e = prefix + e;
@@ -230,4 +197,16 @@ function _test_math({stage, testEl, testString, expectedString, base, msg, msgEx
         assert_not_equals(expectedValue, base, `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
         assert_equals(usedValue, expectedValue, `${testString} and ${expectedString} serialize to the same thing in ${stage} values.`);
     }, msg || `${testString} should be ${stage}-value-equivalent to ${expectedString}`);
+}
+
+function _baseFromType(type) {
+    switch(type) {
+        case "number":     return "1.23"; break;
+        case "integer":    return "123"; break;
+        case "length":     return "123px"; break;
+        case "angle":      return "123deg"; break;
+        case "time":       return "123s"; break;
+        case "resolution": return "123dpi"; break;
+        case "flex":       return "123fr"; break;
+    }
 }

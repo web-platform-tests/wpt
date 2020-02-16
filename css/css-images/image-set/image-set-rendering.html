@@ -4,8 +4,7 @@
         <title>Image set rendering</title>
         <link rel="author" title="Noam Rosenthal" href="mailto:noam@webkit.org">
         <link rel="help" href="https://drafts.csswg.org/css-images-4/#image-set-notation">
-        <meta name="assert" content="image-set selection by simulated resolution">
-        <meta name="device-pixel-ratio" content="2">
+        <meta name="assert" content="image-set rendering">
         <link rel="match"  href="image-set-rendering-ref.html">
         <style>
             .test {
@@ -21,21 +20,21 @@
         </style>
     </head>
     <body>
-        <p>All images below should be lime or a lime-green gradient when devicePixelRatio is 2 - no red!.</p>
+        <p>All images below should be lime or a lime-green gradient when devicePixelRatio is 1 - no red!.</p>
         <main>
             <div class="test" style="background-image: image-set('/images/green.png' 1x)"></div>
-            <div class="test" style="background-image: image-set('/images/red.png' 1x, linear-gradient(green, lightgreen) 2x)"></div>
-            <div class="test" style="background-image: image-set(url('/images/red.png') 1x, url('/images/green.png') 2x)" ></div>
-            <div class="test" style="background-image: image-set(linear-gradient(yellow, red) 1x, radial-gradient(green, lightgreen) 2x)" ></div>
-            <div class="test" style="background-image: image-set('/images/red.png' 1x, linear-gradient(green, lightgreen) 192dpi)" ></div>
-            <div class="test" style="background-image: image-set(radial-gradient(red, yellow) 1x, url('/images/green.png') 200dpi, linear-gradient(red, yellow) 2.5x)" ></div>
-            <div class="test" style="background-image: image-set('/images/red.png' 1x, url('/images/green.png') 2x, url('/images/yellow.png') 300dpi)" ></div>
-            <div class="test" style="background-color: red; background-image: image-set('' 1x, url('/images/green.png') 2x)" ></div>
+            <div class="test" style="background-image: image-set('/images/red.png' 20dpi, linear-gradient(green, lightgreen) 2x)"></div>
+            <div class="test" style="background-image: image-set(url('/images/green.png') 1x, url('/images/red.png') 2x)" ></div>
+            <div class="test" style="background-image: image-set(radial-gradient(green, lightgreen) 1x, linear-gradient(yellow, red) 2x)" ></div>
+            <div class="test" style="background-image: image-set(linear-gradient(green, lightgreen) 96dpi, '/images/red.png' 100dpi)" ></div>
+            <div class="test" style="background-image: image-set(radial-gradient(red, yellow) 1.3x, url('/images/green.png') 100dpi, linear-gradient(red, yellow) 2.5x)" ></div>
+            <div class="test" style="background-image: image-set('/images/red.png' 2x, url('/images/green.png') 1x, url('/images/yellow.png') 300dpi)" ></div>
+            <div class="test" style="background-color: red; background-image: image-set('' 2x, url('/images/green.png') 1x)" ></div>
             <div class="test" style="background-image: image-set('/images/green.png' 1x)"></div>
             <div class="test" style="background-color: lime; background-image: image-set('/images/red.png')" ></div>
             <div class="test" style="background-color: lime; background-image: image-set('/images/red.png' 0x)" ></div>
             <div class="test" style="background-color: lime; background-image: image-set('/images/red.png' 0x, url('/images/red.png') 2x)" ></div>
-            <div class="test" style="content: image-set(url() 100dpi, url('/images/green.png') 2x)" ></div>
+            <div class="test" style="content: image-set(url() 2x, url('/images/green.png') 100dpi)" ></div>
         </main>
     </body>
 </html>

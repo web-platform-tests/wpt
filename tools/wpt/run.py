@@ -192,8 +192,11 @@ def safe_unsetenv(env_var):
     try:
         os.unsetenv(env_var)
     except AttributeError:
-        if env_var in os.environ:
-            del os.environ[env_var]
+        try:
+            os.putenv(env_var,"")
+        except AttributeError:
+            if env_var in os.environ:
+                del os.environ[env_var]
 
 class Firefox(BrowserSetup):
     name = "firefox"

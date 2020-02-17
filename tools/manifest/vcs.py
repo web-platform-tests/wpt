@@ -5,7 +5,7 @@ import stat
 from collections import deque
 from collections import MutableMapping
 
-from six import with_metaclass, PY2, ensure_binary
+from six import with_metaclass, PY2
 
 from .sourcefile import SourceFile
 from .utils import git
@@ -293,7 +293,7 @@ def walk(root):
         try:
             # Note that listdir and error are globals in this module due
             # to earlier import-*.
-            names = listdir(ensure_binary(dir_path))
+            names = listdir(dir_path)
         except OSError:
             continue
 

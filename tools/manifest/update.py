@@ -6,7 +6,6 @@ from . import manifest
 from . import vcs
 from .log import get_logger
 from .download import download_from_github
-from six import ensure_binary
 
 here = os.path.dirname(__file__)
 
@@ -41,7 +40,7 @@ def update(tests_root,  # type: str
 
 def update_from_cli(**kwargs):
     # type: (**Any) -> None
-    tests_root = ensure_binary(kwargs["tests_root"])
+    tests_root = kwargs["tests_root"]
     path = kwargs["path"]
     assert tests_root is not None
 
@@ -53,7 +52,7 @@ def update_from_cli(**kwargs):
                              kwargs["url_base"],
                              update=True,
                              rebuild=kwargs["rebuild"],
-                             cache_root=ensure_binary(kwargs["cache_root"]),
+                             cache_root=kwargs["cache_root"],
                              parallel=kwargs["parallel"])
 
 

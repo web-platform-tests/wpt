@@ -283,5 +283,5 @@ class PathFilter(object):
 
 
 def has_ignore(dirpath):
-    # type: (bytes) -> bool
-    return os.path.exists(os.path.join(dirpath, b".gitignore"))
+    # type: (str) -> bool
+    return os.path.exists(os.path.join(dirpath, ".gitignore"))

@@ -5,7 +5,7 @@ import json
 from io import BytesIO
 
 import pytest
-from six import create_bound_method
+from six import create_bound_method, PY3
 
 wptserve = pytest.importorskip("wptserve")
 from .base import TestUsingServer, TestUsingH2Server, doc_root
@@ -167,7 +167,6 @@ class TestResponse(TestUsingServer):
         self.server.router.register(*route)
         self.request(route[1])
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="py3 urllib doesn't handle invalid HTTP very well")
     def test_write_raw_contents_invalid_http(self):
         resp_content = b"INVALID HTTP"
 
@@ -177,9 +176,16 @@ class TestResponse(TestUsingServer):
 
         route = ("GET", "/test/test_write_raw_content", handler)
         self.server.router.register(*route)
-        resp = self.request(route[1])
-        assert resp.read() == resp_content
 
+        if PY3:
+            from http.client import BadStatusLine
+            try:
+                resp = self.request(route[1])
+            except BadStatusLine as e:
+                assert str(e) == resp_content.decode('utf-8')
+        else:
+            resp = self.request(route[1])
+            assert resp.read() == resp_content
 
 class TestH2Response(TestUsingH2Server):
     def test_write_without_ending_stream(self):

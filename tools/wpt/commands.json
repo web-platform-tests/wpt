@@ -6,11 +6,11 @@
     "help": "Run tests in a browser",
     "virtualenv": true,
     "install": [
-	    "requests",
-	    "zstandard"
+      "requests",
+      "zstandard"
     ],
     "requirements": [
-	    "../wptrunner/requirements.txt"
+      "../wptrunner/requirements.txt"
     ]
   },
   "create": {
@@ -26,10 +26,10 @@
     "help": "Update expectations files from raw logs.",
     "virtualenv": true,
     "install": [
-	    "requests"
+      "requests"
     ],
     "requirements": [
-	    "../wptrunner/requirements.txt"
+      "../wptrunner/requirements.txt"
     ]
   },
   "files-changed": {
@@ -52,8 +52,8 @@
     "parser": "get_parser",
     "help": "Install browser components",
     "install": [
-	    "mozdownload",
-	    "mozinstall"
+      "mozdownload",
+      "mozinstall"
     ]
   },
   "branch-point": {

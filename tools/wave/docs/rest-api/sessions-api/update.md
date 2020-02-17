@@ -88,7 +88,7 @@ The request payload is the same as in the [`create`](./sessions-api/create.md) m
   "reference_tokens": [
     "bb7aafa0-6a92-11e9-8ec2-04f58dad2e4f",
     "a50c6db0-6a94-11e9-8d1b-e23fc4555885"
-  ]
+  ],
   "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/76.0.3809.100 Chrome/76.0.3809.100 Safari/537.36",
   "browser": {
     "name": "Chromium",

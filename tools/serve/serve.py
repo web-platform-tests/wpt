@@ -976,7 +976,7 @@ def run(**kwargs):
                 logger.info("Status of %s:\t%s" % (item.name, "running" if item.is_alive() else "not running"))
 
 
-# Set command is_wave and start venv wit necessary dependencies
+# Set command is_wave and start venv with necessary dependencies
 def run_wave(venv=None, **kwargs):
     kwargs['is_wave'] = True
     if venv is not None:

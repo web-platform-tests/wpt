@@ -115,26 +115,6 @@
         },
         refreshSessionResults(callback = () => {}) {
           WaveService.readResultsCompact(token, results => {
-            //const { status } = resultUi.state;
-            //Object.keys(status.testFilesCount).forEach(api =>
-            //  !results[api] ? (results[api] = {}) : null
-            //);
-            //for (let api in results) {
-            //  let { pass, fail, timeout, not_run } = results[api];
-            //  let complete = 0;
-            //  if (pass) complete += pass;
-            //  if (fail) complete += fail;
-            //  if (timeout) complete += timeout;
-            //  if (not_run) complete += not_run;
-            //  results[api].complete = complete;
-            //  const { testFilesCount, testFilesCompleted } = status;
-            //  if (!testFilesCount[api]) testFilesCount[api] = 0;
-            //  if (!testFilesCompleted[api]) testFilesCompleted[api] = 0;
-            //  results[api].isDone =
-            //    testFilesCount[api] === testFilesCompleted[api];
-            //  results[api].testFilesCount = testFilesCount[api];
-            //  results[api].testFilesCompleted = testFilesCompleted[api];
-            //}
             resultUi.state.results = results;
             callback(results);
           });
@@ -1000,7 +980,6 @@
                     element: "tr",
                     children: [
                       { element: "td", text: "Test File" },
-                      // { element: "td", text: "Status" },
                       { element: "td", text: "Malfunctioning List" }
                     ]
                   }
@@ -1012,7 +991,6 @@
                   element: "tr",
                   children: [
                     { element: "td", text: path },
-                    // { element: "td", text: status }
                     {
                       element: "td",
                       children: [
@@ -1161,13 +1139,6 @@
             return UI.createElement({
               element: "tr",
               style: "white-space: nowrap",
-              // style: `background-image: linear-gradient(to right, hsl(0, 0%, 86%) ${utils.percent(
-              //   testFilesCompleted,
-              //   testFilesCount
-              // )}%, white ${utils.percent(
-              //   testFilesCompleted,
-              //   testFilesCount
-              // )}%); background-attachment: fixed;`,
               children: [
                 { element: "td", text: api },
                 {
@@ -1255,13 +1226,6 @@
 
           const footer = UI.createElement({
             element: "tfoot",
-            // style: `background-image: linear-gradient(to right, hsl(0, 0%, 86%) ${utils.percent(
-            //   testFilesCompleted,
-            //   testFilesCount
-            // )}%, white ${utils.percent(
-            //   testFilesCompleted,
-            //   testFilesCount
-            // )}%); background-attachment: fixed;`,
             children: [
               {
                 element: "tr",

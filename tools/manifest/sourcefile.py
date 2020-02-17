@@ -2,7 +2,7 @@ import hashlib
 import re
 import os
 from collections import deque
-from six import binary_type, PY3
+from six import binary_type, PY3, iteritems
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
 
@@ -242,9 +242,7 @@ class SourceFile(object):
 
         if "__cached_properties__" in rv:
             cached_properties = rv["__cached_properties__"]
-            for key in rv.keys():
-                if key in cached_properties:
-                    del rv[key]
+            rv = { key:value for key, value in iteritems(rv) if not key in cached_properties }
             del rv["__cached_properties__"]
         return rv
 

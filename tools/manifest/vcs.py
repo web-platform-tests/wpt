@@ -33,7 +33,7 @@ def get_tree(tests_root, manifest, manifest_path, cache_root,
     # type: (bytes, Manifest, Optional[bytes], Optional[bytes], bool, bool) -> FileSystem
     tree = None
     if cache_root is None:
-        cache_root = os.path.join(tests_root, b".wptcache")
+        cache_root = os.path.join(tests_root, ".wptcache")
     if not os.path.exists(cache_root):
         try:
             os.makedirs(cache_root)
@@ -65,7 +65,7 @@ class GitHasher(object):
         # not be the root of the git repo (e.g., within a browser repo)
         cmd = [b"diff-index", b"--relative", b"--no-renames", b"--name-only", b"-z", b"HEAD"]
         data = self.git(*cmd)
-        return set(data.split(b"\0"))
+        return set(data.split("\0"))
 
     def hash_cache(self):
         # type: () -> Dict[bytes, Optional[bytes]]
@@ -81,9 +81,9 @@ class GitHasher(object):
         # not be the root of the git repo (e.g., within a browser repo)
         cmd = ["ls-tree", "-r", "-z", "HEAD"]
         local_changes = self._local_changes()
-        for result in self.git(*cmd).split(b"\0")[:-1]:  # type: bytes
-            data, rel_path = result.rsplit(b"\t", 1)
-            hash_cache[rel_path] = None if rel_path in local_changes else data.split(b" ", 3)[2]
+        for result in self.git(*cmd).split("\0")[:-1]:  # type: str
+            data, rel_path = result.rsplit("\t", 1)
+            hash_cache[rel_path] = None if rel_path in local_changes else data.split(" ", 3)[2]
 
         return hash_cache
 

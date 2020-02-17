@@ -195,7 +195,6 @@ class Manifest(object):
             changed = True
 
         if parallel and len(to_update) > 25 and cpu_count() > 1:
-            import pdb;pdb.set_trace()
             # 25 derived experimentally (2020-01) to be approximately
             # the point at which it is quicker to create Pool and
             # parallelize this

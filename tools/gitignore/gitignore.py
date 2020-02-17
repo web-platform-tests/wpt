@@ -141,7 +141,7 @@ class PathFilter(object):
     def __init__(self, root, extras=None, cache=None):
         # type: (str, Optional[List[str]], Optional[MutableMapping[str, bool]]) -> None
         if root:
-            ignore_path = os.path.join(root, b".gitignore")  # type: Optional[str]
+            ignore_path = os.path.join(root, ".gitignore")  # type: Optional[str]
         else:
             ignore_path = None
         if not ignore_path and not extras:
@@ -232,12 +232,12 @@ class PathFilter(object):
             keep_files = []  # type: List[Tuple[str, T]]
 
             for iter_items, literals, patterns, target, suffix in [
-                    (dirnames, self.literals_dir, self.patterns_dir, keep_dirs, b"/"),
-                    (filenames, self.literals_file, self.patterns_file, keep_files, b"")]:
+                    (dirnames, self.literals_dir, self.patterns_dir, keep_dirs, "/"),
+                    (filenames, self.literals_file, self.patterns_file, keep_files, "")]:
                 for item in iter_items:
                     name = item[0]
                     if dirpath:
-                        path = os.path.join(dirpath, name, suffix)
+                        path = "%s/%s" % (dirpath, name) + suffix
                     else:
                         path = name + suffix
                     if path in self.cache:
@@ -255,9 +255,9 @@ class PathFilter(object):
                     else:
                         for (component_only, pattern), exclude in patterns:
                             if component_only:
-                                match = pattern.match(name.decode())
+                                match = pattern.match(name)
                             else:
-                                match = pattern.match(path.decode())
+                                match = pattern.match(path)
                             if match:
                                 if not any(rule.match(name if name_only else path)
                                            for name_only, rule in exclude):

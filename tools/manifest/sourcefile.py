@@ -2,7 +2,7 @@ import hashlib
 import re
 import os
 from collections import deque
-from six import binary_type, PY3
+from six import binary_type, PY3, ensure_binary
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
 
@@ -217,10 +217,10 @@ class SourceFile(object):
         name, ext = os.path.splitext(filename)
 
         type_flag = None
-        if "-" in name:
-            type_flag = name.rsplit("-", 1)[1].split(".")[0]
+        if b"-" in name:
+            type_flag = name.rsplit(b"-", 1)[1].split(b".")[0]
 
-        meta_flags = name.split(".")[1:]
+        meta_flags = name.split(b".")[1:]
 
         self.tests_root = tests_root  # type: Union[bytes, Text]
         self.rel_path = rel_path  # type: Union[bytes, Text]
@@ -243,7 +243,7 @@ class SourceFile(object):
         if "__cached_properties__" in rv:
             cached_properties = rv["__cached_properties__"]
             for key in rv.keys():
-                if key in cached_properties:
+                if key in cached_properties and False:
                     del rv[key]
             del rv["__cached_properties__"]
         return rv
@@ -283,8 +283,8 @@ class SourceFile(object):
 
     @cached_property
     def rel_path_parts(self):
-        # type: () -> Tuple[Text, ...]
-        return tuple(self.rel_path.split(os.path.sep))
+        # type: () -> Tuple[bytes, ...]
+        return tuple(self.rel_path.split(ensure_binary(os.path.sep)))
 
     @cached_property
     def path(self):
@@ -333,7 +333,7 @@ class SourceFile(object):
 
     def in_conformance_checker_dir(self):
         # type: () -> bool
-        return self.rel_path_parts[0] == "conformance-checkers"
+        return self.rel_path_parts[0] == b"conformance-checkers"
 
     @property
     def name_is_non_test(self):
@@ -402,8 +402,8 @@ class SourceFile(object):
         # wdspec tests are in subdirectories of /webdriver excluding __init__.py
         # files.
         rel_path_parts = self.rel_path_parts
-        return (((rel_path_parts[0] == "webdriver" and len(rel_path_parts) > 1) or
-                 (rel_path_parts[:2] == ("infrastructure", "webdriver") and
+        return (((rel_path_parts[0] == b"webdriver" and len(rel_path_parts) > 1) or
+                 (rel_path_parts[:2] == (b"infrastructure", b"webdriver") and
                   len(rel_path_parts) > 2)) and
                 self.filename not in ("__init__.py", "conftest.py") and
                 fnmatch(self.filename, wd_pattern))

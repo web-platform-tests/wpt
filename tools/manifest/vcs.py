@@ -174,7 +174,7 @@ class CacheFile(with_metaclass(abc.ABCMeta)):
 
 
 class MtimeCache(CacheFile):
-    file_name = b"mtime.json"
+    file_name = "mtime.json"
 
     def __init__(self, cache_root, tests_root, manifest_path, rebuild=False):
         # type: (bytes, bytes, bytes, bool) -> None
@@ -222,7 +222,7 @@ class MtimeCache(CacheFile):
 
 
 class GitIgnoreCache(CacheFile, MutableMapping):  # type: ignore
-    file_name = b"gitignore.json"
+    file_name = "gitignore.json"
 
     def check_valid(self, data):
         # type: (Dict[Any, Any]) -> Dict[Any, Any]
@@ -286,7 +286,7 @@ def walk(root):
     relpath = os.path.relpath
 
     root = os.path.abspath(root)
-    stack = deque([(root, b"")])
+    stack = deque([(root, "")])
 
     while stack:
         dir_path, rel_path = stack.popleft()

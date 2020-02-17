@@ -116,8 +116,8 @@ class TestsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to read next test: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to read next test: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def read_last_completed(self, request, response):
@@ -160,8 +160,8 @@ class TestsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to read last completed tests: "
-                + info[0].__name__ + u": " + str(info[1].args[0]))
+            print(u"Failed to read last completed tests: " +
+                info[0].__name__ + u": " + str(info[1].args[0]))
             response.status = 500
 
     def read_malfunctioning(self, request, response):
@@ -175,8 +175,8 @@ class TestsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to read malfunctioning tests: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to read malfunctioning tests: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def update_malfunctioning(self, request, response):
@@ -193,8 +193,8 @@ class TestsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to read malfunctioning tests: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to read malfunctioning tests: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def read_available_apis(self, request, response):
@@ -204,8 +204,8 @@ class TestsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to read malfunctioning tests: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to read malfunctioning tests: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def handle_request(self, request, response):

@@ -62,8 +62,28 @@ class TestLoader(object):
 
     def _load_tests(self, tests, exclude_list=None, include_list=None):
         loaded_tests = {}
-        for test in tests:
-            test_path = tests[test][0][0]
+
+        def get_next_part(tests):
+            paths = []
+            for test in tests:
+                if isinstance(tests[test], dict):
+                    subs = get_next_part(tests[test])
+                    for sub in subs:
+                        if sub is None:
+                            continue
+                        paths.append(test + "/" + sub)
+                    continue
+                if test.endswith(".html"):
+                    paths.append(test)
+                    continue
+                if test.endswith(".js"):
+                    for element in tests[test][1:]:
+                        paths.append(element[0])
+                    continue
+            return paths
+
+        test_paths = get_next_part(tests)
+        for test_path in test_paths:
             if not test_path.startswith("/"):
                 test_path = "/" + test_path
             if self._is_valid_test(test_path, exclude_list, include_list):

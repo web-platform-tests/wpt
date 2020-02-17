@@ -92,6 +92,6 @@ class HttpHandler(object):
         except IOError:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to perform proxy request: "
-                + info[0].__name__ + u": " + str(info[1].args[0]))
+            print(u"Failed to perform proxy request: " +
+                info[0].__name__ + u": " + str(info[1].args[0]))
             response.status = 500

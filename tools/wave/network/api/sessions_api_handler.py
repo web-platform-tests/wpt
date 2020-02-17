@@ -64,15 +64,15 @@ class SessionsApiHandler(ApiHandler):
         except InvalidDataException:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to create session: " + info[0].__name__ + u": "
-                + info[1].args[0])
+            print(u"Failed to create session: " + info[0].__name__ + u": " +
+                info[1].args[0])
             self.send_json({u"error": info[1].args[0]}, response, 400)
 
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to create session: " + info[0].__name__ + u": "
-                + info[1].args[0])
+            print(u"Failed to create session: " + info[0].__name__ + u": " +
+                info[1].args[0])
             response.status = 500
 
     def read_session(self, request, response):
@@ -100,8 +100,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to read session: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to read session: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def read_session_status(self, request, response):
@@ -134,8 +134,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to read session status: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to read session status: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def read_public_sessions(self, request, response):
@@ -146,8 +146,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to read public session: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to read public session: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def update_session_configuration(self, request, response):
@@ -191,8 +191,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to update session: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to update session: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def update_labels(self, request, response):
@@ -211,8 +211,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to update labels: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to update labels: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def delete_session(self, request, response):
@@ -230,8 +230,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to delete session: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to delete session: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def start_session(self, request, response):
@@ -243,8 +243,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to start session: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to start session: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def pause_session(self, request, response):
@@ -256,8 +256,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to pause session: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to pause session: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def stop_session(self, request, response):
@@ -269,8 +269,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to stop session: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to stop session: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def resume_session(self, request, response):
@@ -287,8 +287,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to stop session: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to stop session: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def find_session(self, request, response):
@@ -303,8 +303,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to find session: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to find session: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def register_event_listener(self, request, response):
@@ -323,8 +323,8 @@ class SessionsApiHandler(ApiHandler):
         except Exception:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to find session: "
-                + info[0].__name__ + u": " + info[1].args[0])
+            print(u"Failed to find session: " +
+                info[0].__name__ + u": " + info[1].args[0])
             response.status = 500
 
     def handle_request(self, request, response):

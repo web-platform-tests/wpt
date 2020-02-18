@@ -8,6 +8,42 @@
 <script src="../support/numeric-testcommon.js"></script>
 <div id=target></div>
 <script>
+const prop = 'opacity';
+const base = '.123';
+const el = document.querySelector("#target");
+function serializeSpecified(t, e) {
+	test(()=>{
+		el.style[prop] = base;
+		el.style[prop] = t;
+		const tValue = el.style[prop];
+		assert_not_equals(tValue, base, `'${t}' should be valid in ${prop}.`);
+
+		el.style[prop] = base;
+		el.style[prop] = e;
+		const eValue = el.style[prop];
+		assert_not_equals(eValue, base, `'${e}' should be valid in ${prop}.`);
+		assert_equals(e, eValue, `'${e}' should round-trip exactly in specified values.`);
+
+		assert_equals(tValue, e, `'${t}' and '${e}' should serialize the same in specified values.`);
+	});
+}
+function serializeComputed(t, e) {
+	test(()=>{
+		el.style[prop] = base;
+		el.style[prop] = t;
+		const tValue = getComputedStyle(el)[prop];
+		assert_not_equals(tValue, base, `'${t}' should be valid in ${prop}.`);
+
+		el.style[prop] = base;
+		el.style[prop] = e;
+		const eValue = getComputedStyle(el)[prop];
+		assert_not_equals(eValue, base, `'${e}' should be valid in ${prop}.`);
+		assert_equals(e, eValue, `'${e}' should round-trip exactly in computed values.`);
+
+		assert_equals(tValue, e, `'${t}' and '${e}' should serialize the same in computed values.`);
+	});
+}
+
 test_math_specified('min(1)', 'calc(1)', {type:"number"});
 test_math_computed('min(1)', 'calc(1)', {type:"number"});
 test_math_used('min(1)', '1', {type:"number"});

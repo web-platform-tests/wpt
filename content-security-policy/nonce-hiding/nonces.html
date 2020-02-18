@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+[document.createElement("meh"),
+ document.createElement("div"),
+ document.createElement("script"),
+ document.createElementNS("http://www.w3.org/2000/svg", "meh"),
+ document.createElementNS("http://www.w3.org/2000/svg", "svg"),
+ document.createElementNS("http://www.w3.org/2000/svg", "script")].forEach(element => {
+  test(t => {
+    t.add_cleanup(() => element.remove());
+    assert_equals(element.nonce, "", "Initial IDL attribute value");
+    element.setAttribute("nonce", "x");
+    assert_equals(element.nonce, "x", "IDL attribute is modified after content attribute set");
+    assert_equals(element.getAttribute("nonce"), "x", "Content attribute is modified after content attribute set");
+    document.body.appendChild(element);
+    assert_equals(element.nonce, "x", "IDL attribute is unchanged after element insertion");
+    assert_equals(element.getAttribute("nonce"), "", "Content attribute is changed after element insertion");
+  }, `Basic nonce tests for ${element.localName} in ${element.namespaceURI}`);
+});
+</script>

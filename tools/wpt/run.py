@@ -183,6 +183,17 @@ class BrowserSetup(object):
     def setup(self, kwargs):
         self.setup_kwargs(kwargs)
 
+def safe_unsetenv(env_var):
+    """Safely remove an environment variable.
+
+    Python3 does not support os.unsetenv in Windows for python<3.9, so we better
+    remove the variable directly from os.environ.
+    """
+    try:
+        del os.environ[env_var]
+    except AttributeError:
+        pass
+
 class Firefox(BrowserSetup):
     name = "firefox"
     browser_cls = browser.Firefox
@@ -242,9 +253,9 @@ Consider installing certutil via your OS package manager or directly.""")
             logger.info("Running in headless mode, pass --no-headless to disable")
 
         # Turn off Firefox WebRTC ICE logging on WPT (turned on by mozrunner)
-        del os.environ['R_LOG_LEVEL']
-        del os.environ['R_LOG_DESTINATION']
-        del os.environ['R_LOG_VERBOSE']
+        safe_unsetenv('R_LOG_LEVEL')
+        safe_unsetenv('R_LOG_DESTINATION')
+        safe_unsetenv('R_LOG_VERBOSE')
 
         # Allow WebRTC tests to call getUserMedia.
         kwargs["extra_prefs"].append("media.navigator.streams.fake=true")

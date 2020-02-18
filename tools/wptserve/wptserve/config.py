@@ -69,6 +69,19 @@ class Config(Mapping):
     def as_dict(self):
         return json_types(self.__dict__)
 
+    # Environment variables are limited in size so we need to prune the most egregious contributors
+    # to size, the origin policy subdomains.
+    def as_dict_for_wd_env_variable(self):
+        dict = self.as_dict()
+        dict["subdomains"] = [x for x in dict["subdomains"] if not x.startswith("op")]
+        dict["domains"]["alt"] = {k:v for (k,v) in dict["domains"]["alt"].items() if not k.startswith("op")}
+        dict["domains"][""] = {k:v for (k,v) in dict["domains"][""].items() if not k.startswith("op")}
+        dict["all_domains"]["alt"] = {k:v for (k,v) in dict["all_domains"]["alt"].items() if not k.startswith("op")}
+        dict["all_domains"][""] = {k:v for (k,v) in dict["all_domains"][""].items() if not k.startswith("op")}
+        dict["domains_set"] = [x for x in dict["domains_set"] if not x.startswith("op")]
+        dict["all_domains_set"] = [x for x in dict["all_domains_set"] if not x.startswith("op")]
+        return dict
+
 
 def json_types(obj):
     if isinstance(obj, dict):

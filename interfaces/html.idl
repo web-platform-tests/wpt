@@ -1976,8 +1976,8 @@ interface mixin WindowOrWorkerGlobalScope {
   void queueMicrotask(VoidFunction callback);
 
   // ImageBitmap
-  Promise<ImageBitmap> createImageBitmap(ImageBitmapSource image, optional ImageBitmapOptions options = {});
-  Promise<ImageBitmap> createImageBitmap(ImageBitmapSource image, long sx, long sy, long sw, long sh, optional ImageBitmapOptions options = {});
+  Promise<ImageBitmap> createImageBitmap(ImageBitmapSource image, optional (ImageBitmapOptionsInit or ImageBitmapOptions) options = {});
+  Promise<ImageBitmap> createImageBitmap(ImageBitmapSource image, long sx, long sy, long sw, long sh, optional (ImageBitmapOptionsInit or ImageBitmapOptions) options = {});
 };
 Window includes WindowOrWorkerGlobalScope;
 WorkerGlobalScope includes WindowOrWorkerGlobalScope;
@@ -2098,13 +2098,27 @@ enum PremultiplyAlpha { "none", "premultiply", "default" };
 enum ColorSpaceConversion { "none", "default" };
 enum ResizeQuality { "pixelated", "low", "medium", "high" };
 
-dictionary ImageBitmapOptions {
-  ImageOrientation imageOrientation = "none";
-  PremultiplyAlpha premultiplyAlpha = "default";
-  ColorSpaceConversion colorSpaceConversion = "default";
-  [EnforceRange] unsigned long resizeWidth;
-  [EnforceRange] unsigned long resizeHeight;
-  ResizeQuality resizeQuality = "low";
+dictionary ImageBitmapOptionsInit {
+    ImageOrientation imageOrientation = "none";
+    [RuntimeEnabled=CanvasColorManagement] ImageBitmapPixelFormat imagePixelFormat = "default";
+    PremultiplyAlpha premultiplyAlpha = "default";
+    ColorSpaceConversion colorSpaceConversion = "default";
+    [EnforceRange] unsigned long resizeWidth;
+    [EnforceRange] unsigned long resizeHeight;
+    ResizeQuality resizeQuality = "low";
+};
+
+[
+    Constructor(optional ImageBitmapOptionsInit init),
+    Exposed=(Window,Worker)
+] interface ImageBitmapOptions {
+    readonly attribute ImageOrientation imageOrientation;
+    [RuntimeEnabled=CanvasColorManagement] readonly attribute ImageBitmapPixelFormat imagePixelFormat;
+    readonly attribute PremultiplyAlpha premultiplyAlpha;
+    readonly attribute ColorSpaceConversion colorSpaceConversion;
+    [EnforceRange] readonly attribute unsigned long resizeWidth;
+    [EnforceRange] readonly attribute unsigned long resizeHeight;
+    readonly attribute ResizeQuality resizeQuality;
 };
 
 callback FrameRequestCallback = void (DOMHighResTimeStamp time);

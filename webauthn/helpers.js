@@ -541,8 +541,7 @@ function standardSetup(cb) {
       protocol: "ctap1/u2f",
       transport: "usb"
     }).then(cb).catch(error => {
-        if (error.status === "error" &&
-            error.message === "Action add_virtual_authenticator not implemented") {
+        if (error === "error: Action add_virtual_authenticator not implemented") {
           // The protocol is not available. Continue manually.
           cb();
           return;

@@ -57,7 +57,7 @@ def to_os_path(path):
 def git(path):
     # type: (bytes) -> Optional[Callable[..., bytes]]
     def gitfunc(cmd, *args):
-        # type: (bytes, *bytes) -> bytes
+        # type: (bytes, *bytes) -> str
         full_cmd = ["git", cmd] + list(args)
         try:
             return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT).decode('utf8')

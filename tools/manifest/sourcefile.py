@@ -242,7 +242,7 @@ class SourceFile(object):
 
         if "__cached_properties__" in rv:
             cached_properties = rv["__cached_properties__"]
-            rv = { key:value for key, value in iteritems(rv) if not key in cached_properties }
+            rv = {key:value for key, value in iteritems(rv) if key not in cached_properties}
             del rv["__cached_properties__"]
         return rv
 

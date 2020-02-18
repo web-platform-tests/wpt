@@ -296,7 +296,10 @@ class WebDriverProtocol(Protocol):
             message = str(getattr(e, "message", ""))
             if message:
                 message += "\n"
-            message += traceback.format_exc(e)
+            if getattr(e, 'errno', None) != None:
+                message += traceback.format_exc(e.errno)
+            else:
+                message += traceback.format_exc(e)
             self.logger.debug(message)
         self.webdriver = None
 
@@ -337,7 +340,10 @@ class WebDriverRun(TimedRunner):
                 message = str(getattr(e, "message", ""))
                 if message:
                     message += "\n"
-                message += traceback.format_exc(e)
+                if getattr(e, 'errno', None) != None:
+                    message += traceback.format_exc(e.errno)
+                else:    
+                    message += traceback.format_exc(e)
                 self.result = False, ("INTERNAL-ERROR", message)
         finally:
             self.result_flag.set()

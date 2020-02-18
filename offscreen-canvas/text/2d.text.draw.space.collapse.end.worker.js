@@ -24,8 +24,8 @@ new Promise(function(resolve) { step_timeout(resolve, 500); })
     ctx.fillStyle = '#0f0';
     ctx.textAlign = 'right';
     ctx.fillText('EE ', 100, 37.5);
-    _assertPixelApprox(offscreenCanvas, 25,25, 0,255,0,255, "25,25", "0,255,0,255", 2);
-    _assertPixelApprox(offscreenCanvas, 75,25, 0,255,0,255, "75,25", "0,255,0,255", 2);
+    _assertPixelApprox(offscreenCanvas, 25,25, 0,255,0,255, "25,25", "0,255,0,255");
+    _assertPixelApprox(offscreenCanvas, 75,25, 0,255,0,255, "75,25", "0,255,0,255");
   }).then(t_pass, t_fail);
 
 });

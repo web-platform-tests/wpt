@@ -2133,9 +2133,9 @@
     ctx.fillStyle = g;
     ctx.translate(-50, 0);
     ctx.fillRect(50, 0, 100, 50);
-    @assert pixel 25,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 75,25 == 0,255,0,255;
+    @assert pixel 25,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 75,25 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.linear.transform.2
@@ -2152,9 +2152,9 @@
     ctx.fillStyle = g;
     ctx.translate(-150, 0);
     ctx.fillRect(50, 0, 100, 50);
-    @assert pixel 25,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 75,25 == 0,255,0,255;
+    @assert pixel 25,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 75,25 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.linear.transform.3
@@ -2171,9 +2171,9 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.translate(-50, 0);
     ctx.fillRect(50, 0, 100, 50);
-    @assert pixel 25,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 75,25 == 0,255,0,255;
+    @assert pixel 25,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 75,25 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.negative
@@ -2206,15 +2206,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.inside2
@@ -2230,15 +2230,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.inside3
@@ -2255,15 +2255,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.outside1
@@ -2279,15 +2279,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.outside2
@@ -2303,15 +2303,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.outside3
@@ -2328,15 +2328,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.touch1
@@ -2352,15 +2352,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
-    @assert pixel 50,1 == 0,255,0,255; @moz-todo
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
-    @assert pixel 1,25 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
-    @assert pixel 98,25 == 0,255,0,255; @moz-todo
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 50,48 == 0,255,0,255; @moz-todo
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 1,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 1,48 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,48 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,48 ==~ 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.gradient.radial.touch2
@@ -2378,15 +2378,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.touch3
@@ -2402,15 +2402,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
-    @assert pixel 50,1 == 0,255,0,255; @moz-todo
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
-    @assert pixel 1,25 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
-    @assert pixel 98,25 == 0,255,0,255; @moz-todo
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 50,48 == 0,255,0,255; @moz-todo
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 1,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 1,48 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,48 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,48 ==~ 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.gradient.radial.equal
@@ -2426,15 +2426,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
-    @assert pixel 50,1 == 0,255,0,255; @moz-todo
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
-    @assert pixel 1,25 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
-    @assert pixel 98,25 == 0,255,0,255; @moz-todo
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 50,48 == 0,255,0,255; @moz-todo
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 1,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 1,48 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,48 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,48 ==~ 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.gradient.radial.cone.behind
@@ -2450,15 +2450,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
-    @assert pixel 50,1 == 0,255,0,255; @moz-todo
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
-    @assert pixel 1,25 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
-    @assert pixel 98,25 == 0,255,0,255; @moz-todo
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 50,48 == 0,255,0,255; @moz-todo
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 1,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 1,48 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,48 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,48 ==~ 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.gradient.radial.cone.front
@@ -2474,15 +2474,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.cone.bottom
@@ -2498,15 +2498,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.cone.top
@@ -2522,15 +2522,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.cone.beside
@@ -2546,15 +2546,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
-    @assert pixel 50,1 == 0,255,0,255; @moz-todo
-    @assert pixel 98,1 == 0,255,0,255; @moz-todo
-    @assert pixel 1,25 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255; @moz-todo
-    @assert pixel 98,25 == 0,255,0,255; @moz-todo
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 50,48 == 0,255,0,255; @moz-todo
-    @assert pixel 98,48 == 0,255,0,255; @moz-todo
+    @assert pixel 1,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 1,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 1,48 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,48 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,48 ==~ 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.gradient.radial.cone.cylinder
@@ -2570,15 +2570,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.cone.shape1
@@ -2603,15 +2603,15 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 100, 50);
 
-    @assert pixel 1,1 == 0,255,0,255;
-    @assert pixel 50,1 == 0,255,0,255;
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255;
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255;
+    @assert pixel 50,1 ==~ 0,255,0,255;
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255;
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.cone.shape2
@@ -2636,15 +2636,15 @@
     ctx.lineTo(110, 100+tol);
     ctx.fill();
 
-    @assert pixel 1,1 == 0,255,0,255; @moz-todo
-    @assert pixel 50,1 == 0,255,0,255; @moz-todo
-    @assert pixel 98,1 == 0,255,0,255;
-    @assert pixel 1,25 == 0,255,0,255; @moz-todo
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 98,25 == 0,255,0,255;
-    @assert pixel 1,48 == 0,255,0,255; @moz-todo
-    @assert pixel 50,48 == 0,255,0,255;
-    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,1 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 98,1 ==~ 0,255,0,255;
+    @assert pixel 1,25 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 98,25 ==~ 0,255,0,255;
+    @assert pixel 1,48 ==~ 0,255,0,255; @moz-todo
+    @assert pixel 50,48 ==~ 0,255,0,255;
+    @assert pixel 98,48 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.transform.1
@@ -2661,9 +2661,9 @@
     ctx.translate(50, 25);
     ctx.scale(10, 10);
     ctx.fillRect(-5, -2.5, 10, 5);
-    @assert pixel 25,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 75,25 == 0,255,0,255;
+    @assert pixel 25,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 75,25 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.transform.2
@@ -2681,9 +2681,9 @@
     ctx.translate(-50, 25);
     ctx.scale(10, 10);
     ctx.fillRect(-5, -2.5, 10, 5);
-    @assert pixel 25,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 75,25 == 0,255,0,255;
+    @assert pixel 25,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 75,25 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.gradient.radial.transform.3
@@ -2701,9 +2701,9 @@
     ctx.translate(50, 25);
     ctx.scale(10, 10);
     ctx.fillRect(-5, -2.5, 10, 5);
-    @assert pixel 25,25 == 0,255,0,255;
-    @assert pixel 50,25 == 0,255,0,255;
-    @assert pixel 75,25 == 0,255,0,255;
+    @assert pixel 25,25 ==~ 0,255,0,255;
+    @assert pixel 50,25 ==~ 0,255,0,255;
+    @assert pixel 75,25 ==~ 0,255,0,255;
   expected: green
 
 

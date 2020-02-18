@@ -212,11 +212,11 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
 
         if ISOFFSCREENCANVAS:
             code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+);',
-                    r'_assertPixelApprox(offscreenCanvas, \1, \2, "\1", "\2", 2);',
+                    r'_assertPixelApprox(offscreenCanvas, \1, \2, "\1", "\2");',
                     code)
         else:
             code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+);',
-                    r'_assertPixelApprox(canvas, \1, \2, "\1", "\2", 2);',
+                    r'_assertPixelApprox(canvas, \1, \2, "\1", "\2");',
                     code)
 
         if ISOFFSCREENCANVAS:

@@ -191,7 +191,7 @@ def safe_unsetenv(env_var):
     """
     try:
         del os.environ[env_var]
-    except AttributeError:
+    except KeyError:
         pass
 
 class Firefox(BrowserSetup):

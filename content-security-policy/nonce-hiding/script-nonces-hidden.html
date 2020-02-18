@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness.js" nonce="abc"></script>
+<script src="/resources/testharnessreport.js" nonce="abc"></script>
 
-<meta http-equiv="content-security-policy" content="script-src 'nonce-abc'; img-src 'none'">
+<!-- `Content-Security-Policy: script-src 'nonce-abc'; img-src 'none'` delivered via headers -->
 
 <body>
 <!-- Basics -->
@@ -16,10 +16,10 @@
     test(t => {
       // Query Selector
       assert_equals(document.querySelector('body [nonce]'), script);
-      assert_equals(document.querySelector('body [nonce=""]'), null);
-      assert_equals(document.querySelector('body [nonce=abc]'), script);
+      assert_equals(document.querySelector('body [nonce=""]'), script);
+      assert_equals(document.querySelector('body [nonce=abc]'), null);
 
-      assert_equals(script.getAttribute('nonce'), 'abc');
+      assert_equals(script.getAttribute('nonce'), '');
       assert_equals(script.nonce, 'abc');
     }, "Reading 'nonce' content attribute and IDL attribute.");
 
@@ -28,14 +28,15 @@
       script.setAttribute('executed', 'boo');
       var s2 = script.cloneNode();
       assert_equals(s2.nonce, 'abc', 'IDL attribute');
-      assert_equals(s2.getAttribute('nonce'), 'abc');
+      assert_equals(s2.getAttribute('nonce'), '');
     }, "Cloned node retains nonce.");
 
     async_test(t => {
       var s2 = script.cloneNode();
       document.head.appendChild(s2);
       assert_equals(s2.nonce, 'abc');
-      assert_equals(s2.getAttribute('nonce'), 'abc');
+      assert_equals(s2.getAttribute('nonce'), '');
+
       window.addEventListener('load', t.step_func_done(_ => {
         // The cloned script won't execute, as its 'already started' flag is set.
         assert_equals(s2.getAttribute('executed'), 'boo');
@@ -62,7 +63,7 @@
       documentWriteTest.done();
       test(t => {
         var script = document.currentScript;
-        assert_equals(script.getAttribute('nonce'), 'abc');
+        assert_equals(script.getAttribute('nonce'), '');
         assert_equals(script.nonce, 'abc');
       }, "Document-written script's nonce value.");
     </scr` + `ipt>`);
@@ -89,7 +90,7 @@
       assert_equals(s.nonce, 'abc');
       document.head.appendChild(s);
       assert_equals(s.nonce, 'abc');
-      assert_equals(s.getAttribute('nonce'), 'abc');
+      assert_equals(s.getAttribute('nonce'), '');
 
       window.addEventListener('load', t.step_func_done(_ => {
         assert_equals(s.getAttribute('executed'), 'yay');
@@ -105,12 +106,52 @@
       assert_equals(s.nonce, 'abc', "Pre-insertion IDL");
       document.head.appendChild(s);
       assert_equals(s.nonce, 'abc', "Post-insertion IDL");
-      assert_equals(s.getAttribute('nonce'), 'abc', "Post-insertion content");
+      assert_equals(s.getAttribute('nonce'), '', "Post-insertion content");
 
       window.addEventListener('load', t.step_func_done(_ => {
         assert_equals(s.getAttribute('executed'), 'yay');
       }));
     }, "createElement.setAttribute.");
+</script>
+
+<!-- Custom Element -->
+<script nonce="abc">
+  var eventList = [];
+  class NonceElement extends HTMLElement {
+    static get observedAttributes() {
+      return ['nonce'];
+    }
+
+    constructor() {
+      super();
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      eventList.push({
+        type: "AttributeChanged",
+        name: name,
+        oldValue: oldValue,
+        newValue: newValue
+      });
+    }
+
+    connectedCallback() {
+      eventList.push({
+        type: "Connected",
+      });
+    }
+  }
+
+  customElements.define("nonce-element", NonceElement);
+</script>
+<nonce-element nonce="abc"></nonce-element>
+<script nonce="abc">
+  test(t => {
+    assert_equals(eventList.length, 3);
+    assert_object_equals(eventList[0], { type: "AttributeChanged", name: "nonce", oldValue: null, newValue: "abc" });
+    assert_object_equals(eventList[1], { type: "Connected" });
+    assert_object_equals(eventList[2], { type: "AttributeChanged", name: "nonce", oldValue: "abc", newValue: "" });
+  }, "Custom elements expose the correct events.");
 </script>
 
 <!-- CSS Leakage -->
@@ -121,10 +162,11 @@
 <script nonce="abc" id="cssTest">
     async_test(t => {
       requestAnimationFrame(t.step_func_done(_ => {
-        var script = document.querySelector('#cssTest');
+        const script = document.querySelector('#cssTest');
+        t.add_cleanup(() => script.remove());
         var style = getComputedStyle(script);
         assert_equals(style['display'], 'block');
-        assert_equals(style['background-image'], "url(\"http://{{domains[]}}:{{ports[http][0]}}/security/resources/abe.png\")");
+        assert_equals(style['background-image'], 'none');
       }));
-    }, "Nonces leak via CSS side-channels.");
+    }, "Nonces don't leak via CSS side-channels.");
 </script>

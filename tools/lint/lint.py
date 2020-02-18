@@ -197,6 +197,14 @@ def check_ahem_copy(repo_root, path):
     return []
 
 
+def check_license_files(repo_root, path):
+    # type: (str, str) -> List[rules.Error]
+    lpath = path.lower()
+    if "license" in lpath:
+        return [rules.LicenseFiles.error(path)]
+    return []
+
+
 def check_git_ignore(repo_root, paths):
     # type: (str, List[str]) -> List[rules.Error]
     errors = []
@@ -929,7 +937,7 @@ def lint(repo_root, paths, output_format, ignore_glob=str()):
     return sum(itervalues(error_count))
 
 path_lints = [check_file_type, check_path_length, check_worker_collision, check_ahem_copy,
-              check_gitignore_file]
+              check_license_files, check_gitignore_file]
 all_paths_lints = [check_css_globally_unique]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata,
               check_ahem_system_font]

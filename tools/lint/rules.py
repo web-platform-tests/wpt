@@ -86,6 +86,11 @@ class AhemCopy(Rule):
     description = "Don't add extra copies of Ahem, use /fonts/Ahem.ttf"
 
 
+class LicenseFiles(Rule):
+    name = "LICENSE"
+    description = "Don't add new license files"
+
+
 class AhemSystemFont(Rule):
     name = "AHEM SYSTEM FONT"
     description = "Don't use Ahem as a system font, use /fonts/ahem.css"

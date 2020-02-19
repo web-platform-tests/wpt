@@ -744,7 +744,7 @@ def _make_subdomains_product(s, depth=2):
     return {u".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth+1)))}
 
 def _make_origin_policy_subdomains(limit):
-    return {u"op%d" % x for x in range(1,limit)}
+    return {u"op%d" % x for x in range(1,limit+1)}
 
 
 _subdomains = {u"www",

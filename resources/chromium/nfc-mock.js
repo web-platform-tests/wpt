@@ -77,8 +77,11 @@ function compareNDEFRecords(providedRecord, receivedRecord) {
   assert_not_equals(providedRecord.recordType, 'empty');
 
   if (providedRecord.recordType == 'text') {
-    assert_equals(providedRecord.encoding == null? 'utf-8': providedRecord.encoding, receivedRecord.encoding);
-    assert_equals(providedRecord.lang == null? 'en': providedRecord.lang, receivedRecord.lang);
+    assert_equals(
+        providedRecord.encoding == null? 'utf-8': providedRecord.encoding,
+        receivedRecord.encoding);
+    assert_equals(providedRecord.lang == null? 'en': providedRecord.lang,
+                  receivedRecord.lang);
   }
 
   assert_array_equals(toByteArray(providedRecord.data),

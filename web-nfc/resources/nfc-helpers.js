@@ -193,8 +193,10 @@ function assertWebNDEFMessagesEqual(message, expectedMessage) {
     assert_equals(record.mediaType, expectedRecord.mediaType);
     assert_equals(record.id, expectedRecord.id);
     if (record.recordType == 'text') {
-      assert_equals(record.encoding == null? 'utf-8': record.encoding, expectedRecord.encoding);
-      assert_equals(record.lang == null? 'en': record.lang, expectedRecord.lang);
+      assert_equals(record.encoding == null? 'utf-8': record.encoding,
+                    expectedRecord.encoding);
+      assert_equals(record.lang == null? 'en': record.lang,
+                    expectedRecord.lang);
     }
     // Compares record data
     assert_array_equals(new Uint8Array(record.data),

@@ -10,7 +10,6 @@
  document.createElementNS("http://www.w3.org/2000/svg", "svg"),
  document.createElementNS("http://www.w3.org/2000/svg", "script")].forEach(element => {
   test(t => {
-    t.add_cleanup(() => element.remove());
     assert_equals(element.nonce, "", "Initial IDL attribute value");
     element.setAttribute("nonce", "x");
     assert_equals(element.nonce, "x", "IDL attribute is modified after content attribute set");
@@ -19,5 +18,11 @@
     assert_equals(element.nonce, "x", "IDL attribute is unchanged after element insertion");
     assert_equals(element.getAttribute("nonce"), "", "Content attribute is changed after element insertion");
   }, `Basic nonce tests for ${element.localName} in ${element.namespaceURI}`);
+
+  test(t => {
+    t.add_cleanup(() => element.remove());
+    element.removeAttribute("nonce");
+    assert_equals(element.nonce, "x", "IDL attribute is unchanged after content attribute removal");
+  }, `Ensure that removal of content attribute does not affect IDL attribute for ${element.localName} in ${element.namespaceURI}`);
 });
 </script>

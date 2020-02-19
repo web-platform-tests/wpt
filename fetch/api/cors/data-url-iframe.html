@@ -36,29 +36,23 @@ const fetch_from_data_url_iframe_test =
   }, description);
 };
 
-fetch_from_data_url_worker_test(
+fetch_from_data_url_iframe_test(
   '../resources/top.txt',
   'no-cors',
   'rejected',
   'fetching "top.txt" with no CORS should be rejected.'
 );
-fetch_from_data_url_worker_test(
+fetch_from_data_url_iframe_test(
   '../resources/top.txt',
   'null-origin',
   'allowed',
   'fetching "top.txt" with CORS allowing null origin should be allowed.'
 );
-fetch_from_data_url_worker_test(
+fetch_from_data_url_iframe_test(
   'data:text/plain, top',
   'no-cors',
   'allowed',
-  'fetching data url script with no CORS should be allowed.'
-);
-fetch_from_data_url_worker_test(
-  'data:text/plain, top',
-  'null-origin',
-  'allowed',
-  'fetching data url script with CORS allowing null origin should be allowed.'
+  'fetching data url script should be allowed.'
 );
 
 </script>

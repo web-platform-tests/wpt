@@ -74,7 +74,15 @@ class Config(Mapping):
     def as_dict_for_wd_env_variable(self):
         result = self.as_dict()
 
-        for key in [("subdomains",), ("domains", "alt"), ("domains", ""), ("all_domains", "alt"), ("all_domains", ""), ("domains_set",), ("all_domains_set",)]:
+        for key in [
+            ("subdomains",),
+            ("domains", "alt"),
+            ("domains", ""),
+            ("all_domains", "alt"),
+            ("all_domains", ""),
+            ("domains_set",),
+            ("all_domains_set",)
+        ]:
             target = result
             for part in key[:-1]:
                 target = target[part]

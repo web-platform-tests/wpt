@@ -38,9 +38,9 @@ const fetch_from_data_url_iframe_test =
 
 fetch_from_data_url_iframe_test(
   '../resources/top.txt',
-  'same-origin',
+  'acao-omitted',
   'rejected',
-  'fetching "top.txt" should be rejected.'
+  'fetching "top.txt" without ACAO should be rejected.'
 );
 fetch_from_data_url_iframe_test(
   '../resources/top.txt',
@@ -50,7 +50,7 @@ fetch_from_data_url_iframe_test(
 );
 fetch_from_data_url_iframe_test(
   'data:text/plain, top',
-  'same-origin',
+  'acao-omitted',
   'allowed',
   'fetching data url script should be allowed.'
 );

@@ -30,9 +30,9 @@ const fetch_from_data_url_shared_worker_test =
 
 fetch_from_data_url_shared_worker_test(
   '../resources/top.txt',
-  'no-cors',
+  'same-origin',
   'rejected',
-  'fetching "top.txt" with no CORS should be rejected.'
+  'fetching "top.txt" should be rejected.'
 );
 fetch_from_data_url_shared_worker_test(
   '../resources/top.txt',
@@ -42,7 +42,7 @@ fetch_from_data_url_shared_worker_test(
 );
 fetch_from_data_url_shared_worker_test(
   'data:text/plain, top',
-  'no-cors',
+  'same-origin',
   'allowed',
   'fetching data url script should be allowed.'
 );

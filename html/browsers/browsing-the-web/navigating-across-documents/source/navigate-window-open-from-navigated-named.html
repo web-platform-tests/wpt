@@ -4,24 +4,31 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-  var t = async_test("Navigate using window.open() from a navigated document using a name"),
-      navigations = 0,
-      navigations2 = 0,
-      fRef
-  function l() {
-  	if(navigations === 0) {
-  	  fRef = frames[0].f
-  	  navigations++
-  	  frames[0].location = "about:blank"
+async_test(t => {
+  const fr1 = document.createElement("iframe");
+  const fr2 = document.createElement("iframe");
+  let navigations1 = 0;
+  let navigations2 = 0;
+  let fRef;
+  fr1.src = "resources/window-open-uniqueish.html";
+  fr2.name = "uniqueish";
+  fr1.onload = t.step_func(() => {
+    if (navigations1 === 0) {
+      fRef = fr1.contentWindow.f;
+      navigations1++;
+      fr1.contentWindow.location = "about:blank";
     } else {
-      fRef()
+      fRef();
     }
-  }
-  function d() {
-    if(navigations2 === 1)
-      t.done()
-    navigations2++
-  }
+  });
+  fr2.onload = t.step_func(() => {
+    if (navigations2 === 1) {
+      assert_equals(fr2.contentWindow.location.href, new URL("resources/dummy.html", location).href);
+      assert_equals(fr2.contentDocument.referrer, document.URL);
+      t.done();
+    }
+    navigations2++;
+  });
+  document.body.append(fr1, fr2);
+});
 </script>
-<iframe src=support/window-open-uniqueish.html onload=t.step(l)></iframe>
-<iframe name=uniqueish onload=t.step(d)></iframe>

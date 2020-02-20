@@ -6,13 +6,11 @@
 <div id=log></div>
 <iframe></iframe>
 <script>
-  setup({ single_test: true });
-  onload = function() {
-    var fr = document.querySelector("iframe")
-    fr.contentWindow.location = "support/dummy.html"
-    fr.onload = function() {
-      assert_equals(fr.contentDocument.referrer, document.URL)
-      done()
-    }
-  }
+async_test(t => {
+  const fr = document.querySelector("iframe")
+  fr.contentWindow.location = "resources/dummy.html";
+  fr.onload = t.step_func_done(() => {
+    assert_equals(fr.contentDocument.referrer, document.URL);
+  });
+});
 </script>

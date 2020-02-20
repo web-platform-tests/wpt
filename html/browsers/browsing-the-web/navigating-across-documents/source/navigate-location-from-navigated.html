@@ -4,20 +4,27 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-  var t = async_test(document.title),
-      navigations = 0,
-      fRef
-  function l() {
-  	if(navigations === 0) {
-  	  fRef = frames[0].f
-  	  navigations++
-  	  frames[0].location = "about:blank"
-    } else if(navigations === 1) {
-      navigations++
-      fRef()
+async_test(t => {
+  let navigations = 0;
+  let fRef;
+  const fr = document.createElement("iframe");
+  const initialTarget = "resources/window-location.html";
+  fr.src = initialTarget;
+  t.add_cleanup(() => fr.remove());
+  fr.onload = t.step_func(() => {
+    if (navigations === 0) {
+      fRef = fr.contentWindow.f;
+      navigations++;
+      fr.contentWindow.location = "about:blank";
+    } else if (navigations === 1) {
+      navigations++;
+      fRef();
     } else {
-      t.done()
+      assert_true(fr.contentDocument.referrer.endsWith(initialTarget));
+      assert_true(fr.contentWindow.location.href.endsWith("resources/dummy.html"));
+      t.done();
     }
-  }
+  });
+  document.body.append(fr);
+});
 </script>
-<iframe src=support/window-location.html onload=t.step(l)></iframe>

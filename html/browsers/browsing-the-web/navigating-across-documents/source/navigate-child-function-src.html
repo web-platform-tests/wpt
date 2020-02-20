@@ -4,15 +4,16 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
-<iframe src="support/set-parent-src.html"></iframe>
+<iframe src="resources/set-parent-src.html"></iframe>
 <script>
-async_test(function() {
-  onload = this.step_func(function() {
-    var fr = document.querySelector("iframe")
-    fr.contentWindow.go()
-    fr.onload = this.step_func_done(function() {
-      assert_equals(fr.contentDocument.referrer, document.URL)
-    })
-  })
-})
+async_test(t => {
+  self.onload = t.step_func(() => {
+    const fr = document.querySelector("iframe");
+    fr.contentWindow.go();
+    fr.onload = t.step_func_done(() => {
+      assert_equals(fr.contentDocument.URL, new URL("resources/dummy.html", location).href);
+      assert_equals(fr.contentDocument.referrer, document.URL);
+    });
+  });
+});
 </script>

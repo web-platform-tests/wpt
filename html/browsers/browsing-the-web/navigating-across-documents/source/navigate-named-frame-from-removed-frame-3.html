@@ -4,19 +4,24 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-  var t = async_test("Use window.open() with a function from a removed frame with a different current global"),
-      navigations = 0
-  function l() {
-  	var nav = frames[0].f,
-  	    fr = frames[0].frameElement
-    fr.parentNode.removeChild(fr)
-    nav(window)
-  }
-  function d() {
-    if(navigations === 1)
-      t.done()
-    navigations++
-  }
+async_test(t => {
+  const fr1 = document.createElement("iframe");
+  const fr2 = document.createElement("iframe");
+  fr1.src = "resources/window-open-uniqueish.html";
+  fr2.name = "uniqueish";
+  fr1.onload = t.step_func(() => {
+    const nav = fr1.contentWindow.f;
+    fr1.remove();
+    t.step_timeout(() => nav(window), 500);
+  });
+  fr2.onload = t.step_func(() => {
+    if (fr2.contentWindow.location.href === "about:blank") {
+      return;
+    }
+    assert_true(fr2.contentWindow.location.href.endsWith("resources/dummy.html"));
+    assert_equals(fr2.contentDocument.referrer, document.URL);
+    t.done();
+  });
+  document.body.append(fr1, fr2);
+});
 </script>
-<iframe src=support/window-open-uniqueish.html onload=t.step(l)></iframe>
-<iframe name=uniqueish onload=t.step(d)></iframe>

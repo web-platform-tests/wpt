@@ -6,6 +6,11 @@ from io import BytesIO
 import pytest
 from six import create_bound_method, PY3
 
+try:
+    from httplib import BadStatusLine
+except ImportError:
+    from http.client import BadStatusLine
+
 wptserve = pytest.importorskip("wptserve")
 from .base import TestUsingServer, TestUsingH2Server, doc_root
 from h2.exceptions import ProtocolError
@@ -176,15 +181,13 @@ class TestResponse(TestUsingServer):
         route = ("GET", "/test/test_write_raw_content", handler)
         self.server.router.register(*route)
 
-        if PY3:
-            from http.client import BadStatusLine
-            try:
-                resp = self.request(route[1])
-            except BadStatusLine as e:
-                assert str(e) == resp_content.decode('utf-8')
-        else:
+        try:
             resp = self.request(route[1])
             assert resp.read() == resp_content
+        except BadStatusLine as e:
+            # In Python3, an invalid HTTP request should throw BadStatusLine.
+            assert PY3
+            assert str(e) == resp_content.decode('utf-8')
 
 class TestH2Response(TestUsingH2Server):
     def test_write_without_ending_stream(self):

@@ -7,7 +7,6 @@ import json
 import io
 import os
 from datetime import datetime, timedelta
-from typing import Text
 
 from six.moves.urllib.request import urlopen
 
@@ -27,6 +26,7 @@ if MYPY:
     from typing import Callable
     from typing import List
     from typing import Optional
+    from typing import Text
 
 here = os.path.dirname(__file__)
 

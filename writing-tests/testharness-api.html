@@ -202,7 +202,7 @@ be used to test Promises that need to reject:</p>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">code</span></code>, <code class="docutils literal notranslate"><span class="pre">constructor</span></code>, and <code class="docutils literal notranslate"><span class="pre">value</span></code> arguments are equivalent to the same
 argument to the <code class="docutils literal notranslate"><span class="pre">assert_throws_dom</span></code>, <code class="docutils literal notranslate"><span class="pre">assert_throws_js</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">assert_throws_exactly</span></code> functions.</p>
+<code class="docutils literal notranslate"><span class="pre">assert_throws_exactly</span></code> functions.  The <code class="docutils literal notranslate"><span class="pre">promise_rejects_dom</span></code> function can also be called with a DOMException constructor argument between the <code class="docutils literal notranslate"><span class="pre">code</span></code> and <code class="docutils literal notranslate"><span class="pre">promise</span></code> arguments, just like <code class="docutils literal notranslate"><span class="pre">assert_throws_dom</span></code>, when we want to assert that the DOMException comes from a non-default global.</p>
 <p>Here’s an example where the <code class="docutils literal notranslate"><span class="pre">bar()</span></code> function returns a Promise that rejects
 with a TypeError:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
@@ -803,8 +803,8 @@ attribute attribute_name following the conditions specified by WebIDL</p>
 <h3><code class="docutils literal notranslate"><span class="pre">assert_readonly(object,</span> <span class="pre">property_name,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-readonly-object-property-name-description" title="Permalink to this headline">¶</a></h3>
 <p>assert that property <code class="docutils literal notranslate"><span class="pre">property_name</span></code> on object is readonly</p>
 </div>
-<div class="section" id="assert-throws-dom-code-func-description">
-<h3><code class="docutils literal notranslate"><span class="pre">assert_throws_dom(code,</span> <span class="pre">func,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-throws-dom-code-func-description" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="assert-throws-dom-code-func-description-or-assert-throws-dom-code-constructor-func-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_throws_dom(code,</span> <span class="pre">func,</span> <span class="pre">description)</span></code> or <code class="docutils literal notranslate"><span class="pre">assert_throws_dom(code,</span> <span class="pre">constructor,</span> <span class="pre">func,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-throws-dom-code-func-description-or-assert-throws-dom-code-constructor-func-description" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">code</span></code> - the expected exception. This can take several forms:</p>
 <ul class="simple">
 <li>string - asserts that the thrown exception must be a DOMException
@@ -816,6 +816,7 @@ DOMException constant can also be given, e.g.,
 with the fiven code value (e.g. DOMException.TIMEOUT_ERR).</li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">func</span></code> - a function that should throw</p>
+<p><code class="docutils literal notranslate"><span class="pre">constructor</span></code> - The DOMException constructor that the resulting DOMException should have as its <code class="docutils literal notranslate"><span class="pre">.constructor</span></code>.  This should be used when a DOMException from a non-default global is expected to be thrown.</p>
 </div>
 <div class="section" id="assert-throws-js-constructor-func-description">
 <h3><code class="docutils literal notranslate"><span class="pre">assert_throws_js(constructor,</span> <span class="pre">func,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-throws-js-constructor-func-description" title="Permalink to this headline">¶</a></h3>

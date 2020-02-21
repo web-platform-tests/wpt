@@ -299,7 +299,7 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
 
     def affected_by_interfaces(file_contents):
         # type: (Union[bytes, Text]) -> bool
-        if interfaces_changed_names:
+        if len(interfaces_changed) > 0:
             if 'idlharness.js' in file_contents:
                 for interface in interfaces_changed_names:
                     regex = '[\'"]' + interface + '(\\.idl)?[\'"]'

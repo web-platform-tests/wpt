@@ -55,16 +55,16 @@ def to_os_path(path):
 
 
 def git(path):
-    # type: (bytes) -> Optional[Callable[..., Text]]
+    # type: (bytes) -> Optional[Callable[..., bytes]]
     def gitfunc(cmd, *args):
-        # type: (bytes, *bytes) -> Text
+        # type: (bytes, *bytes) -> bytes
         full_cmd = ["git", cmd] + list(args)
         try:
-            return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT).decode('utf8')
+            return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT)
         except Exception as e:
             if platform.uname()[0] == "Windows" and isinstance(e, WindowsError):
                 full_cmd[0] = "git.bat"
-                return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT).decode('utf8')
+                return subprocess.check_output(full_cmd, cwd=path, stderr=subprocess.STDOUT)
             else:
                 raise
 

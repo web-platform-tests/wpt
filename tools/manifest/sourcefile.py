@@ -195,7 +195,7 @@ class SourceFile(object):
                          ("css", "common")}  # type: Set[Tuple[bytes, ...]]
 
     def __init__(self, tests_root, rel_path, url_base, hash=None, contents=None):
-        # type: (AnyStr, AnyStr, Text, Optional[Text], Optional[bytes]) -> None
+        # type: (AnyStr, AnyStr, Text, Optional[bytes], Optional[bytes]) -> None
         """Object representing a file in a source tree.
 
         :param tests_root: Path to the root of the source tree
@@ -302,7 +302,7 @@ class SourceFile(object):
 
     @cached_property
     def hash(self):
-        # type: () -> Text
+        # type: () -> bytes
         if not self._hash:
             with self.open() as f:
                 content = f.read()

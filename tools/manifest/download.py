@@ -51,14 +51,14 @@ def should_download(manifest_path, rebuild_time=timedelta(days=5)):
 
 
 def merge_pr_tags(repo_root, max_count=50):
-    # type: (str, int) -> List[Text]
+    # type: (str, int) -> List[str]
     gitfunc = git(repo_root)
-    tags = []  # type: List[Text]
+    tags = []  # type: List[str]
     if gitfunc is None:
         return tags
-    for line in gitfunc("log", "--format=%D", "--max-count=%s" % max_count).split("\n"):
-        for ref in line.split(", "):
-            if ref.startswith("tag: merge_pr_"):
+    for line in gitfunc("log", "--format=%D", "--max-count=%s" % max_count).split(b"\n"):
+        for ref in line.split(b", "):
+            if ref.startswith(b"tag: merge_pr_"):
                 tags.append(ref[5:])
     return tags
 
@@ -80,7 +80,7 @@ def score_name(name):
 
 
 def github_url(tags):
-    # type: (List[Text]) -> Optional[List[Text]]
+    # type: (List[str]) -> Optional[List[str]]
     for tag in tags:
         url = "https://api.github.com/repos/web-platform-tests/wpt/releases/tags/%s" % tag
         try:
@@ -112,8 +112,8 @@ def github_url(tags):
 
 def download_manifest(
         manifest_path,  # type: str
-        tags_func,  # type: Callable[[], List[Text]]
-        url_func,  # type: Callable[[List[Text]], Optional[List[Text]]]
+        tags_func,  # type: Callable[[], List[str]]
+        url_func,  # type: Callable[[List[str]], Optional[List[str]]]
         force=False  # type: bool
 ):
     # type: (...) -> bool

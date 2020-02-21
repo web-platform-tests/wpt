@@ -5,11 +5,7 @@ from io import BytesIO
 
 import pytest
 from six import create_bound_method, PY3
-
-try:
-    from httplib import BadStatusLine
-except ImportError:
-    from http.client import BadStatusLine
+from six.moves.http_client import BadStatusLine
 
 wptserve = pytest.importorskip("wptserve")
 from .base import TestUsingServer, TestUsingH2Server, doc_root

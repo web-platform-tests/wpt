@@ -55,7 +55,7 @@ def to_os_path(path):
 
 
 def git(path):
-    # type: (bytes) -> Optional[Callable[..., bytes]]
+    # type: (bytes) -> Optional[Callable[..., Text]]
     def gitfunc(cmd, *args):
         # type: (bytes, *bytes) -> Text
         full_cmd = ["git", cmd] + list(args)

@@ -3,37 +3,98 @@
 <link rel="help" href="https://drafts.csswg.org/css-values-4/#angles">
 <link rel="help" href="https://drafts.csswg.org/css-values-4/#calc-serialize">
 <link rel="author" title="Xiaocheng Hu" href="mailto:xiaochengh@chromium.org">
+<link rel="author" title="Tab Atkins-Bittner" href="https://xanthir.com/contact">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../support/parsing-testcommon.js"></script>
+<script src="../support/serialize-testcommon.js"></script>
+<div id=target></div>
 <script>
-function test_valid_angle(value, expected) {
-  test_valid_value('transform', `rotate(${value})`, `rotate(${expected})`);
+function test_serialization(t,s,c,u, {prop="transform"}={}) {
+	t = `rotate${t})`;
+    test_specified_serialization(prop, t, `rotate(${s})`);
+    test_computed_serialization(prop, t, c);
+    if(u) test_used_serialization(prop, t, u);
 }
 
-test_valid_angle('min(1deg)', 'calc(1deg)');
-test_valid_angle('min(1turn)', 'calc(360deg)');
-test_valid_angle('min(100grad)', 'calc(90deg)');
-test_valid_angle('max(1deg)', 'calc(1deg)');
-test_valid_angle('max(1turn)', 'calc(360deg)');
-test_valid_angle('max(100grad)', 'calc(90deg)');
+test_serialization(
+    'min(90deg)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'min(.25turn)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'min(100grad)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'max(90deg)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'max(.25turn)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'max(100grad)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
 // No way to test 'rad' serialization without depending heavily on numeric serialization
 // and the precision used for radians...
 
-test_valid_angle('min(1deg, 2deg, 3deg)', 'calc(1deg)');
-test_valid_angle('min(3deg, 2deg, 1deg)', 'calc(1deg)');
-test_valid_angle('min(90deg, 1.58rad, 0.25turn)', 'calc(90deg)');
-test_valid_angle('min(0.25turn, 1.58rad, 90deg)', 'calc(90deg)');
-test_valid_angle('max(1deg, 2deg, 3deg)', 'calc(3deg)');
-test_valid_angle('max(3deg, 2deg, 1deg)', 'calc(3deg)');
-test_valid_angle('max(90deg, 1.57rad, 0.25turn)', 'calc(90deg)');
-test_valid_angle('max(0.25turn, 1.57rad, 90deg)', 'calc(90deg)');
+test_serialization(
+    'min(90deg, 92deg, 93deg)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'min(93deg, 92deg, 90deg)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'min(90deg, 1.58rad, 0.25turn)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'min(0.25turn, 1.58rad, 90deg)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'max(81deg, 82deg, 90deg)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'max(83deg, 82deg, 90deg)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'max(90deg, 1.57rad, 0.25turn)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'max(0.25turn, 1.57rad, 90deg)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
 
-test_valid_angle('calc(min(1deg) + min(2deg))', 'calc(3deg)');
-test_valid_angle('calc(max(1deg) + max(2deg))', 'calc(3deg)');
-test_valid_angle('calc(100grad + min(1deg))', 'calc(91deg)');
-test_valid_angle('calc(min(1deg) + 100grad)', 'calc(91deg)');
-test_valid_angle('calc(100grad + max(1deg))', 'calc(91deg)');
-test_valid_angle('calc(max(1deg) + 100grad)', 'calc(91deg)');
+test_serialization(
+    'calc(min(30deg) + max(60deg))',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'calc(50grad + min(45deg))',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'calc(min(45deg) + 50grad)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'calc(50grad + max(45deg))',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
+test_serialization(
+    'calc(max(45deg) + 50grad)',
+    'calc(90deg)',
+    'matrix(0, 1, -1, 0, 0, 0)');
 
 </script>

@@ -8,8 +8,8 @@
   <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-cascade">
   <link rel="match" href="active-selection-051-ref.html">
 
-  <meta content="invalid" name="flags">
-  <meta name="assert" content="In this test, 'background-color' has an invalid value which makes the declaration invalid; therefore, it is ignored. Therefore, the div::selection selector has neither color nor background-color specified. In such case, the UA must use the OS-default highlight colors for div::selection.">
+  <meta content="invalid should" name="flags">
+  <meta name="assert" content="In this test, 'background-color' has an invalid value which makes the declaration invalid; therefore, it is ignored. Therefore, the div::selection selector has neither color nor background-color specified. In such case, the UA should use the OS-default highlight colors for div::selection.">
 
   <style>
   div

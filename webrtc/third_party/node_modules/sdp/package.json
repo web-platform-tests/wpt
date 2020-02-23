@@ -1,0 +1,29 @@
+{
+  "name": "sdp",
+  "version": "2.12.0",
+  "description": "SDP parsing and serialization utilities",
+  "main": "sdp.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fippo/sdp.git"
+  },
+  "scripts": {
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "test": "eslint sdp.js test/sdp.js && nyc --reporter html mocha test/sdp.js"
+  },
+  "keywords": [
+    "sdp",
+    "webrtc"
+  ],
+  "author": "Philipp Hancke",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^4.0.0",
+    "codecov": "^3.0.4",
+    "eslint": "^6.0.1",
+    "mocha": "^5.2.0",
+    "nyc": "^14.1.1",
+    "sinon": "^2.3.2",
+    "sinon-chai": "^2.10.0"
+  }
+}

@@ -494,7 +494,7 @@ invoke the remainder of the code to execute tests</p>
 
 <span class="target" id="module-wptrunner.testloader"></span><dl class="class">
 <dt id="wptrunner.testloader.DirectoryHashChunker">
-<em class="property">class </em><code class="descclassname">wptrunner.testloader.</code><code class="descname">DirectoryHashChunker</code><span class="sig-paren">(</span><em>total_chunks</em>, <em>chunk_number</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testloader.DirectoryHashChunker" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wptrunner.testloader.</code><code class="descname">DirectoryHashChunker</code><span class="sig-paren">(</span><em>total_chunks</em>, <em>chunk_number</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testloader.DirectoryHashChunker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Like HashChunker except the directory is hashed.</p>
 <p>This ensures that all tests in the same directory end up in the same
 chunk.</p>
@@ -509,7 +509,7 @@ to initial criteria</p>
 
 <dl class="class">
 <dt id="wptrunner.testloader.TestLoader">
-<em class="property">class </em><code class="descclassname">wptrunner.testloader.</code><code class="descname">TestLoader</code><span class="sig-paren">(</span><em>test_manifests</em>, <em>test_types</em>, <em>run_info</em>, <em>manifest_filters=None</em>, <em>chunk_type='none'</em>, <em>total_chunks=1</em>, <em>chunk_number=1</em>, <em>include_https=True</em>, <em>skip_timeout=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testloader.TestLoader" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wptrunner.testloader.</code><code class="descname">TestLoader</code><span class="sig-paren">(</span><em>test_manifests</em>, <em>test_types</em>, <em>run_info</em>, <em>manifest_filters=None</em>, <em>chunk_type='none'</em>, <em>total_chunks=1</em>, <em>chunk_number=1</em>, <em>include_https=True</em>, <em>skip_timeout=False</em>, <em>chunker_kwargs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testloader.TestLoader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads tests according to a WPT manifest and any associated expectation files</p>
 </dd></dl>
 

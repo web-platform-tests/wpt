@@ -279,7 +279,7 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
         nontest_changed_paths.add((full_path, repo_path))
 
     interface_name = lambda x: os.path.splitext(os.path.basename(x))[0]
-    interfaces_changed_names = map(interface_name, interfaces_changed)
+    interfaces_changed_names = [interface_name(interface) for interface in interfaces_changed]
 
     def affected_by_wdspec(test):
         # type: (str) -> bool
@@ -299,7 +299,7 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
 
     def affected_by_interfaces(file_contents):
         # type: (Union[bytes, Text]) -> bool
-        if len(interfaces_changed) > 0:
+        if len(interfaces_changed_names) > 0:
             if 'idlharness.js' in file_contents:
                 for interface in interfaces_changed_names:
                     regex = '[\'"]' + interface + '(\\.idl)?[\'"]'

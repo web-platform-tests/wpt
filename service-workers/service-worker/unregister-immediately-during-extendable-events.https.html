@@ -30,8 +30,8 @@ promise_test(async test => {
   const frame = await add_controlled_iframe(test, scope_url);
 
   // Clear-Site-Data must cause the pending fetch promise to reject.
-  const fetch_promise = promise_rejects(
-    test, new TypeError(), frame.contentWindow.fetch('waituntil-forever'));
+  const fetch_promise = promise_rejects_js(
+    test, TypeError, frame.contentWindow.fetch('waituntil-forever'));
 
   const event_watcher = new EventWatcher(
     test, frame.contentWindow.navigator.serviceWorker, 'controllerchange');

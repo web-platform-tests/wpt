@@ -58,21 +58,21 @@ class GitHasher(object):
         self.git = git(path)
 
     def _local_changes(self):
-        # type: () -> Set[bytes]
+        # type: () -> Set[Text]
         """get a set of files which have changed between HEAD and working copy"""
         assert self.git is not None
         # note that git runs the command with tests_root as the cwd, which may
         # not be the root of the git repo (e.g., within a browser repo)
         cmd = [b"diff-index", b"--relative", b"--no-renames", b"--name-only", b"-z", b"HEAD"]
         data = self.git(*cmd)
-        return set(data.split(b"\0"))
+        return set(data.split("\0"))
 
     def hash_cache(self):
-        # type: () -> Dict[bytes, Optional[bytes]]
+        # type: () -> Dict[Text, Optional[Text]]
         """
         A dict of rel_path -> current git object id if the working tree matches HEAD else None
         """
-        hash_cache = {}  # type: Dict[bytes, Optional[bytes]]
+        hash_cache = {}  # type: Dict[Text, Optional[Text]]
 
         if self.git is None:
             return hash_cache
@@ -81,9 +81,9 @@ class GitHasher(object):
         # not be the root of the git repo (e.g., within a browser repo)
         cmd = ["ls-tree", "-r", "-z", "HEAD"]
         local_changes = self._local_changes()
-        for result in self.git(*cmd).split(b"\0")[:-1]:  # type: bytes
-            data, rel_path = result.rsplit(b"\t", 1)
-            hash_cache[rel_path] = None if rel_path in local_changes else data.split(b" ", 3)[2]
+        for result in self.git(*cmd).split("\0")[:-1]:  # type: Text
+            data, rel_path = result.rsplit("\t", 1)
+            hash_cache[rel_path] = None if rel_path in local_changes else data.split(" ", 3)[2]
 
         return hash_cache
 

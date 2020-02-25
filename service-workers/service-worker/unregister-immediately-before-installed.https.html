@@ -25,7 +25,7 @@ promise_test(async test => {
   await service_worker_unregister(test, /*scope=*/script_url);
 
   // Clear-Site-Data must cause register() to fail.
-  const register_promise = promise_rejects(test, 'AbortError',
+  const register_promise = promise_rejects_dom(test, 'AbortError',
     navigator.serviceWorker.register(script_url, { scope: scope_url}));;
 
   await Promise.all([clear_site_data(), register_promise]);

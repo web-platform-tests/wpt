@@ -27,6 +27,7 @@
 </script>
 
 <script>
+  failIfNot(window.WorkletAnimation)
   runInAnimationWorklet(
     document.getElementById('get_timing_animator').textContent
   ).then(() => {

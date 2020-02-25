@@ -17,6 +17,7 @@
 <div id="box"></div>
 
 <script>
+failIfNot(window.WorkletAnimation);
 registerPassthroughAnimator().then(async _  => {
   const duration = 18; // a bit longer than a frame
   const box = document.getElementById('box');

@@ -45,6 +45,7 @@ function CreateKeyframeEffect(element) {
 
 <script>
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('simple_animate').textContent);
     let effect = CreateKeyframeEffect(document.querySelector('#element'));
     let workletAnimation = new WorkletAnimation('test-animator', effect);
@@ -53,6 +54,7 @@ function CreateKeyframeEffect(element) {
   }, 'WorkletAnimation creation without timeline should use default documentation timeline');
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('simple_animate').textContent);
     let effect = CreateKeyframeEffect(document.querySelector('#element'));
     let workletAnimation = new WorkletAnimation('test-animator', effect);
@@ -60,6 +62,7 @@ function CreateKeyframeEffect(element) {
   }, 'WorkletAnimation creation with timeline should work');
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('simple_animate').textContent);
     let iframe = document.createElement('iframe');
     iframe.src = 'resources/iframe.html';
@@ -90,6 +93,7 @@ function CreateKeyframeEffect(element) {
   }, 'WorkletAnimation creation should choose the correct timeline based on the current global object');
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('simple_animate').textContent);
     let effect = CreateKeyframeEffect(document.querySelector('#element'));
     let options = { my_param: 'foo', my_other_param: true };
@@ -99,6 +103,7 @@ function CreateKeyframeEffect(element) {
   }, 'WorkletAnimation creation with timeline and options should work');
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('simple_animate').textContent);
     let effect = CreateKeyframeEffect(document.querySelector('#element'));
     let scroller = document.querySelector('.scroller');
@@ -110,6 +115,7 @@ function CreateKeyframeEffect(element) {
   }, 'ScrollTimeline is a valid timeline for a WorkletAnimation');
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('simple_animate').textContent);
     let constructorFunc = function() { new WorkletAnimation(
         'test-animator', []); };
@@ -117,6 +123,7 @@ function CreateKeyframeEffect(element) {
   }, 'If there are no effects specified, object construction should fail');
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('simple_animate').textContent);
     let effect = CreateKeyframeEffect(document.querySelector('#element'));
 
@@ -131,6 +138,7 @@ function CreateKeyframeEffect(element) {
   }, 'Creating animation with effects from different documents is allowed');
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('simple_animate').textContent);
     let effect = CreateKeyframeEffect(document.querySelector('#element'));
     let constructorFunc = function() {

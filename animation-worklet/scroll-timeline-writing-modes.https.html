@@ -65,6 +65,7 @@ function createAndPlayTestAnimation(elements, timeline_orientation) {
 setup(setupAndRegisterTests, {explicit_done: true});
 
 function setupAndRegisterTests() {
+  assert_precondition(CSS.animationWorklet);
   registerPassthroughAnimator().then(() => {
     // Note that block horizontal-tb is tested implicitly in the basic
     // ScrollTimeline tests (as it is the default).

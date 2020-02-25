@@ -14,6 +14,7 @@
 setup(setupAndRegisterTests, {explicit_done: true});
 
 async function setupAndRegisterTests() {
+  assert_precondition(CSS.animationWorklet);
   await registerPassthroughAnimator();
 
   promise_test(async t => {

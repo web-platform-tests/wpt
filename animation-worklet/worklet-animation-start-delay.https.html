@@ -34,6 +34,7 @@
 </script>
 
 <script>
+  failIfNot(window.WorkletAnimation);
   runInAnimationWorklet(
     document.getElementById('visual_update').textContent
   ).then(()=>{

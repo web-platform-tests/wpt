@@ -51,6 +51,7 @@
 
 <script>
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('get_computed_timing_animator').textContent);
 
     const box = document.getElementById("box");

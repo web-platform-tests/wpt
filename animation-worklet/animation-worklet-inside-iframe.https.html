@@ -26,6 +26,7 @@ registerAnimator("duplicate_animator", class {
 
 <script>
 async_test(t => {
+  assert_precondition(CSS.animationWorklet);
   // Wait for iframe to load and start its animations.
   window.onmessage = function(msg) {
     window.requestAnimationFrame( _ => {

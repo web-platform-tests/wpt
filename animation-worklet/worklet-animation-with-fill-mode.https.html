@@ -20,6 +20,7 @@
 setup(setupAndRegisterTests, {explicit_done: true});
 
 function setupAndRegisterTests() {
+  assert_precondition(CSS.animationWorklet);
   registerConstantLocalTimeAnimator(2000).then(() => {
     promise_test(
         effect_with_fill_mode_forwards,

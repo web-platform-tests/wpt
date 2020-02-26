@@ -279,7 +279,7 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
         nontest_changed_paths.add((full_path, repo_path))
 
     interfaces_changed_names = [os.path.splitext(os.path.basename(interface))[0]
-        for interface in interfaces_changed]
+                                for interface in interfaces_changed]
 
     def affected_by_wdspec(test):
         # type: (str) -> bool

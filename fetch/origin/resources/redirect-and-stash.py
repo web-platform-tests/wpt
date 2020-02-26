@@ -1,5 +1,15 @@
 import json
 
+from six import binary_type
+
+def ensure_str_list(l):
+    if isinstance(l, list):
+        return [ensure_str_list(value) for value in l]
+    elif isinstance(l, binary_type):
+        return l.decode('utf-8')
+    else:
+        return l
+
 def main(request, response):
     key = request.GET.first("stash")
     origin = request.headers.get("origin")
@@ -10,7 +20,7 @@ def main(request, response):
 
     if "dump" in request.GET:
         response.headers.set("Content-Type", "application/json")
-        response.content = json.dumps(origin_list)
+        response.content = json.dumps(ensure_str_list(origin_list))
         return
 
     if origin_list is None:

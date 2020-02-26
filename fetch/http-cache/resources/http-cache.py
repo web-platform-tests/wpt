@@ -38,7 +38,7 @@ def handle_preflight(uuid, request, response):
 
 def handle_state(uuid, request, response):
     response.headers.set("Content-Type", "text/plain")
-    return json.dumps(request.server.stash.take(uuid))
+    return json.dumps(request.server.stash.take(uuid).decode('utf-8'))
 
 def handle_test(uuid, request, response):
     server_state = request.server.stash.take(uuid) or []

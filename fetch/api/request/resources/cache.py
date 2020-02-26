@@ -3,7 +3,7 @@ def main(request, response):
     if "querystate" in request.GET:
         from json import JSONEncoder
         response.headers.set("Content-Type", "text/plain")
-        return JSONEncoder().encode(request.server.stash.take(token))
+        return JSONEncoder().encode(request.server.stash.take(token).decode('utf-8'))
     content = request.GET.first("content", None)
     tag = request.GET.first("tag", None)
     date = request.GET.first("date", None)

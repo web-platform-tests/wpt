@@ -278,8 +278,8 @@ def affected_testfiles(files_changed,  # type: Iterable[Text]
             full_path = os.path.join(wpt_root, repo_path[1:].replace("/", os.path.sep))
         nontest_changed_paths.add((full_path, repo_path))
 
-    interface_name = lambda x: os.path.splitext(os.path.basename(x))[0]
-    interfaces_changed_names = [interface_name(interface) for interface in interfaces_changed]
+    interfaces_changed_names = [os.path.splitext(os.path.basename(interface))[0]
+        for interface in interfaces_changed]
 
     def affected_by_wdspec(test):
         # type: (str) -> bool

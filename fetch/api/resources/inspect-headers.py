@@ -18,7 +18,7 @@ def main(request, response):
         if "allow_headers" in request.GET:
             headers.append(("Access-Control-Allow-Headers", request.GET['allow_headers']))
         else:
-            headers.append(("Access-Control-Allow-Headers", ", ".join(request.headers)))
+            headers.append(("Access-Control-Allow-Headers", b", ".join(request.headers)))
 
     headers.append(("content-type", "text/plain"))
     return headers, ""

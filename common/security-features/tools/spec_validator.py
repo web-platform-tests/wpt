@@ -204,7 +204,7 @@ def validate(spec_json, details):
         'delivery_value', 'redirection', 'subresource', 'origin', 'expectation'
     ])
     assert_atom_or_list_items_from(test_expansion_schema, 'expansion',
-                                   ['default', 'override'])
+                                   ['default', 'override', 'override-strict'])
     assert_atom_or_list_items_from(test_expansion_schema, 'source_scheme',
                                    ['http', 'https'])
     assert_atom_or_list_items_from(

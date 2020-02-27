@@ -210,7 +210,7 @@ Each field in a test expansion can be in one of the following formats:
 The following fields have special meaning:
 
 - **`name`**: just ignored. (Previously this was used as a part of filenames but now this is merely a label for human and is never used by generator. This field might be removed in the future (https://github.com/web-platform-tests/wpt/issues/21708))
-- **`expansion`**: if there is more than one pattern expanding into a same selection, the pattern appearing later in the spec JSON will overwrite a previously generated selection. To make clear this is intentional, set the value of the ```expansion``` field to ```default``` for an expansion appearing earlier and ```override``` for the one appearing later.
+- **`expansion`**: if there is more than one pattern expanding into a same selection, the pattern appearing later in the spec JSON will overwrite a previously generated selection. To make clear this is intentional, set the value of the ```expansion``` field to ```default``` for an expansion appearing earlier and ```override``` for the one appearing later. If you want to override only tha patterns appeared already, you can use ```override-strict```. The patterns whose ```expansio``` filed are set to ```override-strict``` override the existing cases at the end of auto-generation.
 
 For example a test expansion pattern (taken from [referrer-policy/spec.src.json](../../referrer-policy/spec.src.json), sorted/formatted for explanation):
 

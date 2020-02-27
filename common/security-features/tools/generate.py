@@ -267,6 +267,8 @@ def generate_test_source_files(spec_directory, test_helper_filenames,
                                                     artifact_order):
             excluded_selection['delivery_key'] = spec_json['delivery_key']
             exclusion_dict[dump_test_parameters(excluded_selection)] = True
+    dumped_path = []
+    override_strict_dict = {}
 
     for spec in specification:
         # Used to make entries with expansion="override" override preceding
@@ -280,19 +282,41 @@ def generate_test_source_files(spec_directory, test_helper_filenames,
                 selection['delivery_key'] = spec_json['delivery_key']
                 selection_path = spec_json['selection_pattern'] % selection
                 if selection_path in output_dict:
-                    if expansion_pattern['expansion'] != 'override':
+                    if expansion_pattern['expansion'] != 'override' \
+                        and expansion_pattern['expansion'] != 'override-strict':
                         print(
                             "Error: %s's expansion is default but overrides %s"
                             % (selection['name'],
                                output_dict[selection_path]['name']))
                         sys.exit(1)
-                output_dict[selection_path] = copy.deepcopy(selection)
+                if expansion_pattern['expansion'] == 'override-strict':
+                    override_strict_dict[selection_path] = {
+                        "selection": copy.deepcopy(selection),
+                        "spec": spec
+                    }
+                else:
+                    output_dict[selection_path] = copy.deepcopy(selection)
+
+        for selection_path in override_strict_dict:
+            if selection_path in output_dict:
+              output_dict[selection_path] = copy.deepcopy(output_dict[selection_path])
 
         for selection_path in output_dict:
             selection = output_dict[selection_path]
             if dump_test_parameters(selection) in exclusion_dict:
                 print('Excluding selection:', selection_path)
                 continue
+            dumped_path.append(selection_path)
+            try:
+                generate_selection(spec_directory, test_helper_filenames,
+                                   spec_json, selection, spec, html_template)
+            except util.ShouldSkip:
+                continue
+
+    for selection_path in override_strict_dict:
+        selection = override_strict_dict[selection_path]['selection']
+        spec = override_strict_dict[selection_path]['spec']
+        if selection_path in dumped_path:
             try:
                 generate_selection(spec_directory, test_helper_filenames,
                                    spec_json, selection, spec, html_template)

@@ -251,6 +251,21 @@
             "same-wss"
           ],
           "expectation": "allowed"
+        },
+        {
+          "name": "sharedworker-data-allowed",
+          "expansion": "override-strict",
+          "source_scheme": "https",
+          "source_context_list": [
+            "sharedworker-classic-data",
+            "sharedworker-module-data"
+          ],
+          "delivery_type": "*",
+          "delivery_value": "*",
+          "redirection": "*",
+          "subresource": "*",
+          "origin": "*",
+          "expectation": "allowed"
         }
       ]
     }
@@ -517,7 +532,8 @@
   "test_expansion_schema": {
     "expansion": [
       "default",
-      "override"
+      "override",
+      "override-strict"
     ],
     "source_scheme": [
       "http",

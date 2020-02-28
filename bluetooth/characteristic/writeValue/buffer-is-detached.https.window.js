@@ -1,5 +1,3 @@
-// META: script=/resources/testharness.js
-// META: script=/resources/testharnessreport.js
 // META: script=/resources/testdriver.js
 // META: script=/resources/testdriver-vendor.js
 // META: script=/bluetooth/resources/bluetooth-helpers.js
@@ -15,11 +13,11 @@ bluetooth_test(async (t) => {
 
   const typed_array = Uint8Array.of(1, 2);
   detachBuffer(typed_array.buffer);
-  await promise_rejects(
+  await promise_rejects_dom(
       t, 'InvalidStateError', characteristic.writeValue(typed_array));
 
   const array_buffer = Uint8Array.of(3, 4).buffer;
   detachBuffer(array_buffer);
-  await promise_rejects(
+  await promise_rejects_dom(
       t, 'InvalidStateError', characteristic.writeValue(array_buffer));
 }, test_desc);

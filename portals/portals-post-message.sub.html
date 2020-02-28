@@ -12,6 +12,7 @@
     const crossOriginUrl = "http://{{hosts[alt][www]}}:{{ports[http][0]}}/portals/resources/portal-post-message-portal.html"
 
     async function createAndInsertPortal(portalSrc) {
+      assert_precondition("HTMLPortalElement" in self);
       var portal = document.createElement("portal");
       portal.src = portalSrc;
       document.body.append(portal);
@@ -157,19 +158,19 @@
 
     promise_test(async t => {
       var portal = document.createElement("portal");
-      return promise_rejects(t, "InvalidStateError",
+      return promise_rejects_dom(t, "InvalidStateError",
                              postMessage(portal, "test message"));
     }, "cannot call postMessage on portal without portal browsing context");
 
     promise_test(async t => {
       var portal = await createAndInsertPortal(sameOriginUrl);
-      return promise_rejects(t, "DataCloneError",
+      return promise_rejects_dom(t, "DataCloneError",
                              postMessage(portal, document.body));
     }, "postMessage should fail if message serialization fails");
 
     promise_test(async t => {
       var portal = await createAndInsertPortal(sameOriginUrl);
-      return promise_rejects(t, new TypeError(),
+      return promise_rejects_js(t, TypeError,
                              postMessage(portal, "test", "*", [null]));
     }, "postMessage should fail with invalid ports");
 
@@ -184,6 +185,7 @@
     }
 
     promise_test(async t => {
+      assert_precondition("HTMLPortalElement" in self);
       window.open("resources/portal-post-message-before-activate-window.html");
       let {postMessageTS, activateTS} = await waitForMessage(
           "portals-post-message-before-activate");
@@ -191,12 +193,14 @@
     }, "postMessage before activate should work and preserve order");
 
     promise_test(async t => {
+      assert_precondition("HTMLPortalElement" in self);
       window.open("resources/portal-post-message-during-activate-window.html");
       let error = await waitForMessage("portals-post-message-during-activate");
       assert_equals(error, "InvalidStateError");
     }, "postMessage during activate throws error");
 
     promise_test(async t => {
+      assert_precondition("HTMLPortalElement" in self);
       window.open("resources/portal-post-message-after-activate-window.html");
       let error = await waitForMessage("portals-post-message-after-activate");
       assert_equals(error, "InvalidStateError");

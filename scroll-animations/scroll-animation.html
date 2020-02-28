@@ -4,6 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
+<script src="testcommon.js"></script>
 <style>
   .scroller {
     overflow: auto;
@@ -18,30 +19,6 @@
 <div id="log"></div>
 <script>
   'use strict';
-
-  function createScroller(test) {
-    var scroller = createDiv(test);
-    scroller.innerHTML = "<div class='contents'></div>";
-    scroller.classList.add('scroller');
-    return scroller;
-  }
-
-  function createScrollTimeline(test) {
-    return new ScrollTimeline({
-      scrollSource: createScroller(test),
-      timeRange: 1000
-    });
-  }
-
-  function createScrollLinkedAnimation(test, timeline) {
-    if(timeline === undefined)
-      timeline = createScrollTimeline(test);
-    const DURATION = 1000; // ms
-    const KEYFRAMES = { opacity: [1, 0] };
-    return new Animation(
-      new KeyframeEffect(createDiv(test), KEYFRAMES, DURATION), timeline);
-  }
-
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
     const scroller = animation.timeline.scrollSource;
@@ -70,8 +47,17 @@
     // Now do some scrolling and make sure that the Animation current time is
     // correct.
     scroller.scrollTop = 0.2 * maxScroll;
+    // TODO(crbug.com/944449): After scroll offset snapshotting is implemented,
+    // scroll timeline current time, animation current time and effect local
+    // time will be updated on the same frame (which in this case will be the
+    // next frame).
     assert_equals(animation.currentTime, animation.timeline.currentTime,
       "The current time corresponds to the scroll position of the scroller.");
+    await waitForNextFrame();
+    assert_times_equal(
+      animation.effect.getComputedTiming().localTime,
+      animation.timeline.currentTime,
+      'Effect local time corresponds to the scroll position of the scroller.');
 }, 'Animation start and current times are correct for each animation state.');
 
 promise_test(async t => {
@@ -89,7 +75,7 @@ promise_test(async t => {
       "The start time is null in Idle state.");
     animation.play();
     // Verify initial start and current times in Pending state.
-    assert_equals(animation.currentTime, 0,
+    assert_equals(animation.currentTime, animation.timeline.currentTime,
       "The current time is a hold time in Pending state.");
     assert_equals(animation.startTime, null,
       "The start time is null in Pending state.");
@@ -125,12 +111,14 @@ promise_test(async t => {
     animation1.play();
     animation2.play();
     // Verify initial start and current times in Pending state.
-    assert_equals(animation1.currentTime, 0,
-      "The current time is a hold time in Pending state.");
+    assert_equals(animation1.currentTime, timeline.currentTime,
+      "The current time corresponds to the scroll position of the scroller" +
+        " in Pending state.");
     assert_equals(animation1.startTime, null,
       "The start time is null in Pending state.");
-    assert_equals(animation2.currentTime, 0,
-      "The current time is a hold time in Pending state.");
+    assert_equals(animation2.currentTime, timeline.currentTime,
+      "The current time corresponds to the scroll position of the scroller" +
+        " in Pending state.");
     assert_equals(animation2.startTime, null,
       "The start time is null in Pending state.");
 
@@ -147,4 +135,28 @@ promise_test(async t => {
       "The start time is zero in Playing state.");
 }, 'Animation start and current times are correct when multiple animations' +
     ' are attached to the same timeline.');
+
+promise_test(async t => {
+    const animation = createScrollLinkedAnimation(t);
+    const scroller = animation.timeline.scrollSource;
+    // Make the scroll timeline inactive.
+    scroller.style.overflow = "visible";
+    // Trigger layout;
+    scroller.scrollTop;
+    assert_equals(animation.timeline.currentTime, null,
+      "Timeline current time is null in inactive state.");
+    // Play the animation when the timeline is inactive.
+    animation.play();
+    // Make the scroll timeline active.
+    scroller.style.overflow = "auto";
+    await animation.ready;
+    // Ready promise is resolved as a result of the timeline becoming active.
+    assert_equals(animation.timeline.currentTime, 0,
+      "Timeline current time is resolved in active state.");
+    assert_equals(animation.currentTime, 0,
+      "Animation current time is resolved when the animation is ready.");
+    assert_equals(animation.startTime, 0,
+      "Animation start time is resolved when the animation is ready.");
+}, 'Animation start and current times are correct if scroll timeline is ' +
+   'activated after animation.play call.');
 </script>

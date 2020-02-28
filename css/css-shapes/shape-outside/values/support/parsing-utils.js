@@ -446,31 +446,32 @@ function each(object, func) {
     }
 }
 
-function setupFonts(func) {
-    return function () {
-        var fontProperties = {
-            'font-family': 'Ahem',
-            'font-size': '16px',
-            'line-height': '1'
-        };
-        var savedValues = { };
-        each(fontProperties, function (key, value) {
-            savedValues[key] = document.body.style.getPropertyValue(key);
-            document.body.style.setProperty(key, value);
-        });
-        try {
-            func.apply(this, arguments);
-        } finally {
-            each(savedValues, function (key, value) {
-                if (value) {
-                    document.body.style.setProperty(key, value);
-                }
-                else {
-                    document.body.style.removeProperty(key);
-                }
-            });
-        }
+/// For saving and restoring font properties
+var savedFontValues = { };
+
+function setupFonts() {
+    var fontProperties = {
+        'font-family': 'Ahem',
+        'font-size': '16px',
+        'line-height': '1'
     };
+    savedFontValues = { };
+    each(fontProperties, function (key, value) {
+        savedFontValues[key] = document.body.style.getPropertyValue(key);
+        document.body.style.setProperty(key, value);
+    });
+}
+
+function restoreFonts() {
+    each(savedFontValues, function (key, value) {
+        if (value) {
+            document.body.style.setProperty(key, value);
+        }
+        else {
+            document.body.style.removeProperty(key);
+        }
+    });
+    savedFontValues = { };
 }
 
 var validUnits = [
@@ -802,28 +803,25 @@ var validPolygons = [
 ]
 
 // [test value, expected property value, expected computed style]
+// See https://github.com/w3c/csswg-drafts/issues/4399#issuecomment-556160413
+// for the latest resolution to this respect.
 var calcTestValues = [
-    ["calc(10in)", "calc(10in)", "960px"],
+    ["calc(10in)", "calc(960px)", "960px"],
     ["calc(10in + 20px)", "calc(980px)", "980px"],
     ["calc(30%)", "calc(30%)", "30%"],
     ["calc(100%/4)", "calc(25%)", "25%"],
     ["calc(25%*3)", "calc(75%)", "75%"],
-    // These following two test cases represent an either/or situation in the spec
-    // computed value is always supposed to be, at most, a tuple of a length and a percentage.
-    // the computed value of a ‘calc()’ expression can be represented as either a number or a tuple
-    // of a dimension and a percentage.
-    // http://www.w3.org/TR/css3-values/#calc-notation
-    ["calc(25%*3 - 10in)", "calc(75% - 10in)", ["calc(75% - 960px)", "calc(-960px + 75%)"]],
-    ["calc((12.5%*6 + 10in) / 4)", "calc((75% + 10in) / 4)", ["calc((75% + 960px) / 4)", "calc(18.75% + 240px)"]]
+    ["calc(25%*3 - 10in)", "calc(75% - 960px)", "calc(75% - 960px)"],
+    ["calc((12.5%*6 + 10in) / 4)", "calc(18.75% + 240px)", "calc(18.75% + 240px)"]
 ]
 
 return {
     testInlineStyle: testInlineStyle,
-    testComputedStyle: setupFonts(testComputedStyle),
+    testComputedStyle: testComputedStyle,
     testShapeMarginInlineStyle: testShapeMarginInlineStyle,
-    testShapeMarginComputedStyle: setupFonts(testShapeMarginComputedStyle),
+    testShapeMarginComputedStyle: testShapeMarginComputedStyle,
     testShapeThresholdInlineStyle: testShapeThresholdInlineStyle,
-    testShapeThresholdComputedStyle: setupFonts(testShapeThresholdComputedStyle),
+    testShapeThresholdComputedStyle: testShapeThresholdComputedStyle,
     buildTestCases: buildTestCases,
     buildRadiiTests: buildRadiiTests,
     buildPositionTests: buildPositionTests,
@@ -834,6 +832,7 @@ return {
     validUnits: validUnits,
     calcTestValues: calcTestValues,
     roundResultStr: roundResultStr,
-    setupFonts: setupFonts
+    setupFonts: setupFonts,
+    restoreFonts: restoreFonts,
 }
 })();

@@ -35,7 +35,7 @@ from mod_pywebsocket import standalone as pywebsocket
 
 EDIT_HOSTS_HELP = ("Please ensure all the necessary WPT subdomains "
                    "are mapped to a loopback device in /etc/hosts. "
-                   "See https://github.com/web-platform-tests/wpt#running-the-tests "
+                   "See https://web-platform-tests.org/running-tests/from-local-system.html#system-setup "
                    "for instructions.")
 
 
@@ -351,7 +351,7 @@ class RoutesBuilder(object):
         if headers is None:
             headers = {}
         handler = handlers.StaticHandler(path, format_args, content_type, **headers)
-        self.add_handler(b"GET", str(route), handler)
+        self.add_handler("GET", str(route), handler)
 
     def add_mount_point(self, url_base, path):
         url_base = "/%s/" % url_base.strip("/") if url_base != "/" else "/"
@@ -366,6 +366,7 @@ class RoutesBuilder(object):
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.worker.js", AnyWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
+            ("GET", "/.well-known/origin-policy", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
         ]
@@ -515,7 +516,7 @@ def start_servers(host, ports, paths, routes, bind_address, config, **kwargs):
         assert len(ports) == {"http": 2}.get(scheme, 1)
 
         # If trying to start HTTP/2.0 server, check compatibility
-        if scheme == 'http2' and not http2_compatible():
+        if scheme == 'h2' and not http2_compatible():
             logger.error('Cannot start HTTP/2.0 server as the environment is not compatible. ' +
                          'Requires Python 2.7.10+ (< 3.0) and OpenSSL 1.0.2+')
             continue
@@ -525,7 +526,7 @@ def start_servers(host, ports, paths, routes, bind_address, config, **kwargs):
                 continue
             init_func = {"http": start_http_server,
                          "https": start_https_server,
-                         "http2": start_http2_server,
+                         "h2": start_http2_server,
                          "ws": start_ws_server,
                          "wss": start_wss_server}[scheme]
 
@@ -591,21 +592,9 @@ class WebSocketDaemon(object):
                     "-w", handlers_root]
 
         if ssl_config is not None:
-            # This is usually done through pywebsocket.main, however we're
-            # working around that to get the server instance and manually
-            # setup the wss server.
-            if pywebsocket._import_ssl():
-                tls_module = pywebsocket._TLS_BY_STANDARD_MODULE
-            elif pywebsocket._import_pyopenssl():
-                tls_module = pywebsocket._TLS_BY_PYOPENSSL
-            else:
-                print("No SSL module available")
-                sys.exit(1)
-
             cmd_args += ["--tls",
                          "--private-key", ssl_config["key_path"],
-                         "--certificate", ssl_config["cert_path"],
-                         "--tls-module", tls_module]
+                         "--certificate", ssl_config["cert_path"]]
 
         if (bind_address):
             cmd_args = ["-H", host] + cmd_args
@@ -705,8 +694,11 @@ def iter_procs(servers):
 def build_config(override_path=None, **kwargs):
     rv = ConfigBuilder()
 
-    if kwargs.get("h2"):
-        rv._default["ports"]["http2"] = [9000]
+    enable_http2 = kwargs.get("h2")
+    if enable_http2 is None:
+        enable_http2 = True
+    if enable_http2:
+        rv._default["ports"]["h2"] = [9000]
 
     if override_path and os.path.exists(override_path):
         with open(override_path) as f:
@@ -739,6 +731,9 @@ def build_config(override_path=None, **kwargs):
 def _make_subdomains_product(s, depth=2):
     return {u".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth+1)))}
 
+def _make_origin_policy_subdomains(limit):
+    return {u"op%d" % x for x in range(1,limit+1)}
+
 
 _subdomains = {u"www",
                u"www1",
@@ -749,6 +744,12 @@ _subdomains = {u"www",
 _not_subdomains = {u"nonexistent"}
 
 _subdomains = _make_subdomains_product(_subdomains)
+
+# Origin policy subdomains need to not be reused by any other tests, since origin policies have
+# origin-wide impacts like installing a CSP or Feature Policy that could interfere with features
+# under test.
+# See https://github.com/web-platform-tests/rfcs/pull/44.
+_subdomains |= _make_origin_policy_subdomains(99)
 
 _not_subdomains = _make_subdomains_product(_not_subdomains)
 
@@ -845,9 +846,10 @@ def get_parser():
                         help="Path to WebSockets document root. Overrides config.")
     parser.add_argument("--alias_file", action="store", dest="alias_file",
                         help="File with entries for aliases/multiple doc roots. In form of `/ALIAS_NAME/, DOC_ROOT\\n`")
-    parser.add_argument("--h2", action="store_true", dest="h2",
-                        help="Flag for enabling the HTTP/2.0 server")
-    parser.set_defaults(h2=False)
+    parser.add_argument("--h2", action="store_true", dest="h2", default=None,
+                        help=argparse.SUPPRESS)
+    parser.add_argument("--no-h2", action="store_false", dest="h2", default=None,
+                        help="Disable the HTTP/2.0 server")
     return parser
 
 

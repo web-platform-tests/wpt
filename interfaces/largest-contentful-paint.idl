@@ -3,6 +3,7 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Largest Contentful Paint (https://wicg.github.io/largest-contentful-paint/)
 
+[Exposed=Window]
 interface LargestContentfulPaint : PerformanceEntry {
     readonly attribute DOMHighResTimeStamp renderTime;
     readonly attribute DOMHighResTimeStamp loadTime;
@@ -10,4 +11,5 @@ interface LargestContentfulPaint : PerformanceEntry {
     readonly attribute DOMString id;
     readonly attribute DOMString url;
     readonly attribute Element? element;
+    [Default] object toJSON();
 };

@@ -1,10 +1,11 @@
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 import argparse
 import os
 import sys
 from collections import OrderedDict
 from distutils.spawn import find_executable
 from datetime import timedelta
+from six import iterkeys, itervalues, iteritems, string_types
 
 from . import config
 from . import wpttest
@@ -15,9 +16,9 @@ def abs_path(path):
 
 
 def url_or_path(path):
-    import urlparse
+    from six.moves.urllib.parse import urlparse
 
-    parsed = urlparse.urlparse(path)
+    parsed = urlparse(path)
     if len(parsed.scheme) > 2:
         return path
     else:
@@ -36,7 +37,7 @@ def require_arg(kwargs, name, value_func=None):
 def create_parser(product_choices=None):
     from mozlog import commandline
 
-    import products
+    from . import products
 
     if product_choices is None:
         config_data = config.load()
@@ -209,13 +210,17 @@ scheme host and port.""")
                               help="Path to config file")
     config_group.add_argument("--install-fonts", action="store_true",
                               default=None,
-                              help="Allow the wptrunner to install fonts on your system")
+                              help="Install additional system fonts on your system")
+    config_group.add_argument("--no-install-fonts", dest="install_fonts", action="store_false",
+                              help="Do not install additional system fonts on your system")
     config_group.add_argument("--font-dir", action="store", type=abs_path, dest="font_dir",
                               help="Path to local font installation directory", default=None)
     config_group.add_argument("--headless", action="store_true",
                               help="Run browser in headless mode", default=None)
     config_group.add_argument("--no-headless", action="store_false", dest="headless",
                               help="Don't run browser in headless mode")
+    config_group.add_argument("--instrument-to-file", action="store",
+                              help="Path to write instrumentation logs to")
 
     build_type = parser.add_mutually_exclusive_group()
     build_type.add_argument("--debug-build", dest="debug", action="store_true",
@@ -262,8 +267,6 @@ scheme host and port.""")
                              help="Disable the WebRender compositor in Gecko.")
     gecko_group.add_argument("--stackfix-dir", dest="stackfix_dir", action="store",
                              help="Path to directory containing assertion stack fixing scripts")
-    gecko_group.add_argument("--lsan-dir", dest="lsan_dir", action="store",
-                             help="Path to directory containing LSAN suppressions file")
     gecko_group.add_argument("--setpref", dest="extra_prefs", action='append',
                              default=[], metavar="PREF=VALUE",
                              help="Defines an extra user preference (overrides those in prefs_root)")
@@ -368,7 +371,7 @@ def set_from_config(kwargs):
                     ("host_cert_path", "host_cert_path", True),
                     ("host_key_path", "host_key_path", True)]}
 
-    for section, values in keys.iteritems():
+    for section, values in iteritems(keys):
         for config_value, kw_value, is_path in values:
             if kw_value in kwargs and kwargs[kw_value] is None:
                 if not is_path:
@@ -404,7 +407,7 @@ def get_test_paths(config):
     # Set up test_paths
     test_paths = OrderedDict()
 
-    for section in config.iterkeys():
+    for section in iterkeys(config):
         if section.startswith("manifest:"):
             manifest_opts = config.get(section)
             url_base = manifest_opts.get("url_base", "/")
@@ -430,7 +433,7 @@ def exe_path(name):
 
 
 def check_paths(kwargs):
-    for test_paths in kwargs["test_paths"].itervalues():
+    for test_paths in itervalues(kwargs["test_paths"]):
         if not ("tests_path" in test_paths and
                 "metadata_path" in test_paths):
             print("Fatal: must specify both a test path and metadata path")
@@ -438,7 +441,7 @@ def check_paths(kwargs):
         if "manifest_path" not in test_paths:
             test_paths["manifest_path"] = os.path.join(test_paths["metadata_path"],
                                                        "MANIFEST.json")
-        for key, path in test_paths.iteritems():
+        for key, path in iteritems(test_paths):
             name = key.split("_", 1)[0]
 
             if name == "manifest":
@@ -536,7 +539,7 @@ def check_args(kwargs):
 
     if kwargs['extra_prefs']:
         # If a single pref is passed in as a string, make it a list
-        if type(kwargs['extra_prefs']) in (str, unicode):
+        if isinstance(kwargs['extra_prefs'], string_types):
             kwargs['extra_prefs'] = [kwargs['extra_prefs']]
         missing = any('=' not in prefarg for prefarg in kwargs['extra_prefs'])
         if missing:
@@ -547,9 +550,6 @@ def check_args(kwargs):
 
     if kwargs["reftest_internal"] is None:
         kwargs["reftest_internal"] = True
-
-    if kwargs["lsan_dir"] is None:
-        kwargs["lsan_dir"] = kwargs["prefs_root"]
 
     if kwargs["reftest_screenshot"] is None:
         kwargs["reftest_screenshot"] = "unexpected"
@@ -579,7 +579,7 @@ def check_args_update(kwargs):
 def create_parser_update(product_choices=None):
     from mozlog.structured import commandline
 
-    import products
+    from . import products
 
     if product_choices is None:
         config_data = config.load()

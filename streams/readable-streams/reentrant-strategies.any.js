@@ -92,7 +92,7 @@ promise_test(t => {
     }
   });
   controller.enqueue('a');
-  return promise_rejects(t, error1, rs.getReader().read(), 'read() should reject');
+  return promise_rejects_exactly(t, error1, rs.getReader().read(), 'read() should reject');
 }, 'error() inside size() should work');
 
 promise_test(() => {
@@ -123,7 +123,7 @@ promise_test(t => {
     },
     cancel: t.step_func(reason => {
       assert_equals(reason, error1, 'reason should be error1');
-      assert_throws(new TypeError(), () => controller.enqueue(), 'enqueue() should throw');
+      assert_throws_js(TypeError, () => controller.enqueue(), 'enqueue() should throw');
     })
   }, {
     size() {

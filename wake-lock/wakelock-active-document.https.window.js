@@ -3,8 +3,8 @@ function getWakeLockObject(iframe, url) {
     iframe.addEventListener(
       "load",
       () => {
-        const { WakeLock } = iframe.contentWindow;
-        resolve(WakeLock);
+        const { wakeLock } = iframe.contentWindow.navigator;
+        resolve(wakeLock);
       },
       { once: true }
     );
@@ -27,7 +27,7 @@ promise_test(async t => {
   );
   // Now, wakeLock1's relevant global object's document is no longer active.
   // So, call .request(), and make sure it rejects appropriately.
-  await promise_rejects(
+  await promise_rejects_dom(
     t,
     "NotAllowedError",
     wakeLock1.request('screen'),
@@ -35,7 +35,7 @@ promise_test(async t => {
   );
   // We are done, so clean up.
   iframe.remove();
-}, "WakeLock.request() aborts if the document is not active.");
+}, "navigator.wakeLock.request() aborts if the document is not active.");
 
 promise_test(async t => {
   // We nest two iframes and wait for them to load.
@@ -70,7 +70,7 @@ promise_test(async t => {
   // (it is the active document of the inner iframe), but is not fully active
   // (since the parent of the inner iframe is itself no longer active).
   // So, call request.show() and make sure it rejects appropriately.
-  await promise_rejects(
+  await promise_rejects_dom(
     t,
     "NotAllowedError",
     wakeLock.request('screen'),
@@ -78,4 +78,4 @@ promise_test(async t => {
   );
   // We are done, so clean up.
   outerIframe.remove();
-}, "WakeLock.request() aborts if the document is active, but not fully active.");
+}, "navigator.wakeLock.request() aborts if the document is active, but not fully active.");

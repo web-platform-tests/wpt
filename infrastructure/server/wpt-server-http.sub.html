@@ -257,6 +257,14 @@ async_test(function(t) {
   }));
 }, 'H2 protocol, non-existent domain, port #1');
 
+async_test(function(t) {
+  check('http', '{{ip_address}}', {{ports[http][0]}}, t.step_func(function(result) {
+    assert_true(result);
+
+    t.done();
+  }));
+}, 'ip address, port #1');
+
 </script>
 </body>
 </html>

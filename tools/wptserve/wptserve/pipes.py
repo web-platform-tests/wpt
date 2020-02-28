@@ -347,6 +347,8 @@ def sub(request, response, escape_type="html"):
       'server, 'scheme', 'host', 'hostname', 'port', 'path' and 'query'.
       'server' is scheme://host:port, 'host' is hostname:port, and query
       includes the leading '?', but other delimiters are omitted.
+    ip address
+      The ip address the server is bound to
     headers
       A dictionary of HTTP headers in the request.
     header_or_default(header, default)
@@ -391,6 +393,7 @@ def sub(request, response, escape_type="html"):
 
     response.content = new_content
     return response
+
 
 class SubFunctions(object):
     @staticmethod
@@ -445,8 +448,9 @@ class SubFunctions(object):
     def header_or_default(request, name, default):
         return request.headers.get(name, default)
 
+
 def template(request, content, escape_type="html"):
-    #TODO: There basically isn't any error handling here
+    # TODO: There basically isn't any error handling here
     tokenizer = ReplacementTokenizer()
 
     variables = {}
@@ -484,6 +488,8 @@ def template(request, content, escape_type="html"):
             value = request.server.config.all_domains[""]
         elif field == "host":
             value = request.server.config["browser_host"]
+        elif field == "ip_address":
+            value = request.server.config["server_host"]
         elif field in request.server.config:
             value = request.server.config[field]
         elif field == "location":
@@ -535,6 +541,7 @@ def template(request, content, escape_type="html"):
     new_content = template_regexp.sub(config_replacement, content)
 
     return new_content
+
 
 @pipe()
 def gzip(request, response):

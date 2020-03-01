@@ -20,6 +20,8 @@ promise_test(async t => {
     iframe,
     "/wake-lock/resources/page1.html"
   );
+  // Save the DOMException of page1.html before navigating away.
+  const frameDOMException1 = iframe.contentWindow.DOMException;
   // We navigate the iframe again, putting wakeLock1's document into an inactive state.
   const wakeLock2 = await getWakeLockObject(
     iframe,
@@ -27,10 +29,16 @@ promise_test(async t => {
   );
   // Now, wakeLock1's relevant global object's document is no longer active.
   // So, call .request(), and make sure it rejects appropriately.
+  const p = wakeLock1.request("screen");
+  // Since promise_rejects_dom() makes use of `await`, we have to override the
+  // then method of the promise in order to make sure that it doesn't belong to
+  // a non-fully active realm. See https://github.com/whatwg/html/issues/5319.
+  p.then = Promise.prototype.then;
   await promise_rejects_dom(
     t,
     "NotAllowedError",
-    wakeLock1.request('screen'),
+    frameDOMException1,
+    Promise.resolve(p),
     "Inactive document, so must throw NotAllowedError"
   );
   // We are done, so clean up.
@@ -58,6 +66,8 @@ promise_test(async t => {
     innerIframe,
     "/wake-lock/resources/page2.html"
   );
+  // Save DOMException from innerIframe before navigating away.
+  const innerIframeDOMException = innerIframe.contentWindow.DOMException;
 
   // Navigate the outer iframe to a new location.
   // Wait for the load event to fire.
@@ -70,10 +80,16 @@ promise_test(async t => {
   // (it is the active document of the inner iframe), but is not fully active
   // (since the parent of the inner iframe is itself no longer active).
   // So, call request.show() and make sure it rejects appropriately.
+  const p = wakeLock.request("screen");
+  // Since promise_rejects_dom() makes use of `await`, we have to override the
+  // then method of the promise in order to make sure that it doesn't belong to
+  // a non-fully active realm. See https://github.com/whatwg/html/issues/5319.
+  p.then = Promise.prototype.then;
   await promise_rejects_dom(
     t,
     "NotAllowedError",
-    wakeLock.request('screen'),
+    innerIframeDOMException,
+    Promise.resolve(p),
     "Active, but not fully active, so must throw NotAllowedError"
   );
   // We are done, so clean up.

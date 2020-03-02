@@ -15,7 +15,7 @@ promise_test(async t => {
 
   try {
     await smsReceiver.receive();
-    assert_unreached('Expected NotSupportedError to be thrown.');
+    assert_unreached('Expected NotSupportedError to be thrown test test test test.');
   } catch (error) {
     assert_equals(error.name, 'NotSupportedError');
   }

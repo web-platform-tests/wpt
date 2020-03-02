@@ -62,7 +62,7 @@ class ChromiumFormatter(base.BaseFormatter):
         :param str artifact_name: the name of the artifact
         :param str artifact_value: the value of the artifact
         """
-        if not "artifacts" in cur_dict.keys():
+        if "artifacts" not in cur_dict.keys():
             cur_dict["artifacts"] = {}
         cur_dict["artifacts"][artifact_name] = artifact_value
 

@@ -38,7 +38,7 @@ const corp_header = {
 // - |response_corp| the CORP header of the response.
 //
 // Test expectations:
-// |loaded| is true whenever the worker is able to fetch the response from
+// |is_loaded| is true whenever the worker is able to fetch the response from
 // the CacheStorage. According to the specification:
 // https://mikewest.github.io/corpp/#initialize-embedder-policy-for-global
 // it must be false when:
@@ -46,14 +46,14 @@ const corp_header = {
 // - |response-corp| is 'corp-undefined'.
 //
 // |worker_coep| must be ignored.
-function check(
+function test(
   // Test parameters:
   iframe_coep,
   worker_coep,
   response_corp,
 
   // Test expectations:
-  loaded) {
+  is_loaded) {
 
   promise_test(async (t) => {
     // 1) Fetch a response from a document with COEP:none. Store it in the
@@ -107,21 +107,21 @@ function check(
     iframe.contentWindow.postMessage(iframe_eval);
 
     const {data} = await iframe_response;
-    assert_equals(data == "success", loaded);
+    assert_equals(data == "success", is_loaded);
   }, `${iframe_coep} ${worker_coep} ${response_corp}`)
 }
 
 // -----------------------------------------------------------------------------
-//    iframe_coep         , worker_coep         , response_corp       , loaded
+//   iframe_coep         , worker_coep         , response_corp       , is_loaded
 // -----------------------------------------------------------------------------
-check("coep-none"         , "coep-none"         , "corp-cross-origin" , true);
-check("coep-none"         , "coep-none"         , "corp-undefined"    , true);
-check("coep-none"         , "coep-require-corp" , "corp-cross-origin" , true);
-check("coep-none"         , "coep-require-corp" , "corp-undefined"    , true);
-check("coep-require-corp" , "coep-none"         , "corp-cross-origin" , true);
-check("coep-require-corp" , "coep-none"         , "corp-undefined"    , false);
-check("coep-require-corp" , "coep-require-corp" , "corp-cross-origin" , true);
-check("coep-require-corp" , "coep-require-corp" , "corp-undefined"    , false);
+test("coep-none"         , "coep-none"         , "corp-cross-origin" , true);
+test("coep-none"         , "coep-none"         , "corp-undefined"    , true);
+test("coep-none"         , "coep-require-corp" , "corp-cross-origin" , true);
+test("coep-none"         , "coep-require-corp" , "corp-undefined"    , true);
+test("coep-require-corp" , "coep-none"         , "corp-cross-origin" , true);
+test("coep-require-corp" , "coep-none"         , "corp-undefined"    , false);
+test("coep-require-corp" , "coep-require-corp" , "corp-cross-origin" , true);
+test("coep-require-corp" , "coep-require-corp" , "corp-undefined"    , false);
 
 </script>
 </html>

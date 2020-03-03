@@ -347,7 +347,7 @@ def sub(request, response, escape_type="html"):
       'server, 'scheme', 'host', 'hostname', 'port', 'path' and 'query'.
       'server' is scheme://host:port, 'host' is hostname:port, and query
       includes the leading '?', but other delimiters are omitted.
-    ip address
+    ip_address
       The ip address the server is bound to
     headers
       A dictionary of HTTP headers in the request.

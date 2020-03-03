@@ -74,29 +74,29 @@ def read_script_metadata(f, regexp):
 
 
 _any_variants = {
-    "default": {"longhand": {"window", "dedicatedworker"}},
-    "window": {"suffix": ".any.html"},
-    "serviceworker": {"force_https": True},
-    "sharedworker": {},
-    "dedicatedworker": {"suffix": ".any.worker.html"},
-    "worker": {"longhand": {"dedicatedworker", "sharedworker", "serviceworker"}},
-    "jsshell": {"suffix": ".any.js"},
+    b"default": {"longhand": {"window", "dedicatedworker"}},
+    b"window": {"suffix": ".any.html"},
+    b"serviceworker": {"force_https": True},
+    b"sharedworker": {},
+    b"dedicatedworker": {"suffix": ".any.worker.html"},
+    b"worker": {"longhand": {"dedicatedworker", "sharedworker", "serviceworker"}},
+    b"jsshell": {"suffix": ".any.js"},
 }  # type: Dict[bytes, Dict[str, Any]]
 
 
 def get_any_variants(item):
-    # type: (str) -> Set[str]
+    # type: (bytes) -> Set[bytes]
     """
-    Returns a set of variants (strings) defined by the given keyword.
+    Returns a set of variants (bytestrings) defined by the given keyword.
     """
-    assert isinstance(item, string_types), item
-    assert not item.startswith("!"), item
+    assert isinstance(item, binary_type), item
+    assert not item.startswith(b"!"), item
 
     variant = _any_variants.get(item, None)
     if variant is None:
         return set()
 
-    return variant.get("longhand", {item})
+    return variant.get(b"longhand", {item})
 
 
 def get_default_any_variants():
@@ -104,7 +104,7 @@ def get_default_any_variants():
     """
     Returns a set of variants (bytestrings) that will be used by default.
     """
-    return set(_any_variants["default"]["longhand"])
+    return set(_any_variants[b"default"]["longhand"])
 
 
 def parse_variants(value):
@@ -233,7 +233,9 @@ class SourceFile(object):
         self.url_base = url_base
         self.contents = contents
         self.items_cache = None  # type: Optional[Tuple[Text, List[ManifestItem]]]
-        self._hash = ensure_str(hash, encoding='ascii') if hash else None
+        if hash:
+            assert(isinstance(hash, string_types))
+        self._hash = hash
 
     def __getstate__(self):
         # type: () -> Dict[str, Any]

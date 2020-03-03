@@ -610,12 +610,12 @@ def check_global_metadata(value):
     global_values = {item.strip() for item in value.split(b",") if item.strip()}
 
     included_variants = set.union(get_default_any_variants(),
-                                  *(get_any_variants(ensure_str(v)) for v in global_values if not v.startswith(b"!")))
+                                  *(get_any_variants(v) for v in global_values if not v.startswith(b"!")))
 
     for global_value in global_values:
         if global_value.startswith(b"!"):
             excluded_value = global_value[1:]
-            if not get_any_variants(ensure_str(excluded_value)):
+            if not get_any_variants(excluded_value):
                 yield (rules.UnknownGlobalMetadata, ())
 
             elif excluded_value in global_values:
@@ -623,13 +623,13 @@ def check_global_metadata(value):
                        (("Cannot specify both %s and %s" % (global_value, excluded_value)),))
 
             else:
-                excluded_variants = get_any_variants(ensure_str(excluded_value))
+                excluded_variants = get_any_variants(excluded_value)
                 if not (excluded_variants & included_variants):
                     yield (rules.BrokenGlobalMetadata,
                            (("Cannot exclude %s if it is not included" % (excluded_value,)),))
 
         else:
-            if not get_any_variants(ensure_str(global_value)):
+            if not get_any_variants(global_value):
                 yield (rules.UnknownGlobalMetadata, ())
 
 

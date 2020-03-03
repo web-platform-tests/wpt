@@ -13,16 +13,20 @@
   </head>
   <body>
     <script type="text/javascript">
-      var testElement = document.createElement("testElement");
       test(function() {
+        const testElement = document.createElement("testElement");
+
         assert_equals(
           testElement.contentEditable,
           "inherit",
           "check for testElement.contentEditable value"
         );
       }, "no contentEditable attribute");
-      testElement.setAttribute("contentEditable", "");
+
       test(function() {
+        const testElement = document.createElement("testElement");
+        testElement.setAttribute("contentEditable", "");
+
         assert_true(
           testElement.isContentEditable,
           "check for testElement.isContentEditable value"
@@ -33,8 +37,11 @@
           "check for testElement.contentEditable value"
         );
       }, "empty contentEditable attribute");
-      testElement.contentEditable = "true";
+
       test(function() {
+        const testElement = document.createElement("testElement");
+        testElement.contentEditable = "true";
+
         assert_true(
           testElement.isContentEditable,
           "check for testElement.isContentEditable value"
@@ -45,8 +52,11 @@
           "check for testElement.contentEditable value"
         );
       }, 'set contentEditable = "true"');
-      testElement.contentEditable = "false";
+
       test(function() {
+        const testElement = document.createElement("testElement");
+        testElement.contentEditable = "false";
+
         assert_false(
           testElement.isContentEditable,
           "check for testElement.isContentEditable value"
@@ -57,18 +67,24 @@
           "check for testElement.contentEditable value"
         );
       }, 'set contentEditable = "false"');
-      testElement.contentEditable = "inherit";
+
       test(function() {
+        const testElement = document.createElement("testElement");
+        testElement.contentEditable = "inherit";
+
         assert_equals(
           testElement.contentEditable,
           "inherit",
           "check for testElement.contentEditable value"
         );
       }, 'set contentEditable = "inherit"');
-      var childElement = document.createElement("childElement");
-      testElement.appendChild(childElement);
-      testElement.contentEditable = "true";
+
       test(function() {
+        const testElement = document.createElement("testElement");
+        const childElement = document.createElement("childElement");
+        testElement.appendChild(childElement);
+        testElement.contentEditable = "true";
+
         assert_true(
           testElement.isContentEditable,
           "check for testElement.isContentEditable value"
@@ -88,8 +104,13 @@
           "check for childElement.contentEditable value"
         );
       }, 'set parent element contentEditable = "true"');
-      testElement.contentEditable = "false";
+
       test(function() {
+        const testElement = document.createElement("testElement");
+        const childElement = document.createElement("childElement");
+        testElement.appendChild(childElement);
+        testElement.contentEditable = "false";
+
         assert_false(
           testElement.isContentEditable,
           "check for testElement.isContentEditable value"

@@ -2,7 +2,7 @@ import hashlib
 import re
 import os
 from collections import deque
-from six import binary_type, text_type, iteritems, ensure_str
+from six import binary_type, ensure_str, iteritems, string_types
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
 
@@ -89,7 +89,7 @@ def get_any_variants(item):
     """
     Returns a set of variants (strings) defined by the given keyword.
     """
-    assert isinstance(item, text_type), item
+    assert isinstance(item, string_types), item
     assert not item.startswith("!"), item
 
     variant = _any_variants.get(item, None)
@@ -112,7 +112,7 @@ def parse_variants(value):
     """
     Returns a set of variants (bytestrings) defined by a comma-separated value.
     """
-    assert isinstance(value, text_type), value
+    assert isinstance(value, string_types), value
 
     globals = get_default_any_variants()
 
@@ -133,7 +133,7 @@ def global_suffixes(value):
     variant is intended to run in a JS shell, for the variants defined by the
     given comma-separated value.
     """
-    assert isinstance(value, text_type), value
+    assert isinstance(value, string_types), value
 
     rv = set()
 

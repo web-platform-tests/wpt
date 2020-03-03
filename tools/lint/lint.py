@@ -926,7 +926,7 @@ def lint(repo_root, paths, output_format, ignore_glob=str()):
         last = process_errors(errors) or last
 
         if not os.path.isdir(abs_path):
-            with open(abs_path, 'r') as f:
+            with open(abs_path, 'rb') as f:
                 errors = check_file_contents(repo_root, path, f)
                 last = process_errors(errors) or last
 

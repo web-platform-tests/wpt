@@ -85,9 +85,9 @@ _any_variants = {
 
 
 def get_any_variants(item):
-    # type: (bytes) -> Set[bytes]
+    # type: (str) -> Set[str]
     """
-    Returns a set of variants (bytestrings) defined by the given keyword.
+    Returns a set of variants (strings) defined by the given keyword.
     """
     assert isinstance(item, text_type), item
     assert not item.startswith("!"), item

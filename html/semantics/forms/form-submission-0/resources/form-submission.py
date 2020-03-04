@@ -1,8 +1,9 @@
+from six import ensure_str
 def main(request, response):
-    if request.headers.get('Content-Type') == 'application/x-www-form-urlencoded':
-        result = request.body == 'foo=bara'
-    elif request.headers.get('Content-Type') == 'text/plain':
-        result = request.body == 'qux=baz\r\n'
+    if ensure_str(request.headers.get('Content-Type')) == 'application/x-www-form-urlencoded':
+        result = ensure_str(request.body) == 'foo=bara'
+    elif ensure_str(request.headers.get('Content-Type')) == 'text/plain':
+        result = ensure_str(request.body) == 'qux=baz\r\n'
     else:
         result = request.POST.first('foo') == 'bar'
 

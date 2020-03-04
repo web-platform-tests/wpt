@@ -1,9 +1,18 @@
+import os
+from six import PY3
+
 def get_response(raw_headers, filter_value, filter_name):
     result = ""
-    for line in raw_headers.headers:
-        if line[-2:] != '\r\n':
-            return "Syntax error: missing CRLF: " + line
-        line = line[:-2]
+    if PY3:
+        header_list = (os.linesep.join(
+            [s for s in raw_headers.as_string().splitlines() if s])).split('\n')
+    else:
+        header_list = raw_headers.headers
+    for line in header_list:
+        if not PY3:
+            if line[-2:] != '\r\n':
+                return "Syntax error: missing CRLF: " + line
+            line = line[:-2]
 
         if ': ' not in line:
             return "Syntax error: no colon and space found: " + line
@@ -23,7 +32,9 @@ def main(request, response):
         headers.append(("Access-Control-Allow-Credentials", "true"))
         headers.append(("Access-Control-Allow-Methods", "GET, POST, PUT, FOO"))
         headers.append(("Access-Control-Allow-Headers", "x-test, x-foo"))
-        headers.append(("Access-Control-Expose-Headers", "x-request-method, x-request-content-type, x-request-query, x-request-content-length"))
+        headers.append((
+            "Access-Control-Expose-Headers",
+            "x-request-method, x-request-content-type, x-request-query, x-request-content-length"))
     headers.append(("content-type", "text/plain"))
 
     filter_value = request.GET.first("filter_value", "")

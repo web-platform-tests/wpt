@@ -1,9 +1,9 @@
 import base64
 import cgi
-from six.moves.http_cookies import BaseCookie
-from six import BytesIO, binary_type, text_type, iteritems, PY3
 import tempfile
 
+from six import BytesIO, binary_type, ensure_str, text_type, iteritems, PY3
+from six.moves.http_cookies import BaseCookie
 from six.moves.urllib.parse import parse_qsl, urlsplit
 
 from . import stash

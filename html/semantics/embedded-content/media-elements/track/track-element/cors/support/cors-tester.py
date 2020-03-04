@@ -1,5 +1,5 @@
+from six import ensure_str
 from wptserve.handlers import HTTPException
-import urllib
 
 def main(request, response):
     if request.method != "GET":
@@ -33,7 +33,7 @@ def main(request, response):
 
     cookie = request.cookies.first(id, None)
     cookie_value = cookie.value if cookie is not None else "no"
-    line = 'cors = ' + cors + ' | cookie = ' + cookie_value;
+    line = 'cors = ' + ensure_str(cors) + ' | cookie = ' + cookie_value
 
     data = request.server.stash.take(id)
     if data is not None:

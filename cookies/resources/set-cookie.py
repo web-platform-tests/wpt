@@ -1,6 +1,5 @@
-
 import sys
-import urlparse
+from six.moves.urllib.parse import parse_qs
 
 def main(request, response):
     """
@@ -20,7 +19,7 @@ def main(request, response):
     < Date: Tue, 04 Oct 2016 18:16:06 GMT
     < Content-Length: 80
     """
-    params = urlparse.parse_qs(request.url_parts.query)
+    params = parse_qs(request.url_parts.query)
     headers = [
         ("Content-Type", "application/json"),
         ("Set-Cookie", "{name[0]}=1; Path={path[0]}; Expires=Wed, 09 Jun 2021 10:18:14 GMT".format(**params))

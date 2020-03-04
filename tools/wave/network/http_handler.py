@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import httplib
 import sys
 import traceback
@@ -10,13 +11,15 @@ class HttpHandler(object):
         sessions_api_handler=None,
         tests_api_handler=None,
         results_api_handler=None,
-        http_port=None
+        http_port=None,
+        web_root=None
     ):
         self.static_handler = static_handler
         self.sessions_api_handler = sessions_api_handler
         self.tests_api_handler = tests_api_handler
         self.results_api_handler = results_api_handler
         self._http_port = http_port
+        self._web_root = web_root
 
     def handle_request(self, request, response):
         response.headers = [
@@ -27,14 +30,13 @@ class HttpHandler(object):
         if request.method == "OPTIONS":
             return
 
-        is_api_call = False
+        path = self._remove_web_root(request.request_path)
 
-        for index, part in enumerate(request.request_path.split(u"/")):
+        is_api_call = False
+        for index, part in enumerate(path.split("/")):
             if index > 2:
                 break
-            if part == u"" or part is None or index != 2:
-                continue
-            if part != u"api":
+            if part != "api":
                 continue
 
             is_api_call = True
@@ -48,30 +50,30 @@ class HttpHandler(object):
             self.handle_static_file(request, response)
 
     def handle_api(self, request, response):
-        api_name = None
-
-        for index, part in enumerate(request.request_path.split(u"/")):
-            if index > 3:
-                break
-            if part == u"" or part is None or index != 3:
-                continue
-            api_name = part.replace("?", "")
+        path = self._remove_web_root(request.request_path)
+        api_name = path.split("/")[1]
 
         if api_name is None:
             return
 
-        if api_name == u"sessions":
+        if api_name == "sessions":
             self.sessions_api_handler.handle_request(request, response)
             return
-        if api_name == u"tests":
+        if api_name == "tests":
             self.tests_api_handler.handle_request(request, response)
             return
-        if api_name == u"results":
+        if api_name == "results":
             self.results_api_handler.handle_request(request, response)
             return
 
     def handle_static_file(self, request, response):
         self.static_handler.handle_request(request, response)
+
+    def _remove_web_root(self, path):
+        if self._web_root is not None:
+            path = path[len(self._web_root):]
+        return path
+
 
     def _proxy(self, request, response):
         host = 'localhost'
@@ -92,6 +94,6 @@ class HttpHandler(object):
         except IOError:
             info = sys.exc_info()
             traceback.print_tb(info[2])
-            print(u"Failed to perform proxy request: " +
-                info[0].__name__ + u": " + str(info[1].args[0]))
+            print("Failed to perform proxy request: " +
+                info[0].__name__ + ": " + str(info[1].args[0]))
             response.status = 500

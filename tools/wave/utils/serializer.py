@@ -1,22 +1,24 @@
+from __future__ import unicode_literals
+
 def serialize_session(session):
     return {
-        u"token": session.token,
-        u"types": session.types,
-        u"user_agent": session.user_agent,
-        u"labels": session.labels,
-        u"timeouts": session.timeouts,
-        u"test_state": session.test_state,
-        u"last_completed_test": session.last_completed_test,
-        u"tests": session.tests,
-        u"pending_tests": session.pending_tests,
-        u"running_tests": session.running_tests,
-        u"status": session.status,
-        u"browser": session.browser,
-        u"date_started": session.date_started,
-        u"date_finished": session.date_finished,
-        u"is_public": session.is_public,
-        u"reference_tokens": session.reference_tokens,
-        u"webhook_urls": session.webhook_urls,
-        u"expiration_date": session.expiration_date,
-        u"malfunctioning_tests": session.malfunctioning_tests
+        "token": session.token,
+        "types": session.types,
+        "user_agent": session.user_agent,
+        "labels": session.labels,
+        "timeouts": session.timeouts,
+        "test_state": session.test_state,
+        "last_completed_test": session.last_completed_test,
+        "tests": session.tests,
+        "pending_tests": session.pending_tests,
+        "running_tests": session.running_tests,
+        "status": session.status,
+        "browser": session.browser,
+        "date_started": session.date_started,
+        "date_finished": session.date_finished,
+        "is_public": session.is_public,
+        "reference_tokens": session.reference_tokens,
+        "webhook_urls": session.webhook_urls,
+        "expiration_date": session.expiration_date,
+        "malfunctioning_tests": session.malfunctioning_tests
     }

@@ -10,6 +10,7 @@ The `read session` method of the tests API fetches all tests contained in a test
 
 ```json
 {
+  "token": "String",
   "pending_tests": {
     "<api_name>": "Array<String>"
   },
@@ -36,6 +37,7 @@ The `read session` method of the tests API fetches all tests contained in a test
 
 ```json
 {
+  "token": "cd922410-c344-11e9-858f-9063f6dd878f",
   "pending_tests": {
     "apiTwo": ["/apiTwo/test/three.html"],
     "apiThree": [

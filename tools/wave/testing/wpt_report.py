@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import subprocess
 import os
 import ntpath
@@ -9,22 +10,25 @@ def generate_report(
         input_json_directory_path=None,
         output_html_directory_path=None,
         spec_name=None,
-        is_multi=False,
+        is_multi=None,
         reference_dir=None):
+    if is_multi is None:
+        is_multi = False
     try:
         command = [
             "wptreport",
             "--input", input_json_directory_path,
             "--output", output_html_directory_path,
             "--spec", spec_name,
-            "--sort true",
-            "--failures true",
-            "--tokenFileName true" if is_multi else "",
-            "--pass 100 --ref " + reference_dir if reference_dir is not None else ""]
+            "--sort", "true",
+            "--failures", "true",
+            "--tokenFileName", "true" if is_multi else "false",
+            "--pass", "100",
+            "--ref", reference_dir if reference_dir is not None else ""]
         whole_command = ""
         for command_part in command:
             whole_command += command_part + " "
-        subprocess.call(whole_command, shell=True)
+        subprocess.call(command, shell=False)
     except subprocess.CalledProcessError as e:
         info = sys.exc_info()
         raise Exception("Failed to execute wptreport: " + str(info[0].__name__) + ": " + e.output)
@@ -36,12 +40,12 @@ def generate_multi_report(
         result_json_files=None,
         reference_dir=None):
     for file in result_json_files:
-        if not os.path.isfile(file[u"path"]):
+        if not os.path.isfile(file["path"]):
             continue
-        file_name = ntpath.basename(file[u"path"])
-        copyfile(file[u"path"], os.path.join(
+        file_name = ntpath.basename(file["path"])
+        copyfile(file["path"], os.path.join(
             output_html_directory_path,
-            file[u"token"] + "-" + file_name
+            file["token"] + "-" + file_name
         ))
 
     generate_report(

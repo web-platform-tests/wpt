@@ -1,5 +1,6 @@
 from __future__ import division
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import re
 from threading import Timer
 
@@ -54,8 +55,8 @@ class TestsManager(object):
 
         timer = Timer(test_timeout, handler, [self, token, test])
         self._timeouts.append({
-            u"test": test,
-            u"timeout": timer
+            "test": test,
+            "timeout": timer
         })
 
         session.pending_tests = pending_tests
@@ -72,44 +73,44 @@ class TestsManager(object):
         for api in list(results.keys()):
             results_tests[api] = []
             for result in results[api]:
-                results_tests[api].append(result[u"test"])
+                results_tests[api].append(result["test"])
 
         sorted_results_tests = self._sort_tests_by_execution(results_tests)
         sorted_results_tests.reverse()
 
-        tests = {u"pass": [], u"fail": [], u"timeout": []}
+        tests = {"pass": [], "fail": [], "timeout": []}
 
         for test in sorted_results_tests:
             api = None
-            for part in test.split(u"/"):
-                if part != u"":
+            for part in test.split("/"):
+                if part != "":
                     api = part
                     break
 
             result = None
             for potential_result in results[api]:
-                if potential_result[u"test"] == test:
+                if potential_result["test"] == test:
                     result = potential_result
                     break
 
-            if result[u"status"] == u"ERROR":
-                if len(tests[u"fail"]) < count:
-                    tests[u"fail"].append(result[u"test"])
-            elif result[u"status"] == u"TIMEOUT":
-                if len(tests[u"timeout"]) < count:
-                    tests[u"timeout"].append(result[u"test"])
+            if result["status"] == "ERROR":
+                if len(tests["fail"]) < count:
+                    tests["fail"].append(result["test"])
+            elif result["status"] == "TIMEOUT":
+                if len(tests["timeout"]) < count:
+                    tests["timeout"].append(result["test"])
             passes = True
-            for test in result[u"subtests"]:
-                if test[u"status"] != u"PASS":
+            for test in result["subtests"]:
+                if test["status"] != "PASS":
                     passes = False
                     break
 
-            if passes and len(tests[u"pass"]) < count:
-                tests[u"pass"].append(result[u"test"])
-            if not passes and len(tests[u"fail"]) < count:
-                tests[u"fail"].append(result[u"test"])
-            if len(tests[u"pass"]) == count and len(tests[u"fail"]) == count \
-               and len(tests[u"timeout"]) == count:
+            if passes and len(tests["pass"]) < count:
+                tests["pass"].append(result["test"])
+            if not passes and len(tests["fail"]) < count:
+                tests["fail"].append(result["test"])
+            if len(tests["pass"]) == count and len(tests["fail"]) == count \
+               and len(tests["timeout"]) == count:
                 return tests
         return tests
 
@@ -122,14 +123,14 @@ class TestsManager(object):
 
         def compare(tests_manager, test_a, test_b):
             micro_test_list = {}
-            api_a = u""
-            for part in test_a.split(u"/"):
-                if part != u"":
+            api_a = ""
+            for part in test_a.split("/"):
+                if part != "":
                     api_a = part
                     break
-            api_b = u""
-            for part in test_b.split(u"/"):
-                if part != u"":
+            api_b = ""
+            for part in test_b.split("/"):
+                if part != "":
                     api_b = part
                     break
             if api_a == api_b:
@@ -158,7 +159,7 @@ class TestsManager(object):
         apis.sort(key=lambda api: api.lower())
 
         for api in apis:
-            tests[api].sort(key=lambda api: api.replace(u"/", u"").lower())
+            tests[api].sort(key=lambda api: api.replace("/", "").lower())
 
         while test is None:
             if len(apis) <= current_api:
@@ -189,18 +190,18 @@ class TestsManager(object):
                 continue
             test = tests[api][current_test]
 
-            if u"manual" in test and u"https" not in test:
+            if "manual" in test and "https" not in test:
                 return test
 
-            if u"manual" in test and u"https" in test:
+            if "manual" in test and "https" in test:
                 if not has_http:
                     return test
 
-            if u"manual" not in test and u"https" not in test:
+            if "manual" not in test and "https" not in test:
                 if not has_manual:
                     return test
 
-            if u"manual" not in test and u"https" in test:
+            if "manual" not in test and "https" in test:
                 if not has_manual and not has_http:
                     return test
 
@@ -220,7 +221,7 @@ class TestsManager(object):
         for test in remaining_tests:
             if not test.startswith("/" + current_api) and \
                not test.startswith(current_api):
-                current_api = next((p for p in test.split(u"/") if p != u""),
+                current_api = next((p for p in test.split("/") if p != ""),
                                    None)
                 if current_api not in remaining_tests_by_api:
                     remaining_tests_by_api[current_api] = []
@@ -229,8 +230,8 @@ class TestsManager(object):
 
     def remove_test_from_list(self, test_list, test):
         api = None
-        for part in test.split(u"/"):
-            if part is None or part == u"":
+        for part in test.split("/"):
+            if part is None or part == "":
                 continue
             api = part
             break
@@ -246,8 +247,8 @@ class TestsManager(object):
 
     def add_test_to_list(self, test_list, test):
         api = None
-        for part in test.split(u"/"):
-            if part is None or part == u"":
+        for part in test.split("/"):
+            if part is None or part == "":
                 continue
             api = part
             break
@@ -263,28 +264,28 @@ class TestsManager(object):
         test_timeout = None
 
         for path in list(timeouts.keys()):
-            pattern = re.compile(u"^" + path.replace(u".", u""))
-            if pattern.match(test.replace(u".", u"")) is not None:
+            pattern = re.compile("^" + path.replace(".", ""))
+            if pattern.match(test.replace(".", "")) is not None:
                 test_timeout = timeouts[path]
                 break
 
         if test_timeout is None:
-            if u"manual" in test:
-                test_timeout = timeouts[u"manual"]
+            if "manual" in test:
+                test_timeout = timeouts["manual"]
             else:
-                test_timeout = timeouts[u"automatic"]
+                test_timeout = timeouts["automatic"]
 
         return test_timeout
 
     def _on_test_timeout(self, token, test):
         data = {
-            u"test": test,
-            u"status": u"TIMEOUT",
-            u"message": None,
-            u"subtests": [
+            "test": test,
+            "status": "TIMEOUT",
+            "message": None,
+            "subtests": [
                 {
-                    u"status": u"TIMEOUT",
-                    u"xstatus": u"SERVERTIMEOUT"
+                    "status": "TIMEOUT",
+                    "xstatus": "SERVERTIMEOUT"
                 }
             ]
         }
@@ -300,8 +301,8 @@ class TestsManager(object):
         running_tests = self.remove_test_from_list(running_tests, test)
         session.running_tests = running_tests
 
-        timeout = next((t for t in self._timeouts if t[u"test"] == test), None)
-        timeout[u"timeout"].cancel()
+        timeout = next((t for t in self._timeouts if t["test"] == test), None)
+        timeout["timeout"].cancel()
         self._timeouts.remove(timeout)
 
         self.update_tests(
@@ -356,8 +357,8 @@ class TestsManager(object):
     def load_tests(self, session):
         pending_tests = self._test_loader.get_tests(
             session.types,
-            include_list=session.tests[u"include"],
-            exclude_list=session.tests[u"exclude"],
+            include_list=session.tests["include"],
+            exclude_list=session.tests["exclude"],
             reference_tokens=session.reference_tokens
         )
 

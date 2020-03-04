@@ -1,10 +1,11 @@
 # REST API - [WAVE Test Suite](../README.md)
 
-The REST API allows the WAVE server to be integrated into other systems.
+The REST API allows the WAVE server to be integrated into other systems. Every 
+call must be preceded with a namespace or web root, which is omitted in this 
+documentation. The default web root is `/_wave`, which can be changed in the 
+config.json using the keyword `web_root`.
 
 ## Sessions API <a name="sessions-api"></a>
-
-### Methods
 
 | Name                                           | Description                                          |
 | ---------------------------------------------- | ---------------------------------------------------- |
@@ -19,10 +20,9 @@ The REST API allows the WAVE server to be integrated into other systems.
 | [`pause`](./sessions-api/control.md#pause)     | Pauses a test session.                               |
 | [`find`](./sessions-api/find.md)               | Finds a session token by providing a token fragment. |
 | [`labels`](./sessions-api/labels.md)           | Attach labels to sessions for organization purposes. |
+| [`events`](./sessions-api/events.md)           | Register for sessions specific events.               |
 
 ## Tests API <a name="tests-api"></a>
-
-### Methods
 
 | Name                                                            | Description                                            |
 | --------------------------------------------------------------- | ------------------------------------------------------ |
@@ -32,23 +32,23 @@ The REST API allows the WAVE server to be integrated into other systems.
 | [`read last completed`](./tests-api/read-last-completed.md)     | Reads the last completed tests of a session.           |
 | [`read malfunctioning`](./tests-api/read-malfunctioning.md)     | Reads the list of malfunctioning tests of a session.   |
 | [`update malfunctioning`](./tests-api/update-malfunctioning.md) | Updates the list of malfunctioning tests of a session. |
+| [`read available apis`](./tests-api/read-available-apis.md)     | Reads all available APIs names and paths.              |
 
 ## Results API <a name="results-api"></a>
-
-### Methods
 
 | Name                                                                         | Description                                                                     |
 | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | [`create`](./results-api/create.md)                                          | Create a new test result for a test in a session.                               |
 | [`read`](./results-api/read.md)                                              | Read all test results of a session.                                             |
 | [`read compact`](./results-api/read-compact.md)                              | Read the number of passed, failed, timed out and not run tests of a session.    |
+| [`config`](./results-api/config.md)                                          | Read what features of the results API are enabled.                              |
 | [`import`](./results-api/import.md)                                          | Import session results.                                                         |
 | [`import enabled`](./results-api/import.md#2-import-enabled)                 | Check whether or not the import feature is enabled.                             |
 | [`download`](./results-api/download.md#1-download)                           | Download all session results to import into other WMATS instance.               |
 | [`download api`](./results-api/download.md#2-download-api)                   | Download all results of an API.                                                 |
 | [`download all apis`](./results-api/download.md#3-download-all-apis)         | Download all results of all APIs.                                               |
-| [`download report`](./results-api/download.md#4-download-report)             | Download the WPT report of an API of a session.                                 |
-| [`download multi report`](./results-api/download.md#5-download-multi-report) | Download the WPT report of an API of multiple sessions.                         |
+| [`view report`](./results-api/download.md#4-download-report)                 | View the WPT report of an API of a session.                                     |
+| [`view multi report`](./results-api/download.md#5-download-multi-report)     | View the WPT report of an API of multiple sessions.                             |
 | [`download overview`](./results-api/download.md#6-download-overview)         | Download an overview of results of all APIs of a session.                       |
 | [`view report`](./results-api/view.md#1-view-report)                         | Read an url to a hosted version of a WPT report for an API of a session.        |
 | [`view multi report`](./results-api/view.md#2-view-multi-report)             | Read an url to a hosted version of a WPT report for an API of multiple session. |

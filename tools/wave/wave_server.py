@@ -1,5 +1,7 @@
-import sys
+from __future__ import unicode_literals
 import os
+import logging
+
 from . import configuration_loader
 
 from .network.http_handler import HttpHandler
@@ -17,15 +19,21 @@ from .testing.event_dispatcher import EventDispatcher
 
 class WaveServer(object):
     def initialize(self,
-                   configuration_file_path=u".",
-                   application_directory_path=u"",
-                   reports_enabled=False):
-        sys.stdout.write(u"Loading configuration ...")
-        sys.stdout.flush()
+                   tests,
+                   configuration_file_path=None,
+                   application_directory_path=None,
+                   reports_enabled=None):
+        if configuration_file_path is None:
+            configuration_file_path = ""
+        if application_directory_path is None:
+            application_directory_path = ""
+        if reports_enabled is None:
+            reports_enabled = False
 
+        logger = logging.getLogger("wave-server")
+
+        logger.debug("Loading configuration ...")
         configuration = configuration_loader.load(configuration_file_path)
-
-        print(u" done.")
 
         # Initialize Managers
         event_dispatcher = EventDispatcher()
@@ -38,12 +46,12 @@ class WaveServer(object):
             test_loader=test_loader,
             event_dispatcher=event_dispatcher,
             tests_manager=tests_manager,
-            results_directory=configuration[u"results_directory_path"],
+            results_directory=configuration["results_directory_path"],
             results_manager=results_manager
         )
 
         results_manager.initialize(
-            results_directory_path=configuration[u"results_directory_path"],
+            results_directory_path=configuration["results_directory_path"],
             sessions_manager=sessions_manager,
             tests_manager=tests_manager,
             import_enabled=configuration["import_enabled"],
@@ -58,17 +66,16 @@ class WaveServer(object):
             event_dispatcher=event_dispatcher
         )
 
-        exclude_list_file_path = os.path.abspath(u"./excluded.json")
-        include_list_file_path = os.path.abspath(u"./included.json")
-        manifest_file_path = os.path.abspath(u"./MANIFEST.json")
+        exclude_list_file_path = os.path.abspath("./excluded.json")
+        include_list_file_path = os.path.abspath("./included.json")
         test_loader.initialize(
             exclude_list_file_path,
             include_list_file_path,
             results_manager=results_manager,
-            api_titles=configuration[u"api_titles"]
+            api_titles=configuration["api_titles"]
         )
 
-        test_loader.load_tests(manifest_file_path)
+        test_loader.load_tests(tests)
 
         # Initialize HTTP handlers
         static_handler = StaticHandler(
@@ -79,18 +86,21 @@ class WaveServer(object):
         sessions_api_handler = SessionsApiHandler(
             sessions_manager=sessions_manager,
             results_manager=results_manager,
-            event_dispatcher=event_dispatcher
+            event_dispatcher=event_dispatcher,
+            web_root=configuration["web_root"]
         )
         tests_api_handler = TestsApiHandler(
             tests_manager=tests_manager,
             sessions_manager=sessions_manager,
-            wpt_port=configuration[u"wpt_port"],
-            wpt_ssl_port=configuration[u"wpt_ssl_port"],
-            hostname=configuration[u"hostname"],
+            wpt_port=configuration["wpt_port"],
+            wpt_ssl_port=configuration["wpt_ssl_port"],
+            hostname=configuration["hostname"],
             web_root=configuration["web_root"],
             test_loader=test_loader
         )
-        results_api_handler = ResultsApiHandler(results_manager)
+        results_api_handler = ResultsApiHandler(
+            results_manager,
+            web_root=configuration["web_root"])
 
         # Initialize HTTP server
         http_handler = HttpHandler(
@@ -98,6 +108,7 @@ class WaveServer(object):
             sessions_api_handler=sessions_api_handler,
             tests_api_handler=tests_api_handler,
             results_api_handler=results_api_handler,
-            http_port=configuration[u"wpt_port"]
+            http_port=configuration["wpt_port"],
+            web_root=configuration["web_root"]
         )
         self.handle_request = http_handler.handle_request

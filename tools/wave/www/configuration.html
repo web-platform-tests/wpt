@@ -6,7 +6,6 @@
     <title>Session Configuration - Web Platform Test</title>
     <link rel="stylesheet" href="css/bulma-0.7.5/bulma.min.css" />
     <link rel="stylesheet" href="css/fontawesome-5.7.2.min.css" />
-    <script src="lib/jszip.min.js"></script>
     <script src="lib/utils.js"></script>
     <script src="lib/wave-service.js"></script>
     <script src="lib/ui.js"></script>
@@ -278,7 +277,7 @@
           configurationUi.renderResumeView();
         },
         openResultsPage: function(token) {
-          location.href = "results.html?token=" + token;
+          location.href = WEB_ROOT + "results.html?token=" + token;
         },
         handleAddExludedTestsRaw: function() {
           var excludedTestsTextArea = UI.getElement("excluded-tests-text");

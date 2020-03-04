@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 import shutil
 import re
@@ -40,7 +41,7 @@ class ResultsManager(object):
 
     def create_result(self, token, data):
         result = self.prepare_result(data)
-        test = result[u"test"]
+        test = result["test"]
 
         session = self._sessions_manager.read_session(token)
 
@@ -58,7 +59,7 @@ class ResultsManager(object):
         session.recent_completed_count += 1
         self._sessions_manager.update_session(session)
 
-        api = next((p for p in test.split(u"/") if p != u""), None)
+        api = next((p for p in test.split("/") if p != ""), None)
         if session.recent_completed_count >= self._persisting_interval \
            or self._sessions_manager.is_api_complete(api, session):
             self.persist_session(session)
@@ -81,7 +82,7 @@ class ResultsManager(object):
     def read_results(self, token, filter_path=None):
         filter_api = None
         if filter_path is not None:
-            filter_api = next((p for p in filter_path.split(u"/")
+            filter_api = next((p for p in filter_path.split("/")
                                if p is not None), None)
         cached_results = self._read_from_cache(token)
         persisted_results = self.load_results(token)
@@ -95,8 +96,8 @@ class ResultsManager(object):
                 continue
             for result in results[api]:
                 if filter_path is not None:
-                    pattern = re.compile(u"^" + filter_path.replace(u".", u""))
-                    if pattern.match(result[u"test"].replace(u".", u"")) \
+                    pattern = re.compile("^" + filter_path.replace(".", ""))
+                    if pattern.match(result["test"].replace(".", "")) \
                        is None:
                         continue
                 if api not in filtered_results:
@@ -110,26 +111,26 @@ class ResultsManager(object):
         return session.test_state
 
     def _update_test_state(self, result, session):
-        api = next((p for p in result["test"].split("/") if p != u""), None)
-        if u"subtests" not in result:
-            if result[u"status"] == u"OK":
-                session.test_state[api][u"pass"] += 1
-            elif result[u"status"] == u"ERROR":
-                session.test_state[api][u"fail"] += 1
-            elif result[u"status"] == u"TIMEOUT":
-                session.test_state[api][u"timeout"] += 1
-            elif result[u"status"] == u"NOTRUN":
-                session.test_state[api][u"not_run"] += 1
+        api = next((p for p in result["test"].split("/") if p != ""), None)
+        if "subtests" not in result:
+            if result["status"] == "OK":
+                session.test_state[api]["pass"] += 1
+            elif result["status"] == "ERROR":
+                session.test_state[api]["fail"] += 1
+            elif result["status"] == "TIMEOUT":
+                session.test_state[api]["timeout"] += 1
+            elif result["status"] == "NOTRUN":
+                session.test_state[api]["not_run"] += 1
         else:
-            for test in result[u"subtests"]:
-                if test[u"status"] == u"PASS":
-                    session.test_state[api][u"pass"] += 1
-                elif test[u"status"] == u"FAIL":
-                    session.test_state[api][u"fail"] += 1
-                elif test[u"status"] == u"TIMEOUT":
-                    session.test_state[api][u"timeout"] += 1
-                elif test[u"status"] == u"NOTRUN":
-                    session.test_state[api][u"not_run"] += 1
+            for test in result["subtests"]:
+                if test["status"] == "PASS":
+                    session.test_state[api]["pass"] += 1
+                elif test["status"] == "FAIL":
+                    session.test_state[api]["fail"] += 1
+                elif test["status"] == "TIMEOUT":
+                    session.test_state[api]["timeout"] += 1
+                elif test["status"] == "NOTRUN":
+                    session.test_state[api]["not_run"] += 1
 
         session.test_state[api]["complete"] += 1
         self._sessions_manager.update_session(session)
@@ -146,29 +147,29 @@ class ResultsManager(object):
                 "complete": 0,
             }
             for result in results[api]:
-                if u"subtests" not in result:
-                    if result[u"status"] == u"OK":
-                        test_state[api][u"pass"] += 1
-                    elif result[u"status"] == u"ERROR":
-                        test_state[api][u"fail"] += 1
-                    elif result[u"status"] == u"TIMEOUT":
-                        test_state[api][u"timeout"] += 1
-                    elif result[u"status"] == u"NOTRUN":
-                        test_state[api][u"not_run"] += 1
+                if "subtests" not in result:
+                    if result["status"] == "OK":
+                        test_state[api]["pass"] += 1
+                    elif result["status"] == "ERROR":
+                        test_state[api]["fail"] += 1
+                    elif result["status"] == "TIMEOUT":
+                        test_state[api]["timeout"] += 1
+                    elif result["status"] == "NOTRUN":
+                        test_state[api]["not_run"] += 1
                 else:
-                    for test in result[u"subtests"]:
-                        if test[u"status"] == u"PASS":
-                            test_state[api][u"pass"] += 1
-                        elif test[u"status"] == u"FAIL":
-                            test_state[api][u"fail"] += 1
-                        elif test[u"status"] == u"TIMEOUT":
-                            test_state[api][u"timeout"] += 1
-                        elif test[u"status"] == u"NOTRUN":
-                            test_state[api][u"not_run"] += 1
+                    for test in result["subtests"]:
+                        if test["status"] == "PASS":
+                            test_state[api]["pass"] += 1
+                        elif test["status"] == "FAIL":
+                            test_state[api]["fail"] += 1
+                        elif test["status"] == "TIMEOUT":
+                            test_state[api]["timeout"] += 1
+                        elif test["status"] == "NOTRUN":
+                            test_state[api]["not_run"] += 1
                 test_state[api]["complete"] += 1
         return test_state
 
-    def read_common_passed_tests(self, tokens=[]):
+    def read_common_passed_tests(self, tokens=None):
         if tokens is None or len(tokens) == 0:
             return None
 
@@ -190,13 +191,13 @@ class ResultsManager(object):
 
                 for api_result in result[api]:
                     passed = True
-                    for subtest in api_result[u"subtests"]:
-                        if subtest[u"status"] == u"PASS":
+                    for subtest in api_result["subtests"]:
+                        if subtest["status"] == "PASS":
                             continue
                         passed = False
                         break
 
-                    test = api_result[u"test"]
+                    test = api_result["test"]
 
                     if passed:
                         if test in failed_tests[api]:
@@ -265,9 +266,9 @@ class ResultsManager(object):
                 if re.match(r"\w\w\d{1,3}\.json", file_name) is None:
                     continue
                 file_path = os.path.join(api_directory, file_name)
-                file = open(file_path, "r")
-                data = file.read()
-                file.close()
+                data = None
+                with open(file_path, "r") as file:
+                    data = file.read()
                 result = json.loads(data)
                 results[api] = result["results"]
                 break
@@ -279,7 +280,7 @@ class ResultsManager(object):
         if token not in self._results:
             self._results[token] = {}
         test = result["test"]
-        api = next((p for p in test.split("/") if p != u""), None)
+        api = next((p for p in test.split("/") if p != ""), None)
         if api not in self._results[token]:
             self._results[token][api] = []
         self._results[token][api].append(result)
@@ -317,38 +318,38 @@ class ResultsManager(object):
 
     def prepare_result(self, result):
         harness_status_map = {
-            0: u"OK",
-            1: u"ERROR",
-            2: u"TIMEOUT",
-            3: u"NOTRUN",
-            u"OK": u"OK",
-            u"ERROR": u"ERROR",
-            u"TIMEOUT": u"TIMEOUT",
-            u"NOTRUN": u"NOTRUN"
+            0: "OK",
+            1: "ERROR",
+            2: "TIMEOUT",
+            3: "NOTRUN",
+            "OK": "OK",
+            "ERROR": "ERROR",
+            "TIMEOUT": "TIMEOUT",
+            "NOTRUN": "NOTRUN"
         }
 
         subtest_status_map = {
-            0: u"PASS",
-            1: u"FAIL",
-            2: u"TIMEOUT",
-            3: u"NOTRUN",
-            u"PASS": u"PASS",
-            u"FAIL": u"FAIL",
-            u"TIMEOUT": u"TIMEOUT",
-            u"NOTRUN": u"NOTRUN"
+            0: "PASS",
+            1: "FAIL",
+            2: "TIMEOUT",
+            3: "NOTRUN",
+            "PASS": "PASS",
+            "FAIL": "FAIL",
+            "TIMEOUT": "TIMEOUT",
+            "NOTRUN": "NOTRUN"
         }
 
-        if u"tests" in result:
-            for test in result[u"tests"]:
-                test[u"status"] = subtest_status_map[test[u"status"]]
-                if u"stack" in test:
-                    del test[u"stack"]
-            result[u"subtests"] = result[u"tests"]
-            del result[u"tests"]
+        if "tests" in result:
+            for test in result["tests"]:
+                test["status"] = subtest_status_map[test["status"]]
+                if "stack" in test:
+                    del test["stack"]
+            result["subtests"] = result["tests"]
+            del result["tests"]
 
-        if u"stack" in result:
-            del result[u"stack"]
-        result[u"status"] = harness_status_map[result[u"status"]]
+        if "stack" in result:
+            del result["stack"]
+        result["status"] = harness_status_map[result["status"]]
 
         return result
 
@@ -357,10 +358,10 @@ class ResultsManager(object):
         api_directory = os.path.join(self._results_directory_path, token, api)
 
         browser = parse_user_agent(session.user_agent)
-        abbreviation = abbreviate_browser_name(browser[u"name"])
-        version = browser[u"version"]
-        if u"." in version:
-            version = version.split(u".")[0]
+        abbreviation = abbreviate_browser_name(browser["name"])
+        version = browser["version"]
+        if "." in version:
+            version = version.split(".")[0]
         version = version.zfill(2)
         file_name = abbreviation + version + ".json"
 
@@ -376,21 +377,20 @@ class ResultsManager(object):
 
         file_path = self.get_json_path(token, api)
         file_exists = os.path.isfile(file_path)
-        file = open(file_path, "r+" if file_exists else "w")
 
-        api_results = None
-        if file_exists:
-            data = file.read()
-            api_results = json.loads(data)
-        else:
-            api_results = {"results": []}
+        with open(file_path, "r+" if file_exists else "w") as file:
+            api_results = None
+            if file_exists:
+                data = file.read()
+                api_results = json.loads(data)
+            else:
+                api_results = {"results": []}
 
-        api_results["results"] = api_results["results"] + results
+            api_results["results"] = api_results["results"] + results
 
-        file.seek(0)
-        file.truncate()
-        file.write(json.dumps(api_results, indent=4, separators=(',', ': ')))
-        file.close()
+            file.seek(0)
+            file.truncate()
+            file.write(json.dumps(api_results, indent=4, separators=(',', ': ')))
 
     def _ensure_results_directory_existence(self, api, token, session):
         directory = os.path.join(self._results_directory_path, token, api)
@@ -435,8 +435,10 @@ class ResultsManager(object):
             result_json_files=result_json_files
         )
 
-    def get_comparison_identifier(self, tokens, ref_tokens=[]):
-        comparison_directory = u"comparison"
+    def get_comparison_identifier(self, tokens, ref_tokens=None):
+        if ref_tokens is None:
+            ref_tokens = []
+        comparison_directory = "comparison"
         tokens.sort()
         for token in tokens:
             short_token = token.split("-")[0]
@@ -459,13 +461,12 @@ class ResultsManager(object):
             "info.json"
         )
         info = serialize_session(session)
-        del info[u"running_tests"]
-        del info[u"pending_tests"]
+        del info["running_tests"]
+        del info["pending_tests"]
 
         file_content = json.dumps(info, indent=2)
-        file = open(info_file_path, "w+")
-        file.write(file_content)
-        file.close()
+        with open(info_file_path, "w+") as file:
+            file.write(file_content)
 
     def export_results_api_json(self, token, api):
         results = self.read_results(token)
@@ -475,10 +476,10 @@ class ResultsManager(object):
         file_path = self.get_json_path(token, api)
         if not os.path.isfile(file_path):
             return None
-        file = open(file_path, "r")
-        blob = file.read()
-        file.close()
-        return blob
+
+        with open(file_path, "r") as file:
+            blob = file.read()
+            return blob
 
     def export_results_all_api_jsons(self, token):
         self._sessions_manager.read_session(token)
@@ -508,12 +509,11 @@ class ResultsManager(object):
 
         zip.close()
 
-        file = open(zip_file_name, "r")
-        blob = file.read()
-        file.close()
-        os.remove(zip_file_name)
+        with open(zip_file_name, "r") as file:
+            blob = file.read()
+            os.remove(zip_file_name)
 
-        return blob
+            return blob
 
     def export_results(self, token):
         if token is None:
@@ -536,12 +536,11 @@ class ResultsManager(object):
                 zip.write(file_path, file_name, zipfile.ZIP_DEFLATED)
         zip.close()
 
-        file = open(zip_file_name, "r")
-        blob = file.read()
-        file.close()
-        os.remove(zip_file_name)
+        with open(zip_file_name, "r") as file:
+            blob = file.read()
+            os.remove(zip_file_name)
 
-        return blob
+            return blob
 
     def export_results_overview(self, token):
         session = self._sessions_manager.read_session(token)
@@ -571,13 +570,12 @@ class ResultsManager(object):
 
         zip.close()
 
-        file = open(tmp_file_name, "r")
-        blob = file.read()
-        file.close()
+        with open(tmp_file_name, "r") as file:
+            blob = file.read()
 
-        self.remove_tmp_files()
+            self.remove_tmp_files()
 
-        return blob
+            return blob
 
     def is_import_enabled(self):
         return self._import_enabled
@@ -589,19 +587,20 @@ class ResultsManager(object):
         if not os.path.isfile(info_file_path):
             return None
 
-        info_file = open(info_file_path, "r")
-        data = info_file.read()
-        info_file.close()
-        info = json.loads(str(data))
-        return deserialize_session(info)
+        with open(info_file_path, "r") as info_file:
+            data = info_file.read()
+            info_file.close()
+            info = json.loads(str(data))
+            return deserialize_session(info)
 
     def import_results(self, blob):
         if not self.is_import_enabled:
             raise PermissionDeniedException()
         tmp_file_name = "{}.zip".format(str(time.time()))
-        file = open(tmp_file_name, "w")
-        file.write(blob)
-        file.close()
+
+        with open(tmp_file_name, "w") as file:
+            file.write(blob)
+
         zip = zipfile.ZipFile(tmp_file_name)
         if "info.json" not in zip.namelist():
             raise InvalidDataException("Invalid session ZIP!")

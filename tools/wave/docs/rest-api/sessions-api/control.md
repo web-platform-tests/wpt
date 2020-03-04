@@ -7,19 +7,19 @@ The `start` method changes the status of a session from either `PENDING` or `PAU
 
 ### HTTP Request
 
-`GET /api/sessions/<session_token>/start`
+`POST /api/sessions/<session_token>/start`
 
 ## `pause`
 The `pause` method changes the status of a session from `RUNNING` to `PAUSED` and pauses the execution of tests on the device under test.
 
 ### HTTP Request
 
-`GET /api/sessions/<session_token>/pause`
+`POST /api/sessions/<session_token>/pause`
 
 ## `stop`
 The `stop` method finishes a session early by skipping all pending tests, causing a change of the status to `ABORTED`. It is not possible to undo this action and can only be performed on sessions that are not `ABORTED` or `COMPLETED`.
 
 ### HTTP Request
 
-`GET /api/sessions/<session_token>/stop`
+`POST /api/sessions/<session_token>/stop`
 

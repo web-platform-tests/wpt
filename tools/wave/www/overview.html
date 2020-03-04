@@ -26,7 +26,7 @@
       window.onload = () => {
         const query = utils.parseQuery(location.search);
         if (query.token) {
-          location.href = "results.html" + location.search;
+          location.href = WEB_ROOT + "results.html" + location.search;
         }
         resultsUi.render();
         resultsUi.loadData();
@@ -188,7 +188,7 @@
           resultsUi.renderRecentSessions();
         },
         openSessionResult(token) {
-          location.href = `results.html?token=${token}`;
+					location.href = `${WEB_ROOT}results.html?token=${token}`;
         },
         sortSessions(tableType, column) {
           if (tableType in sortDetail) {
@@ -246,7 +246,7 @@
           const tokens = resultsUi.state.comparison;
           if (!tokens || tokens.length === 0) return;
           const refQuery = reftokens ? `&reftokens=${reftokens}` : "";
-          location.href = `/wave/comparison.html?tokens=${tokens.join(
+					location.href = `${WEB_ROOT}comparison.html?tokens=${tokens.join(
             ","
           )}${refQuery}`;
         },
@@ -333,7 +333,7 @@
             WaveService.importResults(
               data,
               function(token) {
-                location.href = "results.html?token=" + token;
+                location.href = WEB_ROOT + "results.html?token=" + token;
               },
               function(error) {
                 resultsUi.state.importError = error;

@@ -1,7 +1,8 @@
+from __future__ import unicode_literals
 
-STATUS_EVENT = u"status"
-RESUME_EVENT = u"resume"
-TEST_COMPLETED_EVENT = u"test_completed"
+STATUS_EVENT = "status"
+RESUME_EVENT = "resume"
+TEST_COMPLETED_EVENT = "test_completed"
 
 
 class EventDispatcher(object):
@@ -32,8 +33,8 @@ class EventDispatcher(object):
         if token not in self._clients:
             return
         event = {
-            u"type": event_type,
-            u"data": data
+            "type": event_type,
+            "data": data
         }
 
         for client in self._clients[token]:

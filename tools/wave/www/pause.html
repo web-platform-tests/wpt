@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="css/bulma-0.7.5/bulma.min.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/main.css" />
-    <script src="lib/qrcode.js"></script>
+    <script src="lib/davidshimjs/qrcode.js"></script>
     <script src="lib/keycodes.js"></script>
     <script src="lib/wave-service.js"></script>
   </head>
@@ -132,7 +132,7 @@
       });
 
       var resultsUrl =
-        "http://" + location.host + "/overview.html" + location.search;
+        "http://" + location.host + WEB_ROOT + "overview.html" + location.search;
       new QRCode(document.getElementById("qr-code"), resultsUrl);
 
       var resultsButton = document.getElementById("results-button");

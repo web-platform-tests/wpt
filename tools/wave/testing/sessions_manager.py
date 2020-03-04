@@ -1,5 +1,6 @@
 from __future__ import division
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import uuid
 import time
 import os
@@ -16,7 +17,7 @@ from ..data.exceptions.invalid_data_exception import InvalidDataException
 from ..utils.deserializer import deserialize_session
 
 DEFAULT_TEST_TYPES = [AUTOMATIC, MANUAL]
-DEFAULT_TEST_PATHS = [u"/"]
+DEFAULT_TEST_PATHS = ["/"]
 DEFAULT_TEST_AUTOMATIC_TIMEOUT = 60000
 DEFAULT_TEST_MANUAL_TIMEOUT = 300000
 
@@ -38,23 +39,36 @@ class SessionsManager(object):
 
     def create_session(
         self,
-        tests={},
+        tests=None,
         types=None,
-        timeouts={},
-        reference_tokens=[],
-        webhook_urls=[],
-        user_agent=u"",
-        labels=[],
+        timeouts=None,
+        reference_tokens=None,
+        webhook_urls=None,
+        user_agent=None,
+        labels=None,
         expiration_date=None
     ):
-        if u"include" not in tests:
-            tests[u"include"] = DEFAULT_TEST_PATHS
-        if u"exclude" not in tests:
-            tests[u"exclude"] = []
-        if u"automatic" not in timeouts:
-            timeouts[u"automatic"] = DEFAULT_TEST_AUTOMATIC_TIMEOUT
-        if u"manual" not in timeouts:
-            timeouts[u"manual"] = DEFAULT_TEST_MANUAL_TIMEOUT
+        if tests is None:
+            tests = {}
+        if timeouts is None:
+            timeouts = {}
+        if reference_tokens is None:
+            reference_tokens = []
+        if webhook_urls is None:
+            webhook_urls = []
+        if user_agent is None:
+            user_agent = ""
+        if labels is None:
+            labels = []
+
+        if "include" not in tests:
+            tests["include"] = DEFAULT_TEST_PATHS
+        if "exclude" not in tests:
+            tests["exclude"] = []
+        if "automatic" not in timeouts:
+            timeouts["automatic"] = DEFAULT_TEST_AUTOMATIC_TIMEOUT
+        if "manual" not in timeouts:
+            timeouts["manual"] = DEFAULT_TEST_MANUAL_TIMEOUT
         if types is None:
             types = DEFAULT_TEST_TYPES
 
@@ -65,8 +79,8 @@ class SessionsManager(object):
         token = str(uuid.uuid1())
         pending_tests = self._test_loader.get_tests(
             types,
-            include_list=tests[u"include"],
-            exclude_list=tests[u"exclude"],
+            include_list=tests["include"],
+            exclude_list=tests["exclude"],
             reference_tokens=reference_tokens)
 
         browser = parse_user_agent(user_agent)
@@ -151,23 +165,23 @@ class SessionsManager(object):
     ):
         session = self.read_session(token)
         if session is None:
-            raise NotFoundException(u"Could not find session")
+            raise NotFoundException("Could not find session")
         if session.status != PENDING:
             return
 
         if tests is not None:
-            if u"include" not in tests:
-                tests[u"include"] = session.tests[u"include"]
-            if u"exclude" not in tests:
-                tests[u"exclude"] = session.tests[u"exclude"]
+            if "include" not in tests:
+                tests["include"] = session.tests["include"]
+            if "exclude" not in tests:
+                tests["exclude"] = session.tests["exclude"]
             if reference_tokens is None:
                 reference_tokens = session.reference_tokens
             if types is None:
                 types = session.types
 
             pending_tests = self._test_loader.get_tests(
-                include_list=tests[u"include"],
-                exclude_list=tests[u"exclude"],
+                include_list=tests["include"],
+                exclude_list=tests["exclude"],
                 reference_tokens=reference_tokens,
                 types=types
             )
@@ -265,9 +279,9 @@ class SessionsManager(object):
         if not os.path.isfile(info_file):
             return None
 
-        file = open(info_file, "r")
-        info_data = file.read()
-        file.close()
+        info_data = None
+        with open(info_file, "r") as file:
+            info_data = file.read()
         parsed_info_data = json.loads(info_data)
 
         session = deserialize_session(parsed_info_data)

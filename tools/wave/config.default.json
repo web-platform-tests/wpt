@@ -31,13 +31,15 @@
     "none": {}
   },
   "aliases": [],
-  "results": "./results",
-  "timeouts": {
-    "automatic": 60000,
-    "manual": 300000
-  },
-  "enable_results_import": false,
-  "web_root": "/wave",
-  "persisting_interval": 20,
-  "api_titles": []
+  "wave": {
+    "results": "./results",
+    "timeouts": {
+      "automatic": 60000,
+      "manual": 300000
+    },
+    "enable_results_import": false,
+    "web_root": "/_wave",
+    "persisting_interval": 20,
+    "api_titles": []
+  }
 }

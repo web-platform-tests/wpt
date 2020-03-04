@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="css/bulma-0.7.5/bulma.min.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/main.css" />
-    <script src="lib/qrcode.js"></script>
+    <script src="lib/davidshimjs/qrcode.js"></script>
     <script src="lib/keycodes.js"></script>
     <script src="lib/wave-service.js"></script>
   </head>
@@ -100,9 +100,9 @@
           document.getElementById("new-button").style.display = "block";
         }
         document.getElementById("results-page-url").innerHTML =
-          "http://" + location.host + "/overview.html";
+          "http://" + location.host + WEB_ROOT + "overview.html";
         document.getElementById("results-page-url").href =
-          "http://" + location.host + "/overview.html";
+          "http://" + location.host + WEB_ROOT + "overview.html";
       };
 
       function displaySessionConfiguration(configuration) {
@@ -149,7 +149,7 @@
       }
 
       var resultsUrl =
-        "http://" + location.host + "/results.html" + location.search;
+        "http://" + location.host + WEB_ROOT + "results.html" + location.search;
       new QRCode(document.getElementById("qr-code"), resultsUrl);
 
       var resultsButton = document.getElementById("results-button");

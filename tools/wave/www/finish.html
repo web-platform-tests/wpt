@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="css/bulma-0.7.5/bulma.min.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/main.css" />
-    <script src="lib/qrcode.js"></script>
+    <script src="lib/davidshimjs/qrcode.js"></script>
     <script src="lib/keycodes.js"></script>
     <script src="lib/wave-service.js"></script>
   </head>
@@ -115,13 +115,13 @@
       }
 
       function startTests() {
-        sendRequest("GET", "/wave/api/next", null, function(response) {
+        sendRequest("GET", WEB_ROOT + "api/next", null, function(response) {
           location.href = response;
         });
       }
 
       var resultsUrl =
-        "http://" + location.host + "/wave/overview.html" + location.search;
+        "http://" + location.host + WEB_ROOT + "overview.html" + location.search;
       new QRCode(document.getElementById("qr-code"), resultsUrl);
 
       var resultsButton = document.getElementById("results-button");
@@ -131,7 +131,7 @@
 
       var newButton = document.getElementById("new-button");
       newButton.onclick = function() {
-        location.href = "/wave/index.html";
+        location.href = WEB_ROOT + "index.html";
       };
 
       function removeClass(element, className) {

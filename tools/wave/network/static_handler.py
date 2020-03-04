@@ -1,5 +1,6 @@
 from __future__ import with_statement
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 from io import open
 
@@ -7,41 +8,41 @@ from io import open
 class StaticHandler(object):
     def __init__(self, web_root, http_port, https_port):
         self.static_dir = os.path.join(
-            os.getcwd(), u"tools/wave/www")
+            os.getcwd(), "tools/wave/www")
         self._web_root = web_root
         self._http_port = http_port
         self._https_port = https_port
 
     def handle_request(self, request, response):
-        file_path = u"."
+        file_path = request.request_path
 
-        for part in request.request_path.split(u"/")[2:]:
-            file_path = file_path + u"/" + part
+        if self._web_root is not None:
+            file_path = file_path[len(self._web_root):]
 
-        if file_path == u"." or file_path == u"./":
-            file_path = u"index.html"
+        if file_path == "." or file_path == "./" or file_path == "":
+            file_path = "index.html"
 
-        file_path = file_path.split(u"?")[0]
+        file_path = file_path.split("?")[0]
         file_path = os.path.join(self.static_dir, file_path)
 
         headers = []
 
         content_types = {
-            u"html": u"text/html",
-            u"js": u"text/javascript",
-            u"css": u"text/css",
-            u"jpg": u"image/jpeg",
-            u"jpeg": u"image/jpeg",
-            u"ttf": u"font/ttf",
-            u"woff": u"font/woff",
-            u"woff2": u"font/woff2"
+            "html": "text/html",
+            "js": "text/javascript",
+            "css": "text/css",
+            "jpg": "image/jpeg",
+            "jpeg": "image/jpeg",
+            "ttf": "font/ttf",
+            "woff": "font/woff",
+            "woff2": "font/woff2"
         }
 
         headers.append(
-            (u"Content-Type", content_types[file_path.split(u".")[-1]]))
+            ("Content-Type", content_types[file_path.split(".")[-1]]))
 
         data = None
-        with open(file_path, u"rb") as file:
+        with open(file_path, "rb") as file:
             data = file.read()
 
         if file_path.split("/")[-1] == "wave-service.js":

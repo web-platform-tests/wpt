@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/fontawesome.min.css" />
     <script src="lib/keycodes.js"></script>
     <script src="lib/wave-service.js"></script>
-    <script src="lib/qrcode.js"></script>
+    <script src="lib/davidshimjs/qrcode.js"></script>
   </head>
 
   <body>
@@ -179,14 +179,14 @@
 			}
 			var unknownTokenError = document.getElementById("unknown_token_error");
 			resumeButton.onclick = function(event) {
-				location.href = "next.html?token=" + resumeToken;
+				location.href = WEB_ROOT + "next.html?token=" + resumeToken;
 			};
 
 			resumeButton.onkeydown = function(event) {
 				var charCode =
 					typeof event.which === "number" ? event.which : event.keyCode;
 				if (ACTION_KEYS.indexOf(charCode) === -1) return;
-				location.href = "next.html?token=" + resumeToken;
+				location.href = WEB_ROOT + "next.html?token=" + resumeToken;
 			};
 
 			document.onkeydown = function(event) {
@@ -231,7 +231,7 @@
 
 					var configurationUrl =
 						location.origin +
-						WaveService.uriPrefix + "configuration.html?token=" +
+						WEB_ROOT + "configuration.html?token=" +
 						token +
 						"&resume=" +
 						resumeToken;
@@ -244,12 +244,12 @@
 					WaveService.onMessage(function(message) {
 						if (message.type === "resume") {
 							var resumeToken = message.data;
-							location.href = "next.html?token=" + resumeToken;
+							location.href = WEB_ROOT + "next.html?token=" + resumeToken;
 						}
 
 						if (message.type !== "status") return;
 						if (message.data === "pending") return;
-						location.href = "next.html?token=" + token;
+						location.href = WEB_ROOT + "next.html?token=" + token;
 					});
 				}
 			);

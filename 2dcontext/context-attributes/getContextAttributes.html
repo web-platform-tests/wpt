@@ -31,6 +31,9 @@ function runTestScenario(testScenario) {
             assert_equals(contextAttributes.desynchronized,
                 testScenario.expectedContextAttributes.desynchronized);
         }
+        if (testScenario.expectedContextAttributes.desynchronized === true) {
+            assert_false(contextAttributes.antialias);
+        }
     }, testScenario.testDescription);
 }
 

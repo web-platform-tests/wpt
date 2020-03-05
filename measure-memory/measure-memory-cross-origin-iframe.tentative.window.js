@@ -1,16 +1,18 @@
 // META: script=/common/get-host-info.sub.js
 // META: script=./resources/common.js
-// META: timeout=long
 'use strict';
 
 promise_test(async testCase => {
   const frame = document.createElement("iframe");
-  const path = new URL("resources/iframe.sub.html", window.location).pathname;
-  frame.src = `${CROSS_ORIGIN}${path}`;
+  const child = getUrl(CROSS_ORIGIN, "resources/child.sub.html");
+  const grandchild = getUrl(CROSS_ORIGIN, "resources/grandchild.sub.html");
+  frame.src = child;
   document.body.append(frame);
   try {
     let result = await performance.measureMemory();
-    checkMeasureMemory(result);
+    checkMeasureMemory(result, {
+      allowed: [window.location.href, child]
+    });
   } catch (error) {
     if (!(error instanceof DOMException)) {
       throw error;

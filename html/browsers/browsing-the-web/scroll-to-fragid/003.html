@@ -9,17 +9,45 @@
 <div style="height:10000px">Filler</div>
 <div id="test1">scroll 2</div>
 <script>
-test(function() {
-  assert_equals(document.scrollingElement.scrollTop, 0);
-  location.hash = "test";
+const hasBeforematch = document.documentElement.onbeforematch !== undefined;
 
-  var scroll1 = document.scrollingElement.scrollTop;
-  assert_true(scroll1 > 0);
+if (hasBeforematch) {
+  async_test(async t => {
+    assert_equals(document.scrollingElement.scrollTop, 0);
 
-  location.hash = "test1";
-  var scroll2 = document.scrollingElement.scrollTop;
-  assert_true(scroll2 > scroll1);
+    let scroll1;
+    document.getElementById('test').addEventListener('beforematch', () => {
+      requestAnimationFrame(t.step_func(() => {
+        scroll1 = document.scrollingElement.scrollTop;
+        assert_true(scroll1 > 0);
+        location.hash = 'test1';
+      }));
+    });
 
-  location.hash = ""
-});
+    document.getElementById('test1').addEventListener('beforematch', () => {
+      requestAnimationFrame(t.step_func_done(() => {
+        const scroll2 = document.scrollingElement.scrollTop;
+        assert_true(scroll2 > scroll1);
+        location.hash = '';
+      }));
+    });
+
+    location.hash = 'test';
+  });
+
+} else {
+  test(function() {
+    assert_equals(document.scrollingElement.scrollTop, 0);
+    location.hash = "test";
+
+    var scroll1 = document.scrollingElement.scrollTop;
+    assert_true(scroll1 > 0);
+
+    location.hash = "test1";
+    var scroll2 = document.scrollingElement.scrollTop;
+    assert_true(scroll2 > scroll1);
+
+    location.hash = ""
+  });
+}
 </script>

@@ -21,8 +21,6 @@ test_math_X(
     expectedString, // A hopefully-equivalent numeric value; required.
     { // all of these are optional
         type, // "number", "length", etc. See impl for full list. Defaults to "length".
-        base, // a valid value that neither test nor expected should serialize to.
-              // Defaults to an appropriate value for the given 'type'.
         msg, // The message to display for the test; autogenned if not provided.
         msgExtra, // Extra info to put after the auto-genned message.
         prop, // If you want to override the automatic choice of tested property.
@@ -44,9 +42,8 @@ to test that a given value is ±∞, ±0, or NaN:
 
 
 
-function test_math_used(testString, expectedString, {base, msg, msgExtra, type, prop, extraStyle={}}={}) {
+function test_math_used(testString, expectedString, {msg, msgExtra, type, prop, prefix, suffix, extraStyle={}}={}) {
     if(type === undefined) type = "length";
-    let prefix, suffix;
     if(!prop) {
         switch(type) {
             case "number":     prop = "transform"; prefix="scale("; suffix=")"; break;
@@ -60,12 +57,11 @@ function test_math_used(testString, expectedString, {base, msg, msgExtra, type, 
         }
 
     }
-    _test_math({stage:'used', testString, expectedString, type, base, msg, msgExtra, prop, prefix, suffix, extraStyle});
+    _test_math({stage:'used', testString, expectedString, type, msg, msgExtra, prop, prefix, suffix, extraStyle});
 }
 
-function test_math_computed(testString, expectedString, {base, msg, msgExtra, type, prop, extraStyle={}}={}) {
+function test_math_computed(testString, expectedString, {msg, msgExtra, type, prop, prefix, suffix, extraStyle={}}={}) {
     if(type === undefined) type = "length";
-    let prefix, suffix;
     if(!prop) {
         switch(type) {
             case "number":     prop = "transform"; prefix="scale("; suffix=")"; break;
@@ -79,12 +75,11 @@ function test_math_computed(testString, expectedString, {base, msg, msgExtra, ty
         }
 
     }
-    _test_math({stage:'computed', testString, expectedString, type, base, msg, msgExtra, prop, prefix, suffix, extraStyle});
+    _test_math({stage:'computed', testString, expectedString, type, msg, msgExtra, prop, prefix, suffix, extraStyle});
 }
 
-function test_math_specified(testString, expectedString, {base, msg, msgExtra, type, prop, extraStyle={}}={}) {
+function test_math_specified(testString, expectedString, {msg, msgExtra, type, prop, prefix, suffix, extraStyle={}}={}) {
     if(type === undefined) type = "length";
-    let prefix, suffix;
     const stage = "specified";
     if(!prop) {
         switch(type) {
@@ -113,26 +108,23 @@ function test_math_specified(testString, expectedString, {base, msg, msgExtra, t
     }
     let t = testString;
     let e = expectedString;
-    let b = base || _baseFromType(type);
     if(prefix) {
         t = prefix + t;
         e = prefix + e;
-        b = prefix + b;
     }
     if(suffix) {
         t += suffix;
         e += suffix;
-        b += suffix;
     }
     test(()=>{
-        testEl.style[prop] = base;
+        testEl.style[prop] = '';
         testEl.style[prop] = t;
         const usedValue = testEl.style[prop];
-        assert_not_equals(usedValue, base, `${testString} isn't valid in '${prop}'; got the default value instead.`);
-        testEl.style[prop] = base;
+        assert_not_equals(usedValue, '', `${testString} isn't valid in '${prop}'; got the default value instead.`);
+        testEl.style[prop] = '';
         testEl.style[prop] = e;
         const expectedValue = testEl.style[prop];
-        assert_not_equals(expectedValue, base, `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
+        assert_not_equals(expectedValue, '', `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
         assert_equals(usedValue, expectedValue, `${testString} and ${expectedString} serialize to the same thing in ${stage} values.`);
     }, msg || `${testString} should be ${stage}-value-equivalent to ${expectedString}`);
 }
@@ -160,7 +152,7 @@ function test_nan(testString) {
 }
 
 
-function _test_math({stage, testEl, testString, expectedString, type, base, msg, msgExtra, prop, prefix, suffix, extraStyle}={}) {
+function _test_math({stage, testEl, testString, expectedString, type, msg, msgExtra, prop, prefix, suffix, extraStyle}={}) {
     // Find the test element
     if(!testEl) testEl = document.getElementById('target');
     if(testEl == null) throw "Couldn't find #target element to run tests on.";
@@ -175,38 +167,23 @@ function _test_math({stage, testEl, testString, expectedString, type, base, msg,
     }
     let t = testString;
     let e = expectedString;
-    let b = base || _baseFromType(type);
     if(prefix) {
         t = prefix + t;
         e = prefix + e;
-        b = prefix + b;
     }
     if(suffix) {
         t += suffix;
         e += suffix;
-        b += suffix;
     }
     test(()=>{
-        testEl.style[prop] = base;
+        testEl.style[prop] = '';
         testEl.style[prop] = t;
         const usedValue = getComputedStyle(testEl)[prop];
-        assert_not_equals(usedValue, base, `${testString} isn't valid in '${prop}'; got the default value instead.`);
-        testEl.style[prop] = base;
+        assert_not_equals(usedValue, '', `${testString} isn't valid in '${prop}'; got the default value instead.`);
+        testEl.style[prop] = '';
         testEl.style[prop] = e;
         const expectedValue = getComputedStyle(testEl)[prop];
-        assert_not_equals(expectedValue, base, `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
+        assert_not_equals(expectedValue, '', `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
         assert_equals(usedValue, expectedValue, `${testString} and ${expectedString} serialize to the same thing in ${stage} values.`);
     }, msg || `${testString} should be ${stage}-value-equivalent to ${expectedString}`);
-}
-
-function _baseFromType(type) {
-    switch(type) {
-        case "number":     return "1.23"; break;
-        case "integer":    return "123"; break;
-        case "length":     return "123px"; break;
-        case "angle":      return "123deg"; break;
-        case "time":       return "123s"; break;
-        case "resolution": return "123dpi"; break;
-        case "flex":       return "123fr"; break;
-    }
 }

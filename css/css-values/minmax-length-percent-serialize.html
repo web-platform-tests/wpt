@@ -11,10 +11,10 @@
     <div id=target></div>
 </div>
 <script>
-function test_serialization(t,s,c,u, {prop="transition-delay"}={}) {
-    test_specified_serialization(prop, t, s);
-    test_computed_serialization(prop, t, c);
-    if(u) test_used_serialization(prop, t, u);
+function test_serialization(t,s,c,u, {prop}={}) {
+    test_specified_serialization(prop || 'text-indent', t, s);
+    test_computed_serialization(prop || 'text-indent', t, c);
+    if(u) test_used_serialization(prop || 'margin-left', t, u);
 }
 
 // If fully resolvable to a number, serialize to a calc() or all the way to a number.

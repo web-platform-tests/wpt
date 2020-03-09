@@ -29,5 +29,5 @@ function corsPreflightResponseValidation(desc, corsUrl, allowHeaders, allowMetho
 }
 
 var corsUrl = get_host_info().HTTP_REMOTE_ORIGIN + dirname(location.pathname) + RESOURCES_DIR + "preflight.py";
-corsPreflightResponseValidation("Preflight response with bad Allow-Access-Control-Headers", corsUrl, "header name with space", null);
-corsPreflightResponseValidation("Preflight response with bad Allow-Access-Control-Methods", corsUrl, null, "Bad method name");
+corsPreflightResponseValidation("Preflight response with a bad Access-Control-Allow-Headers", corsUrl, "Bad value", null);
+corsPreflightResponseValidation("Preflight response with a bad Access-Control-Allow-Methods", corsUrl, null, "Bad value");

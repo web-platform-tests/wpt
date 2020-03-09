@@ -308,8 +308,7 @@ class SourceFile(object):
                 content = f.read()
 
             data = b"".join((b"blob ", b"%d" % len(content), b"\0", content))
-            hash_str = hashlib.sha1(data).hexdigest()  # type: Text
-            self._hash = hash_str
+            self._hash = hashlib.sha1(data).hexdigest()
 
         return self._hash
 

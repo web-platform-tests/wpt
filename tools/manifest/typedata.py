@@ -257,6 +257,7 @@ class TypeData(TypeDataType):
         json_rv = self._json_data.copy()
 
         def safe_sorter(element):
+            # type: (Tuple[str,str]) -> Tuple[str,str]
             """ key function to sort lists with None values.
 
             Python3 is more strict typewise. Comparing None and str for example is valid

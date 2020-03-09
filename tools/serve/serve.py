@@ -178,9 +178,9 @@ class HtmlWrapperHandler(WrapperHandler):
 
     def check_exposure(self, request):
         if self.global_type:
-            globals = b""
+            globals = ""
             for (key, value) in self._get_metadata(request):
-                if key == b"global":
+                if key == "global":
                     globals = value
                     break
 

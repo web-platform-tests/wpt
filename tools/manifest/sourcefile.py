@@ -108,7 +108,7 @@ def get_default_any_variants():
 
 
 def parse_variants(value):
-    # type: (bytes) -> Set[bytes]
+    # type: (str) -> Set[str]
     """
     Returns a set of variants (bytestrings) defined by a comma-separated value.
     """

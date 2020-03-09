@@ -2,7 +2,7 @@ import hashlib
 import re
 import os
 from collections import deque
-from six import binary_type, PY3, iteritems
+from six import binary_type, iteritems
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
 
@@ -308,11 +308,8 @@ class SourceFile(object):
                 content = f.read()
 
             data = b"".join((b"blob ", b"%d" % len(content), b"\0", content))
-            hash_str = hashlib.sha1(data).hexdigest()  # type: str
-            if PY3:
-                self._hash = hash_str.encode("ascii")
-            else:
-                self._hash = hash_str
+            hash_str = hashlib.sha1(data).hexdigest()  # type: Text
+            self._hash = hash_str
 
         return self._hash
 

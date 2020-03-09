@@ -79,7 +79,7 @@ explicitly-managed secret.
 
 ### Lock down write access to the repo
 
-**Recommended but not yet verified approach:** Create a[new branch protection
+**Recommended but not yet verified approach:** Create a [new branch protection
 rule](https://github.com/web-platform-tests/wpt/settings/branch_protection_rules/new)
 that applies to `*` (i.e. all branches), and check "Restrict who can push to
 matching branches". This should prevent everyone except those with the

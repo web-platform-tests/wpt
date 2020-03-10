@@ -94,8 +94,14 @@ explicitly-managed secret.</p>
 <li><p class="first"><a class="reference external" href="https://domains.google/">Google Domains</a>: https://wpt.fyi</p>
 <ul class="simple">
 <li>foolip&#64;google.com</li>
-<li>jeffcarp&#64;google.com</li>
+<li>robertma&#64;google.com</li>
 <li>mike&#64;bocoup.com</li>
+</ul>
+</li>
+<li><p class="first">(Google internal): https://wpt.live https://wptpr.live</p>
+<ul class="simple">
+<li>foolip&#64;google.com</li>
+<li>robertma&#64;google.com</li>
 </ul>
 </li>
 <li><p class="first"><a class="reference external" href="https://github.com/">GitHub</a>: web-platform-tests</p>
@@ -119,15 +125,17 @@ explicitly-managed secret.</p>
 </ul>
 </div>
 </li>
-<li><p class="first"><a class="reference external" href="https://cloud.google.com/">Google Cloud Platform</a>: wptdashboard</p>
+<li><p class="first"><a class="reference external" href="https://cloud.google.com/">Google Cloud Platform</a>: wptdashboard{-staging}</p>
 <ul class="simple">
-<li>boaz&#64;bocoup.com</li>
+<li>robertma&#64;google.com</li>
+<li>smcgruer&#64;google.com</li>
 <li>foolip&#64;google.com</li>
-<li>geoffers&#64;gmail.com</li>
-<li>jeffcarp&#64;google.com</li>
-<li>markdittmer&#64;google.com</li>
-<li>mike&#64;bocoup.com</li>
-<li>rick&#64;bocoup.com</li>
+</ul>
+</li>
+<li><p class="first"><a class="reference external" href="https://cloud.google.com/">Google Cloud Platform</a>: wpt-live</p>
+<ul class="simple">
+<li>smcgruer&#64;google.com</li>
+<li>robertma&#64;google.com</li>
 </ul>
 </li>
 <li><p class="first"><a class="reference external" href="https://cloud.google.com/">Google Cloud Platform</a>: wpt-pr-bot</p>
@@ -153,6 +161,24 @@ explicitly-managed secret.</p>
 </ul>
 </li>
 </ul>
+</div>
+<div class="section" id="emergency-playbook">
+<h2>Emergency playbook<a class="headerlink" href="#emergency-playbook" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="lock-down-write-access-to-the-repo">
+<h3>Lock down write access to the repo<a class="headerlink" href="#lock-down-write-access-to-the-repo" title="Permalink to this headline">¶</a></h3>
+<p><strong>Recommended but not yet verified approach:</strong> Create a <a class="reference external" href="https://github.com/web-platform-tests/wpt/settings/branch_protection_rules/new">new branch protection
+rule</a>
+that applies to <code class="docutils literal notranslate"><span class="pre">*</span></code> (i.e. all branches), and check “Restrict who can push to
+matching branches”. This should prevent everyone except those with the
+“Maintain” role (currently only the GitHub admins listed above) from pushing
+to <em>any</em> branch. To lift the limit, delete this branch protection rule.</p>
+<p><strong>Alternative approach proven to work in
+<a class="reference external" href="https://github.com/web-platform-tests/wpt/issues/21424">#21424</a>:</strong> Go to
+<a class="reference external" href="https://github.com/web-platform-tests/wpt/settings/access">manage access</a>,
+and change the permission of “reviewers” to “Read”. To lift the limit, change
+it back to “Write”. This has the known downside of <em>resubscribing all reviewers
+to repo notifications</em>.</p>
+</div>
 </div>
 </div>
 
@@ -183,6 +209,7 @@ explicitly-managed secret.</p>
 <li class="toctree-l2"><a class="reference internal" href="#tooling">Tooling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#secrets">Secrets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#third-party-account-owners">Third-party account owners</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#emergency-playbook">Emergency playbook</a></li>
 </ul>
 </li>
 </ul>

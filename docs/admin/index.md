@@ -86,9 +86,9 @@ matching branches". This should prevent everyone except those with the
 "Maintain" role (currently only the GitHub admins listed above) from pushing
 to *any* branch. To lift the limit, delete this branch protection rule.
 
-**Alternative apporach proven to work in
+**Alternative approach proven to work in
 [#21424](https://github.com/web-platform-tests/wpt/issues/21424):** Go to
 [manage access](https://github.com/web-platform-tests/wpt/settings/access),
 and change the permission of "reviewers" to "Read". To lift the limit, change
-it back to "Write". This has the known downside of *resubscring all reviewers
+it back to "Write". This has the known downside of *resubscribing all reviewers
 to repo notifications*.

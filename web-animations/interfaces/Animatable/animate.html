@@ -280,8 +280,8 @@ test(t => {
   assert_equals(anim.effect.target, div, 'The returned element has the correct target element');
   assert_equals(anim.effect.pseudoElement, '::before',
                 'The returned Animation targets the correct selector');
-}, 'animate() with pseudoElement an Animation object targeting ' +
-   'the correct pseudo-element');
+}, 'animate() with pseudoElement (::before with content) ' +
+   'creates an Animation object targeting the correct pseudo-element');
 
 test(t => {
   const div = createDiv(t);
@@ -289,10 +289,10 @@ test(t => {
   assert_equals(anim.effect.target, div, 'The returned element has the correct target element');
   assert_equals(anim.effect.pseudoElement, '::before',
                 'The returned Animation targets the correct selector');
-}, 'animate() with pseudoElement without content creates an Animation object targeting ' +
-   'the correct pseudo-element');
+}, 'animate() with pseudoElement (::before without content) ' +
+   'creates an Animation object targeting the correct pseudo-element');
 
-test(t => {
+   test(t => {
   const div = createDiv(t);
   div.classList.add('pseudo');
   div.style.display = 'list-item';
@@ -300,8 +300,8 @@ test(t => {
   assert_equals(anim.effect.target, div, 'The returned element has the correct target element');
   assert_equals(anim.effect.pseudoElement, '::marker',
                 'The returned Animation targets the correct selector');
-}, 'animate() with pseudoElement an Animation object targeting ' +
-   'the correct pseudo-element for ::marker');
+}, 'animate() with pseudoElement (::marker with content) ' +
+   'creates an Animation object targeting the correct pseudo-element');
 
 test(t => {
   const div = createDiv(t);
@@ -311,21 +311,39 @@ test(t => {
   assert_equals(anim.effect.target, div, 'The returned element has the correct target element');
   assert_equals(anim.effect.pseudoElement, '::first-line',
                 'The returned Animation targets the correct selector');
-}, 'animate() with pseudoElement an Animation object targeting ' +
-   'the correct pseudo-element for ::first-line');
+}, 'animate() with pseudoElement (::first-line) ' +
+   'creates an Animation object targeting the correct pseudo-element');
+
+test(t => {
+  const div = createDiv(t);
+  const anim = div.animate(null, {pseudoElement: '::foo'});
+  assert_equals(anim.effect.target, div, 'The returned element has the correct target element');
+  assert_equals(anim.effect.pseudoElement, '::foo',
+                'The returned Animation targets the correct selector');
+}, 'animate() with an unsupported pseudoElement (::foo) ' +
+   'creates an Animation object targeting the correct pseudo-element');
+
+test(t => {
+  const div = createDiv(t);
+  div.classList.add('pseudo');
+  const anim = div.animate(null, {pseudoElement: ':before'});
+  assert_equals(anim.effect.target, div, 'The returned element has the correct target element');
+  assert_equals(anim.effect.pseudoElement, '::before',
+                'The returned Animation targets the correct selector');
+}, 'animate() with a legacy pseudoElement (:before) with content ' +
+   'creates an Animation object targeting the correct pseudo-element');
 
 for (const pseudo of [
   '',
   'before',
-  '::abc',
-  '::placeholder',
+  ':placeholder',
 ]) {
   test(t => {
     const div = createDiv(t);
-    assert_throws_js(TypeError, () => {
+    assert_throws_dom('SyntaxError', () => {
       div.animate(null, {pseudoElement: pseudo});
     });
-  }, `animate() with the invalid pseudoElement '${pseudo}' throws a TypeError`);
+  }, `animate() with the syntactically invalid pseudoElement '${pseudo}' throws a SyntaxError`);
 }
 
 </script>

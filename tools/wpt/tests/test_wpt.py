@@ -43,6 +43,8 @@ def get_persistent_manifest_path():
 
 @pytest.fixture(scope="module", autouse=True)
 def init_manifest():
+    if sys.version_info >= (3,8):
+        pytest.xfail(reason="mozbase does not completely support python >= 3.8")
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["manifest", "--no-download",
                        "--path", get_persistent_manifest_path()])

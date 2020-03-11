@@ -18,15 +18,18 @@ test(function() {
 function testDecodeSample(encoding, string, bytes) {
   test(function() {
     const typedArray = new Uint8Array(bytes);
-    assert_equals(new TextDecoder(encoding).decode(typedArray), string);
-    assert_equals(new TextDecoder(encoding).decode(typedArray.buffer), string);
-    if (typeof SharedArrayBuffer === 'function') {
-      const shared = new SharedArrayBuffer(typedArray.buffer.byteLength);
-      const sharedTypedArray = new Uint8Array(shared).set(typedArray);
-      assert_equals(new TextDecoder(encoding).decode(sharedTypedArray), string);
-      assert_equals(new TextDecoder(encoding).decode(sharedTypedArray.buffer), string);
-    }
+    assert_equals(new TextDecoder(encoding).decode(new Uint8Array(bytes)), string);
+    assert_equals(new TextDecoder(encoding).decode(new Uint8Array(bytes).buffer), string);
   }, 'Decode sample: ' + encoding);
+  test(function() {
+    const typedArray = new Uint8Array(bytes);
+    function getShared() {
+      const shared = new SharedArrayBuffer(typedArray.buffer.byteLength);
+      return new Uint8Array(shared).set(typedArray);
+    }
+    assert_equals(new TextDecoder(encoding).decode(getShared()), string);
+    assert_equals(new TextDecoder(encoding).decode(getShared().buffer), string);
+  }, 'Decode shared sample: ' + encoding);
 }
 
 // z (ASCII U+007A), cent (Latin-1 U+00A2), CJK water (BMP U+6C34),

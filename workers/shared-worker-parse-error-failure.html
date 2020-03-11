@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>SharedWorker: parse error failure</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+promise_test(async () => {
+  const scriptURL = 'modules/resources/syntax-error.js';
+  const worker = new SharedWorker(scriptURL, { name: 'classic',
+                                               type: 'classic' });
+  return new Promise(resolve => worker.onerror = resolve);
+}, 'Classic shared worker construction for script with syntax error should ' +
+   'dispatch an ErrorEvent.');
+
+promise_test(async () => {
+  const scriptURL = 'modules/resources/syntax-error.js';
+  const worker = new SharedWorker(scriptURL, { name: 'module',
+                                               type: 'module' });
+  return new Promise(resolve => worker.onerror = resolve);
+}, 'Module shared worker construction for script with syntax error should ' +
+   'dispatch an ErrorEvent.');
+
+promise_test(async () => {
+  const scriptURL = 'modules/resources/static-import-syntax-error.js';
+  const worker = new SharedWorker(scriptURL, { type: 'module' });
+  return new Promise(resolve => worker.onerror = resolve);
+}, 'Static import on module shared worker for script with syntax error ' +
+   'should dispatch an ErrorEvent.');
+
+promise_test(async () => {
+  const scriptURL = 'modules/resources/static-import-worker.js';
+  const worker = new SharedWorker(scriptURL, { type: 'classic' });
+  return new Promise(resolve => worker.onerror = resolve);
+}, 'Static import on classic shared worker should dispatch an ErrorEvent.');
+
+</script>

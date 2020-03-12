@@ -66,6 +66,10 @@ export const listing = [
     "description": ""
   },
   {
+    "path": "glslang_available",
+    "description": "Checks that glslang is available. If glslang is not supposed to be available, suppress this test."
+  },
+  {
     "path": "resource_init/sampled_texture_clear",
     "description": "computePass test that sampled texture is cleared"
   },

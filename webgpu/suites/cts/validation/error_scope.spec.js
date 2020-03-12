@@ -8,20 +8,25 @@ export const description = `
 error scope validation tests.
 `;
 import { getGPU } from '../../../framework/gpu/implementation.js';
-import { Fixture, TestGroup, raceWithRejectOnTimeout } from '../../../framework/index.js';
+import { Fixture, TestGroup, assert, raceWithRejectOnTimeout } from '../../../framework/index.js';
 
 class F extends Fixture {
   constructor(...args) {
     super(...args);
 
-    _defineProperty(this, "device", undefined);
+    _defineProperty(this, "_device", undefined);
+  }
+
+  get device() {
+    assert(this.device !== undefined);
+    return this.device;
   }
 
   async init() {
     super.init();
     const gpu = getGPU();
     const adapter = await gpu.requestAdapter();
-    this.device = await adapter.requestDevice();
+    this._device = await adapter.requestDevice();
   }
 
   createErrorBuffer() {

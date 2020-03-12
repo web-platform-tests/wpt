@@ -100,7 +100,7 @@ g.test('from ImageData', async t => {
   const {
     width,
     height
-  } = t.params; // The texture format is rgba8uint, so the bytes per pixel is 4.
+  } = t.params; // The texture format is rgba8unorm, so the bytes per pixel is 4.
 
   const bytesPerPixel = 4;
   const imagePixels = new Uint8ClampedArray(bytesPerPixel * width * height);
@@ -163,7 +163,7 @@ g.test('from canvas', async t => {
   if (imageCanvasContext === null) {
     t.skip('OffscreenCanvas "2d" context not available');
     return;
-  } // The texture format is rgba8uint, so the bytes per pixel is 4.
+  } // The texture format is rgba8unorm, so the bytes per pixel is 4.
 
 
   const bytesPerPixel = 4; // Generate original data.

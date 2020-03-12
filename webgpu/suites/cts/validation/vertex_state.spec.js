@@ -5,6 +5,7 @@
 export const description = `
 vertexState validation tests.
 `;
+import { initGLSL } from '../../../framework/glslang.js';
 import { C, TestGroup } from '../../../framework/index.js';
 import { ValidationTest } from './validation_test.js';
 const MAX_VERTEX_ATTRIBUTES = 16;
@@ -26,7 +27,7 @@ function clone(descriptor) {
 class F extends ValidationTest {
   async init() {
     await super.init();
-    await this.initGLSL();
+    await initGLSL();
   }
 
   getDescriptor(vertexState, vertexShaderCode) {

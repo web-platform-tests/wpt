@@ -4,9 +4,9 @@
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+import { compileGLSL } from '../../framework/glslang.js';
 import { getGPU } from '../../framework/gpu/implementation.js';
 import { Fixture, assert, unreachable } from '../../framework/index.js';
-let glslangInstance;
 
 class DevicePool {
   constructor() {
@@ -53,19 +53,31 @@ export class GPUTest extends Fixture {
   constructor(...args) {
     super(...args);
 
-    _defineProperty(this, "device", undefined);
-
-    _defineProperty(this, "queue", undefined);
+    _defineProperty(this, "objects", undefined);
 
     _defineProperty(this, "initialized", false);
 
     _defineProperty(this, "supportsSPIRV", true);
   }
 
+  get device() {
+    assert(this.objects !== undefined);
+    return this.objects.device;
+  }
+
+  get queue() {
+    assert(this.objects !== undefined);
+    return this.objects.queue;
+  }
+
   async init() {
     await super.init();
-    this.device = await devicePool.acquire();
-    this.queue = this.device.defaultQueue;
+    const device = await devicePool.acquire();
+    const queue = device.defaultQueue;
+    this.objects = {
+      device,
+      queue
+    };
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
     if (isSafari) {
@@ -73,16 +85,17 @@ export class GPUTest extends Fixture {
     }
 
     try {
-      await this.device.popErrorScope();
+      await device.popErrorScope();
       unreachable('There was an error scope on the stack at the beginning of the test');
     } catch (ex) {}
 
-    this.device.pushErrorScope('out-of-memory');
-    this.device.pushErrorScope('validation');
+    device.pushErrorScope('out-of-memory');
+    device.pushErrorScope('validation');
     this.initialized = true;
   }
 
   async finalize() {
+    // Note: finalize is called even if init was unsuccessful.
     await super.finalize();
 
     if (this.initialized) {
@@ -101,42 +114,21 @@ export class GPUTest extends Fixture {
       }
     }
 
-    if (this.device) {
-      devicePool.release(this.device);
-    }
-  }
-
-  async initGLSL() {
-    if (!glslangInstance) {
-      const glslangPath = '../../glslang.js';
-      let glslangModule;
-
-      try {
-        glslangModule = (await import(glslangPath)).default;
-      } catch (ex) {
-        this.skip('glslang is not available');
-      }
-
-      await new Promise(resolve => {
-        glslangModule().then(glslang => {
-          glslangInstance = glslang;
-          resolve();
-        });
-      });
+    if (this.objects) {
+      devicePool.release(this.objects.device);
     }
   }
 
   createShaderModule(desc) {
     if (!this.supportsSPIRV) {
-      this.skip('SPIR-V not available');
+      this.skip('SPIR-V not available in this browser');
     }
 
     return this.device.createShaderModule(desc);
   }
 
   makeShaderModuleFromGLSL(stage, glsl) {
-    assert(glslangInstance !== undefined, 'GLSL compiler is not instantiated. Run `await t.initGLSL()` first');
-    const code = glslangInstance.compileGLSL(glsl, stage, false);
+    const code = compileGLSL(glsl, stage, false);
     return this.device.createShaderModule({
       code
     });

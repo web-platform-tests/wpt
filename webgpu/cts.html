@@ -46,7 +46,13 @@
 </style>
 
 <textarea id=results></textarea>
-<script type=module src=/webgpu/runtime/wpt.js></script>
+<script type=module>
+  import { setGlslangPath } from '/webgpu/framework/glslang_path.js';
+  // To override the glslang.js path:
+  //   setGlslangPath('/path/to/glslang.js);
+
+  import '/webgpu/runtime/wpt.js';
+</script>
 <meta name=variant content='?q=cts:buffers/create_mapped'>
 <meta name=variant content='?q=cts:buffers/map'>
 <meta name=variant content='?q=cts:buffers/map_detach'>
@@ -61,6 +67,7 @@
 <meta name=variant content='?q=cts:copyImageBitmapToTexture'>
 <meta name=variant content='?q=cts:examples'>
 <meta name=variant content='?q=cts:fences'>
+<meta name=variant content='?q=cts:glslang_available'>
 <meta name=variant content='?q=cts:resource_init/sampled_texture_clear'>
 <meta name=variant content='?q=cts:validation/createBindGroup'>
 <meta name=variant content='?q=cts:validation/createBindGroupLayout'>

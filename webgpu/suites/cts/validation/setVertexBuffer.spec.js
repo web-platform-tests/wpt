@@ -5,13 +5,14 @@
 export const description = `
 setVertexBuffer validation tests.
 `;
+import { initGLSL } from '../../../framework/glslang.js';
 import { TestGroup, range } from '../../../framework/index.js';
 import { ValidationTest } from './validation_test.js';
 
 class F extends ValidationTest {
   async init() {
     await super.init();
-    await this.initGLSL();
+    await initGLSL();
   }
 
   getVertexBuffer() {

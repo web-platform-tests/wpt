@@ -1,6 +1,6 @@
 import os.path
 from inspect import isabstract
-from six import ensure_str, iteritems, with_metaclass
+from six import iteritems, with_metaclass
 from six.moves.urllib.parse import urljoin, urlparse
 from abc import ABCMeta, abstractproperty
 
@@ -205,7 +205,7 @@ class TestharnessTest(URLManifestItem):
         if self.jsshell:
             rv[-1]["jsshell"] = True
         if self.script_metadata:
-            rv[-1]["script_metadata"] = [(ensure_str(k), ensure_str(v)) for (k,v) in self.script_metadata]
+            rv[-1]["script_metadata"] = [(k.decode('utf8'), v.decode('utf8')) for (k,v) in self.script_metadata]
         return rv
 
 

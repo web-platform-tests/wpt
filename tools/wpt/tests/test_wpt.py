@@ -44,9 +44,6 @@ def get_persistent_manifest_path():
 
 @pytest.fixture(scope="module", autouse=True)
 def init_manifest():
-    # See https://bugzilla.mozilla.org/show_bug.cgi?id=1621226
-    if sys.version_info >= (3,8):
-        pytest.xfail(reason="mozbase does not completely support python >= 3.8")
     # See https://github.com/pypa/virtualenv/issues/1710
     if sys.version_info[0] >= 3 and platform.system() == "Windows":
         pytest.xfail(reason="virtualenv activation fails in Windows for python3")

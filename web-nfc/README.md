@@ -16,7 +16,7 @@ The `WebNFCTest` interface is defined as:
     setPendingPushCompleted(boolean result); // Sets if the pending push is completed.
     pushedMessage(); // Gets the pushed `NDEFMessageSource`.
     writeOptions(); // Gets the pushed `NDEFWriteOptions`.
-    simulateNonNDEFTagDiscovered(); // Simulates that the NFC device discovered does not expose NDEF technology.
+    RejectPendingNFCOperations(); // Rejects all pending NFC operations with NotSupportedError.
     setIsFormattedTag(boolean isFormatted); // Sets if the NFC tag has formatted NDEF message.
   };
 ```

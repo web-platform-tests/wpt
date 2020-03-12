@@ -358,8 +358,10 @@ var WebNFCTest = (() => {
       }
     }
 
-    // Simulates the device coming in proximity does not expose NDEF technology.
-    simulateNonNDEFTagDiscovered() {
+    // Rejects all pending NFC operations with NotSupportedError to
+    // simulates the device coming in proximity does not expose NDEF
+    // technology and NFC permssion be denied when NFC operation is pending.
+    RejectPendingNFCOperations() {
       // Notify NotSupportedError to all active readers.
       if (this.watchers_.length != 0) {
         this.client_.onError(new device.mojom.NDEFError({

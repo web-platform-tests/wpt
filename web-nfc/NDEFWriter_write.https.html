@@ -178,6 +178,22 @@ nfc_test(async (t, mockNFC) => {
   assert_true(callback_called, 'timeout should have caused the abort');
 }, "NDEFWriter.write should fail if abort write request before write happends.");
 
+nfc_test(async (t, mockNFC) => {
+  const writer = new NDEFWriter();
+
+  //Makes sure push is pending
+  mockNFC.setPendingPushCompleted(false);
+  const promise = writer.write(test_text_data);
+
+  await test_driver.set_permission({ name: 'nfc' }, 'denied', false);
+  const status = await navigator.permissions.query({ name: 'nfc' });
+  assert_equals(status.state, "denied");
+    // Rejects pending write operation
+  mockNFC.RejectPendingNFCOperations();
+  await promise_rejects_dom(t, 'NotSupportedError', promise);
+}, "NDEFWriter.write should fail if deny NFC permission when write operation \
+is pending.");
+
 nfc_test(async t => {
   const writer = new NDEFWriter();
   const controller = new AbortController();
@@ -471,7 +487,7 @@ nfc_test(async (t, mockNFC) => {
   const reader = new NDEFReader();
   await reader.scan();
 
-  mockNFC.simulateNonNDEFTagDiscovered();
+  mockNFC.RejectPendingNFCOperations();
   await promise_rejects_dom(t, 'NotSupportedError', promise);
 }, "NDEFWriter.write should fail when the NFC device coming up does not expose \
 NDEF technology.");

@@ -240,7 +240,7 @@ nfc_test(async (t, mockNFC) => {
   promises.push(promise2);
   await reader2.scan();
 
-  mockNFC.simulateNonNDEFTagDiscovered();
+  mockNFC.RejectPendingNFCOperations();
   await Promise.all(promises);
 }, "Test that NDEFReader.onerror should be fired if the NFC tag does not \
 expose NDEF technology.");
@@ -283,5 +283,22 @@ nfc_test(async (t, mockNFC) => {
   mockNFC.setReadingMessage(message);
   await promise;
 }, "Test that reading message with multiple records should succeed.");
+
+nfc_test(async (t, mockNFC) => {
+  const reader = new NDEFReader();
+  const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
+  const promise = readerWatcher.wait_for("error").then(event => {
+    assert_true(event instanceof ErrorEvent);
+  });
+  await reader.scan();
+
+  await test_driver.set_permission({ name: 'nfc' }, 'denied', false);
+  const status = await navigator.permissions.query({ name: 'nfc' });
+  assert_equals(status.state, "denied");
+  // Rejects pending scan operation
+  mockNFC.RejectPendingNFCOperations();
+  await promise;
+}, "NDEFReader.onerror should be fired if NFC permission is not granted during \
+NFC reading.");
 
 </script>

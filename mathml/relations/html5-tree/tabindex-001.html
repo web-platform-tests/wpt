@@ -6,69 +6,38 @@
 <link rel="help" href="https://mathml-refresh.github.io/mathml-core/#css-styling">
 <link rel="help" href="https://mathml-refresh.github.io/mathml-core/#the-top-level-math-element">
 <meta name="assert" content="Verify default values for the tabIndex attribute">
-<script src="/mathml/support/mathml-fragments.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
   window.addEventListener("load", function() {
-      const mathEl = document.querySelector('math')
-
-      Object.keys(MathMLFragments).forEach(elName => {
-
-        mathEl.innerHTML = `
-          <${elName} id="el" onfocus="alert('fail')"></${elName}>
-          <${elName} id="el-link" href="javascript:alert('fail')" onfocus="alert('fail')"></${elName}>
-        `;
-
-        const htmlLinkableElements = 
-          new Set([
-            'mi', 'mo', 'mn', 'ms', 'mtext', 'mrow'
-          ]);
-
-        const el = mathEl.querySelector('#el');
-        const elLink = mathEl.querySelector('#el-link');
-        
-        const expectTabIndex = function (expected) {
-          assert_equals(el.tabIndex, expected, "no attribute");
-          assert_equals(elLink.tabIndex, expected, "no attribute");
-          
-          el.setAttribute("tabindex", "invalid");
-          elLink.setAttribute("tabindex", "invalid");
-
-          assert_equals(el.getAttribute("tabindex"), "invalid");
-          assert_equals(elLink.getAttribute("tabindex"), "invalid");
-
-          assert_equals(el.tabIndex, expected, "invalid");
-          assert_equals(elLink.tabIndex, expected, "invalid");
-
-          el.setAttribute("tabindex", "9999999999");
-          elLink.setAttribute("tabindex", "9999999999");
-          
-
-          assert_equals(el.getAttribute("tabindex"), "9999999999");
-          assert_equals(elLink.getAttribute("tabindex"), "9999999999");
-          
-
-          assert_equals(el.tabIndex, expected, "too large integer");
-          assert_equals(elLink.tabIndex, expected, "too large integer");
-  
-        }
-        if (htmlLinkableElements.has(elName)) {
-          test(function() {
-              expectTabIndex(0);
-          }, "default and invalid values on MathML link");
-        } else {
-          test(function() {
-              expectTabIndex(1);
-          }, "default and invalid values on non-linkable MathML element"); 
-        }
-      });
+      test(() => {
+          const mrow = document.getElementById('mrow');
+          assert_equals(mrow.tabIndex, 0, "no attribute");
+          mrow.setAttribute("tabindex", "invalid");
+          assert_equals(mrow.getAttribute("tabindex"), "invalid");
+          assert_equals(mrow.tabIndex, 0, "invalid");
+          mrow.setAttribute("tabindex", "9999999999");
+          assert_equals(mrow.getAttribute("tabindex"), "9999999999");
+          assert_equals(mrow.tabIndex, 0, "too large integer");
+      }, "default and invalid values on mrow");
+      test(() => {
+          const mrowLink = document.getElementById('mrow-link');
+          assert_equals(mrow.tabIndex, 0, "no attribute");
+          mrow.setAttribute("tabindex", "invalid");
+          assert_equals(mrow.getAttribute("tabindex"), "invalid");
+          assert_equals(mrow.tabIndex, 0, "invalid");
+          mrow.setAttribute("tabindex", "9999999999");
+          assert_equals(mrow.getAttribute("tabindex"), "9999999999");
+          assert_equals(mrow.tabIndex, 0, "too large integer");
+      }, "default and invalid values on MathML link");
   });
 </script>
 </head>
 <body>
   <div id="log"></div>
   <math>
+    <mrow id="mrow" onfocus="alert('fail')"></mrow>
+    <mrow id="mrow-link" href="javascript:alert('fail')" onfocus="alert('fail')"></mrow>
   </math>
 </body>
 </html>

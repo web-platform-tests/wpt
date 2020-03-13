@@ -19,7 +19,7 @@ my-host { display: block; width: 180px; height: 80px; margin: 10px 20px; padding
 <div id="log"></div>
 <script>
 
-var shadowStyle = '#container { width: 160px; height: 60px; padding: 10px; background: yellow; } #target { margin-left: 5px; background: orange; }';
+var shadowStyle = '#container { width: 160px; height: 60px; padding: 10px; background: yellow; } #target { margin-left: 5px; background: orange; display: block }';
 var host = document.querySelector('my-host');
 
 function attachLoggers(targets)
@@ -50,23 +50,23 @@ test(function () {
 
     assert_equals(eventLogs[0].current, target);
     assert_equals(eventLogs[0].target, target);
-    assert_equals(eventLogs[0].offsetX, 21); // Padding edge of target is at (30px, 20px)
-    assert_equals(eventLogs[0].offsetY, 17);
+    assert_equals(eventLogs[0].offsetX, 6);
+    assert_equals(eventLogs[0].offsetY, 7);
 
     assert_equals(eventLogs[1].current, container);
     assert_equals(eventLogs[1].target, target);
-    assert_equals(eventLogs[1].offsetX, 21);
-    assert_equals(eventLogs[1].offsetY, 17);
+    assert_equals(eventLogs[1].offsetX, 6);
+    assert_equals(eventLogs[1].offsetY, 7);
 
     assert_equals(eventLogs[2].current, host);
     assert_equals(eventLogs[2].target, target);
-    assert_equals(eventLogs[2].offsetX, 21);
-    assert_equals(eventLogs[2].offsetY, 17);
+    assert_equals(eventLogs[2].offsetX, 6);
+    assert_equals(eventLogs[2].offsetY, 7);
 
     assert_equals(eventLogs[3].current, document.body);
     assert_equals(eventLogs[3].target, target);
-    assert_equals(eventLogs[3].offsetX, 21);
-    assert_equals(eventLogs[3].offsetY, 17);
+    assert_equals(eventLogs[3].offsetX, 6);
+    assert_equals(eventLogs[3].offsetY, 7);
 }, 'MouseEvent\'s offsetX and offsetY attributes must be relative to the target.');
 
 var shadowRoot = host.attachShadow({mode: 'closed'});
@@ -87,13 +87,13 @@ test(function () {
 
     assert_equals(eventLogs[0].current, target);
     assert_equals(eventLogs[0].target, target);
-    assert_equals(eventLogs[0].offsetX, 21); // Padding edge of target is at (30px, 20px)
-    assert_equals(eventLogs[0].offsetY, 17);
+    assert_equals(eventLogs[0].offsetX, 6);
+    assert_equals(eventLogs[0].offsetY, 7);
 
     assert_equals(eventLogs[1].current, container);
     assert_equals(eventLogs[1].target, target);
-    assert_equals(eventLogs[1].offsetX, 21);
-    assert_equals(eventLogs[1].offsetY, 17);
+    assert_equals(eventLogs[1].offsetX, 6);
+    assert_equals(eventLogs[1].offsetY, 7);
 
     assert_equals(eventLogs[3].current, host);
     assert_equals(eventLogs[3].target, host);

@@ -73,6 +73,8 @@ function test_fcp(label) {
       const main = document.getElementById('main');
       await new Promise(r => window.addEventListener('load', r))
       await assertNoFirstContentfulPaint(t)
+      main.className = 'intermediate'
+      await assertNoFirstContentfulPaint(t)
       main.className = 'contentful'
       await assertFirstContentfulPaint(t)
     } catch (e) {
@@ -83,4 +85,3 @@ function test_fcp(label) {
     }
   }, label)
 }
-

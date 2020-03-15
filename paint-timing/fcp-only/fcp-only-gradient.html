@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<head>
+<title>Performance Paint Timing Test: FCP should not fire with gradient-only backgrounds</title>
+<style>
+    #main {
+        width: 100px;
+        height: 100px;
+        background-image: linear-gradient(to bottom, orange, blue);
+    }
+
+    .contentful {
+        background-image: url(../resources/circles.png);
+    }
+
+    #log {
+        display: none;
+    }
+</style>
+</head>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+<div id="main"></div>
+</body>
+
+<footer>
+<script>
+    test_fcp("First contentful paint doesn't fire for gradients.")
+</script>
+<footer>
+</html>

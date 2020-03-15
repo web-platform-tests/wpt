@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<head>
+<title>Performance Paint Timing Test: FCP due to background size</title>
+<style>
+    #main {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        background-image: url(../resources/circles.png);
+        background-size: 0 0;
+    }
+
+    #main.contentful {
+        background-size: 100% 100%;
+    }
+
+    #log {
+        display: none;
+    }
+</style>
+</head>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+<div id="main"></div>
+</body>
+
+<footer>
+<script>
+    test_fcp("First contentful paint fires due to background size.")
+</script>
+<footer>
+</html>

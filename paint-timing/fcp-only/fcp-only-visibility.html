@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+<title>Performance Paint Timing Test: FCP due to transform-based intersection with document</title>
+<style>
+    #main {
+        width: 100px;
+        height: 100px;
+        left: 0px;
+        position: relative;
+        top: 0;
+        background-image: url(../resources/circles.png);
+        visibility: hidden;
+    }
+
+    #main.contentful {
+        visibility: visible;
+    }
+
+    #log {
+        display: none;
+    }
+</style>
+</head>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+<div id="main"></div>
+</body>
+
+<footer>
+<script>
+    test_fcp("First contentful paint fires due to transform-based intersection with document.")
+</script>
+<footer>
+</html>

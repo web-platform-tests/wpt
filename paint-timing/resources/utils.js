@@ -65,3 +65,22 @@ function assertFirstContentfulPaint(t) {
     });
   });
 }
+
+function test_fcp(label) {
+  promise_test(async t => {
+    try {
+      assert_precondition(window.PerformancePaintTiming, "Paint Timing isn't supported.");
+      const main = document.getElementById('main');
+      await new Promise(r => window.addEventListener('load', r))
+      await assertNoFirstContentfulPaint(t)
+      main.className = 'contentful'
+      await assertFirstContentfulPaint(t)
+    } catch (e) {
+      document.getElementById('log').style.display = 'block'
+      throw e
+    } finally {
+      document.getElementById('log').style.display = 'block'
+    }
+  }, label)
+}
+

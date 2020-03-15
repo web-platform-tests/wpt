@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <head>
-<title>Performance Paint Timing Test: FCP when canvas context is created</title>
+<title>Performance Paint Timing Test: FCP due to loaded video poster</title>
+<style>#log {display: none}</style>
 </head>
 <body>
-<style>#log {display: none}</style>
 <script src="../resources/utils.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<canvas id="canvas" width="50" height="50"></canvas>
+<video id="video" width="50" height="50"></canvas>
 </body>
 
 <footer>
@@ -17,9 +17,14 @@
         assert_precondition(window.PerformancePaintTiming, "Paint Timing isn't supported.");
         await new Promise(r => window.addEventListener('load', r))
         await assertNoFirstContentfulPaint(t)
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d')
-        context.fillRect(0, 0, 100, 100)
+        const video = document.getElementById('video')
+        const src = '../resources/circles.png'
+        const image = new Image()
+        image.src = src
+        video.setAttribute('poster', src)
+        await new Promise(resolve => {
+            image.onload = async () => resolve()
+        })
         await assertFirstContentfulPaint(t)
     } catch (e) {
       document.getElementById('log').style.display = 'block'
@@ -27,7 +32,7 @@
     } finally {
       document.getElementById('log').style.display = 'block'
     }
-  }, 'Canvas should count as contentful when context is created')
+  }, 'Video should become contentful when poster is loaded')
 </script>
 <footer>
 </html>

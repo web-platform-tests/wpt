@@ -1,21 +1,16 @@
 <!DOCTYPE html>
 <head>
-<title>Performance Paint Timing Test: FCP due to background image, in two steps</title>
+<title>Performance Paint Timing Test: FCP should still fire for invisible text</title>
 <style>
     #main {
+        position: relative;
         width: 100px;
         height: 100px;
-    }
-
-    .intermediate {
         visibility: hidden;
+        color: rgba(0, 0, 0, 0);
     }
 
-    .contentful, .intermediate {
-        background-image: url(../resources/circles.png);
-    }
-
-    .contentful {
+    #main.contentful {
         visibility: visible;
     }
 
@@ -28,12 +23,14 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/utils.js"></script>
-<div id="main"></div>
+<div id="main">
+    INVISIBLE
+</div>
 </body>
 
 <footer>
 <script>
-    test_fcp("First contentful paint fires due to background image in two steps.")
+    test_fcp("First contentful paint fires due to pseudo-element becoming visible.")
 </script>
 <footer>
 </html>

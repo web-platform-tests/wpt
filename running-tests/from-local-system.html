@@ -94,7 +94,7 @@ started using:</p>
 </pre></div>
 </div>
 <p>And on Windows (this must be run in a PowerShell session with Administrator privileges):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python wpt make-hosts-file <span class="p">|</span> Out-File %SystemRoot%<span class="se">\S</span>ystem32<span class="se">\d</span>rivers<span class="se">\e</span>tc<span class="se">\h</span>osts -Encoding ascii -Append
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python wpt make-hosts-file | Out-File $env:SystemRoot\System32\drivers\etc\hosts -Encoding ascii -Append
 </pre></div>
 </div>
 <p>If you are behind a proxy, you also need to make sure the domains above are

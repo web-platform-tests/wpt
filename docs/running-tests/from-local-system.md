@@ -76,7 +76,7 @@ On Linux, macOS or other UNIX-like system:
 
 And on Windows (this must be run in a PowerShell session with Administrator privileges):
 
-```pwsh
+```
 python wpt make-hosts-file | Out-File $env:SystemRoot\System32\drivers\etc\hosts -Encoding ascii -Append
 ```
 

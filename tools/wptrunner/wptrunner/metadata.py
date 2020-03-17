@@ -376,8 +376,8 @@ class ExpectedUpdater(object):
             success = self.get_wptreport_data(line)
             if not success:
                 break
-            else:
-                return
+        else:
+            return
 
         # Assume the file is a raw log
         log_file.seek(0)

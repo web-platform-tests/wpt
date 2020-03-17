@@ -45,5 +45,10 @@ const testCases = [
         scriptURL: '/workers/modules/resources/eval-dynamic-import-worker.js',
         expectation: ['export-on-load-script.js'],
         description: 'eval(import()).'
+    },
+    {
+        scriptURL: `http://www1.${location.host}/workers/modules/resources/post-message-on-load-cors-worker.js`,
+        expectation: ['LOADED'],
+        description: 'Cross-origin.'
     }
 ];

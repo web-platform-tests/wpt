@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<head>
+<title>Performance Paint Timing Test: FCP with SVG</title>
+<style>
+    #main {
+        width: 100px;
+        height: 100px;
+        left: 0px;
+        position: relative;
+    }
+
+    #circle {
+//      display: none;
+    }
+
+    #main.contentful #circle {
+        display: block;
+    }
+
+    #log {
+        display: none;
+    }
+</style>
+</head>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+<div id="main">
+  <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+      <circle id="myCircle" cx="5" cy="5" r="4" stroke="blue"/>
+    </defs>
+    <use id="circle" href="#myCircle" fill="green" />
+  </svg>
+</div>
+</body>
+
+<footer>
+<script>
+    test_fcp("First contentful paint fires when SVG becomes contentful.")
+</script>
+<footer>
+</html>

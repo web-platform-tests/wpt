@@ -66,22 +66,24 @@ function assertFirstContentfulPaint(t) {
   });
 }
 
-function test_fcp(label) {
-  promise_test(async t => {
-    try {
-      assert_precondition(window.PerformancePaintTiming, "Paint Timing isn't supported.");
-      const main = document.getElementById('main');
-      await new Promise(r => window.addEventListener('load', r))
-      await assertNoFirstContentfulPaint(t)
-      main.className = 'intermediate'
-      await assertNoFirstContentfulPaint(t)
-      main.className = 'contentful'
-      await assertFirstContentfulPaint(t)
-    } catch (e) {
-      document.getElementById('log').style.display = 'block'
-      throw e
-    } finally {
-      document.getElementById('log').style.display = 'block'
-    }
-  }, label)
+function didReceiveFCP() {
+  return performance.getEntriesByName('first-contentful-paint', 'paint').length === 1;
+}
+
+async function test_fcp(label) {
+  const style = document.createElement('style');
+  document.head.appendChild(style);
+  await promise_test(async t => {    
+    assert_precondition(window.PerformancePaintTiming, "Paint Timing isn't supported.");
+    const main = document.getElementById('main');
+    await new Promise(r => window.addEventListener('load', r));
+    await waitForAnimationFrames(numFramesWaiting);
+    assert_false(didReceiveFCP(), 'FCP marked too early.');
+    main.className = 'preFCP';
+    await waitForAnimationFrames(numFramesWaiting);
+    assert_false(didReceiveFCP(), 'FCP marked too early.');
+    main.className = 'contentful';
+    await waitForAnimationFrames(3);
+    assert_true(didReceiveFCP(), 'FCP not received.');
+  }, label);
 }

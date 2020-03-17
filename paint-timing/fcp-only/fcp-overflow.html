@@ -9,6 +9,7 @@
         display: none;
     }
 
+    /* contentful class is defined in test_fcp script. */
     #main.contentful {
         display: block;
     }
@@ -16,10 +17,6 @@
     #text {
         top: 10000px;
         position: relative;
-    }
-
-    #log {
-        display: none;
     }
 </style>
 </head>
@@ -30,11 +27,9 @@
 <div id="main">
     <div id="text">HELLO</div>
 </div>
+<script>
+    test_fcp("First contentful paint fires even when element is hidden due to overflow.")
+</script>
 </body>
 
-<footer>
-<script>
-    test_fcp("First contentful paint fires even when element is hidden due to.")
-</script>
-<footer>
 </html>

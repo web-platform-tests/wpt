@@ -1,26 +1,23 @@
 <!DOCTYPE html>
 <head>
-<title>Performance Paint Timing Test: FCP due to background image, in two steps</title>
+<title>Performance Paint Timing Test: FCP should fire for background image only when visible</title>
 <style>
     #main {
         width: 100px;
         height: 100px;
     }
 
-    .intermediate {
+    /* contentful and preFCP classes are defined in test_fcp script. */
+    #main.preFCP {
         visibility: hidden;
     }
 
-    .contentful, .intermediate {
+    #main.contentful,  #main.preFCP {
         background-image: url(../resources/circles.png);
     }
 
-    .contentful {
+    #main.contentful {
         visibility: visible;
-    }
-
-    #log {
-        display: none;
     }
 </style>
 </head>
@@ -29,11 +26,9 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/utils.js"></script>
 <div id="main"></div>
+<script>
+    test_fcp("First contentful paint firesfor background image only when visible.");
+</script>
 </body>
 
-<footer>
-<script>
-    test_fcp("First contentful paint fires due to background image in two steps.")
-</script>
-<footer>
 </html>

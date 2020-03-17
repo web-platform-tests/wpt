@@ -10,12 +10,9 @@
         color: rgba(0, 0, 0, 0);
     }
 
+    /* contentful class is defined in test_fcp script. */
     #main.contentful {
         visibility: visible;
-    }
-
-    #log {
-        display: none;
     }
 </style>
 </head>
@@ -26,11 +23,8 @@
 <div id="main">
     INVISIBLE
 </div>
-</body>
-
-<footer>
 <script>
     test_fcp("First contentful paint fires due to pseudo-element becoming visible.")
 </script>
-<footer>
+</body>
 </html>

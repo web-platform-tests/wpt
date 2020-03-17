@@ -14,12 +14,9 @@
         display: none;
     }
 
+    /* contentful class is defined in test_fcp script. */
     #main.contentful #text{
         display: block;
-    }
-
-    #log {
-        display: none;
     }
 </style>
 </head>
@@ -29,13 +26,10 @@
 <script src="../resources/utils.js"></script>
 <div id="main">
     <div id="whitespace">   </div>
-    <div id="text">T</div>
+    <div id="text">TEXT</div>
 </div>
-</body>
-
-<footer>
 <script>
     test_fcp("Whitespace should not count as contentful.")
 </script>
-<footer>
+</body>
 </html>

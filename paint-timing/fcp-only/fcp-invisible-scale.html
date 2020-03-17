@@ -12,12 +12,9 @@
         background-image: url(../resources/circles.png);
     }
 
+    /* contentful class is defined in test_fcp script. */
     #main.contentful {
         transform: none;
-    }
-
-    #log {
-        display: none;
     }
 </style>
 </head>
@@ -26,11 +23,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/utils.js"></script>
 <div id="main"></div>
-</body>
-
-<footer>
 <script>
     test_fcp("First contentful paint fires due to scale becoming positive.")
 </script>
-<footer>
+</body>
 </html>

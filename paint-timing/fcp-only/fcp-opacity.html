@@ -12,12 +12,9 @@
         opacity: 0;
     }
 
+    /* contentful class is defined in test_fcp script. */
     #main.contentful {
         opacity: 0.1;
-    }
-
-    #log {
-        display: none;
     }
 </style>
 </head>
@@ -26,11 +23,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/utils.js"></script>
 <div id="main"></div>
-</body>
-
-<footer>
 <script>
-    test_fcp("First contentful paint fires due to opacity-revealed element.")
+    test_fcp("First contentful paint fires due to opacity-revealed element.");
 </script>
-<footer>
+</body>
 </html>

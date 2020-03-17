@@ -8,26 +8,18 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <canvas id="canvas" width="50" height="50"></canvas>
-</body>
-
-<footer>
 <script>
   promise_test(async t => {
-    try {
-        assert_precondition(window.PerformancePaintTiming, "Paint Timing isn't supported.");
-        await new Promise(r => window.addEventListener('load', r))
-        await assertNoFirstContentfulPaint(t)
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d')
-        context.fillRect(0, 0, 100, 100)
-        await assertFirstContentfulPaint(t)
-    } catch (e) {
-      document.getElementById('log').style.display = 'block'
-      throw e
-    } finally {
-      document.getElementById('log').style.display = 'block'
-    }
-  }, 'Canvas should count as contentful when context is created')
+    assert_precondition(window.PerformancePaintTiming, "Paint Timing isn't supported.");
+    await new Promise(r => window.addEventListener('load', r));
+    await assertNoFirstContentfulPaint(t);
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    context.fillRect(0, 0, 100, 100);
+    await assertFirstContentfulPaint(t);
+    document.getElementById('log').style.display = 'block';
+  }, 'Canvas should count as contentful when context is created');
 </script>
-<footer>
+</body>
+
 </html>

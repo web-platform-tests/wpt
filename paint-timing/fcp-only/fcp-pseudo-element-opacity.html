@@ -13,12 +13,9 @@
         opacity: 0;
     }
 
+    /* contentful class is defined in test_fcp script. */
     #main.contentful:after {
         opacity: 0.5;
-    }
-
-    #log {
-        display: none;
     }
 </style>
 </head>
@@ -28,11 +25,8 @@
 <script src="../resources/utils.js"></script>
 <div id="main">
 </div>
-</body>
-
-<footer>
 <script>
     test_fcp("First contentful paint fires due to pseudo-element getting positive opacity.")
 </script>
-<footer>
+</body>
 </html>

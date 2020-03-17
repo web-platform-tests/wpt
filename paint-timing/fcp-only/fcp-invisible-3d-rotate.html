@@ -9,15 +9,11 @@
         transform: rotateY(90deg);
         position: relative;
         top: 0;
-        background-image: url(../resources/circles.png);
     }
 
+    /* contentful class is defined in test_fcp script. */
     #main.contentful {
         transform: none;
-    }
-
-    #log {
-        display: none;
     }
 </style>
 </head>
@@ -25,12 +21,9 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/utils.js"></script>
-<div id="main"></div>
-</body>
-
-<footer>
+<div id="main">Text</div>
 <script>
     test_fcp("First contentful paint fires due to 3d rotation into view.")
 </script>
-<footer>
+</body>
 </html>

@@ -10,12 +10,9 @@
         background-size: 0 0;
     }
 
+    /* contentful class is defined in test_fcp script. */
     #main.contentful {
         background-size: 100% 100%;
-    }
-
-    #log {
-        display: none;
     }
 </style>
 </head>
@@ -24,11 +21,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/utils.js"></script>
 <div id="main"></div>
-</body>
-
-<footer>
 <script>
-    test_fcp("First contentful paint fires due to background size.")
+    test_fcp("First contentful paint fires due to background size.");
 </script>
-<footer>
+</body>
 </html>

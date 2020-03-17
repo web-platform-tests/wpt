@@ -7,12 +7,10 @@
         height: 100px;
     }
 
-    .contentful {
+    /* contentful class is defined in test_fcp script. */
+    #main.contentful {
         background-image: -webkit-image-set(url(../resources/circles.png) 1x);
-    }
-
-    #log {
-        display: none;
+        background-image: image-set(url(../resources/circles.png) 1x);
     }
 </style>
 </head>
@@ -21,11 +19,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/utils.js"></script>
 <div id="main"></div>
-</body>
-
-<footer>
 <script>
-    test_fcp("First contentful paint fires due to background image in image-set.")
+    test_fcp("First contentful paint fires due to background image in image-set.");
 </script>
-<footer>
+</body>
 </html>

@@ -13,12 +13,9 @@
         display: none;
     }
 
+    /* contentful class is defined in test_fcp script. */
     #main.contentful:after {
         display: block;
-    }
-
-    #log {
-        display: none;
     }
 </style>
 </head>
@@ -28,11 +25,8 @@
 <script src="../resources/utils.js"></script>
 <div id="main">
 </div>
-</body>
-
-<footer>
 <script>
     test_fcp("First contentful paint fires due to pseudo-element text.")
 </script>
-<footer>
+</body>
 </html>

@@ -11,12 +11,9 @@
         background-image: url(../resources/circles.png);
     }
 
+    /* contentful class is defined in test_fcp script. */
     #main.contentful {
         left: 0px;
-    }
-
-    #log {
-        display: none;
     }
 </style>
 </head>
@@ -25,11 +22,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/utils.js"></script>
 <div id="main"></div>
-</body>
-
-<footer>
 <script>
     test_fcp("First contentful paint fires due to intersection with document.")
 </script>
-<footer>
+</body>
 </html>

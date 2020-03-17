@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <head>
-<title>Performance Paint Timing Test: FCP due to loaded video poster</title>
+<title>Performance Paint Timing Test: FCP due to loaded video frame</title>
 <style>#log {display: none}</style>
 </head>
 <body>
 <script src="../resources/utils.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<video id="video" width="50" height="50"></video>
+<video id="video" autoplay></video>
 </body>
 
 <footer>
@@ -18,12 +18,9 @@
         await new Promise(r => window.addEventListener('load', r))
         await assertNoFirstContentfulPaint(t)
         const video = document.getElementById('video')
-        const src = '../resources/circles.png'
-        const image = new Image()
-        image.src = src
-        video.setAttribute('poster', src)
+        video.setAttribute('src', '/media/test.mp4')
         await new Promise(resolve => {
-            image.onload = async () => resolve()
+          video.oncanplay = resolve
         })
         await assertFirstContentfulPaint(t)
     } catch (e) {
@@ -32,7 +29,7 @@
     } finally {
       document.getElementById('log').style.display = 'block'
     }
-  }, 'Video should become contentful when poster is loaded')
+  }, 'Video should become contentful when first frame is loaded')
 </script>
 <footer>
 </html>

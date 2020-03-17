@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test that frame removal cancels its revalidations</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<body>
+<script>
+
+function with_iframe(url) {
+  return new Promise(function(resolve) {
+    var frame = document.createElement('iframe');
+    frame.src = url;
+    frame.onload = function() { resolve(frame); };
+    document.body.appendChild(frame);
+  });
+}
+
+const wait_for_message = () => {
+  return new Promise((resolve, reject) => {
+    window.addEventListener('message', e => {
+      resolve(e);
+    });
+  });
+};
+
+promise_test(async t => {
+  let frame = await with_iframe("resources/frame-removal.html");
+  frame.contentWindow.postMessage('start', '*');
+  let message = await wait_for_message();
+  let request_token = message.data;
+
+  frame.remove();
+  const revalidation_check = await fetch(`resources/stale-script.py?query&query_delay=6&token=` + request_token);
+  assert_equals(revalidation_check.headers.get('Count'), '1');
+  t.done();
+}, 'Frame removal should cancel its revalidations');
+</script>
+</body>

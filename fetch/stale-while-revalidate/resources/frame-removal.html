@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test that frame removal cancels its revalidations</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<body>
+<script>
+var request_token = token();
+
+window.onmessage = async function(e) {
+  if (e.data == 'start') {
+    const response = await fetch(`stale-script.py?token=` + request_token);
+    // Wait until resource is completely fetched to allow caching before next fetch.
+    const body = await response.text();
+    const responseFromStale = await fetch(`stale-script.py?token=` + request_token);
+
+    assert_equals(response.headers.get('Unique-Id'), responseFromStale.headers.get('Unique-Id'));
+    const bodyFromStale = await responseFromStale.text();
+    assert_equals(body, bodyFromStale);
+
+    window.top.postMessage(request_token, '*');
+  }
+};
+</script>
+</body>

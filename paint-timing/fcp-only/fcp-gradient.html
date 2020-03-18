@@ -19,8 +19,7 @@
       assert_precondition(window.PerformancePaintTiming, "Paint Timing isn't supported.");
       const main = document.getElementById('main');
       await new Promise(r => window.addEventListener('load', r));
-      await waitForAnimationFrames(numFramesWaiting);
-      assert_false(didReceiveFCP(), 'FCP marked too early.');
+      await assertNoFirstContentfulPaint();
   },  'Gradients should not count as contentful');
 </script>
 </body>

@@ -11,8 +11,7 @@
   promise_test(async t => {
     assert_precondition(window.PerformancePaintTiming, "Paint Timing isn't supported.");
     await new Promise(r => window.addEventListener('load', r));
-    await waitForAnimationFrames(numFramesWaiting);
-    assert_false(didReceiveFCP());
+    await assertNoFirstContentfulPaint();
     const video = document.getElementById('video');
     const src = '../resources/circles.png';
     const image = new Image();
@@ -21,8 +20,7 @@
     await new Promise(resolve => {
         image.onload = async () => resolve();
     })
-    await waitForAnimationFrames(numFramesWaiting);
-    assert_true(didReceiveFCP());
+    await assertFirstContentfulPaint();
   }, 'Video should become contentful when poster is loaded');
 </script>
 </body>

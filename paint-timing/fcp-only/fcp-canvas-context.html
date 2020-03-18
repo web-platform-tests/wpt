@@ -3,7 +3,6 @@
 <title>Performance Paint Timing Test: FCP when canvas context is created</title>
 </head>
 <body>
-<style>#log {display: none}</style>
 <script src="../resources/utils.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -12,12 +11,13 @@
   promise_test(async t => {
     assert_precondition(window.PerformancePaintTiming, "Paint Timing isn't supported.");
     await new Promise(r => window.addEventListener('load', r));
-    await assertNoFirstContentfulPaint(t);
+    await waitForAnimationFrames(numFramesWaiting);
+    await assertNoFirstContentfulPaint();
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
     context.fillRect(0, 0, 100, 100);
-    await assertFirstContentfulPaint(t);
-    document.getElementById('log').style.display = 'block';
+    await waitForAnimationFrames(numFramesWaiting);
+    await assertFirstContentfulPaint();
   }, 'Canvas should count as contentful when context is created');
 </script>
 </body>

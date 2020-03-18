@@ -11,15 +11,13 @@
   promise_test(async t => {
       assert_precondition(window.PerformancePaintTiming, "Paint Timing isn't supported.");
       await new Promise(r => window.addEventListener('load', r));
-      await waitForAnimationFrames(numFramesWaiting);
-      assert_false(didReceiveFCP());
+      await assertNoFirstContentfulPaint();
       const video = document.getElementById('video');
       video.setAttribute('src', '/media/test.mp4');
       await new Promise(resolve => {
         video.oncanplay = resolve;
       });
-      await waitForAnimationFrames(numFramesWaiting);
-      assert_true(didReceiveFCP());
+      await assertFirstContentfulPaint();
   }, 'Video should become contentful when first frame is loaded');
 </script>
 </body>

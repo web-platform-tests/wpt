@@ -27,42 +27,17 @@ async function assertNoFirstContentfulPaint(t) {
   if (t)
     await waitTime(t);
 
-  waitForAnimationFrames(numFramesWaiting);
-  await new Promise((resolve, reject) => {
-    const observer = new PerformanceObserver(entryList =>{
-      const entries = entryList.getEntriesByName('first-contentful-paint');
-      observer.disconnect();
-      if (entries.length > 0)
-        reject('Received a first contentful paint entry.');
-      else
-        resolve();
-    });
-    observer.observe({type: 'paint', buffered: true});
-    observer.observe({type: 'mark'});
-    performance.mark('flush');
-  });
+  await waitForAnimationFrames(numFramesWaiting);
+  assert_equals(performance.getEntriesByName('first-contentful-paint').length, 0);
 }
 
 // Asserts that FCP is reported, possibly after some wait. The wait is needed
 // because sometimes the FCP relies on some CSS resources to finish loading.
 async function assertFirstContentfulPaint(t) {
   if (t)
-    waitTime(t);
+    await waitTime(t);
   await waitForAnimationFrames(numFramesWaiting);
-  await new Promise((resolve, reject) => {
-    const observer = new PerformanceObserver(entryList =>{
-      const entries = entryList.getEntriesByName('first-contentful-paint');
-      observer.disconnect();
-      if (entries.length === 0)
-        reject('Did not receive a first contentful paint entry.');
-      else {
-        resolve();
-      }
-    });
-    observer.observe({type: 'paint', buffered: true});
-    observer.observe({type: 'mark'});
-    performance.mark('flush');
-  });
+  assert_equals(performance.getEntriesByName('first-contentful-paint').length, 1);
 }
 
 async function test_fcp(label) {

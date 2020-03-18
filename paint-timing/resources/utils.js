@@ -28,7 +28,7 @@ async function assertNoFirstContentfulPaint(t) {
     await waitTime(t);
 
   await waitForAnimationFrames(numFramesWaiting);
-  assert_equals(performance.getEntriesByName('first-contentful-paint').length, 0);
+  assert_equals(performance.getEntriesByName('first-contentful-paint').length, 0, 'First contentful paint marked too early. ');
 }
 
 // Asserts that FCP is reported, possibly after some wait. The wait is needed
@@ -37,7 +37,7 @@ async function assertFirstContentfulPaint(t) {
   if (t)
     await waitTime(t);
   await waitForAnimationFrames(numFramesWaiting);
-  assert_equals(performance.getEntriesByName('first-contentful-paint').length, 1);
+  assert_equals(performance.getEntriesByName('first-contentful-paint').length, 1, 'Expected first contentful paint not found. ');
 }
 
 async function test_fcp(label) {

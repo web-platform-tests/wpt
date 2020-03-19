@@ -5,18 +5,7 @@
 <script src=/resources/testharnessreport.js></script>
 <title>BOM handling</title>
 <div id=log></div>
-<div id=content>これは文字実験です。</div>
 <script>
-
-test(
-  () => {
-    assert_equals(
-      document.getElementById("content").textContent,
-      "\u3053\u308C\u306F\u6587\u5B57\u5B9F\u9A13\u3067\u3059\u3002"
-    );
-  },
-  "The BOM should override any other encoding declarations."
-);
 
 test(
   () => {

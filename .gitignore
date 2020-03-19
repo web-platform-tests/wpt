@@ -8,7 +8,6 @@
 .virtualenv/
 _venv*/
 _virtualenv/
-html-*-cov/
 
 # Node
 node_modules/

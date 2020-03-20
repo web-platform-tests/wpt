@@ -5,11 +5,20 @@
 'use strict';
 
 ["ArrayBuffer", "SharedArrayBuffer"].forEach((arrayBufferOrSharedArrayBuffer) => {
-  const inputChunkData = [73, 32, 240, 159, 146, 153, 32, 115, 116,
-                          114, 101, 97, 109, 115]
+  const inputChunkData = [73, 32, 240, 159, 146, 153, 32, 115, 116, 114, 101, 97, 109, 115];
 
-  const emptyChunk = new Uint8Array(new self[arrayBufferOrSharedArrayBuffer](0));
-  const inputChunk = new Uint8Array(new self[arrayBufferOrSharedArrayBuffer](inputChunkData.length));
+  function createBuffer(type, length = 0) {
+    if (type === "ArrayBuffer") {
+      return new ArrayBuffer(length);
+    } else {
+      // See https://github.com/whatwg/html/issues/5380 for why not `new SharedArrayBuffer()`
+      const sabConstructor = new WebAssembly.Memory({ shared:true, initial:0, maximum:0 }).buffer.constructor;
+      return new sabConstructor(length);
+    }
+  }
+
+  const emptyChunk = new Uint8Array(createBuffer(arrayBufferOrSharedArrayBuffer, 0));
+  const inputChunk = new Uint8Array(createBuffer(arrayBufferOrSharedArrayBuffer, inputChunkData.length));
 
   inputChunk.set(inputChunkData);
 

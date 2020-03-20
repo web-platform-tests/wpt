@@ -1,10 +1,20 @@
+function createBuffer(type, length = 0) {
+  if (type === "ArrayBuffer") {
+    return new ArrayBuffer(length);
+  } else {
+    // See https://github.com/whatwg/html/issues/5380 for why not `new SharedArrayBuffer()`
+    const sabConstructor = new WebAssembly.Memory({ shared:true, initial:0, maximum:0 }).buffer.constructor;
+    return new sabConstructor(length);
+  }
+}
+
 ["ArrayBuffer", "SharedArrayBuffer"].forEach(arrayBufferOrSharedArrayBuffer => {
   test(() => {
-    const buf = new self[arrayBufferOrSharedArrayBuffer](2),
-          view = new Uint8Array(buf),
-          buf2 = new self[arrayBufferOrSharedArrayBuffer](2),
-          view2 = new Uint8Array(buf2),
-          decoder = new TextDecoder("utf-8");
+    const buf = createBuffer(arrayBufferOrSharedArrayBuffer, 2);
+    const view = new Uint8Array(buf);
+    const buf2 = createBuffer(arrayBufferOrSharedArrayBuffer, 2);
+    const view2 = new Uint8Array(buf2);
+    const decoder = new TextDecoder("utf-8");
     view[0] = 0xEF;
     view[1] = 0xBB;
     view2[0] = 0xBF;

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="match" href="block-overflow-1-ref.html">
+<link rel="match" href="block-overflow-1-ref2.html">
+<style type="text/css">
+.separator {
+ height: 20px;
+ background-color: blue;
+}
+#overflow {
+ overflow: visible;
+ margin: 20px 0;
+ background-color: lightgreen;
+}
+#child {
+ height: 200px;
+ margin: 40px 0;
+ background-color: green;
+}
+</style>
+</head>
+<body>
+<div class="separator"></div>
+<div id="overflow">
+ <div id="child"></div>
+</div>
+<div class="separator"></div>
+</body>
+</html>

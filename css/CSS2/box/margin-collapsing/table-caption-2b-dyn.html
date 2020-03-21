@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<head>
+<link rel="match" href="table-caption-2-ref.html">
+<style type="text/css">
+.separator {
+ height: 20px;
+ background-color: green;
+}
+#table {
+ display: table;
+ width: 100px;
+ margin: 20px 0;
+}
+#caption {
+ display: table-cell;
+ height: 20px;
+ margin: 10px 0;
+ background-color: blue;
+}
+</style>
+<script type="text/javascript">
+function test() {
+ document.getElementById('caption').style.display = 'table-caption';
+ document.documentElement.removeAttribute('class');
+}
+document.addEventListener('TestRendered', test);
+</script>
+</head>
+<body>
+<div class="separator"></div>
+<div id="table">
+ <div id="caption"></div>
+</div>
+<div class="separator"></div>
+</body>
+</html>

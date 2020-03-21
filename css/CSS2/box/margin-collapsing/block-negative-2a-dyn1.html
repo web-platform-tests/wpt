@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<head>
+<link rel="match" href="block-negative-2-ref.html">
+<link rel="mismatch" href="block-negative-2-noref1.html">
+<link rel="mismatch" href="block-negative-2-noref2.html">
+<style type="text/css">
+#a {
+ height: 20px;
+ background-color: green;
+}
+#b {
+ display: none;
+ height: 20px;
+ background-color: blue;
+ margin-top: -20px;
+}
+</style>
+<script type="text/javascript">
+function test() {
+ document.getElementById('b').style.display = 'block';
+ document.documentElement.removeAttribute('class');
+}
+document.addEventListener('TestRendered', test);
+</script>
+</head>
+<body>
+<div id="a"></div>
+<div id="b"></div>
+</body>
+</html>

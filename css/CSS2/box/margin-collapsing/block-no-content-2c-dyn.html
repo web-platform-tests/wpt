@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<head>
+<link rel="match" href="block-no-content-2-ref.html">
+<style type="text/css">
+#block1 {
+ height: 20px;
+ margin-bottom: 30px;
+ background-color: green;
+}
+#margin-only {
+ margin-bottom: 10px;
+}
+#block2 {
+ height: 20px;
+ margin-top: 20px;
+ background-color: green;
+}
+</style>
+<script type="text/javascript">
+function test() {
+ document.getElementById('margin-only').style.marginTop = '40px';
+ document.documentElement.removeAttribute('class');
+}
+document.addEventListener('TestRendered', test);
+</script>
+</head>
+<body>
+<div id="block1"></div>
+<div id="margin-only"></div>
+<div id="block2"></div>
+</body>
+</html>

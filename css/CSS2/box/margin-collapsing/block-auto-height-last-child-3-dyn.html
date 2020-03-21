@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<head>
+<link rel="match" href="block-auto-height-last-child-3-ref.html">
+<style type="text/css">
+#last-child {
+ height: 20px;
+ margin-bottom: 20px;
+ background-color: blue;
+}
+#separator {
+ height: 20px;
+ background-color: green;
+}
+#parent {
+ margin-bottom: 0px;
+}
+</style>
+<script type="text/javascript">
+function test() {
+ document.getElementById('parent').style.marginBottom = '-20px';
+ document.documentElement.removeAttribute('class');
+}
+document.addEventListener('TestRendered', test);
+</script>
+</head>
+<body>
+<div id="parent">
+ <div id="last-child"></div>
+</div>
+<div id="separator"></div>
+</body>
+</html>

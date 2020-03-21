@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<head>
+<link rel="match" href="block-fix-height-last-child-4-ref.html">
+<style type="text/css">
+#parent {
+ min-height: 100px;
+ background-color: lightgreen;
+}
+#last-child {
+ height: 10px;
+ margin-bottom: 20px;
+ background-color: green;
+}
+#separator {
+ height: 20px;
+ background-color: blue;
+}
+</style>
+<script type="text/javascript">
+function test() {
+ document.getElementById('parent').style.height = '50px';
+ document.documentElement.removeAttribute('class');
+}
+document.addEventListener('TestRendered', test);
+</script>
+</head>
+<body>
+<div id="parent">
+ <div id="last-child"></div>
+</div>
+<div id="separator"></div>
+</body>
+</html>

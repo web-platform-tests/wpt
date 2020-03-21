@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<head>
+<link rel="match" href="block-float-2a-ref.html">
+<style type="text/css">
+#separator {
+ height: 20px;
+ background-color: green;
+}
+#float {
+ float: left;
+ width: 50px;
+ margin: 20px 0;
+ background-color: green;
+}
+#child {
+ height: 20px;
+ background-color: lightgreen;
+}
+</style>
+<script type="text/javascript">
+function test() {
+ document.getElementById('child').style.margin = '40px 0';
+ document.documentElement.removeAttribute('class');
+}
+document.addEventListener('TestRendered', test);
+</script>
+</head>
+<body>
+<div id="separator"></div>
+<div id="float">
+ <div id="child"></div>
+</div>
+</body>
+</html>

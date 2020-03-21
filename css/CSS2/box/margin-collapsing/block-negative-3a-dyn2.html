@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<head>
+<link rel="match" href="block-negative-3-ref.html">
+<link rel="match" href="block-negative-3-ref2.html">
+<link rel="mismatch" href="block-negative-3-noref1.html">
+<link rel="mismatch" href="block-negative-3-noref2.html">
+<style type="text/css">
+html, body {
+ margin: 0; padding: 5px;
+}
+div {
+ height: 20px;
+ background-color: green;
+}
+#positive {
+ margin-bottom: 100px;
+}
+#negative {
+ margin-top: 0px;
+}
+</style>
+<script type="text/javascript">
+function test() {
+ document.getElementById('negative').style.marginTop = '-80px';
+ document.documentElement.removeAttribute('class');
+}
+document.addEventListener('TestRendered', test);
+</script>
+</head>
+<body>
+<div id="positive"></div>
+<div id="negative"></div>
+</body>
+</html>

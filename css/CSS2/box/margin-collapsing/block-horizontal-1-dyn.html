@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<head>
+<link rel="match" href="block-horizontal-1-ref.html">
+<link rel="mismatch" href="block-horizontal-1-noref.html">
+<style type="text/css">
+#float-blue {
+ float: left;
+ margin-right: 20px;
+ background-color: blue;
+ width: 40px;
+ height: 100px;
+}
+.dyn {
+ display: none;
+}
+.float-green {
+ float: left;
+ margin: 0 20px;
+ background-color: green;
+ width: 40px;
+ height: 100px;
+}
+</style>
+<script type="text/javascript">
+function test() {
+ document.getElementsByClassName('dyn')[0].style.display = 'block';
+ document.documentElement.removeAttribute('class');
+}
+document.addEventListener('TestRendered', test);
+</script>
+</head>
+<body>
+<div id="float-blue"></div>
+<div class="float-green dyn"></div>
+<div class="float-green"></div>
+</body>
+</html>

@@ -20,7 +20,7 @@ promise_setup(async () => {
     worker.port.onmessage = e => {
       resolve(e.data.length == 1 && e.data[0] == 'export-on-load-script.js');
     };
-    worker.onerror = () => reject(false);
+    worker.onerror = () => resolve(false);
   });
   assert_precondition(
     supportsModuleWorkers,

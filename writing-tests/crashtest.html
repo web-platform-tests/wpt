@@ -52,6 +52,9 @@ root. At the time when the test would otherwise have ended a <code class="docuti
 event is emitted; test authors can use this event to perform modifications that
 are guaranteed not to be batched with the initial paint. This matches the
 behaviour of <a class="reference internal" href="reftests.html"><span class="doc">reftests</span></a>.</p>
+<p>Note that crash tests <strong>do not</strong> need to include <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> or use any of
+the <a class="reference internal" href="testharness-api.html"><span class="doc">testharness API</span></a> (e.g. they do not need to declare a
+<code class="docutils literal notranslate"><span class="pre">test(..)</span></code>).</p>
 </div>
 
 

@@ -2,6 +2,7 @@
 <title>SharedWorker: parse error failure</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../support/check-error-arguments.js"></script>
 <script>
 
 // Check if module shared worker is supported.
@@ -27,23 +28,12 @@ promise_setup(async () => {
   );
 });
 
-const checkArguments = (args) => {
-  assert_equals(args.a.constructor, Event);
-  assert_true('message' in args.a, 'Event.message');
-  assert_equals(typeof args.a.message, 'string', 'Event.message');
-  assert_equals(args.a.filename, location.href + '/resources/syntax-error.js'),
-                'Event.filename');
-  assert_equals(args.a.lineno, 1, 'Event.lineno');
-  assert_equals(args.b, undefined, 'unexpected second argument to onerror');
-  assert_equals(args.c, undefined, 'unexpected third argument to onerror');
-};
-
 promise_test(async () => {
   const scriptURL = 'resources/syntax-error.js';
   const worker = new SharedWorker(scriptURL, { type: 'module' });
   const args = await new Promise(resolve =>
-      worker.onerror = (a, b, c) => resolve({a, b, c}));
-  checkArguments(args);
+      worker.onerror = (...args) => resolve(args));
+  window.checkErrorArguments(args);
 }, 'Module shared worker construction for script with syntax error should ' +
    'dispatch an event named error.');
 
@@ -51,8 +41,8 @@ promise_test(async () => {
   const scriptURL = 'resources/static-import-syntax-error.js';
   const worker = new SharedWorker(scriptURL, { type: 'module' });
   const args = await new Promise(resolve =>
-      worker.onerror = (a, b, c) => resolve({a, b, c}));
-  checkArguments(args);
+      worker.onerror = (...args) => resolve(args));
+  window.checkErrorArguments(args);
 }, 'Static import on module shared worker for script with syntax error ' +
    'should dispatch an event named error.');
 

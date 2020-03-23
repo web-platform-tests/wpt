@@ -1,0 +1,23 @@
+<!doctype html>
+<title>Regression test for crbug.com/1063652</title>
+<link rel="help" href="https://drafts.css-houdini.org/css-paint-api/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=target></div>
+<script>
+// This is a regression test for crbug.com/1063652, the test pass as long as it
+// doesn't crash.
+test(function() {
+  CSS.registerProperty({
+    name: '--c',
+    syntax: '<number> | initial-value',
+    initialValue: 'initial-value',
+    inherits: false,
+  });
+  let animation = target.animate({
+    '--c': [, '300' ],
+  }, {
+    duration: 1,
+  });
+}, "This test should not crash");
+</script>

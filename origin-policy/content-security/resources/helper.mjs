@@ -70,3 +70,4 @@ export function runCSPTest({ unsafeEval, img }) {
     );
   }
 }
+

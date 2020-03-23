@@ -2,7 +2,9 @@ import copy
 import logging
 import os
 
-from collections import defaultdict, Mapping
+
+from collections import defaultdict
+from six.moves.collections_abc import Mapping
 from six import integer_types, iteritems, itervalues, string_types
 
 from . import sslutils

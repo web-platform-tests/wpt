@@ -141,3 +141,28 @@ def test_drag_and_drop(session,
     final_rect = drag_target.rect
     assert initial_rect["x"] + dx == final_rect["x"]
     assert initial_rect["y"] + dy == final_rect["y"]
+
+
+@pytest.mark.parametrize("drag_duration", [0, 300, 800])
+def test_drag_and_drop_with_draggable_element(session,
+                       test_actions_page,
+                       mouse_chain,
+                       drag_duration):
+    drag_target = session.find.css("#draggable", all=False)
+    drop_target = session.find.css("#droppable", all=False)
+    # Conclude chain with extra move to allow time for last queued
+    # coordinate-update of drag_target and to test that drag_target is "dropped".
+    mouse_chain \
+        .pointer_move(0, 0, origin=drag_target) \
+        .pointer_down() \
+        .pointer_move(50,
+                      25,
+                      duration=drag_duration,
+                      origin=drop_target) \
+        .pointer_up() \
+        .pointer_move(80, 50, duration=100, origin="pointer") \
+        .perform()
+    # mouseup that ends the drag is at the expected destination
+    e = get_events(session)
+    assert e[1]["type"] == "dragstart", "Events captured were {}".format(e)
+    assert e[2]["type"] == "dragover", "Events captured were {}".format(e)

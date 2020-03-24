@@ -10,4 +10,3 @@ promise_test(() => {
     waitForImgSuccess(imgURL)
   ]);
 });
-

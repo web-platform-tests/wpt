@@ -28,4 +28,3 @@ window.runTestsInSubframe = ({ hostname, testJS, expectedIds }) => {
     fetch_tests_from_window(iframe.contentWindow);
   }), "Test setup of the iframe");
 };
-

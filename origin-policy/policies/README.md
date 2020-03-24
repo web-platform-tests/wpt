@@ -3,4 +3,3 @@ These policies are served via the Python script at /.well-known/origin-policy. T
 The human-facing string has no impact on the tests, and just makes it easier to scroll through the list.
 
 The list of potential hostnames is created by `tools/serve/serve.py`'s `_make_origin_policy_subdomains` function, and can be expanded as necessary.
-

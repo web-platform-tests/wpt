@@ -6,4 +6,3 @@ export function runFPTest({ camera, geolocation }) {
     assert_equals(document.featurePolicy.allowsFeature('geolocation', 'https://example.com/'), geolocation, 'geolocation');
   });
 }
-

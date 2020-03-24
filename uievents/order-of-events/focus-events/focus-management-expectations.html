@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Focus management event expectations</title>
+  <link rel="author" title="Mu-An Chiou" href="https://muan.co">
+  <link rel="help" href="https://w3c.github.io/uievents/#event-flow-activation">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+</head>
+
+<body>
+  <button type="button" id="fromEl">Focus management from button</button>
+  <button type="button" id="toEl">To button</button>
+</body>
+
+<script>
+  const from = document.getElementById("fromEl")
+  const to = document.getElementById("toEl")
+
+  async_test(function (t) {
+    from.addEventListener("keydown", function (event) {
+      if (event.key === " ") to.focus()
+    })
+
+    to.addEventListener("click", t.unreached_func("Button should not be clicked"))
+
+    from.focus()
+    new test_driver.Actions().keyDown("\ue00d").keyUp("\ue00d").send().then(() =>
+      t.done()
+    )
+  }, "Keydown to focus should trigger activation")
+</script>
+
+</html>

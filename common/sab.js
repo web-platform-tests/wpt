@@ -1,7 +1,7 @@
 const createBuffer = (() => {
   // See https://github.com/whatwg/html/issues/5380 for why not `new SharedArrayBuffer()`
   const sabConstructor = new WebAssembly.Memory({ shared:true, initial:0, maximum:0 }).buffer.constructor;
-  return (type, length = 0) => {
+  return (type, length) => {
     if (type === "ArrayBuffer") {
       return new ArrayBuffer(length);
     } else if (type === "SharedArrayBuffer") {

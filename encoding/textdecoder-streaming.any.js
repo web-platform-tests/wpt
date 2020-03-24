@@ -1,5 +1,7 @@
 // META: title=Encoding API: Streaming decode
+// META: global=window,worker
 // META: script=resources/encodings.js
+// META: script=/common/sab.js
 
 var string = '\x00123ABCabc\x80\xFF\u0100\u1000\uFFFD\uD800\uDC00\uDBFF\uDFFF';
 var octets = {
@@ -15,16 +17,6 @@ var octets = {
                  0x01,0x00,0x10,0x00,0xFF,0xFD,0xD8,0x00,0xDC,0x00,0xDB,0xFF,
                  0xDF,0xFF]
 };
-
-function createBuffer(type, length = 0) {
-  if (type === "ArrayBuffer") {
-    return new ArrayBuffer(length);
-  } else {
-    // See https://github.com/whatwg/html/issues/5380 for why not `new SharedArrayBuffer()`
-    const sabConstructor = new WebAssembly.Memory({ shared:true, initial:0, maximum:0 }).buffer.constructor;
-    return new sabConstructor(length);
-  }
-}
 
 ["ArrayBuffer", "SharedArrayBuffer"].forEach((arrayBufferOrSharedArrayBuffer) => {
     Object.keys(octets).forEach(function(encoding) {

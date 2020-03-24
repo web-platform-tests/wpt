@@ -1,12 +1,5 @@
-function createBuffer(type, length = 0) {
-  if (type === "ArrayBuffer") {
-    return new ArrayBuffer(length);
-  } else {
-    // See https://github.com/whatwg/html/issues/5380 for why not `new SharedArrayBuffer()`
-    const sabConstructor = new WebAssembly.Memory({ shared:true, initial:0, maximum:0 }).buffer.constructor;
-    return new sabConstructor(length);
-  }
-}
+// META: global=window,worker
+// META: script=/common/sab.js
 
 ["ArrayBuffer", "SharedArrayBuffer"].forEach(arrayBufferOrSharedArrayBuffer => {
   test(() => {

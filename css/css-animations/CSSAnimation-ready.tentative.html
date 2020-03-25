@@ -10,6 +10,7 @@
 @keyframes abc {
   to { transform: translate(10px) }
 }
+@keyframes def {}
 </style>
 <div id="log"></div>
 <script>
@@ -27,6 +28,7 @@ promise_test(async t => {
   assert_not_equals(animation.ready, originalReadyPromise,
                     'After updating animation-play-state a new ready promise'
                     + ' object is created');
+  await animation.ready;
 }, 'A new ready promise is created when setting animation-play-state: running');
 
 promise_test(async t => {
@@ -80,6 +82,7 @@ promise_test(async t => {
   assert_not_equals(animation.ready, originalReadyPromise,
                     'A new Promise object is generated when setting'
                     + ' animation-play-state: paused');
+  await animation.ready;
 }, 'A new ready promise is created when setting animation-play-state: paused');
 
 promise_test(async t => {

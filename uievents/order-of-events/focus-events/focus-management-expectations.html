@@ -16,22 +16,31 @@
 <body>
   <button type="button" id="fromEl">Focus management from button</button>
   <button type="button" id="toEl">To button</button>
+  <button type="button" id="EndTestEl">End test button</button>
 </body>
 
 <script>
   const from = document.getElementById("fromEl")
   const to = document.getElementById("toEl")
+  const endTest = document.getElementById("EndTestEl")
+
+  from.addEventListener("keydown", function (event) {
+    if (event.key === " ") to.focus()
+  })
 
   async_test(function (t) {
-    from.addEventListener("keydown", function (event) {
-      if (event.key === " ") to.focus()
-    })
-
     to.addEventListener("click", t.unreached_func("Button should not be clicked"))
+    endTest.addEventListener('click', () => t.done())
 
+    // execute test
     from.focus()
     new test_driver.Actions().keyDown("\ue00d").keyUp("\ue00d").send().then(() =>
-      t.done()
+      // end test
+      new test_driver.Actions()
+        .pointerMove(0, 0, { origin: endTest })
+        .pointerDown()
+        .pointerUp()
+        .send()
     )
   }, "Keydown to focus should not trigger activation")
 </script>

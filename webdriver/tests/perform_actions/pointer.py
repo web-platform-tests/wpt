@@ -166,3 +166,9 @@ def test_drag_and_drop_with_draggable_element(session,
     e = get_events(session)
     assert e[1]["type"] == "dragstart", "Events captured were {}".format(e)
     assert e[2]["type"] == "dragover", "Events captured were {}".format(e)
+    drag_events_captured = [ev["type"] for ev in e if ev["type"].startswith("drag") or ev["type"].startswith("drop")]
+    assert "dragend" in drag_events_captured
+    assert "dragenter" in drag_events_captured
+    assert "dragexit" in drag_events_captured
+    assert "dragleave" in drag_events_captured
+    assert "drop" in drag_events_captured

@@ -264,7 +264,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             with open(output_path, "rb") as f:
                 # Might need to strip variable headers or something here
                 data = f.read()
-                return True, ensure_str(base64.b64encode(data))
+                return True, [ensure_str(base64.b64encode(data))]
 
     def do_test(self, test):
         result = self.implementation.run_test(test)

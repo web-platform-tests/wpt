@@ -29,7 +29,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                        "timeout_multiplier": timeout_multiplier,
                        "debug_info": kwargs["debug_info"]}
 
-    if test_type == "reftest":
+    if test_type in ("reftest", "print-reftest"):
         executor_kwargs["screenshot_cache"] = cache_manager.dict()
 
     if test_type == "wdspec":
@@ -102,6 +102,51 @@ def _ensure_hash_in_reftest_screenshots(extra):
             item["hash"] = hash_screenshots([item["screenshot"]])[0]
 
 
+def get_pages(ranges_value, total_pages):
+    """Get a set of page numbers to include in a print reftest.
+
+    :param ranges_value: String containing the range specifier from a meta element
+                         e.g. "1-2,4,6-"
+    :param total_pages: Integer total number of pages in the paginated output.
+    :retval: Set containing integer page numbers to include in the comparison e.g.
+             for the example ranges value and 10 total pages this would be
+             {1,2,4,6,7,8,9,10}"""
+    if not ranges_value:
+        return set(range(1, total_pages + 1))
+
+    range_parts = [item.strip() for item in ranges_value.split(",")]
+
+    rv = set()
+    for range_part in range_parts:
+        if "-" not in range_part:
+            try:
+                part = int(range_part)
+            except ValueError:
+                raise ValueError("Page ranges must be either <int> or <int> '-' <int> (found %s)" % range_part)
+            if part <= total_pages:
+                rv.add(part)
+        else:
+            parts = [item.strip() for item in range_part.split("-")]
+            if len(parts) != 2:
+                raise ValueError("Page ranges must be either <int> or <int> '-' <int> (found %s)" % range_part)
+            range_limits = []
+            for part in parts:
+                if part:
+                    try:
+                        range_limits.append(int(part))
+                    except ValueError:
+                        raise ValueError("Page ranges must be either <int> or <int> '-' <int> (found %s)" % range_part)
+                else:
+                    if range_limits:
+                        range_limits.append(total_pages)
+                    else:
+                        range_limits.append(1)
+            if range_limits[0] > total_pages:
+                continue
+            rv |= set(range(range_limits[0], range_limits[1] + 1))
+    return rv
+
+
 def reftest_result_converter(self, test, result):
     extra = result.get("extra", {})
     _ensure_hash_in_reftest_screenshots(extra)
@@ -126,6 +171,7 @@ def pytest_result_converter(self, test, data):
 
 def crashtest_result_converter(self, test, result):
     return test.result_cls(**result), []
+
 
 class ExecutorException(Exception):
     def __init__(self, status, message):
@@ -327,6 +373,10 @@ class CrashtestExecutor(TestExecutor):
     convert_result = crashtest_result_converter
 
 
+class PrintRefTestExecutor(TestExecutor):
+    convert_result = reftest_result_converter
+
+
 class RefTestImplementation(object):
     def __init__(self, executor):
         self.timeout_multiplier = executor.timeout_multiplier
@@ -526,7 +576,7 @@ class RefTestImplementation(object):
         return value
 
     def retake_screenshot(self, node, viewport_size, dpi):
-        success, data = get_screenshot_list(node, viewport_size, dpi)
+        success, data = self.get_screenshot_list(node, viewport_size, dpi)
         if not success:
             return False, data
 

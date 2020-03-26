@@ -856,6 +856,10 @@ class MarionetteRefTestExecutor(RefTestExecutor):
         with open(os.path.join(here, "test-wait.js")) as f:
             self.wait_script = f.read() % {"classname": "reftest-wait"}
 
+    def get_implementation(self, reftest_internal):
+        return (InternalRefTestImplementation if reftest_internal
+                else RefTestImplementation)(self)
+
     def setup(self, runner):
         super(MarionetteRefTestExecutor, self).setup(runner)
         self.implementation.setup(**self.implementation_kwargs)

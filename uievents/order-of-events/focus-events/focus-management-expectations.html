@@ -35,12 +35,7 @@
     // execute test
     from.focus()
     new test_driver.Actions().keyDown("\ue00d").keyUp("\ue00d").send().then(() =>
-      // end test
-      new test_driver.Actions()
-        .pointerMove(0, 0, { origin: endTest })
-        .pointerDown()
-        .pointerUp()
-        .send()
+      new test_driver.click(endTest)
     )
   }, "Keydown to focus should not trigger activation")
 </script>

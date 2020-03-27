@@ -29,24 +29,28 @@ test(() => {
     "name": "ShadowRoot",
     "creator": doc => doc.createElementNS("http://www.w3.org/1999/xhtml", "div").attachShadow({mode: "closed"})
   }
-].forEach(dfTest => {
+].forEach(({ name, creator }) => {
   test(() => {
     const doc = new Document();
-    const df = dfTest.creator(doc);
+    const df = creator(doc);
     const child = df.appendChild(new Text('hi'));
     assert_equals(df.ownerDocument, doc);
 
     document.body.appendChild(df);
     assert_equals(df.childNodes.length, 0);
     assert_equals(child.ownerDocument, document);
-    assert_equals(df.ownerDocument, doc);
-  }, `appendChild() and ${dfTest.name}`);
+    if (name === "ShadowRoot") {
+      assert_equals(df.ownerDocument, doc);
+    } else {
+      assert_equals(df.ownerDocument, document);
+    }
+  }, `appendChild() and ${name}`);
 
   test(() => {
     const doc = new Document();
-    const df = dfTest.creator(doc);
+    const df = creator(doc);
     const child = df.appendChild(new Text('hi'));
-    if (dfTest.name === "ShadowRoot") {
+    if (name === "ShadowRoot") {
       assert_throws_dom("HierarchyRequestError", () => document.adoptNode(df));
     } else {
       document.adoptNode(df);
@@ -54,5 +58,5 @@ test(() => {
       assert_equals(child.ownerDocument, document);
       assert_equals(df.ownerDocument, document);
     }
-  }, `adoptNode() and ${dfTest.name}`);
+  }, `adoptNode() and ${name}`);
 });

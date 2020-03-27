@@ -29,8 +29,13 @@
   })
 
   async_test(function (t) {
+    let buttonFocused = false
     to.addEventListener("click", t.unreached_func("Button should not be clicked"))
-    endTest.addEventListener('click', () => t.done())
+    to.addEventListener("focus", () => buttonFocused = true)
+    endTest.addEventListener('click', () => {
+      assert_true(buttonFocused, "Button should be focused")
+      t.step_timeout(() => t.done(), 200)
+    })
 
     // execute test
     from.focus()

@@ -18,3 +18,17 @@ function takeScreenshotDelayed(timeout) {
         takeScreenshot();
     }, timeout);
 }
+
+
+/**
+ * Check a value and if it's false write a failure message to the
+ * document then take the screenshot. This is used to implment
+ * preconditions for reftests that depend on js
+ * @param {bool} value - Value to check for truthiness
+ */
+function failIfNot(value) {
+  if (!value) {
+    document.documentElement.textContent = "PRECONDITION FAILED";
+    takeScreenshot();
+  }
+}

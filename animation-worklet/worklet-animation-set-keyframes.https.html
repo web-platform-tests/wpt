@@ -19,6 +19,7 @@
 <div id="box"></div>
 
 <script>
+  failIfNot(window.WorkletAnimation);
   registerConstantLocalTimeAnimator(500).then(()=>{
     const keyframes_before = [
       { transform: 'translateY(0)' },

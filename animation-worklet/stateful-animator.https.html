@@ -127,6 +127,7 @@
   }
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('stateful_animator_basic').textContent);
     const target = document.getElementById('target');
     const effect = new KeyframeEffect(target, [{ opacity: 0 }], { duration: 1000 });
@@ -144,6 +145,7 @@
   }, "Stateful animator can use its state to update the animation. Pass if test does not timeout");
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('stateless_animator_basic').textContent);
     const target = document.getElementById('target');
     const effect = new KeyframeEffect(target, [{ opacity: 0 }], { duration: 1000 });
@@ -158,6 +160,7 @@
   }, "Stateless animator gets reecreated with 'undefined' state.");
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('stateless_animator_preserves_effect_local_time').textContent);
     const target = document.getElementById('target');
     const effect = new KeyframeEffect(target, [{ opacity: 0 }], { duration: 1000 });
@@ -173,6 +176,7 @@
   }, "Stateless animator should preserve the local time of its effect.");
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('stateless_animator_does_not_copy_effect_object').textContent);
     const target = document.getElementById('target');
     const effect = new KeyframeEffect(target, [{ opacity: 0 }], { duration: 1000 });
@@ -187,6 +191,7 @@
   }, "Stateless animator should not copy the effect object.");
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('state_function_returns_empty').textContent);
     const target = document.getElementById('target');
     const effect = new KeyframeEffect(target, [{ opacity: 0 }], { duration: 1000 });
@@ -201,6 +206,7 @@
   }, "Stateful animator gets recreated with 'undefined' state if state function returns undefined.");
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await runInAnimationWorklet(document.getElementById('state_function_returns_not_serializable').textContent);
     const target = document.getElementById('target');
     const effect = new KeyframeEffect(target, [{ opacity: 0 }], { duration: 1000, iteration: Infinity });

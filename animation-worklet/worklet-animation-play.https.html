@@ -11,6 +11,7 @@
 
 <script>
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await registerConstantLocalTimeAnimator(500);
     const effect = new KeyframeEffect(target, [{ opacity: 0 }], { duration: 1000 });
     const animation = new WorkletAnimation('constant_time', effect);
@@ -26,6 +27,7 @@
   }, "A running worklet animation should output values at specified local time.");
 
   promise_test(async t => {
+    assert_precondition(CSS.animationWorklet);
     await registerConstantLocalTimeAnimator(500);
     const effect = new KeyframeEffect(target, [{ opacity: 0 }], { duration: 1000 });
     const animation = new WorkletAnimation('constant_time', effect);

@@ -19,6 +19,7 @@
 <div id="box"></div>
 
 <script>
+  failIfNot(window.WorkletAnimation);
   registerConstantLocalTimeAnimator(2000).then(() => {
     const box = document.getElementById('box');
     const effect = new KeyframeEffect(box,

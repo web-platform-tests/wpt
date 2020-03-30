@@ -97,6 +97,17 @@ The `TestRendered` event provides a hook for tests to make
 modifications to the test document that are not batched into the
 initial layout/paint.
 
+Some helper functions for working with `reftest-wait` are included in
+`common/reftest-wait.js`. This provides three functions:
+* `takeScreenshot()` - Removes the `reftest-wait` class from the root.
+* `takeScreenshotDelayed(timeout)` - Removes the `reftest-wait` class
+  from the root after waiting `timeout` milliseconds.
+* `failIfNot(value)` - If the provided value evaluates as `false`,
+  replaces the `textContent` of the document element with
+  `PRECONDITION FAILED` and removes the `reftest-wait` class. This is
+  useful when a reftest depends on a DOM API that may not be present
+  in all implementations.
+
 ## Fuzzy Matching
 
 In some situations a test may have subtle differences in rendering

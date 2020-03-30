@@ -44,6 +44,7 @@ function createScrollLinkedWorkletAnimation(test) {
 setup(setupAndRegisterTests, {explicit_done: true});
 
 function setupAndRegisterTests() {
+  assert_precondition(CSS.animationWorklet);
   registerPassthroughAnimator().then(() => {
 
     promise_test(async t => {

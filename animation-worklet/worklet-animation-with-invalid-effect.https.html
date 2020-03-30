@@ -19,6 +19,7 @@
 'use strict';
 
 promise_test(async function() {
+  assert_precondition(CSS.animationWorklet);
   await registerPassthroughAnimator();
   let playFunc = function() {
     let effect = new KeyframeEffect(

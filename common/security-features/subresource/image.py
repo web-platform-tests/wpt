@@ -1,4 +1,4 @@
-import os, sys, array, math, StringIO
+import os, sys, array, math, six
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import subresource
 
@@ -79,7 +79,7 @@ def encode_string_as_bmp_image(string_data):
     img.putdata(color_data)
 
     # Flush image to string.
-    f = StringIO.StringIO()
+    f = six.StringIO()
     img.save(f, "BMP")
     f.seek(0)
 

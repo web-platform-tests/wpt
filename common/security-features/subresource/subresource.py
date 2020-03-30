@@ -1,4 +1,5 @@
-import os, json, urllib, urlparse
+import os, json
+from six.moves.urllib.parse import parse_qsl, SplitResult, urlencode, urlsplit,  urlunsplit
 
 def get_template(template_basename):
     script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -41,7 +42,7 @@ def create_url(request,
                swap_origin=False,
                downgrade=False,
                query_parameter_to_remove="redirection"):
-    parsed = urlparse.urlsplit(request.url)
+    parsed = urlsplit(request.url)
     destination_netloc = parsed.netloc
 
     scheme = parsed.scheme
@@ -72,15 +73,15 @@ def create_url(request,
     if swap_origin:
         destination_netloc = __get_swapped_origin_netloc(destination_netloc)
 
-    parsed_query = urlparse.parse_qsl(parsed.query, keep_blank_values=True)
+    parsed_query = parse_qsl(parsed.query, keep_blank_values=True)
     parsed_query = filter(lambda x: x[0] != query_parameter_to_remove,
                           parsed_query)
 
-    destination_url = urlparse.urlunsplit(urlparse.SplitResult(
+    destination_url = urlunsplit(SplitResult(
         scheme = scheme,
         netloc = destination_netloc,
         path = parsed.path,
-        query = urllib.urlencode(parsed_query),
+        query = urlencode(parsed_query),
         fragment = None))
 
     return destination_url

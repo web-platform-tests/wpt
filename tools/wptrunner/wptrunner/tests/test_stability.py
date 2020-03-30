@@ -65,3 +65,27 @@ def test_get_steps():
     assert steps[0][0] == "Running tests in a loop %d times" % repeat_loop
     assert steps[1][0] == (
         "Running tests in a loop with restarts %d times" % repeat_restart)
+
+
+def test_err_string():
+    assert stability.err_string(
+        {u'OK': 1, u'FAIL': 1}, 1) == u"**Duplicate subtest name**"
+    assert stability.err_string(
+        {u'OK': 2, u'FAIL': 1}, 2) == u"**Duplicate subtest name**"
+    assert stability.err_string({u'SKIP': 1}, 0) == u"Duplicate subtest name"
+    assert stability.err_string(
+        {u'SKIP': 1, u'OK': 1}, 1) == u"Duplicate subtest name"
+
+    assert stability.err_string(
+        {u'FAIL': 1}, 2) == u"**FAIL: 1/2, MISSING: 1/2**"
+    assert stability.err_string(
+        {u'FAIL': 1, u'OK': 1}, 3) == u"**FAIL: 1/3, OK: 1/3, MISSING: 1/3**"
+
+    assert stability.err_string(
+        {u'OK': 1, u'FAIL': 1}, 2) == u"**FAIL: 1/2, OK: 1/2**"
+
+    assert stability.err_string(
+        {u'OK': 2, u'FAIL': 1, u'SKIP': 1}, 4) == u"FAIL: 1/4, OK: 2/4, SKIP: 1/4"
+    assert stability.err_string(
+        {u'FAIL': 1, u'SKIP': 1, u'OK': 2}, 4) == u"FAIL: 1/4, OK: 2/4, SKIP: 1/4"
+

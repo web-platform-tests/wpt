@@ -5,6 +5,7 @@ import io
 import os
 from collections import OrderedDict, defaultdict
 from datetime import datetime
+from six import iteritems
 
 from mozlog import reader
 from mozlog.formatters import JSONFormatter
@@ -278,7 +279,7 @@ def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
     for kwargs_extra in kwargs_extras:
         if kwargs_extra:
             flags_string = " with flags %s" % " ".join(
-                "%s=%s" % item for item in kwargs_extra.iteritems())
+                "%s=%s" % item for item in iteritems(kwargs_extra))
         else:
             flags_string = ""
 

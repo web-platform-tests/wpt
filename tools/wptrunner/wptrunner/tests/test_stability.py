@@ -88,4 +88,3 @@ def test_err_string():
         {u'OK': 2, u'FAIL': 1, u'SKIP': 1}, 4) == u"FAIL: 1/4, OK: 2/4, SKIP: 1/4"
     assert stability.err_string(
         {u'FAIL': 1, u'SKIP': 1, u'OK': 2}, 4) == u"FAIL: 1/4, OK: 2/4, SKIP: 1/4"
-

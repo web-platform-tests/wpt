@@ -119,7 +119,13 @@ test(t => {
     }
     assert_not_equals(get_navigator().serviceWorker, null);
     iframe.remove();
-    assert_throws_js(TypeError, () => get_navigator());
+    let thrown = false;
+    try {
+      get_navigator();
+    } catch (e) {
+      thrown = true;
+    }
+    assert_true(thrown);
   }, 'accessing navigator on a removed frame');
 
 // It seems weird that about:blank and blank.html (the test above) have

@@ -55,8 +55,29 @@
                 mrow.outerHTML = `<mspace width="${marginLeft+mspaceWidth+marginRight}px" height="${mspaceHeight+marginTop}px" depth='${mspaceDepth+marginBottom}px' style='background: green;'></mspace>`;
             });
 
-            compareLayout(element, reference, epsilon);
+            // Compare sizes.
+            compareSize(element, reference, epsilon);
 
+            // Compare children positions.
+            var elementBox = element.getBoundingClientRect();
+            var referenceBox = reference.getBoundingClientRect();
+            for (var i = 0; i < element.children.length; i++) {
+                var childBox = element.children[i].getBoundingClientRect();
+                var referenceChildBox = reference.children[i].getBoundingClientRect();
+                assert_approx_equals(childBox.width + marginLeft + marginRight, referenceChildBox.width, epsilon, "inline size (child ${i})");
+                assert_approx_equals(childBox.height + marginTop + marginBottom, referenceChildBox.height, epsilon, "block size (child ${i})");
+
+                assert_approx_equals(childBox.left - marginLeft - elementBox.left,
+                                     referenceChildBox.left - referenceBox.left,
+                                     epsilon,
+                                     `inline position (child ${i})`);
+                assert_approx_equals(childBox.top - marginTop - elementBox.top,
+                                     referenceChildBox.top - referenceBox.top,
+                                     epsilon,
+                                     `block position (child ${i})`);
+            }
+
+            // Compare preferred widths.
             assert_approx_equals(elementShrinkWrapContainer.offsetWidth, referenceShrinkWrapContainer.offsetWidth, epsilon, "preferred width");
 
         }, `Margin properties on the children of ${tag}`);

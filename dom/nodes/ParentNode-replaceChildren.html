@@ -4,44 +4,45 @@
 <link rel=help href="https://dom.spec.whatwg.org/#dom-parentnode-replacechildren">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="pre-insertion-validation-hierarchy.js"></script>
 <script>
+preInsertionValidateHierarchy("replaceChildren");
 
 function test_replacechildren(node, nodeName) {
-
     test(function() {
-        var parent = node.cloneNode();
+        const parent = node.cloneNode();
         parent.replaceChildren();
         assert_array_equals(parent.childNodes, []);
     }, nodeName + '.replaceChildren() without any argument, on a parent having no child.');
 
     test(function() {
-        var parent = node.cloneNode();
+        const parent = node.cloneNode();
         parent.replaceChildren(null);
         assert_equals(parent.childNodes[0].textContent, 'null');
     }, nodeName + '.replaceChildren() with null as an argument, on a parent having no child.');
 
     test(function() {
-        var parent = node.cloneNode();
+        const parent = node.cloneNode();
         parent.replaceChildren(undefined);
         assert_equals(parent.childNodes[0].textContent, 'undefined');
     }, nodeName + '.replaceChildren() with undefined as an argument, on a parent having no child.');
 
     test(function() {
-        var parent = node.cloneNode();
+        const parent = node.cloneNode();
         parent.replaceChildren('text');
         assert_equals(parent.childNodes[0].textContent, 'text');
     }, nodeName + '.replaceChildren() with only text as an argument, on a parent having no child.');
 
     test(function() {
-        var parent = node.cloneNode();
-        var x = document.createElement('x');
+        const parent = node.cloneNode();
+        const x = document.createElement('x');
         parent.replaceChildren(x);
         assert_array_equals(parent.childNodes, [x]);
     }, nodeName + '.replaceChildren() with only one element as an argument, on a parent having no child.');
 
     test(function() {
-        var parent = node.cloneNode();
-        var child = document.createElement('test');
+        const parent = node.cloneNode();
+        const child = document.createElement('test');
         parent.appendChild(child);
         parent.replaceChildren(null);
         assert_equals(parent.childNodes.length, 1);
@@ -49,35 +50,18 @@ function test_replacechildren(node, nodeName) {
     }, nodeName + '.replaceChildren() with null as an argument, on a parent having a child.');
 
     test(function() {
-        var parent = node.cloneNode();
-        var x = document.createElement('x');
-        var child = document.createElement('test');
+        const parent = node.cloneNode();
+        const x = document.createElement('x');
+        const child = document.createElement('test');
         parent.appendChild(child);
         parent.replaceChildren(x, 'text');
         assert_equals(parent.childNodes.length, 2);
         assert_equals(parent.childNodes[0], x);
         assert_equals(parent.childNodes[1].textContent, 'text');
     }, nodeName + '.replaceChildren() with one element and text as argument, on a parent having a child.');
-
-    test(function() {
-        var parent = node.cloneNode();
-        assert_throws_dom("HierarchyRequestError", () => parent.replaceChildren(parent));
-    }, nodeName + '.replaceChildren() with itself, on a parent having no child.');
-
-    test(function() {
-        var parent = node.cloneNode();
-        var doc = document.implementation.createHTMLDocument();
-        assert_throws_dom("HierarchyRequestError", () => parent.replaceChildren(doc));
-    }, nodeName + '.replaceChildren() with a document, on a parent having no child.');
-
-    test(function() {
-        var parent = node.cloneNode();
-        var doctype = document.implementation.createHTMLDocument().childNodes[0];
-        assert_throws_dom("HierarchyRequestError", () => parent.replaceChildren(doctype));
-    }, nodeName + '.replaceChildren() with a doctype, on a parent having no child.');
 }
 
 test_replacechildren(document.createElement('div'), 'Element');
-test_replacechildren(document.createDocumentFragment(), 'DocumentFrgment');
+test_replacechildren(document.createDocumentFragment(), 'DocumentFragment');
 </script>
 </html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<title>Column flexbox with overflow:auto max-width:min-content items</title>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src='/resources/check-layout-th.js'></script>
+<link rel="author" title="David Grogan" href="dgrogan@chromium.org">
+<!-- I couldn't find anything. Is this specified that we include scrollbars in
+  intrinsic widths? This should test be .tentative? -->
+<link rel="help" href="">
+<meta name="flags" content="" />
+<meta name="assert" content="max-width: min-content includes scrollbar for flexed item in vertical flow" />
+<style>
+.column-flexbox {
+  background: rebeccapurple;
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+}
+
+.overflow-auto-item-under-test {
+  background: orange;
+  overflow-y: auto;
+  max-width: min-content;
+  min-height: 0; /* Remove min-size: auto */
+  line-height: 50px;
+}
+
+.inline-block {
+  display: inline-block;
+  vertical-align: top;
+  height: 10px;
+}
+.wide {
+  background: blue;
+  width: 50px;
+}
+.narrow {
+  background: yellow;
+  width: 20px;
+}
+
+.neighbor-item {
+  background: tan;
+  min-height: 0; /* Remove min-size: auto */
+  position: relative;
+}
+
+/* Just for visual comparison with blue rectangle */
+.abspos-pink-rectangle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 10px;
+  width: 50px;
+  background: hotpink
+}
+
+</style>
+
+<p>
+The scrollbar shouldn't cover any of the blue rectangle:
+the pink rectangle and the blue rectangle should be the same size.
+</p>
+
+<p>
+Case 1: Item's intrinsic height is the same as container's height, but greater than post-flexing height.
+</p>
+
+<div class="column-flexbox" style="height: 100px;">
+  <div class="neighbor-item">
+    <div style="height:100px"></div>
+    <div class="abspos-pink-rectangle"></div>
+  </div>
+  <div class=overflow-auto-item-under-test data-expected-scroll-height=100 data-expected-height=50>
+    <div class="wide inline-block"></div>
+    <div class="narrow inline-block"></div>
+    <div class="narrow inline-block"></div>
+  </div>
+</div>
+
+<p>
+Case 2: Item's intrinsic height is greater than both container's height and post-flexing height.
+</p>
+<div class="column-flexbox" style="height: 90px">
+  <div class="neighbor-item">
+    <div style="height:100px"></div>
+    <div class="abspos-pink-rectangle"></div>
+  </div>
+  <div class=overflow-auto-item-under-test data-expected-scroll-height=100 data-expected-height=45>
+    <div class="wide inline-block"></div>
+    <div class="narrow inline-block"></div>
+    <div class="narrow inline-block"></div>
+  </div>
+</div>
+
+<script>
+checkLayout('.overflow-auto-item-under-test');
+</script>

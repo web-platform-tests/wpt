@@ -1,32 +1,27 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>Node.appendChild: inserting script and stylesheet link from a div</title>
-<link rel=help href="https://dom.spec.whatwg.org/#dom-node-appendChild">
-<link rel=help href="https://dom.spec.whatwg.org/#concept-node-insert">
-<link rel=help href="https://github.com/whatwg/dom/issues/575">
+<title>Node.appendChild: inserting script and stylesheet link from a fragment</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <div id="log"></div>
-</head>
-<body>
 <script>
-var link = document.createElement("link");
-link.rel = "stylesheet";
-link.href = "data:text/css,"
+const happened = [];
+const link = document.createElement("link");
+test(() => {
+  link.rel = "stylesheet";
+  link.href = "data:text/css,"
 
-var script = document.createElement("script");
-var scriptRan = false;
-script.textContent = `
-    assert_not_equals(link.sheet, null, "link does not have a stylesheet");
-    scriptRan = true;
+  const script = document.createElement("script");
+  script.textContent = `
+    happened.push(link.sheet === null);
 `;
 
-var df = document.createDocumentFragment();
-df.appendChild(script);
-df.appendChild(link);
+  const df = document.createDocumentFragment();
+  df.appendChild(script);
+  df.appendChild(link);
 
-assert_false(scriptRan, "script ran");
-document.body.appendChild(df);
-assert_true(scriptRan, "script has not run");
-done();
+  assert_array_equals(happened, []);
+  document.body.appendChild(df);
+  assert_array_equals(happened, [true]);
+});
 </script>

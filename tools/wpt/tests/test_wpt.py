@@ -190,8 +190,9 @@ def test_run_zero_tests():
 def test_run_failing_test():
     """Failing tests should be reported with a non-zero exit status unless the
     `--no-fail-on-unexpected` option has been specified."""
-    if is_port_8000_in_use():
-        pytest.skip("port 8000 already in use")
+    # smcgruer: change to make this test run.
+    #if is_port_8000_in_use():
+    #    pytest.skip("port 8000 already in use")
     failing_test = "/infrastructure/expected-fail/failing-test.html"
 
     assert os.path.isfile("../../%s" % failing_test)

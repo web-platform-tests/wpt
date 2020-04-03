@@ -1849,7 +1849,7 @@ policies and contribution forms [3].
     expose(assert_any, "assert_any");
 
     /**
-     * Assert that a feature is implemented, based on a 'truthy' input.
+     * Assert that a feature is implemented, based on a 'truthy' condition.
      *
      * This function should be used to early-exit from tests in which there is
      * no point continuing without support for a non-optional spec or spec
@@ -1857,17 +1857,17 @@ policies and contribution forms [3].
      *
      *     assert_implements(window.Foo, 'Foo is not supported');
      *
-     * @param {truthy value?} input The truthy value to test
-     * @param {string} description Error description for the case that the input is not truthy.
+     * @param {object} condition The truthy value to test
+     * @param {string} description Error description for the case that the condition is not truthy.
      */
-    function assert_implements(input, description) {
-        assert(bool(input), "assert_implements", description,
+    function assert_implements(condition, description) {
+        assert(bool(condition), "assert_implements", description,
                "expected ${actual} to be truthy", {actual:actual});
     }
     expose(assert_implements, "assert_implements")
 
     /**
-     * Assert that an optional feature is implemented, based on a 'truthy' input.
+     * Assert that an optional feature is implemented, based on a 'truthy' condition.
      *
      * This function should be used to early-exit from tests in which there is
      * no point continuing without support for an explicitly optional spec or
@@ -1876,11 +1876,11 @@ policies and contribution forms [3].
      *     assert_implements_optional(video.canPlayType("video/webm"),
      *                                "webm video playback not supported");
      *
-     * @param {truthy value?} input The truthy value to test
-     * @param {string} description Error description for the case that the input is not truthy.
+     * @param {object} condition The truthy value to test
+     * @param {string} description Error description for the case that the condition is not truthy.
      */
-    function assert_implements_optional(input, description) {
-        if (!input) {
+    function assert_implements_optional(condition, description) {
+        if (!condition) {
             // Due to the difficulty of changing logging statuses, we re-use
             // the PRECONDITION_FAILED status for assert_implements_optional.
             // See the RFC: https://github.com/web-platform-tests/rfcs/pull/48

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>assert_implements_optional failure values</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  assert_implements_optional(false, 'assert implements optional 1');
+}, 'boolean false value');
+
+test(() => {
+  assert_implements_optional(0, 'assert implements optional 1');
+}, 'falsy number value');
+
+test(() => {
+  assert_implements_optional('', 'assert implements optional 1');
+}, 'falsy string value');
+
+test(() => {
+  assert_implements_optional(null, 'assert implements optional 1');
+}, 'falsy null value');
+
+test(() => {
+  assert_implements_optional(undefined, 'assert implements optional 1');
+}, 'falsy undefined value');
+
+test(() => {
+  assert_implements_optional(NaN, 'assert implements optional 1');
+}, 'falsy NaN value');
+</script>

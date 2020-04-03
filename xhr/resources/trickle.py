@@ -1,5 +1,7 @@
 import time
 
+from six.moves import xrange
+
 def main(request, response):
     chunk = "TEST_TRICKLE\n"
     delay = float(request.GET.first("ms", 500)) / 1E3

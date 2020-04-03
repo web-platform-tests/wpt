@@ -1,7 +1,10 @@
+spec: https://svgwg.org/svg2-draft/
 suggested_reviewers:
-  - heycam
   - nikosandronikos
   - boggydigital
   - ewilligers
   - AmeliaBR
   - svgeesus
+  - dirkschulze
+  - fsoder
+  - shallawa

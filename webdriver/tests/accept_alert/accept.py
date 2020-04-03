@@ -1,5 +1,8 @@
+from webdriver.error import NoSuchAlertException
+
 from tests.support.asserts import assert_error, assert_success
 from tests.support.inline import inline
+from tests.support.sync import Poll
 
 
 def accept_alert(session):
@@ -7,32 +10,31 @@ def accept_alert(session):
         "POST", "session/{session_id}/alert/accept".format(**vars(session)))
 
 
-# 18.2 Accept Alert
+def test_null_response_value(session, url):
+    session.url = inline("<script>window.alert('Hello');</script>")
 
-def test_no_browsing_context(session, create_window):
-    # 18.2 step 1
-    session.window_handle = create_window()
-    session.close()
+    response = accept_alert(session)
+    value = assert_success(response)
+    assert value is None
 
+
+def test_no_browsing_context(session, closed_window):
     response = accept_alert(session)
     assert_error(response, "no such window")
 
 
 def test_no_user_prompt(session):
-    # 18.2 step 2
     response = accept_alert(session)
     assert_error(response, "no such alert")
 
 
 def test_accept_alert(session):
-    # 18.2 step 3
     session.url = inline("<script>window.alert('Hello');</script>")
     response = accept_alert(session)
     assert_success(response)
 
 
 def test_accept_confirm(session):
-    # 18.2 step 3
     session.url = inline("<script>window.result = window.confirm('Hello');</script>")
     response = accept_alert(session)
     assert_success(response)
@@ -40,8 +42,20 @@ def test_accept_confirm(session):
 
 
 def test_accept_prompt(session):
-    # 18.2 step 3
     session.url = inline("<script>window.result = window.prompt('Enter Your Name: ', 'Federer');</script>")
     response = accept_alert(session)
     assert_success(response)
     assert session.execute_script("return window.result") == "Federer"
+
+
+def test_unexpected_alert(session):
+    session.execute_script("window.setTimeout(function() { window.alert('Hello'); }, 100);")
+    wait = Poll(
+        session,
+        timeout=5,
+        ignored_exceptions=NoSuchAlertException,
+        message="No user prompt with text 'Hello' detected")
+    wait.until(lambda s: s.alert.text == "Hello")
+
+    response = accept_alert(session)
+    assert_success(response)

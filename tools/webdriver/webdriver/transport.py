@@ -1,10 +1,11 @@
-import httplib
 import json
-import urlparse
+import select
 
-import error
+from six import text_type, PY3
+from six.moves.http_client import HTTPConnection
+from six.moves.urllib import parse as urlparse
 
-from six import text_type
+from . import error
 
 """Implements HTTP transport for the WebDriver wire protocol."""
 
@@ -15,9 +16,10 @@ class Response(object):
     body has been read and parsed as appropriate.
     """
 
-    def __init__(self, status, body):
+    def __init__(self, status, body, headers):
         self.status = status
         self.body = body
+        self.headers = headers
 
     def __repr__(self):
         cls_name = self.__class__.__name__
@@ -38,11 +40,12 @@ class Response(object):
     def from_http(cls, http_response, decoder=json.JSONDecoder, **kwargs):
         try:
             body = json.load(http_response, cls=decoder, **kwargs)
+            headers = dict(http_response.getheaders())
         except ValueError:
             raise ValueError("Failed to decode response body as JSON:\n" +
                 http_response.read())
 
-        return cls(http_response.status, body)
+        return cls(http_response.status, body, headers)
 
 
 class HTTPWireProtocol(object):
@@ -72,7 +75,7 @@ class HTTPWireProtocol(object):
         # => webdriver.Element
     """
 
-    def __init__(self, host, port, url_prefix="/", timeout=None):
+    def __init__(self, host, port, url_prefix="/"):
         """
         Construct interface for communicating with the remote server.
 
@@ -82,10 +85,35 @@ class HTTPWireProtocol(object):
         self.host = host
         self.port = port
         self.url_prefix = url_prefix
+        self._conn = None
+        self._last_request_is_blocked = False
 
-        self._timeout = timeout
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        """Closes the current HTTP connection, if there is one."""
+        if self._conn:
+            self._conn.close()
+
+    @property
+    def connection(self):
+        """Gets the current HTTP connection, or lazily creates one."""
+        if not self._conn:
+            conn_kwargs = {}
+            if not PY3:
+                conn_kwargs["strict"] = True
+            # We are not setting an HTTP timeout other than the default when the
+            # connection its created. The send method has a timeout value if needed.
+            self._conn = HTTPConnection(self.host, self.port, **conn_kwargs)
+
+        return self._conn
 
     def url(self, suffix):
+        """
+        From the relative path to a command end-point,
+        craft a full URL suitable to be used in a request to the HTTPD.
+        """
         return urlparse.urljoin(self.url_prefix, suffix)
 
     def send(self,
@@ -95,6 +123,7 @@ class HTTPWireProtocol(object):
              headers=None,
              encoder=json.JSONEncoder,
              decoder=json.JSONDecoder,
+             timeout=None,
              **codec_kwargs):
         """
         Send a command to the remote.
@@ -110,6 +139,8 @@ class HTTPWireProtocol(object):
         as plain JSON unless a `decoder` that converts web
         element references to ``webdriver.Element`` is provided.
         Use ``webdriver.protocol.Decoder`` to achieve this behaviour.
+
+        The client will attempt to use persistent HTTP connections.
 
         :param method: `GET`, `POST`, or `DELETE`.
         :param uri: Relative endpoint of the requests URL path.
@@ -141,26 +172,44 @@ class HTTPWireProtocol(object):
                 raise ValueError("Failed to encode request body as JSON:\n"
                     "%s" % json.dumps(body, indent=2))
 
-            if isinstance(payload, text_type):
-                payload = body.encode("utf-8")
+        # When the timeout triggers, the TestRunnerManager thread will reuse
+        # this connection to check if the WebDriver its alive and we may end
+        # raising an httplib.CannotSendRequest exception if the WebDriver is
+        # not responding and this httplib.request() call is blocked on the
+        # runner thread. We use the boolean below to check for that and restart
+        # the connection in that case.
+        self._last_request_is_blocked = True
+        response = self._request(method, uri, payload, headers, timeout=None)
+        self._last_request_is_blocked = False
+        return Response.from_http(response, decoder=decoder, **codec_kwargs)
+
+    def _request(self, method, uri, payload, headers=None, timeout=None):
+        if isinstance(payload, text_type):
+            payload = payload.encode("utf-8")
 
         if headers is None:
             headers = {}
-        headers.update({'Connection': 'keep-alive'})
+        headers.update({"Connection": "keep-alive"})
 
         url = self.url(uri)
 
-        conn_kwargs = {}
-        if self._timeout is not None:
-            conn_kwargs["timeout"] = self._timeout
+        if self._last_request_is_blocked or self._has_unread_data():
+            self.close()
 
-        conn = httplib.HTTPConnection(
-            self.host, self.port, strict=True, **conn_kwargs)
-        conn.request(method, url, payload, headers)
+        self.connection.request(method, url, payload, headers)
 
+        # timeout for request has to be set just before calling httplib.getresponse()
+        # and the previous value restored just after that, even on exception raised
         try:
-            response = conn.getresponse()
-            return Response.from_http(
-                response, decoder=decoder, **codec_kwargs)
+            if timeout:
+                previous_timeout = self._conn.gettimeout()
+                self._conn.settimeout(timeout)
+            response = self.connection.getresponse()
         finally:
-            conn.close()
+            if timeout:
+                self._conn.settimeout(previous_timeout)
+
+        return response
+
+    def _has_unread_data(self):
+        return self._conn and self._conn.sock and select.select([self._conn.sock], [], [], 0)[0]

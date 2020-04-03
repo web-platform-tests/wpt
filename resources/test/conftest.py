@@ -1,37 +1,72 @@
-import io
+import copy
 import json
 import os
+import ssl
+import sys
+import subprocess
 
 import html5lib
+import py
 import pytest
-from selenium import webdriver
+from six import text_type
+from six.moves import urllib
 
 from wptserver import WPTServer
 
-ENC = 'utf8'
 HERE = os.path.dirname(os.path.abspath(__file__))
 WPT_ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 HARNESS = os.path.join(HERE, 'harness.html')
 TEST_TYPES = ('functional', 'unit')
+DEFAULT_VARIANTS = ["?default"]
+
+sys.path.insert(0, os.path.normpath(os.path.join(WPT_ROOT, "tools", "webdriver")))
+import webdriver
+
 
 def pytest_addoption(parser):
     parser.addoption("--binary", action="store", default=None, help="path to browser binary")
+
 
 def pytest_collect_file(path, parent):
     if path.ext.lower() != '.html':
         return
 
     # Tests are organized in directories by type
-    test_type = os.path.relpath(str(path), HERE).split(os.path.sep)[1]
+    test_type = os.path.relpath(str(path), HERE)
+    if os.path.sep not in test_type or ".." in test_type:
+        # HTML files in this directory are not tests
+        return
+    test_type = test_type.split(os.path.sep)[1]
 
     return HTMLItem(str(path), test_type, parent)
 
+
 def pytest_configure(config):
-    config.driver = webdriver.Firefox(firefox_binary=config.getoption("--binary"))
+    config.proc = subprocess.Popen(["geckodriver"])
+    config.add_cleanup(config.proc.kill)
+
+    capabilities = {"alwaysMatch": {"acceptInsecureCerts": True}}
+    if config.getoption("--binary"):
+        capabilities["alwaysMatch"]["moz:firefoxOptions"] = {"binary": config.getoption("--binary")}
+
+    config.driver = webdriver.Session("localhost", 4444,
+                                      capabilities=capabilities)
+    config.add_cleanup(config.driver.end)
+
     config.server = WPTServer(WPT_ROOT)
     config.server.start()
+    # Although the name of the `_create_unverified_context` method suggests
+    # that it is not intended for external consumption, the standard library's
+    # documentation explicitly endorses its use:
+    #
+    # > To revert to the previous, unverified, behavior
+    # > ssl._create_unverified_context() can be passed to the context
+    # > parameter.
+    #
+    # https://docs.python.org/2/library/httplib.html#httplib.HTTPSConnection
+    config.ssl_context = ssl._create_unverified_context()
     config.add_cleanup(config.server.stop)
-    config.add_cleanup(config.driver.quit)
+
 
 def resolve_uri(context, uri):
     if uri.startswith('/'):
@@ -43,17 +78,24 @@ def resolve_uri(context, uri):
 
     return os.path.exists(os.path.join(base, path))
 
+
 class HTMLItem(pytest.Item, pytest.Collector):
     def __init__(self, filename, test_type, parent):
-        self.filename = filename
+        self.url = parent.session.config.server.url(filename)
         self.type = test_type
         self.variants = []
+        # Some tests are reliant on the WPT servers substitution functionality,
+        # so tests must be retrieved from the server rather than read from the
+        # file system directly.
+        handle = urllib.request.urlopen(self.url,
+                                        context=parent.session.config.ssl_context)
+        try:
+            markup = handle.read()
+        finally:
+            handle.close()
 
         if test_type not in TEST_TYPES:
             raise ValueError('Unrecognized test type: "%s"' % test_type)
-
-        with io.open(filename, encoding=ENC) as f:
-            markup = f.read()
 
         parsed = html5lib.parse(markup, namespaceHTMLElements=False)
         name = None
@@ -69,7 +111,7 @@ class HTMLItem(pytest.Item, pytest.Collector):
                 continue
             if element.tag == 'script':
                 if element.attrib.get('id') == 'expected':
-                    self.expected = json.loads(unicode(element.text))
+                    self.expected = json.loads(text_type(element.text))
 
                 src = element.attrib.get('src', '')
 
@@ -79,22 +121,30 @@ class HTMLItem(pytest.Item, pytest.Collector):
                         raise ValueError('Could not resolve path "%s" from %s' % (src, filename))
 
         if not name:
-            raise ValueError('No name found in file: %s' % filename)
+            raise ValueError('No name found in %s add a <title> element' % filename)
         elif self.type == 'functional':
             if not self.expected:
                 raise ValueError('Functional tests must specify expected report data')
             if not includes_variants_script:
-                raise ValueError('No variants script found in file: %s' % filename)
+                raise ValueError('No variants script found in file %s add '
+                                 '\'<script src="../../variants.js"></script>\'' % filename)
             if len(self.variants) == 0:
-                raise ValueError('No test variants specified in file %s' % filename)
+                self.variants = DEFAULT_VARIANTS
         elif self.type == 'unit' and self.expected:
             raise ValueError('Unit tests must not specify expected report data')
 
-        super(HTMLItem, self).__init__(name, parent)
+        # Ensure that distinct items have distinct fspath attributes.
+        # This is necessary because pytest has an internal cache keyed on it,
+        # and only the first test with any given fspath will be run.
+        #
+        # This cannot use super(HTMLItem, self).__init__(..) because only the
+        # Collector constructor takes the fspath argument.
+        pytest.Item.__init__(self, name, parent)
+        pytest.Collector.__init__(self, name, parent, fspath=py.path.local(filename))
 
 
     def reportinfo(self):
-        return self.fspath, None, self.filename
+        return self.fspath, None, self.url
 
     def repr_failure(self, excinfo):
         return pytest.Collector.repr_failure(self, excinfo)
@@ -111,11 +161,15 @@ class HTMLItem(pytest.Item, pytest.Collector):
         driver = self.session.config.driver
         server = self.session.config.server
 
-        driver.get(server.url(HARNESS))
+        driver.url = server.url(HARNESS)
 
-        actual = driver.execute_async_script('runTest("%s", "foo", arguments[0])' % server.url(str(self.filename)))
+        actual = driver.execute_async_script(
+            'runTest("%s", "foo", arguments[0])' % self.url
+        )
 
-        summarized = self._summarize(actual)
+        summarized = self._summarize(copy.deepcopy(actual))
+
+        print(json.dumps(summarized, indent=2))
 
         assert summarized[u'summarized_status'][u'status_string'] == u'OK', summarized[u'summarized_status'][u'message']
         for test in summarized[u'summarized_tests']:
@@ -130,17 +184,20 @@ class HTMLItem(pytest.Item, pytest.Collector):
         driver = self.session.config.driver
         server = self.session.config.server
 
-        driver.get(server.url(HARNESS))
+        driver.url = server.url(HARNESS)
 
-        test_url = server.url(str(self.filename) + variant)
+        test_url = self.url + variant
         actual = driver.execute_async_script('runTest("%s", "foo", arguments[0])' % test_url)
+
+        summarized = self._summarize(copy.deepcopy(actual))
+
+        print(json.dumps(summarized, indent=2))
 
         # Test object ordering is not guaranteed. This weak assertion verifies
         # that the indices are unique and sequential
         indices = [test_obj.get('index') for test_obj in actual['tests']]
         self._assert_sequence(indices)
 
-        summarized = self._summarize(actual)
         self.expected[u'summarized_tests'].sort(key=lambda test_obj: test_obj.get('name'))
 
         assert summarized == self.expected
@@ -159,7 +216,7 @@ class HTMLItem(pytest.Item, pytest.Collector):
     @staticmethod
     def _assert_sequence(nums):
         if nums and len(nums) > 0:
-            assert nums == range(1, nums[-1] + 1)
+            assert nums == list(range(1, nums[-1] + 1))
 
     @staticmethod
     def _scrub_stack(test_obj):

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>Test disable Picture-in-Picture</title>
+<script src="/common/media.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -27,18 +28,17 @@ test(t => {
 promise_test(async t => {
   const video = await loadVideo();
   video.disablePictureInPicture = true;
-  return promise_rejects(t, 'InvalidStateError',
+  return promise_rejects_dom(t, 'InvalidStateError',
       requestPictureInPictureWithTrustedClick(video));
 }, 'Request Picture-in-Picture rejects if disablePictureInPicture is true');
 
 promise_test(async t => {
   const video = await loadVideo();
-  return callWithTrustedClick(async () => {
-    const promise = video.requestPictureInPicture();
-    video.disablePictureInPicture = true;
-    await promise_rejects(t, 'InvalidStateError', promise);
-    assert_equals(document.pictureInPictureElement, null);
-  });
+  await test_driver.bless('request Picture-in-Picture');
+  const promise = video.requestPictureInPicture();
+  video.disablePictureInPicture = true;
+  await promise_rejects_dom(t, 'InvalidStateError', promise);
+  assert_equals(document.pictureInPictureElement, null);
 }, 'Request Picture-in-Picture rejects if disablePictureInPicture becomes ' +
    'true before promise resolves.');
 
@@ -47,7 +47,9 @@ promise_test(async t => {
   return requestPictureInPictureWithTrustedClick(video)
   .then(() => {
     video.disablePictureInPicture = true;
-    assert_equals(document.pictureInPictureElement, null);
+    video.addEventListener('leavepictureinpicture', t.step_func(() => {
+      assert_equals(document.pictureInPictureElement, null);
+    }));
   });
 }, 'pictureInPictureElement is unset if disablePictureInPicture becomes true');
 

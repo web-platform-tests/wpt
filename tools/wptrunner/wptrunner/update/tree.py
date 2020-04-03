@@ -1,6 +1,9 @@
 import os
 import re
 import subprocess
+import tempfile
+
+from six.moves import range
 
 from .. import vcs
 from ..vcs import git, hg
@@ -15,7 +18,7 @@ def get_unique_name(existing, initial):
     :param initial: Name, or name prefix, to use"""
     if initial not in existing:
         return initial
-    for i in xrange(len(existing) + 1):
+    for i in range(len(existing) + 1):
         test = "%s_%s" % (initial, i + 1)
         if test not in existing:
             return test
@@ -38,6 +41,9 @@ class NoVCSTree(object):
         return True
 
     def add_new(self, prefix=None):
+        pass
+
+    def add_ignored(self, sync_tree, prefix):
         pass
 
     def create_patch(self, patch_name, message):
@@ -89,6 +95,9 @@ class HgTree(object):
         else:
             args = ()
         self.hg("add", *args)
+
+    def add_ignored(self, sync_tree, prefix):
+        pass
 
     def create_patch(self, patch_name, message):
         try:
@@ -178,10 +187,26 @@ class GitTree(object):
                        add all files under that path.
         """
         if prefix is None:
-            args = ("-a",)
+            args = ["-a"]
         else:
-            args = ("--no-ignore-removal", prefix)
+            args = ["--no-ignore-removal", prefix]
         self.git("add", *args)
+
+    def add_ignored(self, sync_tree, prefix):
+        """Add files to the staging area that are explicitly ignored by git.
+
+        :param prefix: None to include all files or a path prefix to
+                       add all files under that path.
+        """
+        with tempfile.TemporaryFile() as f:
+            sync_tree.git("ls-tree", "-z", "-r", "--name-only", "HEAD", stdout=f)
+            f.seek(0)
+            ignored_files = sync_tree.git("check-ignore", "--no-index", "--stdin", "-z", stdin=f)
+        args = []
+        for entry in ignored_files.split('\0'):
+            args.append(os.path.join(prefix, entry))
+        if args:
+            self.git("add", "--force", *args)
 
     def list_refs(self, ref_filter=None):
         """Get a list of sha1, name tuples for references in a repository.

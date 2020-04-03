@@ -1,6 +1,5 @@
 // META: script=/webusb/resources/fake-devices.js
 // META: script=/webusb/resources/usb-helpers.js
-// META: global=sharedworker
 
 'use strict';
 
@@ -13,9 +12,9 @@ usb_test(() => getFakeDevice()
     'Can construct a USBConnectionEvent with a device');
 
 test(t => {
-  assert_throws(TypeError(),
+  assert_throws_js(TypeError,
       () => new USBConnectionEvent('connect', { device: null }));
-  assert_throws(TypeError(),
+  assert_throws_js(TypeError,
       () => new USBConnectionEvent('connect', {}));
 }, 'Cannot construct a USBConnectionEvent without a device');
 

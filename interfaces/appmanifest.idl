@@ -1,23 +1,28 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Web App Manifest" spec.
-// See: https://w3c.github.io/manifest/
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: Web App Manifest (https://w3c.github.io/manifest/)
+
+[Exposed=Window]
+interface BeforeInstallPromptEvent : Event {
+  constructor(DOMString type, optional EventInit eventInitDict = {});
+  Promise<PromptResponseObject> prompt();
+};
+
+dictionary PromptResponseObject {
+  AppBannerPromptOutcome userChoice;
+};
 
 enum AppBannerPromptOutcome {
   "accepted",
   "dismissed"
 };
-[Constructor, Exposed=Window]
-interface BeforeInstallPromptEvent : Event {
-    Promise<PromptResponseObject> prompt();
-};
-dictionary PromptResponseObject {
-  AppBannerPromptOutcome userChoice;
-};
+
 partial interface Window {
   attribute EventHandler onappinstalled;
   attribute EventHandler onbeforeinstallprompt;
 };
+
 dictionary WebAppManifest {
    TextDirectionType dir = "auto";
    DOMString lang;
@@ -34,17 +39,20 @@ dictionary WebAppManifest {
    USVString theme_color;
    USVString background_color;
    USVString scope;
-   ServiceWorkerRegistrationObject serviceworker;
    sequence<ExternalApplicationResource> related_applications;
    boolean prefer_related_applications = "false";
+   sequence<ShortcutItem> shortcuts;
 };
+
 enum TextDirectionType { "ltr", "rtl", "auto" };
+
 enum DisplayModeType {
   "fullscreen",
   "standalone",
   "minimal-ui",
   "browser"
 };
+
 dictionary ImageResource {
   required USVString src;
   DOMString sizes;
@@ -52,12 +60,15 @@ dictionary ImageResource {
   USVString purpose;
   USVString platform;
 };
-dictionary ServiceWorkerRegistrationObject {
-  required USVString src;
-  USVString scope;
-  WorkerType type = "classic";
-  ServiceWorkerUpdateViaCache update_via_cache = "imports";
+
+dictionary ShortcutItem {
+  required USVString name;
+  USVString short_name;
+  USVString description;
+  required USVString url;
+  sequence<ImageResource> icons;
 };
+
 dictionary ExternalApplicationResource {
   required USVString platform;
   USVString url;
@@ -65,6 +76,7 @@ dictionary ExternalApplicationResource {
   USVString min_version;
   sequence<Fingerprint> fingerprints;
 };
+
 dictionary Fingerprint {
   USVString type;
   USVString value;

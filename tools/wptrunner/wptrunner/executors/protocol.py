@@ -1,4 +1,5 @@
 import traceback
+
 from abc import ABCMeta, abstractmethod
 
 
@@ -31,7 +32,6 @@ class Protocol(object):
         """:returns: Current logger"""
         return self.executor.logger
 
-    @property
     def is_alive(self):
         """Is the browser connection still active
 
@@ -56,11 +56,8 @@ class Protocol(object):
         except Exception:
             if msg is not None:
                 self.logger.warning(msg)
-            self.logger.error(traceback.format_exc())
-            self.executor.runner.send_message("init_failed")
-            return
-        else:
-            self.executor.runner.send_message("init_succeeded")
+            self.logger.warning(traceback.format_exc())
+            raise
 
     @abstractmethod
     def connect(self):
@@ -111,11 +108,11 @@ class BaseProtocolPart(ProtocolPart):
     name = "base"
 
     @abstractmethod
-    def execute_script(self, script, async=False):
+    def execute_script(self, script, asynchronous=False):
         """Execute javascript in the current Window.
 
         :param str script: The js source to execute. This is implicitly wrapped in a function.
-        :param bool async: Whether the script is asynchronous in the webdriver
+        :param bool asynchronous: Whether the script is asynchronous in the webdriver
                            sense i.e. whether the return value is the result of
                            the initial function call or if it waits for some callback.
         :returns: The result of the script execution.
@@ -147,6 +144,13 @@ class BaseProtocolPart(ProtocolPart):
 
         :param handle: A protocol-specific handle identifying a top level browsing
                        context."""
+        pass
+
+    @abstractmethod
+    def load(self, url):
+        """Load a url in the current browsing context
+
+        :param url: The url to load"""
         pass
 
 
@@ -237,10 +241,28 @@ class SelectorProtocolPart(ProtocolPart):
 
     name = "select"
 
+    def element_by_selector(self, element_selector, frame="window"):
+        elements = self.elements_by_selector_and_frame(element_selector, frame)
+        frame_name = "window"
+        if (frame != "window"):
+            frame_name = frame.id
+        if len(elements) == 0:
+            raise ValueError("Selector '%s' in frame '%s' matches no elements" % (element_selector, frame_name))
+        elif len(elements) > 1:
+            raise ValueError("Selector '%s' in frame '%s' matches multiple elements" % (element_selector, frame_name))
+        return elements[0]
+
     @abstractmethod
     def elements_by_selector(self, selector):
         """Select elements matching a CSS selector
 
+        :param str selector: The CSS selector
+        :returns: A list of protocol-specific handles to elements"""
+        pass
+
+    @abstractmethod
+    def elements_by_selector_and_frame(self, element_selector, frame):
+        """Select elements matching a CSS selector
         :param str selector: The CSS selector
         :returns: A list of protocol-specific handles to elements"""
         pass
@@ -259,6 +281,7 @@ class ClickProtocolPart(ProtocolPart):
         :param element: A protocol-specific handle to an element."""
         pass
 
+
 class SendKeysProtocolPart(ProtocolPart):
     """Protocol part for performing trusted clicks"""
     __metaclass__ = ABCMeta
@@ -271,6 +294,50 @@ class SendKeysProtocolPart(ProtocolPart):
 
         :param element: A protocol-specific handle to an element.
         :param keys: A protocol-specific handle to a string of input keys."""
+        pass
+
+
+class GenerateTestReportProtocolPart(ProtocolPart):
+    """Protocol part for generating test reports"""
+    __metaclass__ = ABCMeta
+
+    name = "generate_test_report"
+
+    @abstractmethod
+    def generate_test_report(self, message):
+        """Generate a test report.
+
+        :param message: The message to be contained in the report."""
+        pass
+
+
+class SetPermissionProtocolPart(ProtocolPart):
+    """Protocol part for setting permissions"""
+    __metaclass__ = ABCMeta
+
+    name = "set_permission"
+
+    @abstractmethod
+    def set_permission(self, descriptor, state, one_realm=False):
+        """Set permission state.
+
+        :param descriptor: A PermissionDescriptor object.
+        :param state: The state to set the permission to.
+        :param one_realm: Whether to set the permission for only one realm."""
+        pass
+
+
+class ActionSequenceProtocolPart(ProtocolPart):
+    """Protocol part for performing trusted clicks"""
+    __metaclass__ = ABCMeta
+
+    name = "action_sequence"
+
+    @abstractmethod
+    def send_actions(self, actions):
+        """Send a sequence of actions to the window.
+
+        :param actions: A protocol-specific handle to an array of actions."""
         pass
 
 
@@ -302,4 +369,80 @@ class AssertsProtocolPart(ProtocolPart):
     @abstractmethod
     def get(self):
         """Get a count of assertions since the last browser start"""
+        pass
+
+
+class CoverageProtocolPart(ProtocolPart):
+    """Protocol part for collecting per-test coverage data."""
+    __metaclass__ = ABCMeta
+
+    name = "coverage"
+
+    @abstractmethod
+    def reset(self):
+        """Reset coverage counters"""
+        pass
+
+    @abstractmethod
+    def dump(self):
+        """Dump coverage counters"""
+        pass
+
+class VirtualAuthenticatorProtocolPart(ProtocolPart):
+    """Protocol part for creating and manipulating virtual authenticators"""
+    __metaclass__ = ABCMeta
+
+    name = "virtual_authenticator"
+
+    @abstractmethod
+    def add_virtual_authenticator(self, config):
+        """Add a virtual authenticator
+
+        :param config: The Authenticator Configuration"""
+        pass
+
+    @abstractmethod
+    def remove_virtual_authenticator(self, authenticator_id):
+        """Remove a virtual authenticator
+
+        :param str authenticator_id: The ID of the authenticator to remove"""
+        pass
+
+    @abstractmethod
+    def add_credential(self, authenticator_id, credential):
+        """Inject a credential onto an authenticator
+
+        :param str authenticator_id: The ID of the authenticator to add the credential to
+        :param credential: The credential to inject"""
+        pass
+
+    @abstractmethod
+    def get_credentials(self, authenticator_id):
+        """Get the credentials stored in an authenticator
+
+        :param str authenticator_id: The ID of the authenticator
+        :returns: An array with the credentials stored on the authenticator"""
+        pass
+
+    @abstractmethod
+    def remove_credential(self, authenticator_id, credential_id):
+        """Remove a credential stored in an authenticator
+
+        :param str authenticator_id: The ID of the authenticator
+        :param str credential_id: The ID of the credential"""
+        pass
+
+    @abstractmethod
+    def remove_all_credentials(self, authenticator_id):
+        """Remove all the credentials stored in an authenticator
+
+        :param str authenticator_id: The ID of the authenticator"""
+        pass
+
+    @abstractmethod
+    def set_user_verified(self, authenticator_id, uv):
+        """Sets the user verified flag on an authenticator
+
+        :param str authenticator_id: The ID of the authenticator
+        :param bool uv: the user verified flag"""
         pass

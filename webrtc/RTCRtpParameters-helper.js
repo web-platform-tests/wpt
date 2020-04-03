@@ -19,6 +19,8 @@ async function doOfferAnswerExchange(t, caller) {
   const answer = await callee.createAnswer();
   await callee.setLocalDescription(answer);
   await caller.setRemoteDescription(answer);
+
+  return callee;
 }
 
 /*
@@ -68,11 +70,6 @@ function validateSenderRtpParameters(param) {
     getParameters
       When getParameters is called, the RTCRtpParameters dictionary is constructed
       as follows:
-
-      - encodings is populated based on SSRCs and RIDs present in the current remote
-        description, including SSRCs used for RTX and FEC, if signaled. Every member
-        of the RTCRtpEncodingParameters dictionaries other than the SSRC and RID fields
-        is left undefined.
 
       - The headerExtensions sequence is populated based on the header extensions that
         the receiver is currently prepared to receive.
@@ -144,18 +141,10 @@ function validateRtpParameters(param) {
 
 /*
   dictionary RTCRtpEncodingParameters {
-    [readonly]
-    unsigned long       ssrc;
-
-    [readonly]
-    RTCRtpRtxParameters rtx;
-
-    [readonly]
-    RTCRtpFecParameters fec;
-
     RTCDtxStatus        dtx;
     boolean             active;
     RTCPriorityType     priority;
+    RTCPriorityType     networkPriority;
     unsigned long       ptime;
     unsigned long       maxBitrate;
     double              maxFramerate;
@@ -164,16 +153,6 @@ function validateRtpParameters(param) {
     DOMString           rid;
 
     double              scaleResolutionDownBy;
-  };
-
-  dictionary RTCRtpRtxParameters {
-    [readonly]
-    unsigned long ssrc;
-  };
-
-  dictionary RTCRtpFecParameters {
-    [readonly]
-    unsigned long ssrc;
   };
 
   enum RTCDtxStatus {
@@ -189,23 +168,13 @@ function validateRtpParameters(param) {
   };
  */
 function validateEncodingParameters(encoding) {
-  assert_optional_unsigned_int_field(encoding, 'ssrc');
-
-  assert_optional_dict_field(encoding, 'rtx');
-  if(encoding.rtx) {
-    assert_unsigned_int_field(encoding.rtx, 'ssrc');
-  }
-
-  assert_optional_dict_field(encoding, 'fec');
-  if(encoding.fec) {
-    assert_unsigned_int_field(encoding.fec, 'ssrc');
-  }
-
   assert_optional_enum_field(encoding, 'dtx',
     ['disabled', 'enabled']);
 
   assert_optional_boolean_field(encoding, 'active');
   assert_optional_enum_field(encoding, 'priority',
+    ['very-low', 'low', 'medium', 'high']);
+  assert_optional_enum_field(encoding, 'networkPriority',
     ['very-low', 'low', 'medium', 'high']);
 
   assert_optional_unsigned_int_field(encoding, 'ptime');
@@ -272,4 +241,70 @@ function validateCodecParameters(codec) {
   assert_optional_unsigned_int_field(codec, 'clockRate');
   assert_optional_unsigned_int_field(codec, 'channels');
   assert_optional_string_field(codec, 'sdpFmtpLine');
+}
+
+// Get the first encoding in param.encodings.
+// Asserts that param.encodings has at least one element.
+function getFirstEncoding(param) {
+  const {
+    encodings
+  } = param;
+  assert_equals(encodings.length, 1);
+  return encodings[0];
+}
+
+// Helper function to test that modifying an encoding field should succeed
+function test_modified_encoding(kind, field, value1, value2, desc) {
+  promise_test(async t => {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+    const {
+      sender
+    } = pc.addTransceiver(kind, {
+      sendEncodings: [{
+        [field]: value1
+      }]
+    });
+    await doOfferAnswerExchange(t, pc);
+
+    const param1 = sender.getParameters();
+    validateSenderRtpParameters(param1);
+    const encoding1 = getFirstEncoding(param1);
+
+    assert_equals(encoding1[field], value1);
+    encoding1[field] = value2;
+
+    await sender.setParameters(param1);
+    const param2 = sender.getParameters();
+    validateSenderRtpParameters(param2);
+    const encoding2 = getFirstEncoding(param2);
+    assert_equals(encoding2[field], value2);
+  }, desc + ' with RTCRtpTransceiverInit');
+
+  promise_test(async t => {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+    const {
+      sender
+    } = pc.addTransceiver(kind);
+    await doOfferAnswerExchange(t, pc);
+
+    const initParam = sender.getParameters();
+    validateSenderRtpParameters(initParam);
+    initParam.encodings[0][field] = value1;
+    await sender.setParameters(initParam);
+
+    const param1 = sender.getParameters();
+    validateSenderRtpParameters(param1);
+    const encoding1 = getFirstEncoding(param1);
+
+    assert_equals(encoding1[field], value1);
+    encoding1[field] = value2;
+
+    await sender.setParameters(param1);
+    const param2 = sender.getParameters();
+    validateSenderRtpParameters(param2);
+    const encoding2 = getFirstEncoding(param2);
+    assert_equals(encoding2[field], value2);
+  }, desc + ' without RTCRtpTransceiverInit');
 }

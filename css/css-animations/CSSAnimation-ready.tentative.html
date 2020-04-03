@@ -11,7 +11,6 @@
   to { transform: translate(10px) }
 }
 </style>
-<body>
 <div id="log"></div>
 <script>
 'use strict';
@@ -43,7 +42,7 @@ promise_test(async t => {
   div.style.animation = '';
   getComputedStyle(div).animation;
 
-  await promise_rejects(t, 'AbortError', readyPromise,
+  await promise_rejects_dom(t, 'AbortError', readyPromise,
                         'ready promise is rejected with AbortError');
 }, 'ready promise is rejected when an animation is canceled by resetting'
    + ' the animation property');
@@ -65,7 +64,7 @@ promise_test(async t => {
   div.style.animation = 'def 100s';
   getComputedStyle(div).animation;
 
-  await promise_rejects(t, 'AbortError', readyPromise,
+  await promise_rejects_dom(t, 'AbortError', readyPromise,
                         'ready promise is rejected with AbortError');
 }, 'ready promise is rejected when an animation is canceled by updating'
    + ' the animation property');
@@ -97,4 +96,3 @@ promise_test(async t => {
 }, 'Pausing twice re-uses the same Promise');
 
 </script>
-</body>

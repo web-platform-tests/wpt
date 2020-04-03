@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "CSS Fonts Module Level 4" spec.
-// See: https://drafts.csswg.org/css-fonts-4/
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: CSS Fonts Module Level 4 (https://drafts.csswg.org/css-fonts-4/)
 
 [Exposed=Window]
 interface CSSFontFaceRule : CSSRule {
@@ -10,7 +10,9 @@ interface CSSFontFaceRule : CSSRule {
 
 partial interface CSSRule {  const unsigned short FONT_FEATURE_VALUES_RULE = 14;
 };
-interface CSSFontFeatureValuesRule : CSSRule {  attribute CSSOMString fontFamily;
+[Exposed=Window]
+interface CSSFontFeatureValuesRule : CSSRule {
+  attribute CSSOMString fontFamily;
   readonly attribute CSSFontFeatureValuesMap annotation;
   readonly attribute CSSFontFeatureValuesMap ornaments;
   readonly attribute CSSFontFeatureValuesMap stylistic;
@@ -19,17 +21,18 @@ interface CSSFontFeatureValuesRule : CSSRule {  attribute CSSOMString fontFamily
   readonly attribute CSSFontFeatureValuesMap styleset;
 };
 
+[Exposed=Window]
 interface CSSFontFeatureValuesMap {
   maplike<CSSOMString, sequence<unsigned long>>;
   void set(CSSOMString featureValueName,
            (unsigned long or sequence<unsigned long>) values);
 };
-partial interface CSSRule {
-  const unsigned short FONT_PALETTE_VALUES_RULE = 15;
+partial interface CSSRule {  const unsigned short FONT_PALETTE_VALUES_RULE = 15;
 };
 
+[Exposed=Window]
 interface CSSFontPaletteValuesRule : CSSRule {
-  maplike<unsigned long, (CSSOMString or CSSOMRGBColor)>;
+  maplike<unsigned long, CSSOMString>;
   attribute CSSOMString fontFamily;
   attribute CSSOMString basePalette;
 };

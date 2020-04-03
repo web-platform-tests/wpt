@@ -14,7 +14,7 @@
     <style>
       div.flexbox {
         width: 200px;
-        height: 20px; /* Short, to force us to wrap */
+        height: 10px; /* Short, to force us to wrap */
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
@@ -23,19 +23,19 @@
       }
       div.a {
         width: 10px;
-        height: 20px;
+        height: 10px;
         flex: none;
         background: lightgreen;
       }
       div.b {
         width: auto; /* width comes from contents */
-        height: 20px;
+        height: 10px;
         flex: none;
         background: pink;
       }
       div.c {
         width: 40px;
-        height: 20px;
+        height: 10px;
         flex: none;
         background: orange;
       }
@@ -43,7 +43,7 @@
       /* Inside of 'b': */
       div.fixedSizeChild {
         width: 30px;
-        height: 10px;
+        height: 5px;
         background: purple;
       }
     </style>
@@ -143,6 +143,34 @@
       <div class="b"><div class="fixedSizeChild"/></div>
     </div>
     <div class="flexbox" style="align-content: space-evenly">
+      <div class="a"/>
+      <div class="b"><div class="fixedSizeChild"/></div>
+      <div class="c"/>
+    </div>
+
+    <!-- start -->
+    <div class="flexbox" style="align-content: start">
+      <div class="a"/>
+    </div>
+    <div class="flexbox" style="align-content: start">
+      <div class="a"/>
+      <div class="b"><div class="fixedSizeChild"/></div>
+    </div>
+    <div class="flexbox" style="align-content: start">
+      <div class="a"/>
+      <div class="b"><div class="fixedSizeChild"/></div>
+      <div class="c"/>
+    </div>
+
+    <!-- end -->
+    <div class="flexbox" style="align-content: end">
+      <div class="a"/>
+    </div>
+    <div class="flexbox" style="align-content: end">
+      <div class="a"/>
+      <div class="b"><div class="fixedSizeChild"/></div>
+    </div>
+    <div class="flexbox" style="align-content: end">
       <div class="a"/>
       <div class="b"><div class="fixedSizeChild"/></div>
       <div class="c"/>

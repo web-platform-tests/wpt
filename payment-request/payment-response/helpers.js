@@ -1,10 +1,21 @@
 setup({ explicit_done: true, explicit_timeout: true });
 
+const applePay = Object.freeze({
+  supportedMethods: "https://apple.com/apple-pay",
+  data: {
+    version: 3,
+    merchantIdentifier: "merchant.com.example",
+    countryCode: "US",
+    merchantCapabilities: ["supports3DS"],
+    supportedNetworks: ["visa"],
+  }
+});
+
 const validMethod = Object.freeze({
   supportedMethods: "basic-card",
 });
 
-const validMethods = Object.freeze([validMethod]);
+const validMethods = Object.freeze([validMethod, applePay]);
 
 const validAmount = Object.freeze({
   currency: "USD",
@@ -35,7 +46,7 @@ test(() => {
  * @param PaymentOptions options
  */
 async function getPaymentResponse(options, id) {
-  const { response } = getPaymentRequestResponse(options, id);
+  const { response } = await getPaymentRequestResponse(options, id);
   return response;
 }
 

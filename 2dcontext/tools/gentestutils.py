@@ -229,11 +229,11 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                     code)
 
         code = re.sub(r'@assert throws (\S+_ERR) (.*);',
-                r'assert_throws("\1", function() { \2; });',
+                r'assert_throws_dom("\1", function() { \2; });',
                 code)
 
         code = re.sub(r'@assert throws (\S+Error) (.*);',
-                r'assert_throws(new \1(), function() { \2; });',
+                r'assert_throws_js(\1, function() { \2; });',
                 code)
 
         code = re.sub(r'@assert (.*) === (.*);',
@@ -343,6 +343,8 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
 
         notes = '<p class="notes">%s' % test['notes'] if 'notes' in test else ''
 
+        timeout = '\n<meta name="timeout" content="%s">' % test['timeout'] if 'timeout' in test else ''
+
         scripts = ''
         for s in test.get('scripts', []):
             scripts += '<script src="%s"></script>\n' % (s)
@@ -359,6 +361,12 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                 used_images[i] = 1
                 i = '../images/%s' % i
             images += '<img src="%s" id="%s" class="resource">\n' % (i,id)
+        for i in test.get('svgimages', []):
+            id = i.split('/')[-1]
+            if '/' not in i:
+                used_images[i] = 1
+                i = '../images/%s' % i
+            images += '<svg><image xlink:href="%s" id="%s" class="resource"></svg>\n' % (i,id)
         images = images.replace("../images/", "/images/")
 
         fonts = ''
@@ -385,7 +393,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                 'mapped_name':mapped_name,
                 'desc':desc, 'escaped_desc':escaped_desc,
                 'prev':prev, 'next':next, 'refs':refs, 'notes':notes, 'images':images,
-                'fonts':fonts, 'fonthack':fonthack,
+                'fonts':fonts, 'fonthack':fonthack, 'timeout': timeout,
                 'canvas':canvas, 'expected':expectation_html, 'code':code,
                 'scripts':scripts + extra_script,
                 'fallback':fallback
@@ -465,7 +473,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         # Insert our new stylesheet
         n = doc.getElementsByTagName('head')[0].appendChild(doc.createElement('link'))
         n.setAttribute('rel', 'stylesheet')
-        n.setAttribute('href', '../common/canvas-spec.css')
+        n.setAttribute('href', 'resources/canvas-spec.css')
         n.setAttribute('type', 'text/css')
 
         spec_assertion_patterns = []

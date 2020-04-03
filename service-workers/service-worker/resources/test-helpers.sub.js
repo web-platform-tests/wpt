@@ -1,10 +1,19 @@
 // Adapter for testharness.js-style tests with Service Workers
 
-function service_worker_unregister_and_register(test, url, scope) {
+/**
+ * @param options an object that represents RegistrationOptions except for scope.
+ * @param options.type a WorkerType.
+ * @param options.updateViaCache a ServiceWorkerUpdateViaCache.
+ * @see https://w3c.github.io/ServiceWorker/#dictdef-registrationoptions
+ */
+function service_worker_unregister_and_register(test, url, scope, options) {
   if (!scope || scope.length == 0)
     return Promise.reject(new Error('tests must define a scope'));
 
-  var options = { scope: scope };
+  if (options && options.scope)
+    return Promise.reject(new Error('scope must not be passed in options'));
+
+  options = Object.assign({ scope: scope }, options);
   return service_worker_unregister(test, scope)
     .then(function() {
         return navigator.serviceWorker.register(url, options);
@@ -75,9 +84,11 @@ function wait_for_update(test, registration) {
   }
 
   return new Promise(test.step_func(function(resolve) {
-      registration.addEventListener('updatefound', test.step_func(function() {
-          resolve(registration.installing);
-        }));
+      var handler = test.step_func(function() {
+        registration.removeEventListener('updatefound', handler);
+        resolve(registration.installing);
+      });
+      registration.addEventListener('updatefound', handler);
     }));
 }
 
@@ -276,3 +287,33 @@ async function wait_for_activation_on_dummy_scope(t, window_or_workerglobalscope
   await wait_for_state(t, registration.installing, 'activated');
   await registration.unregister();
 }
+
+// This installs resources/appcache-ordering.manifest.
+function install_appcache_ordering_manifest() {
+  let resolve_install_appcache;
+  let reject_install_appcache;
+
+  // This is notified by the child iframe, i.e. appcache-ordering.install.html,
+  // that's to be created below.
+  window.notify_appcache_installed = success => {
+    if (success)
+      resolve_install_appcache();
+    else
+      reject_install_appcache();
+  };
+
+  return new Promise((resolve, reject) => {
+      const frame = document.createElement('iframe');
+      frame.src = 'resources/appcache-ordering.install.html';
+      document.body.appendChild(frame);
+      resolve_install_appcache = function() {
+          document.body.removeChild(frame);
+          resolve();
+        };
+      reject_install_appcache = function() {
+          document.body.removeChild(frame);
+          reject();
+        };
+  });
+}
+

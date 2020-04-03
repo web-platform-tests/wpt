@@ -12,6 +12,7 @@ This test uses data only, and thus does not require fake media devices.
   <div id="log"></div>
   <h2>Retrieved stats info</h2>
   <pre>
+  <input type="button" onclick="showStats()" value="Show stats"></input>
   <div id="stats">
   </div>
   </pre>
@@ -21,7 +22,7 @@ This test uses data only, and thus does not require fake media devices.
   <script src="/resources/testharnessreport.js"></script>
   <script type="text/javascript">
   var test = async_test('Can get stats from a basic WebRTC call.');
-
+  var statsToShow;
   var gFirstConnection = null;
   var gSecondConnection = null;
 
@@ -36,10 +37,6 @@ This test uses data only, and thus does not require fake media devices.
     if (event.candidate) {
       gFirstConnection.addIceCandidate(event.candidate);
     }
-  });
-
-  var onRemoteStream = test.step_func(function(event) {
-    assert_unreached('WebRTC received a stream when there was none');
   });
 
   var getStatsRecordByType = function(stats, type) {
@@ -60,18 +57,16 @@ This test uses data only, and thus does not require fake media devices.
     }
     gFirstConnection.getStats()
     .then(function(report) {
-      // Show the retrieved stats info
-      var showStats = document.getElementById('stats');
       let reportDictionary = {};
       for (let stats of report.values()) {
         reportDictionary[stats.id] = stats;
       }
-      showStats.innerHTML = JSON.stringify(reportDictionary, null, 2);
+      statsToShow = JSON.stringify(reportDictionary, null, 2);
       // Check the stats properties.
       assert_not_equals(report, null, 'No report');
       let sessionStat = getStatsRecordByType(report, 'peer-connection');
       assert_not_equals(sessionStat, null, 'Did not find peer-connection stats');
-      assert_exists(sessionStat, 'dataChannelsOpened', 'no dataChannelsOpened stat');
+      assert_own_property(sessionStat, 'dataChannelsOpened', 'no dataChannelsOpened stat');
       // Once every 4000 or so tests, the datachannel won't be opened when the getStats
       // function is done, so allow both 0 and 1 datachannels.
       assert_true(sessionStat.dataChannelsOpened == 1 || sessionStat.dataChannelsOpened == 0,
@@ -91,7 +86,6 @@ This test uses data only, and thus does not require fake media devices.
 
     gSecondConnection = new RTCPeerConnection(null);
     gSecondConnection.onicecandidate = onIceCandidateToSecond;
-    gSecondConnection.onaddstream = onRemoteStream;
 
     // The createDataChannel is necessary and sufficient to make
     // sure the ICE connection be attempted.
@@ -126,6 +120,13 @@ This test uses data only, and thus does not require fake media devices.
                        ' happened at step ' + atStep);
     }));
   });
+
+  function showStats() {
+    // Show the retrieved stats info
+    var showStats = document.getElementById('stats');
+    showStats.innerHTML = statsToShow;
+  }
+
 </script>
 
 </body>

@@ -46,9 +46,6 @@ include ib-split/reftest.list
 # Image Values and Replaced Content Level 3
 include images3/reftest.list
 
-# Lists and Counters Level 3
-include lists-3/reftest.list
-
 # Masking Level 1
 include masking/reftest.list
 
@@ -63,6 +60,9 @@ include selectors4/reftest.list
 
 # Shapes Level 1
 include shapes1/reftest.list
+
+# CSS Intrinsic & Extrinsic Sizing Module Level 3
+include sizing/reftest.list
 
 # Text Level 3
 include text3/reftest.list

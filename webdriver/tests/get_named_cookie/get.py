@@ -1,15 +1,19 @@
 from datetime import datetime, timedelta
 
-from tests.support.asserts import assert_success
-from tests.support.fixtures import clear_all_cookies
+from tests.support.asserts import assert_error, assert_success
+from tests.support.helpers import clear_all_cookies
 from tests.support.inline import inline
-
 
 def get_named_cookie(session, name):
     return session.transport.send(
         "GET", "session/{session_id}/cookie/{name}".format(
             session_id=session.session_id,
             name=name))
+
+
+def test_no_browsing_context(session, closed_window):
+    response = get_named_cookie(session, "foo")
+    assert_error(response, "no such window")
 
 
 def test_get_named_session_cookie(session, url):
@@ -48,8 +52,8 @@ def test_get_named_cookie(session, url):
 
     # same formatting as Date.toUTCString() in javascript
     utc_string_format = "%a, %d %b %Y %H:%M:%S"
-    a_year_from_now = (datetime.utcnow() + timedelta(days=365)).strftime(utc_string_format)
-    session.execute_script("document.cookie = 'foo=bar;expires=%s'" % a_year_from_now)
+    a_day_from_now = (datetime.utcnow() + timedelta(days=1)).strftime(utc_string_format)
+    session.execute_script("document.cookie = 'foo=bar;expires=%s'" % a_day_from_now)
 
     result = get_named_cookie(session, "foo")
     cookie = assert_success(result)
@@ -66,7 +70,7 @@ def test_get_named_cookie(session, url):
     assert cookie["value"] == "bar"
     # convert from seconds since epoch
     assert datetime.utcfromtimestamp(
-        cookie["expiry"]).strftime(utc_string_format) == a_year_from_now
+        cookie["expiry"]).strftime(utc_string_format) == a_day_from_now
 
 
 def test_duplicated_cookie(session, url, server_config):

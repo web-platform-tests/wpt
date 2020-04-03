@@ -11,8 +11,7 @@
   // https://w3c.github.io/webrtc-pc/archives/20170515/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  //   generateOffer()
-  //   generateAnswer()
+  //   generateDataChannelOffer()
 
   /*
    * 4.3.2. createAnswer()
@@ -25,7 +24,7 @@
   promise_test(t => {
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
-    return promise_rejects(t, 'InvalidStateError',
+    return promise_rejects_dom(t, 'InvalidStateError',
       pc.createAnswer());
   }, 'createAnswer() with null remoteDescription should reject with InvalidStateError');
 
@@ -39,7 +38,7 @@
 
     t.add_cleanup(() => pc.close());
 
-    return pc.createOffer({ offerToReceiveVideo: true })
+    return generateVideoReceiveOnlyOffer(pc)
     .then(offer => pc.setRemoteDescription(offer))
     .then(() => pc.createAnswer())
     .then(answer => {
@@ -56,11 +55,11 @@
 
     t.add_cleanup(() => pc.close());
 
-    return generateOffer({ pc, data: true })
+    return generateDataChannelOffer(pc)
     .then(offer => pc.setRemoteDescription(offer))
     .then(() => {
       pc.close();
-      return promise_rejects(t, 'InvalidStateError',
+      return promise_rejects_dom(t, 'InvalidStateError',
         pc.createAnswer());
     });
   }, 'createAnswer() when connection is closed reject with InvalidStateError');

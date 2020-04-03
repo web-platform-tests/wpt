@@ -1,13 +1,16 @@
 import collections
 import json
 
+from six import itervalues
 
 class WebDriverException(Exception):
     http_status = None
     status_code = None
 
-    def __init__(self, message, stacktrace=None):
+    def __init__(self, http_status=None, status_code=None, message=None, stacktrace=None):
         super(WebDriverException, self)
+        self.http_status = http_status
+        self.status_code = status_code
         self.message = message
         self.stacktrace = stacktrace
 
@@ -15,12 +18,15 @@ class WebDriverException(Exception):
         return "<%s http_status=%s>" % (self.__class__.__name__, self.http_status)
 
     def __str__(self):
-        message = "%s (%s): %s\n" % (self.status_code, self.http_status, self.message)
+        message = "%s (%s)" % (self.status_code, self.http_status)
+
+        if self.message is not None:
+            message += ": %s" % self.message
+        message += "\n"
+
         if self.stacktrace:
-            message += ("\n"
-            "Remote-end stacktrace:\n"
-            "\n"
-            "%s" % self.stacktrace)
+            message += ("\nRemote-end stacktrace:\n\n%s" % self.stacktrace)
+
         return message
 
 
@@ -89,6 +95,11 @@ class NoSuchAlertException(WebDriverException):
     status_code = "no such alert"
 
 
+class NoSuchCookieException(WebDriverException):
+    http_status = 404
+    status_code = "no such cookie"
+
+
 class NoSuchElementException(WebDriverException):
     http_status = 404
     status_code = "no such element"
@@ -105,7 +116,7 @@ class NoSuchWindowException(WebDriverException):
 
 
 class ScriptTimeoutException(WebDriverException):
-    http_status = 408
+    http_status = 500
     status_code = "script timeout"
 
 
@@ -120,7 +131,7 @@ class StaleElementReferenceException(WebDriverException):
 
 
 class TimeoutException(WebDriverException):
-    http_status = 408
+    http_status = 500
     status_code = "timeout"
 
 
@@ -163,6 +174,8 @@ def from_response(response):
     """
     if response.status == 200:
         raise UnknownErrorException(
+            response.status,
+            None,
             "Response is not an error:\n"
             "%s" % json.dumps(response.body))
 
@@ -170,6 +183,8 @@ def from_response(response):
         value = response.body["value"]
     else:
         raise UnknownErrorException(
+            response.status,
+            None,
             "Expected 'value' key in response body:\n"
             "%s" % json.dumps(response.body))
 
@@ -179,7 +194,7 @@ def from_response(response):
     stack = value["stacktrace"] or None
 
     cls = get(code)
-    return cls(message, stacktrace=stack)
+    return cls(response.status, code, message, stacktrace=stack)
 
 
 def get(error_code):
@@ -191,6 +206,6 @@ def get(error_code):
 
 
 _errors = collections.defaultdict()
-for item in locals().values():
+for item in list(itervalues(locals())):
     if type(item) == type and issubclass(item, WebDriverException):
         _errors[item.status_code] = item

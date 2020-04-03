@@ -1,20 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <meta charset=utf-8>
 <title>Clipboard IDL test</title>
-<link rel="help" href="https://w3c.github.io/clipboard-apis/">
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src=/resources/WebIDLParser.js></script>
-<script src=/resources/idlharness.js></script>
+<link rel='help' href='https://w3c.github.io/clipboard-apis/#async-clipboard-api'>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
 <script>
 'use strict';
 
-function doTest(idl, dom) {
-  var idl_array = new IdlArray();
+function doTest(idl, dom, html) {
+  const idl_array = new IdlArray();
   idl_array.add_untested_idls('interface Navigator {};');
   idl_array.add_untested_idls('interface EventTarget {};');
   idl_array.add_untested_idls('dictionary PermissionDescriptor {};');
   idl_array.add_untested_idls(dom, { only: ['Event', 'EventInit'] });
+  idl_array.add_untested_idls(html, { only: ['DataTransfer', 'DataTransferItemList'] });
   idl_array.add_idls(idl);
   idl_array.add_objects({
     Navigator: ['navigator'],
@@ -25,15 +26,16 @@ function doTest(idl, dom) {
 };
 
 function fetchText(url) {
-  return fetch(url).then((response) => response.text());
+  return fetch(url).then(response => response.text());
 }
 
 promise_test(() => {
   return Promise.all(
     [
-      "/interfaces/clipboard-apis.idl",
-      "/interfaces/dom.idl",
+      '/interfaces/clipboard-apis.idl',
+      '/interfaces/dom.idl',
+      '/interfaces/html.idl',
     ].map(fetchText))
-    .then(([idl, dom]) => doTest(idl, dom));
-}, "Test driver");
+    .then(([idl, dom, html]) => doTest(idl, dom, html));
+}, 'Test driver');
 </script>

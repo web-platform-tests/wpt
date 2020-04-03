@@ -8,13 +8,14 @@
 <meta name="assert" content="object-position supports only the '<position>' grammar.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/parsing-testcommon.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
 </head>
 <body>
 <script>
 test_invalid_value("object-position", "auto");
 test_invalid_value("object-position", "1px 2px 3px");
 test_invalid_value("object-position", "left right");
+test_invalid_value("object-position", "bottom 10%");
 test_invalid_value("object-position", "bottom 10% top 20%");
 
 // The following were supported in an earlier version of the spec.

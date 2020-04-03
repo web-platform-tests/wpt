@@ -11,8 +11,9 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  // exchangeIceCandidates
   // doSignalingHandshake
+  // exchangeIceCandidates
+  // generateAudioReceiveOnlyOffer
 
   /*
     4.3.2.  Interface Definition
@@ -59,20 +60,25 @@
 
     t.add_cleanup(() => pc.close());
 
+    let reachedGathering = false;
     const onIceGatheringStateChange = t.step_func(() => {
       const { iceGatheringState } = pc;
 
-      if(iceGatheringState === 'complete') {
+      if(iceGatheringState === 'gathering') {
+        reachedGathering = true;
+      } else if(iceGatheringState === 'complete') {
+        assert_true(reachedGathering, 'iceGatheringState should reach gathering before complete');
         t.done();
       }
     });
 
     assert_equals(pc.onicegatheringstatechange, null,
       'Expect connection to have icegatheringstatechange event');
+    assert_equals(pc.iceGatheringState, 'new');
 
     pc.addEventListener('icegatheringstatechange', onIceGatheringStateChange);
 
-    pc.createOffer({ offerToReceiveAudio: true })
+    generateAudioReceiveOnlyOffer(pc)
     .then(offer => pc.setLocalDescription(offer))
     .then(err => t.step_func(err =>
       assert_unreached(`Unhandled rejection ${err.name}: ${err.message}`)));
@@ -107,13 +113,13 @@
       const { iceGatheringState } = pc2;
 
       if(iceGatheringState === 'gathering') {
-        const iceTransport = pc2.sctp.transport.transport;
+        const iceTransport = pc2.sctp.transport.iceTransport;
 
         assert_equals(iceTransport.gatheringState, 'gathering',
           'Expect ICE transport to be in checking gatheringState when iceGatheringState is checking');
 
       } else if(iceGatheringState === 'complete') {
-        const iceTransport = pc2.sctp.transport.transport;
+        const iceTransport = pc2.sctp.transport.iceTransport;
 
         assert_equals(iceTransport.gatheringState, 'complete',
           'Expect ICE transport to be in complete gatheringState when iceGatheringState is complete');

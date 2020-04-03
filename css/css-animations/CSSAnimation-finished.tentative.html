@@ -12,7 +12,6 @@
 }
 @keyframes def {}
 </style>
-<body>
 <div id="log"></div>
 <script>
 'use strict';
@@ -32,7 +31,7 @@ promise_test(async t => {
   div.style.animation = '';
   getComputedStyle(div).animation;
 
-  await promise_rejects(t, 'AbortError', originalFinishedPromise,
+  await promise_rejects_dom(t, 'AbortError', originalFinishedPromise,
                         'finished promise is rejected with AbortError');
 
   assert_not_equals(animation.finished, originalFinishedPromise,
@@ -56,7 +55,7 @@ promise_test(async t => {
   div.style.animation = 'def 100s';
   getComputedStyle(div).animation;
 
-  await promise_rejects(t, 'AbortError', originalFinishedPromise,
+  await promise_rejects_dom(t, 'AbortError', originalFinishedPromise,
                         'finished promise is rejected with AbortError');
 
   assert_not_equals(animation.finished, originalFinishedPromise,
@@ -84,4 +83,3 @@ promise_test(async t => {
 }, 'finished promise is not reset when animationPlayState is set to running');
 
 </script>
-</body>

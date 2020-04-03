@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
+<link rel="help" href="https://drafts.css-houdini.org/css-paint-api/">
 <link rel="match" href="parse-input-arguments-ref.html">
 <style>
 .container {
@@ -21,18 +22,18 @@ var testsPassed = false;
 try {
     registerPaint('', class { });
 } catch(ex) {
-    if (ex.name == 'TypeError' && ex.message == "Failed to execute 'registerPaint' on 'PaintWorkletGlobalScope': The empty string is not a valid name.")
+    // The empty string is not a valid name.
+    if (ex.name == 'TypeError')
         testsPassed = true;
 }
 
 registerPaint('geometry', class {
     paint(ctx, geom) {
         if (testsPassed)
-            ctx.strokeStyle = 'green';
+            ctx.fillStyle = 'green';
         else
-            ctx.strokeStyle = 'red';
-        ctx.lineWidth = 4;
-        ctx.strokeRect(0, 0, geom.width, geom.height);
+            ctx.fillStyle = 'red';
+        ctx.fillRect(0, 0, geom.width, geom.height);
     }
 });
 </script>

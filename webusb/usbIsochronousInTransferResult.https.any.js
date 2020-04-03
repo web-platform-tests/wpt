@@ -1,4 +1,3 @@
-// META: global=sharedworker
 'use strict';
 
 test(t => {
@@ -33,5 +32,5 @@ test(t => {
 }, 'Can construct a USBIsochronousInTransferResult without a DataView');
 
 test(t => {
-  assert_throws(TypeError(), () => new USBIsochronousInTransferResult());
+  assert_throws_js(TypeError, () => new USBIsochronousInTransferResult());
 }, 'Cannot construct a USBIsochronousInTransferResult without packets');

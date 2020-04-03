@@ -1,4 +1,3 @@
-// META: global=sharedworker
 'use strict';
 
 test(t => {
@@ -16,5 +15,5 @@ test(t => {
 }, 'Can construct a USBIsochronousOutTransferResult');
 
 test(t => {
-  assert_throws(TypeError(), () => new USBIsochronousOutTransferResult());
+  assert_throws_js(TypeError, () => new USBIsochronousOutTransferResult());
 }, 'Cannot construct a USBIsochronousOutTransferResult without packets');

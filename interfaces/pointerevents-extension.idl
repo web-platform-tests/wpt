@@ -1,8 +1,0 @@
-dictionary PointerEventInit : MouseEventInit {
-    sequence<PointerEvent> coalescedEvents;
-};
-
-[Constructor(DOMString type, optional PointerEventInit eventInitDict)]
-interface PointerEvent : MouseEvent {
-    sequence<PointerEvent> getCoalescedEvents();
-};

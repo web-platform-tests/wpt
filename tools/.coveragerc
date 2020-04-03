@@ -8,9 +8,11 @@ omit =
   pywebsocket/*
   six/*
   webdriver/*
-  wptserve/*
   */site-packages/*
   */lib_pypy/*
+  wpt/*
+  wptrunner/*
+  */tests/*
 
 [paths]
 html5lib =

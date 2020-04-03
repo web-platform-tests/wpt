@@ -1,0 +1,29 @@
+<title>CSS Filter Effects: filter primitive subregion with css transform when applying page zoom</title>
+<link rel="help" href="https://drafts.fxtf.org/filter-effects-1/#FilterEffectsRegion">
+<link rel="help" href="https://drafts.fxtf.org/filter-effects-1/#FilterPrimitiveSubRegion">
+<link rel="match" href="reference/filter-subregion-zoom-002-ref.html">
+<meta name="assert" content="This test checks that when applying page zoom to a filter with filter primitive subregion, the width and height are scaled correctly with css transform which triggers a separate layer on modern browsers.">
+<style>
+.filtered {
+    filter: url(#colormatrix);
+    background-color: green;
+    width: 100px;
+    height: 100px;
+    margin: 0px;
+    transform: translateZ(0);
+}
+body {
+    margin: 0px;
+}
+</style>
+<body style="zoom: 50%;">
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" version="1.1">
+  <defs>
+    <filter id="colormatrix" color-interpolation-filters="sRGB" x="0%" y="0%" width="100%" height="100%">
+      <feColorMatrix x="2" y="12" width="80" height="60"/>
+    </filter>
+  </defs>
+</svg>
+<div class="filtered">
+</div>
+</body>

@@ -316,18 +316,18 @@ unexpected exceptions that will lead to an error in the harness.
 ## Optional Features ##
 
 If a test depends on a specification or specification feature that is OPTIONAL
-(in the [RGC2119 sense](https://tools.ietf.org/html/rfc2119)),
+(in the [RFC 2119 sense](https://tools.ietf.org/html/rfc2119)),
 `assert_implements_optional` can be used to indicate that failing the test does
 not mean violating a web standard. For example:
 
 ```js
 async_test((t) => {
-  const video = document.createelement("video");
-  assert_implements_optional(video.canplaytype("video/webm"));
+  const video = document.createElement("video");
+  assert_implements_optional(video.canPlayType("video/webm"));
   video.src = "multitrack.webm";
-  // test something specific to multiple audio tracks in a webm container
+  // test something specific to multiple audio tracks in a WebM container
   t.done();
-}, "webm with multiple audio tracks");
+}, "WebM with multiple audio tracks");
 ```
 
 A failing `assert_implements_optional` call is reported as a status of
@@ -890,7 +890,7 @@ asserts that a feature is supported, by checking if `condition` is truthy.
 
 ### `assert_implements_optional(condition, description)`
 asserts that an optional feature is supported, by checking if `condition` is truthy.
-See [Optional Features](#optional_features) for usage.
+See [Optional Features](#optional-features) for usage.
 
 ### `assert_unreached(description)`
 asserts if called. Used to ensure that some codepath is *not* taken e.g.

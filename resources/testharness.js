@@ -1862,7 +1862,7 @@ policies and contribution forms [3].
      */
     function assert_implements(condition, description) {
         assert(!!condition, "assert_implements", description,
-               "expected ${actual} to be truthy", {actual:actual});
+               "expected ${actual} to be truthy", {actual:condition});
     }
     expose(assert_implements, "assert_implements")
 

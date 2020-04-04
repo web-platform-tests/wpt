@@ -1,0 +1,57 @@
+<!DOCTYPE html><!-- webkit-test-runner [ experimental:ResizeObserverEnabled=true ] -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./resources/resizeTestHelper.js"></script>
+<style>
+    #target {
+        width: 200px;
+        height: 200px;
+    }
+</style>
+<div id="target"></div>
+
+<script>
+'use strict';
+
+let target = document.querySelector('#target');
+
+// allow uncaught exception because ResizeObserver posts exceptions
+// to window error handler when limit is exceeded.
+setup({ allow_uncaught_exception: true });
+
+function test0() {
+    let helper = new ResizeTestHelper(
+        "test0: The change of zoom shouldn't trigger resize observer",
+        [
+            {
+                setup: observer => {
+                    observer.observe(target);
+                },
+                notify: entries => {
+                }
+            }, 
+            {
+                setup: observer => {
+                    window.internals.setPageZoomFactor(2);
+                },
+                notify: entries => {
+                    assert_unreached("no entries should be observed");
+                },
+                timeout: () => {
+                    // expected
+                }
+            }
+        ]);
+    return helper.start();
+}
+
+let guard;
+test(_ => {
+    assert_own_property(window, "ResizeObserver");
+    guard = async_test('guard');
+}, "ResizeObserver implemented")
+
+test0()
+    .then(() => { guard.done(); });
+    
+</script>

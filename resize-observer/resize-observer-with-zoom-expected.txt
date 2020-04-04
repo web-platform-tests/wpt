@@ -1,0 +1,5 @@
+
+PASS ResizeObserver implemented 
+PASS guard 
+PASS test0: The change of zoom shouldn't trigger resize observer 
+

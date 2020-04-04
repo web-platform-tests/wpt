@@ -1861,8 +1861,7 @@ policies and contribution forms [3].
      * @param {string} description Error description for the case that the condition is not truthy.
      */
     function assert_implements(condition, description) {
-        assert(!!condition, "assert_implements", description,
-               "expected ${actual} to be truthy", {actual:condition});
+        assert(!!condition, "assert_implements", description);
     }
     expose(assert_implements, "assert_implements")
 

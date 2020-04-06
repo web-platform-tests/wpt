@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests the prototype Trust Token API's functionality through its XHR interface.</title>
+<link rel="help" href="https://github.com/WICG/trust-token-api#trust-token-redemption" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+  'use strict';
+
+  async_test((t) => {
+    let request = new XMLHttpRequest();
+    request.open('GET', 'https://trusttoken.example');
+    request.setTrustToken({
+      type: 'token-request'
+    });
+    request.onerror = t.step_func((_) => {
+      assert_equals(request.trustTokenOperationError.name, "OperationError");
+      t.done();
+    });
+    request.send();
+  }, 'Trust Token issuance is not implemented');
+
+  async_test((t) => {
+    let request = new XMLHttpRequest();
+    request.open('GET', 'https://trusttoken.example');
+    request.setTrustToken({
+      type: 'srr-token-redemption'
+    });
+    request.onerror = t.step_func((_) => {
+      assert_equals(request.trustTokenOperationError.name, "OperationError");
+      t.done();
+    });
+    request.send();
+  }, 'Trust Token redemption is not implemented');
+
+  async_test((t) => {
+    let request = new XMLHttpRequest();
+    request.open('GET', 'https://destination.example');
+    request.setTrustToken({
+      type: 'send-srr',
+      issuer: 'https://issuer.example'
+    });
+    request.onerror = t.step_func((_) => {
+      assert_equals(request.trustTokenOperationError.name, "OperationError");
+      t.done();
+    });
+    request.send();
+  }, 'Trust Token signing is not implemented');
+</script>

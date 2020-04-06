@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests the prototype Trust Token API's functionality through its Fetch interface.</title>
+<link rel="help" href="https://github.com/WICG/trust-token-api#trust-token-redemption" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+  'use strict';
+
+  promise_test((t) => promise_rejects_dom(t, 'OperationError',
+    fetch('https://trusttoken.example', {
+      trustToken: {
+        type: 'token-request'
+      }
+    }), 'Trust Token issuance should error.'), 'Trust Token issuance is not implemented');
+
+  promise_test((t) => promise_rejects_dom(t, 'OperationError',
+    fetch('https://trusttoken.example', {
+      trustToken: {
+        type: 'srr-token-redemption'
+      }
+    }), 'Trust Token redemption should error.'), 'Trust Token redemption is not implemented');
+
+  promise_test((t) => promise_rejects_dom(t, 'OperationError',
+    fetch('https://destination.example', {
+      trustToken: {
+        type: 'send-srr',
+        issuer: 'https://issuer.example'
+      }
+    }), 'Trust Token signing should error.'), 'Trust Token signing is not implemented');
+</script>

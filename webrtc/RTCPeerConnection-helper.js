@@ -683,6 +683,33 @@ function preferCodec(transceiver, mimeType, sdpFmtpLine) {
   return transceiver.setCodecPreferences(codecs);
 }
 
+// Uses WebAudio to detect audio (or lack of audio).
+function waitForAudio(stream, silence = false) {
+  const ac = new AudioContext();
+  const analyser = ac.createAnalyser();
+  analyser.fftSize = 2048;
+  analyser.smoothingTimeConstant = 0;
+  const fftBins = new Uint8Array(analyser.frequencyBinCount);
+  const sourceNode = ac.createMediaStreamSource(new MediaStream([stream.getAudioTracks()[0]]));
+  sourceNode.connect(analyser);
+  return new Promise(resolve => {
+    setTimeout(function poll() {
+      analyser.getByteFrequencyData(fftBins);
+      const sum = fftBins.reduce((a, b) => a + b);
+      if ((silence && sum === 0) || (!silence && sum > 0)) {
+        ac.close().then(resolve);
+      } else {
+        requestAnimationFrame(poll);
+      }
+    }, 500);
+  });
+}
+
+// Variant of waitForAudio that waits for the lack of a signal, i.e. silence.
+function waitForSilence(stream) {
+    return waitForAudio(stream, true);
+}
+
 // Contains a set of values and will yell at you if you try to add a value twice.
 class UniqueSet extends Set {
   constructor(items) {

@@ -15,8 +15,8 @@
   test_create("createCDATASection", CDATASection, 4, "#cdata-section");
 
   test(() => {
-    assert_throws("InvalidCharacterError", () => document.createCDATASection(" ]]>  "));
-  }, "Creating a CDATA section containing the string \"]]>\" must throw");
+    assert_throws_dom("InvalidCharacterError", () => document.createCDATASection(" ]" + "]>  "));
+  }, "Creating a CDATA section containing the string \"]" + "]>\" must throw");
   </script>
 </body>
 </html>

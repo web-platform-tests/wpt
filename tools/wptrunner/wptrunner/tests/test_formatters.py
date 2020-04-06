@@ -174,19 +174,19 @@ def test_wptscreenshot_test_end(capfd):
 
     # Empty
     data = {}
-    assert None == formatter.test_end(data)
+    assert formatter.test_end(data) is None
 
     # No items
-    data['extra'] = { "reftest_screenshots": [] }
-    assert None == formatter.test_end(data)
+    data['extra'] = {"reftest_screenshots": []}
+    assert formatter.test_end(data) is None
 
     # Invalid item
     data['extra']['reftest_screenshots'] = ["no dict item"]
-    assert None == formatter.test_end(data)
+    assert formatter.test_end(data) is None
 
     # Random hash
     data['extra']['reftest_screenshots'] = [{"hash": "HASH", "screenshot": "DATA"}]
     assert 'data:image/png;base64,DATA\n' == formatter.test_end(data)
 
     # Already cached hash
-    assert None == formatter.test_end(data)
+    assert formatter.test_end(data) is None

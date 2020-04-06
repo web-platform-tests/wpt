@@ -275,15 +275,6 @@ test(t => {
                 'CSS animations canceled by the API are not returned');
 }, 'CSS Animations canceled via the API are not returned');
 
-test(t => {
-  const div = addDiv(t, { style: 'animation: animLeft 100s' });
-  const anim = div.getAnimations()[0];
-  anim.cancel();
-  anim.play();
-  assert_equals(document.getAnimations().length, 1,
-                'CSS animations canceled and restarted by the API are ' +
-                'returned');
-}, 'CSS Animations canceled and restarted via the API are returned');
 
 function pseudoTest(description, testMarkerPseudos) {
   test(t => {

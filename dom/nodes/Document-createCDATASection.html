@@ -10,7 +10,7 @@
 
 setup({ single_test: true });
 
-assert_throws("NotSupportedError", () => document.createCDATASection("foo"));
+assert_throws_dom("NotSupportedError", () => document.createCDATASection("foo"));
 
 done();
 </script>

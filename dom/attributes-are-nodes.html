@@ -22,7 +22,7 @@ test(() => {
   const parent = document.createElement("p");
 
   const attribute = document.createAttribute("newattribute");
-  assert_throws("HierarchyRequestError", () => {
+  assert_throws_dom("HierarchyRequestError", () => {
     parent.appendChild(attribute);
   });
 
@@ -34,7 +34,7 @@ test(() => {
   parent.appendChild(document.createElement("span"));
 
   const attribute = document.createAttribute("newattribute");
-  assert_throws("HierarchyRequestError", () => {
+  assert_throws_dom("HierarchyRequestError", () => {
     parent.replaceChild(attribute, parent.firstChild);
   });
 
@@ -46,7 +46,7 @@ test(() => {
   parent.appendChild(document.createElement("span"));
 
   const attribute = document.createAttribute("newattribute");
-  assert_throws("HierarchyRequestError", () => {
+  assert_throws_dom("HierarchyRequestError", () => {
     parent.insertBefore(attribute, parent.firstChild);
   });
 

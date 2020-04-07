@@ -35,7 +35,6 @@ var document_scrollend_arrived = false;
 
 function onElementScrollEnd(event) {
   assert_false(event.cancelable);
-  // scrollend events are bubbled when the target node is document.
   assert_false(event.bubbles);
   element_scrollend_arrived = true;
 }

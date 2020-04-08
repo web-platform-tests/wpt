@@ -1,0 +1,20 @@
+<svg id="svg-root"
+  width="100%" height="100%" viewBox="0 0 480 360"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <g id="testmeta">
+    <title>Path With Square Caps</title>
+    <html:link rel="author"
+          title="Skef Iterum"
+          href="https://github.com/skef/"/>
+    <html:link rel="help"
+          href="https://www.w3.org/TR/SVG2/painting.html#LineCaps"/>
+    <html:link rel="match" href="linecap-003-ref.svg"/>
+    <html:meta name="fuzzy" content="maxDifference=0-40;totalPixels=0-800"/>
+  </g>
+
+  <g id="test-body-content">
+    <path fill="none" stroke="blue" stroke-width="80" stroke-linecap="square" d="M 215 260 l 50 5"/>
+  </g>
+</svg>

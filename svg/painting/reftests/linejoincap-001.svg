@@ -1,0 +1,26 @@
+<svg id="svg-root"
+  width="100%" height="100%" viewBox="0 0 480 360"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <g id="testmeta">
+    <title>Filled Open Path With Round Joins and Butt Caps</title>
+    <html:link rel="author"
+          title="Skef Iterum"
+          href="https://github.com/skef/"/>
+    <html:link rel="help"
+          href="https://www.w3.org/TR/SVG2/render.html#LineJoin"/>
+    <html:link rel="help"
+          href="https://www.w3.org/TR/SVG2/render.html#LineCaps"/>
+    <html:link rel="help"
+          href="https://www.w3.org/TR/SVG2/paths.html#PathDataClosePathCommand"/>
+    <html:link rel="match" href="linejoincap-001-ref.svg"/>
+    <html:meta name="fuzzy" content="maxDifference=0-50;totalPixels=0-700"/>
+  </g>
+
+  <g id="test-body-content">
+    <g transform="translate(125,10)">
+      <path id="triangle-01" fill="green" stroke="#39D" stroke-width="15" stroke-linecap="butt" stroke-linejoin="round" d="M 100 0 L 100 80 0 40 100 0"/>
+    </g>
+  </g>
+</svg>

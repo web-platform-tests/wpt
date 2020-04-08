@@ -1,0 +1,20 @@
+<svg id="svg-root"
+  width="100%" height="100%" viewBox="0 0 480 360"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <g id="testmeta">
+    <title>Polygon 1</title>
+    <html:link rel="author"
+          title="Skef Iterum"
+          href="https://github.com/skef/"/>
+    <html:link rel="help"
+          href="https://www.w3.org/TR/SVG2/shapes.html#PolygonElement"/>
+    <html:link rel="match" href="polygon-001-ref.svg"/>
+    <html:meta name="fuzzy" content="maxDifference=0-70;totalPixels=0-1300"/>
+  </g>
+
+  <g id="test-body-content">
+    <polygon id="polygon-01" fill="none" stroke="#000000" points="59,45,95,63,108,105,82,139,39,140,11,107,19,65"/>
+  </g>
+</svg>

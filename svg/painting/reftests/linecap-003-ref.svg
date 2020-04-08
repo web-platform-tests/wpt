@@ -1,0 +1,16 @@
+<svg id="svg-root"
+  width="100%" height="100%" viewBox="0 0 480 360"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <g id="testmeta">
+    <title>Path With Square Caps</title>
+    <html:link rel="author"
+          title="Skef Iterum"
+          href="https://github.com/skef/"/>
+  </g>
+
+  <g id="test-body-reference">
+    <path style="stroke:none;fill:blue" d="M219.021 220.2l50 5l39.7637 3.97656l-7.96094 79.6074l-39.8438 -3.98438l-50 -5l-39.7637 -3.97656l7.96094 -79.6074z"/>
+  </g>
+</svg>

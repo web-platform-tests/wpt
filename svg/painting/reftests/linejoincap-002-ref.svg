@@ -1,0 +1,17 @@
+<svg id="svg-root"
+  width="100%" height="100%" viewBox="0 0 480 360"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <g id="testmeta">
+    <title>Filled Open Path With Bevel Joins and Round Caps</title>
+    <html:link rel="author"
+          title="Skef Iterum"
+          href="https://github.com/skef/"/>
+  </g>
+
+  <g id="test-body-reference">
+    <path style="stroke:none;fill:#39D" d="M225 107.5c4.13965 0 7.5 3.36035 7.5 7.5v80l-10.2812 6.9668l-100 -40v-13.9336l100 -40c0.860352 -0.34375 1.79883 -0.533203 2.78125 -0.533203z"/>
+    <path style="stroke:none;fill:green" d="M217.5 183.921v-57.8418l-72.3027 28.9209z"/>
+  </g>
+</svg>

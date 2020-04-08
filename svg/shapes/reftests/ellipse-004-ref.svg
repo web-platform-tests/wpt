@@ -1,0 +1,16 @@
+<svg id="svg-root"
+  width="100%" height="100%" viewBox="0 0 480 360"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <g id="testmeta">
+    <title>Ellipse 4</title>
+    <html:link rel="author"
+          title="Skef Iterum"
+          href="https://github.com/skef/"/>
+  </g>
+
+  <g id="test-body-reference">
+    <path style="stroke:none;fill:green" d="M335 80c0 -19.3301 15.6699 -35 35 -35s35 15.6699 35 35s-15.6699 35 -35 35s-35 -15.6699 -35 -35z"/>
+  </g>
+</svg>

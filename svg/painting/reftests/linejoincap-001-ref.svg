@@ -1,0 +1,18 @@
+<svg id="svg-root"
+  width="100%" height="100%" viewBox="0 0 480 360"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <g id="testmeta">
+    <title>Filled Open Path With Round Joins and Butt Caps</title>
+    <html:link rel="author"
+          title="Skef Iterum"
+          href="https://github.com/skef/"/>
+  </g>
+
+  <g id="test-body-reference">
+    <path style="stroke:none;fill:#39D" d="M232.5 10v80c0 4.13965 -3.36035 7.5 -7.5 7.5c-0.982422 0 -1.9209 -0.189453 -2.78125 -0.533203l-100 -40c-2.76367 -1.10547 -4.71875 -3.80957 -4.71875 -6.9668s1.95508 -5.86133 4.71875 -6.9668l100 -40l2.78125 6.9668
+  h7.5z"/>
+    <path style="stroke:none;fill:green" d="M217.5 78.9209v-57.8418l-72.3027 28.9209z"/>
+  </g>
+</svg>

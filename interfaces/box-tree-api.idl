@@ -1,0 +1,32 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: Box Tree API Level 1 (https://drafts.css-houdini.org/box-tree-api/)
+
+[Exposed=Window]
+interface DeadFragmentInformation {
+  readonly attribute Node node;
+  readonly attribute double width;
+  readonly attribute double height;
+  readonly attribute double top;
+  readonly attribute double left;
+  readonly attribute boolean isOverflowed;
+  readonly attribute FrozenArray<DeadFragmentInformation>? children;
+  readonly attribute DeadFragmentInformation? nextSibling;
+  readonly attribute DeadFragmentInformation? previousSibling;
+  readonly attribute DeadFragmentInformation? nextInBox;
+  readonly attribute DeadFragmentInformation? previousInBox;
+};
+
+enum FragmentFilter {
+  "direct-fragments-only",
+  "fragment-hierarchy"
+};
+
+partial interface Element {
+  Promise<DeadFragmentInformation> getFragmentInformation(FragmentFilter filter);
+};
+
+partial interface Document {
+  void layoutNow();
+};

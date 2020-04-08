@@ -1,20 +1,23 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>document.write in a module</title>
+<title>document.write in an imported module</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
 async_test(test => {
   const iframe = document.createElement("iframe");
-  iframe.src = "module-iframe.html";
+  iframe.src = "module-tla-import-iframe.html";
   document.body.appendChild(iframe);
 
   iframe.onerror = test.unreached_func("Error loading iframe");
+  let testEndWasCalled = false;
   document.addEventListener("testEnd", test.step_func(() => {
     assert_equals(iframe.contentDocument.body.textContent, "PASS\n");
+    testEndWasCalled = true;
   }));
   iframe.onload = test.step_func_done(() => {
+    assert_true(testEndWasCalled);
     assert_equals(iframe.contentDocument.body.textContent, "PASS\n");
   });
 });

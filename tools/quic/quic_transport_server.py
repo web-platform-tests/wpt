@@ -23,8 +23,9 @@ SERVER_NAME = 'aioquic-transport'
 
 handlers_path = None
 
+
 class EventHandler:
-    def __init__(self, connection: QuicConnectionProtocol, global_dict):
+    def __init__(self, connection: QuicConnectionProtocol, global_dict: Dict):
         self.connection = connection
         self.global_dict = global_dict
 
@@ -40,6 +41,7 @@ class EventHandler:
         name = 'handle_event'
         if name in self.global_dict:
             self.global_dict[name](self.connection, event)
+
 
 class QuicTransportProtocol(QuicConnectionProtocol):
     def __init__(self, *args, **kwargs) -> None:
@@ -58,8 +60,8 @@ class QuicTransportProtocol(QuicConnectionProtocol):
         logging.log(logging.INFO, 'QUIC event: %s' % type(event))
         try:
             if (not self.client_indication_finished and
-                isinstance(event, StreamDataReceived) and
-                event.stream_id == 2):
+                    isinstance(event, StreamDataReceived) and
+                    event.stream_id == 2):
                 # client indication process
                 self.client_indication_data += event.data
                 if event.end_stream:
@@ -97,7 +99,7 @@ class QuicTransportProtocol(QuicConnectionProtocol):
             if len(value) != length:
                 raise Exception('truncated "Value" field')
             yield (key, value)
-        
+
     def process_client_indication(self) -> None:
         origin = None
         origin_string = None
@@ -122,9 +124,9 @@ class QuicTransportProtocol(QuicConnectionProtocol):
             raise Exception('No origin is given')
         if path is None:
             raise Exception('No path is given')
-
-        if (origin.scheme != 'https' and
-            origin.scheme != 'http') or origin.netloc == '':
+        if origin.scheme != 'https' and origin.scheme != 'http':
+            raise Exception('Invalid origin: %s' % origin_string)
+        if origin.netloc == '':
             raise Exception('Invalid origin: %s' % origin_string)
 
         # To make the situation simple we accept only simple path strings.
@@ -154,7 +156,7 @@ class QuicTransportProtocol(QuicConnectionProtocol):
         if self._quic._state in END_STATES:
             return True
         return False
-        
+
 
 class SessionTicketStore:
     '''
@@ -206,7 +208,10 @@ if __name__ == '__main__':
         help='the directory path of QuicTransport event handlers',
         )
     parser.add_argument(
-        '-v', '--verbose', action='store_true', help='increase logging verbosity'
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='increase logging verbosity'
     )
     args = parser.parse_args()
 

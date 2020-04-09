@@ -40,8 +40,13 @@
 crashing or experiencing other low-level issues that may be checked by
 implementation-specific tooling (e.g. leaks, asserts, or sanitizer
 failures).</p>
-<p>Crashtests are identified by the string <code class="docutils literal notranslate"><span class="pre">-crash</span></code> in the filename, or
-by being in a directory called <code class="docutils literal notranslate"><span class="pre">crashtests</span></code>.</p>
+<p>Crashtests are identified by the string <code class="docutils literal notranslate"><span class="pre">-crash</span></code> in the filename immediately
+before the extension, or by being in a directory called <code class="docutils literal notranslate"><span class="pre">crashtests</span></code>. Examples:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">css/css-foo/bar-crash.html</span></code> is a crash test</li>
+<li><code class="docutils literal notranslate"><span class="pre">css/css-foo/crashtests/bar.html</span></code> is a crash test</li>
+<li><code class="docutils literal notranslate"><span class="pre">css/css-foo/bar-crash-001.html</span></code> is <strong>not</strong> a crash test</li>
+</ul>
 <p>The simplest crashtest is a single HTML file with any content. The
 test passes if the load event is reached, and the browser finishes
 painting, without terminating.</p>

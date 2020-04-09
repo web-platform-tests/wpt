@@ -8,9 +8,9 @@ failures).
 Crashtests are identified by the string `-crash` in the filename immediately
 before the extension, or by being in a directory called `crashtests`. Examples:
 
-- css/css-foo/bar**-crash**.html is a crash test
-- css/css-foo/**crashtests**/bar.html is a crash test
-- css/css-foo/bar-crash-001.html is **not** a crash test
+- `css/css-foo/bar-crash.html` is a crash test
+- `css/css-foo/crashtests/bar.html` is a crash test
+- `css/css-foo/bar-crash-001.html` is **not** a crash test
 
 The simplest crashtest is a single HTML file with any content. The
 test passes if the load event is reached, and the browser finishes

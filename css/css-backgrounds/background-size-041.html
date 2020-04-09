@@ -25,23 +25,78 @@
 
   -->
 
-  <link rel="match" href="reference/ref-filled-green-100px-square.xht">
+  <link rel="match" href="reference/background-size-041-ref.html">
 
   <meta content="" name="flags">
-  <meta content="This test checks that when only one 'background-size' value is declared, then the second is assumed to be 'auto'. In this test, the image has no intrinsic size and no intrinsic ratio, therefore it must use 100%. In this test, the 'auto' value should use 100% of the height of the background positioning area of the div, which is 100px." name="assert">
+  <meta content="This test checks that when only one 'background-size' value is declared, then the second is assumed to be 'auto'. In this test, the image has no intrinsic size and no intrinsic ratio, therefore it must use 100%. In this test, the 'auto' value should use 100% of the height of the background positioning area of each of the targeted div, which is 10px, 20px, 30px, 40px, 50px and 60px." name="assert">
 
   <style>
   div
     {
       background-color: red;
-      background-image: linear-gradient(green, green);
       background-repeat: repeat-x;
-      background-size: 10px;
-      height: 100px;
+      margin-bottom: 8px;
+    }
+
+  div#first
+    {
+      background-image: linear-gradient(green, green);
+      background-size: 1px;
+      height: 10px;
       width: 100px;
+    }
+
+  div#second
+    {
+      background-image: linear-gradient(green, green);
+      background-size: 1%;
+      height: 20px;
+      width: 90px;
+    }
+
+  div#third
+    {
+      background-image: linear-gradient(green, green);
+      background-size: 2px auto;
+      height: 30px;
+      width: 80px;
+    }
+
+  div#fourth
+    {
+      background-image: linear-gradient(green, green);
+      background-size: 2% auto;
+      height: 40px;
+      width: 70px;
+    }
+
+  div#fifth
+    {
+      background-image: url("support/green-intrinsic-none.svg");
+      background-size: 3px auto;
+      height: 50px;
+      width: 60px;
+    }
+
+  div#sixth
+    {
+      background-image: url("support/green-intrinsic-none.svg");
+      background-size: 3% auto;
+      height: 60px;
+      width: 50px;
     }
   </style>
 
-  <p>Test passes if there is a filled green square and <strong>no red</strong>.
+  <p>Test passes if there are 6 different green rectangles and <strong>no red</strong>.
 
-  <div></div>
+  <div id="first"></div>
+
+  <div id="second"></div>
+
+  <div id="third"></div>
+
+  <div id="fourth"></div>
+
+  <div id="fifth"></div>
+
+  <div id="sixth"></div>

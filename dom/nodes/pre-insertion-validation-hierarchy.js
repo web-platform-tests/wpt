@@ -10,7 +10,7 @@ function preInsertionValidateHierarchy(methodName) {
       parent[methodName](node);
     }
   }
-  
+
   // Step 2
   test(() => {
     const doc = document.implementation.createHTMLDocument("title");
@@ -56,7 +56,6 @@ function preInsertionValidateHierarchy(methodName) {
     assert_throws_dom("HierarchyRequestError", () => insert(doc, df));
   }, "If node is a DocumentFragment with an element and parent is a document with another element, then throw a HierarchyRequestError DOMException.");
 
-  
   // Step 6, in case of an element
   test(() => {
     const doc = document.implementation.createHTMLDocument("title");
@@ -64,7 +63,6 @@ function preInsertionValidateHierarchy(methodName) {
     assert_throws_dom("HierarchyRequestError", () => insert(doc, el));
   }, "If node is an Element and parent is a document with another element, then throw a HierarchyRequestError DOMException.");
 
-  
   // Step 6, in case of a doctype when document already has another doctype
   test(() => {
     const doc = document.implementation.createHTMLDocument("title");

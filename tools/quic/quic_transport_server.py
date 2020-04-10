@@ -223,6 +223,7 @@ if __name__ == '__main__':
     )
 
     handlers_path = os.path.abspath(os.path.expanduser(args.handlers_path))
+    logging.log(logging.INFO, 'port = %s' % args.port);
     logging.log(logging.INFO, 'handlers path = %s' % handlers_path)
 
     # load SSL certificate and key

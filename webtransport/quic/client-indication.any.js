@@ -2,21 +2,24 @@
 
 const PORT = 8983;
 const HOST = get_host_info().ORIGINAL_HOST;
+const ORIGIN = get_host_info().ORIGIN;
 
-promise_test(async (t) => {
+promise_test(async (test) => {
   function onClosed() {
-    t.assert_unreached('QuicTransport.closed should be' +
-                       'fulfilled or rejected after getting a PASS signal.');
+    assert_unreached('The closed promise should be ' +
+                     'fulfilled or rejected after getting a PASS signal.');
   }
-  t = new QuicTransport('quic-transport://${HOST}:${PORT}/client-indication');
-  t.closed.then(t.step_func(onClosed), t.step_func(onClosed));
+  t = new QuicTransport(
+    `quic-transport://${HOST}:${PORT}/handlers/client-indication.py?origin=${ORIGIN}`);
+  t.closed.then(test.step_func(onClosed), test.step_func(onClosed));
 
   const streams = t.receiveStreams();
   let {done, value} = await streams.getReader().read();
   assert_false(done, 'getting an incoming stream');
 
-  const reader = value.pipeThroug(hnew TextDecoderStream());
-  const result = '';
+  const readable = value.readable.pipeThrough(new TextDecoderStream());
+  const reader = readable.getReader();
+  let result = '';
   while (true) {
     let {done, value} = await reader.read();
     if (done) {
@@ -24,5 +27,5 @@ promise_test(async (t) => {
     } 
     result += value;
   }
-  assert_true(result, 'PASS');
-});
+  assert_equals(result, 'PASS');
+}, 'Client indication');

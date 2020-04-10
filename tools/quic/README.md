@@ -2,7 +2,7 @@ This directory contains
 [QUIC](https://tools.ietf.org/html/draft-ietf-quic-transport) related tools.
 
 # QuicTransport
-[[quic_transport_server.py]] implements a simple
+[quic_transport_server.py](./quic_transport_server.py) implements a simple
 [QuicTransport](https://tools.ietf.org/html/draft-vvv-webtransport-quic) server
 for testing. It uses [aioquic](https://github.com/aiortc/aioquic/), and test
 authors can implement custom handlers by putting python scripts in

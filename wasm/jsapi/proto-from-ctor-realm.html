@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<title>WebAssembly JS API: Default [[Prototype]] value is from NewTarget's realm</title>
+<meta name="help" content="https://heycam.github.io/webidl/#internally-create-a-new-object-implementing-the-interface">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="wasm-module-builder.js"></script>
+<body>
+<iframe srcdoc></iframe>
+<script>
+"use strict";
+
+const other = document.querySelector("iframe").contentWindow;
+const newTarget = new other.Function();
+const emptyModuleBinary = new WasmModuleBuilder().toBuffer();
+
+test(() => {
+  newTarget.prototype = undefined;
+  const wasmModule = Reflect.construct(WebAssembly.Module, [emptyModuleBinary], newTarget);
+  assert_equals(Object.getPrototypeOf(wasmModule), other.WebAssembly.Module.prototype);
+}, "WebAssembly.Module");
+
+test(() => {
+  newTarget.prototype = null;
+  const wasmModule = new WebAssembly.Module(emptyModuleBinary);
+  const wasmInstance = Reflect.construct(WebAssembly.Instance, [wasmModule], newTarget);
+  assert_equals(Object.getPrototypeOf(wasmInstance), other.WebAssembly.Instance.prototype);
+}, "WebAssembly.Instance");
+
+test(() => {
+  newTarget.prototype = true;
+  const wasmMemory = Reflect.construct(WebAssembly.Memory, [{initial: 0}], newTarget);
+  assert_equals(Object.getPrototypeOf(wasmMemory), other.WebAssembly.Memory.prototype);
+}, "WebAssembly.Memory");
+
+test(() => {
+  newTarget.prototype = false;
+  const wasmTable = Reflect.construct(WebAssembly.Table, [{element: "anyfunc", initial: 0}], newTarget);
+  assert_equals(Object.getPrototypeOf(wasmTable), other.WebAssembly.Table.prototype);
+}, "WebAssembly.Table");
+
+test(() => {
+  newTarget.prototype = 0;
+  const wasmGlobal = Reflect.construct(WebAssembly.Global, [{value: "i32"}], newTarget);
+  assert_equals(Object.getPrototypeOf(wasmGlobal), other.WebAssembly.Global.prototype);
+}, "WebAssembly.Global");
+
+test(() => {
+  newTarget.prototype = 1;
+  const wasmError = Reflect.construct(WebAssembly.CompileError, [], newTarget);
+  assert_equals(Object.getPrototypeOf(wasmError), other.WebAssembly.CompileError.prototype);
+}, "WebAssembly.CompileError");
+
+test(() => {
+  newTarget.prototype = "";
+  const wasmError = Reflect.construct(WebAssembly.LinkError, [], newTarget);
+  assert_equals(Object.getPrototypeOf(wasmError), other.WebAssembly.LinkError.prototype);
+}, "WebAssembly.LinkError");
+
+test(() => {
+  newTarget.prototype = Symbol();
+  const wasmError = Reflect.construct(WebAssembly.RuntimeError, [], newTarget);
+  assert_equals(Object.getPrototypeOf(wasmError), other.WebAssembly.RuntimeError.prototype);
+}, "WebAssembly.RuntimeError");
+</script>
+</body>

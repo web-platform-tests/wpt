@@ -24,7 +24,7 @@ promise_test(async (test) => {
     let {done, value} = await reader.read();
     if (done) {
         break;
-    } 
+    }
     result += value;
   }
   assert_equals(result, 'PASS');

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import garbageCollect from './resources/test-utils.js';
+
+setup({allow_uncaught_exception: true });
+
+async_test(function() {
+  window.onerror = this.step_func(function(msg, source, lineno, colno, e) {
+    assert_equals(e.message, 'weakrefs are awesome',
+                  'Correct exception is thrown');
+    this.done();
+  });
+
+  function callback(holdings) {
+    throw new Error('weakrefs are awesome');
+  }
+
+  const fr = new FinalizationRegistry(callback);
+
+  (function() {
+    let x = {};
+    fr.register(x, 'holdings');
+    x = null;
+  })();
+
+  garbageCollect();
+}, 'FinalizationRegistry callback exceptions are reported to error handler');
+</script>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import garbageCollect from './resources/test-utils.js';
+
+async_test(function() {
+  let last_task_that_ran = "";
+  let num_microtasks_that_ran = 0;
+
+  const callback = () => {
+    last_task_that_ran = 'finalizer';
+    Promise.resolve().then(this.step_func(function() {
+      assert_equals(last_task_that_ran, 'finalizer');
+      last_task_that_ran = 'microtask';
+      this.done();
+      if (++num_microtasks_that_ran == 2) this.done();
+    }));
+  };
+
+  const fr1 = new FinalizationRegistry(callback);
+  const fr2 = new FinalizationRegistry(callback);
+
+  (function() {
+    let x = {};
+    fr1.register(x, 'holdings1');
+    fr2.register(x, 'holdings2');
+    x = null;
+  })();
+
+  garbageCollect();
+}, 'FinalizationGroup finalizers have a microtask checkpoint on completion');
+</script>

@@ -50,10 +50,7 @@ class QuicTransportProtocol(QuicConnectionProtocol):
         self.pending_events = []
         self.client_indication_finished = False
         self.client_indication_data = b''
-        self.origin = None
-        self.query = None
         self.handler = None
-        self.handler_global = dict()
 
     def quic_event_received(self, event: QuicEvent) -> None:
         prefix = '!!'
@@ -134,11 +131,10 @@ class QuicTransportProtocol(QuicConnectionProtocol):
         if m is None:
             raise Exception('Invalid path: %s' % path_string)
 
-        self.origin = origin_string
         handler_name = m.group(1)
-        self.query = dict(urllib.parse.parse_qsl(path.query))
+        query = dict(urllib.parse.parse_qsl(path.query))
         self.handler = self.create_event_handler(handler_name)
-        self.handler.handle_client_indication(origin_string, self.query)
+        self.handler.handle_client_indication(origin_string, query)
         if self.is_closing_or_closed():
             return
         self.client_indication_finished = True

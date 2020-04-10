@@ -6,7 +6,7 @@ This directory contains
 [QuicTransport](https://tools.ietf.org/html/draft-vvv-webtransport-quic) server
 for testing. It uses [aioquic](https://github.com/aiortc/aioquic/), and test
 authors can implement custom handlers by putting python scripts in
-[wpt/webtransport/quic/handlers/](../../wpt/webtransport/quic/handlers/).
+[wpt/webtransport/quic/handlers/](../../webtransport/quic/handlers/).
 
 ## Custom Handlers
 The QuicTransportServer calls functions defined in each handler script.

@@ -1,0 +1,29 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Test reference</title>
+<link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net">
+
+<style>
+#grid {
+    display: inline-grid;
+    width: 0;
+    height: 0;
+    grid: auto auto / auto auto;
+
+    background: red;
+}
+.green {
+    background: green;
+}
+.sizer {
+    color: transparent;
+}
+</style>
+
+<p>Test passes if there is a green box below and no red.
+
+<div id=grid>
+  <span class=green></span>
+  <span class=sizer>filler text</span>
+  <span class=sizer>filler text</span>
+</div>

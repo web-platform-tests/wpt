@@ -11,7 +11,7 @@
 
   idl_test(
     ['hit-test'],
-    ['webxr', 'dom'],
+    ['webxr', 'geometry', 'dom'],
     async idl_array => {
       idl_array.add_objects({
         // TODO: XRHitTestSource
@@ -20,7 +20,7 @@
         // TODO: XRTransientInputHitTestResult
         XRSession: ['xrSession'],
         // TODO: XRFrame
-        // TODO: XRRay
+        XRRay: ['new XRRay()'],
       });
 
       self.xrSession = await navigator.xr.requestSession("inline");

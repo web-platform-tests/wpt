@@ -11,7 +11,7 @@ async_test((t) => {
   setTimeout(() => {
     t.done();
   }, 100);
-});
+}, "Clear timeout with clearInterval");
 
 async_test((t) => {
   const handle = setInterval(
@@ -26,4 +26,4 @@ async_test((t) => {
   setTimeout(() => {
     t.done();
   }, 100);
-});
+}, "Clear interval with clearTimeout");

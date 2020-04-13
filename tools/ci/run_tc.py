@@ -152,7 +152,9 @@ def install_chrome(channel):
     dest = os.path.join("/tmp", deb_archive)
     deb_url = "https://dl.google.com/linux/direct/%s" % deb_archive
     with open(dest, "w") as f:
-        download_url_to_descriptor(f, deb_url)
+        if not download_url_to_descriptor(f, deb_url):
+            raise RuntimeError("Can't download %s. Aborting" % deb_url)
+
 
     run(["sudo", "apt-get", "-qqy", "update"])
     run(["sudo", "gdebi", "-qn", "/tmp/%s" % deb_archive])

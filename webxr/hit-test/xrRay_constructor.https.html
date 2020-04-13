@@ -88,6 +88,26 @@ let constructor_tests = function() {
     assert_ray_approx_equals(xrRay2, xrRay3, FLOAT_EPSILON, "ray2-ray3:");
   }
 
+  {
+    // Check that we throw exception on direction too close to 0,0,0:
+    let originDict = {x : 10.0, y : 10.0, z : 10.0, w : 1.0};
+    let directionDict = {x : 1.0, y : 0.0, z : 0.0, w : 0.0};
+
+    assert_throws_js(TypeError, () => new XRRay(
+        DOMPoint.fromPoint(originDict),
+        DOMPoint.fromPoint({x : 0.0, y : 0.0, z : 0.0, w : 0.0})
+    ), "Constructor should throw for zero direction");
+
+    assert_throws_js(TypeError, () => new XRRay(
+        DOMPoint.fromPoint(originDict),
+        DOMPoint.fromPoint({x : 1.0, y : 0.0, z : 0.0, w : 0.5})
+    ), "Constructor should throw for nonzero direction w coordinate");
+
+    assert_throws_js(TypeError, () => new XRRay(
+        DOMPoint.fromPoint({x : 10.0, y : 10.0, z : 10.0, w : 0.5}),
+        DOMPoint.fromPoint(directionDict)
+    ), "Constructor should throw for non-1 origin w coordinate");
+  }
   //
   // Constructor 2 - from rigid transform.
   //

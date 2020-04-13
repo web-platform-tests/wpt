@@ -4,14 +4,14 @@
 const PORT = 8983;
 const HOST = get_host_info().ORIGINAL_HOST;
 const ORIGIN = get_host_info().ORIGIN;
+const BASE = `quic-transport://${HOST:${PORT}/handlers`;
 
 promise_test(async (test) => {
   function onClosed() {
     assert_unreached('The closed promise should be ' +
                      'fulfilled or rejected after getting a PASS signal.');
   }
-  t = new QuicTransport(
-    `quic-transport://${HOST}:${PORT}/handlers/client-indication.py?origin=${ORIGIN}`);
+  t = new QuicTransport(`${BASE}/client-indication.quic.py?origin=${ORIGIN}`);
   t.closed.then(test.step_func(onClosed), test.step_func(onClosed));
 
   const streams = t.receiveStreams();

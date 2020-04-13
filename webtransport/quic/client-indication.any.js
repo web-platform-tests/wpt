@@ -1,3 +1,4 @@
+// META: quic=true
 // META: script=/common/get-host-info.sub.js
 
 const PORT = 8983;

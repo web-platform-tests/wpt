@@ -5,10 +5,12 @@ from aioquic.asyncio import QuicConnectionProtocol
 from aioquic.quic.events import QuicEvent
 from typing import Dict
 
-async def notify(connection):
+
+async def notify_pass(connection: QuicConnectionProtocol):
     _, writer = await connection.create_stream(is_unidirectional=True)
     writer.write(b'PASS')
     writer.write_eof()
+
 
 def handle_client_indication(connection: QuicConnectionProtocol,
                              origin: str, query: Dict[str, str]):
@@ -19,8 +21,8 @@ def handle_client_indication(connection: QuicConnectionProtocol,
         return
 
     loop = asyncio.get_event_loop()
-    loop.create_task(notify(connection))
+    loop.create_task(notify_pass(connection))
+
 
 def handle_event(connection: QuicConnectionProtocol, event: QuicEvent) -> None:
     pass
-

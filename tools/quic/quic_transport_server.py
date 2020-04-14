@@ -128,7 +128,7 @@ class QuicTransportProtocol(QuicConnectionProtocol):
             raise Exception('Invalid origin: %s' % origin_string)
 
         # To make the situation simple we accept only simple path strings.
-        m = re.compile('^/handlers/([a-zA-Z0-9\._\-]+)$').match(path.path)
+        m = re.compile('^/([a-zA-Z0-9\._\-]+)$').match(path.path)
         if m is None:
             raise Exception('Invalid path: %s' % path_string)
 

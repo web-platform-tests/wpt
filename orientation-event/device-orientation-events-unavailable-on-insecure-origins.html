@@ -17,8 +17,8 @@ function waitForLackOfEvent(t, eventName) {
   });
 }
 
-if (window.location.origin != get_host_info().UNAUTHENTICATED_ORIGIN) {
-  window.location = get_host_info().UNAUTHENTICATED_ORIGIN + window.location.pathname;
+if (window.location.origin != get_host_info().HTTP_ORIGIN) {
+  window.location = get_host_info().HTTP_ORIGIN + window.location.pathname;
   promise_test(_ => new Promise(_ => {}), "Stall tests on the wrong host.");
 } else {
   test(() => {

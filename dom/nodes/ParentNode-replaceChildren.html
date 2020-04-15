@@ -6,62 +6,80 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="pre-insertion-validation-hierarchy.js"></script>
 <script>
-preInsertionValidateHierarchy("replaceChildren");
+  Node.prototype.replaceChildren = function (...args) {
+    const nodes = args.map(arg => {
+      if (typeof arg === "string") {
+        return new Text(arg);
+      }
+      return arg;
+    });
+    const node = nodes.length === 1 ? nodes[0] : (() => {
+      const fragment = this.ownerDocument.createDocumentFragment();
+      fragment.append(...nodes);
+      return fragment;
+    })();
 
-function test_replacechildren(node, nodeName) {
-    test(function() {
-        const parent = node.cloneNode();
-        parent.replaceChildren();
-        assert_array_equals(parent.childNodes, []);
-    }, nodeName + '.replaceChildren() without any argument, on a parent having no child.');
+    this.textContent = ""; // no way to do these two atomically
+    this.append(node);
+  }
 
-    test(function() {
-        const parent = node.cloneNode();
-        parent.replaceChildren(null);
-        assert_equals(parent.childNodes[0].textContent, 'null');
-    }, nodeName + '.replaceChildren() with null as an argument, on a parent having no child.');
+  preInsertionValidateHierarchy("replaceChildren");
 
-    test(function() {
-        const parent = node.cloneNode();
-        parent.replaceChildren(undefined);
-        assert_equals(parent.childNodes[0].textContent, 'undefined');
-    }, nodeName + '.replaceChildren() with undefined as an argument, on a parent having no child.');
+  function test_replacechildren(node, nodeName) {
+    test(() => {
+      const parent = node.cloneNode();
+      parent.replaceChildren();
+      assert_array_equals(parent.childNodes, []);
+    }, `${nodeName}.replaceChildren() without any argument, on a parent having no child.`);
 
-    test(function() {
-        const parent = node.cloneNode();
-        parent.replaceChildren('text');
-        assert_equals(parent.childNodes[0].textContent, 'text');
-    }, nodeName + '.replaceChildren() with only text as an argument, on a parent having no child.');
+    test(() => {
+      const parent = node.cloneNode();
+      parent.replaceChildren(null);
+      assert_equals(parent.childNodes[0].textContent, 'null');
+    }, `${nodeName}.replaceChildren() with null as an argument, on a parent having no child.`);
 
-    test(function() {
-        const parent = node.cloneNode();
-        const x = document.createElement('x');
-        parent.replaceChildren(x);
-        assert_array_equals(parent.childNodes, [x]);
-    }, nodeName + '.replaceChildren() with only one element as an argument, on a parent having no child.');
+    test(() => {
+      const parent = node.cloneNode();
+      parent.replaceChildren(undefined);
+      assert_equals(parent.childNodes[0].textContent, 'undefined');
+    }, `${nodeName}.replaceChildren() with undefined as an argument, on a parent having no child.`);
 
-    test(function() {
-        const parent = node.cloneNode();
-        const child = document.createElement('test');
-        parent.appendChild(child);
-        parent.replaceChildren(null);
-        assert_equals(parent.childNodes.length, 1);
-        assert_equals(parent.childNodes[0].textContent, 'null');
-    }, nodeName + '.replaceChildren() with null as an argument, on a parent having a child.');
+    test(() => {
+      const parent = node.cloneNode();
+      parent.replaceChildren('text');
+      assert_equals(parent.childNodes[0].textContent, 'text');
+    }, `${nodeName}.replaceChildren() with only text as an argument, on a parent having no child.`);
 
-    test(function() {
-        const parent = node.cloneNode();
-        const x = document.createElement('x');
-        const child = document.createElement('test');
-        parent.appendChild(child);
-        parent.replaceChildren(x, 'text');
-        assert_equals(parent.childNodes.length, 2);
-        assert_equals(parent.childNodes[0], x);
-        assert_equals(parent.childNodes[1].textContent, 'text');
-    }, nodeName + '.replaceChildren() with one element and text as argument, on a parent having a child.');
-}
+    test(() => {
+      const parent = node.cloneNode();
+      const x = document.createElement('x');
+      parent.replaceChildren(x);
+      assert_array_equals(parent.childNodes, [x]);
+    }, `${nodeName}.replaceChildren() with only one element as an argument, on a parent having no child.`);
 
-test_replacechildren(document.createElement('div'), 'Element');
-test_replacechildren(document.createDocumentFragment(), 'DocumentFragment');
+    test(() => {
+      const parent = node.cloneNode();
+      const child = document.createElement('test');
+      parent.appendChild(child);
+      parent.replaceChildren(null);
+      assert_equals(parent.childNodes.length, 1);
+      assert_equals(parent.childNodes[0].textContent, 'null');
+    }, `${nodeName}.replaceChildren() with null as an argument, on a parent having a child.`);
+
+    test(() => {
+      const parent = node.cloneNode();
+      const x = document.createElement('x');
+      const child = document.createElement('test');
+      parent.appendChild(child);
+      parent.replaceChildren(x, 'text');
+      assert_equals(parent.childNodes.length, 2);
+      assert_equals(parent.childNodes[0], x);
+      assert_equals(parent.childNodes[1].textContent, 'text');
+    }, `${nodeName}.replaceChildren() with one element and text as argument, on a parent having a child.`);
+  }
+
+  test_replacechildren(document.createElement('div'), 'Element');
+  test_replacechildren(document.createDocumentFragment(), 'DocumentFragment');
 </script>
+
 </html>

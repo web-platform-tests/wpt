@@ -269,8 +269,10 @@ def download_artifacts(artifacts):
     for artifact in artifacts:
         base_url = task_url(artifact["task"])
         if artifact["task"] not in artifact_list_by_task:
-            resp = urlopen(base_url + "/artifacts")
-            artifacts_data = json.load(resp)
+            with tempfile.TemporaryFile() as f:
+                download_url_to_descriptor(f, base_url + "/artifacts")
+                f.seek(0)
+                artifacts_data = json.load(f)
             artifact_list_by_task[artifact["task"]] = artifacts_data
 
         artifacts_data = artifact_list_by_task[artifact["task"]]
@@ -430,9 +432,10 @@ def fetch_event_data():
         # For example under local testing
         return None
 
-    url = task_url(task_id)
-    resp = urlopen(url)
-    task_data = json.load(resp)
+    with tempfile.TemporaryFile() as f:
+        download_url_to_descriptor(f, task_url(task_id))
+        f.seek(0)
+        task_data = json.load(f)
     event_data = task_data.get("extra", {}).get("github_event")
     if event_data is not None:
         return json.loads(event_data)

@@ -5,12 +5,12 @@
 'use strict';
 
 test(() => {
-  assert_equals(ReadableStream.prototype[Symbol.asyncIterator], ReadableStream.prototype.getIterator);
-}, '@@asyncIterator() method is === to getIterator() method');
+  assert_equals(ReadableStream.prototype[Symbol.asyncIterator], ReadableStream.prototype.values);
+}, '@@asyncIterator() method is === to values() method');
 
 test(() => {
   const s = new ReadableStream();
-  const it = s.getIterator();
+  const it = s.values();
   const proto = Object.getPrototypeOf(it);
 
   const AsyncIteratorPrototype = Object.getPrototypeOf(Object.getPrototypeOf(async function* () {}).prototype);
@@ -81,7 +81,7 @@ promise_test(async () => {
     },
   }, new CountQueuingStrategy({ highWaterMark: 0 }));
 
-  const it = s.getIterator();
+  const it = s.values();
   assert_array_equals(s.events, []);
 
   const read1 = await it.next();
@@ -182,7 +182,7 @@ for (const type of ['throw', 'break', 'return']) {
 
       // use a separate function for the loop body so return does not stop the test
       const loop = async () => {
-        for await (const c of s.getIterator({ preventCancel })) {
+        for await (const c of s.values({ preventCancel })) {
           if (type === 'throw') {
             throw new Error();
           } else if (type === 'break') {
@@ -214,7 +214,7 @@ for (const preventCancel of [false, true]) {
       }
     });
 
-    const it = s.getIterator({ preventCancel });
+    const it = s.values({ preventCancel });
     await it.return();
 
     if (preventCancel) {
@@ -261,9 +261,9 @@ test(() => {
       c.close();
     },
   });
-  const it = s.getIterator();
-  assert_throws_js(TypeError, () => s.getIterator(), 'getIterator() should throw');
-}, 'getIterator() throws if there\'s already a lock');
+  const it = s.values();
+  assert_throws_js(TypeError, () => s.values(), 'values() should throw');
+}, 'values() throws if there\'s already a lock');
 
 promise_test(async () => {
   const s = new ReadableStream({
@@ -321,7 +321,7 @@ promise_test(async () => {
 
   // read the first two chunks, then release lock
   const chunks = [];
-  for await (const chunk of s.getIterator({preventCancel: true})) {
+  for await (const chunk of s.values({preventCancel: true})) {
     chunks.push(chunk);
     if (chunk >= 2) {
       break;
@@ -338,7 +338,7 @@ promise_test(async () => {
 
 promise_test(async t => {
   const rs = new ReadableStream();
-  const it = rs.getIterator();
+  const it = rs.values();
   await it.return();
   return promise_rejects_js(t, TypeError, it.next(), 'next() should reject');
 }, 'calling next() after return() should reject');
@@ -346,7 +346,7 @@ promise_test(async t => {
 for (const preventCancel of [false, true]) {
   test(() => {
     const rs = new ReadableStream();
-    rs.getIterator({ preventCancel }).return();
+    rs.values({ preventCancel }).return();
     // The test passes if this line doesn't throw.
     rs.getReader();
   }, `return() should unlock the stream synchronously when preventCancel = ${preventCancel}`);

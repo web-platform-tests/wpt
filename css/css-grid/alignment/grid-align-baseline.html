@@ -51,7 +51,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/check-layout-th.js"></script>
 
-<body onload="runTests()">
+<body onload="document.fonts.ready.then(() => { runTests(); })">
 
 <div class="grid alignItemsBaseline">
     <div style="margin: 40px 0px;" class="firstRowFirstColumn" data-offset-x="0" data-offset-y="40" data-expected-width="200" data-expected-height="20"><div style="display:inline-block;"></div></div>

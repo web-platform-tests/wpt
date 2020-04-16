@@ -206,6 +206,56 @@ tasks:
                   of ${chunks.total}), run in the ${vars.channel} release of
                   ${vars.browser}.
 
+  # Run full suites with Python 3 daily 
+  - $map:
+      for:
+        - vars:
+            suite: testharness
+        - vars:
+            suite: reftest
+        - vars:
+            suite: wdspec
+        - vars:
+            suite: crashtest
+      do:
+        $map:
+          for:
+            - vars:
+                py3: py3
+                browser: chrome
+                channel: dev
+              use:
+                - trigger-daily
+                - trigger-push
+          do:
+            - wpt-${vars.py3}-${vars.browser}-${vars.channel}-${vars.suite}-${chunks.id}:
+                use:
+                  - wpt-base
+                  - run-options
+                  - browser-${vars.browser}
+                  - wpt-${vars.suite}
+                name: wpt-${vars.py3}-${vars.browser}-${vars.channel}-${vars.suite}-${chunks.id}
+                options:
+                  browser:
+                    - ${vars.browser}
+                  channel: ${vars.channel}
+                description: >-
+                  A subset of WPT's "${vars.suite}" tests (chunk number ${chunks.id}
+                  of ${chunks.total}), run in the ${vars.channel} release of
+                  ${vars.browser} with Python 3.
+                command: >-
+                  ./tools/ci/taskcluster-run.py
+                  --${vars.py3}
+                  ${vars.browser}
+                  --
+                  --channel=${vars.channel}
+                  --log-wptreport=../artifacts/wpt_report.json
+                  --log-wptscreenshot=../artifacts/wpt_screenshot.txt
+                  --no-fail-on-unexpected
+                  --this-chunk=${chunks.id}
+                  --total-chunks=${chunks.total}
+                  --test-type=${vars.suite}
+
   - $map:
       for:
         - vars:

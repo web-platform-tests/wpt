@@ -295,34 +295,38 @@ behaviors independently, you should use multiple tests.</p>
 these places won’t be detected correctly by the harness and may cause
 unexpected exceptions that will lead to an error in the harness.</p>
 </div>
-<div class="section" id="preconditions">
-<h2>Preconditions<a class="headerlink" href="#preconditions" title="Permalink to this headline">¶</a></h2>
-<p>When a test would be invalid unless certain conditions are met, but yet
-doesn’t explicitly depend on those preconditions, <code class="docutils literal notranslate"><span class="pre">assert_precondition</span></code> can be
-used. For example:</p>
+<div class="section" id="optional-features">
+<h2>Optional Features<a class="headerlink" href="#optional-features" title="Permalink to this headline">¶</a></h2>
+<p>If a test depends on a specification or specification feature that is OPTIONAL
+(in the <a class="reference external" href="https://tools.ietf.org/html/rfc2119">RFC 2119 sense</a>),
+<code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code> can be used to indicate that failing the test does
+not mean violating a web standard. For example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">((</span><span class="nx">t</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
   <span class="kr">const</span> <span class="nx">video</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;video&quot;</span><span class="p">);</span>
-  <span class="nx">assert_precondition</span><span class="p">(</span><span class="nx">video</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="s2">&quot;video/webm&quot;</span><span class="p">));</span>
+  <span class="nx">assert_implements_optional</span><span class="p">(</span><span class="nx">video</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="s2">&quot;video/webm&quot;</span><span class="p">));</span>
   <span class="nx">video</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="s2">&quot;multitrack.webm&quot;</span><span class="p">;</span>
   <span class="c1">// test something specific to multiple audio tracks in a WebM container</span>
   <span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
 <span class="p">},</span> <span class="s2">&quot;WebM with multiple audio tracks&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>A failing <code class="docutils literal notranslate"><span class="pre">assert_precondition</span></code> call is reported as a status of
-<code class="docutils literal notranslate"><span class="pre">PRECONDITION_FAILED</span></code> for the subtest.</p>
-<p><code class="docutils literal notranslate"><span class="pre">assert_precondition</span></code> can also be used during test setup. For example:</p>
+<p>A failing <code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code> call is reported as a status of
+<code class="docutils literal notranslate"><span class="pre">PRECONDITION_FAILED</span></code> for the subtest. This unusual status code is a legacy
+leftover from the deprecated <code class="docutils literal notranslate"><span class="pre">assert_precondition</span></code>; see the <a class="reference external" href="https://github.com/web-platform-tests/rfcs/pull/48">RFC that renamed
+it</a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code> can also be used during test setup. For example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">setup</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-  <span class="nx">assert_precondition</span><span class="p">(</span><span class="s2">&quot;onfoo&quot;</span> <span class="k">in</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="s2">&quot;&#39;foo&#39; event supported&quot;</span><span class="p">);</span>
+  <span class="nx">assert_implements_optional</span><span class="p">(</span><span class="s2">&quot;optionalfeature&quot;</span> <span class="k">in</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span>
+                             <span class="s2">&quot;&#39;optionalfeature&#39; event supported&quot;</span><span class="p">);</span>
 <span class="p">});</span>
-<span class="nx">async_test</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="cm">/* test #1 waiting for &quot;foo&quot; event */</span> <span class="p">});</span>
-<span class="nx">async_test</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="cm">/* test #2 waiting for &quot;foo&quot; event */</span> <span class="p">});</span>
+<span class="nx">async_test</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="cm">/* test #1 waiting for &quot;optionalfeature&quot; event */</span> <span class="p">});</span>
+<span class="nx">async_test</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="cm">/* test #2 waiting for &quot;optionalfeature&quot; event */</span> <span class="p">});</span>
 </pre></div>
 </div>
-<p>A failing <code class="docutils literal notranslate"><span class="pre">assert_precondition</span></code> during setup is reported as a status of
+<p>A failing <code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code> during setup is reported as a status of
 <code class="docutils literal notranslate"><span class="pre">PRECONDITION_FAILED</span></code> for the test, and the subtests will not run.</p>
-<p>See also the <code class="docutils literal notranslate"><span class="pre">.optional</span></code> <a class="reference internal" href="file-names.html"><span class="doc">file name convention</span></a>, which is
-appropriate when the precondition is explicitly optional behavior.</p>
+<p>See also the <code class="docutils literal notranslate"><span class="pre">.optional</span></code> <a class="reference internal" href="file-names.html"><span class="doc">file name convention</span></a>, which may be
+preferable if the entire test is optional.</p>
 </div>
 <div class="section" id="cleanup">
 <h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h2>
@@ -694,11 +698,6 @@ workers and want to ensure they run in series:</p>
 </div>
 <div class="section" id="list-of-assertions">
 <h2>List of Assertions<a class="headerlink" href="#list-of-assertions" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="assert-precondition-condition-description">
-<h3><code class="docutils literal notranslate"><span class="pre">assert_precondition(condition,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-precondition-condition-description" title="Permalink to this headline">¶</a></h3>
-<p>asserts that <code class="docutils literal notranslate"><span class="pre">condition</span></code> is truthy.
-See <a class="reference external" href="#preconditions">preconditions</a> for usage.</p>
-</div>
 <div class="section" id="assert-true-actual-description">
 <h3><code class="docutils literal notranslate"><span class="pre">assert_true(actual,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-true-actual-description" title="Permalink to this headline">¶</a></h3>
 <p>asserts that <code class="docutils literal notranslate"><span class="pre">actual</span></code> is strictly true</p>
@@ -830,6 +829,15 @@ that the exception should have as its .constructor.  For example,
 <p><code class="docutils literal notranslate"><span class="pre">value</span></code> - the exact value that <code class="docutils literal notranslate"><span class="pre">func</span></code> is expected to throw if called.</p>
 <p><code class="docutils literal notranslate"><span class="pre">func</span></code> - a function that should throw</p>
 </div>
+<div class="section" id="assert-implements-condition-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_implements(condition,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-implements-condition-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that a feature is supported, by checking if <code class="docutils literal notranslate"><span class="pre">condition</span></code> is truthy.</p>
+</div>
+<div class="section" id="assert-implements-optional-condition-description">
+<h3><code class="docutils literal notranslate"><span class="pre">assert_implements_optional(condition,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-implements-optional-condition-description" title="Permalink to this headline">¶</a></h3>
+<p>asserts that an optional feature is supported, by checking if <code class="docutils literal notranslate"><span class="pre">condition</span></code> is truthy.
+See <a class="reference external" href="#optional-features">Optional Features</a> for usage.</p>
+</div>
 <div class="section" id="assert-unreached-description">
 <h3><code class="docutils literal notranslate"><span class="pre">assert_unreached(description)</span></code><a class="headerlink" href="#assert-unreached-description" title="Permalink to this headline">¶</a></h3>
 <p>asserts if called. Used to ensure that some codepath is <em>not</em> taken e.g.
@@ -843,6 +851,10 @@ with signature <code class="docutils literal notranslate"><span class="pre">asse
 with multiple allowed pass conditions are bad practice unless the spec specifically
 allows multiple behaviours. Test authors should not use this method simply to hide
 UA bugs.</p>
+</div>
+<div class="section" id="deprecated-assert-precondition-condition-description">
+<h3><strong>DEPRECATED</strong> <code class="docutils literal notranslate"><span class="pre">assert_precondition(condition,</span> <span class="pre">description)</span></code><a class="headerlink" href="#deprecated-assert-precondition-condition-description" title="Permalink to this headline">¶</a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">assert_implements</span></code> or <code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code> instead.</p>
 </div>
 </div>
 <div class="section" id="utility-functions">

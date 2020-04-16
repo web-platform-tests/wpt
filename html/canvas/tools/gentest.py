@@ -1,3 +1,4 @@
 from gentestutils import genTestUtils
 
-genTestUtils('../../2dcontext', '../../2dcontext', 'templates.yaml', 'name2dir.yaml', False)
+genTestUtils('', '', 'templates.yaml', 'name2dir.yaml', False)
+genTestUtils('offscreen', 'offscreen', 'templates-offscreen.yaml', 'name2dir-offscreen.yaml', True)

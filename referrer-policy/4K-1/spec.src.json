@@ -45,7 +45,10 @@
       "delivery_type": "*",
       "delivery_value": "*",
       "origin": "*",
-      "subresource": "sharedworker-module",
+      "subresource": [
+        "sharedworker-import",
+        "sharedworker-module"
+      ],
       "expectation": "*"
     }
   ]

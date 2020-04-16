@@ -541,8 +541,10 @@
       ],
       "subresource": [
         "worker-classic",
+        "worker-import",
         "worker-module",
         "sharedworker-classic",
+        "sharedworker-import",
         "sharedworker-module"
       ],
       "expectation": "*"
@@ -668,11 +670,9 @@
         "link-prefetch-tag",
         "object-tag",
         "picture-tag",
-        "sharedworker-import",
         "sharedworker-import-data",
         "video-tag",
         "websocket",
-        "worker-import",
         "worker-import-data",
         "worklet-animation",
         "worklet-animation-import-data",

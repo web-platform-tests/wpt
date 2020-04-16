@@ -35,6 +35,7 @@ function invokeScenario(scenario) {
     subresourceType: scenario.subresource,
     url: urls.testUrl,
     policyDeliveries: scenario.subresource_policy_deliveries,
+    topUrl: location.toString(),
   };
 
   return invokeRequest(subresource, scenario.source_context_list);
@@ -69,6 +70,12 @@ function checkResult(scenario, expectation, result) {
     // This doesn't work if e.g. we test <iframe srcdoc> inside another
     // external <iframe>.
     referrerSource = location.toString();
+  }
+  // Step 3. Let referrerSource be request's referrer. [spec text]
+  if (result.requestReferrer) {
+    // result.requestReferrer is set when request's referrer differs from test
+    // url e.g. worker-import.
+    referrerSource = result.requestReferrer;
   }
   const expectedReferrerUrl =
     referrerUrlResolver[expectation](referrerSource);

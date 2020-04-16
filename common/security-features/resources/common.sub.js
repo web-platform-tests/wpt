@@ -313,6 +313,7 @@ function wrapResult(server_data) {
   @property {Array<Object<string, string>>} headers
     HTTP request headers sent to server.
   @property {string} referrer - Referrer.
+  @property {string} requestReferrer - Request referrer.
   @property {string} location - The URL of the subresource.
   @property {string} sourceContextUrl
     the URL of the global object where the actual request is sent.
@@ -812,7 +813,9 @@ function requestViaWebSocket(url) {
   The keys of `subresourceMap` below are the valid values.
 */
 
-// Subresource paths and invokers.
+// Subresource paths, invokers and getRequestReferrers.
+// getRequestReferrer is set when the request referrer differs from the test
+// page url.
 const subresourceMap = {
   "a-tag": {
     path: "/common/security-features/subresource/document.py",
@@ -887,6 +890,10 @@ const subresourceMap = {
     path: "/common/security-features/subresource/worker.py",
     invoker: url =>
         requestViaDedicatedWorker(workerUrlThatImports(url), {type: "module"}),
+    // https://html.spec.whatwg.org/multipage/webappapis.html#fetch-the-descendants-of-a-module-script
+    // Step 8 set request's referrer to the parent module script's base URL.
+    getRequestReferrer: subresource =>
+        new URL(workerUrlThatImports(subresource.url), subresource.topUrl),
   },
   "worker-import-data": {
     path: "/common/security-features/subresource/worker.py",
@@ -905,6 +912,10 @@ const subresourceMap = {
     path: "/common/security-features/subresource/shared-worker.py",
     invoker: url =>
         requestViaSharedWorker(workerUrlThatImports(url), {type: "module"}),
+    // https://html.spec.whatwg.org/multipage/webappapis.html#fetch-the-descendants-of-a-module-script
+    // Step 8 set request's referrer to the parent module script's base URL.
+    getRequestReferrer: subresource =>
+        new URL(workerUrlThatImports(subresource.url), subresource.topUrl),
   },
   "sharedworker-import-data": {
     path: "/common/security-features/subresource/shared-worker.py",
@@ -1071,8 +1082,12 @@ function getRequestURLs(subresourceType, originType, redirectionType) {
   @param {Array<SourceContext>} sourceContextList
 
   @returns {Promise} A promise that is resolved with an RequestResult object.
-  `sourceContextUrl` is always set. For whether other properties are set,
-  see the comments for requestVia*() above.
+  `sourceContextUrl` is always set. `requestReferrer` is set when the function
+  `getRequestReferrer` is defined in subresourceMap. For whether other
+  properties are set, see the comments for requestVia*() above.
+  - RequestResult.requestReferrer: request's referrer.
+      https://fetch.spec.whatwg.org/#concept-request-referrer
+      This is either a URL object, or "client".
 */
 function invokeRequest(subresource, sourceContextList) {
   if (sourceContextList.length === 0) {
@@ -1090,11 +1105,16 @@ function invokeRequest(subresource, sourceContextList) {
       }
     }
 
+    const getRequestReferrer =
+        subresourceMap[subresource.subresourceType].getRequestReferrer;
+    const requestReferrer = getRequestReferrer
+        ? getRequestReferrer(subresource).toString()
+        : undefined;
     return subresourceMap[subresource.subresourceType].invoker(
         subresource.url,
         additionalAttributes)
       .then(result => Object.assign(
-          {sourceContextUrl: location.toString()},
+          {sourceContextUrl: location.toString(), requestReferrer},
           result));
   }
 

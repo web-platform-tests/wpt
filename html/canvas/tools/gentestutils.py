@@ -127,8 +127,6 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
     name_mapping = yaml.load(open(NAME2DIRFILE, "r").read())
 
     SPECFILE = 'spec.yaml'
-    if ISOFFSCREENCANVAS:
-        SPECFILE = '../../2dcontext/tools/spec.yaml'
     spec_assertions = []
     for s in yaml.load(open(SPECFILE, "r").read())['assertions']:
         if 'meta' in s:
@@ -139,7 +137,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
     tests = []
     TESTSFILES = ['tests.yaml', 'tests2d.yaml', 'tests2dtext.yaml']
     if ISOFFSCREENCANVAS:
-        TESTSFILES = ['tests2d.yaml']
+        TESTSFILES = ['tests2d-offscreen.yaml']
     for t in sum([ yaml.load(open(f, "r").read()) for f in TESTSFILES], []):
         if 'DISABLED' in t:
             continue

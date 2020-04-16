@@ -7,11 +7,12 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-text-3/#white-space-property">
   <link rel="help" href="https://www.w3.org/TR/css-text-3/#white-space-phase-2">
+  <link rel="help" href="https://www.w3.org/TR/css-text-3/#hanging">
   <link rel="match" href="reference/ref-filled-green-100px-square.xht">
   <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
 
   <meta content="" name="flags">
-  <meta content="When 'white-space' is 'pre-wrap', preserved white spaces at the end of the line affect the intrinsic min-content size. Overflow-wrap makes no difference." name="assert">
+  <meta content="When 'white-space' is 'pre-wrap', white spaces at the end of the line are preserved. In this test, the 4 overflowing white spaces following the 'ABCD', following the 'GHIJ', following the 'MNOP' and following the 'WXYZ' unconditionally 'hang' while they do not affect the intrinsic min-content size." name="assert">
 
   <style>
   div
@@ -19,68 +20,66 @@
       color: transparent;
       /*
       so that background-color can
-      shine through the A, G, M, Z glyphs
+      shine through the ABCD, GHIJ,
+      MNOP, WXYZ glyphs
       */
       font-family: Ahem;
       font-size: 25px;
       line-height: 1;
       width: 0;
       /*
-      This will trigger
+      'width: 0' will trigger
       min-content size
       for div#min-sized-parent
       */
     }
 
-  div#reference-overlapped-red
+  div.test-overlapped-red
     {
       background-color: red;
-      position: absolute;
-      width: auto;
-      z-index: -1;
-    }
-
-  div.test-overlapping-green
-    {
-      background-color: green;
       float: left;
       white-space: pre-wrap;
       width: auto;
     }
 
-  div#last
+  div#reference-overlapping-green
     {
-      overflow-wrap: break-word;
+      background-color: green;
+      position: absolute;
+      width: auto;
     }
   </style>
 
   <p>Test passes if there is a filled green square and <strong>no red</strong>.
 
-  <div id="reference-overlapped-red">1234<br>567<br>89<br>0</div>
-
   <div id="min-sized-parent">
 
-    <div class="test-overlapping-green">A   </div>
+    <div class="test-overlapped-red">ABCD    </div>
 
-    <div class="test-overlapping-green">G   </div>
+    <div class="test-overlapped-red">GHIJ    </div>
 
-    <div class="test-overlapping-green">M   </div>
+    <div class="test-overlapped-red">MNOP    </div>
 
-    <div class="test-overlapping-green" id="last">Z   </div>
+    <div class="test-overlapped-red">WXYZ    </div>
 
   </div>
 
   <!--
 
-  The 3 white spaces following
-  the "A", following the "G", following
-  the "M" and following the "Z" do not
-  get wrapped. That is by definition of
-  'white-space: pre-wrap'.
+  The sequences of 4 white spaces following
+  the "ABCD", following the "GHIJ", following
+  the "MNOP" and following the "WXYZ" do not
+  get collapsed due to
+  'white-space: pre-wrap': they hang. Such
+  sequences of 4 hanging-overflowing end-of-line
+  white spaces are not considered with regards
+  to the line box content for fit.
 
-  Since the div.test-overlapping-green
-  are floated and since their parent in
-  the flow is 0-width, then these floats
+  Since the 4 div.test-overlapped-red
+  are floated and since its parent in
+  the flow is 0-width, then these 4 floats
   are min-content sized.
 
   -->
+
+  <div id="reference-overlapping-green">1234<br>5678<br>90AB<br>CDEF</div>

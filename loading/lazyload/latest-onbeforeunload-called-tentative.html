@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<head>
+  <title>Deferred iframes with loading='lazy' calls the latest onbeforeunload event</title>
+  <link rel="author" title="Raj T" href="mailto:rajendrant@chromium.org">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="common.js"></script>
+</head>
+
+<!--
+Marked as tentative until https://github.com/whatwg/html/pull/3752 is landed.
+-->
+
+<script>
+  const iframe_load = new ElementLoadPromise("below_viewport_iframe");
+  const iframe_before_unload_initial = new ElementLoadPromise("below_viewport_iframe");
+  const iframe_before_unload_latest = new ElementLoadPromise("below_viewport_iframe");
+
+  window.addEventListener("load", () => {
+    const iframe_element = document.getElementById("below_viewport_iframe")
+    // Modify the beforeunload event handler before scrolling down.
+    iframe_element.contentWindow.onbeforeunload = iframe_before_unload_latest.resolve;
+    iframe_load.promise.then(() => {
+      // Navigate away to trigger unload.
+      iframe_element.src = "about:blank"
+    });
+    iframe_element.scrollIntoView();
+  });
+
+  async_test(function(t) {
+    iframe_before_unload_initial.promise.then(t.unreached_func(
+      "The initial beforeunload handler should not be called"));
+    iframe_before_unload_latest.promise.then(t.step_func_done());
+  }, "Test that when the iframe is unloaded, it calls the latest beforeunload handler.");
+</script>
+
+<body>
+  <div style="height:10000px;"></div>
+  <iframe id="below_viewport_iframe" src="resources/subframe.html"
+      loading="lazy" width="200px" height="100px"
+      onload="iframe_load.resolve();" onbeforeunload="iframe_before_unload_initial.resolve();">
+  </iframe>
+</body>

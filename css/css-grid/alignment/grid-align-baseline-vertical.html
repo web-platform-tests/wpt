@@ -55,7 +55,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/check-layout-th.js"></script>
 
-<body>
+<body onload="document.fonts.ready.then(() => { runTests(); })">
 
 <div class="grid" style="writing-mode: vertical-rl">
     <div data-expected-width="20" data-offset-x="70" class="firstRowFirstColumn alignSelfBaseline" style="width: 20px;"></div>
@@ -99,28 +99,30 @@
 </body>
 
 <script>
-    document.fonts.ready.then(() => {
-      var baseline1 = document.getElementById("baseline1");
-      var baseline2 = document.getElementById("baseline2");
-      var baseline3 = document.getElementById("baseline3");
-      var baseline4 = document.getElementById("baseline4");
-      var baseline5 = document.getElementById("baseline5");
-      var baseline6 = document.getElementById("baseline6");
-      var baseline7 = document.getElementById("baseline7");
-      var baseline8 = document.getElementById("baseline8");
-      var baseline9 = document.getElementById("baseline9");
+  setup({ explicit_done: true });
 
-      checkLayout('.grid', false);
+  function runTests() {
+    var baseline1 = document.getElementById("baseline1");
+    var baseline2 = document.getElementById("baseline2");
+    var baseline3 = document.getElementById("baseline3");
+    var baseline4 = document.getElementById("baseline4");
+    var baseline5 = document.getElementById("baseline5");
+    var baseline6 = document.getElementById("baseline6");
+    var baseline7 = document.getElementById("baseline7");
+    var baseline8 = document.getElementById("baseline8");
+    var baseline9 = document.getElementById("baseline9");
 
-      test(() => {assert_equals(baseline1.offsetLeft, baseline2.offsetLeft, "baseline1 and baseline2 should have the same baseline;")}, "Additional Check 1");
-      test(() => {assert_greater_than(baseline3.offsetLeft + baseline3.offsetWidth, 75, "baseline3 should be above the center align-itemsed item;")}, "Additional Check 2");
-      test(() => {assert_equals(baseline4.offsetLeft + baseline4.offsetWidth, baseline5.offsetLeft + baseline5.offsetWidth, "baseline4 and baseline5 should be right aligned with each other;")}, "Additional Check 3");
-      test(() => {assert_less_than(baseline4.offsetLeft + baseline4.offsetWidth, 100, "baseline4 and baseline5 should be below the dominant baseline;")}, "Additional Check 4");
-      test(() => {assert_equals(baseline6.offsetLeft, baseline7.offsetLeft, "baseline6 and baseline7 should have the same baseline;")}, "Additional Check 5");
-      test(() => {assert_equals(baseline8.offsetLeft, baseline9.offsetLeft, "baseline8 and baseline9 should be left aligned with each other;")}, "Additional Check 6");
+    checkLayout('.grid', false);
 
-      done();
-    });
+    test(() => {assert_equals(baseline1.offsetLeft, baseline2.offsetLeft, "baseline1 and baseline2 should have the same baseline;")}, "Additional Check 1");
+    test(() => {assert_greater_than(baseline3.offsetLeft + baseline3.offsetWidth, 75, "baseline3 should be above the center align-itemsed item;")}, "Additional Check 2");
+    test(() => {assert_equals(baseline4.offsetLeft + baseline4.offsetWidth, baseline5.offsetLeft + baseline5.offsetWidth, "baseline4 and baseline5 should be right aligned with each other;")}, "Additional Check 3");
+    test(() => {assert_less_than(baseline4.offsetLeft + baseline4.offsetWidth, 100, "baseline4 and baseline5 should be below the dominant baseline;")}, "Additional Check 4");
+    test(() => {assert_equals(baseline6.offsetLeft, baseline7.offsetLeft, "baseline6 and baseline7 should have the same baseline;")}, "Additional Check 5");
+    test(() => {assert_equals(baseline8.offsetLeft, baseline9.offsetLeft, "baseline8 and baseline9 should be left aligned with each other;")}, "Additional Check 6");
+
+    done();
+  };
 
 </script>
 

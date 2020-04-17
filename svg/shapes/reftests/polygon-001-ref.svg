@@ -1,18 +1,14 @@
-<svg id="svg-root"
-  width="100%" height="100%" viewBox="0 0 480 360"
+<svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <g id="testmeta">
     <title>Polygon 1</title>
-    <html:link rel="author"
-          title="Skef Iterum"
-          href="https://github.com/skef/"/>
+    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
   </g>
 
   <g id="test-body-reference">
-    <path style="stroke:none;fill:black" d="M58.7773 44.5527l-40 20l-0.222656 0.110352l-0.0458984 0.243164l-8 42l-0.0449219 0.234375l0.154297 0.182617l28 33l0.155273 0.182617l0.238281 -0.00585938l43 -1l0.239258 -0.00585938l0.146484 -0.19043l26 -34
+    <path stroke="none" fill="black" d="M58.7773 44.5527l-40 20l-0.222656 0.110352l-0.0458984 0.243164l-8 42l-0.0449219 0.234375l0.154297 0.182617l28 33l0.155273 0.182617l0.238281 -0.00585938l43 -1l0.239258 -0.00585938l0.146484 -0.19043l26 -34
   l0.15625 -0.205078l-0.0761719 -0.246094l-13 -42l-0.0625 -0.204102l-0.192383 -0.0957031l-36 -18l-0.222656 -0.111328z"/>
-    <path style="stroke:none;fill:white" d="M19.4453 65.3369l39.5547 -19.7783l35.585 17.793l12.8613 41.5498l-25.6973 33.6045l-42.5225 0.988281l-27.6904 -32.6348z"/>
+    <path stroke="none" fill="white" d="M19.4453 65.3369l39.5547 -19.7783l35.585 17.793l12.8613 41.5498l-25.6973 33.6045l-42.5225 0.988281l-27.6904 -32.6348z"/>
   </g>
 </svg>

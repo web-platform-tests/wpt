@@ -1,17 +1,13 @@
-<svg id="svg-root"
-  width="100%" height="100%" viewBox="0 0 480 360"
+<svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <g id="testmeta">
     <title>Circle 6</title>
-    <html:link rel="author"
-          title="Skef Iterum"
-          href="https://github.com/skef/"/>
+    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
   </g>
 
   <g id="test-body-reference">
-    <path style="stroke:none;fill:green" d="M285 260c0 -30.3721 24.6279 -55 55 -55s55 24.6279 55 55s-24.6279 55 -55 55s-55 -24.6279 -55 -55z"/>
-    <path style="stroke:none;fill:white" d="M295 260c0 24.8564 20.1436 45 45 45s45 -20.1436 45 -45s-20.1436 -45 -45 -45s-45 20.1436 -45 45z"/>
+    <path stroke="none" fill="green" d="M285 260c0 -30.3721 24.6279 -55 55 -55s55 24.6279 55 55s-24.6279 55 -55 55s-55 -24.6279 -55 -55z"/>
+    <path stroke="none" fill="white" d="M295 260c0 24.8564 20.1436 45 45 45s45 -20.1436 45 -45s-20.1436 -45 -45 -45s-45 20.1436 -45 45z"/>
   </g>
 </svg>

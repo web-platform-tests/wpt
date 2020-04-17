@@ -1,19 +1,12 @@
-<svg id="svg-root"
-  width="100%" height="100%" viewBox="0 0 480 360"
+<svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <g id="testmeta">
     <title>Filled Closed Path With Miter Joins and Square Caps</title>
-    <html:link rel="author"
-          title="Skef Iterum"
-          href="https://github.com/skef/"/>
-    <html:link rel="help"
-          href="https://www.w3.org/TR/SVG2/render.html#LineJoin"/>
-    <html:link rel="help"
-          href="https://www.w3.org/TR/SVG2/render.html#LineCaps"/>
-    <html:link rel="help"
-          href="https://www.w3.org/TR/SVG2/paths.html#PathDataClosePathCommand"/>
+    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+    <html:link rel="help" href="https://www.w3.org/TR/SVG2/render.html#LineJoin"/>
+    <html:link rel="help" href="https://www.w3.org/TR/SVG2/render.html#LineCaps"/>
+    <html:link rel="help" href="https://www.w3.org/TR/SVG2/paths.html#PathDataClosePathCommand"/>
     <html:link rel="match" href="linejoincap-006-ref.svg"/>
     <html:meta name="fuzzy" content="maxDifference=0-50;totalPixels=0-1100"/>
   </g>

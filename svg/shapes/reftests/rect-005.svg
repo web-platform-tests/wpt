@@ -1,15 +1,10 @@
-<svg id="svg-root"
-  width="100%" height="100%" viewBox="0 0 480 360"
+<svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <g id="testmeta">
     <title>Rectangle 5</title>
-    <html:link rel="author"
-          title="Skef Iterum"
-          href="https://github.com/skef/"/>
-    <html:link rel="help"
-          href="https://www.w3.org/TR/SVG2/shapes.html#RectElement"/>
+    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+    <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#RectElement"/>
     <html:link rel="match" href="rect-005-ref.svg"/>
     <html:meta name="fuzzy" content="maxDifference=0-100;totalPixels=0-1900"/>
   </g>

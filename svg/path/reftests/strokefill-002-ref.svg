@@ -1,18 +1,14 @@
-<svg id="svg-root"
-  width="100%" height="100%" viewBox="0 0 480 360"
+<svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <g id="testmeta">
     <title>Closed Path With Stroke And Fill 2</title>
-    <html:link rel="author"
-          title="Skef Iterum"
-          href="https://github.com/skef/"/>
+    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
   </g>
 
   <g id="test-body-reference">
-    <path style="stroke:none;fill:black" d="M287.172 77.1719l-60 60l-1.17188 1.17285v1.65527v60v1.65527l1.17188 1.17285l60 60l1.17285 1.17188h1.65527h60h1.65527l1.17285 -1.17188l60 -60l1.17188 -1.17285v-1.65527v-60v-1.65527l-1.17188 -1.17285l-60 -60
+    <path stroke="none" fill="black" d="M287.172 77.1719l-60 60l-1.17188 1.17285v1.65527v60v1.65527l1.17188 1.17285l60 60l1.17285 1.17188h1.65527h60h1.65527l1.17285 -1.17188l60 -60l1.17188 -1.17285v-1.65527v-60v-1.65527l-1.17188 -1.17285l-60 -60
   l-1.17285 -1.17188h-1.65527h-60h-1.65527z"/>
-    <path style="stroke:none;fill:blue" d="M234 141.655l57.6553 -57.6553h56.6895l57.6553 57.6553v56.6895l-57.6553 57.6553h-56.6895l-57.6553 -57.6553v-56.6895z"/>
+    <path stroke="none" fill="blue" d="M234 141.655l57.6553 -57.6553h56.6895l57.6553 57.6553v56.6895l-57.6553 57.6553h-56.6895l-57.6553 -57.6553v-56.6895z"/>
   </g>
 </svg>

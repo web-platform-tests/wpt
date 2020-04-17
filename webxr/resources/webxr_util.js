@@ -23,10 +23,8 @@ function xr_promise_test(name, func, properties) {
     }
 
     if (self.internals && internals.xrTest && navigator.xr) {
-      // WebKit setup. The internals object is used by the WebKit test runner
-      // to provide JS access to internal APIs. In this case it's used to
-      // ensure that XRTest is only exposed to wpt tests.
-      navigator.xr.test = internals.xrTest;
+      // WebKit setup
+      await setupWebKitWebXRTestAPI;
     }
 
     // Ensure that any devices are disconnected when done. If this were done in
@@ -205,4 +203,12 @@ let loadChromiumResources = Promise.resolve().then(() => {
   });
 
   return chain;
+});
+
+let setupWebKitWebXRTestAPI = Promise.resolve().then(() => {
+  // WebKit setup. The internals object is used by the WebKit test runner
+  // to provide JS access to internal APIs. In this case it's used to
+  // ensure that XRTest is only exposed to wpt tests.
+  navigator.xr.test = internals.xrTest;
+  return Promise.resolve();
 });

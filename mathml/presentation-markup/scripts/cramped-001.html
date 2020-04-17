@@ -129,6 +129,15 @@
           assert_cramped("munderover-006", false, "overscript");
       }, "accent child of munderover (accent overscript)");
 
+      test(function() {
+          assert_true(MathMLFeatureDetection.has_mspace());
+          assert_cramped("mmultiscripts-001", false, "base");
+          assert_cramped("mmultiscripts-002", true, "post-subscript");
+          assert_cramped("mmultiscripts-003", false, "post-superscript");
+          assert_cramped("mmultiscripts-004", true, "pre-subscript");
+          assert_cramped("mmultiscripts-005", false, "post-superscript");
+      }, "mmultiscripts");
+
       done();
   }
 </script>
@@ -462,6 +471,121 @@
           <mspace height="1em" width="1em"/>
         </msup>
       </munderover>
+    </math>
+  </p>
+  <p>
+    <math>
+      <mmultiscripts id="mmultiscripts-001">
+        <msup class="testedElement">
+          <mspace height="2em" width="2em"/>
+          <mspace height="1em" width="1em"/>
+        </msup>
+        <mn>1</mn>
+        <mn>2</mn>
+        <mn>3</mn>
+        <mn>4</mn>
+        <mn>5</mn>
+        <mn>6</mn>
+        <mprescripts/>
+        <mn>7</mn>
+        <mn>8</mn>
+        <mn>9</mn>
+        <mn>10</mn>
+        <mn>11</mn>
+        <mn>12</mn>
+      </mmultiscripts>
+    </math>
+  </p>
+  <p>
+    <math>
+      <mmultiscripts id="mmultiscripts-002">
+        <mn>0</mn>
+        <mn>1</mn>
+        <mn>2</mn>
+        <msup class="testedElement">
+          <mspace height="2em" width="2em"/>
+          <mspace height="1em" width="1em"/>
+        </msup>
+        <mn>4</mn>
+        <mn>5</mn>
+        <mn>6</mn>
+        <mprescripts/>
+        <mn>7</mn>
+        <mn>8</mn>
+        <mn>9</mn>
+        <mn>10</mn>
+        <mn>11</mn>
+        <mn>12</mn>
+      </mmultiscripts>
+    </math>
+  </p>
+  <p>
+    <math>
+      <mmultiscripts id="mmultiscripts-003">
+        <mn>0</mn>
+        <mn>1</mn>
+        <mn>2</mn>
+        <mn>3</mn>
+        <msup class="testedElement">
+          <mspace height="2em" width="2em"/>
+          <mspace height="1em" width="1em"/>
+        </msup>
+        <mn>5</mn>
+        <mn>6</mn>
+        <mprescripts/>
+        <mn>7</mn>
+        <mn>8</mn>
+        <mn>9</mn>
+        <mn>10</mn>
+        <mn>11</mn>
+        <mn>12</mn>
+      </mmultiscripts>
+    </math>
+  </p>
+  <p>
+    <math>
+      <mmultiscripts id="mmultiscripts-004">
+        <mn>0</mn>
+        <mn>1</mn>
+        <mn>2</mn>
+        <mn>3</mn>
+        <mn>4</mn>
+        <mn>5</mn>
+        <mn>6</mn>
+        <mprescripts/>
+        <mn>7</mn>
+        <mn>8</mn>
+        <msup class="testedElement">
+          <mspace height="2em" width="2em"/>
+          <mspace height="1em" width="1em"/>
+        </msup>
+        <mn>10</mn>
+        <mn>11</mn>
+        <mn>12</mn>
+      </mmultiscripts>
+    </math>
+  </p>
+  <p>
+    <math>
+      <mmultiscripts id="mmultiscripts-005">
+        <mn>0</mn>
+        <mn>1</mn>
+        <mn>2</mn>
+        <mn>3</mn>
+        <mn>4</mn>
+        <mn>5</mn>
+        <mn>6</mn>
+        <mprescripts/>
+        <mn>7</mn>
+        <mn>8</mn>
+        <mn>9</mn>
+        <msup class="testedElement">
+          <mspace height="2em" width="2em"/>
+          <mspace height="1em" width="1em"/>
+        </msup>
+        <mn>11</mn>
+        <mn>12</mn>
+      </mmultiscripts>
     </math>
   </p>
 </body>

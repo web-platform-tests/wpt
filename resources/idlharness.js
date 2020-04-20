@@ -1429,7 +1429,8 @@ IdlInterface.prototype.assert_interface_object_exists = function()
 
 IdlInterface.prototype.get_interface_object = function() {
     if (!this.should_have_interface_object()) {
-        throw new IdlHarnessError(this.name + " has no interface object due to NoInterfaceObject");
+        var reason = this.is_callback() ? "lack of declared constants" : "declared [NoInterfaceObject] attribute";
+        throw new IdlHarnessError(this.name + " has no interface object due to " + reason);
     }
 
     return this.get_interface_object_owner()[this.name];

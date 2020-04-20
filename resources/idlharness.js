@@ -1651,10 +1651,7 @@ IdlInterface.prototype.test_self = function()
         //    section 19.2.3.8, unless otherwise specified."
         // TODO
 
-        // ES6 (rev 30) 19.1.3.6:
-        // "Else, if O has a [[Call]] internal method, then let builtinTag be
-        // "Function"."
-        assert_class_string(this.get_interface_object(), "Function", "class string of " + this.name);
+        assert_equals(typeof this.get_interface_object(), "function", this.name + " is callable");
 
         // "The [[Prototype]] internal property of an interface object for a
         // non-callback interface is determined as follows:"

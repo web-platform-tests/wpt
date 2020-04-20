@@ -6,23 +6,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="pre-insertion-validation-hierarchy.js"></script>
 <script>
-  Node.prototype.replaceChildren = function (...args) {
-    const nodes = args.map(arg => {
-      if (typeof arg === "string") {
-        return new Text(arg);
-      }
-      return arg;
-    });
-    const node = nodes.length === 1 ? nodes[0] : (() => {
-      const fragment = this.ownerDocument.createDocumentFragment();
-      fragment.append(...nodes);
-      return fragment;
-    })();
-
-    this.textContent = ""; // no way to do these two atomically
-    this.append(node);
-  }
-
   preInsertionValidateHierarchy("replaceChildren");
 
   function test_replacechildren(node, nodeName) {

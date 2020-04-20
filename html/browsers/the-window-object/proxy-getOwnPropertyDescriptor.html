@@ -19,6 +19,13 @@ const assert_accessor_descriptor_equals = (actual, expected) => {
   assert_equals(actual.configurable, expected.configurable, 'configurable');
 };
 
+const assert_data_descriptor_equals = (actual, expected) => {
+  assert_equals(actual.value, expected.value, 'value');
+  assert_equals(actual.writable, expected.writable, 'writable');
+  assert_equals(actual.enumerable, expected.enumerable, 'enumerable');
+  assert_equals(actual.configurable, expected.configurable, 'configurable');
+};
+
 test(() => {
   const windowProxy = new Proxy(window, {});
   name = 'old_name';
@@ -69,7 +76,7 @@ test(() => {
     getOwnPropertyDescriptor: () => trapResult,
   });
 
-  assert_object_equals(
+  assert_data_descriptor_equals(
     Object.getOwnPropertyDescriptor(documentProxy, 'foo'),
     trapResult
   );
@@ -92,7 +99,7 @@ test(() => {
     getOwnPropertyDescriptor: Reflect.getOwnPropertyDescriptor,
   });
 
-  assert_object_equals(
+  assert_data_descriptor_equals(
     Object.getOwnPropertyDescriptor(locationProxy, 'reload'),
     Object.getOwnPropertyDescriptor(location, 'reload')
   );

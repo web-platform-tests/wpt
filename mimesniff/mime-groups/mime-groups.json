@@ -43,7 +43,7 @@
     "HTML is scriptable",
     {"input": "text/html",                         "groups": ["HTML", "scriptable"]},
     {"input": "text/html;x=x",                     "groups": ["HTML", "scriptable"]},
-    "PDF is scriptable",    
+    "PDF is scriptable",
     {"input": "application/pdf",                   "groups": ["scriptable"]},
     {"input": "application/pdf;x=x",               "groups": ["scriptable"]},
     {"input": "application/ecmascript",            "groups": ["JavaScript"]},

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL putImageData() throws TypeError if arguments are not finite assert_throws_js: function "function() { ctx.putImageData(imgdata, Infinity, 10); }" did not throw
+Harness: the test ran to completion.
+

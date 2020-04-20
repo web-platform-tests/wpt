@@ -1,1 +1,7 @@
-/* This file intentionally left blank. */
+div.body {
+  min-width: auto;
+}
+
+#video-introduction-transcript iframe {
+  max-width: 100%;
+}

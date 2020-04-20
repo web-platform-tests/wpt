@@ -1,10 +1,9 @@
-// META: global=jsshell
+// META: global=default,jsshell
 
 function assert_ArrayBuffer(actual, expected, message) {
   // https://github.com/WebAssembly/spec/issues/840
-  const bufferType = expected.shared ? self.SharedArrayBuffer : ArrayBuffer;
-  assert_equals(Object.getPrototypeOf(actual), bufferType.prototype,
-                `${message}: prototype`);
+  const isShared = !("isView" in actual.constructor);
+  assert_equals(isShared, expected.shared, `${message}: constructor`);
   if (expected.detached) {
     // https://github.com/tc39/ecma262/issues/678
     let byteLength;

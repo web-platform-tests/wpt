@@ -1462,6 +1462,11 @@ policies and contribution forms [3].
         assert(same_value(actual, expected), "assert_class_string", description,
                                              "expected ${expected} but got ${actual}",
                                              {expected:expected, actual:actual});
+
+        var tag = object[Symbol.toStringTag];
+        assert(same_value(tag, class_string), "assert_class_string", description,
+                                              "expected ${expected} but got ${actual}",
+                                              {expected:class_string, actual:tag});
     }
     expose(assert_class_string, "assert_class_string");
 

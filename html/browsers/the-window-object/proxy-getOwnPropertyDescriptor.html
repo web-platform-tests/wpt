@@ -39,12 +39,19 @@ test(() => {
 }, 'Window target, no trap, "name" attribute');
 
 test(() => {
-  const windowProxy = new Proxy(window, {});
+  let trapCalls = 0;
+  const windowProxy = new Proxy(window, {
+    getOwnPropertyDescriptor(...args) {
+      trapCalls++;
+      return Reflect.getOwnPropertyDescriptor(...args);
+    },
+  });
 
   assert_accessor_descriptor_equals(
     Object.getOwnPropertyDescriptor(windowProxy, 'document'),
     Object.getOwnPropertyDescriptor(window, 'document')
   );
+  assert_equals(trapCalls, 1);
 }, 'Window target, forwarding trap, [Unforgeable] "document" attribute');
 
 test(() => {
@@ -60,14 +67,19 @@ test(() => {
 }, 'Window proxy target, custom trap, "onclick" event handler attribute');
 
 test(() => {
+  let trapCalls = 0;
   const documentProxy = new Proxy(document, {
-    getOwnPropertyDescriptor: Reflect.getOwnPropertyDescriptor,
+    getOwnPropertyDescriptor(...args) {
+      trapCalls++;
+      return Reflect.getOwnPropertyDescriptor(...args);
+    },
   });
 
   assert_accessor_descriptor_equals(
     Object.getOwnPropertyDescriptor(documentProxy, 'location'),
     Object.getOwnPropertyDescriptor(document, 'location')
   );
+  assert_equals(trapCalls, 1);
 }, 'Document target, forwarding trap, [Unforgeable] "location" attribute');
 
 test(() => {
@@ -95,14 +107,19 @@ test(() => {
 }, 'Location target, no trap, [Unforgeable] "hash" attribute');
 
 test(() => {
+  let trapCalls = 0;
   const locationProxy = new Proxy(new Proxy(location, {}), {
-    getOwnPropertyDescriptor: Reflect.getOwnPropertyDescriptor,
+    getOwnPropertyDescriptor(...args) {
+      trapCalls++;
+      return Reflect.getOwnPropertyDescriptor(...args);
+    },
   });
 
   assert_data_descriptor_equals(
     Object.getOwnPropertyDescriptor(locationProxy, 'reload'),
     Object.getOwnPropertyDescriptor(location, 'reload')
   );
+  assert_equals(trapCalls, 1);
 }, 'Location proxy target, forwarding trap, [Unforgeable] "reload" method');
 </script>
 </body>

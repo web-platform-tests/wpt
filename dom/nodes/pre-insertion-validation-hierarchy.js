@@ -5,6 +5,8 @@
 function preInsertionValidateHierarchy(methodName) {
   function insert(parent, node) {
     if (parent[methodName].length > 1) {
+      // This is for insertBefore(). We can't blindly pass `null` for all methods
+      // as doing so will move nodes before validation.
       parent[methodName](node, null);
     } else {
       parent[methodName](node);

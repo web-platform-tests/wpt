@@ -1,65 +1,96 @@
 <!DOCTYPE html>
-<title>WebAssembly JS API: Default [[Prototype]] value is from NewTarget's realm</title>
-<meta name="help" content="https://heycam.github.io/webidl/#internally-create-a-new-object-implementing-the-interface">
+<meta charset="utf-8">
+<title>WebAssembly JS API: Default [[Prototype]] value is from NewTarget's Realm</title>
+<link rel="help" href="https://heycam.github.io/webidl/#internally-create-a-new-object-implementing-the-interface">
+<link rel="help" href="https://tc39.es/ecma262/#sec-nativeerror">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="wasm-module-builder.js"></script>
 <body>
-<iframe srcdoc></iframe>
+<iframe id="constructor-iframe" hidden></iframe>
+<iframe id="new-target-iframe" hidden></iframe>
+<iframe id="other-iframe" hidden></iframe>
 <script>
 "use strict";
 
-const other = document.querySelector("iframe").contentWindow;
-const newTarget = new other.Function();
+const constructorRealm = document.querySelector("#constructor-iframe").contentWindow;
+const newTargetRealm = document.querySelector("#new-target-iframe").contentWindow;
+const otherRealm = document.querySelector("#other-iframe").contentWindow;
+
 const emptyModuleBinary = new WasmModuleBuilder().toBuffer();
+const interfaces = [
+  ["Module", emptyModuleBinary],
+  ["Instance", new WebAssembly.Module(emptyModuleBinary)],
+  ["Memory", {initial: 0}],
+  ["Table", {element: "anyfunc", initial: 0}],
+  ["Global", {value: "i32"}],
 
-test(() => {
-  newTarget.prototype = undefined;
-  const wasmModule = Reflect.construct(WebAssembly.Module, [emptyModuleBinary], newTarget);
-  assert_equals(Object.getPrototypeOf(wasmModule), other.WebAssembly.Module.prototype);
-}, "WebAssembly.Module");
+  // See step 2 of https://tc39.es/ecma262/#sec-nativeerror
+  ["CompileError"],
+  ["LinkError"],
+  ["RuntimeError"],
+];
 
-test(() => {
-  newTarget.prototype = null;
-  const wasmModule = new WebAssembly.Module(emptyModuleBinary);
-  const wasmInstance = Reflect.construct(WebAssembly.Instance, [wasmModule], newTarget);
-  assert_equals(Object.getPrototypeOf(wasmInstance), other.WebAssembly.Instance.prototype);
-}, "WebAssembly.Instance");
+const formatPrimitive = p => typeof p === "symbol" ? String(p) : JSON.stringify(p);
+const primitives = [
+  undefined,
+  null,
+  false,
+  true,
+  0,
+  -1,
+  "",
+  "str",
+  Symbol(),
+];
 
-test(() => {
-  newTarget.prototype = true;
-  const wasmMemory = Reflect.construct(WebAssembly.Memory, [{initial: 0}], newTarget);
-  assert_equals(Object.getPrototypeOf(wasmMemory), other.WebAssembly.Memory.prototype);
-}, "WebAssembly.Memory");
+const getNewTargets = function* (realm) {
+  for (const primitive of primitives) {
+    const newTarget = new realm.Function();
+    newTarget.prototype = primitive;
+    yield [newTarget, "cross-realm NewTarget with `" + formatPrimitive(primitive) + "` prototype"];
+  }
 
-test(() => {
-  newTarget.prototype = false;
-  const wasmTable = Reflect.construct(WebAssembly.Table, [{element: "anyfunc", initial: 0}], newTarget);
-  assert_equals(Object.getPrototypeOf(wasmTable), other.WebAssembly.Table.prototype);
-}, "WebAssembly.Table");
+  // GetFunctionRealm (https://tc39.es/ecma262/#sec-getfunctionrealm) coverage:
+  const bindOther = otherRealm.Function.prototype.bind;
+  const ProxyOther = otherRealm.Proxy;
 
-test(() => {
-  newTarget.prototype = 0;
-  const wasmGlobal = Reflect.construct(WebAssembly.Global, [{value: "i32"}], newTarget);
-  assert_equals(Object.getPrototypeOf(wasmGlobal), other.WebAssembly.Global.prototype);
-}, "WebAssembly.Global");
+  const bound = new realm.Function();
+  bound.prototype = undefined;
+  yield [bindOther.call(bound), "bound cross-realm NewTarget with `undefined` prototype"];
 
-test(() => {
-  newTarget.prototype = 1;
-  const wasmError = Reflect.construct(WebAssembly.CompileError, [], newTarget);
-  assert_equals(Object.getPrototypeOf(wasmError), other.WebAssembly.CompileError.prototype);
-}, "WebAssembly.CompileError");
+  const boundBound = new realm.Function();
+  boundBound.prototype = null;
+  yield [bindOther.call(bindOther.call(boundBound)), "bound bound cross-realm NewTarget with `null` prototype"];
 
-test(() => {
-  newTarget.prototype = "";
-  const wasmError = Reflect.construct(WebAssembly.LinkError, [], newTarget);
-  assert_equals(Object.getPrototypeOf(wasmError), other.WebAssembly.LinkError.prototype);
-}, "WebAssembly.LinkError");
+  const boundProxy = new realm.Function();
+  boundProxy.prototype = false;
+  yield [bindOther.call(new ProxyOther(boundProxy, {})), "bound Proxy of cross-realm NewTarget with `false` prototype"];
 
-test(() => {
-  newTarget.prototype = Symbol();
-  const wasmError = Reflect.construct(WebAssembly.RuntimeError, [], newTarget);
-  assert_equals(Object.getPrototypeOf(wasmError), other.WebAssembly.RuntimeError.prototype);
-}, "WebAssembly.RuntimeError");
+  const proxy = new realm.Function();
+  proxy.prototype = true;
+  yield [new ProxyOther(proxy, {}), "Proxy of cross-realm NewTarget with `true` prototype"];
+
+  const proxyProxy = new realm.Function();
+  proxyProxy.prototype = -0;
+  yield [new ProxyOther(new ProxyOther(proxyProxy, {}), {}), "Proxy of Proxy of cross-realm NewTarget with `-0` prototype"];
+
+  const proxyBound = new realm.Function();
+  proxyBound.prototype = NaN;
+  yield [new ProxyOther(bindOther.call(proxyBound), {}), "Proxy of bound cross-realm NewTarget with `NaN` prototype"];
+};
+
+for (const [interfaceName, constructorArg] of interfaces) {
+  for (const [newTarget, testDescription] of getNewTargets(newTargetRealm)) {
+    test(() => {
+      const Constructor = constructorRealm.WebAssembly[interfaceName];
+      const object = Reflect.construct(Constructor, [constructorArg], newTarget);
+
+      const NewTargetConstructor = newTargetRealm.WebAssembly[interfaceName];
+      assert_true(object instanceof NewTargetConstructor);
+      assert_equals(Object.getPrototypeOf(object), NewTargetConstructor.prototype);
+    }, `WebAssembly.${interfaceName}: ${testDescription}`);
+  }
+}
 </script>
 </body>

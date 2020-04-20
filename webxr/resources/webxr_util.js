@@ -206,6 +206,11 @@ let loadChromiumResources = Promise.resolve().then(() => {
 });
 
 let setupWebKitWebXRTestAPI = Promise.resolve().then(() => {
+  if (!self.internals) {
+    // Do nothing on non-WebKit-based browsers.
+    return;
+  }
+
   // WebKit setup. The internals object is used by the WebKit test runner
   // to provide JS access to internal APIs. In this case it's used to
   // ensure that XRTest is only exposed to wpt tests.

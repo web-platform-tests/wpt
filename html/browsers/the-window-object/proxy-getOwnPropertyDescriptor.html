@@ -12,6 +12,13 @@
 <script>
 'use strict';
 
+const assert_accessor_descriptor_equals = (actual, expected) => {
+  assert_equals(actual.get, expected.get, 'get');
+  assert_equals(actual.set, expected.set, 'set');
+  assert_equals(actual.enumerable, expected.enumerable, 'enumerable');
+  assert_equals(actual.configurable, expected.configurable, 'configurable');
+};
+
 test(() => {
   const windowProxy = new Proxy(window, {});
   name = 'old_name';
@@ -27,7 +34,7 @@ test(() => {
 test(() => {
   const windowProxy = new Proxy(window, {});
 
-  assert_object_equals(
+  assert_accessor_descriptor_equals(
     Object.getOwnPropertyDescriptor(windowProxy, 'document'),
     Object.getOwnPropertyDescriptor(window, 'document')
   );
@@ -39,7 +46,7 @@ test(() => {
     getOwnPropertyDescriptor: () => trapResult,
   });
 
-  assert_object_equals(
+  assert_accessor_descriptor_equals(
     Object.getOwnPropertyDescriptor(windowProxy, 'onclick'),
     trapResult
   );
@@ -50,7 +57,7 @@ test(() => {
     getOwnPropertyDescriptor: Reflect.getOwnPropertyDescriptor,
   });
 
-  assert_object_equals(
+  assert_accessor_descriptor_equals(
     Object.getOwnPropertyDescriptor(documentProxy, 'location'),
     Object.getOwnPropertyDescriptor(document, 'location')
   );

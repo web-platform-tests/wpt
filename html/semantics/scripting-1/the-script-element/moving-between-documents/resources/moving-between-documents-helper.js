@@ -35,30 +35,46 @@ window.didExecute = undefined;
 
 // For a script, there are four associated Documents that can
 // potentially different:
+//
 // [1] script's parser document
-// [2] script's node document at the beginning of #prepare-a-script
-//     == script's preparation-time document
+//     https://html.spec.whatwg.org/C/#parser-document
+//
+// [2] script's preparation-time document
+//     https://html.spec.whatwg.org/C/#preparation-time-document
+//     == script's node document at the beginning of #prepare-a-script
+//
 // [3] script's node document at the beginning of
 //     #execute-the-script-block
 //
+// This helper is for tests where [1]/[2]/[3] are different.
+
 // In the spec, scripts are not executed only if [1]/[2]/[3] are all the same
 // (or [1] is null and [2]==[3]).
-// [1]==[2] is tested in #prepare-a-script (Step 10), and
-// [1]==[3] and [2]==[3] are tested in #execute-the-script-block.
 //
-// This helper is for tests where [1]/[2]/[3] are different.
+// A check for [1]==[2] is in #prepare-a-script and
+// a check for [1]==[3] is in #execute-the-script-block,
+// but these are under debate: https://github.com/whatwg/html/issues/2137
+//
+// A check for [2]==[3] is in #execute-the-script-block, which is added by
+// https://github.com/whatwg/html/pull/2673
 
 // timing:
 //   "before-prepare":
 //     A <script> is moved during parsing before #prepare-a-script.
 //     [1] != [2] == [3]
+//
 //   "after-prepare":
 //     A <script> is moved after parsing/#prepare-a-script but
 //     before #execute-the-script-block.
+//     [1] == [2] != [3]
+//
 //     To move such scripts, #has-a-style-sheet-that-is-blocking-scripts
 //     is utilized to block inline scripts after #prepare-a-script.
-//     TODO: This mechanism isn't complete in some cases.
-//     [1] == [2] != [3]
+//     Note: this is a corner case in the spec which might be removed
+//     from the spec in the future, e.g.
+//     https://github.com/whatwg/html/issues/1349
+//     https://github.com/chrishtr/rendering/blob/master/stylesheet-loading-proposal.md
+//
 //   "parsing but moved back"
 //     A <script> is moved before #prepare-a-script, but moved back again
 //     to the original Document after #prepare-a-script.
@@ -96,21 +112,13 @@ async function runTest(timing, destType, result, inlineOrExternal, type) {
   const [destWindow, destDocument] = await createDocument(
       destType, null, null, null, hasBlockingStylesheet);
 
-  const shouldScriptErrorEventFired = false;
-  // TODO: Temporarily set to false just to test behaviors on
-  // the current browsers.
-  // during === "failed fetch" && destType === "iframe";
-
   let scriptErrorEventFired = false;
   const scriptOnError = (event) => {
     // For Firefox: Prevent window.onerror is fired due to propagation
     // from <script>'s error event.
     event.stopPropagation();
-    if (shouldScriptErrorEventFired) {
-      scriptErrorEventFired = true;
-    } else {
-     tScriptErrorEvent.unreached_func("onerror")();
-    }
+
+    tScriptErrorEvent.unreached_func("Event fired unexpectedly")();
   };
 
   sourceWindow.didExecute = false;
@@ -180,12 +188,7 @@ async function runTest(timing, destType, result, inlineOrExternal, type) {
     step_timeout(() => {
       tWindowErrorEvent.done();
       tScriptLoadEvent.done();
-      tScriptErrorEvent.step_func_done(() => {
-        if (shouldScriptErrorEventFired) {
-          assert_true(scriptErrorEventFired,
-              "error event should be fired");
-        }
-      })();
+      tScriptErrorEvent.done();
 
       t.step_func_done(() => {
         assert_false(sourceWindow.didExecute,

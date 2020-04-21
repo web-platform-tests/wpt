@@ -2,7 +2,7 @@
 
 ## Conduct
 
-Contact: a moderator (see below), or a member of the community you feel you can trust.
+Contact: a moderator ([see below](#moderators)), or a member of the community you feel you can trust.
 
 * We are committed to providing a friendly, safe, and welcoming environment for all,
  regardless of level of experience, gender, gender identity and expression, sexual orientation,
@@ -41,7 +41,7 @@ The enforcement policies listed above apply to all official WPT venues; includin
 
 This section lists the current moderators for WPT and how to reach them.
 
-* Boaz Sender - boaz@bocoup.com
-* Jory Burson - jory@bocoup.education
+* Boaz Sender - [boaz@bocoup.com](mailto:boaz@bocoup.com)
+* Jory Burson - [jory@bocoup.education](mailto:jory@bocoup.education). Languages: English (fluent), Spanish (conversational).
 
 *Adapted from [The Rust Code of Conduct](https://www.rust-lang.org/conduct.html).*

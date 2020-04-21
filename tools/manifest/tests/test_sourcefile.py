@@ -328,8 +328,8 @@ test()"""
 
 
 @pytest.mark.parametrize("input,expected", [
-    (b"", {"dedicatedworker", "window"}),
-    (b"default", {"dedicatedworker", "window"}),
+    (b"", {}),
+    (b"default", {}),
     (b"window", {"window"}),
     (b"sharedworker", {"sharedworker"}),
     (b"sharedworker,serviceworker", {"serviceworker", "sharedworker"}),

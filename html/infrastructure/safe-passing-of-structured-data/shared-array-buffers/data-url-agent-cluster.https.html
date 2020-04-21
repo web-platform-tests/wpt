@@ -6,40 +6,62 @@
 <div id=log></div>
 <script>
 const dataURLWorker = `
-  onmessage = () => self.postMessage("FAIL");
-  onmessageerror = () => self.postMessage("PASS");
+  onmessage = () => self.postMessage("message");
+  onmessageerror = () => self.postMessage("messsageeror");
 `;
 
 const dataFrameScript = `
-  onmessage = () => parent.postMessage("FAIL", "*");
-  onmessageerror = () => parent.postMessage("FAIL", "*");
+  onmessage = () => parent.postMessage("message", "*");
+  onmessageerror = () => parent.postMessage("messsageeror", "*");
 `;
 
 [
-  new SharedArrayBuffer(),
-  new WebAssembly.Module(new WasmModuleBuilder().toBuffer())
-].forEach(instance => {
+  {
+    "input": new ArrayBuffer(),
+    "expected": "message"
+  },
+  {
+    "input": new SharedArrayBuffer(),
+    "expected": "messsageeror"
+  },
+  {
+    "input": new WebAssembly.Module(new WasmModuleBuilder().toBuffer()),
+    "expected": "messsageeror"
+  },
+  // postMessage() throws for this object (needs shared: true)
+  //{
+  //  "input": new WebAssembly.Memory({ initial: 0 }),
+  //  "expected": "message"
+  //},
+  {
+    "input": new WebAssembly.Memory({ initial: 0, maximum: 0, shared: true }),
+    "expected": "messsageeror",
+    "name": "Memory (shared: true)"
+  }
+].forEach(({ input: instance, expected, name }) => {
+  name = name ?? instance.constructor.name;
   async_test(t => {
     const worker = new Worker(`data:,${dataURLWorker}`);
     worker.onmessage = t.step_func_done(({ data }) => {
-      assert_equals(data, "PASS");
+      assert_equals(data, expected);
     });
     worker.postMessage(instance);
-  }, `As data URL dedicated workers form their own agent cluster, ${instance.constructor.name} cannot be messaged to them`);
+  }, `data URL dedicated workers and messaging ${name}`);
 
+  // Use promise_test because of the global message event listener
   promise_test(t => {
     return new Promise(resolve => {
       const frame = document.body.appendChild(document.createElement("iframe"));
       t.add_cleanup(() => frame.remove());
       frame.onload = t.step_func(() => {
         self.addEventListener("message", t.step_func(({ data }) => {
-          assert_equals(data, "PASS");
+          assert_equals(data, expected);
           resolve();
         }), { once: true });
         frame.contentWindow.postMessage(instance, "*");
       });
       frame.src = `data:text/html,<script>${dataFrameScript}<\/script>`;
     });
-  }, `As data URL frames form their own agent cluster, ${instance.constructor.name} cannot be messaged to them`);
+  }, `data URL frame and messaging ${name}`);
 });
 </script>

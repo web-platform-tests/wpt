@@ -9,7 +9,7 @@ delimit text to be replaced and `#` represents a digit.
 
 ## Reftests
 
-### Test
+### HTML test
 
 <!--
   Syntax highlighting cannot be enabled for the following template because it
@@ -31,7 +31,7 @@ delimit text to be replaced and `#` represents a digit.
 
 Filename: `{test-topic}-###.html`
 
-### Reference:
+### HTML reference
 
 <!--
   Syntax highlighting cannot be enabled for the following template because it
@@ -52,7 +52,35 @@ Filename: `{test-topic}-###.html`
 
 Filename: `{description}.html` or `{test-topic}-###-ref.html`
 
+### SVG test
+
+``` xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml">
+  <title>${1:Test title}</title>
+  <metadata>
+    <h:link rel="help" href="${2:Specification link}"/>
+    <h:link rel="match" href="${3:URL of match}"/>
+  </metadata>
+  ${4:Test body}
+</svg>
+```
+
+Filename: `{test-topic}-###.svg`
+
+### SVG reference
+
+``` xml
+<svg xmlns="http://www.w3.org/2000/svg">
+  <title>${1:Reference title}</title>
+  ${2:Reference content}
+</svg>
+```
+
+Filename: `{description}.svg` or `{test-topic}-###-ref.svg`
+
 ## testharness.js tests
+
+### HTML
 
 ``` html
 <!DOCTYPE html>
@@ -67,7 +95,44 @@ ${2:Test body}
 
 Filename: `{test-topic}-###.html`
 
+### HTML with [testdriver automation](testdriver)
+``` html
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>${1:Test title}</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+${2:Test body}
+</script>
+```
+
+Filename: `{test-topic}-###.html`
+
+### SVG
+
+``` xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml">
+  <title>${1:Test title}</title>
+  <metadata>
+    <h:link rel="help" href="${2:Specification link}"/>
+  </metadata>
+  <h:script src="/resources/testharness.js"/>
+  <h:script src="/resources/testharnessreport.js"/>
+  <script><![CDATA[
+  ${4:Test body}
+  ]]></script>
+</svg>
+```
+
+Filename: `{test-topic}-###.svg`
+
 ### Manual Test
+
+#### HTML
 
 ``` html
 <!DOCTYPE html>
@@ -82,3 +147,22 @@ ${2:Test body}
 ```
 
 Filename: `{test-topic}-###-manual.html`
+
+#### SVG
+
+``` xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml">
+  <title>${1:Test title}</title>
+  <metadata>
+    <h:link rel="help" href="${2:Specification link}"/>
+  </metadata>
+  <h:script src="/resources/testharness.js"/>
+  <h:script src="/resources/testharnessreport.js"/>
+  <script><![CDATA[
+  setup({explicit_timeout: true});
+  ${4:Test body}
+  ]]></script>
+</svg>
+```
+
+Filename: `{test-topic}-###-manual.svg`

@@ -10,6 +10,16 @@
 
 <script>
   "use strict";
+
+  // The prefixed animation events are special; their event types are
+  // camel-case.
+  const prefixedAnimationAttributeToEventType = new Map([
+    ["webkitanimationend", "webkitAnimationEnd"],
+    ["webkitanimationiteration", "webkitAnimationIteration"],
+    ["webkitanimationstart", "webkitAnimationStart"],
+    ["webkittransitionend", "webkitTransitionEnd"],
+  ]);
+
   setup({ explicit_done: true });
 
   // basic pattern lifted from /html/webappapis/scripting/events/event-handler-all-global-events.html
@@ -58,13 +68,9 @@
         }, `${name}: the default value must be null`);
 
         test(() => {
-          const el = document.createElementNS(
-            "http://www.w3.org/1998/Math/MathML",
-            "math"
-          );
-          el.setAttribute(name, `window.${name}Happened = true;`);
-          const compiledHandler = el[name];
-
+          const div = document.getElementById("container");
+          div.innerHTML = `<math ${name}="window.${name}Happened1 = true;"></math>`;
+          const compiledHandler = div.firstElementChild[name];
           assert_equals(
             typeof compiledHandler,
             "function",
@@ -72,28 +78,80 @@
           );
           compiledHandler();
           assert_true(
-            window[name + "Happened"],
+            window[`${name}Happened1`],
             "Calling the handler must run the code"
           );
         }, `${name}: the content attribute must be compiled into a function as the corresponding property`);
+
+        test(() => {
+          const el = document.createElementNS(
+            "http://www.w3.org/1998/Math/MathML",
+            "math"
+          );
+          assert_equals(el[name], null, `The ${name} property must be null (no attribute)`);
+
+          el.setAttribute(name, `window.${name}Happened2 = true;`);
+          const compiledHandler = el[name];
+          assert_equals(
+            typeof compiledHandler,
+            "function",
+            `The ${name} property must be a function (set attribute)`
+          );
+          compiledHandler();
+          assert_true(
+            window[`${name}Happened2`],
+            "Calling the handler must run the code (set attribute)"
+          );
+
+          window[`${name}Happened2`] = false;
+          const clonedEl = el.cloneNode(true);
+          const clonedCompiledHandler = clonedEl[name];
+          assert_equals(
+            typeof clonedCompiledHandler,
+            "function",
+            `The ${name} property must be a function (clone node)`
+          );
+          clonedCompiledHandler();
+          assert_true(
+            window[`${name}Happened2`],
+            "Calling the handler must run the code (clone node)"
+          );
+
+          el.setAttribute(name, `window.${name}Happened3 = true;`);
+          const newCompiledHandler = el[name];
+          assert_equals(
+            typeof newCompiledHandler,
+            "function",
+            `The ${name} property must be a function (modify attribute)`
+          );
+          newCompiledHandler();
+          assert_true(
+            window[`${name}Happened3`],
+            "Calling the handler must run the code (modify attribute)"
+          );
+
+          el.removeAttribute(name);
+          assert_equals(el[name], null, `The ${name} property must be null (remove attribute)`);
+        }, `${name}: dynamic changes on the attribute`);
 
         test(() => {
           const element = document.createElementNS(
             "http://www.w3.org/1998/Math/MathML",
             "math"
           );
-          element[name] = e => {
-            assert_equals(
-              e.currentTarget,
-              element,
-              "The event must be fired at the <math> element"
-            );
-          };
-
-          element.dispatchEvent(new Event(withoutOn));
+          let target = undefined;
+          element[name] = (e) => { target = e.currentTarget; }
+          let eventType = withoutOn;
+          if (prefixedAnimationAttributeToEventType.has(eventType)) {
+            eventType = prefixedAnimationAttributeToEventType.get(eventType);
+          }
+          element.dispatchEvent(new Event(eventType));
+          assert_equals(target, element, "The event must be fired at the <math> element");
         }, `${name}: dispatching an Event at a <math> element must trigger element.${name}`);
       }
 
       done();
     });
 </script>
+
+<div style="display: none" id="container"></div>

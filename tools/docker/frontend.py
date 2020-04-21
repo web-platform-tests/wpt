@@ -8,6 +8,7 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 def build(*args, **kwargs):
     subprocess.check_call(["docker",
                            "build",
+                           "--pull",
                            "--tag", "wpt:local",
                            here])
 
@@ -29,6 +30,8 @@ def run(*args, **kwargs):
         build()
 
     args = ["docker", "run"]
+    args.extend(["--security-opt", "seccomp:%s" %
+                 os.path.join(wpt_root, "tools", "docker", "seccomp.json")])
     if kwargs["privileged"]:
         args.append("--privileged")
     if kwargs["checkout"]:

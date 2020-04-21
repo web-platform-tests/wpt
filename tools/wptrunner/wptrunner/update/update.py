@@ -1,6 +1,8 @@
 import os
 import sys
 
+from six import itervalues
+
 from .metadata import MetadataUpdateRunner
 from .sync import SyncFromUpstreamRunner
 from .tree import GitTree, HgTree, NoVCSTree
@@ -109,7 +111,7 @@ class RemoveObsolete(Step):
         state.tests_path = state.paths["/"]["tests_path"]
         state.metadata_path = state.paths["/"]["metadata_path"]
 
-        for url_paths in paths.itervalues():
+        for url_paths in itervalues(paths):
             tests_path = url_paths["tests_path"]
             metadata_path = url_paths["metadata_path"]
             for dirpath, dirnames, filenames in os.walk(metadata_path):
@@ -164,7 +166,7 @@ class WPTUpdate(object):
             return exit_clean
 
         if not self.kwargs["continue"] and not self.state.is_empty():
-            self.logger.error("Found existing state. Run with --continue to resume or --abort to clear state")
+            self.logger.critical("Found existing state. Run with --continue to resume or --abort to clear state")
             return exit_unclean
 
         if self.kwargs["continue"]:

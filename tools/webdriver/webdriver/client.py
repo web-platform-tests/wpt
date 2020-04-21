@@ -1,10 +1,9 @@
-import urlparse
-
-import error
-import protocol
-import transport
+from . import error
+from . import protocol
+from . import transport
 
 from six import string_types
+from six.moves.urllib import parse as urlparse
 
 
 def command(func):
@@ -114,17 +113,17 @@ class ActionSequence(object):
         """Perform all queued actions."""
         self.session.actions.perform([self.dict])
 
-    def _key_action(self, subtype, value, async_dispatch=False):
-        self._actions.append({"type": subtype, "value": value, "asyncDispatch": async_dispatch})
+    def _key_action(self, subtype, value):
+        self._actions.append({"type": subtype, "value": value})
 
-    def _pointer_action(self, subtype, button, async_dispatch=False):
-        self._actions.append({"type": subtype, "button": button, "asyncDispatch": async_dispatch})
+    def _pointer_action(self, subtype, button):
+        self._actions.append({"type": subtype, "button": button})
 
     def pause(self, duration):
         self._actions.append({"type": "pause", "duration": duration})
         return self
 
-    def pointer_move(self, x, y, duration=None, origin=None, async_dispatch=False):
+    def pointer_move(self, x, y, duration=None, origin=None):
         """Queue a pointerMove action.
 
         :param x: Destination x-axis coordinate of pointer in CSS pixels.
@@ -143,29 +142,28 @@ class ActionSequence(object):
             action["duration"] = duration
         if origin is not None:
             action["origin"] = origin
-        action["asyncDispatch"] = async_dispatch
         self._actions.append(action)
         return self
 
-    def pointer_up(self, button=0, async_dispatch=False):
+    def pointer_up(self, button=0):
         """Queue a pointerUp action for `button`.
 
         :param button: Pointer button to perform action with.
                        Default: 0, which represents main device button.
         """
-        self._pointer_action("pointerUp", button, async_dispatch)
+        self._pointer_action("pointerUp", button)
         return self
 
-    def pointer_down(self, button=0, async_dispatch=False):
+    def pointer_down(self, button=0):
         """Queue a pointerDown action for `button`.
 
         :param button: Pointer button to perform action with.
                        Default: 0, which represents main device button.
         """
-        self._pointer_action("pointerDown", button, async_dispatch)
+        self._pointer_action("pointerDown", button)
         return self
 
-    def click(self, element=None, button=0, async_dispatch=False):
+    def click(self, element=None, button=0):
         """Queue a click with the specified button.
 
         If an element is given, move the pointer to that element first,
@@ -176,33 +174,33 @@ class ActionSequence(object):
                        with. Default: 0, which represents main device button.
         """
         if element:
-            self.pointer_move(0, 0, origin=element, async_dispatch=async_dispatch)
-        return self.pointer_down(button, async_dispatch).pointer_up(button, async_dispatch)
+            self.pointer_move(0, 0, origin=element)
+        return self.pointer_down(button).pointer_up(button)
 
-    def key_up(self, value, async_dispatch=False):
+    def key_up(self, value):
         """Queue a keyUp action for `value`.
 
         :param value: Character to perform key action with.
         """
-        self._key_action("keyUp", value, async_dispatch)
+        self._key_action("keyUp", value)
         return self
 
-    def key_down(self, value, async_dispatch=False):
+    def key_down(self, value):
         """Queue a keyDown action for `value`.
 
         :param value: Character to perform key action with.
         """
-        self._key_action("keyDown", value, async_dispatch)
+        self._key_action("keyDown", value)
         return self
 
-    def send_keys(self, keys, async_dispatch=False):
+    def send_keys(self, keys):
         """Queue a keyDown and keyUp action for each character in `keys`.
 
         :param keys: String of keys to perform key actions with.
         """
         for c in keys:
-            self.key_down(c, async_dispatch)
-            self.key_up(c, async_dispatch)
+            self.key_down(c)
+            self.key_up(c)
         return self
 
 
@@ -375,10 +373,8 @@ class Session(object):
                  port,
                  url_prefix="/",
                  capabilities=None,
-                 timeout=None,
                  extension=None):
-        self.transport = transport.HTTPWireProtocol(
-            host, port, url_prefix, timeout=timeout)
+        self.transport = transport.HTTPWireProtocol(host, port, url_prefix)
         self.requested_capabilities = capabilities
         self.capabilities = None
         self.session_id = None
@@ -448,7 +444,7 @@ class Session(object):
         finally:
             self.session_id = None
 
-    def send_command(self, method, url, body=None):
+    def send_command(self, method, url, body=None, timeout=None):
         """
         Send a command to the remote end and validate its success.
 
@@ -469,7 +465,7 @@ class Session(object):
         response = self.transport.send(
             method, url, body,
             encoder=protocol.Encoder, decoder=protocol.Decoder,
-            session=self)
+            session=self, timeout=timeout)
 
         if response.status != 200:
             err = error.from_response(response)
@@ -497,7 +493,7 @@ class Session(object):
 
         return value
 
-    def send_session_command(self, method, uri, body=None):
+    def send_session_command(self, method, uri, body=None, timeout=None):
         """
         Send a command to an established session and validate its success.
 
@@ -514,7 +510,7 @@ class Session(object):
             an error.
         """
         url = urlparse.urljoin("session/%s/" % self.session_id, uri)
-        return self.send_command(method, url, body)
+        return self.send_command(method, url, body, timeout)
 
     @property
     @command
@@ -738,6 +734,10 @@ class Element(object):
     @command
     def selected(self):
         return self.send_element_command("GET", "selected")
+
+    @command
+    def screenshot(self):
+        return self.send_element_command("GET", "screenshot")
 
     @command
     def attribute(self, name):

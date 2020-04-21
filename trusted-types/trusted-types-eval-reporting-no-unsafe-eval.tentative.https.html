@@ -10,9 +10,9 @@
   // (rather than as "<meta http-equiv" tags). This test assumes the following
   // headers are set in the .headers file:
   //
-  //   Content-Security-Policy: trusted-types *
   //   Content-Security-Policy: script-src 'unsafe-inline'; report-uri ...
   //   Content-Security-Policy: plugin-types bla/blubb
+  //   Content-Security-Policy: require-trusted-types-for 'script'
   //
   // The last rule is there so we can provoke a CSP violation report at will.
   // The intent is that in order to test that a violation has *not* been thrown
@@ -42,13 +42,13 @@
     });
   }
 
-  // Like assert_throws, but we don't care about the exact error. We just want
+  // Like assert_throws_*, but we don't care about the exact error. We just want
   // to run the code and continue.
   function expect_throws(fn) {
     try { fn(); assert_unreached(); } catch (err) { /* ignore */ }
   }
 
-  // A sample policy we use to test TrustedTypes.createPolicy behaviour.
+  // A sample policy we use to test trustedTypes.createPolicy behaviour.
   const id = x => x;
   const a_policy = {
     createHTML: id,
@@ -57,7 +57,7 @@
     createScript: id,
   };
 
-  const scriptyPolicy = TrustedTypes.createPolicy('allowEval', a_policy);
+  const scriptyPolicy = trustedTypes.createPolicy('allowEval', a_policy);
 
   // Provoke/wait for a CSP violation, in order to be sure that all previous
   // CSP violations have been delivered.
@@ -76,7 +76,7 @@
 
   promise_test(t => {
     let p = Promise.resolve()
-        .then(promise_violation("trusted-types *"))
+        .then(promise_violation("require-trusted-types-for 'script'"))
         .then(promise_flush());
     expect_throws(_ => eval('script_run_beacon="should not run"'));
     assert_equals(script_run_beacon, 'never_overwritten');
@@ -88,16 +88,14 @@
     let p = Promise.resolve()
         .then(promise_violation("script-src"))
         .then(promise_flush());
-    expect_throws(_ => eval('script_run_beacon="should not run"'));
-    // TODO(ssanfilippo) This should throw, but doesn't yet. See crbug.com/992424.
-    eval(scriptyPolicy.createScript('script_run_beacon="i ran"'));
+    expect_throws(_ => eval(scriptyPolicy.createScript('script_run_beacon="i ran"')));
     flush();
     assert_not_equals(script_run_beacon, 'i ran'); // Code did not run.
     return p;
   }, "Trusted Type violation report: evaluating a Trusted Script violates script-src.");
 
   promise_test(t => {
-    TrustedTypes.createPolicy('default', {
+    trustedTypes.createPolicy('default', {
       createScript: s => s.replace('payload', 'default policy'),
     }, true);
     let p = Promise.resolve()

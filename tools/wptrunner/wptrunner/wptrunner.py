@@ -3,19 +3,21 @@ from __future__ import print_function, unicode_literals
 import json
 import os
 import sys
+from six import iteritems, itervalues
 
 from wptserve import sslutils
 
-import environment as env
-import products
-import testloader
-import wptcommandline
-import wptlogging
-import wpttest
+from . import environment as env
+from . import instruments
+from . import products
+from . import testloader
+from . import wptcommandline
+from . import wptlogging
+from . import wpttest
 from mozlog import capture, handlers
-from font import FontInstaller
-from testrunner import ManagerGroup
-from browsers.base import NullBrowser
+from .font import FontInstaller
+from .testrunner import ManagerGroup
+from .browsers.base import NullBrowser
 
 here = os.path.split(__file__)[0]
 
@@ -43,7 +45,7 @@ def setup_logging(*args, **kwargs):
     return logger
 
 
-def get_loader(test_paths, product, debug=None, run_info_extras=None, **kwargs):
+def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kwargs=None, **kwargs):
     if run_info_extras is None:
         run_info_extras = {}
 
@@ -76,7 +78,9 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, **kwargs):
                                         total_chunks=kwargs["total_chunks"],
                                         chunk_number=kwargs["this_chunk"],
                                         include_https=ssl_enabled,
-                                        skip_timeout=kwargs["skip_timeout"])
+                                        skip_timeout=kwargs["skip_timeout"],
+                                        skip_implementation_status=kwargs["skip_implementation_status"],
+                                        chunker_kwargs=chunker_kwargs)
     return run_info, test_loader
 
 
@@ -102,7 +106,7 @@ def list_disabled(test_paths, product, **kwargs):
     run_info, test_loader = get_loader(test_paths, product,
                                        run_info_extras=run_info_extras, **kwargs)
 
-    for test_type, tests in test_loader.disabled_tests.iteritems():
+    for test_type, tests in iteritems(test_loader.disabled_tests):
         for test in tests:
             rv.append({"test": test.id, "reason": test.disabled()})
     print(json.dumps(rv, indent=2))
@@ -121,20 +125,29 @@ def list_tests(test_paths, product, **kwargs):
 
 
 def get_pause_after_test(test_loader, **kwargs):
-    total_tests = sum(len(item) for item in test_loader.tests.itervalues())
     if kwargs["pause_after_test"] is None:
         if kwargs["repeat_until_unexpected"]:
             return False
         if kwargs["headless"]:
             return False
-        if kwargs["repeat"] == 1 and kwargs["rerun"] == 1 and total_tests == 1:
+        tests = test_loader.tests
+        is_single_testharness = (sum(len(item) for item in itervalues(tests)) == 1 and
+                                 len(tests.get("testharness", [])) == 1)
+        if kwargs["repeat"] == 1 and kwargs["rerun"] == 1 and is_single_testharness:
             return True
         return False
     return kwargs["pause_after_test"]
 
 
 def run_tests(config, test_paths, product, **kwargs):
-    with capture.CaptureIO(logger, not kwargs["no_capture_stdio"]):
+    """Set up the test environment, load the list of tests to be executed, and
+    invoke the remainder of the code to execute tests"""
+    if kwargs["instrument_to_file"] is None:
+        recorder = instruments.NullInstrument()
+    else:
+        recorder = instruments.Instrument(kwargs["instrument_to_file"])
+    with recorder as recording, capture.CaptureIO(logger, not kwargs["no_capture_stdio"]):
+        recording.set(["startup"])
         env.do_delayed_imports(logger, test_paths)
 
         product = products.load_product(config, product, load_cls=True)
@@ -145,22 +158,29 @@ def run_tests(config, test_paths, product, **kwargs):
 
         if kwargs["install_fonts"]:
             env_extras.append(FontInstaller(
+                logger,
                 font_dir=kwargs["font_dir"],
                 ahem=os.path.join(test_paths["/"]["tests_path"], "fonts/Ahem.ttf")
             ))
 
-        run_info, test_loader = get_loader(test_paths,
-                                           product.name,
-                                           run_info_extras=product.run_info_extras(**kwargs),
-                                           **kwargs)
+        recording.set(["startup", "load_tests"])
 
         test_source_kwargs = {"processes": kwargs["processes"]}
+        chunker_kwargs = {}
         if kwargs["run_by_dir"] is False:
             test_source_cls = testloader.SingleTestSource
         else:
             # A value of None indicates infinite depth
             test_source_cls = testloader.PathGroupedSource
             test_source_kwargs["depth"] = kwargs["run_by_dir"]
+            chunker_kwargs["depth"] = kwargs["run_by_dir"]
+
+        run_info, test_loader = get_loader(test_paths,
+                                           product.name,
+                                           run_info_extras=product.run_info_extras(**kwargs),
+                                           chunker_kwargs=chunker_kwargs,
+                                           **kwargs)
+
 
         logger.info("Using %i client processes" % kwargs["processes"])
 
@@ -169,10 +189,10 @@ def run_tests(config, test_paths, product, **kwargs):
         unexpected_total = 0
 
         if len(test_loader.test_ids) == 0 and kwargs["test_list"]:
-            logger.error("Unable to find any tests at the path(s):")
+            logger.critical("Unable to find any tests at the path(s):")
             for path in kwargs["test_list"]:
-                logger.error("  %s" % path)
-            logger.error("Please check spelling and make sure there are tests in the specified path(s).")
+                logger.critical("  %s" % path)
+            logger.critical("Please check spelling and make sure there are tests in the specified path(s).")
             return False
         kwargs["pause_after_test"] = get_pause_after_test(test_loader, **kwargs)
 
@@ -184,6 +204,7 @@ def run_tests(config, test_paths, product, **kwargs):
 
         testharness_timeout_multipler = product.get_timeout_multiplier("testharness", run_info, **kwargs)
 
+        recording.set(["startup", "start_environment"])
         with env.TestEnvironment(test_paths,
                                  testharness_timeout_multipler,
                                  kwargs["pause_after_test"],
@@ -191,11 +212,14 @@ def run_tests(config, test_paths, product, **kwargs):
                                  product.env_options,
                                  ssl_config,
                                  env_extras) as test_environment:
+            recording.set(["startup", "ensure_environment"])
             try:
                 test_environment.ensure_started()
             except env.TestEnvironmentError as e:
                 logger.critical("Error starting test environment: %s" % e.message)
                 raise
+
+            recording.set(["startup"])
 
             repeat = kwargs["repeat"]
             repeat_count = 0
@@ -262,6 +286,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     else:
                         run_tests = test_loader.tests
 
+                    recording.pause()
                     with ManagerGroup("web-platform-tests",
                                       kwargs["processes"],
                                       test_source_cls,
@@ -275,7 +300,8 @@ def run_tests(config, test_paths, product, **kwargs):
                                       kwargs["pause_on_unexpected"],
                                       kwargs["restart_on_unexpected"],
                                       kwargs["debug_info"],
-                                      not kwargs["no_capture_stdio"]) as manager_group:
+                                      not kwargs["no_capture_stdio"],
+                                      recording=recording) as manager_group:
                         try:
                             manager_group.run(test_type, run_tests)
                         except KeyboardInterrupt:
@@ -284,7 +310,7 @@ def run_tests(config, test_paths, product, **kwargs):
                             raise
                         test_count += manager_group.test_count()
                         unexpected_count += manager_group.unexpected_count()
-
+                recording.set(["after-end"])
                 test_total += test_count
                 unexpected_total += unexpected_count
                 logger.info("Got %i unexpected results" % unexpected_count)
@@ -302,7 +328,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 logger.info("No tests ran")
                 return True
             else:
-                logger.error("No tests ran")
+                logger.critical("No tests ran")
                 return False
 
     if unexpected_total and not kwargs["fail_on_unexpected"]:
@@ -313,7 +339,7 @@ def run_tests(config, test_paths, product, **kwargs):
 
 
 def check_stability(**kwargs):
-    import stability
+    from . import stability
     if kwargs["stability"]:
         logger.warning("--stability is deprecated; please use --verify instead!")
         kwargs['verify_max_time'] = None
@@ -338,6 +364,7 @@ def start(**kwargs):
     handler = handlers.LogLevelFilter(logged_critical, "CRITICAL")
     logger.add_handler(handler)
 
+    rv = False
     try:
         if kwargs["list_test_groups"]:
             list_test_groups(**kwargs)
@@ -346,11 +373,12 @@ def start(**kwargs):
         elif kwargs["list_tests"]:
             list_tests(**kwargs)
         elif kwargs["verify"] or kwargs["stability"]:
-            return check_stability(**kwargs) or logged_critical.has_log
+            rv = check_stability(**kwargs) or logged_critical.has_log
         else:
-            return not run_tests(**kwargs) or logged_critical.has_log
+            rv = not run_tests(**kwargs) or logged_critical.has_log
     finally:
         logger.remove_handler(handler)
+    return rv
 
 
 def main():

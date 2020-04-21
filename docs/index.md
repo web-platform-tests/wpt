@@ -1,15 +1,15 @@
 # web-platform-tests documentation
 
-The web-platform-tests project is a W3C-coordinated attempt to build a
-cross-browser test suite for [the Web-platform
-stack](https://platform.html5.org). Writing tests in a way that allows them to
-be run in all browsers gives browser projects confidence that they are shipping
-software which is compatible with other implementations, and that later
-implementations will be compatible with their implementations. This in turn
-gives Web authors/developers confidence that they can actually rely on the Web
-platform to deliver on the promise of working across browsers and devices
-without needing extra layers of abstraction to paper over the gaps left by
-specification editors and implementors.
+The web-platform-tests project is a cross-browser test suite for [the
+Web-platform stack](https://platform.html5.org). Writing tests in a way that
+allows them to be run in all browsers gives browser projects confidence that
+they are shipping software which is compatible with other implementations, and
+that later implementations will be compatible with their implementations. This
+in turn gives Web authors/developers confidence that they can actually rely on
+the Web platform to deliver on the promise of working across browsers and
+devices without needing extra layers of abstraction to paper over the gaps left
+by specification editors and implementors.
+
 
 The most important sources of information and activity are:
 
@@ -19,9 +19,9 @@ The most important sources of information and activity are:
 - [web-platform-tests.org](https://web-platform-tests.org): the documentation
   website; details how to set up the project, how to write tests, how to give
   and receive peer review, how to serve as an administrator, and more
-- [web-platform-tests.live](http://web-platform-tests.live): a public
-  deployment of the test suite, allowing anyone to run the tests by visiting
-  from an Internet-enabled browser of their choice
+- [wpt.live](http://wpt.live): a public deployment of the test suite,
+  allowing anyone to run the tests by visiting from an
+  Internet-enabled browser of their choice
 - [wpt.fyi](https://wpt.fyi): an archive of test results collected from an
   array of web browsers on a regular basis
 - [Real-time chat room](http://irc.w3.org/?channels=testing): the
@@ -35,11 +35,18 @@ The most important sources of information and activity are:
 **If you'd like clarification about anything**, don't hesitate to ask in the
 chat room or on the mailing list.
 
-## Watch a Talk
+## Video Introduction ([transcript](intro-video-transcript))
 
-If you prefer watching a video, here is a talk introducing web-platform-tests:
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/zuK1uyXPZS0"
+  frameborder="0"
+  allow="autoplay; encrypted-media"
+  allowfullscreen></iframe>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/XnfE3MfH5hQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+See also [this lecture from Web Engines Hackfest 2018 (30
+minutes)](https://www.youtube.com/watch?v=XnfE3MfH5hQ)
 
 ## GitHub
 
@@ -64,6 +71,7 @@ free to add yourself to the META.yml file!
    :maxdepth: 2
 
    test-suite-design
+   intro-video-transcript
    running-tests/index
    writing-tests/index
    reviewing-tests/index

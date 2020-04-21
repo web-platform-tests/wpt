@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <head>
+  <meta name="timeout" content="long">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/content-security-policy/support/testharness-helper.js"></script>
@@ -48,18 +49,35 @@
     });
   }
 
-  // Like assert_throws, but we don't care about the exact error. We just want
+  // Like assert_throws_*, but we don't care about the exact error. We just want
   // to run the code and continue.
   function expect_throws(fn) {
     try { fn(); assert_unreached(); } catch (err) { /* ignore */ }
   }
 
-  // A sample policy we use to test TrustedTypes.createPolicy behaviour.
+  // Test the "sample" field of the event.
+  // TODO(vogelheim): The current set of tests allows for more variance in the
+  //     sample reports than the current spec draft does. Once the spec has
+  //     been finalized, we should clamp this down to check byte-for-byte
+  //     against the values mandated by the spec.
+
+  function expect_sample(s) { return e => {
+    assert_true(e.sample.includes(s),
+                `expected "${e.sample}" to include "${s}".`);
+    return e;
+  } }
+
+  function expect_blocked_uri(s) { return e => {
+    assert_true(e.blockedURI === s,
+                `expected "${e.blockedURI}" to be "${s}".`);
+    return e;
+  } }
+
+  // A sample policy we use to test trustedTypes.createPolicy behaviour.
   const id = x => x;
   const a_policy = {
     createHTML: id,
     createScriptURL: id,
-    createURL: id,
     createScript: id,
   };
 
@@ -80,15 +98,17 @@
     let p = Promise.resolve()
         .then(promise_violation("trusted-types one"))
         .then(promise_violation("trusted-types two"))
+        .then(expect_sample("three"))
+        .then(expect_blocked_uri("trusted-types-policy"))
         .then(promise_flush());
-    expect_throws(_ => TrustedTypes.createPolicy("three", a_policy));
+    expect_throws(_ => trustedTypes.createPolicy("three", a_policy));
     flush();
     return p;
   }, "Trusted Type violation report: creating a forbidden policy.");
 
   promise_test(t => {
     let p = promise_flush()();
-    expect_throws(_ => TrustedTypes.createPolicy("two", a_policy));
+    expect_throws(_ => trustedTypes.createPolicy("two", a_policy));
     flush();
     return p;
   }, "Trusted Type violation report: creating a report-only-forbidden policy.");
@@ -100,29 +120,29 @@
     let p = Promise.resolve()
         .then(promise_violation("trusted-types two"))
         .then(promise_flush());
-    policy_one = TrustedTypes.createPolicy("one", a_policy);
+    policy_one = trustedTypes.createPolicy("one", a_policy);
     flush();
     return p;
   }, "Trusted Type violation report: creating a forbidden-but-not-reported policy.");
 
   promise_test(t => {
-    let p = promise_violation("trusted-types two")();
-    expect_throws(_ => document.getElementById("anchor").href = url);
+    let p = promise_violation("require-trusted-types-for 'script'")();
+    expect_throws(_ => document.getElementById("script").src = url);
     return p;
-  }, "Trusted Type violation report: assign string to url");
+  }, "Trusted Type violation report: assign string to script url");
 
   promise_test(t => {
-    let p = promise_violation("trusted-types two")();
+    let p = promise_violation("require-trusted-types-for 'script'")();
     expect_throws(_ => document.getElementById("div").innerHTML = "abc");
     return p;
   }, "Trusted Type violation report: assign string to html");
 
   promise_test(t => {
     let p = promise_flush()();
-    document.getElementById("anchor").href = policy_one.createURL("#");
+    document.getElementById("script").text = policy_one.createScript("2+2;");
     flush();
     return p;
-  }, "Trusted Type violation report: assign trusted URL to url; no report");
+  }, "Trusted Type violation report: assign trusted script to script; no report");
 
   promise_test(t => {
     let p = promise_flush()();
@@ -131,49 +151,79 @@
     return p;
   }, "Trusted Type violation report: assign trusted HTML to html; no report");
 
-  // Test the "sample" field of the event.
-  // TODO(vogelheim): The current set of tests allows for more variance in the
-  //     sample reports than the current spec draft does. Once the spec has
-  //     been finalized, we should clamp this down to check byte-for-byte
-  //     against the values mandated by the spec.
-
-  function expect_sample(s) { return e => {
-    assert_true(e.sample.includes(s),
-                `expected "${e.sample}" to include "${s}".`);
-    return e;
-  } }
-
   promise_test(t => {
     let p = Promise.resolve()
-        .then(promise_violation("trusted-types two"))
-        .then(expect_sample("Element.innerHTML"))
-        .then(expect_sample("abc"));
+        .then(promise_violation("require-trusted-types-for 'script'"))
+        .then(expect_blocked_uri("trusted-types-sink"))
+        .then(expect_sample("Element innerHTML|abc"));
     expect_throws(_ => { document.getElementById("div").innerHTML = "abc" });
     return p;
-  }, "Trusted Type violation report: sample for .innerHTML assignment");
+  }, "Trusted Type violation report: sample for innerHTML assignment");
 
   promise_test(t => {
     let p = Promise.resolve()
-        .then(promise_violation("trusted-types two"))
-        .then(expect_sample("HTMLAnchorElement.href"));
-      expect_throws(_ => { document.getElementById("anchor").href = "" });
+        .then(promise_violation("require-trusted-types-for 'script'"))
+        .then(expect_blocked_uri("trusted-types-sink"))
+        .then(expect_sample("HTMLScriptElement text|abc"));
+    expect_throws(_ => { document.getElementById("script").text = "abc" });
     return p;
-  }, "Trusted Type violation report: sample for .href assignment");
+  }, "Trusted Type violation report: sample for text assignment");
 
   promise_test(t => {
     let p = Promise.resolve()
-        .then(promise_violation("trusted-types two"))
-        .then(expect_sample("HTMLElement.innerText"))
-        .then(expect_sample("2+2;"));
+        .then(promise_violation("require-trusted-types-for 'script'"))
+        .then(expect_blocked_uri("trusted-types-sink"))
+        .then(expect_sample("HTMLScriptElement src"));
+      expect_throws(_ => { document.getElementById("script").src = "" });
+    return p;
+  }, "Trusted Type violation report: sample for script.src assignment");
+
+  promise_test(t => {
+    let p = Promise.resolve()
+        .then(promise_violation("require-trusted-types-for 'script'"))
+        .then(expect_blocked_uri("trusted-types-sink"))
+        .then(expect_sample("HTMLElement innerText|2+2;"));
     expect_throws(_ => document.getElementById("script").innerText = "2+2;");
     return p;
   }, "Trusted Type violation report: sample for script innerText assignment");
 
+  // TODO(lyf): https://crbug.com/1066791 Following tests which related to svg
+  // script element cause a flaky timeout in `linux-blink-rel`, following tests
+  // should be added back after the bug fix.
+  //
+  // TODO(lyf): https://crbug.com/1064598
+  // promise_test(t => {
+  //   let p = Promise.resolve()
+  //       .then(promise_violation("require-trusted-types-for 'script'"))
+  //       .then(expect_blocked_uri("trusted-types-sink"))
+  //       .then(expect_sample("SVGScriptElement href"));
+  //     expect_throws(_ => { document.getElementById("svgscript").href.baseVal = "" });
+  //   return p;
+  // }, "Trusted Type violation report: sample for SVGScriptElement href assignment");
+  //
+  // promise_test(t => {
+  //   let p = Promise.resolve()
+  //       .then(promise_violation("require-trusted-types-for 'script'"))
+  //       .then(expect_blocked_uri("trusted-types-sink"))
+  //       .then(expect_sample("Element setAttribute"));
+  //     expect_throws(_ => { document.getElementById("svgscript").setAttribute('href', "test"); });
+  //   return p;
+  // }, "Trusted Type violation report: sample for SVGScriptElement href assignment by setAttribute");
+  //
+  // promise_test(t => {
+  //   let p = Promise.resolve()
+  //       .then(promise_violation("require-trusted-types-for 'script'"))
+  //       .then(expect_blocked_uri("trusted-types-sink"))
+  //       .then(expect_sample("SVGScriptElement text"));
+  //     expect_throws(_ => { document.getElementById("svgscript").insertBefore(document.createTextNode("Hello"), null) });
+  //   return p;
+  // }, "Trusted Type violation report: sample for SVGScriptElement text assignment");
+
   promise_test(t => {
     let p = Promise.resolve()
-        .then(promise_violation("trusted-types one"))
-        .then(expect_sample("eval"))
-        .then(expect_sample("2+2"))
+        .then(promise_violation("require-trusted-types-for 'script'"))
+        .then(expect_blocked_uri("trusted-types-sink"))
+        .then(expect_sample("eval|2+2"))
         .then(promise_flush());
     expect_throws(_ => eval("2+2"));
     flush();
@@ -184,9 +234,9 @@
     // We expect the sample string to always contain the name, and at least the
     // start of the value, but it should not be excessively long.
     let p = Promise.resolve()
-        .then(promise_violation("trusted-types two"))
-        .then(expect_sample("HTMLElement.innerText"))
-        .then(expect_sample("abbb"))
+        .then(promise_violation("require-trusted-types-for 'script'"))
+        .then(expect_blocked_uri("trusted-types-sink"))
+        .then(expect_sample("HTMLElement innerText|abbb"))
         .then(e => assert_less_than(e.sample.length, 150));
     const value = "a" + "b".repeat(50000);
     expect_throws(_ => document.getElementById("script").innerText = value);
@@ -197,23 +247,24 @@
   // refer to the DOM elements being modified, so that Custom Elements cannot
   // "mask" the underlying DOM mechanism (for reporting).
   if (customElements) {
-    class CustomLink extends HTMLAnchorElement {};
-    customElements.define("custom-link", CustomLink, { extends: "a" });
+    class CustomScript extends HTMLScriptElement {};
+    customElements.define("custom-script", CustomScript, { extends: "script" });
 
     promise_test(t => {
       let p = Promise.resolve()
-          .then(promise_violation("trusted-types one"))
-          .then(expect_sample("HTMLAnchorElement.href"))
-          .then(expect_sample("abc"));
-      expect_throws(_ => document.getElementById("customlink").href = "abc");
+          .then(promise_violation("require-trusted-types-for 'script'"))
+          .then(expect_blocked_uri("trusted-types-sink"))
+          .then(expect_sample("HTMLScriptElement src|abc"));
+      expect_throws(_ => document.getElementById("customscript").src = "abc");
       return p;
     }, "Trusted Type violation report: sample for custom element assignment");
   }
+
   </script>
 
   <!-- Some elements for the tests to act on. -->
-  <a id="anchor" href="">anchor</a>
   <div id="div"></div>
   <script id="script"></script>
-  <a id="customlink" is="custom-link" href="a"></a>
+  <script id="customscript" is="custom-script" src="a"></script>
+  <svg><script id="svgscript"></script></svg>
 </body>

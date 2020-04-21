@@ -57,9 +57,9 @@
         to: 'path("M0 0H 300") 600px 0deg',
         method: 'CSS Animations',
       }, [
-        {at: -0.3, expect: 'path("M0 0H 170") 470px auto'},
-        {at: 0, expect: 'path("M0 0H 200") 500px auto'},
-        {at: 0.3, expect: 'path("M0 0H 230") 530px auto'},
+        {at: -0.3, expect: 'path("M0 0H 170") 470px'},
+        {at: 0, expect: 'path("M0 0H 200") 500px'},
+        {at: 0.3, expect: 'path("M0 0H 230") 530px'},
         {at: 0.6, expect: 'path("M0 0H 260") 560px 0deg'},
         {at: 1, expect: 'path("M0 0H 300") 600px 0deg'},
         {at: 1.5, expect: 'path("M0 0H 350") 650px 0deg'},
@@ -85,21 +85,12 @@
         to: 'path("M0 0H 300") 600px 0deg',
         method: 'Web Animations',
       }, [
-        {at: -0.3, expect: 'path("M0 0V 200") 470px auto'},
-        {at: 0, expect: 'path("M0 0V 200") 500px auto'},
-        {at: 0.3, expect: 'path("M0 0V 200") 530px auto'},
+        {at: -0.3, expect: 'path("M0 0V 200") 470px'},
+        {at: 0, expect: 'path("M0 0V 200") 500px'},
+        {at: 0.3, expect: 'path("M0 0V 200") 530px'},
         {at: 0.6, expect: 'path("M0 0H 300") 560px 0deg'},
         {at: 1, expect: 'path("M0 0H 300") 600px 0deg'},
         {at: 1.5, expect: 'path("M0 0H 300") 650px 0deg'},
-      ]);
-
-      // Regression test for crbug.com/994489
-      test_interpolation({
-        property: 'offset',
-        from: 'path("M0 0H 200") 500px auto',
-        to: 'path("M0 0H 300") 600px 0deg',
-      }, [
-        {at: 3.40282e+038,  expect: 'path("M0 0H 3.4e+38") 3.36e+07px 0deg'},
       ]);
     </script>
   </body>

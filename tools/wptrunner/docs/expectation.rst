@@ -160,6 +160,24 @@ A simple example of a manifest file is::
   [another_section]
     another_key: another_value
 
+The web-platform-test harness knows about several keys:
+
+`expected`
+  Must evaluate to a possible test status indicating the expected
+  result of the test. The implicit default is PASS or OK when the
+  field isn't present. When `expected` is a list, the first status
+  is the primary expected status and the trailing statuses listed are
+  expected intermittent statuses.
+
+`disabled`
+  Any value indicates that the test is disabled.
+
+`reftype`
+  The type of comparison for reftests; either `==` or `!=`.
+
+`refurl`
+  The reference url for reftests.
+
 Conditional Values
 ~~~~~~~~~~~~~~~~~~
 
@@ -230,7 +248,7 @@ When used for expectation data, manifests have the following format:
    base test URL, in which case the fuzziness applies to any
    comparison with that URL, or takes the form lhs url, comparison,
    rhs url, in which case the fuzziness only applies for any
-   comparison involving that specifc pair of URLs. Some illustrative
+   comparison involving that specific pair of URLs. Some illustrative
    examples are given below.
 
  * Variables ``debug``, ``os``, ``version``, ``processor`` and
@@ -269,7 +287,7 @@ A more complex manifest with conditional properties might be::
 
   [canvas_test.html]
     expected:
-      if os == "osx": FAIL
+      if os == "mac": FAIL
       if os == "windows" and version == "XP": FAIL
       PASS
 

@@ -9,6 +9,14 @@ idl_test(
   ['BackgroundSync'],
   ['service-workers', 'html', 'dom'],
   idlArray => {
-    // TODO: Objects
+    const isServiceWorker = location.pathname.includes('.serviceworker.');
+    if (isServiceWorker) {
+      idlArray.add_objects({
+        ServiceWorkerGlobalScope: ['self', 'onsync'],
+        ServiceWorkerRegistration: ['registration'],
+        SyncManager: ['registration.sync'],
+        SyncEvent: ['new SyncEvent("tag", "lastChance")'],
+      });
   }
+}
 );

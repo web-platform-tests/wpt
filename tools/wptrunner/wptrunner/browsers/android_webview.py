@@ -30,6 +30,7 @@ def check_args(**kwargs):
 
 def browser_kwargs(test_type, run_info_data, config, **kwargs):
     return {"binary": kwargs["binary"],
+            "device_serial": kwargs["device_serial"],
             "webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs.get("webdriver_args")}
 
@@ -53,6 +54,8 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     capabilities["goog:chromeOptions"]["androidPackage"] = \
         "org.chromium.webview_shell"
     capabilities["goog:chromeOptions"]["androidActivity"] = ".WebPlatformTestsActivity"
+    if kwargs.get('device_serial'):
+        capabilities["goog:chromeOptions"]["androidDeviceSerial"] = kwargs['device_serial']
 
     # Workaround: driver.quit() cannot quit SystemWebViewShell.
     executor_kwargs["pause_after_test"] = False
@@ -67,7 +70,8 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {}
+    # allow the use of host-resolver-rules in lieu of modifying /etc/hosts file
+    return {"server_host": "127.0.0.1"}
 
 
 #TODO: refactor common elements of SystemWebViewShell and ChromeAndroidBrowser
@@ -77,19 +81,25 @@ class SystemWebViewShell(Browser):
     """
 
     def __init__(self, logger, binary, webdriver_binary="chromedriver",
+                 device_serial=None,
                  webdriver_args=None):
         """Creates a new representation of Chrome.  The `binary` argument gives
         the browser binary to use for testing."""
         Browser.__init__(self, logger)
         self.binary = binary
+        self.device_serial = device_serial
         self.server = ChromeDriverServer(self.logger,
                                          binary=webdriver_binary,
                                          args=webdriver_args)
         self.setup_adb_reverse()
 
     def _adb_run(self, args):
-        self.logger.info('adb ' + ' '.join(args))
-        subprocess.check_call(['adb'] + args)
+        cmd = ['adb']
+        if self.device_serial:
+            cmd.extend(['-s', self.device_serial])
+        cmd.extend(args)
+        self.logger.info(' '.join(cmd))
+        subprocess.check_call(cmd)
 
     def setup_adb_reverse(self):
         self._adb_run(['wait-for-device'])

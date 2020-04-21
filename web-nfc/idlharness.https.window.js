@@ -7,7 +7,6 @@
 
 const record = {
   recordType: "text",
-  mediaType: "text/plain",
   data: "Hello World",
   id: "/custom/path"
 };
@@ -21,12 +20,11 @@ idl_test(
   ['html', 'dom', 'WebIDL'],
   idl_array => {
     idl_array.add_objects({
-      NFCWriter: ['new NFCWriter();'],
-      NFCReader: ['new NFCReader();'],
+      NDEFWriter: ['new NDEFWriter();'],
+      NDEFReader: ['new NDEFReader();'],
       NDEFRecord: [`new NDEFRecord(${JSON.stringify(record)});`],
       NDEFMessage: [`new NDEFMessage(${JSON.stringify(message)});`],
-      NFCReadingEvent: [`new NFCReadingEvent("reading", { message: ${JSON.stringify(message)} })`],
-      NFCErrorEvent: ['new NFCErrorEvent("error", { error: new DOMException() });'],
+      NDEFReadingEvent: [`new NDEFReadingEvent("reading", { message: ${JSON.stringify(message)} })`],
     });
   }
 );

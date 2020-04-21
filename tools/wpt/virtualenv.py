@@ -32,7 +32,9 @@ class Virtualenv(object):
 
     @property
     def exists(self):
-        return os.path.isdir(self.path)
+        # We need to check also for lib_path because different python versions
+        # create different library paths.
+        return os.path.isdir(self.path) and os.path.isdir(self.lib_path)
 
     @property
     def broken_link(self):
@@ -90,7 +92,8 @@ class Virtualenv(object):
 
     def activate(self):
         path = os.path.join(self.bin_path, "activate_this.py")
-        execfile(path, {"__file__": path})  # noqa: F821
+        with open(path) as f:
+            exec(f.read(), {"__file__": path})
 
     def start(self):
         if not self.exists or self.broken_link:

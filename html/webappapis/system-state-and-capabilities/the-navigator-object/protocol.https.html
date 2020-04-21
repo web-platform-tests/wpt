@@ -21,8 +21,9 @@ test(() => {
 }, 'the unregisterProtocolHandler method should exist on the navigator object');
 
 /* URL argument */
-const vaild_urls = [
+const valid_urls = [
   '%s',
+  'foo/%s',
   location.href + '/%s',
   location.href + '#%s',
   location.href + '?foo=%s',
@@ -31,7 +32,7 @@ const vaild_urls = [
   location.href + '/%s/bar/baz/?foo=1337&bar#baz',
   location.href + '/%s/foo/%s/',
 ];
-for (const url of vaild_urls) {
+for (const url of valid_urls) {
   test(() => {
     navigator.registerProtocolHandler('tel', url, 'foo');
   }, 'registerProtocolHandler: Valid URL "' + url + '" should work.');
@@ -53,15 +54,15 @@ const invalid_urls1 = [
 
 for (const url of invalid_urls1) {
   test(() => {
-    assert_throws('SYNTAX_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
+    assert_throws_dom('SYNTAX_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
   }, 'registerProtocolHandler: Invalid URL "' + url + '" should throw SYNTAX_ERR.');
 
   test(() => {
-    assert_throws('SYNTAX_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
+    assert_throws_dom('SYNTAX_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
   }, 'unregisterProtocolHandler: Invalid URL "' + url + '" should throw SYNTAX_ERR.');
 }
 
-const invaild_urls2 = [
+const invalid_urls2 = [
   'http://%s.com',
   'http://%s.example.com',
   'http://example.com/%s',
@@ -69,14 +70,17 @@ const invaild_urls2 = [
   'http://foobar.example.com/%s',
   'mailto:%s@example.com',
   'mailto:%s',
+  `ftp://${location.host}/%s`,
+  `chrome://${location.host}/%s`,
+  `foo://${location.host}/%s`,
 ];
-for (const url of invaild_urls2) {
+for (const url of invalid_urls2) {
   test(() => {
-    assert_throws('SECURITY_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
+    assert_throws_dom('SECURITY_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
   }, 'registerProtocolHandler: Invalid URL "' + url + '" should throw SECURITY_ERR.');
 
   test(() => {
-    assert_throws('SECURITY_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
+    assert_throws_dom('SECURITY_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
   }, 'unregisterProtocolHandler: Invalid URL "' + url + '" should throw SECURITY_ERR.');
 }
 
@@ -84,7 +88,7 @@ for (const url of invaild_urls2) {
 
 /* Overriding any of the following protocols must never be allowed. That would
  * break the browser. */
-const blacklist = [
+const denylist = [
   'about',
   'attachment',
   'blob',
@@ -99,6 +103,7 @@ const blacklist = [
   'livescript',
   'mid',
   'mocha',
+  'moz-icon',
   'opera',
   'operamail',
   'res',
@@ -110,9 +115,9 @@ const blacklist = [
   'ws',
   'wss',
   'wyciwyg',
-  /*other invalid schemes*/
+  /* other invalid schemes */
   'unrecognized',
-  'mаilto', /*a cyrillic "а"*/
+  'mаilto', /* a cyrillic "а" */
   'mailto:',
   'mailto://',
   'mailto' + String.fromCharCode(0),
@@ -122,15 +127,23 @@ const blacklist = [
   'ssh:/',
   'magnet:+',
   'tel:sip',
+  'foo',
+  'fweb+oo',
+  /* web+ prefixed schemes must be followed by 1+ ascii alphas */
   'web+',
+  'web+1',
+  'web+dots.are.forbidden',
+  'web+dashes-are-forbidden',
+  'web+digits123areforbidden',
+  'web+UpperCasesAreForbidden',
 ];
-for (const scheme of blacklist) {
+for (const scheme of denylist) {
   test(() => {
-    assert_throws('SECURITY_ERR', () => { navigator.registerProtocolHandler(scheme, location.href + '/%s', 'foo'); });
+    assert_throws_dom('SECURITY_ERR', () => { navigator.registerProtocolHandler(scheme, location.href + '/%s', 'foo'); });
   }, 'registerProtocolHandler: Attempting to override the "' + scheme + '" protocol should throw SECURITY_ERR.');
 
   test(() => {
-    assert_throws('SECURITY_ERR', () => { navigator.unregisterProtocolHandler(scheme, location.href + '/%s', 'foo'); });
+    assert_throws_dom('SECURITY_ERR', () => { navigator.unregisterProtocolHandler(scheme, location.href + '/%s'); });
   }, 'unregisterProtocolHandler: Attempting to override the "' + scheme + '" protocol should throw SECURITY_ERR.');
 }
 
@@ -161,7 +174,7 @@ const safelist = [
   'webcal',
   'wtai',
   'xmpp',
-  /*other vaild schemes*/
+  /* other valid schemes */
   'BitcoIn',
   'Irc',
   'MagneT',

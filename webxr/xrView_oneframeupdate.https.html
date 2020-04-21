@@ -13,19 +13,26 @@ let testName = "XRView projection matrices update near and far depths on the "
 
 const fakeViews = [{
         eye:"left",
-        projectionMatrix: VALID_PROJECTION_MATRIX,
         viewOffset: LEFT_OFFSET,
-        resolution: VALID_RESOLUTION
+        resolution: VALID_RESOLUTION,
+        fieldOfView: VALID_FIELD_OF_VIEW,
+        // The webxr-test-api requires that we still set this for now, but it is
+        // supposed to be ignored.
+        projectionMatrix: IDENTITY_MATRIX
     }, {
         eye:"right",
-        projectionMatrix: VALID_PROJECTION_MATRIX,
         viewOffset: RIGHT_OFFSET,
-        resolution: VALID_RESOLUTION
+        resolution: VALID_RESOLUTION,
+        fieldOfView: VALID_FIELD_OF_VIEW,
+        // The webxr-test-api requires that we still set this for now, but it is
+        // supposed to be ignored.
+        projectionMatrix: IDENTITY_MATRIX
     },
 ];
 
 let fakeDeviceInitParams = {
     supportsImmersive: true,
+    supportedModes: ["inline", "immersive-vr"],
     views: fakeViews,
     viewerOrigin: IDENTITY_TRANSFORM,
     supportedFeatures: ALL_FEATURES
@@ -70,7 +77,7 @@ let testFunction = function(session, fakeDeviceController, t) {
         counter++;
       }
 
-      session.requestAnimationFrame(onFrame);
+      session.requestAnimationFrame(t.step_func(onFrame));
   }));
 };
 

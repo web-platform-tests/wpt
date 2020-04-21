@@ -5,6 +5,7 @@ all_jobs = {
     "lint",
     "manifest_upload",
     "resources_unittest",
+    "affected_tests",
     "stability",
     "tools_unittest",
     "update_built",
@@ -60,6 +61,32 @@ def test_stability():
                           "css/CSS21/test-001.html"],
                          includes=["stability"]) == {"stability"}
 
+def test_affected_tests():
+    assert jobs.get_jobs(["dom/historical.html"],
+                         includes=["affected_tests"]) == {"affected_tests"}
+    assert jobs.get_jobs(["tools/pytest.ini"],
+                         includes=["affected_tests"]) == set()
+    assert jobs.get_jobs(["serve"],
+                         includes=["affected_tests"]) == set()
+    assert jobs.get_jobs(["resources/testharness.js"],
+                         includes=["affected_tests"]) == set()
+    assert jobs.get_jobs(["docs/.gitignore"],
+                         includes=["affected_tests"]) == set()
+    assert jobs.get_jobs(["dom/tools/example.py"],
+                         includes=["affected_tests"]) == set()
+    assert jobs.get_jobs(["conformance-checkers/test.html"],
+                         includes=["affected_tests"]) == set()
+    assert jobs.get_jobs(["dom/README.md"],
+                         includes=["affected_tests"]) == set()
+    assert jobs.get_jobs(["css/build-css-testsuite.sh"],
+                         includes=["affected_tests"]) == set()
+    assert jobs.get_jobs(["css/CSS21/test-001.html"],
+                         includes=["affected_tests"]) == {"affected_tests"}
+    assert jobs.get_jobs(["css/build-css-testsuite.sh",
+                          "css/CSS21/test-001.html"],
+                         includes=["affected_tests"]) == {"affected_tests"}
+    assert jobs.get_jobs(["resources/idlharness.js"],
+                         includes=["affected_tests"]) == {"affected_tests"}
 
 def test_tools_unittest():
     assert jobs.get_jobs(["tools/ci/test/test_jobs.py"],
@@ -106,4 +133,8 @@ def test_wpt_infrastructure():
     assert jobs.get_jobs(["tools/hammer.html"],
                          includes=["wptrunner_infrastructure"]) == {"wptrunner_infrastructure"}
     assert jobs.get_jobs(["infrastructure/assumptions/ahem.html"],
+                         includes=["wptrunner_infrastructure"]) == {"wptrunner_infrastructure"}
+
+def test_wdspec_support():
+    assert jobs.get_jobs(["webdriver/tests/support/__init__.py"],
                          includes=["wptrunner_infrastructure"]) == {"wptrunner_infrastructure"}

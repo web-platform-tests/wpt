@@ -9,6 +9,12 @@ const dataURLWorker = `
   onmessage = () => self.postMessage("FAIL");
   onmessageerror = () => self.postMessage("PASS");
 `;
+
+const dataFrameScript = `
+  onmessage = () => parent.postMessage("FAIL", "*");
+  onmessageerror = () => parent.postMessage("FAIL", "*");
+`;
+
 [
   new SharedArrayBuffer(),
   new WebAssembly.Module(new WasmModuleBuilder().toBuffer())
@@ -20,5 +26,20 @@ const dataURLWorker = `
     });
     worker.postMessage(instance);
   }, `As data URL dedicated workers form their own agent cluster, ${instance.constructor.name} cannot be messaged to them`);
+
+  promise_test(t => {
+    return new Promise(resolve => {
+      const frame = document.body.appendChild(document.createElement("iframe"));
+      t.add_cleanup(() => frame.remove());
+      frame.onload = t.step_func(() => {
+        self.addEventListener("message", t.step_func(({ data }) => {
+          assert_equals(data, "PASS");
+          resolve();
+        }), { once: true });
+        frame.contentWindow.postMessage(instance, "*");
+      });
+      frame.src = `data:text/html,<script>${dataFrameScript}<\/script>`;
+    });
+  }, `As data URL frames form their own agent cluster, ${instance.constructor.name} cannot be messaged to them`);
 });
 </script>

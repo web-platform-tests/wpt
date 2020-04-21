@@ -28,7 +28,8 @@ const dataFrameScript = `
     "input": new WebAssembly.Module(new WasmModuleBuilder().toBuffer()),
     "expected": "messsageeror"
   },
-  // postMessage() throws for this object (needs shared: true)
+  // postMessage() throws for this object (needs shared: true):
+  // https://github.com/WebAssembly/threads/issues/160
   //{
   //  "input": new WebAssembly.Memory({ initial: 0 }),
   //  "expected": "message"
@@ -41,7 +42,7 @@ const dataFrameScript = `
 ].forEach(({ input: instance, expected, name }) => {
   name = name ?? instance.constructor.name;
   async_test(t => {
-    const worker = new Worker(`data:,${dataURLWorker}`);
+    const worker = new Worker(`data:text/javascript,${dataURLWorker}`);
     worker.onmessage = t.step_func_done(({ data }) => {
       assert_equals(data, expected);
     });

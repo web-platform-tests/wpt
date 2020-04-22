@@ -65,4 +65,15 @@ const dataFrameScript = `
     });
   }, `data URL frame and messaging ${name}`);
 });
+
+async_test(t => {
+  const worker = new Worker(`data:text/javascript,
+  const worker = new Worker("data:text/javascript,self.postMessage(new SharedArrayBuffer())");
+  worker.onmessageerror = () => self.postMessage("messageerror");
+  worker.onmessage = () => self.postMessage("message");
+`);
+  worker.onmessage = t.step_func_done(({ data }) => {
+    assert_equals(data, "messageerror");
+  });
+}, "Nested data URL dedicated workers");
 </script>

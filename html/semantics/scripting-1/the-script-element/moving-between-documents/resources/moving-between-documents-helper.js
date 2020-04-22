@@ -82,13 +82,9 @@ window.didExecute = undefined;
 //
 // destType: "iframe" or "createHTMLDocument".
 // result: "fetch-error", "parse-error", or "success".
-// inlineOrExternal: "inline" or "external".
+// inlineOrExternal: "inline" or "external" or "empty-src".
 // type: "classic" or "module".
 async function runTest(timing, destType, result, inlineOrExternal, type) {
-  if (result === "fetch-error" && inlineOrExternal === "inline") {
-    return;
-  }
-
   const description =
       `Move ${result} ${inlineOrExternal} ${type} script ` +
       `to ${destType} ${timing}`;

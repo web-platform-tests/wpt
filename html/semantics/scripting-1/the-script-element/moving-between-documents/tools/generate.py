@@ -19,11 +19,16 @@ n = 0
 for timing in ["before-prepare", "after-prepare", "move-back"]:
   for destType in ["iframe", "createHTMLDocument"]:
     for result in ["fetch-error", "parse-error", "success"]:
-      for inlineOrExternal in ["inline", "external"]:
+      for inlineOrExternal in ["inline", "external", "empty-src"]:
         for type in ["classic", "module"]:
           # No fetch error for inline scripts.
           if result == "fetch-error" and inlineOrExternal == "inline":
             continue
+          if inlineOrExternal == "empty-src":
+            if result != "success":
+              continue
+            if timing != "before-prepare":
+              continue
 
           # The current test helper uses
           # #has-a-style-sheet-that-is-blocking-scripts to block script

@@ -42,10 +42,11 @@ def gzip_file(filename, delete_original=True):
         os.unlink(filename)
 
 
-def main(product, commit_range, wpt_args):
+def main(product, commit_range, py3, wpt_args):
     """Invoke the `wpt run` command according to the needs of the Taskcluster
     continuous integration service."""
 
+    py3 = True
     logger = logging.getLogger("tc-run")
     logger.setLevel(logging.INFO)
     handler = logging.StreamHandler()
@@ -54,7 +55,11 @@ def main(product, commit_range, wpt_args):
     )
     logger.addHandler(handler)
 
-    subprocess.call(['python', './wpt', 'manifest-download'])
+    if py3 and sys.version_info.major < 3:
+        logger.info("Downloading manifest in Python 3 environment")
+        subprocess.call(['python3', './wpt', 'manifest-download'])
+    else:
+        subprocess.call(['python', './wpt', 'manifest-download'])
 
     if commit_range:
         logger.info(
@@ -80,7 +85,11 @@ def main(product, commit_range, wpt_args):
     if product == "servo" and "--test-type=wdspec" in wpt_args:
         wpt_args = [item for item in wpt_args if not item.startswith("--processes")]
 
-    command = ["python", "./wpt", "run"] + wpt_args + [product]
+    if py3 and sys.version_info.major < 3:
+        logger.info("Running tests in Python 3")
+        command = ["python3", "./wpt", "run"] + wpt_args + [product]
+    else:
+        command = ["python", "./wpt", "run"] + wpt_args + [product]
 
     logger.info("Executing command: %s" % " ".join(command))
     retcode = subprocess.call(command, env=dict(os.environ, TERM="dumb"))
@@ -101,6 +110,8 @@ if __name__ == "__main__":
                         help="""Git commit range. If specified, this will be
                              supplied to the `wpt tests-affected` command to
                              determine the list of test to execute""")
+    parser.add_argument("--py3", action="store_true",
+                        help="""Run test with Python3""")
     parser.add_argument("product", action="store",
                         help="Browser to run tests in")
     parser.add_argument("wpt_args", nargs="*",

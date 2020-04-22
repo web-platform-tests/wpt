@@ -1,15 +1,11 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Stroked Line With Miter Join</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/painting.html#LineJoin"/>
-    <html:link rel="match" href="linejoin-001-ref.svg"/>
-    <html:meta name="fuzzy" content="maxDifference=0-40;totalPixels=0-500"/>
-  </g>
+  <title>Stroked Line With Miter Join</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/painting.html#LineJoin"/>
+  <html:link rel="match" href="linejoin-001-ref.svg"/>
 
-  <g id="test-body-content">
-    <path fill="none" stroke="blue" stroke-width="60" d="M 215 90 l 35 -40 l 35 40"/>
-  </g>
+  <path fill="none" stroke="blue" stroke-width="60" d="M 215 90 l 35 -40 l 35 40"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M192.417 70.2598l35 -40l22.583 -25.8096l22.583 25.8096l35 40l-45.1465 39.5029l-0.0195312 -0.0224609l-12.417 -14.1904l-12.417 14.1904l-0.0195312 0.0224609z"/>
 </svg>

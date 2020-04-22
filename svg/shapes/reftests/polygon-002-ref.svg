@@ -1,12 +1,8 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Polygon 2</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-  </g>
+  <title>Polygon 2</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <g id="test-body-reference">
-    <path stroke="none" fill="blue" d="M179 45l39 18l10 42l-26 34l-43 1l-28 -33l8 -42z"/>
-  </g>
+  <path stroke="black" stroke-width="1.5" fill="blue" d="M179 45l39 18l10 42l-26 34l-43 1l-28 -33l8 -42z"/>
 </svg>

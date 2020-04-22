@@ -1,12 +1,8 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Stroked Line With Bevel Join</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-  </g>
+  <title>Stroked Line With Bevel Join</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <g id="test-body-reference">
-    <path stroke="none" fill="blue" d="M192.417 270.26l35 -40h45.166l35 40l-45.1465 39.5029l-0.0195312 -0.0224609l-12.417 -14.1904l-12.417 14.1904l-0.0195312 0.0224609z"/>
-  </g>
+  <path stroke="black" stroke-width="1.5" fill="blue" d="M192.417 270.26l35 -40h45.166l35 40l-45.1465 39.5029l-0.0195312 -0.0224609l-12.417 -14.1904l-12.417 14.1904l-0.0195312 0.0224609z"/>
 </svg>

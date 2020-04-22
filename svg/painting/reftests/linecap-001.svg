@@ -1,15 +1,12 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Path With Round Caps</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/painting.html#LineCaps"/>
-    <html:link rel="match" href="linecap-001-ref.svg"/>
-    <html:meta name="fuzzy" content="maxDifference=0-100;totalPixels=0-700"/>
-  </g>
+  <title>Path With Round Caps</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/painting.html#LineCaps"/>
+  <html:link rel="match" href="linecap-001-ref.svg"/>
 
-  <g id="test-body-content">
-    <path fill="none" stroke="blue" stroke-width="80" stroke-linecap="round" d="M 215 60 l 50 5"/>
-  </g>
+  <path fill="none" stroke="blue" stroke-width="80" stroke-linecap="round" d="M 215 60 l 50 5"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M219.021 20.2002l50 5c20.1914 2.01855 35.9795 19.0801 35.9795 39.7998c0 22.0762 -17.9238 40 -40 40c-1.35742 0 -2.69824 -0.0673828 -4.02051 -0.200195l-50 -5c-20.1914 -2.01855 -35.9795 -19.0801 -35.9795 -39.7998
+c0 -22.0762 17.9238 -40 40 -40c1.35742 0 2.69824 0.0673828 4.02051 0.200195z"/>
 </svg>

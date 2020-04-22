@@ -1,13 +1,9 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Ellipse 1</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-  </g>
+  <title>Ellipse 1</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <g id="test-body-reference">
-    <path stroke="none" fill="black" d="M19.5 75c0 27.6748 13.4473 50.5 30.5 50.5s30.5 -22.8252 30.5 -50.5s-13.4473 -50.5 -30.5 -50.5s-30.5 22.8252 -30.5 50.5z"/>
-    <path stroke="none" fill="white" d="M20.5 75c0 -27.5537 13.416 -49.5 29.5 -49.5s29.5 21.9463 29.5 49.5s-13.416 49.5 -29.5 49.5s-29.5 -21.9463 -29.5 -49.5z"/>
-  </g>
+  <path stroke="green" stroke-width="1.5" fill="black" d="M19.5 75c0 27.6748 13.4473 50.5 30.5 50.5s30.5 -22.8252 30.5 -50.5s-13.4473 -50.5 -30.5 -50.5s-30.5 22.8252 -30.5 50.5z"/>
+  <path stroke="green" stroke-width="1.5" fill="white" d="M20.5 75c0 -27.5537 13.416 -49.5 29.5 -49.5s29.5 21.9463 29.5 49.5s-13.416 49.5 -29.5 49.5s-29.5 -21.9463 -29.5 -49.5z"/>
 </svg>

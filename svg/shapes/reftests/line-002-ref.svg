@@ -1,12 +1,8 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Stroked Line 2</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-  </g>
+  <title>Stroked Line 2</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <g id="test-body-reference">
-    <path stroke="none" fill="black" d="M72.0049 117.645l-2.58789 9.65918l193.185 51.7646l2.58789 -9.66016z"/>
-  </g>
+  <path stroke="green" stroke-width="1.5" fill="black" d="M72.0049 117.645l-2.58789 9.65918l193.185 51.7646l2.58789 -9.66016z"/>
 </svg>

@@ -1,12 +1,8 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Rectangle 6</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-  </g>
+  <title>Rectangle 6</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <g id="test-body-reference">
-    <path stroke="none" fill="lime" d="M427.5 40v0c12.418 0 22.5 62.7314 22.5 140v0c0 77.2686 -10.082 140 -22.5 140v0c-12.418 0 -22.5 -62.7314 -22.5 -140v0c0 -77.2686 10.082 -140 22.5 -140z"/>
-  </g>
+  <path stroke="green" stroke-width="1.5" fill="lime" d="M427.5 40v0c12.418 0 22.5 62.7314 22.5 140v0c0 77.2686 -10.082 140 -22.5 140v0c-12.418 0 -22.5 -62.7314 -22.5 -140v0c0 -77.2686 10.082 -140 22.5 -140z"/>
 </svg>

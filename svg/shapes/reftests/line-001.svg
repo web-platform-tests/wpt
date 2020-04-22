@@ -1,14 +1,10 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Stroked Line 2</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#LineElement"/>
-    <html:link rel="match" href="line-001-ref.svg"/>
-  </g>
+  <title>Stroked Line 1</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#LineElement"/>
+  <html:link rel="match" href="line-001-ref.svg"/>
 
-  <g id="test-body-content">
-    <line x1="100" y1="100" x2="300" y2="100" stroke-width="10" stroke="black" fill="red"/>
-  </g>
+  <line x1="100" y1="100" x2="300" y2="100" stroke-width="10" stroke="black" fill="red"/>
 </svg>

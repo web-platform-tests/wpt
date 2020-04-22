@@ -1,19 +1,14 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Filled Closed Path With Bevel Joins and Round Caps</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/render.html#LineJoin"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/render.html#LineCaps"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/paths.html#PathDataClosePathCommand"/>
-    <html:link rel="match" href="linejoincap-005-ref.svg"/>
-    <html:meta name="fuzzy" content="maxDifference=0-50;totalPixels=0-1000"/>
-  </g>
+  <title>Filled Closed Path With Bevel Joins and Round Caps</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/render.html#LineJoin"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/render.html#LineCaps"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/paths.html#PathDataClosePathCommand"/>
+  <html:link rel="match" href="linejoincap-005-ref.svg"/>
 
-  <g id="test-body-content">
-    <g transform="translate(250,115)">
-      <path id="triangle-05" fill="green" stroke="#39D" stroke-width="15" stroke-linecap="round" stroke-linejoin="bevel" d="m 0 0 l 100 40 -100 40 z"/>
-    </g>
-  </g>
+  <path id="triangle-05" fill="green" stroke="#39D" stroke-width="15" stroke-linecap="round" stroke-linejoin="bevel" transform="translate(250,115)" d="m 0 0 l 100 40 -100 40 z"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M242.5 115v80l10.2812 6.9668l100 -40v-13.9336l-100 -40z"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M257.5 183.921v-57.8418l72.3027 28.9209z"/>
 </svg>

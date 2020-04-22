@@ -1,15 +1,13 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Polygon 4</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#PolygonElement"/>
-    <html:link rel="match" href="polygon-004-ref.svg"/>
-    <html:meta name="fuzzy" content="maxDifference=0-65;totalPixels=0-1200"/>
-  </g>
+  <title>Polygon 4</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#PolygonElement"/>
+  <html:link rel="match" href="polygon-004-ref.svg"/>
 
-  <g id="test-body-content">
-    <polygon id="polygon-04" fill="none" stroke="#0000FF" stroke-width="8" points="59,185,98,203,108,245,82,279,39,280,11,247,19,205,59,185"/>
-  </g>
+  <polygon id="polygon-04" fill="none" stroke="#0000FF" stroke-width="8" points="59,185,98,203,108,245,82,279,39,280,11,247,19,205,59,185"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M57.2148 181.42l-40 20l-1.77441 0.887695l-0.370117 1.94043l-8 42l-0.357422 1.88086l1.23633 1.45703l28 33l1.23633 1.45703l1.90918 -0.0439453l43 -1l1.91602 -0.0449219l1.16895 -1.52734l26 -34l1.15137 -1.50684
+  l-0.439453 -1.84863l-10 -42l-0.450195 -1.88867l-1.76855 -0.816406l-39 -18l-1.74219 -0.803711z"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M22.5596 207.692l36.5098 -18.2549l35.4893 16.3799l9.11035 38.2627l-23.6797 30.9658l-39.1748 0.911133l-25.5273 -30.0859z"/>
 </svg>

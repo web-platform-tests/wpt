@@ -1,19 +1,14 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Filled Closed Path With Miter Joins and Square Caps</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/render.html#LineJoin"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/render.html#LineCaps"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/paths.html#PathDataClosePathCommand"/>
-    <html:link rel="match" href="linejoincap-006-ref.svg"/>
-    <html:meta name="fuzzy" content="maxDifference=0-50;totalPixels=0-1100"/>
-  </g>
+  <title>Filled Closed Path With Miter Joins and Square Caps</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/render.html#LineJoin"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/render.html#LineCaps"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/paths.html#PathDataClosePathCommand"/>
+  <html:link rel="match" href="linejoincap-006-ref.svg"/>
 
-  <g id="test-body-content">
-    <g transform="translate(250,220)">
-      <path id="triangle-06" fill="green" stroke="#39D" stroke-width="15" stroke-linecap="square" stroke-linejoin="miter" d="M 0 0 L 100 40 0 80 Z"/>
-    </g>
-  </g>
+  <path id="triangle-06" fill="green" stroke="#39D" stroke-width="15" stroke-linecap="square" stroke-linejoin="miter" transform="translate(250,220)" d="M 0 0 L 100 40 0 80 Z"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M242.5 220v91.0791l127.697 -51.0791l-127.697 -51.0791v11.0791z"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M257.5 288.921v-57.8418l72.3027 28.9209z"/>
 </svg>

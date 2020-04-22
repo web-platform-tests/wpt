@@ -1,15 +1,16 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Rectangle 2</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#RectElement"/>
-    <html:link rel="match" href="rect-002-ref.svg"/>
-    <html:meta name="fuzzy" content="maxDifference=0-100;totalPixels=0-600"/>
-  </g>
+  <title>Rectangle 2</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#RectElement"/>
+  <html:link rel="match" href="rect-002-ref.svg"/>
 
-  <g id="test-body-content">
-    <rect x="105" y="40" width="45" height="280" rx="10" ry="25" stroke-width="12" stroke="blue" fill="lime"/>
-  </g>
+  <rect x="105" y="40" width="45" height="280" rx="10" ry="25" stroke-width="12" stroke="blue" fill="lime"/>
+  <path stroke="green" stroke-width="1.5" fill="none" d="M115 34h25c4.75488 0 8.0127 3.11914 10.0049 6.03906c1.86035 2.72461 3.15723 5.95605 4.125 9.58984c1.20898 4.54395 1.87012 9.77051 1.87012 15.3711v230c0 5.60059 -0.661133 10.8271 -1.87012 15.3711
+  c-0.967773 3.63379 -2.26465 6.86523 -4.125 9.58984c-1.99219 2.91992 -5.25 6.03906 -10.0049 6.03906h-25c-4.75488 0 -8.0127 -3.11914 -10.0049 -6.03906c-1.86035 -2.72461 -3.15723 -5.95605 -4.125 -9.58984c-1.20898 -4.54395 -1.87012 -9.77051 -1.87012 -15.3711
+  v-230c0 -5.60059 0.661133 -10.8271 1.87012 -15.3711c0.967773 -3.63379 2.26465 -6.86523 4.125 -9.58984c1.99219 -2.91992 5.25 -6.03906 10.0049 -6.03906z"/>
+  <path stroke="green" stroke-width="1.5" fill="none" d="M115.558 314h23.8887c0.216797 -0.214844 0.584961 -0.658203 0.983398 -1.33398c0.535156 -0.90625 1.11816 -2.20215 1.62988 -3.78027c1.15723 -3.56445 1.94043 -8.49512 1.94043 -13.8857v-230
+  c0 -6.16406 -1.04004 -11.7217 -2.45117 -15.3164c-0.552734 -1.41016 -1.1543 -2.48535 -1.62988 -3.12695c-0.192383 -0.260742 -0.358398 -0.441406 -0.476562 -0.556641h-23.8887c-0.216797 0.214844 -0.584961 0.658203 -0.983398 1.33398
+  c-0.535156 0.90625 -1.11816 2.20215 -1.62988 3.78027c-1.15723 3.56445 -1.94043 8.49512 -1.94043 13.8857v230c0 6.16406 1.04004 11.7217 2.45117 15.3164c0.552734 1.41016 1.1543 2.48535 1.62988 3.12695c0.192383 0.260742 0.358398 0.441406 0.476562 0.556641z"/>
 </svg>

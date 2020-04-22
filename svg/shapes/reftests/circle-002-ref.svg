@@ -1,13 +1,9 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Circle 2</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-  </g>
+  <title>Circle 2</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <g id="test-body-reference">
-    <path stroke="none" fill="black" d="M184.5 100c0 -19.6055 15.8945 -35.5 35.5 -35.5s35.5 15.8945 35.5 35.5s-15.8945 35.5 -35.5 35.5s-35.5 -15.8945 -35.5 -35.5z"/>
-    <path stroke="none" fill="green" d="M185.5 100c0 19.0547 15.4453 34.5 34.5 34.5s34.5 -15.4453 34.5 -34.5s-15.4453 -34.5 -34.5 -34.5s-34.5 15.4453 -34.5 34.5z"/>
-  </g>
+  <path stroke="yellow" stroke-width="1.5" fill="black" d="M184.5 100c0 -19.6055 15.8945 -35.5 35.5 -35.5s35.5 15.8945 35.5 35.5s-15.8945 35.5 -35.5 35.5s-35.5 -15.8945 -35.5 -35.5z"/>
+  <path stroke="yellow" stroke-width="1.5" fill="green" d="M185.5 100c0 19.0547 15.4453 34.5 34.5 34.5s34.5 -15.4453 34.5 -34.5s-15.4453 -34.5 -34.5 -34.5s-34.5 15.4453 -34.5 34.5z"/>
 </svg>

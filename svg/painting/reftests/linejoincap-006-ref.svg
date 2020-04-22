@@ -1,13 +1,9 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Filled Closed Path With Miter Joins and Square Caps</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-  </g>
+  <title>Filled Closed Path With Miter Joins and Square Caps</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <g id="test-body-reference">
-    <path stroke="none" fill="#39D" d="M242.5 220v91.0791l127.697 -51.0791l-127.697 -51.0791v11.0791z"/>
-    <path stroke="none" fill="green" d="M257.5 288.921v-57.8418l72.3027 28.9209z"/>
-  </g>
+  <path stroke="black" stroke-width="1.5" fill="#39D" d="M242.5 220v91.0791l127.697 -51.0791l-127.697 -51.0791v11.0791z"/>
+  <path stroke="black" stroke-width="1.5" fill="green" d="M257.5 288.921v-57.8418l72.3027 28.9209z"/>
 </svg>

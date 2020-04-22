@@ -1,15 +1,13 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Polygon 6</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#PolygonElement"/>
-    <html:link rel="match" href="polygon-006-ref.svg"/>
-    <html:meta name="fuzzy" content="maxDifference=0-70;totalPixels=0-1700"/>
-  </g>
+  <title>Polygon 6</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#PolygonElement"/>
+  <html:link rel="match" href="polygon-006-ref.svg"/>
 
-  <g id="test-body-content">
-    <polygon id="polygon-06" fill="none" stroke="#00FF00" stroke-width="8" points="270,225 300,245 320,225 340,245 280,280 390,280 420,240 280,185"/>
-  </g>
+  <polygon id="polygon-06" fill="none" stroke="#00FF00" stroke-width="8" points="270,225 300,245 320,225 340,245 280,280 390,280 420,240 280,185"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M267.785 228.331l30 20l2.72363 1.81543l2.31934 -2.31836l17.1719 -17.1729l13.5029 13.5039l-55.5137 32.3828l-12.7852 7.45801h14.7959h110h1.99902l1.20312 -1.60352l30 -40l3.14941 -4.19922l-4.8916 -1.92188l-140 -55
+  l-4.23633 -1.66406l-1.10449 4.41699l-10 40l-0.683594 2.73535z"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M299.491 239.854l-24.9268 -16.6172l8.21191 -32.8477l130.872 51.4141l-25.6475 34.1973h-93.2051l47.2148 -27.542l4.48633 -2.61719l-3.66895 -3.66895l-20 -20l-2.82812 -2.82715l-2.82812 2.82715z"/>
 </svg>

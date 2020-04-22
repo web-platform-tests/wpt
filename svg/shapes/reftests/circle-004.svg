@@ -1,15 +1,12 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Circle 4</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#CircleElement"/>
-    <html:link rel="match" href="circle-004-ref.svg"/>
-    <html:meta name="fuzzy" content="maxDifference=0-100;totalPixels=0-600"/>
-  </g>
+  <title>Circle 4</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#CircleElement"/>
+  <html:link rel="match" href="circle-004-ref.svg"/>
 
-  <g id="test-body-content">
-    <circle cx="100" cy="260" r="20" stroke="lime" fill="yellow" stroke-width="4"/>
-  </g>
+  <circle cx="100" cy="260" r="20" stroke="lime" fill="yellow" stroke-width="4"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M78 260c0 -12.1494 9.85059 -22 22 -22s22 9.85059 22 22s-9.85059 22 -22 22s-22 -9.85059 -22 -22z"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M82 260c0 9.94238 8.05762 18 18 18s18 -8.05762 18 -18s-8.05762 -18 -18 -18s-18 8.05762 -18 18z"/>
 </svg>

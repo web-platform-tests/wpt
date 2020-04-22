@@ -1,15 +1,11 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Ellipse 4</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#EllipseElement"/>
-    <html:link rel="match" href="ellipse-004-ref.svg"/>
-    <html:meta name="fuzzy" content="maxDifference=0-70;totalPixels=0-500"/>
-  </g>
+  <title>Ellipse 4</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#EllipseElement"/>
+  <html:link rel="match" href="ellipse-004-ref.svg"/>
 
-  <g id="test-body-content">
-    <ellipse id="ellipse-04" fill="green" cx="370" cy="80" rx="35" ry="35"/>
-  </g>
+  <ellipse id="ellipse-04" fill="green" cx="370" cy="80" rx="35" ry="35"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M335 80c0 -19.3301 15.6699 -35 35 -35s35 15.6699 35 35s-15.6699 35 -35 35s-35 -15.6699 -35 -35z"/>
 </svg>

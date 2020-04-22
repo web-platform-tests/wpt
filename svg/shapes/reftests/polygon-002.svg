@@ -1,15 +1,11 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Polygon 2</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#PolygonElement"/>
-    <html:link rel="match" href="polygon-002-ref.svg"/>
-    <html:meta name="fuzzy" content="maxDifference=0-70;totalPixels=0-1000"/>
-  </g>
+  <title>Polygon 2</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#PolygonElement"/>
+  <html:link rel="match" href="polygon-002-ref.svg"/>
 
-  <g id="test-body-content">
-    <polygon id="polygon-02" fill="blue" points="179,45,218,63,228,105,202,139,159,140,131,107,139,65,179,45"/>
-  </g>
+  <polygon id="polygon-02" fill="blue" points="179,45,218,63,228,105,202,139,159,140,131,107,139,65,179,45"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M179 45l39 18l10 42l-26 34l-43 1l-28 -33l8 -42z"/>
 </svg>

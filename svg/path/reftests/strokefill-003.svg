@@ -1,19 +1,13 @@
 <svg viewBox="0 0 480 360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <g id="testmeta">
-    <title>Closed Path With Stroke 1</title>
-    <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-    <html:link rel="help" href="https://www.w3.org/TR/SVG2/painting.html#StrokeProperties"/>
-    <html:link rel="match" href="strokefill-003-ref.svg"/>
-    <html:meta name="fuzzy" content="maxDifference=0-90;totalPixels=0-2200"/>
-  </g>
+  <title>Closed Path With Stroke 1</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+  <html:link rel="help" href="https://www.w3.org/TR/SVG2/painting.html#StrokeProperties"/>
+  <html:link rel="match" href="strokefill-003-ref.svg"/>
 
-  <g id="test-body-content">
-    <g transform="translate(30, 80)">
-      <g fill="none" stroke="green" stroke-width="3">
-        <path d="M60,0 l60,0 l60,60 l0,60 l-60,60 l-60,0 l-60,-60 l0,-60 z"/>
-      </g>
-    </g>
-  </g>
+  <path fill="none" stroke="green" stroke-width="3" transform="translate(30, 80)" d="M60,0 l60,0 l60,60 l0,60 l-60,60 l-60,0 l-60,-60 l0,-60 z"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M88.9395 78.9395l-60 60l-0.439453 0.439453v0.621094v60v0.621094l0.439453 0.439453l60 60l0.439453 0.439453h0.621094h60h0.621094l0.439453 -0.439453l60 -60l0.439453 -0.439453v-0.621094v-60v-0.621094
+  l-0.439453 -0.439453l-60 -60l-0.439453 -0.439453h-0.621094h-60h-0.621094z"/>
+  <path stroke="black" stroke-width="1.5" fill="none" d="M31.5 140.621l59.1211 -59.1211h58.7578l59.1211 59.1211v58.7578l-59.1211 59.1211h-58.7578l-59.1211 -59.1211v-58.7578z"/>
 </svg>

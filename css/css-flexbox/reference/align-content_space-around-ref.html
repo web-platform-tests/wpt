@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSS Flexible Box Test: align-content_space-around</title>
+<link rel="stylesheet" href="../support/test-style.css">
+<style>
+#test {
+  height: 200px;
+  width: 80px;
+  align-content: center;
+}
+#spacertop {
+  width: 50px;
+  height: 8px;
+}
+#spacermiddle {
+  width: 50px;
+  height: 17px;
+}
+</style>
+</head>
+<body>
+<p>Test passes if:<br>
+1. the rectangle 1, 2, 3 show up in a vertical column in a red rectangle.<br>
+2. the rectangle 1, 2, 3 are distributed such that the empty space between any two adjacent rectangle is the same, and the empty space of the column before the first and after the last rectangle are half the size of the other empty spaces.</p>
+<div id=test><div id=spacertop></div><div id=test01>1</div><div id=spacermiddle></div><div id=test02>2</div><div id=spacermiddle></div><div id=test03>3</div></div>
+</body>
+</html>

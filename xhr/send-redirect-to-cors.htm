@@ -33,7 +33,7 @@
                   expectedType = explicitType
                 }
                 let expectedMethod = method;
-                if (((code === "301" || code === "302") && method === "POST") || code === "303") {
+                if (((code === "301" || code === "302") && method === "POST") || (code === "303" && method !== "GET" && method !== "HEAD")) {
                   expectedMethod = "GET";
                   expectedBody = "";
                   expectedType = "NO";
@@ -67,6 +67,7 @@
       redirect("301")
       redirect("301", "301 GET with explicit Content-Type", "GET", null, "application/x-pony")
       redirect("301", "301 GET with explicit Content-Type safelisted", "GET", null, "application/x-pony", true)
+      redirect("303", "303 GET with explicit Content-Type safelisted", "GET", null, "application/x-pony", true)
       redirect("302")
       redirect("303")
       redirect("302", "302 FOO with string and explicit Content-Type safelisted", "FOO", "test", "application/x-pony", true)

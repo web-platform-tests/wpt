@@ -41,7 +41,7 @@ The enforcement policies listed above apply to all official WPT venues; includin
 
 This section lists the current moderators for WPT and how to reach them.
 
-* Boaz Sender - [boaz@bocoup.com](mailto:boaz@bocoup.com)
+* Boaz Sender - [boaz@bocoup.com](mailto:boaz@bocoup.com). Languages: English, Hebrew.
 * Jory Burson - [jory@bocoup.education](mailto:jory@bocoup.education). Languages: English (fluent), Spanish (conversational).
 
 *Adapted from [The Rust Code of Conduct](https://www.rust-lang.org/conduct.html).*

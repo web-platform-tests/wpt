@@ -486,4 +486,3 @@ class AssertPreconditionRegexp(Regexp):
     file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
     description = "Test-file line has an `assert_precondition(...)` call"
     to_fix = """Replace with `assert_implements` or `assert_implements_optional`"""
-

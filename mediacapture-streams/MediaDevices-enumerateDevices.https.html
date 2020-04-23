@@ -28,6 +28,9 @@ promise_test(async () => {
     assert_equals(mediaInfo.groupId, "", "mediaInfo's groupId  should exist and be empty if getUserMedia was never called successfully.");
     assert_in_array(mediaInfo.kind, ["videoinput", "audioinput", "audiooutput"]);
   }
+  assert_less_than_equal(deviceList.filter((item) => { return item.kind == "audioinput"; }).length, 1, "there should be zero or one audio input device ");
+  assert_less_than_equal(deviceList.filter((item) => { return item.kind == "videoinput"; }).length, 1, "there should be zero or one video input device ");
+
 }, "mediaDevices.enumerateDevices() is present and working - before capture");
 
 promise_test(async () => {

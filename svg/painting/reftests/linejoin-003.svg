@@ -1,4 +1,4 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <title>Stroked Line With Bevel Join</title>
@@ -7,5 +7,5 @@
   <html:link rel="match" href="linejoin-003-ref.svg"/>
 
   <path fill="none" stroke="blue" stroke-width="60" stroke-linejoin="bevel" d="M 215 290 l 35 -40 l 35 40"/>
-  <path stroke="black" stroke-width="1.5" fill="none" d="M192.417 270.26l35 -40h45.166l35 40l-45.1465 39.5029l-0.0195312 -0.0224609l-12.417 -14.1904l-12.417 14.1904l-0.0195312 0.0224609z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M192.417 270.26l35 -40h45.166l35 40l-45.1465 39.5029l-0.0195312 -0.0224609l-12.417 -14.1904l-12.417 14.1904l-0.0195312 0.0224609z"/>
 </svg>

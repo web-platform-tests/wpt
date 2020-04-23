@@ -1,9 +1,0 @@
-<svg viewBox="0 0 480 360"
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:html="http://www.w3.org/1999/xhtml">
-  <title>Circle 6</title>
-  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
-
-  <path stroke="black" stroke-width="1.5" fill="green" d="M285 260c0 -30.3721 24.6279 -55 55 -55s55 24.6279 55 55s-24.6279 55 -55 55s-55 -24.6279 -55 -55z"/>
-  <path stroke="black" stroke-width="1.5" fill="white" d="M295 260c0 24.8564 20.1436 45 45 45s45 -20.1436 45 -45s-20.1436 -45 -45 -45s-45 20.1436 -45 45z"/>
-</svg>

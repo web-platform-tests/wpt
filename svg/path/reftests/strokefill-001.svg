@@ -1,13 +1,13 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <title>Closed Path With Stroke And Fill 1</title>
+  <title>Closed, filled polygonal path with stroke-width 8</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
   <html:link rel="help" href="https://www.w3.org/TR/SVG2/painting.html#StrokeProperties"/>
   <html:link rel="match" href="strokefill-001-ref.svg"/>
 
   <path fill="yellow" stroke="green" stroke-width="8" transform="translate(30, 80)" d="M60,0 l60,0 l60,60 l0,60 l-60,60 l-60,0 l-60,-60 l0,-60 z"/>
-  <path stroke="#000000" stroke-width="1.5" fill="none" d="M34 141.655l57.6553 -57.6553h56.6895l57.6553 57.6553v56.6895l-57.6553 57.6553h-56.6895l-57.6553 -57.6553v-56.6895z"/>
-  <path stroke="#000000" stroke-width="1.5" fill="none" d="M87.1719 77.1719l-60 60l-1.17188 1.17285v1.65527v60v1.65527l1.17188 1.17285l60 60l1.17285 1.17188h1.65527h60h1.65527l1.17285 -1.17188l60 -60l1.17188 -1.17285v-1.65527v-60v-1.65527l-1.17188 -1.17285l-60 -60
+  <path stroke="black" stroke-width="2.4" fill="none" d="M34 141.655l57.6553 -57.6553h56.6895l57.6553 57.6553v56.6895l-57.6553 57.6553h-56.6895l-57.6553 -57.6553v-56.6895z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M87.1719 77.1719l-60 60l-1.17188 1.17285v1.65527v60v1.65527l1.17188 1.17285l60 60l1.17285 1.17188h1.65527h60h1.65527l1.17285 -1.17188l60 -60l1.17188 -1.17285v-1.65527v-60v-1.65527l-1.17188 -1.17285l-60 -60
   l-1.17285 -1.17188h-1.65527h-60h-1.65527z"/>
 </svg>

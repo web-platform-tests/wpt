@@ -1,12 +1,12 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <title>Circle 1</title>
+  <title>Circle with radius 50 and default stroke-width</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
   <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#CircleElement"/>
   <html:link rel="match" href="circle-001-ref.svg"/>
 
   <circle cx="100" cy="100" r="50" fill="none" stroke="black"/>
-  <path stroke="green" stroke-width="1.5" fill="none" d="M49.5 100c0 -27.8896 22.6104 -50.5 50.5 -50.5s50.5 22.6104 50.5 50.5s-22.6104 50.5 -50.5 50.5s-50.5 -22.6104 -50.5 -50.5z"/>
-  <path stroke="green" stroke-width="1.5" fill="none" d="M50.5 100c0 27.3389 22.1611 49.5 49.5 49.5s49.5 -22.1611 49.5 -49.5s-22.1611 -49.5 -49.5 -49.5s-49.5 22.1611 -49.5 49.5z"/>
+  <path stroke="green" stroke-width="2.4" fill="none" d="M49.5 100c0 -27.8896 22.6104 -50.5 50.5 -50.5s50.5 22.6104 50.5 50.5s-22.6104 50.5 -50.5 50.5s-50.5 -22.6104 -50.5 -50.5z"/>
+  <path stroke="green" stroke-width="2.4" fill="none" d="M50.5 100c0 27.3389 22.1611 49.5 49.5 49.5s49.5 -22.1611 49.5 -49.5s-22.1611 -49.5 -49.5 -49.5s-49.5 22.1611 -49.5 49.5z"/>
 </svg>

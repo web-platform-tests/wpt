@@ -1,8 +1,9 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <title>Stroked Line 2</title>
+  <title>Stroked slanted line</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <path stroke="green" stroke-width="1.5" fill="black" d="M72.0049 117.645l-2.58789 9.65918l193.185 51.7646l2.58789 -9.66016z"/>
+  <path stroke="none" fill="black" d="M72.0049 117.645l-2.58789 9.65918l193.185 51.7646l2.58789 -9.66016z"/>
+  <path stroke="green" stroke-width="2" fill="none" d="M72.0049 117.645l-2.58789 9.65918l193.185 51.7646l2.58789 -9.66016z"/>
 </svg>

@@ -1,7 +1,7 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <title>Stroked Line 1</title>
+  <title>Stroked horizontal line</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
   <path stroke="none" fill="black" d="M100 95v10h200v-10h-200z"/>

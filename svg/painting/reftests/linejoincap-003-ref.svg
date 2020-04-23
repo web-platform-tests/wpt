@@ -1,9 +1,11 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <title>Filled Open Path With Miter Joins and Square Caps</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <path stroke="black" stroke-width="1.5" fill="#39D" d="M230.079 212.5h2.4209v6.05273l2.25098 5.62598l-2.25098 0.900391v86l-127.697 -51.0791l112.697 -45.0791v-2.4209h6.05273l5.62598 -2.25098z"/>
-  <path stroke="black" stroke-width="1.5" fill="green" d="M217.5 288.921v-57.8418l-72.3027 28.9209z"/>
+  <path stroke="none" fill="#39D" d="M230.079 212.5h2.4209v6.05273l2.25098 5.62598l-2.25098 0.900391v86l-127.697 -51.0791l112.697 -45.0791v-2.4209h6.05273l5.62598 -2.25098z"/>
+  <path stroke="none" fill="green" d="M217.5 288.921v-57.8418l-72.3027 28.9209z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M230.079 212.5h2.4209v6.05273l2.25098 5.62598l-2.25098 0.900391v86l-127.697 -51.0791l112.697 -45.0791v-2.4209h6.05273l5.62598 -2.25098z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M217.5 288.921v-57.8418l-72.3027 28.9209z"/>
 </svg>

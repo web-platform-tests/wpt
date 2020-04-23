@@ -1,4 +1,4 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <title>Filled Closed Path With Bevel Joins and Round Caps</title>
@@ -8,7 +8,7 @@
   <html:link rel="help" href="https://www.w3.org/TR/SVG2/paths.html#PathDataClosePathCommand"/>
   <html:link rel="match" href="linejoincap-005-ref.svg"/>
 
-  <path id="triangle-05" fill="green" stroke="#39D" stroke-width="15" stroke-linecap="round" stroke-linejoin="bevel" transform="translate(250,115)" d="m 0 0 l 100 40 -100 40 z"/>
-  <path stroke="black" stroke-width="1.5" fill="none" d="M242.5 115v80l10.2812 6.9668l100 -40v-13.9336l-100 -40z"/>
-  <path stroke="black" stroke-width="1.5" fill="none" d="M257.5 183.921v-57.8418l72.3027 28.9209z"/>
+  <path fill="green" stroke="#39D" stroke-width="15" stroke-linecap="round" stroke-linejoin="bevel" transform="translate(250,115)" d="m 0 0 l 100 40 -100 40 z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M242.5 115v80l10.2812 6.9668l100 -40v-13.9336l-100 -40z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M257.5 183.921v-57.8418l72.3027 28.9209z"/>
 </svg>

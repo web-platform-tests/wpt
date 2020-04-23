@@ -1,8 +1,9 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <title>Ellipse 4</title>
+  <title>Filled ellipse with rx=35 and ry=35 and default stroke-width</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <path stroke="black" stroke-width="1.5" fill="green" d="M335 80c0 -19.3301 15.6699 -35 35 -35s35 15.6699 35 35s-15.6699 35 -35 35s-35 -15.6699 -35 -35z"/>
+  <path stroke="none" fill="green" d="M335 80c0 -19.3301 15.6699 -35 35 -35s35 15.6699 35 35s-15.6699 35 -35 35s-35 -15.6699 -35 -35z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M335 80c0 -19.3301 15.6699 -35 35 -35s35 15.6699 35 35s-15.6699 35 -35 35s-35 -15.6699 -35 -35z"/>
 </svg>

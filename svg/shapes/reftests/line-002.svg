@@ -1,11 +1,11 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <title>Stroked Line 2</title>
+  <title>Stroked slanted line</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
   <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#LineElement"/>
   <html:link rel="match" href="line-002-ref.svg"/>
 
   <line x1="100" y1="100" x2="300" y2="100" stroke-width="10" stroke="black" fill="red" transform="rotate(15)"/>
-  <path stroke="green" stroke-width="1.5" fill="none" d="M72.0049 117.645l-2.58789 9.65918l193.185 51.7646l2.58789 -9.66016z"/>
+  <path stroke="green" stroke-width="2" fill="none" d="M72.0049 117.645l-2.58789 9.65918l193.185 51.7646l2.58789 -9.66016z"/>
 </svg>

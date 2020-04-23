@@ -1,11 +1,11 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <title>Rectangle 6</title>
+  <title>Unstroked Rectangle with ry=140 and corresponding rx</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
   <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#RectElement"/>
   <html:link rel="match" href="rect-006-ref.svg"/>
 
   <rect x="405" y="40" width="45" height="280" ry="140" stroke="none" fill="lime"/>
-  <path stroke="green" stroke-width="1.5" fill="none" d="M427.5 40v0c12.418 0 22.5 62.7314 22.5 140v0c0 77.2686 -10.082 140 -22.5 140v0c-12.418 0 -22.5 -62.7314 -22.5 -140v0c0 -77.2686 10.082 -140 22.5 -140z"/>
+  <path stroke="green" stroke-width="2.4" fill="none" d="M427.5 40v0c12.418 0 22.5 62.7314 22.5 140v0c0 77.2686 -10.082 140 -22.5 140v0c-12.418 0 -22.5 -62.7314 -22.5 -140v0c0 -77.2686 10.082 -140 22.5 -140z"/>
 </svg>

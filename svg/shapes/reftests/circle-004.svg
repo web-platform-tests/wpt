@@ -1,12 +1,12 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <title>Circle 4</title>
+  <title>Unfilled circle with radius 50 and stroke-width 10</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
   <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#CircleElement"/>
   <html:link rel="match" href="circle-004-ref.svg"/>
 
-  <circle cx="100" cy="260" r="20" stroke="lime" fill="yellow" stroke-width="4"/>
-  <path stroke="black" stroke-width="1.5" fill="none" d="M78 260c0 -12.1494 9.85059 -22 22 -22s22 9.85059 22 22s-9.85059 22 -22 22s-22 -9.85059 -22 -22z"/>
-  <path stroke="black" stroke-width="1.5" fill="none" d="M82 260c0 9.94238 8.05762 18 18 18s18 -8.05762 18 -18s-8.05762 -18 -18 -18s-18 8.05762 -18 18z"/>
+  <circle cx="340" cy="260" r="50" stroke="green" fill="none" stroke-width="10"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M285 260c0 -30.3721 24.6279 -55 55 -55s55 24.6279 55 55s-24.6279 55 -55 55s-55 -24.6279 -55 -55z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M295 260c0 24.8564 20.1436 45 45 45s45 -20.1436 45 -45s-20.1436 -45 -45 -45s-45 20.1436 -45 45z"/>
 </svg>

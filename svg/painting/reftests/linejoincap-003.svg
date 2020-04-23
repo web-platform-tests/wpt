@@ -1,4 +1,4 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <title>Filled Open Path With Miter Joins and Square Caps</title>
@@ -8,7 +8,7 @@
   <html:link rel="help" href="https://www.w3.org/TR/SVG2/paths.html#PathDataClosePathCommand"/>
   <html:link rel="match" href="linejoincap-003-ref.svg"/>
 
-  <path id="triangle-03" fill="green" stroke="#39D" stroke-width="15" stroke-linecap="square" stroke-linejoin="miter" transform="translate(125,220)" d="M 100 0 L 100 80 0 40 100 0"/>
-  <path stroke="black" stroke-width="1.5" fill="none" d="M230.079 212.5h2.4209v6.05273l2.25098 5.62598l-2.25098 0.900391v86l-127.697 -51.0791l112.697 -45.0791v-2.4209h6.05273l5.62598 -2.25098z"/>
-  <path stroke="black" stroke-width="1.5" fill="none" d="M217.5 288.921v-57.8418l-72.3027 28.9209z"/>
+  <path fill="green" stroke="#39D" stroke-width="15" stroke-linecap="square" stroke-linejoin="miter" transform="translate(125,220)" d="M 100 0 L 100 80 0 40 100 0"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M230.079 212.5h2.4209v6.05273l2.25098 5.62598l-2.25098 0.900391v86l-127.697 -51.0791l112.697 -45.0791v-2.4209h6.05273l5.62598 -2.25098z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M217.5 288.921v-57.8418l-72.3027 28.9209z"/>
 </svg>

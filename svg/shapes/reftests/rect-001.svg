@@ -1,12 +1,12 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <title>Rectangle 1</title>
+  <title>Unrounded rectangle with stroke-width 6</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
   <html:link rel="help" href="https://www.w3.org/TR/SVG2/shapes.html#RectElement"/>
   <html:link rel="match" href="rect-001-ref.svg"/>
 
   <rect x="30" y="40" width="45" height="280" stroke-width="6" stroke="blue" fill="lime"/>
-  <path stroke="black" stroke-width="1.5" fill="none" d="M27 40v-3h3h45h3v3v280v3h-3h-45h-3v-3v-280z"/>
-  <path stroke="black" stroke-width="1.5" fill="none" d="M33 317h39v-274h-39v274z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M27 40v-3h3h45h3v3v280v3h-3h-45h-3v-3v-280z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M33 317h39v-274h-39v274z"/>
 </svg>

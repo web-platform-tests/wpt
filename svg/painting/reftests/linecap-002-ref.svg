@@ -1,8 +1,9 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <title>Path With Butt Caps</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <path stroke="black" stroke-width="1.5" fill="blue" d="M219.021 120.2l50 5l-7.96094 79.6074l-0.0800781 -0.0078125l-50 -5l7.96094 -79.6074z"/>
+  <path stroke="none" fill="blue" d="M219.021 120.2l50 5l-7.96094 79.6074l-0.0800781 -0.0078125l-50 -5l7.96094 -79.6074z"/>
+  <path stroke="black" stroke-width="2.4" fill="none" d="M219.021 120.2l50 5l-7.96094 79.6074l-0.0800781 -0.0078125l-50 -5l7.96094 -79.6074z"/>
 </svg>

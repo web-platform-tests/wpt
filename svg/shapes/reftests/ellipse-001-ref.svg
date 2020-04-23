@@ -1,9 +1,11 @@
-<svg viewBox="0 0 480 360"
+<svg width="480" height="360"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-  <title>Ellipse 1</title>
+  <title>Unfilled ellipse with rx=30 and ry=50 and default stroke-width</title>
   <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
 
-  <path stroke="green" stroke-width="1.5" fill="black" d="M19.5 75c0 27.6748 13.4473 50.5 30.5 50.5s30.5 -22.8252 30.5 -50.5s-13.4473 -50.5 -30.5 -50.5s-30.5 22.8252 -30.5 50.5z"/>
-  <path stroke="green" stroke-width="1.5" fill="white" d="M20.5 75c0 -27.5537 13.416 -49.5 29.5 -49.5s29.5 21.9463 29.5 49.5s-13.416 49.5 -29.5 49.5s-29.5 -21.9463 -29.5 -49.5z"/>
+  <path stroke="none" fill="black" d="M19.5 75c0 27.6748 13.4473 50.5 30.5 50.5s30.5 -22.8252 30.5 -50.5s-13.4473 -50.5 -30.5 -50.5s-30.5 22.8252 -30.5 50.5z"/>
+  <path stroke="none" fill="white" d="M20.5 75c0 -27.5537 13.416 -49.5 29.5 -49.5s29.5 21.9463 29.5 49.5s-13.416 49.5 -29.5 49.5s-29.5 -21.9463 -29.5 -49.5z"/>
+  <path stroke="green" stroke-width="2.4" fill="none" d="M19.5 75c0 27.6748 13.4473 50.5 30.5 50.5s30.5 -22.8252 30.5 -50.5s-13.4473 -50.5 -30.5 -50.5s-30.5 22.8252 -30.5 50.5z"/>
+  <path stroke="green" stroke-width="2.4" fill="none" d="M20.5 75c0 -27.5537 13.416 -49.5 29.5 -49.5s29.5 21.9463 29.5 49.5s-13.416 49.5 -29.5 49.5s-29.5 -21.9463 -29.5 -49.5z"/>
 </svg>

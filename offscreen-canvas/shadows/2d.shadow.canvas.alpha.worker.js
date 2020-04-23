@@ -25,7 +25,7 @@ ctx.fillRect(0, 0, 100, 50);
 ctx.shadowOffsetY = 50;
 ctx.shadowColor = '#00f';
 ctx.drawImage(offscreenCanvas2, 0, -50);
-_assertPixelApprox(offscreenCanvas, 50,25, 127,0,127,255, "50,25", "127,0,127,255", 2);
+_assertPixelApprox(offscreenCanvas, 50,25, 127,0,127,255, "50,25", "127,0,127,255");
 t.done();
 
 });

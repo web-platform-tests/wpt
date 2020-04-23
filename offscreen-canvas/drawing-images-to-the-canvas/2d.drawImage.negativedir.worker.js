@@ -31,16 +31,16 @@ promise.then(function(response) {
     createImageBitmap(response).then(bitmap => {
         ctx.drawImage(bitmap, 0, 178, 50, -100, 0, 0, 50, 100);
         ctx.drawImage(bitmap, 0, 78, 50, 100, 50, 100, 50, -100);
-        _assertPixelApprox(offscreenCanvas, 1,1, 0,255,0,255, "1,1", "0,255,0,255", 2);
-        _assertPixelApprox(offscreenCanvas, 1,48, 0,255,0,255, "1,48", "0,255,0,255", 2);
-        _assertPixelApprox(offscreenCanvas, 98,1, 0,255,0,255, "98,1", "0,255,0,255", 2);
-        _assertPixelApprox(offscreenCanvas, 98,48, 0,255,0,255, "98,48", "0,255,0,255", 2);
-        _assertPixelApprox(offscreenCanvas, 48,1, 0,255,0,255, "48,1", "0,255,0,255", 2);
-        _assertPixelApprox(offscreenCanvas, 48,48, 0,255,0,255, "48,48", "0,255,0,255", 2);
-        _assertPixelApprox(offscreenCanvas, 51,1, 0,255,0,255, "51,1", "0,255,0,255", 2);
-        _assertPixelApprox(offscreenCanvas, 51,48, 0,255,0,255, "51,48", "0,255,0,255", 2);
-        _assertPixelApprox(offscreenCanvas, 25,25, 0,255,0,255, "25,25", "0,255,0,255", 2);
-        _assertPixelApprox(offscreenCanvas, 75,25, 0,255,0,255, "75,25", "0,255,0,255", 2);
+        _assertPixelApprox(offscreenCanvas, 1,1, 0,255,0,255, "1,1", "0,255,0,255");
+        _assertPixelApprox(offscreenCanvas, 1,48, 0,255,0,255, "1,48", "0,255,0,255");
+        _assertPixelApprox(offscreenCanvas, 98,1, 0,255,0,255, "98,1", "0,255,0,255");
+        _assertPixelApprox(offscreenCanvas, 98,48, 0,255,0,255, "98,48", "0,255,0,255");
+        _assertPixelApprox(offscreenCanvas, 48,1, 0,255,0,255, "48,1", "0,255,0,255");
+        _assertPixelApprox(offscreenCanvas, 48,48, 0,255,0,255, "48,48", "0,255,0,255");
+        _assertPixelApprox(offscreenCanvas, 51,1, 0,255,0,255, "51,1", "0,255,0,255");
+        _assertPixelApprox(offscreenCanvas, 51,48, 0,255,0,255, "51,48", "0,255,0,255");
+        _assertPixelApprox(offscreenCanvas, 25,25, 0,255,0,255, "25,25", "0,255,0,255");
+        _assertPixelApprox(offscreenCanvas, 75,25, 0,255,0,255, "75,25", "0,255,0,255");
     }, t_fail);
 }).then(t_pass, t_fail);
 

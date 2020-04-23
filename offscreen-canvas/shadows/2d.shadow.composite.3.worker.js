@@ -23,8 +23,8 @@ ctx.shadowColor = '#f00';
 ctx.shadowBlur = 10;
 ctx.fillStyle = '#f00';
 ctx.fillRect(200, 0, 100, 50);
-_assertPixelApprox(offscreenCanvas, 5,5, 0,255,0,255, "5,5", "0,255,0,255", 2);
-_assertPixelApprox(offscreenCanvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255", 2);
+_assertPixelApprox(offscreenCanvas, 5,5, 0,255,0,255, "5,5", "0,255,0,255");
+_assertPixelApprox(offscreenCanvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255");
 t.done();
 
 });

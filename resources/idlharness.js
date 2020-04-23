@@ -3110,7 +3110,8 @@ IdlInterface.prototype.do_interface_attribute_asserts = function(obj, member, a_
             // "If the attribute is declared with a [Replaceable] extended
             // attribute, then: ..."
             // "If validThis is false, then return."
-            if (!member.has_extended_attribute("LenientThis")) {
+            if (!member.has_extended_attribute("LenientThis") &&
+                !member.has_extended_attribute("LegacyLenientThis")) {
                 assert_throws_js(globalOf(desc.set).TypeError, function() {
                     desc.set.call({});
                 }.bind(this), "calling setter on wrong object type must throw TypeError");

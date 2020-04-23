@@ -64,6 +64,10 @@ below to fix all errors reported.</p>
 <dd>Don’t add extra copies of Ahem, use /fonts/Ahem.ttf</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">AHEM</span> <span class="pre">SYSTEM</span> <span class="pre">FONT</span></code></dt>
 <dd>Don’t use Ahem as a system font, use /fonts/ahem.css</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ASSERT-PRECONDITION</span></code></dt>
+<dd><p class="first">Test-file line has an <code class="docutils literal notranslate"><span class="pre">assert_precondition(...)</span></code> call</p>
+<strong>To fix:</strong><p class="last">Replace with <code class="docutils literal notranslate"><span class="pre">assert_implements</span></code> or <code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code></p>
+</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">ASSERT_THROWS</span></code></dt>
 <dd><p class="first">Test-file line has an <code class="docutils literal notranslate"><span class="pre">assert_throws(...)</span></code> call</p>
 <strong>To fix:</strong><p class="last">Replace with <code class="docutils literal notranslate"><span class="pre">assert_throws_dom</span></code> or <code class="docutils literal notranslate"><span class="pre">assert_throws_js</span></code> or <code class="docutils literal notranslate"><span class="pre">assert_throws_exactly</span></code></p>

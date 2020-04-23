@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=author title="Tommy Hodgins" href="mailto:tomhodgins@gmail.com">
+<title>HTML Test: Marquee element uses the HTMLMarqueeElement interface</title>
+
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
+<script>
+  // “The marquee element must implement the HTMLMarqueeElement interface.”
+  // https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+  test(
+    function() {
+      assert_true(
+        document.createElement('marquee') instanceof HTMLMarqueeElement
+      )
+    },
+    'Marquee element implements the HTMLMarqueeElement interface'
+  )
+</script>

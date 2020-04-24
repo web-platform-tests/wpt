@@ -21,9 +21,8 @@ function xr_promise_test(name, func, properties) {
     if (!navigator.xr.test) {
         if (isChromiumBased) {
           // Chrome setup
-          loadChromiumResources().then(() => {
-            xr_debug = navigator.xr.test.Debug;
-          });
+          await loadChromiumResources();
+          xr_debug = navigator.xr.test.Debug;
         } else if (isWebKitBased) {
           // WebKit setup
           await setupWebKitWebXRTestAPI();

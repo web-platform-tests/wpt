@@ -18,15 +18,15 @@ function xr_promise_test(name, func, properties) {
     // Perform any required test setup:
     xr_debug(name, 'setup');
 
-    if (isChromiumBased) {
-      // Chrome setup
-      await loadChromiumResources;
-      xr_debug = navigator.xr.test.Debug;
-    }
-
-    if (isWebKitBased) {
-      // WebKit setup
-      await setupWebKitWebXRTestAPI;
+    if (!navigator.xr.test) {
+      if (isChromiumBased) {
+        // Chrome setup
+        await loadChromiumResources;
+        xr_debug = navigator.xr.test.Debug;
+      } else if (isWebKitBased) {
+        // WebKit setup
+        await setupWebKitWebXRTestAPI;
+      }
     }
 
     // Ensure that any devices are disconnected when done. If this were done in

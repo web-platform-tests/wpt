@@ -31,7 +31,6 @@ const interfaces = [
   ["RuntimeError"],
 ];
 
-const formatPrimitive = p => typeof p === "symbol" ? String(p) : JSON.stringify(p);
 const primitives = [
   undefined,
   null,
@@ -48,7 +47,7 @@ const getNewTargets = function* (realm) {
   for (const primitive of primitives) {
     const newTarget = new realm.Function();
     newTarget.prototype = primitive;
-    yield [newTarget, "cross-realm NewTarget with `" + formatPrimitive(primitive) + "` prototype"];
+    yield [newTarget, "cross-realm NewTarget with `" + format_value(primitive) + "` prototype"];
   }
 
   // GetFunctionRealm (https://tc39.es/ecma262/#sec-getfunctionrealm) coverage:

@@ -19,14 +19,15 @@ function xr_promise_test(name, func, properties) {
     xr_debug(name, 'setup');
 
     if (!navigator.xr.test) {
-      if (isChromiumBased) {
-        // Chrome setup
-        await loadChromiumResources;
-        xr_debug = navigator.xr.test.Debug;
-      } else if (isWebKitBased) {
-        // WebKit setup
-        await setupWebKitWebXRTestAPI;
-      }
+        if (isChromiumBased) {
+          // Chrome setup
+          loadChromiumResources().then(() => {
+            xr_debug = navigator.xr.test.Debug;
+          });
+        } else if (isWebKitBased) {
+          // WebKit setup
+          await setupWebKitWebXRTestAPI();
+        }
     }
 
     // Ensure that any devices are disconnected when done. If this were done in
@@ -162,13 +163,7 @@ function forEachWebxrObject(callback) {
 }
 
 // Code for loading test API in Chromium.
-let loadChromiumResources = Promise.resolve().then(() => {
-  if (!isChromiumBased) {
-    // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
-    // not present in the global namespace.
-    return;
-  }
-
+function loadChromiumResources() {
   let chromiumResources = [
     '/gen/layout_test_data/mojo/public/js/mojo_bindings.js',
     '/gen/mojo/public/mojom/base/time.mojom.js',
@@ -194,28 +189,23 @@ let loadChromiumResources = Promise.resolve().then(() => {
   }
 
   let chain = Promise.resolve();
-    chromiumResources.forEach(path => {
-      let script = document.createElement('script');
-      script.src = path;
-      script.async = false;
-      chain = chain.then(() => new Promise(resolve => {
-                           script.onload = () => resolve();
-                         }));
-      document.head.appendChild(script);
+  chromiumResources.forEach(path => {
+    let script = document.createElement('script');
+    script.src = path;
+    script.async = false;
+    chain = chain.then(() => new Promise(resolve => {
+      script.onload = () => resolve();
+    }));
+    document.head.appendChild(script);
   });
-
   return chain;
-});
+}
 
-let setupWebKitWebXRTestAPI = Promise.resolve().then(() => {
-  if (!isWebKitBased) {
-    // Do nothing on non-WebKit-based browsers.
-    return;
-  }
-
-  // WebKit setup. The internals object is used by the WebKit test runner
-  // to provide JS access to internal APIs. In this case it's used to
-  // ensure that XRTest is only exposed to wpt tests.
-  navigator.xr.test = internals.xrTest;
-  return Promise.resolve();
-});
+function setupWebKitWebXRTestAPI() {
+  return new Promise(resolve => {
+    // WebKit setup. The internals object is used by the WebKit test runner
+    // to provide JS access to internal APIs. In this case it's used to
+    // ensure that XRTest is only exposed to wpt tests.
+    navigator.xr.test = internals.xrTest;
+  });
+}

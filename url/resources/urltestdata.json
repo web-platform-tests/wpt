@@ -6697,6 +6697,20 @@
     "search": "?a",
     "hash": "#b%00c"
   },
+  {
+    "input": "non-spec:/test?a#b\u0000c",
+    "base": "about:blank",
+    "href": "non-spec:/test?a#b%00c",
+    "protocol": "non-spec:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/test",
+    "search": "?a",
+    "hash": "#b%00c"
+  },
   "First scheme char - not allowed: https://github.com/whatwg/url/issues/464",
   {
     "input": "10.0.0.7:8080/foo.html",

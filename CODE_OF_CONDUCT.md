@@ -35,7 +35,9 @@ In the WPT community we strive to go the extra step to look out for each other. 
 
 And if someone takes issue with something you said or did, resist the urge to be defensive. Just stop doing what it was they complained about and apologize. Even if you feel you were misinterpreted or unfairly accused, chances are good there was something you could’ve communicated better — remember that it’s your responsibility to make your fellow testers comfortable. Everyone wants to get along and we are all here first and foremost because we want to talk about cool technology. You will find that people will be eager to assume good intent and forgive as long as you earn their trust.
 
-The enforcement policies listed above apply to all official WPT venues; including official IRC channels (#testing); GitHub repositories under web-platform-tests; and the public-test-infra mailing list.
+The enforcement policies listed above apply to all official WPT venues: official IRC channels (#testing on irc.w3.org); GitHub repositories under the web-platform-tests organization; and the public-test-infra@w3.org mailing list.
+
+There may arise situations where both the WPT code of conduct and that of another organization (such as the WHATWG or W3C) may apply. For example, a WPT-focused meeting at TPAC would involve both the WPT code of conduct and the W3C code of conduct. In such situations we operate under all code of conducts involved. To continue the example of a WPT-focused meeting at TPAC, attendees would be expected to respect both the WPT code of conduct and the W3C code of conduct. If you are placed in a situation where you feel this is inappropriate (e.g. if you believe the code of conducts involved contradict one another), please contact a ([moderator](#moderators)).
 
 ## Moderators
 

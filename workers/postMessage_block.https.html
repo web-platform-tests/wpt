@@ -14,7 +14,5 @@ w.onmessage = t.step_func_done(() => {
   while (Atomics.load(a, 0) === 0);
   assert_equals(Atomics.load(a, 0), 1);
 });
-
-w.onerror = e => console.error(e.message);
 </script>
 </body>

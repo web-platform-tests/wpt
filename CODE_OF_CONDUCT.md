@@ -1,8 +1,8 @@
 # Code of Conduct
 
-## Conduct
+Contact: a moderator ([see below](#moderators)), or a member of the WPT community that you feel you can trust.
 
-Contact: a moderator ([see below](#moderators)), or a member of the community you feel you can trust.
+## Conduct
 
 * We are committed to providing a friendly, safe, and welcoming environment for all,
  regardless of level of experience, gender, gender identity and expression, sexual orientation,
@@ -14,13 +14,13 @@ Contact: a moderator ([see below](#moderators)), or a member of the community yo
  * Please keep unstructured critique to a minimum. If you have solid ideas you want to experiment with, make a fork and see how it works.
  * We will exclude you from interaction if you insult, demean or harass anyone. That is not welcome behavior. We interpret the term "harassment" as including the definition in the [Citizen Code of Conduct](http://citizencodeofconduct.org/); if you have any lack of clarity about what might be included in that concept, please read their definition. In
  particular, we don't tolerate behavior that excludes people in socially marginalized groups.
- * Private harassment is also unacceptable. No matter who you are, if you feel you have been or are being harassed or made uncomfortable by a community member, please contact one of the  moderators immediately. Whether you're a regular contributor or a newcomer, we care about making this community a safe place for you and we've got your back.
+ * Private harassment is also unacceptable. No matter who you are, if you feel you have been or are being harassed or made uncomfortable by a community member, please contact one of the moderators immediately. Whether you're a regular contributor or a newcomer, we care about making this community a safe place for you and we've got your back.
  * Likewise any spamming, trolling, flaming, baiting, or other attention-stealing behaviour
  is not welcome.
 
 ## Moderation
 
-These are the policies for upholding our community’s standards of conduct.  If you feel that a thread needs moderation, please contact one of the moderators.
+These are the policies for upholding our community’s standards of conduct. If you feel that a thread needs moderation, please contact one of [the moderators](#moderators).
 
 * Remarks that violate this code of conduct, including hateful, hurtful, oppressive, or exclusionary remarks, are not allowed. (Cursing is allowed, but never targeting another user, and never in a hateful manner.)
 * Remarks that moderators find inappropriate, whether listed in the code of conduct or not, are also not allowed.
@@ -37,7 +37,7 @@ And if someone takes issue with something you said or did, resist the urge to be
 
 The enforcement policies listed above apply to all official WPT venues: official IRC channels (#testing on irc.w3.org); GitHub repositories under the web-platform-tests organization; and the public-test-infra@w3.org mailing list.
 
-There may arise situations where both the WPT code of conduct and that of another organization (such as the WHATWG or W3C) may apply. For example, a WPT-focused meeting at TPAC would involve both the WPT code of conduct and the W3C code of conduct. In such situations we operate under all code of conducts involved. To continue the example of a WPT-focused meeting at TPAC, attendees would be expected to respect both the WPT code of conduct and the W3C code of conduct. If you are placed in a situation where you feel this is inappropriate (e.g. if you believe the code of conducts involved contradict one another), please contact a ([moderator](#moderators)).
+There may arise situations where both the WPT code of conduct and that of another organization (such as the WHATWG or W3C) may apply. For example, a WPT-focused meeting at [TPAC](https://www.w3.org/2002/09/TPOverview.html) would involve both the WPT code of conduct and the [W3C code of conduct](https://www.w3.org/Consortium/cepc/). In such situations we operate under all code of conducts involved. To continue the example of a WPT-focused meeting at TPAC, attendees would be expected to respect both the WPT code of conduct and the W3C code of conduct. If you are placed in a situation where you feel this is inappropriate (e.g. if you believe the code of conducts involved contradict one another), please contact a [moderator](#moderators).
 
 ## Moderators
 

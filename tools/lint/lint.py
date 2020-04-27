@@ -392,7 +392,8 @@ regexps = [item() for item in  # type: ignore
             rules.MissingDepsRegexp,
             rules.SpecialPowersRegexp,
             rules.AssertThrowsRegexp,
-            rules.PromiseRejectsRegexp]]
+            rules.PromiseRejectsRegexp,
+            rules.AssertPreconditionRegexp]]
 
 
 def check_regexp_line(repo_root, path, f):
@@ -586,7 +587,8 @@ ast_checkers = [item() for item in [OpenModeCheck]]
 
 def check_python_ast(repo_root, path, f):
     # type: (str, str, IO[bytes]) -> List[rules.Error]
-    if not path.endswith(".py"):
+    # *.quic.py are Python 3 only and cannot be parsed by Python 2.
+    if not path.endswith(".py") or path.endswith(".quic.py"):
         return []
 
     try:
@@ -659,13 +661,7 @@ def check_script_metadata(repo_root, path, f):
                 if value != b"long":
                     errors.append(rules.UnknownTimeoutMetadata.error(path,
                                                                      line_no=idx + 1))
-            elif key == b"title":
-                pass
-            elif key == b"script":
-                pass
-            elif key == b"variant":
-                pass
-            else:
+            elif key not in (b"title", b"script", b"variant", b"quic"):
                 errors.append(rules.UnknownMetadata.error(path,
                                                           line_no=idx + 1))
         else:

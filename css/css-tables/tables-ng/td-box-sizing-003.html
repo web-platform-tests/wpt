@@ -1,0 +1,110 @@
+<!doctype html>
+<title>TD box sizing</title>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src="/resources/check-layout-th.js"></script>
+<link rel='stylesheet' href='../support/base.css' />
+<link rel="author" title="Aleks Totic" href="atotic@chromium.org" />
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-cell-measures" />
+<style>
+  table {
+    border-spacing: 0;
+  }
+  td {
+    background: gray;
+    width:100px;
+    padding: 0;
+  }
+  .bb {
+    box-sizing: border-box;
+  }
+</style>
+<p>Tests of intrinsic cell sizing wrt border/padding, and box-sizing.</p>
+<p>box-sizing: content-box; border px; padding px.
+<table>
+  <tbody>
+  <tr>
+      <td data-expected-width="100">
+        <div style="width:50px;height:50px;background:yellow">0,0</div>
+      </td>
+  </tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+  <tr data-expected-width="120">
+      <td data-expected-width="120" style="border:10px solid black">
+        <div style="height:50px;background:yellow">0,0</div>
+      </td>
+  </tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+  <tr data-expected-width="140">
+      <td data-expected-width="140" style="border:10px solid black;padding: 10px">
+        <div style="height:50px;background:yellow">0,0</div>
+      </td>
+  </tr>
+  </tbody>
+</table>
+<p>box-sizing: border-box, border px, padding px.
+<table>
+  <tbody>
+  <tr>
+      <td data-expected-width="100" class="bb">
+        <div style="height:50px;background:yellow">0,0</div>
+      </td>
+  </tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+  <tr>
+      <td data-expected-width="100" class="bb" style="border:10px solid black" >
+        <div style="height:50px;background:yellow">0,0</div>
+      </td>
+  </tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+  <tr>
+      <td data-expected-width="100" class="bb" style="border:10px solid black;padding: 10px">
+        <div style="height:50px;background:yellow">0,0</div>
+      </td>
+  </tr>
+  </tbody>
+</table>
+
+<p>box-sizing: border-box; border px; padding %.</p>
+<li>intrinsic size of % padding is 0.
+<li>final size of % padding is computed against table's width.
+<table data-expected-width="240">
+  <tbody>
+  <tr>
+      <td data-expected-width="120" style="border:10px solid black;padding: 30%">
+        <div data-offset-x="72" data-offset-y="72" style="width:50px;height:50px;background:yellow">0,0</div>
+      </td>
+      <td style="border:10px solid black;padding: 30%">
+        <div style="width:50px;height:50px;background:yellow">0,0</div>
+      </td>
+  </tr>
+  </tbody>
+</table>
+<table data-expected-width="300">
+  <caption><div style="width:300px;background:#ddd">300px caption</div></caption>
+  <tbody>
+  <tr>
+      <td data-expected-width="150" style="border:10px solid black;padding: 30%">
+        <div data-offset-x="90" data-offset-y="90" style="width:50px;height:50px;background:yellow">0,0</div>
+      </td>
+      <td style="border:10px solid black;padding: 30%">
+        <div style="width:50px;height:50px;background:yellow">0,0</div>
+      </td>
+  </tr>
+  </tbody>
+</table>
+<script>
+  checkLayout("table");
+</script>

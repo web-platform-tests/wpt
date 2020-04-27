@@ -1,0 +1,306 @@
+<!doctype html>
+<title>Column widths</title>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src="/resources/check-layout-th.js"></script>
+<link rel="stylesheet" type="text/css" href="./support/tables-ng.css">
+<link rel="author" title="Aleks Totic" href="atotic@chromium.org" />
+<link rel="help" href="https://www.w3.org/TR/css-tables-3/#distributing-width-to-columns" />
+<style>
+  body { overflow: scroll;}
+  table {
+    background: gray;
+    border-spacing: 8px 8px;
+    table-layout: auto;
+    margin-top: 4px;
+  }
+  td {
+    background: #BFB;
+    font-size: 10px;
+  }
+  td > div {
+    display: inline-block;
+    background: rgba(56,162,56,0.3);
+  }
+</style>
+<h1>Colgroup width</h1>
+<p>how does colgroup width interact with td widths to produce final column width?</p>
+<p>Column has min_width, max_width, percent.</p>
+<ol>
+<li>default: td.min = minmax.min. In fixed mode, td.min=0</li>
+<li>default: td.max = minmax.max </li>
+<li>css[px]: td.max = max(td.min, css[px])</li>
+<li>css[%]: td.percent = css[%]</li>
+<li>colgroup: td.min = 0</li>
+<li>colgroup[px]: td.max = colgroup[px]</li>
+<li>colgroup[%]: td.percent = colgroup[%]</lI>
+</ol>
+
+<h2>Initial cell assignment</h2>
+
+
+<p class="testdesc">Unconstrained single TD, table-layout:auto
+td.min = minmax.min
+td.max = minmax.max</p>
+<table style="width:1px" data-expected-width=266>
+  <tr>
+    <td><div style="width:50px">min</div><div style="width:250px">min</div></td>
+  </tr>
+</table>
+<table data-expected-width=316>
+  <tr>
+    <td><div style="width:50px">max</div><div style="width:250px">max</div></td>
+  </tr>
+</table>
+
+<p class="testdesc">Unconstrained single TD, table-layout:fixed
+td.min = 0
+td.max = minmax.max</p>
+<table style="width:1px;table-layout:fixed" data-expected-width=16>
+  <tr>
+    <td><div style="width:50px">min</div><div style="width:250px">min</div></td>
+  </tr>
+</table>
+<table style="table-layout:fixed;width:300px" data-expected-width=300>
+  <tr>
+    <td><div style="width:50px">max</div><div style="width:250px">max</div></td>
+  </tr>
+</table>
+
+<p class="testdesc">Constrained single TD, table-layout:auto
+  td.min = minmax.min
+  td.max = max(minmax.min, css.width)
+</p>
+<table data-expected-width=266>
+  <tr>
+    <td style="width:200px"><div style="width:50px">max</div><div style="width:250px">max</div></td>
+  </tr>
+</table>
+<table data-expected-width=416>
+  <tr>
+    <td style="width:400px"><div style="width:50px">max</div><div style="width:250px">max</div></td>
+  </tr>
+</table>
+<table style="width:1px" data-expected-width=26>
+  <tr>
+    <td style="width:50px"><div style="width:10px">min</div></td>
+  </tr>
+</table>
+<table data-expected-width=266>
+  <tr>
+    <td style="width:100px"><div style="width:50px">min</div><div style="width:250px">min</div></td>
+  </tr>
+</table>
+<table data-expected-width=416>
+  <tr>
+    <td style="width:400px"><div style="width:50px">min</div><div style="width:250px">min</div></td>
+  </tr>
+</table>
+
+
+<h2>TD/TD merging</h2>
+
+<p>TD merging only happens in auto, in fixed only 1st row gets measured</p>
+
+<p class="testdesc">Two unconstrained TDs, table-layout:auto or fixed
+  td.min = max(C0.min, C1.min). always 0 in fixed layout.
+  td.max = max(C0.max, C1.max)
+</p>
+<table data-expected-width=316>
+  <tr>
+    <td data-expected-width=300><div style="width:50px">auto</div><div style="width:250px">max</div></td>
+  </tr>
+  <tr>
+    <td><div style="width:100px">auto</div><div style="width:150px">auto</div></td>
+  </tr>
+</table>
+<table style="width:1px" data-expected-width=266>
+  <tr>
+    <td data-expected-width=250><div style="width:50px">auto</div><div style="width:250px">max</div></td>
+  </tr>
+  <tr>
+    <td><div style="width:100px">auto</div><div style="width:150px">auto</div></td>
+  </tr>
+</table>
+
+<p class="testdesc">Unconstrained (UN) and constrained (CON) TD
+  td.min = max(UN.min, CON.min)
+  td.max = max(UN.min, CON.max)
+</p>
+<table style="width:1px" data-expected-width=36>
+  <tr>
+    <td style="width:50px" data-expected-width=20><div style="width:20px">min</div></td>
+  </tr>
+  <tr>
+    <td><div style="width:15px">min</div></td>
+  </tr>
+</table>
+<table style="" data-expected-width=66>
+  <tr>
+    <td style="width:50px" data-expected-width=50><div style="width:20px">max</div></td>
+  </tr>
+  <tr>
+    <td><div style="width:40px">max</div></td>
+  </tr>
+</table>
+
+<p class="testdesc">Two percent TDs
+  td.percent = max(C1.percent, C2.percent)
+  td.max = max(C1.max, C2.max)
+  td.min = max(C1.min, C2.min)
+</p>
+<table>
+  <td style="width:10%"><div style="width:50px">50</div></td>
+  <td>row 1 unmerged</td>
+</table>
+<table>
+  <td style="width:20%"><div style="width:50px">50</div></td>
+  <td>row 2 unmerged</td>
+</table>
+<table data-expected-width=324>
+  <tr>
+  <td style="width:10%"><div style="width:60px">50</div></td>
+  <td>auto</td>
+</tr>
+<tr>
+  <td style="width:20%" data-expected-width=60><div style="width:50px">50</div></td>
+  <td data-expected-width=240>auto</td>
+</tr>
+</table>
+
+<h2>COLGROUP/TD merging</h2>
+
+<p class="testdesc">colgroup auto td auto
+column.min = td.min
+column.max = td.max</p>
+<table data-expected-width=66>
+  <col>
+  <td><div style="width:50px">auto</div></td>
+</table>
+
+<p class="testdesc">colgroup fixed td auto
+  column.min = td.min
+  column.max = max(colgroup[px], td.min)
+</p>
+<table data-expected-width=116>
+  <col style="width:100px">
+  <td><div style="width:50px">auto</div></td>
+</table>
+<table data-expected-width=126>
+  <col style="width:100px">
+  <td><div style="width:110px">110</div><div style="width:110px">110</div></td>
+</table>
+<table style="width:1px" data-expected-width=66>
+  <col style="width:100px">
+  <td><div style="width:50px">min</div></td>
+</table>
+
+<p class="testdesc">colgroup % td auto
+column.min = td.min
+column.max = max(td.max, colgroup.max)
+column.percent = colgroup[%]
+<table data-expected-width=224>
+  <col style="width:80%">
+  <td><div style="width:50px">auto</div></td>
+  <td style="width:40px">40</td>
+</table>
+<table style="width:1px" data-expected-width=94>
+  <col style="width:80%">
+  <td style="width:50px"><div style="width:30px">auto</div></td>
+  <td><div style="width:40px"></div></td>
+</table>
+<table data-expected-width=274>
+  <col style="width:80%">
+  <td><div style="width:200px" data-expected-width=200>auto</div></td>
+  <td style="width:30px"><div style="width:30px">30</div></td>
+</table>
+
+<p class="testdesc">colgroup auto td percent
+column.min = td.min
+column.max = td.max
+column.percent = td.percent
+<table data-expected-width=174>
+  <col>
+  <td style="width:80%" data-expected-width=120><div style="width:100px">auto</div></td>
+  <td ><div style="width:30px">10</div></td>
+</table>
+
+<p class="testdesc">colgroup fixed td percent
+column.min = td.min
+column.max = max(td.max, colgroup.max)
+column.percent = td.percent
+<table data-expected-width=154>
+  <col style="width:70px">
+  <td data-expected-width=80><div style="width:80px">auto</div></td>
+  <td ><div style="width:50px">50</div></td>
+</table>
+<table data-expected-width=154>
+  <col style="width:80px">
+  <td data-expected-width=80><div style="width:70px">auto</div></td>
+  <td ><div style="width:50px">50</div></td>
+</table>
+<table data-expected-width=424>
+  <col style="width:200px">
+  <td style="width:50%" data-expected-width=200><div style="width:50px">50</div></td>
+  <td><div style="width:50px">50</div>
+</table>
+<table style="width:1px" data-expected-width=124>
+  <col style="width:200px">
+  <td style="width:60%" data-expected-width=50><div style="width:50px">50</div></td>
+  <td><div style="width:50px">50</div>
+</table>
+
+<p class="testdesc">colgroup percent td percent
+column.min = td.min
+column.max = max(td.max, colgroup.max)
+column.percent = max(td.percent, colgroup.percent)</p>
+<table data-expeced-width=524>
+  <col style="width:60%">
+  <td style="width:50%" data-expected-width=300><div style="width:100px">100</div></td>
+  <td><div style="width:200px">200</div></td>
+</table>
+<table data-expeced-width=524>
+  <col style="width:50%">
+  <td style="width:60%" data-expected-width=300><div style="width:100px">100</div></td>
+  <td><div style="width:200px">200</div></td>
+</table>
+
+<p class="testdesc">colgroup auto td fixed
+column.min = td.min
+column.max = td.max</p>
+<table data-expected-width=116>
+  <col>
+  <td style="width:100px">100</td>
+</table>
+
+<p class="testdesc">colgroup fixed td fixed
+column.min = td.min
+column.max = max(td.max, colgroup.max)</p>
+<table data-expected-width=216>
+  <col style="width:200px">
+  <td style="width:100px">100</td>
+</table>
+<table data-expected-width=216>
+  <col style="width:100px">
+  <td style="width:200px">100</td>
+</table>
+
+<p class="testdesc">colgroup percent td fixed
+column.min = td.min
+column.percent = td.percent
+column.max = max(td.max, colgroup.max)</p>
+<table data-expected-width=424>
+  <col style="width:50%">
+  <td style="width:100px" data-expected-width=200>100</td>
+  <td><div style="width:200px">200</div>
+</table>
+
+<table style="width:1px" data-expected-width=234>
+  <col style="width:50%">
+  <td style="width:100px" data-expected-width=10><div style="width:10px">10</div></td>
+  <td><div style="width:200px">200</div>
+</table>
+
+<script>
+  checkLayout("table");
+</script>

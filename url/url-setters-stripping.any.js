@@ -34,14 +34,13 @@ for(const scheme of ["https", "wpt++"]) {
       assert_equals(url.href, urlString({ scheme: expected }), "href");
     }, `Setting protocol with leading ${cpReference} (${scheme}:)`);
 
-    // The setter appends ":" so trailing cannot be stripped
     test(() => {
-      const expected = scheme;
+      const expected = scheme === "https" ? (stripped ? "http" : "https") : (stripped ? "wpt--" : "wpt++");
       const url = urlRecord(scheme);
       url.protocol = (scheme === "https" ? "http" : "wpt--") + String.fromCodePoint(i);
       assert_equals(url.protocol, expected + ":", "property");
       assert_equals(url.href, urlString({ scheme: expected }), "href");
-    }, `Setting protocol with trailing ${cpReference} (${scheme}:)`);
+    }, `Setting protocol with ${cpReference} before inserted colon (${scheme}:)`);
 
 
     // These do no stripping

@@ -114,7 +114,7 @@ def test_build_css():
 
 
 def test_update_built():
-    assert jobs.get_jobs(["2dcontext/foo.html"],
+    assert jobs.get_jobs(["html/canvas/element/foo.html"],
                          includes=["update_built"]) == {"update_built"}
     assert jobs.get_jobs(["html/foo.html"],
                          includes=["update_built"]) == {"update_built"}

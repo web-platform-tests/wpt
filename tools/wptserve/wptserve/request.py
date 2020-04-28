@@ -304,7 +304,6 @@ class Request(object):
             # Work out the post parameters
             pos = self.raw_input.tell()
             self.raw_input.seek(0)
-            # FIXME: specify encoding in Python 3.
             if PY3:
                 fs = cgi.FieldStorage(fp=self.raw_input,
                                       environ={"REQUEST_METHOD": self.method},
@@ -531,9 +530,8 @@ class CookieValue(object):
 
 
 class MultiDict(dict):
-    """Dictionary type that holds multiple values for each
-    key"""
-    #TODO: this should perhaps also order the keys
+    """Dictionary type that holds multiple values for each key"""
+    # TODO: this should perhaps also order the keys
     def __init__(self):
         pass
 
@@ -548,7 +546,7 @@ class MultiDict(dict):
 
     def __getitem__(self, key):
         """Get the first value with a given key"""
-        #TODO: should this instead be the last value?
+        # TODO: should this instead be the last value?
         return self.first(key)
 
     def first(self, key, default=missing):
@@ -591,6 +589,10 @@ class MultiDict(dict):
 
     @classmethod
     def from_field_storage(cls, fs):
+        """Construct a MultiDict from a cgi.FieldStorage
+
+        Note that all keys and values are binary strings.
+        """
         self = cls()
         if fs.list is None:
             return self
@@ -601,8 +603,10 @@ class MultiDict(dict):
 
             for value in values:
                 if not value.filename:
-                    value = value.value
-                self.add(_maybe_encode(key), _maybe_encode(value))
+                    value = _maybe_encode(value.value)
+                else:
+                    assert isinstance(value, cgi.FieldStorage)
+                self.add(_maybe_encode(key), value)
         return self
 
 

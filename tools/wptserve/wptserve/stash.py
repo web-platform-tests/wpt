@@ -4,7 +4,7 @@ import os
 import uuid
 import threading
 from multiprocessing.managers import AcquirerProxy, BaseManager, DictProxy
-from six import text_type
+from six import text_type, binary_type
 
 
 class ServerDictManager(BaseManager):
@@ -147,6 +147,9 @@ class Stash(object):
         # This key format is required to support using the path. Since the data
         # passed into the stash can be a DictProxy which wouldn't detect changes
         # when writing to a subdict.
+        if isinstance(key, binary_type):
+            # UUIDs are within the ASCII charset.
+            key = key.decode('ascii')
         return (str(path), str(uuid.UUID(key)))
 
     def put(self, key, value, path=None):

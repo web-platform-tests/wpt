@@ -295,7 +295,7 @@ class Request(object):
             params = parse_qsl(self.url_parts.query, keep_blank_values=True)
             self._GET = MultiDict()
             for key, value in params:
-                self._GET.add(key, value)
+                self._GET.add(_maybe_encode(key), _maybe_encode(value))
         return self._GET
 
     @property
@@ -305,10 +305,17 @@ class Request(object):
             pos = self.raw_input.tell()
             self.raw_input.seek(0)
             # FIXME: specify encoding in Python 3.
-            fs = cgi.FieldStorage(fp=self.raw_input,
-                                  environ={"REQUEST_METHOD": self.method},
-                                  headers=self.raw_headers,
-                                  keep_blank_values=True)
+            if PY3:
+                fs = cgi.FieldStorage(fp=self.raw_input,
+                                      environ={"REQUEST_METHOD": self.method},
+                                      headers=self.raw_headers,
+                                      keep_blank_values=True,
+                                      encoding='iso-8859-1')
+            else:
+                fs = cgi.FieldStorage(fp=self.raw_input,
+                                      environ={"REQUEST_METHOD": self.method},
+                                      headers=self.raw_headers,
+                                      keep_blank_values=True)
             self._POST = MultiDict.from_field_storage(fs)
             self.raw_input.seek(pos)
         return self._POST
@@ -595,7 +602,7 @@ class MultiDict(dict):
             for value in values:
                 if not value.filename:
                     value = value.value
-                self.add(key, value)
+                self.add(_maybe_encode(key), _maybe_encode(value))
         return self
 
 

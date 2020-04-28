@@ -137,8 +137,8 @@ JavaScript file with the <code class="docutils literal notranslate"><span class=
 creating a <code class="docutils literal notranslate"><span class="pre">FileAPI/FileReaderSync.worker.js</span></code> as follows:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">importScripts</span><span class="p">(</span><span class="s2">&quot;/resources/testharness.js&quot;</span><span class="p">);</span>
 <span class="nx">test</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="s2">&quot;Hello&quot;</span><span class="p">]);</span>
-    <span class="kd">var</span> <span class="nx">fr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FileReaderSync</span><span class="p">();</span>
+    <span class="kr">const</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="s2">&quot;Hello&quot;</span><span class="p">]);</span>
+    <span class="kr">const</span> <span class="nx">fr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FileReaderSync</span><span class="p">();</span>
     <span class="nx">assert_equals</span><span class="p">(</span><span class="nx">fr</span><span class="p">.</span><span class="nx">readAsText</span><span class="p">(</span><span class="nx">blob</span><span class="p">),</span> <span class="s2">&quot;Hello&quot;</span><span class="p">);</span>
 <span class="p">},</span> <span class="s2">&quot;FileReaderSync#readAsText.&quot;</span><span class="p">);</span>
 <span class="nx">done</span><span class="p">();</span>
@@ -155,7 +155,7 @@ JavaScript file with extension <code class="docutils literal notranslate"><span 
 <p>For example, one could write a test for the <code class="docutils literal notranslate"><span class="pre">Blob</span></code> constructor by
 creating a <code class="docutils literal notranslate"><span class="pre">FileAPI/Blob-constructor.any.js</span></code> as follows:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">();</span>
+    <span class="kr">const</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">();</span>
     <span class="nx">assert_equals</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
     <span class="nx">assert_equals</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
     <span class="nx">assert_false</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">isClosed</span><span class="p">);</span>
@@ -165,17 +165,14 @@ creating a <code class="docutils literal notranslate"><span class="pre">FileAPI/
 <p>This test could then be run from <code class="docutils literal notranslate"><span class="pre">FileAPI/Blob-constructor.any.worker.html</span></code> as well
 as <code class="docutils literal notranslate"><span class="pre">FileAPI/Blob-constructor.any.html</span></code>.</p>
 <p>It is possible to customize the set of scopes with a metadata comment, such as</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// META: global=sharedworker
-//       ==&gt; would run in the default window and dedicated worker scopes,
-//           as well as the shared worker scope
-// META: global=!default,serviceworker
-//       ==&gt; would only run in the service worker scope
-// META: global=!window
-//       ==&gt; would run in the default dedicated worker scope, but not the
-//           window scope
-// META: global=worker
-//       ==&gt; would run in the default window scope, as well as in the
-//           dedicated, shared and service worker scopes
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">META</span><span class="p">:</span> <span class="k">global</span><span class="o">=</span><span class="n">sharedworker</span>
+<span class="o">//</span>       <span class="o">==&gt;</span> <span class="n">would</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">shared</span> <span class="n">worker</span> <span class="n">scope</span>
+<span class="o">//</span> <span class="n">META</span><span class="p">:</span> <span class="k">global</span><span class="o">=</span><span class="n">window</span><span class="p">,</span><span class="n">serviceworker</span>
+<span class="o">//</span>       <span class="o">==&gt;</span> <span class="n">would</span> <span class="n">only</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">window</span> <span class="ow">and</span> <span class="n">service</span> <span class="n">worker</span> <span class="n">scope</span>
+<span class="o">//</span> <span class="n">META</span><span class="p">:</span> <span class="k">global</span><span class="o">=</span><span class="n">dedicatedworker</span>
+<span class="o">//</span>       <span class="o">==&gt;</span> <span class="n">would</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">default</span> <span class="n">dedicated</span> <span class="n">worker</span> <span class="n">scope</span>
+<span class="o">//</span> <span class="n">META</span><span class="p">:</span> <span class="k">global</span><span class="o">=</span><span class="n">worker</span>
+<span class="o">//</span>       <span class="o">==&gt;</span> <span class="n">would</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">dedicated</span><span class="p">,</span> <span class="n">shared</span><span class="p">,</span> <span class="ow">and</span> <span class="n">service</span> <span class="n">worker</span> <span class="n">scopes</span>
 </pre></div>
 </div>
 <p>For a test file <code><var>x</var>.any.js</code>, the available scope keywords
@@ -187,8 +184,7 @@ are:</p>
 <li><code class="docutils literal notranslate"><span class="pre">sharedworker</span></code>: to be run at <code><var>x</var>.any.sharedworker.html</code></li>
 <li><code class="docutils literal notranslate"><span class="pre">jsshell</span></code>: to be run in a JavaScript shell, without access to the DOM
 (currently only supported in SpiderMonkey, and skipped in wptrunner)</li>
-<li><code class="docutils literal notranslate"><span class="pre">default</span></code>: shorthand for the default scopes</li>
-<li><code class="docutils literal notranslate"><span class="pre">worker</span></code>: shorthand for the dedicated, shared and service worker scopes</li>
+<li><code class="docutils literal notranslate"><span class="pre">worker</span></code>: shorthand for the dedicated, shared, and service worker scopes</li>
 </ul>
 <p>To check if your test is run from a window or worker you can use the following two methods that will
 be made available by the framework:</p>

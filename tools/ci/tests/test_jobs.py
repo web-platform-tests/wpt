@@ -118,7 +118,7 @@ def test_update_built():
                          includes=["update_built"]) == {"update_built"}
     assert jobs.get_jobs(["html/foo.html"],
                          includes=["update_built"]) == {"update_built"}
-    assert jobs.get_jobs(["offscreen-canvas/foo.html"],
+    assert jobs.get_jobs(["html/canvas/offscreen/foo.html"],
                          includes=["update_built"]) == {"update_built"}
 
 

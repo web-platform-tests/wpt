@@ -328,8 +328,6 @@ test()"""
 
 
 @pytest.mark.parametrize("input,expected", [
-    (b"", {}),
-    (b"default", {}),
     (b"window", {"window"}),
     (b"sharedworker", {"sharedworker"}),
     (b"sharedworker,serviceworker", {"serviceworker", "sharedworker"}),
@@ -370,7 +368,7 @@ test()""" % input
 
 
 def test_multi_global_with_jsshell_globals():
-    contents = b"""// META: global=jsshell
+    contents = b"""// META: global=window,dedicatedworker,jsshell
 test()"""
 
     s = create("html/test.any.js", contents=contents)

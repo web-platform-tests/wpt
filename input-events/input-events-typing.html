@@ -261,9 +261,9 @@ promise_test(async function() {
         for (const eventType of ['beforeinput', 'input', 'keydown', 'keypress', 'keyup']) {
             target.addEventListener(eventType, event => {
                 if (event.key === 'Shift') return;
-                let eventInfo = `${target.id}-${event.type}-${event.data || event.key}`;
-                if (event instanceof InputEvent) eventInfo += `-${event.dataTransfer}`;
-                result.push(eventInfo);
+                let eventInfo = [target.id, event.type, event.data || event.key];
+                if (event instanceof InputEvent) eventInfo.push(String(event.dataTransfer));
+                result.push(eventInfo.join('-'));
             });
         }
     }

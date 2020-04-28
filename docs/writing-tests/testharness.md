@@ -158,7 +158,7 @@ It is possible to customize the set of scopes with a metadata comment, such as
 // META: global=dedicatedworker
 //       ==> would run in the default dedicated worker scope
 // META: global=worker
-//       ==> would run in the dedicated, shared and service worker scopes
+//       ==> would run in the dedicated, shared, and service worker scopes
 ```
 
 For a test file <code><var>x</var>.any.js</code>, the available scope keywords

@@ -42,11 +42,13 @@ for(const scheme of ["https", "wpt++"]) {
       assert_equals(url.href, urlString({ scheme: expected }), "href");
     }, `Setting protocol with ${cpReference} before inserted colon (${scheme}:)`);
 
+    // Cannot test protocol with trailing as the algorithm inserts a colon before proceeding
 
     // These do no stripping
     for (const property of ["username", "password"]) {
       for (const [type, expected, input] of [
         ["leading", encodeURIComponent(cpString) + "test", String.fromCodePoint(i) + "test"],
+        ["middle", "te" + encodeURIComponent(cpString) + "st", "te" + String.fromCodePoint(i) + "st"],
         ["trailing", "test" + encodeURIComponent(cpString), "test" + String.fromCodePoint(i)]
       ]) {
         test(() => {
@@ -60,6 +62,7 @@ for(const scheme of ["https", "wpt++"]) {
 
     for (const [type, expectedPart, input] of [
       ["leading", (scheme === "https" ? cpString : encodeURIComponent(cpString)) + "test", String.fromCodePoint(i) + "test"],
+      ["middle", "te" + (scheme === "https" ? cpString : encodeURIComponent(cpString)) + "st", "te" + String.fromCodePoint(i) + "st"],
       ["trailing", "test" + (scheme === "https" ? cpString : encodeURIComponent(cpString)), "test" + String.fromCodePoint(i)]
     ]) {
       test(() => {
@@ -88,6 +91,14 @@ for(const scheme of ["https", "wpt++"]) {
     }, `Setting port with leading ${cpReference} (${scheme}:)`);
 
     test(() => {
+      const expected = stripped ? "9000" : "90";
+      const url = urlRecord(scheme);
+      url.port = "90" + String.fromCodePoint(i) + "00";
+      assert_equals(url.port, expected, "property");
+      assert_equals(url.href, urlString({ scheme, port: expected }), "href");
+    }, `Setting port with middle ${cpReference} (${scheme}:)`);
+
+    test(() => {
       const expected = "9000";
       const url = urlRecord(scheme);
       url.port = "9000" + String.fromCodePoint(i);
@@ -98,6 +109,7 @@ for(const scheme of ["https", "wpt++"]) {
     for (const [property, separator] of [["pathname", "/"], ["search", "?"], ["hash", "#"]]) {
       for (const [type, expectedPart, input] of [
         ["leading", encodeURIComponent(cpString) + "test", String.fromCodePoint(i) + "test"],
+        ["middle", "te" + encodeURIComponent(cpString) + "st", "te" + String.fromCodePoint(i) + "st"],
         ["trailing", "test" + encodeURIComponent(cpString), "test" + String.fromCodePoint(i)]
       ]) {
         test(() => {

@@ -331,6 +331,7 @@ test()"""
     (b"window", {"window"}),
     (b"sharedworker", {"sharedworker"}),
     (b"sharedworker,serviceworker", {"serviceworker", "sharedworker"}),
+    (b"worker", {"dedicatedworker", "serviceworker", "sharedworker"}),
 ])
 def test_multi_global_with_custom_globals(input, expected):
     contents = b"""// META: global=%s

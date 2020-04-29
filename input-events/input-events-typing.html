@@ -14,14 +14,9 @@ const rich = document.getElementById('rich');
 const plain = document.getElementById('plain');
 
 function log(event) {
-    inputEventsLog.push({
-        type: event.type,
-        inputType: event.inputType,
-        data: event.data,
-        isComposing: event.isComposing,
-        cancelable: event.cancelable,
-        state: encodeURI(rich.innerHTML)
-    });
+    const clone = new event.constructor(event.type, event);
+    clone.state = rich.innerHTML;
+    inputEventsLog.push(clone);
 }
 
 function resetRich() {
@@ -29,12 +24,8 @@ function resetRich() {
     rich.innerHTML = '';
 }
 
-function setRichContent(content = '') {
-    rich.innerHTML = content;
-}
-
-rich.addEventListener('beforeinput', event => log(event));
-rich.addEventListener('input', event => log(event));
+rich.addEventListener('beforeinput', log);
+rich.addEventListener('input', log);
 
 promise_test(async function() {
     this.add_cleanup(resetRich);
@@ -92,7 +83,7 @@ promise_test(async function() {
 
 promise_test(async function() {
     this.add_cleanup(resetRich);
-    setRichContent('<p>Preexisting <i id="caret">c</i>ontent</p>');
+    rich.innerHTML = '<p>Preexisting <i id="caret">c</i>ontent</p>';
     const caret = document.querySelector('#caret');
     await test_driver.click(caret);
     await test_driver.send_keys(caret, "\uE017"); // Delete
@@ -121,7 +112,7 @@ promise_test(async function() {
 
 promise_test(async function() {
     this.add_cleanup(resetRich);
-    setRichContent('<p>Preexisting <i id="caret">c</i>ontent</p>');
+    rich.innerHTML = '<p>Preexisting <i id="caret">c</i>ontent</p>';
 
     await test_driver.click(document.querySelector('#caret'));
     await test_driver.send_keys(rich, "\uE003"); // Back Space
@@ -175,7 +166,7 @@ promise_test(async function() {
         .send();
 
     // Ignore the initial typing of 'hello'
-    historyInputEventsLog = inputEventsLog.slice(10);
+    const historyInputEventsLog = inputEventsLog.slice(10);
 
     assert_equals(historyInputEventsLog.length, 4);
     const inputTypes = ['historyUndo', 'historyRedo'];
@@ -257,15 +248,15 @@ promise_test(async function() {
     ];
     const result = [];
 
-    for (const target of [plain, rich]) {
-        for (const eventType of ['beforeinput', 'input', 'keydown', 'keypress', 'keyup']) {
-            target.addEventListener(eventType, event => {
-                if (event.key === 'Shift') return;
-                let eventInfo = [target.id, event.type, event.data || event.key];
-                if (event instanceof InputEvent) eventInfo.push(String(event.dataTransfer));
-                result.push(eventInfo.join('-'));
-            });
+    for (const eventType of ['beforeinput', 'input', 'keydown', 'keypress', 'keyup']) {
+        const listener = event => {
+            if (event.key === 'Shift') return;
+            const eventInfo = [event.target.id, event.type, event.data || event.key];
+            if (event instanceof InputEvent) eventInfo.push(String(event.dataTransfer));
+            result.push(eventInfo.join('-'));
         }
+        rich.addEventListener(eventType, listener);
+        plain.addEventListener(eventType, listener);
     }
 
     plain.focus();

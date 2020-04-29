@@ -322,15 +322,12 @@ class Request(object):
     @property
     def cookies(self):
         if self._cookies is None:
-            parser = BaseCookie()
+            parser = BinaryCookieParser()
             cookie_headers = self.headers.get("cookie", b"")
-            # FIXME: cookies should probably be decoded in UTF-8?
-            if PY3:
-                cookie_headers = cookie_headers.decode("iso-8859-1")
             parser.load(cookie_headers)
             cookies = Cookies()
             for key, value in iteritems(parser):
-                cookies[key] = CookieValue(value)
+                cookies[_maybe_encode(key)] = CookieValue(value)
             self._cookies = cookies
         return self._cookies
 
@@ -610,8 +607,33 @@ class MultiDict(dict):
         return self
 
 
+class BinaryCookieParser(BaseCookie):
+    """A subclass of BaseCookie that returns values in binary strings
+
+    This is not intended to store the cookies; use Cookies instead."""
+
+    def value_decode(self, val):
+        """Decode value from network to (real_value, coded_value).
+
+        Override BaseCookie.value_decode."""
+        real = val.encode('iso-8859-1') if isinstance(val, text_type) else val
+        return real, val
+
+    def value_encode(self, val):
+        raise NotImplementedError('BinaryCookieParser is not for setting cookies')
+
+    def load(self, rawdata):
+        assert isinstance(rawdata, binary_type)
+        if PY3:
+            rawdata = rawdata.decode('iso-8859-1')
+        # BaseCookie.load expects a native string.
+        super(BinaryCookieParser, self).load(rawdata)
+
+
 class Cookies(MultiDict):
-    """MultiDict specialised for Cookie values"""
+    """MultiDict specialised for Cookie values
+
+    Keys and values are binary strings."""
     def __init__(self):
         pass
 

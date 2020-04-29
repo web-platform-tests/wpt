@@ -47,18 +47,20 @@ class TestResponseSetCookie(TestUsingServer):
 
         self.assertEqual(parts["name"], "")
         self.assertEqual(parts["Path"], "/")
-        #Should also check that expires is in the past
+        # TODO: Should also check that expires is in the past
+
 
 class TestRequestCookies(TestUsingServer):
     def test_set_cookie(self):
         @wptserve.handlers.handler
         def handler(request, response):
-            return request.cookies["name"].value
+            return request.cookies[b"name"].value
 
         route = ("GET", "/test/set_cookie", handler)
         self.server.router.register(*route)
         resp = self.request(route[1], headers={"Cookie": "name=value"})
         self.assertEqual(resp.read(), b"value")
+
 
 if __name__ == '__main__':
     unittest.main()

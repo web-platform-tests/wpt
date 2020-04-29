@@ -10,7 +10,7 @@ class TestResponseSetCookie(TestUsingServer):
     def test_name_value(self):
         @wptserve.handlers.handler
         def handler(request, response):
-            response.set_cookie("name", "value")
+            response.set_cookie(b"name", b"value")
             return "Test"
 
         route = ("GET", "/test/name_value", handler)
@@ -22,8 +22,8 @@ class TestResponseSetCookie(TestUsingServer):
     def test_unset(self):
         @wptserve.handlers.handler
         def handler(request, response):
-            response.set_cookie("name", "value")
-            response.unset_cookie("name")
+            response.set_cookie(b"name", b"value")
+            response.unset_cookie(b"name")
             return "Test"
 
         route = ("GET", "/test/unset", handler)
@@ -35,7 +35,7 @@ class TestResponseSetCookie(TestUsingServer):
     def test_delete(self):
         @wptserve.handlers.handler
         def handler(request, response):
-            response.delete_cookie("name")
+            response.delete_cookie(b"name")
             return "Test"
 
         route = ("GET", "/test/delete", handler)

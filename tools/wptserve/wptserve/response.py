@@ -114,7 +114,7 @@ class Response(object):
 
         """
         if value is None:
-            value = ''
+            value = b''
             max_age = 0
             expires = timedelta(days=-1)
 

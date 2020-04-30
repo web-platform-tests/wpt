@@ -9,12 +9,14 @@
 <script>
 var t = async_test("Modify inline script element's text " +
                    "after prepare-a-script before evaluation");
+t.step_timeout(() => {
+  document.querySelector('#script0').textContent =
+    't.unreached_func("This should not be evaluated")();';
+}, 1000);
 </script>
 
 <!-- This is "a style sheet that is blocking scripts" and thus ... -->
-<link rel="stylesheet" href="/common/slow.py"></link>
-
-<script src="resources/script-text-modifications.py" async></script>
+<link rel="stylesheet" href="/common/slow.py?pipe=trickle(d2)"></link>
 
 <!-- This inline script becomes a parser-blocking script, and thus
 the async script above is evaluated after script0 is inserted into DOM,

@@ -2,18 +2,13 @@
 import argparse
 import asyncio
 import io
-import json
 import logging
 import os
 import re
 import struct
-import time
 import urllib.parse
-from collections import deque
-from email.utils import formatdate
-from typing import Callable, Deque, Dict, List, Optional, Union, cast
+from typing import Dict, Optional
 
-import aioquic
 from aioquic.asyncio import QuicConnectionProtocol, serve
 from aioquic.quic.configuration import QuicConfiguration
 from aioquic.quic.connection import END_STATES
@@ -203,7 +198,7 @@ if __name__ == '__main__':
         type=str,
         required=True,
         help='the directory path of QuicTransport event handlers',
-        )
+    )
     parser.add_argument(
         '-v',
         '--verbose',
@@ -224,7 +219,7 @@ if __name__ == '__main__':
     )
 
     handlers_path = os.path.abspath(os.path.expanduser(args.handlers_path))
-    logging.log(logging.INFO, 'port = %s' % args.port);
+    logging.log(logging.INFO, 'port = %s' % args.port)
     logging.log(logging.INFO, 'handlers path = %s' % handlers_path)
 
     # load SSL certificate and key

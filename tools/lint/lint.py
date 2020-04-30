@@ -21,6 +21,7 @@ from ..wpt import testfiles
 from ..manifest.vcs import walk
 
 from ..manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, get_any_variants
+from wptserve import handlers
 from six import binary_type, iteritems, itervalues, with_metaclass
 from six.moves import range
 from six.moves.urllib.parse import urlsplit, urljoin
@@ -583,7 +584,9 @@ class OpenModeCheck(ASTCheck):
                         errors.append(node.lineno)
         return errors
 
+
 ast_checkers = [item() for item in [OpenModeCheck]]
+
 
 def check_python_ast(repo_root, path, f):
     # type: (str, str, IO[bytes]) -> List[rules.Error]
@@ -601,6 +604,23 @@ def check_python_ast(repo_root, path, f):
         for lineno in checker.check(root):
             errors.append(checker.rule.error(path, line_no=lineno))
     return errors
+
+
+def check_python_strings(repo_root, path, f):
+    # type: (str, str, IO[bytes]) -> List[rules.Error]
+    # *.quic.py are Python 3 only and cannot be parsed by Python 2.
+    if not path.endswith(".py") or path.endswith(".quic.py"):
+        return []
+
+    if "tools" in path.split(os.path.sep):
+        return []
+
+    is_valid, msg = (handlers.PythonScriptHandler(require_string_prefix=True)
+                     ._validate(path, f.read()))
+    print(is_valid)
+    if not is_valid:
+        return [rules.StringPrefix.error(path)]
+    return []
 
 
 broken_js_metadata = re.compile(br"//\s*META:")
@@ -923,8 +943,8 @@ def lint(repo_root, paths, output_format, ignore_glob=str()):
 path_lints = [check_file_type, check_path_length, check_worker_collision, check_ahem_copy,
               check_gitignore_file]
 all_paths_lints = [check_css_globally_unique]
-file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata,
-              check_ahem_system_font]
+file_lints = [check_regexp_line, check_parsed, check_python_ast, check_python_strings,
+              check_script_metadata, check_ahem_system_font]
 
 # Don't break users of the lint that don't have git installed.
 try:

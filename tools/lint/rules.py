@@ -127,6 +127,12 @@ class ParseFailed(Rule):
         examine the file to find the causes of any parse errors, and fix them.
     """
 
+class StringPrefix(Rule):
+    name = "STRING-PREFIX"
+    description = "Missing string type prefix in Python script handler files"
+    to_fix = """
+        ensure text strings are prefixed with 'u' and bytes with 'b'
+    """
 
 class ContentManual(Rule):
     name = "CONTENT-MANUAL"

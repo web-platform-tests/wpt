@@ -103,7 +103,7 @@ let testFunction = function(session, fakeDeviceController, t) {
   // frame for that disappearance to propogate.
   requestSkipAnimationFrame(session, (time, xrFrame) => {
     input_source.disconnect();
-    requestSkipAnimationFrame(session, (time, xrFrame) => {});
+    session.requestAnimationFrame((time, xrFrame) => {});
   });
 
   return eventPromise;

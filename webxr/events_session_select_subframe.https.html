@@ -54,7 +54,7 @@ let testFunction = function(session, fakeDeviceController, t) {
   requestSkipAnimationFrame(session, (time, xrFrame) => {
     input_source.simulateSelect();
 
-    requestSkipAnimationFrame(session, (time, xrFrame) => {
+    session.requestAnimationFrame((time, xrFrame) => {
       // Need to process one more frame to allow select to propegate.
     });
   });

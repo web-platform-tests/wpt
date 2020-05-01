@@ -1,13 +1,13 @@
 import base64
 import cgi
-from six.moves.http_cookies import BaseCookie
-from six import BytesIO, binary_type, text_type, iteritems, PY3
 import tempfile
 
+from six import BytesIO, binary_type, iteritems, PY3
+from six.moves.http_cookies import BaseCookie
 from six.moves.urllib.parse import parse_qsl, urlsplit
 
 from . import stash
-from .utils import HTTPException
+from .utils import HTTPException, isomorphic_encode
 
 missing = object()
 
@@ -296,7 +296,7 @@ class Request(object):
             params = parse_qsl(self.url_parts.query, keep_blank_values=True)
             self._GET = MultiDict()
             for key, value in params:
-                self._GET.add(_maybe_encode(key), _maybe_encode(value))
+                self._GET.add(isomorphic_encode(key), isomorphic_encode(value))
         return self._GET
 
     @property
@@ -363,24 +363,6 @@ class H2Request(Request):
         super(H2Request, self).__init__(request_handler)
 
 
-def _maybe_encode(s):
-    """Encodes a text-type string into binary data using iso-8859-1.
-
-    Returns `str` in Python 2 and `bytes` in Python 3. The function is a no-op
-    if the argument already has a binary type.
-    """
-    if isinstance(s, binary_type):
-        return s
-
-    # Python 3 assumes iso-8859-1 when parsing headers, which will garble text
-    # with non ASCII characters. We try to encode the text back to binary.
-    # https://github.com/python/cpython/blob/273fc220b25933e443c82af6888eb1871d032fb8/Lib/http/client.py#L213
-    if isinstance(s, text_type):
-        return s.encode("iso-8859-1")
-
-    raise TypeError("Unexpected value in RequestHeaders: %r" % s)
-
-
 class RequestHeaders(dict):
     """Read-only dictionary-like API for accessing request headers.
 
@@ -390,7 +372,7 @@ class RequestHeaders(dict):
     """
     def __init__(self, items):
         for header in items.keys():
-            key = _maybe_encode(header).lower()
+            key = isomorphic_encode(header).lower()
             # get all headers with the same name
             values = items.getallmatchingheaders(header)
             if len(values) > 1:
@@ -400,16 +382,16 @@ class RequestHeaders(dict):
                 for value in values:
                     # getallmatchingheaders returns raw header lines, so
                     # split to get name, value
-                    multiples.append(_maybe_encode(value).split(b':', 1)[1].strip())
+                    multiples.append(isomorphic_encode(value).split(b':', 1)[1].strip())
                 headers = multiples
             else:
-                headers = [_maybe_encode(items[header])]
+                headers = [isomorphic_encode(items[header])]
             dict.__setitem__(self, key, headers)
 
     def __getitem__(self, key):
         """Get all headers of a certain (case-insensitive) name. If there is
         more than one, the values are returned comma separated"""
-        key = _maybe_encode(key)
+        key = isomorphic_encode(key)
         values = dict.__getitem__(self, key.lower())
         if len(values) == 1:
             return values[0]
@@ -435,7 +417,7 @@ class RequestHeaders(dict):
     def get_list(self, key, default=missing):
         """Get all the header values for a particular field name as
         a list"""
-        key = _maybe_encode(key)
+        key = isomorphic_encode(key)
         try:
             return dict.__getitem__(self, key.lower())
         except KeyError:
@@ -445,7 +427,7 @@ class RequestHeaders(dict):
                 raise
 
     def __contains__(self, key):
-        key = _maybe_encode(key)
+        key = isomorphic_encode(key)
         return dict.__contains__(self, key.lower())
 
     def iteritems(self):
@@ -603,10 +585,10 @@ class MultiDict(dict):
 
             for value in values:
                 if not value.filename:
-                    value = _maybe_encode(value.value)
+                    value = isomorphic_encode(value.value)
                 else:
                     assert isinstance(value, cgi.FieldStorage)
-                self.add(_maybe_encode(key), value)
+                self.add(isomorphic_encode(key), value)
         return self
 
 

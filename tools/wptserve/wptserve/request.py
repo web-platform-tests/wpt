@@ -268,6 +268,7 @@ class Request(object):
         if self.request_path.startswith(scheme + "://"):
             self.url = self.request_path
         else:
+            # TODO(#23362): Stop using native strings for URLs.
             self.url = "%s://%s:%s%s" % (
                 scheme, host, port, self.request_path)
         self.url_parts = urlsplit(self.url)
@@ -318,7 +319,6 @@ class Request(object):
         if self._cookies is None:
             parser = BaseCookie()
             cookie_headers = self.headers.get("cookie", b"")
-            # FIXME: cookies should probably be decoded in UTF-8?
             if PY3:
                 cookie_headers = cookie_headers.decode("iso-8859-1")
             parser.load(cookie_headers)

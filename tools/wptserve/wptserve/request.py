@@ -305,17 +305,15 @@ class Request(object):
             # Work out the post parameters
             pos = self.raw_input.tell()
             self.raw_input.seek(0)
+            kwargs = {
+                "fp": self.raw_input,
+                "environ": {"REQUEST_METHOD": self.method},
+                "headers": self.raw_headers,
+                "keep_blank_values": True,
+            }
             if PY3:
-                fs = cgi.FieldStorage(fp=self.raw_input,
-                                      environ={"REQUEST_METHOD": self.method},
-                                      headers=self.raw_headers,
-                                      keep_blank_values=True,
-                                      encoding='iso-8859-1')
-            else:
-                fs = cgi.FieldStorage(fp=self.raw_input,
-                                      environ={"REQUEST_METHOD": self.method},
-                                      headers=self.raw_headers,
-                                      keep_blank_values=True)
+                kwargs["encoding"] = "iso-8859-1"
+            fs = cgi.FieldStorage(**kwargs)
             self._POST = MultiDict.from_field_storage(fs)
             self.raw_input.seek(pos)
         return self._POST
@@ -528,7 +526,6 @@ class MultiDict(dict):
 
     def __getitem__(self, key):
         """Get the first value with a given key"""
-        # TODO: should this instead be the last value?
         return self.first(key)
 
     def first(self, key, default=missing):

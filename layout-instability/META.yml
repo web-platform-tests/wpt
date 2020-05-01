@@ -1,4 +1,4 @@
 spec: https://wicg.github.io/layout-instability/
-suggested-reviewers:
+suggested_reviewers:
         - skobes
         - npm1

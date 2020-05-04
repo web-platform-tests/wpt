@@ -10,19 +10,21 @@
 // Debugging message helper, by default does nothing. Implementations can
 // override this.
 var xr_debug = function(name, msg) {}
+var isChromiumBased = 'MojoInterfaceInterceptor' in self;
+var isWebKitBased = 'internals' in self && 'xrTest' in internals;
 
 function xr_promise_test(name, func, properties) {
   promise_test(async (t) => {
     // Perform any required test setup:
     xr_debug(name, 'setup');
 
-    if (window.XRTest === undefined) {
+    if (isChromiumBased) {
       // Chrome setup
       await loadChromiumResources;
       xr_debug = navigator.xr.test.Debug;
     }
 
-    if (self.internals && internals.xrTest && navigator.xr) {
+    if (isWebKitBased) {
       // WebKit setup
       await setupWebKitWebXRTestAPI;
     }
@@ -40,6 +42,18 @@ function xr_promise_test(name, func, properties) {
     xr_debug(name, 'main');
     return func(t);
   }, name, properties);
+}
+
+// A utility function for waiting one animation frame before running the callback
+//
+// This is only needed after calling FakeXRDevice methods outside of an animation frame
+//
+// This is so that we can paper over the potential race allowed by the "next animation frame"
+// concept https://immersive-web.github.io/webxr-test-api/#xrsession-next-animation-frame
+function requestSkipAnimationFrame(session, callback) {
+ session.requestAnimationFrame(() => {
+  session.requestAnimationFrame(callback);
+ });
 }
 
 // A test function which runs through the common steps of requesting a session.
@@ -147,6 +161,7 @@ function forEachWebxrObject(callback) {
   callback(window.XRFrameRequestCallback, 'XRFrameRequestCallback');
   callback(window.XRPresentationContext, 'XRPresentationContext');
   callback(window.XRFrame, 'XRFrame');
+  callback(window.XRLayer, 'XRLayer');
   callback(window.XRView, 'XRView');
   callback(window.XRViewport, 'XRViewport');
   callback(window.XRViewerPose, 'XRViewerPose');
@@ -161,7 +176,7 @@ function forEachWebxrObject(callback) {
 
 // Code for loading test API in Chromium.
 let loadChromiumResources = Promise.resolve().then(() => {
-  if (!('MojoInterfaceInterceptor' in self)) {
+  if (!isChromiumBased) {
     // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
     // not present in the global namespace.
     return;
@@ -206,7 +221,7 @@ let loadChromiumResources = Promise.resolve().then(() => {
 });
 
 let setupWebKitWebXRTestAPI = Promise.resolve().then(() => {
-  if (!self.internals || !internals.xrTest) {
+  if (!isWebKitBased) {
     // Do nothing on non-WebKit-based browsers.
     return;
   }

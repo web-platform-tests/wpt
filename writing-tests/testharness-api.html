@@ -312,8 +312,8 @@ not mean violating a web standard. For example:</p>
 </div>
 <p>A failing <code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code> call is reported as a status of
 <code class="docutils literal notranslate"><span class="pre">PRECONDITION_FAILED</span></code> for the subtest. This unusual status code is a legacy
-leftover from the deprecated <code class="docutils literal notranslate"><span class="pre">assert_precondition</span></code>; see the <a class="reference external" href="https://github.com/web-platform-tests/rfcs/pull/48">RFC that renamed
-it</a>.</p>
+leftover; see the <a class="reference external" href="https://github.com/web-platform-tests/rfcs/pull/48">RFC that introduced
+<code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code></a>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code> can also be used during test setup. For example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">setup</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
   <span class="nx">assert_implements_optional</span><span class="p">(</span><span class="s2">&quot;optionalfeature&quot;</span> <span class="k">in</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span>
@@ -851,10 +851,6 @@ with signature <code class="docutils literal notranslate"><span class="pre">asse
 with multiple allowed pass conditions are bad practice unless the spec specifically
 allows multiple behaviours. Test authors should not use this method simply to hide
 UA bugs.</p>
-</div>
-<div class="section" id="deprecated-assert-precondition-condition-description">
-<h3><strong>DEPRECATED</strong> <code class="docutils literal notranslate"><span class="pre">assert_precondition(condition,</span> <span class="pre">description)</span></code><a class="headerlink" href="#deprecated-assert-precondition-condition-description" title="Permalink to this headline">¶</a></h3>
-<p>Use <code class="docutils literal notranslate"><span class="pre">assert_implements</span></code> or <code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code> instead.</p>
 </div>
 </div>
 <div class="section" id="utility-functions">

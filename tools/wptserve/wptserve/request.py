@@ -229,13 +229,13 @@ class Request(object):
 
     .. attribute:: cookies
 
-    Cookies object representing cookies sent with the request with a
+    A Cookies object representing cookies sent with the request with a
     dictionary-like interface.
 
     .. attribute:: auth
 
-    Object with username and password properties representing any
-    credentials supplied using HTTP authentication.
+    An instance of Authentication with username and password properties
+    representing any credentials supplied using HTTP authentication.
 
     .. attribute:: server
 

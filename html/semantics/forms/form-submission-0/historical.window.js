@@ -8,11 +8,12 @@ test(t => {
   });
   const submitter = form.querySelector('input[type=submit]');
   let invalid = form.querySelector('[required]');
-  let counter = 0;
-  form.addEventListener("invalid", t.step_func(() => counter++));
-  form.oninvalid = t.step_func(() => counter++);
-  invalid.addEventListener("invalid", t.step_func(() => counter++));
-  invalid.oninvalid = t.step_func(() => counter++);
+  let targets = [];
+  const listener = e => targets.push(e.target.localName);
+  form.addEventListener("invalid", t.step_func(listener));
+  form.oninvalid = t.step_func(listener);
+  invalid.addEventListener("invalid", t.step_func(listener));
+  invalid.oninvalid = t.step_func(listener);
   submitter.click();
-  assert_equals(counter, 2);
+  assert_array_equals(targets, ["input", "input"]);
 }, "invalid event is only supported for form controls");

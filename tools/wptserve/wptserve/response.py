@@ -121,8 +121,8 @@ class Response(object):
             expires = timedelta(days=-1)
 
         if PY3:
-            name = name.decode('iso-8859-1')
-            value = value.decode('iso-8859-1')
+            name = isomorphic_decode(name)
+            value = isomorphic_decode(value)
 
         days = {i+1: name for i, name in enumerate(["jan", "feb", "mar",
                                                     "apr", "may", "jun",
@@ -162,7 +162,7 @@ class Response(object):
     def unset_cookie(self, name):
         """Remove a cookie from those that are being sent with the response"""
         if PY3:
-            name = name.decode('iso-8859-1')
+            name = isomorphic_decode(name)
         cookies = self.headers.get("Set-Cookie")
         parser = BaseCookie()
         for cookie in cookies:

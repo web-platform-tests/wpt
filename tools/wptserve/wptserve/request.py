@@ -7,7 +7,7 @@ from six.moves.http_cookies import BaseCookie
 from six.moves.urllib.parse import parse_qsl, urlsplit
 
 from . import stash
-from .utils import HTTPException, isomorphic_encode
+from .utils import HTTPException, isomorphic_encode, isomorphic_decode
 
 missing = object()
 
@@ -326,7 +326,7 @@ class Request(object):
             parser.load(cookie_headers)
             cookies = Cookies()
             for key, value in iteritems(parser):
-                cookies[_maybe_encode(key)] = CookieValue(value)
+                cookies[isomorphic_encode(key)] = CookieValue(value)
             self._cookies = cookies
         return self._cookies
 
@@ -596,8 +596,7 @@ class BinaryCookieParser(BaseCookie):
         """Decode value from network to (real_value, coded_value).
 
         Override BaseCookie.value_decode."""
-        real = val.encode('iso-8859-1') if isinstance(val, text_type) else val
-        return real, val
+        return isomorphic_encode(val), val
 
     def value_encode(self, val):
         raise NotImplementedError('BinaryCookieParser is not for setting cookies')
@@ -605,7 +604,7 @@ class BinaryCookieParser(BaseCookie):
     def load(self, rawdata):
         assert isinstance(rawdata, binary_type)
         if PY3:
-            rawdata = rawdata.decode('iso-8859-1')
+            rawdata = isomorphic_decode(rawdata)
         # BaseCookie.load expects a native string.
         super(BinaryCookieParser, self).load(rawdata)
 

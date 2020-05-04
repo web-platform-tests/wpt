@@ -219,12 +219,13 @@ class Request(object):
     MultiDict representing the parameters supplied with the request.
     Note that these may be present on non-GET requests; the name is
     chosen to be familiar to users of other systems such as PHP.
+    Both keys and values are binary strings.
 
     .. attribute:: POST
 
     MultiDict representing the request body parameters. Most parameters
     are present as string values, but file uploads have file-like
-    values.
+    values. All string values (including keys) have binary type.
 
     .. attribute:: cookies
 

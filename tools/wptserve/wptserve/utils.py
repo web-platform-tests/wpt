@@ -5,7 +5,7 @@ from six import binary_type, text_type
 
 
 def isomorphic_decode(s):
-    """Encodes a text-type string into binary data using iso-8859-1.
+    """Decodes a binary string into a text string using iso-8859-1.
 
     Returns `unicode` in Python 2 and `str` in Python 3. The function is a
     no-op if the argument already has a text type. iso-8859-1 is chosen because

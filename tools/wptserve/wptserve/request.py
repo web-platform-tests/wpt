@@ -605,8 +605,8 @@ class BinaryCookieParser(BaseCookie):
     def load(self, rawdata):
         assert isinstance(rawdata, binary_type)
         if PY3:
+            # BaseCookie.load expects a native string, which in Python 3 is text.
             rawdata = isomorphic_decode(rawdata)
-        # BaseCookie.load expects a native string.
         super(BinaryCookieParser, self).load(rawdata)
 
 

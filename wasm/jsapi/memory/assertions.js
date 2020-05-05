@@ -23,25 +23,16 @@ function assert_ArrayBuffer(actual, { size=0, shared=false, detached=false }, me
       assert_equals(array[array.byteLength - 1], 0, `${message}: last element`);
     }
   }
+  assert_equals(Object.isFrozen(actual), shared, "buffer frozen");
+  assert_equals(Object.isExtensible(actual), !shared, "buffer extensibility");
 }
 
-function assert_Memory(memory, expected) {
+function assert_Memory(memory, { size=0, shared=false }) {
   assert_equals(Object.getPrototypeOf(memory), WebAssembly.Memory.prototype,
                 "prototype");
   assert_true(Object.isExtensible(memory), "extensible");
 
   // https://github.com/WebAssembly/spec/issues/840
   assert_equals(memory.buffer, memory.buffer, "buffer should be idempotent");
-  const isShared = !!expected.shared;
-  const bufferType = isShared ? self.SharedArrayBuffer : ArrayBuffer;
-  assert_equals(Object.getPrototypeOf(memory.buffer), bufferType.prototype,
-                'prototype of buffer');
-  assert_equals(memory.buffer.byteLength, 0x10000 * expected.size, "size of buffer");
-  if (expected.size > 0) {
-    const array = new Uint8Array(memory.buffer);
-    assert_equals(array[0], 0, "first element of buffer");
-    assert_equals(array[array.byteLength - 1], 0, "last element of buffer");
-  }
-  assert_equals(isShared, Object.isFrozen(memory.buffer), "buffer frozen");
-  assert_not_equals(Object.isExtensible(memory.buffer), isShared, "buffer extensibility");
+  assert_ArrayBuffer(memory.buffer, { size, shared });
 }

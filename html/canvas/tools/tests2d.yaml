@@ -5561,7 +5561,6 @@
     cr.set_source_rgb(1, 1, 0)
     cr.rectangle(0, 25, 1, 25)
     cr.fill()
-    foo = 12
     for x in range(1, 100):
         sigma = x/2.0
         filter = []

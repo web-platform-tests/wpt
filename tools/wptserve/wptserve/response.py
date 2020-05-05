@@ -115,6 +115,7 @@ class Response(object):
                         time or interval from now when the cookie expires
 
         """
+        # TODO(Python 3): Convert other parameters (e.g. path) to bytes, too.
         if value is None:
             value = b''
             max_age = 0

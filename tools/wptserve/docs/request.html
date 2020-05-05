@@ -140,8 +140,7 @@ However this is not enforced.</p>
 <dl class="class">
 <dt id="wptserve.request.MultiDict">
 <em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">MultiDict</code><a class="headerlink" href="#wptserve.request.MultiDict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dictionary type that holds multiple values for each
-key</p>
+<dd><p>Dictionary type that holds multiple values for each key</p>
 <dl class="method">
 <dt id="wptserve.request.MultiDict.first">
 <code class="descname">first</code><span class="sig-paren">(</span><em>key</em>, <em>default=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.first" title="Permalink to this definition">¶</a></dt>
@@ -160,6 +159,13 @@ specified)</li>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="wptserve.request.MultiDict.from_field_storage">
+<em class="property">classmethod </em><code class="descname">from_field_storage</code><span class="sig-paren">(</span><em>fs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.from_field_storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a MultiDict from a cgi.FieldStorage</p>
+<p>Note that all keys and values are binary strings.</p>
 </dd></dl>
 
 <dl class="method">
@@ -289,7 +295,8 @@ the request headers.</p>
 
 <p>MultiDict representing the parameters supplied with the request.
 Note that these may be present on non-GET requests; the name is
-chosen to be familiar to users of other systems such as PHP.</p>
+chosen to be familiar to users of other systems such as PHP.
+Both keys and values are binary strings.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.POST">
 <code class="descname">POST</code><a class="headerlink" href="#wptserve.request.Request.POST" title="Permalink to this definition">¶</a></dt>
@@ -297,7 +304,7 @@ chosen to be familiar to users of other systems such as PHP.</p>
 
 <p>MultiDict representing the request body parameters. Most parameters
 are present as string values, but file uploads have file-like
-values.</p>
+values. All string values (including keys) have binary type.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.cookies">
 <code class="descname">cookies</code><a class="headerlink" href="#wptserve.request.Request.cookies" title="Permalink to this definition">¶</a></dt>

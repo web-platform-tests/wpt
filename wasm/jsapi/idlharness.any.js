@@ -18,7 +18,7 @@ promise_test(async () => {
   });
 
   // https://github.com/web-platform-tests/wpt/issues/12850
-  idl_array.add_untested_idls('[Exposed=(Window,Worker)] interface ArrayBuffer {};');
+  idl_array.add_untested_idls('[Exposed=(Window,Worker)] interface _ArrayBuffer {};');
 
   // Ignored errors are surfaced in idlharness.js's test_object below.
   try {

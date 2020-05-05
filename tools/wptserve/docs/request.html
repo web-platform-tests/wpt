@@ -64,6 +64,37 @@ choice if callers need to decode them as most browsers use it.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="wptserve.request.BinaryCookieParser">
+<em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">BinaryCookieParser</code><span class="sig-paren">(</span><em>input=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>A subclass of BaseCookie that returns values in binary strings</p>
+<p>This is not intended to store the cookies; use Cookies instead.</p>
+<dl class="method">
+<dt id="wptserve.request.BinaryCookieParser.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>rawdata</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load cookies from a binary string.</p>
+<p>This overrides and calls BaseCookie.load. Unlike BaseCookie.load, it
+does not accept dictionaries.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.request.BinaryCookieParser.value_decode">
+<code class="descname">value_decode</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.value_decode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decode value from network to (real_value, coded_value).</p>
+<p>Override BaseCookie.value_decode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.request.BinaryCookieParser.value_encode">
+<code class="descname">value_encode</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.value_encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>real_value, coded_value = value_encode(VALUE)
+Called prior to setting a cookie’s value from the dictionary
+representation.  The VALUE is the value being assigned.
+Override this function to modify the behavior of cookies.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="wptserve.request.CookieValue">
 <em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">CookieValue</code><span class="sig-paren">(</span><em>morsel</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.CookieValue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Representation of cookies.</p>
@@ -130,6 +161,7 @@ However this is not enforced.</p>
 <dt id="wptserve.request.Cookies">
 <em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">Cookies</code><a class="headerlink" href="#wptserve.request.Cookies" title="Permalink to this definition">¶</a></dt>
 <dd><p>MultiDict specialised for Cookie values</p>
+<p>Keys and values are binary strings.</p>
 </dd></dl>
 
 <dl class="class">
@@ -310,15 +342,15 @@ values. All string values (including keys) have binary type.</p>
 <code class="descname">cookies</code><a class="headerlink" href="#wptserve.request.Request.cookies" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<p>Cookies object representing cookies sent with the request with a
+<p>A Cookies object representing cookies sent with the request with a
 dictionary-like interface.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.auth">
 <code class="descname">auth</code><a class="headerlink" href="#wptserve.request.Request.auth" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<p>Object with username and password properties representing any
-credentials supplied using HTTP authentication.</p>
+<p>An instance of Authentication with username and password properties
+representing any credentials supplied using HTTP authentication.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.server">
 <code class="descname">server</code><a class="headerlink" href="#wptserve.request.Request.server" title="Permalink to this definition">¶</a></dt>

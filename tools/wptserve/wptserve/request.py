@@ -591,18 +591,24 @@ class MultiDict(dict):
 class BinaryCookieParser(BaseCookie):
     """A subclass of BaseCookie that returns values in binary strings
 
-    This is not intended to store the cookies; use Cookies instead."""
-
+    This is not intended to store the cookies; use Cookies instead.
+    """
     def value_decode(self, val):
         """Decode value from network to (real_value, coded_value).
 
-        Override BaseCookie.value_decode."""
+        Override BaseCookie.value_decode.
+        """
         return isomorphic_encode(val), val
 
     def value_encode(self, val):
         raise NotImplementedError('BinaryCookieParser is not for setting cookies')
 
     def load(self, rawdata):
+        """Load cookies from a binary string.
+
+        This overrides and calls BaseCookie.load. Unlike BaseCookie.load, it
+        does not accept dictionaries.
+        """
         assert isinstance(rawdata, binary_type)
         if PY3:
             # BaseCookie.load expects a native string, which in Python 3 is text.
@@ -613,7 +619,8 @@ class BinaryCookieParser(BaseCookie):
 class Cookies(MultiDict):
     """MultiDict specialised for Cookie values
 
-    Keys and values are binary strings."""
+    Keys and values are binary strings.
+    """
     def __init__(self):
         pass
 

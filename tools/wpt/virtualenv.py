@@ -92,8 +92,12 @@ class Virtualenv(object):
 
     def activate(self):
         path = os.path.join(self.bin_path, "activate_this.py")
-        with open(path) as f:
-            exec(f.read(), {"__file__": path})
+        if sys.version_info.major >= 3:
+            f = open(path, encoding='utf-8')
+        else:
+            f = open(path)
+        exec(f.read(), {"__file__": path})
+        f.close()
 
     def start(self):
         if not self.exists or self.broken_link:
@@ -113,13 +117,17 @@ class Virtualenv(object):
         call(self.pip_path, "install", "--prefer-binary", *requirements)
 
     def install_requirements(self, requirements_path):
-        with open(requirements_path) as f:
-            try:
-                self.working_set.require(f.read())
-            except Exception:
-                pass
-            else:
-                return
+        if sys.version_info.major >= 3:
+            f = open(requirements_path, encoding='utf-8')
+        else:
+            f = open(requirements_path)
+        try:
+            self.working_set.require(f.read())
+            f.close()
+        except Exception:
+            pass
+        else:
+            return
 
         # `--prefer-binary` guards against race conditions when installation
         # occurs while packages are in the process of being published.

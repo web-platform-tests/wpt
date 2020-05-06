@@ -43,6 +43,7 @@ There may arise situations where both the WPT code of conduct and that of anothe
 
 This section lists the current moderators for WPT and how to reach them.
 
+* Nina Satragno - [nso@google.com](mailto:nso@google.com). Languages: English, Spanish.
 * Boaz Sender - [boaz@bocoup.com](mailto:boaz@bocoup.com). Languages: English, Hebrew.
 * Jory Burson - [jory@bocoup.education](mailto:jory@bocoup.education). Languages: English (fluent), Spanish (conversational).
 

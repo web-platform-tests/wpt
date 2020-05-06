@@ -1,6 +1,3 @@
-// Based on https://encoding.spec.whatwg.org/
-const utf_encodings = ['utf-8', 'utf-16le', 'utf-16be'];
-
 // Straight from https://encoding.spec.whatwg.org/encodings.json
 const encodings_table =
 [

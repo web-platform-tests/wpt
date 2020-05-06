@@ -1,71 +1,112 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: marquee-events</title>
+<title>&lt;marquee> events</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/multipage/obsolete.html#the-marquee-element">
+<link rel="help" href="https://html.spec.whatwg.org/#the-marquee-element">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<marquee id="test1" loop="2" width="1" behavior="alternate">&nbsp;</marquee>
-<marquee id="test2" loop="2" width="1">&nbsp;</marquee>
 <script>
-  var mq;
-  var t_start = async_test("marquee_events_start");
-  var t_finish = async_test("marquee_events_finish");
-  var t_bounce = async_test("marquee_events_bounce");
-  var t_bounce2 = async_test("marquee_events_bounce2");
-  var timeStamp = [];
-  var bounced = false;
+let started = false;
 
-  setup(function() {
-    mq = document.getElementById("test1");
-    mq2 = document.getElementById("test2");
-  });
+const t_startBeforeLoad = async_test("Load event must not block start event");
+addEventListener("load", t_startBeforeLoad.step_func_done(() => {
+  assert_true(started, "marquee should already have started");
+}));
 
-  mq.addEventListener("start", function(evt) {
-    t_start.step(function() {
-      timeStamp.push(evt.timeStamp);
-      assert_true(evt.isTrusted, "The onstart event is created by UA, it must be trusted.");
-      assert_equals(timeStamp.length, 1, "The onstart event should be fired firstly.");
-      assert_false(evt.bubbles, "The bubbles property of onstart event should be false.");
-      assert_false(evt.cancelable, "The cancelable property of onstart event should be false.");
-      assert_true(evt instanceof Event, "The onstart event must be the instance of Event interface.");
-    });
-    t_start.done();
-  });
+let timeStamp = [];
 
-  mq.addEventListener("finish", function(evt) {
-    t_finish.step(function() {
-      timeStamp.push(evt.timeStamp);
-      assert_true(evt.isTrusted, "The onfinish event is created by UA, it must be trusted.");
-      assert_equals(timeStamp.length, 3, "The onfinish event should be fired lastly.");
-      assert_false(evt.bubbles, "The bubbles property of onfinish event should be false.");
-      assert_false(evt.cancelable, "The cancelable property of onfinish event should be false.");
-      assert_true(evt instanceof Event, "The onfinish event must be the instance of Event interface.");
-    });
-    t_finish.done();
+// UAs could fire the start event immediately upon adding the marquee to the
+// document, so use inline event handlers to avoid missing it.
+const t_start = async_test("Start event");
+function onStart(evt) {
+  started = true;
+  t_start.step(() => {
+    timeStamp.push(evt.timeStamp);
+    assert_true(evt.isTrusted, "The onstart event is created by UA, it must be trusted.");
+    assert_equals(timeStamp.length, 1, "The onstart event should be fired first.");
+    assert_false(evt.bubbles, "The bubbles property of onstart event should be false.");
+    assert_false(evt.cancelable, "The cancelable property of onstart event should be false.");
+    assert_equals(Object.getPrototypeOf(evt), Event.prototype,
+                  "The event's prototype must be Event.prototype.");
   });
+  t_start.done();
+}
 
-  mq.addEventListener("bounce", function(evt) {
-    t_bounce.step(function() {
-      timeStamp.push(evt.timeStamp);
-      assert_true(evt.isTrusted, "The onbounce event is created by UA, it must be trusted.");
-      assert_equals(timeStamp.length, 2, "The onbounce event should be fired secondly.");
-      assert_false(evt.bubbles, "The bubbles property of onbounce event should be false.");
-      assert_false(evt.cancelable, "The cancelable property of onbounce event should be false.");
-      assert_true(evt instanceof Event, "The onbounce event must be the instance of Event interface.");
-    });
-    t_bounce.done();
+const t_bounce = async_test("Bounce event with behavior=alternate");
+function onBounce(evt) {
+  t_bounce.step(() => {
+    timeStamp.push(evt.timeStamp);
+    assert_true(evt.isTrusted, "The onbounce event is created by UA, it must be trusted.");
+    assert_equals(timeStamp.length, 2, "The onbounce event should be fired second.");
+    assert_false(evt.bubbles, "The bubbles property of onbounce event should be false.");
+    assert_false(evt.cancelable, "The cancelable property of onbounce event should be false.");
+    assert_equals(Object.getPrototypeOf(evt), Event.prototype,
+                  "The event's prototype must be Event.prototype.");
   });
+  t_bounce.done();
+}
 
-  mq2.addEventListener("bounce", function(evt) {
-    bounced = true;
+const t_finish = async_test("Finish event");
+function onFinish(evt) {
+  t_finish.step(() => {
+    timeStamp.push(evt.timeStamp);
+    assert_true(evt.isTrusted, "The onfinish event is created by UA, it must be trusted.");
+    assert_equals(timeStamp.length, 3, "The onfinish event should be fired last.");
+    assert_false(evt.bubbles, "The bubbles property of onfinish event should be false.");
+    assert_false(evt.cancelable, "The cancelable property of onfinish event should be false.");
+    assert_equals(Object.getPrototypeOf(evt), Event.prototype,
+                  "The event's prototype must be Event.prototype.");
   });
+  t_finish.done();
+}
 
-  mq2.addEventListener("finish", function(evt) {
-    t_bounce2.step(function () {
-      assert_false(bounced, "The onbounce event should not be fired.");
-    });
-    t_bounce2.done();
+const t_bounce2 = async_test("No bounce event without behavior=alternate");
+let bounced = false;
+function onBounce2() {
+  bounced = true;
+}
+
+function onFinish2() {
+  t_bounce2.step(() => {
+    assert_false(bounced, "The onbounce event should not be fired.");
   });
+  t_bounce2.done();
+}
+
+const t_startDetached = async_test("Start event on detached marquee");
+t_startDetached.step_timeout(() => t_startDetached.done(), 2000);
+document.createElement("marquee")
+.addEventListener("start", t_startDetached.step_func_done(() => {
+  assert_unreached("Start event should not be fired");
+}));
+
+const t_startUndisplayed = async_test("Start event on display: none marquee");
+t_startUndisplayed.step_timeout(() => t_startUndisplayed.done(), 2000);
+function onStartUndisplayed() {
+  t_startUndisplayed.step(() => {
+    assert_unreached("Start event should not be fired");
+  });
+  t_startUndisplayed.done();
+}
+
+const t_startHidden = async_test("Start event on visibility: hidden marquee");
+function onStartHidden() {
+  t_startHidden.done();
+}
+
+const t_startDynamic = async_test("Start event on marquee dynamically added to the document");
+const dynamicMarquee = document.createElement("marquee");
+dynamicMarquee.addEventListener("start", t_startDynamic.step_func_done());
+document.body.appendChild(dynamicMarquee);
 </script>
+<marquee loop="2" width="1" behavior="alternate" onstart="onStart(event)"
+         onBounce="onBounce(event)" onfinish="onFinish(event)">&nbsp;</marquee>
+<marquee loop="2" width="1" onbounce="onBounce2()"
+         onfinish="onFinish2()">&nbsp;</marquee>
+<marquee loop="2" width="1" style="display: none"
+         onstart="onStartUndisplayed()">&nbsp;</marquee>
+<marquee loop="2" width="1" style="visibility: hidden"
+         onstart="onStartHidden()">&nbsp;</marquee>
+<!-- Delay load event by two seconds -->
+<img src="/images/blue.png?pipe=trickle(d2)" style="display: none">

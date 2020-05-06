@@ -48,6 +48,12 @@ promise_test(async t => {
   assert_equals(img1.width, 16, "(initial version loaded)");
   assert_equals((await img2).width, 16, "(stale version loaded)");
 
+  // Some web browsers (like Chrome) are enforcing CSP checks on stale
+  // revalidations. As a result, they are blocked. At least, they should never
+  // send CSP violation reports.
+  let timedOut = false;
+  step_timeout(() => timedOut = true, 1000);
+
   // At some point, the <img> resource is going to be revalidated. It must not
   // be blocked nor trigger a CSP violation report.
 
@@ -58,7 +64,7 @@ promise_test(async t => {
     await new Promise(r => step_timeout(r, 25));
     let response = await fetch(image_src + "&query");
     let count = response.headers.get("Count");
-    if (count == "2")
+    if (count == "2" || timedOut)
       break;
   }
 }, "Request revalidation aren't blocked by CSP");

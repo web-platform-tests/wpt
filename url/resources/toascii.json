@@ -156,7 +156,7 @@
     "output": "ab"
   },
   {
-    "comment": "Empty host after the domain to ASCII",
+    "comment": "Empty host after domain to ASCII",
     "input": "\u00AD",
     "output": null
   },

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Test: outline-width subpixels</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-ui/#outline-width">
+<link rel="match" href="reference/outline-width-001-ref.html">
+<meta name="assert" content="Test checks that outline-width support subpixel values (decimal values for pixels).">
+<style>
+div {
+  width: 100px;
+  height: 100px;
+  background: lime;
+  outline: 2.5px solid blue;
+}
+</style>
+<p>The test passes if the blue outline is 2.5px.</p>
+<div></div>

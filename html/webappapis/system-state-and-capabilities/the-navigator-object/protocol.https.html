@@ -11,7 +11,7 @@
 registration requests on a page, you might need to disable or significantly
 increase that limit for the tests below to run.</p>
 
-<script type='text/javascript'>
+<script>
 test(() => {
   assert_idl_attribute(navigator, 'registerProtocolHandler');
 }, 'the registerProtocolHandler method should exist on the navigator object');
@@ -135,7 +135,6 @@ const denylist = [
   'web+dots.are.forbidden',
   'web+dashes-are-forbidden',
   'web+digits123areforbidden',
-  'web+UpperCasesAreForbidden',
 ];
 for (const scheme of denylist) {
   test(() => {
@@ -184,6 +183,7 @@ const safelist = [
   'WebCAL',
   'WTAI',
   'web+myprotocol',
+  'web+UpperCasedIsLowercased',
 ];
 for (const scheme of safelist) {
   test(() => {

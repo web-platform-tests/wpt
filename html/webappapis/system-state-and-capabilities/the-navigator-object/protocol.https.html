@@ -54,7 +54,7 @@ test(() => {
   test(() => {
     assert_throws_dom('SYNTAX_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
     assert_throws_dom('SECURITY_ERR', () => { navigator.registerProtocolHandler('x', url, 'foo'); });
-  }, 'registerProtocolHandler: Invalid URL "' + url + '" should throw (but after scheme)');
+  }, `registerProtocolHandler: Invalid URL "${url}" should throw (but after scheme)`);
 
   test(() => {
     assert_throws_dom('SYNTAX_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });

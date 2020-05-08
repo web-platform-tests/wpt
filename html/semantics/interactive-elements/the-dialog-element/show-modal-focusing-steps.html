@@ -10,10 +10,11 @@ promise_test(() => {
         outerButton = document.getElementById('outer-button');
         assert_equals(document.activeElement, outerButton);
 
-        // Test that focus goes to body if the dialog has no focusable elements, including itself
+        // dialog element itself should be focused when no descendant
+        // element matches the requirements.
         var outerDialog = document.getElementById('outer-dialog');
         outerDialog.showModal();
-        assert_equals(document.activeElement, document.body);
+        assert_equals(document.activeElement, outerDialog);
 
         // Test that an autofocus element in the dialog gets focus.
         var dialog = document.getElementById('dialog');

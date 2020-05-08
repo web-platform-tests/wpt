@@ -43,10 +43,11 @@ def test_verify_payload():
     from tools.ci.tc.decision import decide
 
     create_task_schema = requests.get(
-        "https://raw.githubusercontent.com/taskcluster/taskcluster/blob/master/services/queue/schemas/v1/create-task-request.yml")
+        "https://raw.githubusercontent.com/taskcluster/taskcluster/master/services/queue/schemas/v1/create-task-request.yml")
     create_task_schema = yaml.safe_load(create_task_schema.content)
 
-    payload_schema = requests.get("https://raw.githubusercontent.com/taskcluster/docker-worker/master/schemas/v1/payload.json").json()
+    payload_schema = requests.get(
+        "https://raw.githubusercontent.com/taskcluster/taskcluster/master/workers/docker-worker/schemas/v1/payload.json").json()
 
     jobs = ["lint",
             "manifest_upload",

@@ -227,6 +227,86 @@ test(() => {
 
 test(() => {
   smokeTest();
+  const totals = ["omitted", undefined];
+  totals.forEach(total => {
+    let details = {id: "foo"};
+    if (total !== "omitted") Object.assign(details, { total });
+    try {
+      new PaymentRequest([{supportedMethods: "https://play.google.com/billing"}], details)
+    } catch (err) {
+      assert_unreached(
+          `Unexpected error constructing PaymentReuqest with total being "${JSON.stringify(total)}": ${err.message}.`
+        );
+    }
+  });
+}, `The total field is optional when the merchant requests only app-store billing methods.`);
+
+test(() => {
+  smokeTest();
+  const totals = [null, {}];
+  totals.forEach(total => {
+    assert_throws_js(TypeError, () => {
+      new PaymentRequest([{supportedMethods: "https://play.google.com/billing"}], {id: "foo", total})
+    });
+  });
+}, `The total field is not allowed to be null or {} when it is optional (when the merchant requests only app-store billing methods).`);
+
+test(() => {
+  smokeTest();
+  const totals = ["omitted", undefined, null, {}];
+  totals.forEach(total => {
+    let details = {id: "foo"};
+    if (total !== "omitted") Object.assign(details, { total });
+    assert_throws_js(TypeError, () => {
+      new PaymentRequest([{supportedMethods: "https://play.google.com/billing"},
+        {supportedMethods: "https://{{domains[nonexistent]}}/payment-request"}], details);
+    });
+  });
+}, `The total field is manadatory when the merchant requests non-app-store billing methods.`);
+
+test(() => {
+  smokeTest();
+  const methodData = [{supportedMethods: "https://play.google.com/billing"}];
+  const detailsList = ["omitted", undefined, null, {}];
+  detailsList.forEach(details => {
+    try {
+      if (details === "omitted") {
+        new PaymentRequest(methodData);
+      } else {
+        new PaymentRequest(methodData, details);
+      }
+    } catch (err) {
+      assert_unreached(
+          `Unexpected error constructing PaymentReuqest with details being ${JSON.stringify(details)}: ${err.message}`
+        );
+    }
+  });
+}, `The details field is optional when the merchant requests only app-store billing methods.`);
+
+test(() => {
+  smokeTest();
+  const methodData = [{supportedMethods: "https://play.google.com/billing"},
+      {supportedMethods: "https://{{domains[nonexistent]}}/payment-request"}];
+  const detailsList = ["omitted", undefined, null];
+  detailsList.forEach(details => {
+    try {
+      if (details === "omitted") {
+        new PaymentRequest(methodData);
+      } else {
+        new PaymentRequest(methodData, details);
+      }
+    } catch (err) {
+      // Since the details pointer is always not null in the C++ code, total is checked as a fallback.
+      assert_equals(err.message, "Failed to construct 'PaymentRequest': Total is required but not provided.",
+          `Error message mismatched when testing with details ${JSON.stringify(details)}`);
+      return;
+    }
+    assert_unreached(`Expect an exception when details is ${JSON.stringify(details)} and the merchant requests non-app-store billing methods.`);
+  });
+}, `The details field is manadatory when the merchant requests non-app-store billing methods.`);
+
+test(() => {
+  smokeTest();
   for (const prop in ["displayItems", "shippingOptions", "modifiers"]) {
     try {
       const details = Object.assign({}, defaultDetails, { [prop]: [] });

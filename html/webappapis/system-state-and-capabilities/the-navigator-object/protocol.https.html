@@ -59,7 +59,7 @@ test(() => {
   test(() => {
     assert_throws_dom('SYNTAX_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
     assert_throws_dom('SECURITY_ERR', () => { navigator.registerProtocolHandler('x', url, 'foo'); });
-  }, 'unregisterProtocolHandler: Invalid URL "' + url + '" should throw (but after scheme)');
+  }, `unregisterProtocolHandler: Invalid URL "${url}" should throw (but after scheme)`);
 });
 
 [
@@ -88,11 +88,11 @@ test(() => {
 ].forEach(url => {
   test(() => {
     assert_throws_dom('SYNTAX_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
-  }, 'registerProtocolHandler: Invalid URL "' + url + '" should throw SYNTAX_ERR.');
+  }, `registerProtocolHandler: Invalid URL "${url}" should throw SYNTAX_ERR.`);
 
   test(() => {
     assert_throws_dom('SYNTAX_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
-  }, 'unregisterProtocolHandler: Invalid URL "' + url + '" should throw SYNTAX_ERR.');
+  }, `unregisterProtocolHandler: Invalid URL "${url}" should throw SYNTAX_ERR.`);
 });
 
 /* Protocol argument */

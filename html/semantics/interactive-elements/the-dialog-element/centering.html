@@ -22,17 +22,17 @@ testDialogCentering("horizontal-tb", "", "", "dialog bigger than viewport", 100,
 
 testDialogCentering("vertical-rl", "", "", "tall viewport", 40, 100, "left", 40 / 2 - DIALOG_WIDTH / 2);
 testDialogCentering("vertical-lr", "", "", "tall viewport", 40, 100, "right", 40 / 2 - DIALOG_WIDTH / 2);
-testDialogCentering("vertical-lr", "", "", "dialog bigger than viewport", DIALOG_WIDTH / 2, 100, "right", 0);
+testDialogCentering("vertical-lr", "", "", "dialog bigger than viewport", DIALOG_WIDTH / 2, 100, "left", 0);
 
-testDialogCentering("vertical-rl", "", "horizontal-tb", "tall viewport", 40, 100, "left", 40 / 2 - DIALOG_WIDTH / 2);
-testDialogCentering("vertical-lr", "", "horizontal-tb", "tall viewport", 40, 100, "right", 40 / 2 - DIALOG_WIDTH / 2);
-testDialogCentering("vertical-lr", "", "horizontal-tb", "dialog bigger than viewport", DIALOG_WIDTH / 2, 100, "right", 0);
+testDialogCentering("vertical-rl", "", "horizontal-tb", "tall viewport", 40, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
+testDialogCentering("vertical-lr", "", "horizontal-tb", "tall viewport", 40, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
+testDialogCentering("vertical-lr", "", "horizontal-tb", "dialog bigger than viewport", DIALOG_WIDTH / 2, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
 
 testDialogCentering("horizontal-tb", "vertical-rl", "", "tall viewport", 40, 100, "right", 40 / 2 - DIALOG_WIDTH / 2);
 testDialogCentering("vertical-rl", "horizontal-tb", "", "tall viewport", 40, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
 
-testDialogCentering("horizontal-tb", "vertical-rl", "horizontal-tb", "tall viewport", 40, 100, "right", 40 / 2 - DIALOG_WIDTH / 2);
-testDialogCentering("vertical-rl", "horizontal-tb", "vertical-rl", "tall viewport", 40, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
+testDialogCentering("horizontal-tb", "vertical-rl", "horizontal-tb", "tall viewport", 40, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
+testDialogCentering("vertical-rl", "horizontal-tb", "vertical-rl", "tall viewport", 40, 100, "right", 40 / 2 - DIALOG_WIDTH / 2);
 
 function testDialogCentering(writingMode, containerWritingMode, dialogWritingMode, label, iframeWidth, iframeHeight, property, numericValue) {
   async_test(t => {

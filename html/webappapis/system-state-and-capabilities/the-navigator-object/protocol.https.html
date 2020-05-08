@@ -50,6 +50,7 @@ test(() => {
   location.href + '/%a',
   'http://example.com',
   'http://[v8.:::]//url=%s',
+  'https://test:test/',
 ].forEach(url => {
   test(() => {
     assert_throws_dom('SYNTAX_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
@@ -81,18 +82,6 @@ test(() => {
   test(() => {
     assert_throws_dom('SECURITY_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
   }, 'unregisterProtocolHandler: Invalid URL "' + url + '" should throw SECURITY_ERR.');
-});
-
-[
-  'https://test:test/'
-].forEach(url => {
-  test(() => {
-    assert_throws_dom('SYNTAX_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
-  }, `registerProtocolHandler: Invalid URL "${url}" should throw SYNTAX_ERR.`);
-
-  test(() => {
-    assert_throws_dom('SYNTAX_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
-  }, `unregisterProtocolHandler: Invalid URL "${url}" should throw SYNTAX_ERR.`);
 });
 
 /* Protocol argument */

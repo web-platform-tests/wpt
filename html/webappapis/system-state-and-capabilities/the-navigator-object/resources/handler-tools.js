@@ -1,7 +1,6 @@
 // These can be used in an environment that has these variables defined:
 // * type
 // * handler
-// * nonASCIIExectations
 
 function register() {
   navigator.registerProtocolHandler(`web+wpt${type}`, `resources/handler/${type}/${handler}`, `WPT ${type} handler`);

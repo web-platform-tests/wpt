@@ -25,7 +25,7 @@ def test_tripleclick_at_coordinates(session, mouse_chain):
         .pause(0) \
         .click() \
         .perform()
-    
+
     actual_text = session.execute_script("return document.getSelection().toString();")
 
     assert lots_of_text == actual_text

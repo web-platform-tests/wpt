@@ -74,6 +74,7 @@ test(() => {
   `ftp://${location.host}/%s`,
   `chrome://${location.host}/%s`,
   `foo://${location.host}/%s`,
+  URL.createObjectURL(new Blob()) + "#%s",
 ].forEach(url => {
   test(() => {
     assert_throws_dom('SECURITY_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });

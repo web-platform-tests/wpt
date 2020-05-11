@@ -2,7 +2,9 @@
 <p>This popup can be closed if it does not close itself.
 <p>
 <script>
-// https://web-platform.test:8443/html/webappapis/system-state-and-capabilities/the-navigator-object/resources/handler/{type}/...
+// This resource gets loaded through a service worker as a result of a URL that looks like:
+// https://.../html/webappapis/system-state-and-capabilities/the-navigator-object/resources/handler/{type}/...
+// The host is excluded to not upset the lint tool.
 const type = document.URL.split("/")[9];
 new BroadcastChannel(`protocol-handler-${type}`).postMessage(document.URL);
 window.close();

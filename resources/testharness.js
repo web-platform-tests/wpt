@@ -715,6 +715,10 @@ policies and contribution forms [3].
      */
     function EventWatcher(test, watchedNode, eventTypes, timeoutPromise)
     {
+        test.step(() => {
+            assert_false(!!timeoutPromise, 'timeoutPromise argument used');
+        });
+
         if (typeof eventTypes == 'string') {
             eventTypes = [eventTypes];
         }

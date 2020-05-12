@@ -281,7 +281,7 @@ initalized so can depend on a fully-populated object.</p>
 
 <dl class="class">
 <dt id="wptrunner.executors.base.CrashtestExecutor">
-<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">CrashtestExecutor</code><span class="sig-paren">(</span><em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.CrashtestExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">CrashtestExecutor</code><span class="sig-paren">(</span><em>logger</em>, <em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.CrashtestExecutor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="exception">
@@ -291,12 +291,12 @@ initalized so can depend on a fully-populated object.</p>
 
 <dl class="class">
 <dt id="wptrunner.executors.base.RefTestExecutor">
-<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">RefTestExecutor</code><span class="sig-paren">(</span><em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>screenshot_cache=None</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.RefTestExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">RefTestExecutor</code><span class="sig-paren">(</span><em>logger</em>, <em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>screenshot_cache=None</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.RefTestExecutor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
 <dt id="wptrunner.executors.base.TestExecutor">
-<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">TestExecutor</code><span class="sig-paren">(</span><em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.TestExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">TestExecutor</code><span class="sig-paren">(</span><em>logger</em>, <em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.TestExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract Base class for object that actually executes the tests in a
 specific browser. Typically there will be a different TestExecutor
 subclass for each test type and method of executing tests.</p>
@@ -329,12 +329,6 @@ specific test.</p>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="wptrunner.executors.base.TestExecutor.logger">
-<code class="descname">logger</code><a class="headerlink" href="#wptrunner.executors.base.TestExecutor.logger" title="Permalink to this definition">¶</a></dt>
-<dd><p>StructuredLogger for this executor</p>
 </dd></dl>
 
 <dl class="method">
@@ -383,12 +377,12 @@ browser instance</p>
 
 <dl class="class">
 <dt id="wptrunner.executors.base.TestharnessExecutor">
-<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">TestharnessExecutor</code><span class="sig-paren">(</span><em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.TestharnessExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">TestharnessExecutor</code><span class="sig-paren">(</span><em>logger</em>, <em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.TestharnessExecutor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
 <dt id="wptrunner.executors.base.WdspecExecutor">
-<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">WdspecExecutor</code><span class="sig-paren">(</span><em>browser</em>, <em>server_config</em>, <em>webdriver_binary</em>, <em>webdriver_args</em>, <em>timeout_multiplier=1</em>, <em>capabilities=None</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">WdspecExecutor</code><span class="sig-paren">(</span><em>logger</em>, <em>browser</em>, <em>server_config</em>, <em>webdriver_binary</em>, <em>webdriver_args</em>, <em>timeout_multiplier=1</em>, <em>capabilities=None</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="wptrunner.executors.base.WdspecExecutor.do_test">
 <code class="descname">do_test</code><span class="sig-paren">(</span><em>test</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecExecutor.do_test" title="Permalink to this definition">¶</a></dt>

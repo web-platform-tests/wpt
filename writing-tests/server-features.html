@@ -50,8 +50,9 @@ approach is insufficient, including:</p>
 server-side components designed to make it easy to manipulate the
 precise details of the response:</p>
 <ul class="simple">
-<li><em>wptserve</em>, a custom Python HTTP server.</li>
+<li><em>wptserve</em>, a custom Python HTTP server</li>
 <li><em>pywebsocket</em>, an existing websockets server</li>
+<li><em>tools/quic</em>, a custom Python 3 QUIC server using <code class="docutils literal notranslate"><span class="pre">aioquic</span></code></li>
 </ul>
 <p>wptserve is a Python-based web server. By default it serves static
 files in the test suite. For more sophisticated requirements, several
@@ -134,8 +135,8 @@ timing is unnecessary, but the response does not conform to HTTP requirements.</
 data and can manipulate the content and timing of the response. Responses are
 also influenced by <a class="reference internal" href="server-pipes.html"><span class="doc">the pipe query string parameter</span></a>.</p>
 </div>
-<div class="section" id="writing-tests-for-http-2-0">
-<h2>Writing tests for HTTP/2.0<a class="headerlink" href="#writing-tests-for-http-2-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="tests-requiring-http-2-0">
+<h2>Tests Requiring HTTP/2.0<a class="headerlink" href="#tests-requiring-http-2-0" title="Permalink to this headline">¶</a></h2>
 <p>The server now has a prototype HTTP/2.0 server which gives you access to
 some of the HTTP/2.0 specific functionality. Currently, the server is off
 by default and needs to be run using <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">serve</span> <span class="pre">--h2</span></code> in order to enable it.
@@ -144,7 +145,31 @@ API are documented in <a class="reference internal" href="h2tests.html"><span cl
 <blockquote>
 <div><b>Important:</b> The HTTP/2.0 server requires you to have Python 2.7.10+
 and OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
-<a class="reference external" href="https://tools.ietf.org/html/rfc7301">TLS ALPN</a> extension, which is only supported in <a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</div></blockquote>
+<a class="reference external" href="https://tools.ietf.org/html/rfc7301">TLS ALPN</a> extension, which is only
+supported in
+<a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</div></blockquote>
+</div>
+<div class="section" id="tests-requiring-quic">
+<h2>Tests Requiring QUIC<a class="headerlink" href="#tests-requiring-quic" title="Permalink to this headline">¶</a></h2>
+<p>We do not support loading a test over QUIC yet, but a test can establish a QUIC
+connection to the test server (e.g. for WebTransport, similar to WebSocket).
+Since the QUIC server is not yet enabled by default, tests must explicitly
+declare that they need access to the QUIC server:</p>
+<ul class="simple">
+<li>For HTML tests (including testharness.js and reference tests), add the
+following element:</li>
+</ul>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;quic&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;true&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>For JavaScript tests (auto-generated tests), add the following comment:</li>
+</ul>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// META: quic=true</span>
+</pre></div>
+</div>
+<p>The QUIC server is not yet enabled by default, so QUIC tests will be skipped
+unless <code class="docutils literal notranslate"><span class="pre">--enable-quic</span></code> is specified to <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code>.</p>
 </div>
 </div>
 

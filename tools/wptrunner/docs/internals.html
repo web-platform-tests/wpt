@@ -165,7 +165,7 @@ per test)</p>
 
 <span class="target" id="module-wptrunner.environment"></span><dl class="class">
 <dt id="wptrunner.environment.TestEnvironment">
-<em class="property">class </em><code class="descclassname">wptrunner.environment.</code><code class="descname">TestEnvironment</code><span class="sig-paren">(</span><em>test_paths</em>, <em>testharness_timeout_multipler</em>, <em>pause_after_test</em>, <em>debug_info</em>, <em>options</em>, <em>ssl_config</em>, <em>env_extras</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.environment.TestEnvironment" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wptrunner.environment.</code><code class="descname">TestEnvironment</code><span class="sig-paren">(</span><em>test_paths</em>, <em>testharness_timeout_multipler</em>, <em>pause_after_test</em>, <em>debug_info</em>, <em>options</em>, <em>ssl_config</em>, <em>env_extras</em>, <em>enable_quic=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.environment.TestEnvironment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Context manager that owns the test environment i.e. the http and
 websockets servers</p>
 </dd></dl>
@@ -503,7 +503,7 @@ to initial criteria</p>
 
 <dl class="class">
 <dt id="wptrunner.testloader.TestLoader">
-<em class="property">class </em><code class="descclassname">wptrunner.testloader.</code><code class="descname">TestLoader</code><span class="sig-paren">(</span><em>test_manifests</em>, <em>test_types</em>, <em>run_info</em>, <em>manifest_filters=None</em>, <em>chunk_type='none'</em>, <em>total_chunks=1</em>, <em>chunk_number=1</em>, <em>include_https=True</em>, <em>skip_timeout=False</em>, <em>skip_implementation_status=None</em>, <em>chunker_kwargs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testloader.TestLoader" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wptrunner.testloader.</code><code class="descname">TestLoader</code><span class="sig-paren">(</span><em>test_manifests</em>, <em>test_types</em>, <em>run_info</em>, <em>manifest_filters=None</em>, <em>chunk_type='none'</em>, <em>total_chunks=1</em>, <em>chunk_number=1</em>, <em>include_https=True</em>, <em>include_quic=False</em>, <em>skip_timeout=False</em>, <em>skip_implementation_status=None</em>, <em>chunker_kwargs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.testloader.TestLoader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads tests according to a WPT manifest and any associated expectation files</p>
 </dd></dl>
 

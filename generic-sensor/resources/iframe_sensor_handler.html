@@ -5,11 +5,11 @@
 <script src="/generic-sensor/resources/generic-sensor-helpers.js"></script>
 <script>
   let mockBackend = null;
-  // Minimum frequency supported by the mock backend is 5Hz. Using 200ms
-  // update period + 50ms threshold.
-  const maxUpdatePeriod = 250;
   let sensor = null;
   let lastTimestamp = null;
+
+  const frequencyInHz = 10;
+  const periodInMs = (1 / frequencyInHz) * 1000;
 
   window.onmessage = (e) => {
     if (e.data.command === 'create_sensor') {
@@ -17,7 +17,7 @@
       initialize_generic_sensor_tests().then((backend) => {
         mockBackend = backend;
         try {
-          sensor = new self[e.data.type]();
+          sensor = new self[e.data.type]({ frequency: frequencyInHz });
           e.source.postMessage({command: e.data.command,
                                 result: 'success'}, '*');
         } catch (error) {
@@ -38,18 +38,30 @@
         e.source.postMessage({command: e.data.command, result: error}, '*');
       }
     } else if (e.data.command === 'is_sensor_suspended') {
+      // We have two possibilities here:
+      // 1. The sensor is suspended, so there will be no new 'reading' event.
+      //    We will call |callback| as a timeout function, with a period larger
+      //    enough than the sensor's frequency for us to be sure that at least
+      //    one event should have been delivered if the sensor had been active.
+      //    The |result| sent as a reply should be true.
+      // 2. The sensor is not suspended. In this case, |callback| will be called
+      //    as a callback for |sensor|'s "reading" event, and the |result| it
+      //    sends back should be false.
       let cachedTimestamp = lastTimestamp;
-      let timeoutId = setTimeout(() => {
-        e.source.postMessage({command: e.data.command,
-                              result: cachedTimestamp === lastTimestamp}, '*');
-      }, maxUpdatePeriod);
 
-      let suspendListener = () => {
+      const callback = () => {
+        // Ensure this function is only called once.
         clearTimeout(timeoutId);
-        e.source.postMessage({command: e.data.command,
-                              result: cachedTimestamp === lastTimestamp}, '*');
-      }
-      sensor.addEventListener('reading', suspendListener, {once: true});
+        sensor.removeEventListener('reading', callback);
+
+        e.source.postMessage({
+          command: e.data.command,
+          result: cachedTimestamp === lastTimestamp
+        }, '*');
+      };
+
+      const timeoutId = setTimeout(callback, 2 * periodInMs);
+      sensor.addEventListener('reading', callback, { once: true });
     } else if (e.data.command === 'reset_sensor_backend') {
       if (sensor) {
         sensor.stop();

@@ -406,7 +406,8 @@ def test_check_unique_testharness_basename_same_basename(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/dir1/a.html", "tests/dir1/a.xhtml"], "normal")
-            assert rv == 1
+            # There will be one failure for each file.
+            assert rv == 2
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
     assert "DUPLICATE-BASENAME-PATH" in caplog.text

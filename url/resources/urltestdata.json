@@ -5863,6 +5863,68 @@
     "search": "",
     "hash": "#frag"
   },
+  "# file: drive letter cases from https://crbug.com/1078698",
+  {
+    "input": "file:///Y:",
+    "base": "about:blank",
+    "href": "file:///Y:",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/Y:",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file:///Y:/",
+    "base": "about:blank",
+    "href": "file:///Y:/",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/Y:/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file:///./Y",
+    "base": "about:blank",
+    "href": "file:///Y",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/Y",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file:///./Y:",
+    "base": "about:blank",
+    "href": "file:///Y:",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/Y:",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "\\\\\\.\\Y:",
+    "base": "about:blank",
+    "failure": true
+  },
   "# IPv6 tests",
   {
     "input": "http://[1:0::]",

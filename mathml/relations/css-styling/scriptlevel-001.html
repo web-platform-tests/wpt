@@ -80,7 +80,7 @@
       }, `automatic scriptlevel on munderover (accent=true)`);
 
       test(function() {
-          var element = document.getElementById("munderover-dynamic-caseinsentivie")
+          var element = document.getElementById("munderover-dynamic-case-insensitive")
           assert_approx_equals(fontSize(element.children[0]), fontSizeAtScriptLevelZero, epsilon, "base");
           assert_approx_equals(fontSize(element.children[1]), fontSizeAtScriptLevelZero * .71, epsilon, "under");
           assert_approx_equals(fontSize(element.children[2]), fontSizeAtScriptLevelZero, epsilon, "over");
@@ -206,7 +206,7 @@
     </p>
     <p>
       <math>
-        <munderover id="munderover-dynamic-caseinsentivie" accent="TrUe">
+        <munderover id="munderover-dynamic-case-insensitive" accent="TrUe">
           <mn>0</mn>
           <mn>1</mn>
           <mn>2</mn>

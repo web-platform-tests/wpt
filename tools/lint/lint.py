@@ -352,7 +352,7 @@ def check_unique_testharness_basenames(repo_root, paths):
     for k, v in file_dict.items():
         if len(v) == 1:
             continue
-        context = (', '.join(v))
+        context = (', '.join(v),)
         for extension in v:
             errors.append(rules.DuplicateBasenamePath.error(k + extension, context))
     return errors

@@ -20,9 +20,7 @@ def test_tripleclick_at_coordinates(session, mouse_chain):
     mouse_chain \
         .pointer_move(div_centre["x"], div_centre["y"]) \
         .click() \
-        .pause(0) \
         .click() \
-        .pause(0) \
         .click() \
         .perform()
 

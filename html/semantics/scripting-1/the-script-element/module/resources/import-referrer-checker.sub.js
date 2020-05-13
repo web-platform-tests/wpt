@@ -1,1 +1,2 @@
-export { referrer } from './referrer-checker.py?name={{GET[name]}}';
+import { referrer as referrerImport } from './referrer-checker.py?name={{GET[name]}}';
+export const referrer = referrerImport;

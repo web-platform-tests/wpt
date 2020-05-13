@@ -222,9 +222,10 @@ time or interval from now when the cookie expires</li>
 
 <dl class="method">
 <dt id="wptserve.response.Response.set_error">
-<code class="descname">set_error</code><span class="sig-paren">(</span><em>code</em>, <em>message=''</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.set_error" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the response status headers and body to indicate an
-error</p>
+<code class="descname">set_error</code><span class="sig-paren">(</span><em>code</em>, <em>message=u''</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.set_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the response status headers and return a JSON error object:</p>
+<p>{“error”: {“code”: code, “message”: message}}
+code is an int (HTTP status code), and message is a text string.</p>
 </dd></dl>
 
 <dl class="method">

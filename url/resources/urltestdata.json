@@ -5925,6 +5925,68 @@
     "base": "about:blank",
     "failure": true
   },
+  "# file: drive letter cases from https://crbug.com/1078698 but lowercased",
+  {
+    "input": "file:///y:",
+    "base": "about:blank",
+    "href": "file:///y:",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/y:",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file:///y:/",
+    "base": "about:blank",
+    "href": "file:///y:/",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/y:/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file:///./y",
+    "base": "about:blank",
+    "href": "file:///y",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/y",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file:///./y:",
+    "base": "about:blank",
+    "href": "file:///y:",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/y:",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "\\\\\\.\\y:",
+    "base": "about:blank",
+    "failure": true
+  },
   "# IPv6 tests",
   {
     "input": "http://[1:0::]",

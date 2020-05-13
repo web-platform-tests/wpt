@@ -8,6 +8,11 @@ lots_of_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do 
 
 
 def test_tripleclick_at_coordinates(session, mouse_chain):
+    """
+        This test does a triple click on a coordinate. On desktop platforms
+        this will select a paragraph. On mobile this will not have the same
+        desired outcome as taps are handled differently on mobile.
+    """
     session.url = inline("""<div>
           {}
         </div>""".format(lots_of_text))

@@ -2,16 +2,16 @@ from wptserve.handlers import HTTPException
 
 def main(request, response):
     if request.method != u"GET":
-        raise HTTPException(400, message="Method was not GET")
+        raise HTTPException(400, message=u"Method was not GET")
 
     if not b"id" in request.GET:
-        raise HTTPException(400, message="No id")
+        raise HTTPException(400, message=u"No id")
 
     id = request.GET[b'id']
     if b"read" in request.GET:
         data = request.server.stash.take(id)
         if data is None:
-            response.set_error(404, "Tried to read data not yet set")
+            response.set_error(404, u"Tried to read data not yet set")
             return
         return [(b"Content-Type", b"text/plain")], data
 
@@ -44,7 +44,7 @@ def main(request, response):
         response.status = 302
         response.headers.set(b'Location', request.GET[b'redirect'])
     else:
-        return """WEBVTT
+        return b"""WEBVTT
 
 00:00:00.000 --> 00:00:10.000
 Test"""

@@ -1,0 +1,38 @@
+<!doctype html>
+<input autofocus onfocus="autofocus_onfocus()"/>
+<script>
+  let autofocused = false;
+  function autofocus_onfocus() {
+    autofocused = true;
+  }
+
+  function wait_focus_event(target, timeout, focus_target) {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(false), timeout);
+      target.onfocus = () => resolve(true);
+      if (focus_target)
+        target.focus();
+    });
+  }
+
+  function post_result(destination, result) {
+    destination.postMessage({focused: result}, "*");
+  }
+
+  window.addEventListener("message", (e) => {
+    if (e.data === "autofocus") {
+      if (autofocused)
+        post_result(e.source, true);
+
+      wait_focus_event(document.querySelector("input"), 400)
+        .then(result => post_result(e.source, result));
+    } else if (e.data === "focus-window") {
+      wait_focus_event(window, 400, true /* focus_target */)
+        .then(result => post_result(e.source, result));
+    } else if (e.data === "focus-input") {
+      const input_element = document.querySelector("input");
+      wait_focus_event(input_element, 400, true /* focus_target */)
+        .then(result => post_result(e.source, result));
+    }
+});
+</script>

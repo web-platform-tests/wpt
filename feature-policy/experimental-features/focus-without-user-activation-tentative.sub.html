@@ -5,26 +5,19 @@
 <title> 'focus-without-user-activation' Policy : Correctly block automatic focus when policy disabled
 </title>
 <body>
-  <input onblur="did_blur();" autofocus/>
 <script>
   "use strict"
 
-  const url = "http://{{hosts[alt][www1]}}:{{ports[http][0]}}/feature-policy/experimental-features/resources/focus_steal.html";
+  // Use same origin url here because when iframe document has cross origin
+  // url, autofocus will be blocked by default with following console error:
+  // "Blocked autofocusing on a form control in a cross-origin subframe."
+  const url = "http://{{hosts[alt][www]}}:{{ports[http][0]}}/feature-policy/experimental-features/resources/focus-without-user-activation-iframe-tentative.html";
 
-  let did_blur_ = false;
-  function did_blur() {
-    did_blur_ = true;
-  }
-
-  function short_delay(test_instance) {
-    // Long enough to allow focus to propagate correctly.
-    const SHORT_DELAY = 400;
-    return new Promise( (r) => test_instance.step_timeout(r, SHORT_DELAY));
-  }
-
-  function reset_focus() {
-    did_blur_ = false;
-    document.querySelector("input").focus();
+  function subframe_focused(subframe, event_name) {
+    return new Promise(resolve => {
+      window.onmessage = m => resolve(m.data.focused);
+      subframe.contentWindow.postMessage(event_name, "*");
+    });
   }
 
   promise_test( async (instance) => {
@@ -33,21 +26,16 @@
       allow: "focus-without-user-activation 'none'",
       src: url
     });
+
     await wait_for_load(frame);
-
-    await short_delay(instance);
-    assert_false(did_blur_, "'autofocus' should not work.");
-
-    frame.contentWindow.postMessage("focus-input", "*");
-    await short_delay(instance);
-    assert_false(did_blur_, "'element.focus' should not work.");
-
-    frame.contentWindow.postMessage("focus-window", "*");
-    await short_delay(instance);
-    assert_false(did_blur_, "'window.focus' should not work.");
+    assert_false(await subframe_focused(frame, "autofocus"), "'autofocus' should not work.");
+    window.focus(); // Reset focus state in subframe.
+    assert_false(await subframe_focused(frame, "focus-input"), "'element.focus' should not work.");
+    window.focus(); // Reset focus state in subframe.
+    assert_false(await subframe_focused(frame, "focus-window"), "'window.focus' should not work.");
+    window.focus(); // Reset focus state in subframe.
   }, "When the policy is disabled, 'autofocus' and scripted focus do not focus " +
      "the document.");
-
 
   promise_test( async (instance) => {
     const frame = createIframe(document.body, {
@@ -55,19 +43,14 @@
       allow: "focus-without-user-activation *",
       src: url
     });
+
     await wait_for_load(frame);
-    await short_delay(instance);
-
-    reset_focus();
-    frame.contentWindow.postMessage("focus-input", "*");
-    await short_delay(instance);
-    assert_true(did_blur_, "'element.focus' should work.");
-    did_blur_ = false;
-
-    reset_focus();
-    frame.contentWindow.postMessage("focus-window", "*");
-    await short_delay(instance);
-    assert_true(did_blur_, "'window.focus' should work.");
+    // assert_true(await subframe_focused(frame, "autofocus"), "'autofocus' should work.");
+    window.focus(); // Reset focus state in subframe.
+    assert_true(await subframe_focused(frame, "focus-input"), "'element.focus' should work.");
+    window.focus(); // Reset focus state in subframe.
+    assert_true(await subframe_focused(frame, "focus-window"), "'window.focus' should work.");
+    window.focus(); // Reset focus state in subframe.
   }, "When the policy is enabled, 'autofocus' and scripted focus do focus " +
      "the document.");
 </script>

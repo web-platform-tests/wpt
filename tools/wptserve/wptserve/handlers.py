@@ -1,7 +1,9 @@
 import json
+import io
 import os
 import sys
 import traceback
+import tokenize
 
 from six.moves.urllib.parse import parse_qs, quote, unquote, urljoin
 from six import iteritems
@@ -31,7 +33,6 @@ def guess_content_type(path):
     return "application/octet-stream"
 
 
-
 def filesystem_path(base_path, request, url_base="/"):
     if base_path is None:
         base_path = request.doc_root
@@ -51,6 +52,7 @@ def filesystem_path(base_path, request, url_base="/"):
         raise HTTPException(404)
 
     return new_path
+
 
 class DirectoryHandler(object):
     def __init__(self, base_path=None, url_base="/"):
@@ -245,9 +247,10 @@ file_handler = FileHandler()
 
 
 class PythonScriptHandler(object):
-    def __init__(self, base_path=None, url_base="/"):
+    def __init__(self, base_path=None, url_base="/", require_string_prefix=False):
         self.base_path = base_path
         self.url_base = url_base
+        self.require_string_prefix = require_string_prefix
 
     def __repr__(self):
         return "<%s base_path:%s url_base:%s>" % (self.__class__.__name__, self.base_path, self.url_base)
@@ -271,7 +274,11 @@ class PythonScriptHandler(object):
             environ = {"__file__": path}
             sys.path.insert(0, os.path.dirname(path))
             with open(path, 'rb') as f:
-                exec(compile(f.read(), path, 'exec'), environ, environ)
+                data = f.read()
+                is_valid, msg = self._validate(path, data)
+                if not is_valid:
+                    raise HTTPException(500, msg)
+                exec(compile(data, path, 'exec'), environ, environ)
 
             if func is not None:
                 return func(request, response, environ, path)
@@ -281,6 +288,32 @@ class PythonScriptHandler(object):
         finally:
             sys.path = sys_path
             sys.modules = sys_modules
+
+    def _validate(self, path, code):
+        if not self.require_string_prefix:
+            return True, None
+
+        errors = []
+        if sys.version_info[0] == 2:
+            readline = io.BytesIO(code).readline
+        else:
+            encoding = tokenize.detect_encoding(io.BytesIO(code).readline)[0]
+            readline = io.StringIO(code.decode(encoding)).readline
+
+        for token in tokenize.generate_tokens(readline):
+            # Need to inde tuple for Py2
+
+            if token[0] == tokenize.STRING:
+                if token[1][0] not in ("u", "b"):
+                    errors.append(token)
+        if errors:
+            msg = ["String literals require either a u or b prefix"]
+            for token in errors:
+                msg.append("  %s line %s column %s" %
+                           (path, token[2][0], token[2][1]))
+            return False, "\n".join(msg)
+
+        return True, None
 
     def __call__(self, request, response):
         def func(request, response, environ, path):

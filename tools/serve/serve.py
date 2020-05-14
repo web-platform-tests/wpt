@@ -359,23 +359,26 @@ class RoutesBuilder(object):
         self.mountpoint_routes[url_base] = []
 
         routes = [
-            ("GET", "*.worker.html", WorkersHandler),
-            ("GET", "*.window.html", WindowHandler),
-            ("GET", "*.any.html", AnyHtmlHandler),
-            ("GET", "*.any.sharedworker.html", SharedWorkersHandler),
-            ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
-            ("GET", "*.any.worker.js", AnyWorkerHandler),
-            ("GET", "*.asis", handlers.AsIsHandler),
-            ("GET", "/.well-known/origin-policy", handlers.PythonScriptHandler),
-            ("*", "*.py", handlers.PythonScriptHandler),
-            ("GET", "*", handlers.FileHandler)
+            ("GET", "*.worker.html", WorkersHandler, None),
+            ("GET", "*.window.html", WindowHandler, None),
+            ("GET", "*.any.html", AnyHtmlHandler, None),
+            ("GET", "*.any.sharedworker.html", SharedWorkersHandler, None),
+            ("GET", "*.any.serviceworker.html", ServiceWorkersHandler, None),
+            ("GET", "*.any.worker.js", AnyWorkerHandler, None),
+            ("GET", "*.asis", handlers.AsIsHandler, None),
+            ("GET", "/.well-known/origin-policy", handlers.PythonScriptHandler,
+             {"require_string_prefix": True}),
+            ("*", "*.py", handlers.PythonScriptHandler, {"require_string_prefix": True}),
+            ("GET", "*", handlers.FileHandler, None)
         ]
 
-        for (method, suffix, handler_cls) in routes:
+        for (method, suffix, handler_cls, handler_kwargs) in routes:
+            if handler_kwargs is None:
+                handler_kwargs = {}
             self.mountpoint_routes[url_base].append(
                 (method,
                  "%s%s" % (url_base if url_base != "/" else "", suffix),
-                 handler_cls(base_path=path, url_base=url_base)))
+                 handler_cls(base_path=path, url_base=url_base, **handler_kwargs)))
 
     def add_file_mount_point(self, file_url, base_path):
         assert file_url.startswith("/")

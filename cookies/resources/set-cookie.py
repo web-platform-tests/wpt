@@ -19,7 +19,7 @@ def main(request, response):
 
     name = request.GET[b'name']
     path = request.GET[b'path']
-    cookie = name + b"=1; " + b"Path=" +  path + b"; " + b"Expires=Wed, 09 Jun 2021 10:18:14 GMT"
+    cookie = b"%s=1; Path=%s; Expires=Wed, 09 Jun 2021 10:18:14 GMT" % (name, path)
 
     headers = [
         (b"Content-Type", b"application/json"),

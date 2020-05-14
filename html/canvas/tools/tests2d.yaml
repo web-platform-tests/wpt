@@ -2839,7 +2839,7 @@
     - 2d.pattern.IDL
   notes: *bindings
   code: |
-    @assert throws TypeError ctx.createPattern('../images/red.png', 'repeat');
+    @assert throws TypeError ctx.createPattern('/images/red.png', 'repeat');
 
 - name: 2d.pattern.image.incomplete.nosrc
   testing:
@@ -2855,7 +2855,7 @@
     - red.png
   code: |
     var img = new Image();
-    img.src = '../images/red.png';
+    img.src = '/images/red.png';
     // This triggers the "update the image data" algorithm.
     // The image will not go to the "completely available" state
     // until a fetch task in the networking task source is processed,
@@ -2870,7 +2870,7 @@
     - red.png
   code: |
     var img = document.getElementById('yellow.png');
-    img.src = '../images/red.png';
+    img.src = '/images/red.png';
     // This triggers the "update the image data" algorithm,
     // and resets the image to the "unavailable" state.
     // The image will not go to the "completely available" state
@@ -9097,7 +9097,7 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
     var img = new Image();
-    img.src = '../images/red.png';
+    img.src = '/images/red.png';
     // This triggers the "update the image data" algorithm.
     // The image will not go to the "completely available" state
     // until a fetch task in the networking task source is processed,
@@ -9116,7 +9116,7 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
     var img = document.getElementById('yellow.png');
-    img.src = '../images/red.png';
+    img.src = '/images/red.png';
     // This triggers the "update the image data" algorithm,
     // and resets the image to the "unavailable" state.
     // The image will not go to the "completely available" state

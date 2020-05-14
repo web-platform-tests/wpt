@@ -2238,7 +2238,7 @@
   testing:
     - 2d.pattern.IDL
   code: |
-    @assert throws TypeError ctx.createPattern('../images/red.png', 'repeat');
+    @assert throws TypeError ctx.createPattern('/images/red.png', 'repeat');
     t.done();
 
 - name: 2d.pattern.repeat.empty

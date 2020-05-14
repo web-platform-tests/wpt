@@ -1,6 +1,8 @@
 <!doctype html>
 <title>Navigating to a text fragment anchor</title>
 <script src="stash.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script>
 function isInView(element) {
   let rect = element.getBoundingClientRect();
@@ -8,7 +10,7 @@ function isInView(element) {
       && rect.left >= 0 && rect.left <= window.innerWidth;
 }
 
-function checkScroll() {
+async function checkScroll() {
   let position = 'unknown';
   if (window.scrollY == 0)
     position = 'top';
@@ -28,9 +30,12 @@ function checkScroll() {
     position = 'hidden';
   else if (isInView(document.getElementById('horizontal-scroll')) && window.scrollX > 0)
     position = 'horizontal-scroll';
+  else if (isInView(document.getElementById('tab-focus'))) {
+    position = 'focus';
+    await test_driver.send_keys(document.getElementById("tab-focus"), "\ue004");
+  }
 
   let target = document.querySelector(":target");
-
   if (!target && position == 'shadow-parent') {
     let shadow = document.getElementById("shadow-parent").shadowRoot.firstElementChild;
     if (shadow.matches(":target")) {
@@ -42,7 +47,8 @@ function checkScroll() {
   let results = {
     scrollPosition: position,
     href: window.location.href,
-    target: target ? target.id : 'undefined'
+    target: target ? target.id : 'undefined',
+    activeElementId: document.activeElement.id
   };
 
   let key = (new URL(document.location)).searchParams.get("key");
@@ -96,4 +102,10 @@ window.onload = function() {
   <p id="hidden" class="scroll-section">hidden text</p>
   <p id="horizontal-scroll" class="scroll-section">horizontally scrolled text</p>
   <p id="display-none" class="scroll-section">display none</p>
+  <div id = "tab-focus" class="scroll-section">
+    <a href="#" id="focusableElement1">Test1</a>
+    <p id="focus">Focus</p>
+    <a href="#" id="focusableElement2">Test2</a>
+  </div>
+
 </body>

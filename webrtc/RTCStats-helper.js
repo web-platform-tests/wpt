@@ -1,4 +1,4 @@
-'use strict';
+R'use strict';
 
 // Test is based on the following editor draft:
 // webrtc-pc 20171130
@@ -147,8 +147,8 @@ function validateRtcStats(statsReport, stats) {
 
 /*
   [webrtc-stats]
-  7.1.  RTCRTPStreamStats dictionary
-    dictionary RTCRTPStreamStats : RTCStats {
+  7.1.  RTCRtpStreamStats dictionary
+    dictionary RTCRtpStreamStats : RTCStats {
       unsigned long       ssrc;
       DOMString           kind;
       DOMString           transportId;
@@ -160,7 +160,7 @@ function validateRtcStats(statsReport, stats) {
 
   [webrtc-pc]
   8.6.  Mandatory To Implement Stats
-    - RTCRTPStreamStats, with attributes ssrc, kind, transportId, codecId
+    - RTCRtpStreamStats, with attributes ssrc, kind, transportId, codecId
  */
 function validateRtpStreamStats(statsReport, stats) {
   validateRtcStats(statsReport, stats);
@@ -214,8 +214,8 @@ function validateCodecStats(statsReport, stats) {
 
 /*
   [webrtc-stats]
-  7.3.  RTCReceivedRTPStreamStats dictionary
-    dictionary RTCReceivedRTPStreamStats : RTCRTPStreamStats {
+  7.3.  RTCReceivedRtpStreamStats dictionary
+    dictionary RTCReceivedRtpStreamStats : RTCRtpStreamStats {
       unsigned long long   packetsReceived;
       long long            packetsLost;
       double               jitter;
@@ -236,7 +236,7 @@ function validateCodecStats(statsReport, stats) {
 
     [webrtc-pc]
     8.6.  Mandatory To Implement Stats
-      - RTCReceivedRTPStreamStats, with all required attributes from its
+      - RTCReceivedRtpStreamStats, with all required attributes from its
         inherited dictionaries, and also attributes packetsReceived,
         packetsLost, jitter, packetsDiscarded, framesDropped
  */
@@ -268,8 +268,8 @@ function validateReceivedRtpStreamStats(statsReport, stats) {
 
 /*
   [webrtc-stats]
-  7.4.  RTCInboundRTPStreamStats dictionary
-    dictionary RTCInboundRTPStreamStats : RTCReceivedRTPStreamStats {
+  7.4.  RTCInboundRtpStreamStats dictionary
+    dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
       DOMString            trackId;
       DOMString            receiverId;
       DOMString            remoteId;
@@ -317,7 +317,7 @@ function validateReceivedRtpStreamStats(statsReport, stats) {
 
   [webrtc-pc]
   8.6.  Mandatory To Implement Stats
-    - RTCInboundRTPStreamStats, with all required attributes from its inherited
+    - RTCInboundRtpStreamStats, with all required attributes from its inherited
       dictionaries, and also attributes receiverId, remoteId, framesDecoded, nackCount, framesReceived, bytesReceived, totalAudioEnergy, totalSampleDuration
  */
 function validateInboundRtpStreamStats(statsReport, stats) {
@@ -385,8 +385,8 @@ function validateInboundRtpStreamStats(statsReport, stats) {
 
 /*
   [webrtc-stats]
-  7.5.  RTCRemoteInboundRTPStreamStats dictionary
-    dictionary RTCRemoteInboundRTPStreamStats : RTCReceivedRTPStreamStats {
+  7.5.  RTCRemoteInboundRtpStreamStats dictionary
+    dictionary RTCRemoteInboundRtpStreamStats : RTCReceivedRtpStreamStats {
       DOMString            localId;
       double               roundTripTime;
       double               totalRoundTripTime;
@@ -397,7 +397,7 @@ function validateInboundRtpStreamStats(statsReport, stats) {
 
   [webrtc-pc]
   8.6.  Mandatory To Implement Stats
-    - RTCRemoteInboundRTPStreamStats, with all required attributes from its
+    - RTCRemoteInboundRtpStreamStats, with all required attributes from its
       inherited dictionaries, and also attributes localId, roundTripTime
  */
 function validateRemoteInboundRtpStreamStats(statsReport, stats) {
@@ -413,15 +413,15 @@ function validateRemoteInboundRtpStreamStats(statsReport, stats) {
 
 /*
   [webrtc-stats]
-  7.6.  RTCSentRTPStreamStats dictionary
-    dictionary RTCSentRTPStreamStats : RTCRTPStreamStats {
+  7.6.  RTCSentRtpStreamStats dictionary
+    dictionary RTCSentRtpStreamStats : RTCRtpStreamStats {
       unsigned long      packetsSent;
       unsigned long long bytesSent;
     };
 
     [webrtc-pc]
     8.6.  Mandatory To Implement Stats
-      - RTCSentRTPStreamStats, with all required attributes from its inherited
+      - RTCSentRtpStreamStats, with all required attributes from its inherited
         dictionaries, and also attributes packetsSent, bytesSent
  */
 function validateSentRtpStreamStats(statsReport, stats) {
@@ -433,8 +433,8 @@ function validateSentRtpStreamStats(statsReport, stats) {
 
 /*
   [webrtc-stats]
-  7.7.  RTCOutboundRTPStreamStats dictionary
-    dictionary RTCOutboundRTPStreamStats : RTCSentRTPStreamStats {
+  7.7.  RTCOutboundRtpStreamStats dictionary
+    dictionary RTCOutboundRtpStreamStats : RTCSentRtpStreamStats {
       DOMString            trackId;
       DOMString            mediaSourceId;
       DOMString            senderId;
@@ -479,7 +479,7 @@ function validateSentRtpStreamStats(statsReport, stats) {
 
     [webrtc-pc]
     8.6.  Mandatory To Implement Stats
-      - RTCOutboundRTPStreamStats, with all required attributes from its
+      - RTCOutboundRtpStreamStats, with all required attributes from its
         inherited dictionaries, and also attributes senderId, remoteId, framesEncoded, nackCount, framesSent
  */
 function validateOutboundRtpStreamStats(statsReport, stats) {
@@ -560,8 +560,8 @@ function validateOutboundRtpStreamStats(statsReport, stats) {
 
 /*
   [webrtc-stats]
-  7.8.  RTCRemoteOutboundRTPStreamStats dictionary
-    dictionary RTCRemoteOutboundRTPStreamStats : RTCSentRTPStreamStats {
+  7.8.  RTCRemoteOutboundRtpStreamStats dictionary
+    dictionary RTCRemoteOutboundRtpStreamStats : RTCSentRtpStreamStats {
       DOMString           localId;
       DOMHighResTimeStamp remoteTimestamp;
       unsigned long long  reportsSent;
@@ -569,7 +569,7 @@ function validateOutboundRtpStreamStats(statsReport, stats) {
 
   [webrtc-pc]
   8.6.  Mandatory To Implement Stats
-    - RTCRemoteOutboundRTPStreamStats, with all required attributes from its
+    - RTCRemoteOutboundRtpStreamStats, with all required attributes from its
       inherited dictionaries, and also attributes localId, remoteTimestamp
  */
 function validateRemoteOutboundRtpStreamStats(statsReport, stats) {
@@ -864,7 +864,7 @@ function validateTransportStats(statsReport, stats) {
                           'transport');
 
   assert_optional_enum_field(stats, 'iceRole',
-                             ['unkwnon', 'controlling', 'controlled']);
+                             ['unknown', 'controlling', 'controlled']);
 
   assert_optional_enum_field(stats, 'dtlsState',
     ['new', 'connecting', 'connected', 'closed', 'failed']);

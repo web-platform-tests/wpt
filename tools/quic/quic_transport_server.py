@@ -48,7 +48,7 @@ class QuicTransportProtocol(QuicConnectionProtocol):
 
     def quic_event_received(self, event: QuicEvent) -> None:
         prefix = '!!'
-        logging.log(logging.INFO, 'QUIC event: %s' % type(event))
+        logging.info('QUIC event: %s', type(event))
         try:
             if (not self.client_indication_finished and
                     isinstance(event, StreamDataReceived) and
@@ -71,7 +71,7 @@ class QuicTransportProtocol(QuicConnectionProtocol):
                 self.handler.handle_event(event)
         except Exception as e:
             self.handler = None
-            logging.log(logging.WARN, prefix + str(e))
+            logging.warn(prefix + str(e))
             self.close()
 
     def parse_client_indication(self, bs):
@@ -109,8 +109,7 @@ class QuicTransportProtocol(QuicConnectionProtocol):
             else:
                 # We must ignore unrecognized fields.
                 pass
-        logging.log(logging.INFO,
-                    'origin = %s, path = %s' % (origin_string, path_string))
+        logging.info('origin = %s, path = %s', origin_string, path_string)
         if origin is None:
             raise Exception('No origin is given')
         if path is None:
@@ -121,7 +120,7 @@ class QuicTransportProtocol(QuicConnectionProtocol):
             raise Exception('Invalid origin: %s' % origin_string)
 
         # To make the situation simple we accept only simple path strings.
-        m = re.compile('^/([a-zA-Z0-9\._\-]+)$').match(path.path)
+        m = re.compile(r'^/([a-zA-Z0-9\._\-]+)$').match(path.path)
         if m is None:
             raise Exception('Invalid path: %s' % path_string)
 
@@ -132,7 +131,7 @@ class QuicTransportProtocol(QuicConnectionProtocol):
         if self.is_closing_or_closed():
             return
         self.client_indication_finished = True
-        logging.log(logging.INFO, 'Client indication finished')
+        logging.info('Client indication finished')
 
     def create_event_handler(self, handler_name: str) -> None:
         global_dict = {}
@@ -170,9 +169,10 @@ def start(kwargs):
         max_datagram_frame_size=65536,
     )
 
-    handlers_path = os.path.abspath(os.path.expanduser(kwargs['handlers_path']))
-    logging.log(logging.INFO, 'port = %s' % kwargs['port'])
-    logging.log(logging.INFO, 'handlers path = %s' % handlers_path)
+    handlers_path = os.path.abspath(os.path.expanduser(
+        kwargs['handlers_path']))
+    logging.info('port = %s', kwargs['port'])
+    logging.info('handlers path = %s', handlers_path)
 
     # load SSL certificate and key
     configuration.load_cert_chain(kwargs['certificate'], kwargs['private_key'])

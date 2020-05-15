@@ -39,7 +39,8 @@ def get_parser():
     parser.add_argument(
         '--handlers-path',
         type=str,
-        default=os.path.join(_dir, '..', '..', 'webtransport', 'quic', 'handlers'),
+        default=os.path.join(
+            _dir, '..', '..', 'webtransport', 'quic', 'handlers'),
         help='the directory path of QuicTransport event handlers',
     )
     parser.add_argument(

@@ -1,5 +1,5 @@
 {
-  "servequic": {
+  "serve-quic": {
     "path": "serve.py",
     "script": "run",
     "parser": "get_parser",

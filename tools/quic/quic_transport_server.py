@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-import argparse
 import asyncio
 import io
 import logging
@@ -165,73 +163,27 @@ class SessionTicketStore:
         return self.tickets.pop(label, None)
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='QUIC server')
-    parser.add_argument(
-        '-c',
-        '--certificate',
-        type=str,
-        required=True,
-        help='load the TLS certificate from the specified file',
-    )
-    parser.add_argument(
-        '--host',
-        type=str,
-        default='::',
-        help='listen on the specified address (defaults to ::)',
-    )
-    parser.add_argument(
-        '--port',
-        type=int,
-        default=4433,
-        help='listen on the specified port (defaults to 4433)',
-    )
-    parser.add_argument(
-        '-k',
-        '--private-key',
-        type=str,
-        required=True,
-        help='load the TLS private key from the specified file',
-    )
-    parser.add_argument(
-        '--handlers-path',
-        type=str,
-        required=True,
-        help='the directory path of QuicTransport event handlers',
-    )
-    parser.add_argument(
-        '-v',
-        '--verbose',
-        action='store_true',
-        help='increase logging verbosity'
-    )
-    args = parser.parse_args()
-
-    logging.basicConfig(
-        format='%(asctime)s %(levelname)s %(name)s %(message)s',
-        level=logging.DEBUG if args.verbose else logging.INFO,
-    )
-
+def start(kwargs):
     configuration = QuicConfiguration(
         alpn_protocols=['wq-vvv-01'] + ['siduck'],
         is_client=False,
         max_datagram_frame_size=65536,
     )
 
-    handlers_path = os.path.abspath(os.path.expanduser(args.handlers_path))
-    logging.log(logging.INFO, 'port = %s' % args.port)
+    handlers_path = os.path.abspath(os.path.expanduser(kwargs['handlers_path']))
+    logging.log(logging.INFO, 'port = %s' % kwargs['port'])
     logging.log(logging.INFO, 'handlers path = %s' % handlers_path)
 
     # load SSL certificate and key
-    configuration.load_cert_chain(args.certificate, args.private_key)
+    configuration.load_cert_chain(kwargs['certificate'], kwargs['private_key'])
 
     ticket_store = SessionTicketStore()
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(
         serve(
-            args.host,
-            args.port,
+            kwargs['host'],
+            kwargs['port'],
             configuration=configuration,
             create_protocol=QuicTransportProtocol,
             session_ticket_fetcher=ticket_store.pop,

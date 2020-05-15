@@ -70,6 +70,16 @@ To run Safari Technology Preview instead, use the <code class="docutils literal 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">channel</span><span class="o">=</span><span class="n">preview</span> <span class="n">safari</span> <span class="p">[</span><span class="n">test_list</span><span class="p">]</span>
 </pre></div>
 </div>
+<div class="section" id="debugging">
+<h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h2>
+<p>To debug problems with <code class="docutils literal notranslate"><span class="pre">safaridriver</span></code>, add the <code class="docutils literal notranslate"><span class="pre">--webdriver-arg=--diagnose</span></code>
+argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">channel</span><span class="o">=</span><span class="n">preview</span> <span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">arg</span><span class="o">=--</span><span class="n">diagnose</span> <span class="n">safari</span> <span class="p">[</span><span class="n">test_list</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The logs will be in <code class="docutils literal notranslate"><span class="pre">~/Library/Logs/com.apple.WebDriver/</span></code>.
+See <code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">safaridriver</span></code> for more information.</p>
+</div>
 </div>
 
 

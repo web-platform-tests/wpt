@@ -11,7 +11,9 @@
         return navigator.xr.test.simulateDeviceConnection(TRACKED_IMMERSIVE_DEVICE)
           .then( (controller) => {
             webglCanvas = document.getElementById('webgl-canvas');
-            gl = webglCanvas.getContext('webgl', {xrCompatible: true});
+            gl = webglCanvas.getContext('webgl');
+            return gl.makeXRCompatible();
+          }).then( () => {
             assert_true(gl.getContextAttributes().xrCompatible);
 
             // Check that an offscreen context behaves no different.

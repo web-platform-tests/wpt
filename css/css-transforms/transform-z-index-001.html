@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Test (Transforms): z-index without positioning</title>
+    <link
+      rel="author"
+      title="Anthony Frehner"
+      href="mailto:afrehner.work+wpt@gmail.com"
+    />
+    <link
+      rel="help"
+      href="https://drafts.csswg.org/css-transforms/#transform-property"
+    />
+    <meta
+      name="assert"
+      content="Content that is transformed but NOT positioned must appear in the stacking order as if it were positioned with 'z-index: 0'"
+    />
+    <link rel="match" href="transform-lime-square-ref.html" />
+    <style>
+      body > div:first-child {
+        height: 100px;
+        width: 100px;
+        background: red;
+        z-index: 2;
+        transform: scale(1);
+      }
+      body > div:last-child {
+        height: 100px;
+        width: 100px;
+        background: lime;
+        position: relative;
+        bottom: 100px;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div></div>
+    <div></div>
+  </body>
+</html>

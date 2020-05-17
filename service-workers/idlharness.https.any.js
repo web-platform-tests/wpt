@@ -40,8 +40,6 @@ idl_test(
         ExtendableEvent: ['new ExtendableEvent("type")'],
         FetchEvent: ['new FetchEvent("type")'],
         ServiceWorkerGlobalScope: ['self'],
-        // TODO: ServiceWorker and ServiceWorkerRegistration are technically
-        // exposed in Worker, not ServiceWorker.
         ServiceWorkerRegistration: ['registration'],
         ServiceWorker: ['serviceWorker'],
         // TODO: Test instances of Client and WindowClient, e.g.

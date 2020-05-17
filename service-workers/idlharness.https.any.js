@@ -5,6 +5,8 @@
 // META: script=service-worker/resources/test-helpers.sub.js
 // META: timeout=long
 
+// https://w3c.github.io/ServiceWorker
+
 idl_test(
   ['service-workers'],
   ['dom', 'html'],

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Backgrounds Test: box-shadow and inset (basic)</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-backgrounds-3/#the-box-shadow">
+  <link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+
+  <meta content="" name="flags">
+
+  <!--
+
+  <shadow> = inset? && <length>{2,4} && <color>?
+
+  A comma-separated pair of numbers in curly braces {A,B}
+  indicates that the preceding type, word, or group occurs
+  at least A and at most B times.
+
+  A question mark (?) indicates that the preceding type,
+  word, or group is optional (occurs zero or one times).
+
+  The components of each <shadow> are interpreted as follows:
+
+  1st <length>
+    Specifies the horizontal offset
+    of the shadow. A positive value draws a shadow that is offset to the right of the box, a negative length to the left.
+  2nd <length>
+    Specifies the vertical offset
+    of the shadow. A positive value offsets the shadow down, a negative one up.
+  4th <length>
+    Specifies the spread distance. Positive values cause the shadow to expand in all directions by the specified radius. Negative values cause the shadow to contract.
+  inset
+    If present, the inset keyword changes the drop shadow from an outer box-shadow (one that shadows the box onto the canvas, as if it were lifted above the canvas) to an inner box-shadow (one that shadows the canvas onto the box, as if the box were cut out of the canvas and shifted behind it).
+
+  -->
+
+  <style>
+  div#green-overlapping-test
+    {
+      background-color: transparent;
+      height: 100px;
+      width: 100px;
+
+      box-shadow: inset green 100px 100px 0px 0px;
+    }
+
+  div#red-overlapped-reference
+    {
+      background-color: red;
+      bottom: 100px;
+      height: 100px;
+      position: relative;
+      width: 100px;
+      z-index: -1;
+    }
+  </style>
+
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.
+
+  <div id="green-overlapping-test"></div>
+
+  <div id="red-overlapped-reference"></div>

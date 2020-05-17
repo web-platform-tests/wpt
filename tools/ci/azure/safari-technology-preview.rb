@@ -1,10 +1,10 @@
 cask 'safari-technology-preview' do
   if MacOS.version <= :mojave
-    version '104,061-96689-20200407-7f675598-e07d-46db-8b24-b10c33a006ba'
-    sha256 'bc1b0a79f99022aae802bbb1e83a6a13613a339115063489fc240567b1b5d81d'
+    version '106,001-05966-20200513-86571be6-878e-411b-a5b9-65a971573fae'
+    sha256 '8518c8917a9172aeb75deeb61060d353229760fd54dc85bd38a0897cc1d12105'
   else
-    version '104,061-96685-20200407-907fca12-9ba9-4bfa-8b8c-d5bf101d534b'
-    sha256 '3dcfde56386f38984c9ede1d67714c43699c5cafece9608ee2730484bffdcf9c'
+    version '106,001-05890-20200513-321a69b4-de58-440e-8182-8ac03d65f6ce'
+    sha256 'f3c073d9b60ff6d11f82abbc6cc131e5913e6d0f2a11f0968ae77db1b51e1e35'
   end
 
   url "https://secure-appldnld.apple.com/STP/#{version.after_comma}/SafariTechnologyPreview.dmg"

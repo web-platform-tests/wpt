@@ -155,10 +155,10 @@ class ServoWebDriverRun(TimedRunner):
 class ServoWebDriverTestharnessExecutor(TestharnessExecutor):
     supports_testdriver = True
 
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, capabilities=None, debug_info=None,
                  **kwargs):
-        TestharnessExecutor.__init__(self, browser, server_config, timeout_multiplier=1,
+        TestharnessExecutor.__init__(self, logger, browser, server_config, timeout_multiplier=1,
                                      debug_info=None)
         self.protocol = ServoWebDriverProtocol(self, browser, capabilities=capabilities)
         with open(os.path.join(here, "testharness_servodriver.js")) as f:
@@ -221,11 +221,12 @@ class TimeoutError(Exception):
 
 
 class ServoWebDriverRefTestExecutor(RefTestExecutor):
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, capabilities=None, debug_info=None,
                  **kwargs):
         """Selenium WebDriver-based executor for reftests"""
         RefTestExecutor.__init__(self,
+                                 logger,
                                  browser,
                                  server_config,
                                  screenshot_cache=screenshot_cache,
@@ -235,8 +236,8 @@ class ServoWebDriverRefTestExecutor(RefTestExecutor):
                                                capabilities=capabilities)
         self.implementation = RefTestImplementation(self)
         self.timeout = None
-        with open(os.path.join(here, "reftest-wait_webdriver.js")) as f:
-            self.wait_script = f.read()
+        with open(os.path.join(here, "test-wait.js")) as f:
+            self.wait_script = f.read() % {"classname": "reftest-wait"}
 
     def reset(self):
         self.implementation.reset()
@@ -277,7 +278,7 @@ class ServoWebDriverRefTestExecutor(RefTestExecutor):
 
         return ServoWebDriverRun(self.logger,
                                  self._screenshot,
-                                 self.protocol.session,
+                                 self.protocol,
                                  self.test_url(test),
                                  timeout,
                                  self.extra_timeout).run()

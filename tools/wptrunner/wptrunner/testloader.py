@@ -168,6 +168,7 @@ class TestLoader(object):
                  total_chunks=1,
                  chunk_number=1,
                  include_https=True,
+                 include_quic=False,
                  skip_timeout=False,
                  skip_implementation_status=None,
                  chunker_kwargs=None):
@@ -181,6 +182,7 @@ class TestLoader(object):
         self.tests = None
         self.disabled_tests = None
         self.include_https = include_https
+        self.include_quic = include_quic
         self.skip_timeout = skip_timeout
         self.skip_implementation_status = skip_implementation_status
 
@@ -267,6 +269,8 @@ class TestLoader(object):
             enabled = not test.disabled()
             if not self.include_https and test.environment["protocol"] == "https":
                 enabled = False
+            if not self.include_quic and test.environment["quic"]:
+                enabled = False
             if self.skip_timeout and test.expected() == "TIMEOUT":
                 enabled = False
             if self.skip_implementation_status and test.implementation_status() in self.skip_implementation_status:
@@ -299,6 +303,10 @@ class TestSource(object):
     @abstractmethod
     #@classmethod (doesn't compose with @abstractmethod in < 3.3)
     def make_queue(cls, tests, **kwargs):  # noqa: N805
+        pass
+
+    @abstractmethod
+    def tests_by_group(cls, tests, **kwargs):  # noqa: N805
         pass
 
     @classmethod
@@ -339,6 +347,17 @@ class GroupedSource(TestSource):
             test_queue.put(item)
         return test_queue
 
+    @classmethod
+    def tests_by_group(cls, tests, **kwargs):
+        groups = defaultdict(list)
+        state = {}
+        current = None
+        for test in tests:
+            if cls.new_group(state, test, **kwargs):
+                current = cls.group_metadata(state)['scope']
+            groups[current].append(test.id)
+        return groups
+
 
 class SingleTestSource(TestSource):
     @classmethod
@@ -358,6 +377,10 @@ class SingleTestSource(TestSource):
             test_queue.put(item)
 
         return test_queue
+
+    @classmethod
+    def tests_by_group(cls, tests, **kwargs):
+        return {cls.group_metadata(None)['scope']: [t.id for t in tests]}
 
 
 class PathGroupedSource(GroupedSource):

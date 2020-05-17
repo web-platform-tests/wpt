@@ -1,26 +1,53 @@
 export function insertIframe(hostname, header) {
+  const iframe = document.createElement("iframe");
+  const navigatePromise = navigateIframe(iframe, hostname, header);
+  document.body.append(iframe);
+  return navigatePromise;
+}
+
+export function navigateIframe(iframeEl, hostname, header) {
+  const url = getURL(hostname, header);
+
+  const waitPromise = waitForIframe(iframeEl, url);
+  iframeEl.src = url;
+  return waitPromise;
+}
+
+export function waitForIframe(iframeEl, destinationForErrorMessage) {
+  return new Promise((resolve, reject) => {
+    iframeEl.addEventListener("load", () => resolve(iframeEl.contentWindow));
+    iframeEl.addEventListener(
+      "error",
+      () => reject(new Error(`Could not navigate to ${destinationForErrorMessage}`))
+    );
+  });
+}
+
+function getURL(hostname, header) {
   const url = new URL("send-origin-isolation-header.py", import.meta.url);
   url.hostname = hostname;
-
   if (header !== undefined) {
     url.searchParams.set("header", header);
   }
 
-  const iframe = document.createElement("iframe");
-  iframe.src = url.href;
-
-  return new Promise((resolve, reject) => {
-    iframe.onload = () => resolve(iframe.contentWindow);
-    iframe.onerror = () => reject(new Error(`Could not load ${iframe.src}`));
-    document.body.append(iframe);
-  });
+  return url.href;
 }
 
 // This function is coupled to ./send-origin-isolation-header.py, which ensures
 // that sending such a message will result in a message back.
 export async function sendWasmModule(frameWindow) {
   frameWindow.postMessage(await createWasmModule(), "*");
-  return waitForMessage();
+  return waitForMessage(frameWindow);
+}
+
+export async function sendWasmModuleBetween(frameWindow, indexIntoParentFrameOfDestination) {
+  frameWindow.postMessage({ command: "send WASM module", indexIntoParentFrameOfDestination }, "*");
+  return waitForMessage(frameWindow);
+}
+
+export async function accessDocumentBetween(frameWindow, indexIntoParentFrameOfDestination) {
+  frameWindow.postMessage({ command: "access document", indexIntoParentFrameOfDestination }, "*");
+  return waitForMessage(frameWindow);
 }
 
 // This function is coupled to ./send-origin-isolation-header.py, which ensures
@@ -34,13 +61,19 @@ export async function setBothDocumentDomains(frameWindow) {
   document.domain = document.domain;
 
   frameWindow.postMessage({ command: "set document.domain", newDocumentDomain: document.domain }, "*");
-  const whatHappened = await waitForMessage();
+  const whatHappened = await waitForMessage(frameWindow);
   assert_equals(whatHappened, "document.domain is set");
 }
 
-function waitForMessage() {
+function waitForMessage(expectedSource) {
   return new Promise(resolve => {
-    window.addEventListener("message", e => resolve(e.data), { once: true });
+    const handler = e => {
+      if (e.source === expectedSource) {
+        resolve(e.data);
+        window.removeEventListener("message", handler);
+      }
+    };
+    window.addEventListener("message", handler);
   });
 }
 

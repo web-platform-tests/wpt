@@ -190,74 +190,6 @@ function exchangeIceCandidates(pc1, pc2) {
   doExchange(pc2, pc1);
 }
 
-// Helper class to exchange ice candidates between
-// two local peer connections
-class CandidateChannel {
-  constructor(source, dest, name) {
-    source.addEventListener('icecandidate', event => {
-      const { candidate } = event;
-      if (candidate && this.activated
-          && this.destination.signalingState !== 'closed') {
-        this.destination.addIceCandidate(candidate);
-      } else if (candidate) {
-        this.queue.push(candidate);
-      }
-    });
-    dest.addEventListener('signalingstatechange', event => {
-      if (this.destination.signalingState == 'stable' && !this.activated) {
-        this.activate();
-      }
-    });
-    this.name = name;
-    this.destination = dest;
-    this.activated = false;
-    this.queue = [];
-  }
-  activate() {
-    this.activated = true;
-    for (const candidate of this.queue) {
-      this.destination.addIceCandidate(candidate);
-    }
-  }
-}
-
-// Alternate function to exchange ICE candidates between two
-// PeerConnections. Unlike exchangeIceCandidates, it will function
-// correctly if candidates are added before descriptions are set.
-function coupleIceCandidates(pc1, pc2) {
-  const ch1 = new CandidateChannel(pc1, pc2, 'forward');
-  const ch2 = new CandidateChannel(pc2, pc1, 'back');
-  return [ch1, ch2];
-}
-
-// Helper function for doing one round of offer/answer exchange
-// between two local peer connections.
-// Calls setRemoteDescription(offer/answer) before
-// setLocalDescription(offer/answer) to ensure the remote description
-// is set and candidates can be added before the local peer connection
-// starts generating candidates and ICE checks.
-async function doSignalingHandshake(localPc, remotePc, options={}) {
-  let offer = await localPc.createOffer();
-  // Modify offer if callback has been provided
-  if (options.modifyOffer) {
-    offer = await options.modifyOffer(offer);
-  }
-
-  // Apply offer.
-  await remotePc.setRemoteDescription(offer);
-  await localPc.setLocalDescription(offer);
-
-  let answer = await remotePc.createAnswer();
-  // Modify answer if callback has been provided
-  if (options.modifyAnswer) {
-    answer = await options.modifyAnswer(answer);
-  }
-
-  // Apply answer.
-  await localPc.setRemoteDescription(answer);
-  await remotePc.setLocalDescription(answer);
-}
-
 // Returns a promise that resolves when the |transport| gets a
 // 'statechange' event with the value |state|.
 // This should work for RTCSctpTransport, RTCDtlsTransport and RTCIceTransport.
@@ -376,96 +308,25 @@ function listenForSSRCs(t, receiver) {
 // It does the heavy lifting of performing signaling handshake,
 // ICE candidate exchange, and waiting for data channel at two
 // end points to open.
-function createDataChannelPair(
-  pc1=new RTCPeerConnection(),
-  pc2=new RTCPeerConnection(),
-  options={})
-{
-  options = Object.assign({}, {
-    channelLabel: '',
-    channelOptions: undefined,
-    doSignaling: true
-  }, options);
-
-  let channel1Options;
-  let channel2Options = null;
-  if (options.channelOptions instanceof Array) {
-    [channel1Options, channel2Options] = options.channelOptions;
-  } else {
-    channel1Options = options.channelOptions;
+async function createDataChannelPair(
+  pc1 = new RTCPeerConnection(),
+  pc2 = new RTCPeerConnection()) {
+  const pair = [pc1, pc2].map(pc =>
+      pc.createDataChannel('', {negotiated: true, id: 0}));
+  const bothOpen = Promise.all(pair.map(dc => new Promise((r, e) => {
+    dc.onopen = r;
+    dc.onerror = ({error}) => e(error);
+  })));
+  try {
+    exchangeIceCandidates(pc1, pc2);
+    await exchangeOfferAnswer(pc1, pc2);
+    await bothOpen;
+    return pair;
+  } finally {
+    for (const dc of pair) {
+       dc.onopen = dc.onerror = null;
+    }
   }
-
-  const channel1 = pc1.createDataChannel(options.channelLabel, channel1Options);
-
-  return new Promise((resolve, reject) => {
-    let channel2;
-    let opened1 = false;
-    let opened2 = false;
-
-    function cleanup() {
-      channel1.removeEventListener('open', onOpen1);
-      channel2.removeEventListener('open', onOpen2);
-      channel1.removeEventListener('error', onError);
-      channel2.removeEventListener('error', onError);
-    }
-
-    function onBothOpened() {
-      cleanup();
-      resolve([channel1, channel2]);
-    }
-
-    function onError(...args) {
-      cleanup();
-      reject(...args);
-    }
-
-    function onOpen1() {
-      opened1 = true;
-      if (opened2) {
-        onBothOpened();
-      }
-    }
-
-    function onOpen2() {
-      opened2 = true;
-      if (opened1) {
-        onBothOpened();
-      }
-    }
-
-    function onDataChannelPairFound() {
-      channel2.addEventListener('error', onError, { once: true });
-      const { readyState } = channel2;
-
-      if (readyState === 'open') {
-        onOpen2();
-      } else if (readyState === 'connecting') {
-        channel2.addEventListener('open', onOpen2, { once: true });
-      } else {
-        onError(new Error(`Unexpected ready state ${readyState}`));
-      }
-    }
-
-    function onDataChannel(event) {
-      channel2 = event.channel;
-      onDataChannelPairFound();
-    }
-
-    channel1.addEventListener('open', onOpen1, { once: true });
-    channel1.addEventListener('error', onError, { once: true });
-
-    if (channel2Options !== null) {
-      channel2 = pc2.createDataChannel(options.channelLabel, channel2Options);
-      onDataChannelPairFound();
-    } else {
-      pc2.addEventListener('datachannel', onDataChannel);
-    }
-
-    if (options.doSignaling) {
-      exchangeIceCandidates(pc1, pc2);
-      doSignalingHandshake(pc1, pc2, options);
-    }
-  });
 }
 
 // Wait for RTP and RTCP stats to arrive
@@ -582,7 +443,7 @@ const trackFactories = {
     return dst.stream.getAudioTracks()[0];
   },
 
-  video({width = 640, height = 480} = {}) {
+  video({width = 640, height = 480, signal = null} = {}) {
     const canvas = Object.assign(
       document.createElement("canvas"), {width, height}
     );
@@ -593,8 +454,13 @@ const trackFactories = {
     setInterval(() => {
       ctx.fillStyle = `rgb(${count%255}, ${count*count%255}, ${count%255})`;
       count += 1;
-
       ctx.fillRect(0, 0, width, height);
+      // If signal is set, add a constant-color box to the video frame
+      // at coordinates 10 to 30 in both X and Y direction.
+      if (signal !== null) {
+        ctx.fillStyle = `rgb(${signal}, ${signal}, ${signal})`;
+        ctx.fillRect(10, 10, 20, 20);
+      }
     }, 100);
 
     if (document.body) {
@@ -609,13 +475,44 @@ const trackFactories = {
   }
 };
 
+// Get the signal from a video element inserted by createNoiseStream
+function getVideoSignal(v) {
+  if (v.videoWidth < 21 || v.videoHeight < 21) {
+    return null;
+  }
+  const canvas = new OffscreenCanvas(v.videoWidth, v.videoHeight);
+  let context = canvas.getContext('2d');
+  context.drawImage(v, 0, 0, v.videoWidth, v.videoHeight);
+  // Extract pixel value at position 20, 20
+  let pixel = context.getImageData(20, 20, 1, 1);
+  // Use luma reconstruction to get back original value according to
+  // ITU-R rec BT.709
+  return (pixel.data[0] * 0.21 + pixel.data[1] * 0.72 + pixel.data[2] * 0.07);
+}
+
+function detectSignal(t, v, value) {
+  return new Promise((resolve) => {
+    let check = () => {
+      const signal = getVideoSignal(v);
+      if (signal !== null && signal < value + 1 && signal > value - 1) {
+        resolve();
+      } else {
+        // We would like to wait for each new frame instead here,
+        // but there seems to be no such callback.
+        t.step_timeout(check, 100);
+      }
+    }
+    check();
+  });
+}
+
 // Generate a MediaStream bearing the specified tracks.
 //
 // @param {object} [caps]
 // @param {boolean} [caps.audio] - flag indicating whether the generated stream
 //                                 should include an audio track
 // @param {boolean} [caps.video] - flag indicating whether the generated stream
-//                                 should include a video track
+//                                 should include a video track, or parameters for video
 async function getNoiseStream(caps = {}) {
   if (!trackFactories.canCreate(caps)) {
     return navigator.mediaDevices.getUserMedia(caps);
@@ -627,7 +524,7 @@ async function getNoiseStream(caps = {}) {
   }
 
   if (caps.video) {
-    tracks.push(trackFactories.video());
+    tracks.push(trackFactories.video(caps.video));
   }
 
   return new MediaStream(tracks);
@@ -672,20 +569,19 @@ function getUserMediaTracksAndStreams(count, type = 'audio') {
 
 // Performs an offer exchange caller -> callee.
 async function exchangeOffer(caller, callee) {
-  const offer = await caller.createOffer();
-  await caller.setLocalDescription(offer);
-  return callee.setRemoteDescription(offer);
+  await caller.setLocalDescription(await caller.createOffer());
+  await callee.setRemoteDescription(caller.localDescription);
 }
 // Performs an answer exchange caller -> callee.
 async function exchangeAnswer(caller, callee) {
-  const answer = await callee.createAnswer();
-  await callee.setLocalDescription(answer);
-  return caller.setRemoteDescription(answer);
+  await callee.setLocalDescription(await callee.createAnswer());
+  await caller.setRemoteDescription(callee.localDescription);
 }
 async function exchangeOfferAnswer(caller, callee) {
   await exchangeOffer(caller, callee);
-  return exchangeAnswer(caller, callee);
+  await exchangeAnswer(caller, callee);
 }
+
 // The returned promise is resolved with caller's ontrack event.
 async function exchangeAnswerAndListenToOntrack(t, caller, callee) {
   const ontrackPromise = addEventListenerPromise(t, caller, 'track');
@@ -773,6 +669,18 @@ function findTransceiverForSender(pc, sender) {
       return transceivers[i];
   }
   return null;
+}
+
+function preferCodec(transceiver, mimeType, sdpFmtpLine) {
+  const {codecs} = RTCRtpSender.getCapabilities(transceiver.receiver.track.kind);
+  // sdpFmtpLine is optional, pick the first partial match if not given.
+  const selectedCodecIndex = codecs.findIndex(c => {
+    return c.mimeType === mimeType && (c.sdpFmtpLine === sdpFmtpLine || !sdpFmtpLine);
+  });
+  const selectedCodec = codecs[selectedCodecIndex];
+  codecs.slice(selectedCodecIndex, 1);
+  codecs.unshift(selectedCodec);
+  return transceiver.setCodecPreferences(codecs);
 }
 
 // Contains a set of values and will yell at you if you try to add a value twice.

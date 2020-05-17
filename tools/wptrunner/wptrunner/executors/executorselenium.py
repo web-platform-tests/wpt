@@ -271,11 +271,11 @@ class SeleniumRun(TimedRunner):
 class SeleniumTestharnessExecutor(TestharnessExecutor):
     supports_testdriver = True
 
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, capabilities=None, debug_info=None,
                  supports_eager_pageload=True, **kwargs):
         """Selenium-based executor for testharness.js tests"""
-        TestharnessExecutor.__init__(self, browser, server_config,
+        TestharnessExecutor.__init__(self, logger, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
         self.protocol = SeleniumProtocol(self, browser, capabilities)
@@ -356,11 +356,12 @@ if (location.href === "about:blank") {
 
 
 class SeleniumRefTestExecutor(RefTestExecutor):
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
                  debug_info=None, capabilities=None, **kwargs):
         """Selenium WebDriver-based executor for reftests"""
         RefTestExecutor.__init__(self,
+                                 logger,
                                  browser,
                                  server_config,
                                  screenshot_cache=screenshot_cache,
@@ -372,8 +373,8 @@ class SeleniumRefTestExecutor(RefTestExecutor):
         self.close_after_done = close_after_done
         self.has_window = False
 
-        with open(os.path.join(here, "test-wait.js" % {"classname": "reftest-wait"})) as f:
-            self.wait_script = f.read()
+        with open(os.path.join(here, "test-wait.js")) as f:
+            self.wait_script = f.read() % {"classname": "reftest-wait"}
 
     def reset(self):
         self.implementation.reset()

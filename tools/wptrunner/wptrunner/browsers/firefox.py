@@ -425,8 +425,11 @@ class OutputHandler(object):
 
         self.symbols_path = symbols_path
         if stackfix_dir:
+            # We hide errors because they cause disconcerting `CRITICAL`
+            # warnings in web platform test output.
             self.stack_fixer = get_stack_fixer_function(stackfix_dir,
-                                                        self.symbols_path)
+                                                        self.symbols_path,
+                                                        hideErrors=True)
         else:
             self.stack_fixer = None
         self.asan = asan
@@ -439,8 +442,8 @@ class OutputHandler(object):
         self.line_buffer = []
         self.setup_ran = False
 
-    def setup(self, instance=None, group_metadata=None, lsan_allowed=None,
-              lsan_max_stack_depth=None, mozleak_allowed=None,
+    def setup(self, instance=None, group_metadata=None, lsan_disabled=False,
+              lsan_allowed=None, lsan_max_stack_depth=None, mozleak_allowed=None,
               mozleak_thresholds=None, **kwargs):
         """Configure the output handler"""
         self.instance = instance
@@ -456,7 +459,8 @@ class OutputHandler(object):
             self.lsan_handler = mozleak.LSANLeaks(self.logger,
                                                   scope=group_metadata.get("scope", "/"),
                                                   allowed=lsan_allowed,
-                                                  maxNumRecordedFrames=lsan_max_stack_depth)
+                                                  maxNumRecordedFrames=lsan_max_stack_depth,
+                                                  allowAll=lsan_disabled)
         else:
             self.lsan_handler = None
 
@@ -485,7 +489,7 @@ class OutputHandler(object):
 
     def __call__(self, line):
         """Write a line of output from the firefox process to the log"""
-        if "GLib-GObject-CRITICAL" in line:
+        if b"GLib-GObject-CRITICAL" in line:
             return
         if line:
             if not self.setup_ran:
@@ -706,6 +710,7 @@ class FirefoxBrowser(Browser):
 
     def settings(self, test):
         return {"check_leaks": self.leak_check and not test.leaks,
+                "lsan_disabled": test.lsan_disabled,
                 "lsan_allowed": test.lsan_allowed,
                 "lsan_max_stack_depth": test.lsan_max_stack_depth,
                 "mozleak_allowed": self.leak_check and test.mozleak_allowed,

@@ -21,15 +21,14 @@ const FLOOR_ORIGIN_TRANSFORM = {
   orientation: [0, 0, 0, 1],
 };
 
-const SCREEN_POINTER_TRANSFORM = {
-    position: [0, 0, 0],      // middle of the screen
-    orientation: [0, 0, 0, 1] // forward-facing
-};
+// Start the screen pointer at the same place as the viewer, so it's essentially
+// coming straight forward from the middle of the screen.
+const SCREEN_POINTER_TRANSFORM = VIEWER_ORIGIN_TRANSFORM;
 
 const screen_controller_init = {
     handedness: "none",
     targetRayMode: "screen",
-    pointerOrigin: SCREEN_POINTER_TRANSFORM,  // aka input_from_pointer
+    pointerOrigin: SCREEN_POINTER_TRANSFORM,  // aka mojo_from_pointer
     profiles: ["generic-touchscreen",]
 };
 
@@ -52,11 +51,13 @@ const fakeDeviceInitParams = {
 //                            Null entries in the array mean that the given entry will not be validated.
 let testFunctionGenerator = function(ray, expectedPoses, inputFromPointer, nextFrameExpectedPoses) {
   const testFunction = function(session, fakeDeviceController, t) {
+    let debug = xr_debug.bind(this, 'testFunction');
     return session.requestReferenceSpace('local').then((localRefSpace) => new Promise((resolve, reject) => {
 
       const input_source_controller = fakeDeviceController.simulateInputSourceConnection(screen_controller_init);
 
-      session.requestAnimationFrame((time, frame) => {
+      requestSkipAnimationFrame(session, (time, frame) => {
+        debug('rAF 1');
         t.step(() => {
           assert_equals(session.inputSources.length, 1);
         });
@@ -74,6 +75,7 @@ let testFunctionGenerator = function(ray, expectedPoses, inputFromPointer, nextF
 
           // We got a hit test source, now get the results in subsequent rAFcb:
           session.requestAnimationFrame((time, frame) => {
+            debug('rAF 2');
             const results = frame.getHitTestResultsForTransientInput(hitTestSource);
 
             t.step(() => {
@@ -92,6 +94,7 @@ let testFunctionGenerator = function(ray, expectedPoses, inputFromPointer, nextF
             input_source_controller.setPointerOrigin(inputFromPointer, false);
 
             session.requestAnimationFrame((time, frame) => {
+              debug('rAF 3');
               const results = frame.getHitTestResultsForTransientInput(hitTestSource);
 
               t.step(() => {
@@ -105,6 +108,7 @@ let testFunctionGenerator = function(ray, expectedPoses, inputFromPointer, nextF
                 }
               });
 
+              debug('resolving');
               resolve();
             });
           });
@@ -136,7 +140,7 @@ xr_session_promise_test("Ensures subscription to transient hit test works with a
   'immersive-ar', { 'requiredFeatures': ['hit-test'] });
 
 const moved_pointer_transform_1 = {
-  position: [0, 0, 0],      // middle of the screen
+  position: [0, 1, 0],
   orientation: [ 0.707, 0, 0, 0.707 ] // 90 degrees around X axis = facing up
 };
 
@@ -160,7 +164,7 @@ const pose_2 = {
 };
 
 const moved_pointer_transform_2 = {
-  position: [0, 0, 0],      // middle of the screen
+  position: [0, 1, 0],
   orientation: [ 0, 0.2588, 0, 0.9659 ] // 30 degrees around Y axis = to the left,
                                         // creating 30-60-90 triangle with the front wall
 };

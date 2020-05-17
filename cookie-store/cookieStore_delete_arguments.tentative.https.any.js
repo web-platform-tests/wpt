@@ -1,5 +1,5 @@
 // META: title=Cookie Store API: cookieStore.delete() arguments
-// META: global=!default,serviceworker,window
+// META: global=window,serviceworker
 
 'use strict';
 
@@ -32,6 +32,19 @@ promise_test(async testCase => {
   const cookie = await cookieStore.get('cookie-name');
   assert_equals(cookie, null);
 }, 'cookieStore.delete with name in both positional arguments and options');
+
+promise_test(async testCase => {
+  const currentUrl = new URL(self.location.href);
+  const currentDomain = currentUrl.hostname;
+
+  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+      'cookie-name', 'cookie-value', { domain: `.${currentDomain}` }));
+}, 'cookieStore.delete domain starts with "."');
+
+promise_test(async testCase => {
+  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+      'cookie-name', 'cookie-value', { domain: 'example.com' }));
+}, 'cookieStore.delete with domain that is not equal current host');
 
 promise_test(async testCase => {
   const currentUrl = new URL(self.location.href);

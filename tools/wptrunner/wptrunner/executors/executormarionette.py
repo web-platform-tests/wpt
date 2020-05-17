@@ -5,7 +5,7 @@ import time
 import traceback
 import uuid
 
-from six import iteritems
+from six import iteritems, iterkeys
 from six.moves.urllib.parse import urljoin
 
 errors = None
@@ -602,7 +602,7 @@ class MarionetteProtocol(Protocol):
 
     def on_environment_change(self, old_environment, new_environment):
         #Unset all the old prefs
-        for name in old_environment.get("prefs", {}).iterkeys():
+        for name in iterkeys(old_environment.get("prefs", {})):
             value = self.executor.original_pref_values[name]
             if value is None:
                 self.prefs.clear(name)
@@ -669,11 +669,11 @@ class ExecuteAsyncScriptRun(TimedRunner):
 class MarionetteTestharnessExecutor(TestharnessExecutor):
     supports_testdriver = True
 
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, debug_info=None, capabilities=None,
                  debug=False, ccov=False, **kwargs):
         """Marionette-based executor for testharness.js tests"""
-        TestharnessExecutor.__init__(self, browser, server_config,
+        TestharnessExecutor.__init__(self, logger, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
         self.protocol = MarionetteProtocol(self,
@@ -765,13 +765,14 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
 
 
 class MarionetteRefTestExecutor(RefTestExecutor):
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
                  debug_info=None, reftest_internal=False,
                  reftest_screenshot="unexpected", ccov=False,
                  group_metadata=None, capabilities=None, debug=False, **kwargs):
         """Marionette-based executor for reftests"""
         RefTestExecutor.__init__(self,
+                                 logger,
                                  browser,
                                  server_config,
                                  screenshot_cache=screenshot_cache,
@@ -798,7 +799,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
             self.wait_script = f.read() % {"classname": "reftest-wait"}
 
     def setup(self, runner):
-        super(self.__class__, self).setup(runner)
+        super(MarionetteRefTestExecutor, self).setup(runner)
         self.implementation.setup(**self.implementation_kwargs)
 
     def teardown(self):
@@ -808,7 +809,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                 handles = self.protocol.marionette.window_handles
                 if handles:
                     self.protocol.marionette.switch_to_window(handles[0])
-            super(self.__class__, self).teardown()
+            super(MarionetteRefTestExecutor, self).teardown()
         except Exception:
             # Ignore errors during teardown
             self.logger.warning("Exception during reftest teardown:\n%s" %
@@ -949,11 +950,11 @@ class MarionetteWdspecExecutor(WdspecExecutor):
 
 
 class MarionetteCrashtestExecutor(CrashtestExecutor):
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  debug_info=None, capabilities=None, debug=False,
                  ccov=False, **kwargs):
         """Marionette-based executor for testharness.js tests"""
-        CrashtestExecutor.__init__(self, browser, server_config,
+        CrashtestExecutor.__init__(self, logger, browser, server_config,
                                    timeout_multiplier=timeout_multiplier,
                                    debug_info=debug_info)
         self.protocol = MarionetteProtocol(self,

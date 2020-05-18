@@ -10,14 +10,14 @@ def main(request, response):
     headers = setNoCacheAndCORSHeaders(request, response)
     value = request.url_parts.query
 
-    headers.append(("Content-Type", "text/html; charset=utf-8"))
-    headers.append(makeCookieHeader("samesite_strict", value, {"SameSite":"Strict","path":"/"}))
-    headers.append(makeCookieHeader("samesite_lax", value, {"SameSite":"Lax","path":"/"}))
+    headers.append((b"Content-Type", b"text/html; charset=utf-8"))
+    headers.append(makeCookieHeader(u"samesite_strict", value, {u"SameSite":u"Strict",u"path":u"/"}))
+    headers.append(makeCookieHeader(u"samesite_lax", value, {u"SameSite":u"Lax",u"path":u"/"}))
     # SameSite=None cookies must be Secure.
-    headers.append(makeCookieHeader("samesite_none", value, {"SameSite":"None", "path":"/", "Secure": ""}))
-    headers.append(makeCookieHeader("samesite_unspecified", value, {"path":"/"}))
+    headers.append(makeCookieHeader(u"samesite_none", value, {u"SameSite":u"None", u"path":u"/", u"Secure": u""}))
+    headers.append(makeCookieHeader(U"samesite_unspecified", value, {u"path":u"/"}))
 
-    document = """
+    document = u"""
 <!DOCTYPE html>
 <script>
   // A same-site navigation, which should attach all cookies including SameSite ones.

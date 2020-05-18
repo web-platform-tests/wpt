@@ -25,5 +25,5 @@ def main(request, response):
         (b"Content-Type", b"application/json"),
         (b"Set-Cookie", cookie)
     ]
-    body = b"{}"
+    body = u"{}"
     return headers, body

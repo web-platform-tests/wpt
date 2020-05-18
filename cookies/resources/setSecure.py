@@ -7,6 +7,6 @@ def main(request, response):
     headers = setNoCacheAndCORSHeaders(request, response)
     value = request.url_parts.query
 
-    headers.append(makeCookieHeader("alone_secure", value, {"secure": "","path": "/"}))
-    headers.append(makeCookieHeader("alone_insecure", value, {"path": "/"}))
-    return headers, '{"success": true}'
+    headers.append(makeCookieHeader(u"alone_secure", value, {u"secure": u"",u"path": u"/"}))
+    headers.append(makeCookieHeader(u"alone_insecure", value, {u"path": u"/"}))
+    return headers, u'{"success": true}'

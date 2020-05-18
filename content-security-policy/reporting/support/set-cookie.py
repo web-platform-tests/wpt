@@ -14,7 +14,7 @@ def main(request, response):
     >
     < HTTP/1.1 200 OK
     < Content-Type: application/json
-    < Set-Cookie: match-slash=1; Path=/; Expires=Wed, 09 Jun 2021 10:18:14 GMT
+    < Set-Cookie: match-slash=1; Path=/; Expires=Mon, 09 Jun 2121 10:18:14 GMT
     < Server: BaseHTTP/0.3 Python/2.7.12
     < Date: Tue, 04 Oct 2016 18:16:06 GMT
     < Content-Length: 80
@@ -22,7 +22,7 @@ def main(request, response):
     params = urlparse.parse_qs(request.url_parts.query)
     headers = [
         ("Content-Type", "application/json"),
-        ("Set-Cookie", "{name[0]}={value[0]}; Path={path[0]}; Expires=Wed, 09 Jun 2021 10:18:14 GMT".format(**params))
+        ("Set-Cookie", "{name[0]}={value[0]}; Path={path[0]}; Expires=Mon, 09 Jun 2121 10:18:14 GMT".format(**params))
     ]
     body = "{}"
     return headers, body

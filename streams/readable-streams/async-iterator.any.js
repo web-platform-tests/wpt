@@ -21,7 +21,7 @@ test(() => {
 
   for (const m of methods) {
     const propDesc = Object.getOwnPropertyDescriptor(proto, m);
-    assert_false(propDesc.enumerable, 'method should be non-enumerable');
+    assert_true(propDesc.enumerable, 'method should be enumerable');
     assert_true(propDesc.configurable, 'method should be configurable');
     assert_true(propDesc.writable, 'method should be writable');
     assert_equals(typeof it[m], 'function', 'method should be a function');
@@ -340,8 +340,10 @@ promise_test(async t => {
   const rs = new ReadableStream();
   const it = rs.values();
   await it.return();
-  return promise_rejects_js(t, TypeError, it.next(), 'next() should reject');
-}, 'calling next() after return() should reject');
+  const readResult = await it.next();
+  assert_equals(readResult.done, true, 'done');
+  assert_equals(readResult.value, undefined, 'undefined');
+}, 'calling next() after return() should result in { value: undefined, done: true }');
 
 for (const preventCancel of [false, true]) {
   test(() => {

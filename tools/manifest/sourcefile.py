@@ -991,7 +991,9 @@ class SourceFile(object):
         self.items_cache = rv
 
         if drop_cached and "__cached_properties__" in self.__dict__:
-            cached_properties = self.__dict__["__cached_properties__"]
+            # __cached_properties__ comes from the @cached_property decorator,
+            # and is a set filled with 'func.__name__', which are 'str' types.
+            cached_properties = self.__dict__["__cached_properties__"]  # type: Set[str]
             for key in cached_properties:
                 if key in self.__dict__:
                     del self.__dict__[key]

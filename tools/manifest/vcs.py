@@ -111,16 +111,16 @@ class FileSystem(object):
             self.hash_cache = {}
 
     def __iter__(self):
-        # type: () -> Iterator[Tuple[Union[bytes, SourceFile], bool]]
+        # type: () -> Iterator[Tuple[bytes, Optional[bytes], bool]]
         mtime_cache = self.mtime_cache
         for dirpath, dirnames, filenames in self.path_filter(walk(self.root)):
             for filename, path_stat in filenames:
                 path = os.path.join(dirpath, filename)
                 if mtime_cache is None or mtime_cache.updated(path, path_stat):
-                    hash = self.hash_cache.get(path, None)
-                    yield SourceFile(self.root, path, self.url_base, hash), True
+                    file_hash = self.hash_cache.get(path, None)
+                    yield path, file_hash, True
                 else:
-                    yield path, False
+                    yield path, None, False
 
     def dump_caches(self):
         # type: () -> None

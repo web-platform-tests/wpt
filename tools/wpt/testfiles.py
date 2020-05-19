@@ -66,7 +66,6 @@ def display_branch_point():
 
 def branch_point():
     # type: () -> Optional[Text]
-    git = get_git_cmd(wpt_root)
     if (os.environ.get("GITHUB_PULL_REQUEST", "false") == "false" and
         os.environ.get("GITHUB_BRANCH") == "master"):
         # For builds on the master branch just return the HEAD commit

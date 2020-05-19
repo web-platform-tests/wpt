@@ -12,7 +12,6 @@ from six import (
     iteritems,
     itervalues,
     string_types,
-    text_type,
 )
 
 from . import vcs
@@ -64,6 +63,10 @@ class ManifestVersionMismatch(ManifestError):
     pass
 
 
+class InvalidCacheError(Exception):
+    pass
+
+
 item_classes = {"testharness": TestharnessTest,
                 "reftest": RefTest,
                 "print-reftest": PrintRefTest,
@@ -82,10 +85,12 @@ def compute_manifest_items(source_file):
     file_hash = source_file.hash
     return rel_path_parts, new_type, set(manifest_items), file_hash
 
+
 if MYPY:
     ManifestDataType = Dict[Any, TypeData]
 else:
     ManifestDataType = dict
+
 
 class ManifestData(ManifestDataType):
     def __init__(self, manifest):
@@ -182,32 +187,43 @@ class Manifest(object):
         data = self._data
 
         types = data.type_by_path()
-        deleted = set(types)
+        remaining_manifest_paths = set(types)
 
         to_update = []
 
-        for source_file_or_path, update in tree:
-            if not update:
-                assert isinstance(source_file_or_path, (binary_type, text_type))
-                path = ensure_text(source_file_or_path)
-                deleted.remove(tuple(path.split(os.path.sep)))
-            else:
-                assert not isinstance(source_file_or_path, (binary_type, text_type))
-                source_file = source_file_or_path
-                rel_path_parts = source_file.rel_path_parts
-                assert isinstance(rel_path_parts, tuple)
+        for path_str, file_hash, updated in tree:
+            assert isinstance(path_str, (binary_type, text_type))
+            path = ensure_text(path_str)
+            path_parts = tuple(path.split(os.path.sep))
+            is_new = path_parts not in remaining_manifest_paths
 
-                is_new = rel_path_parts not in deleted  # type: bool
+            if not updated and is_new:
+                # This is kind of a bandaid; if we ended up here the cache
+                # was invalid but we've been using it anyway. That's obviously
+                # bad; we should fix the underlying issue that we sometimes
+                # use an invalid cache. But at least this fixes the immediate
+                # problem
+                raise InvalidCacheError
+
+            if not updated:
+                remaining_manifest_paths.remove(path_parts)
+            else:
+                source_file = SourceFile(self.tests_root,
+                                         path,
+                                         self.url_base,
+                                         file_hash)
+
                 hash_changed = False  # type: bool
 
                 if not is_new:
-                    deleted.remove(rel_path_parts)
-                    old_type = types[rel_path_parts]
-                    old_hash = data[old_type].hashes[rel_path_parts]
-                    file_hash = source_file.hash  # type: Text
+                    if file_hash is None:
+                        file_hash = source_file.hash
+                    remaining_manifest_paths.remove(path_parts)
+                    old_type = types[path_parts]
+                    old_hash = data[old_type].hashes[path_parts]
                     if old_hash != file_hash:
                         hash_changed = True
-                        del data[old_type][rel_path_parts]
+                        del data[old_type][path_parts]
 
                 if is_new or hash_changed:
                     to_update.append(source_file)
@@ -238,9 +254,9 @@ class Manifest(object):
             data[new_type][rel_path_parts] = manifest_items
             data[new_type].hashes[rel_path_parts] = file_hash
 
-        if deleted:
+        if remaining_manifest_paths:
             changed = True
-            for rel_path_parts in deleted:
+            for rel_path_parts in remaining_manifest_paths:
                 for test_data in itervalues(data):
                     if rel_path_parts in test_data:
                         del test_data[rel_path_parts]
@@ -399,9 +415,18 @@ def load_and_update(tests_root,  # type: bytes
         update = True
 
     if rebuild or update:
-        tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
-                            working_copy, rebuild)
-        changed = manifest.update(tree, parallel)
+        for retry in range(2):
+            try:
+                tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,
+                                    working_copy, rebuild)
+                changed = manifest.update(tree, parallel)
+                break
+            except InvalidCacheError:
+                logger.warning("Manifest cache was invalid, doing a complete rebuild")
+                rebuild = True
+        else:
+            # If we didn't break there was an error
+            raise
         if write_manifest and changed:
             write(manifest, manifest_path)
         tree.dump_caches()

@@ -6,7 +6,7 @@ from copy import deepcopy
 from multiprocessing import Pool, cpu_count
 from six import (
     PY3,
-    binary_type,
+    ensure_text,
     iteritems,
     itervalues,
     string_types,
@@ -181,7 +181,7 @@ class Manifest(object):
         to_update = []
 
         for path, file_hash, updated in tree:
-            assert isinstance(path, (binary_type,))
+            path = ensure_text(path)
             path_parts = tuple(path.split(os.path.sep))
             is_new = path_parts not in remaining_manifest_paths
 

@@ -2,6 +2,7 @@ import io
 import itertools
 import json
 import os
+import uuid
 from copy import deepcopy
 from multiprocessing import Pool, cpu_count
 from six import (
@@ -42,7 +43,7 @@ try:
 except ImportError:
     fast_json = json  # type: ignore
 
-CURRENT_VERSION = 8  # type: int
+CURRENT_VERSION = 9  # type: int
 
 
 class ManifestError(Exception):
@@ -117,14 +118,14 @@ class ManifestData(ManifestDataType):
         return rv
 
 
-
 class Manifest(object):
-    def __init__(self, tests_root=None, url_base="/"):
+    def __init__(self, tests_root=None, url_base="/", manifest_uuid=None):
         # type: (Optional[str], Text) -> None
         assert url_base is not None
         self._data = ManifestData(self)  # type: ManifestData
         self.tests_root = tests_root  # type: Optional[str]
         self.url_base = url_base  # type: Text
+        self.uuid = manifest_uuid  # type: Text
 
     def __iter__(self):
         # type: () -> Iterator[Tuple[str, Text, Set[ManifestItem]]]
@@ -273,6 +274,7 @@ class Manifest(object):
 
         rv = {"url_base": self.url_base,
               "items": out_items,
+              "uuid": ensure_text(uuid.uuid4().hex),
               "version": CURRENT_VERSION}  # type: Dict[Text, Any]
         return rv
 
@@ -295,7 +297,9 @@ class Manifest(object):
         if version != CURRENT_VERSION:
             raise ManifestVersionMismatch
 
-        self = cls(tests_root, url_base=obj.get("url_base", "/"))
+        self = cls(tests_root,
+                   url_base=obj.get("url_base", "/"),
+                   manifest_uuid=obj.get("uuid"))
         if not hasattr(obj, "items"):
             raise ManifestError
 
@@ -413,9 +417,12 @@ def load_and_update(tests_root,  # type: bytes
         else:
             # If we didn't break there was an error
             raise
-        if write_manifest and changed:
-            write(manifest, manifest_path)
-        tree.dump_caches()
+        if write_manifest:
+            if changed:
+                uuid = write(manifest, manifest_path)
+            else:
+                uuid = manifest.uuid
+            tree.dump_caches(uuid)
 
     return manifest
 
@@ -428,6 +435,8 @@ def write(manifest, manifest_path):
     with open(manifest_path, "w") as f:
         # Use ',' instead of the default ', ' separator to prevent trailing
         # spaces: https://docs.python.org/2/library/json.html#json.dump
-        json.dump(manifest.to_json(caller_owns_obj=True), f,
+        manifest_json = manifest.to_json(caller_owns_obj=True)
+        json.dump(manifest_json, f,
                   sort_keys=True, indent=1, separators=(',', ': '))
         f.write("\n")
+    return manifest_json["uuid"]

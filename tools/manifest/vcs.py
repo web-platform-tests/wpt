@@ -48,7 +48,8 @@ def get_tree(tests_root, manifest, manifest_path, cache_root,
                           manifest.url_base,
                           manifest_path=manifest_path,
                           cache_path=cache_root,
-                          rebuild=rebuild)
+                          rebuild=rebuild,
+                          manifest_uuid=manifest.uuid)
     return tree
 
 
@@ -90,7 +91,8 @@ class GitHasher(object):
 
 
 class FileSystem(object):
-    def __init__(self, root, url_base, cache_path, manifest_path=None, rebuild=False):
+    def __init__(self, root, url_base, cache_path, manifest_path=None, rebuild=False,
+                 manifest_uuid=None):
         # type: (bytes, Text, Optional[bytes], Optional[bytes], bool) -> None
         self.root = os.path.abspath(root)
         self.url_base = url_base
@@ -98,7 +100,8 @@ class FileSystem(object):
         self.mtime_cache = None
         if cache_path is not None:
             if manifest_path is not None:
-                self.mtime_cache = MtimeCache(cache_path, root, manifest_path, rebuild)
+                self.mtime_cache = MtimeCache(cache_path, root, manifest_path, manifest_uuid,
+                                              rebuild)
             if gitignore.has_ignore(root):
                 self.ignore_cache = GitIgnoreCache(cache_path, root, rebuild)
         self.path_filter = gitignore.PathFilter(self.root,
@@ -122,11 +125,11 @@ class FileSystem(object):
                 else:
                     yield path, None, False
 
-    def dump_caches(self):
+    def dump_caches(self, new_manifest_uuid):
         # type: () -> None
         for cache in [self.mtime_cache, self.ignore_cache]:
             if cache is not None:
-                cache.dump()
+                cache.dump(new_manifest_uuid)
 
 
 class CacheFile(with_metaclass(abc.ABCMeta)):
@@ -144,7 +147,7 @@ class CacheFile(with_metaclass(abc.ABCMeta)):
         # type: () -> bytes
         pass
 
-    def dump(self):
+    def dump(self, new_manifest_uuid):
         # type: () -> None
         if not self.modified:
             return
@@ -176,9 +179,11 @@ class CacheFile(with_metaclass(abc.ABCMeta)):
 class MtimeCache(CacheFile):
     file_name = "mtime.json"
 
-    def __init__(self, cache_root, tests_root, manifest_path, rebuild=False):
-        # type: (bytes, bytes, bytes, bool) -> None
+    def __init__(self, cache_root, tests_root, manifest_path, manifest_uuid,
+                 rebuild=False):
+        # type: (bytes, bytes, bytes, text, bool) -> None
         self.manifest_path = manifest_path
+        self.manifest_uuid = manifest_uuid
         super(MtimeCache, self).__init__(cache_root, tests_root, rebuild)
 
     def updated(self, rel_path, stat):
@@ -195,30 +200,20 @@ class MtimeCache(CacheFile):
 
     def check_valid(self, data):
         # type: (Dict[Any, Any]) -> Dict[Any, Any]
-        if data.get("/tests_root") != self.tests_root:
-            self.modified = True
-        else:
-            if self.manifest_path is not None and os.path.exists(self.manifest_path):
-                mtime = os.path.getmtime(self.manifest_path)
-                if data.get("/manifest_path") != [self.manifest_path, mtime]:
-                    self.modified = True
-            else:
-                self.modified = True
+        self.modified = not self.manifest_uuid or data.get("/manifest_uuid") != self.manifest_uuid
         if self.modified:
             data = {}
-            data["/tests_root"] = self.tests_root
         return data
 
-    def dump(self):
+    def dump(self, new_manifest_uuid):
         # type: () -> None
-        if self.manifest_path is None:
-            raise ValueError
         if not os.path.exists(self.manifest_path):
             return
-        mtime = os.path.getmtime(self.manifest_path)
-        self.data["/manifest_path"] = [self.manifest_path, mtime]
-        self.data["/tests_root"] = self.tests_root
-        super(MtimeCache, self).dump()
+        if not self.modified and self.manifest_uuid == new_manifest_uuid:
+            return
+        self.data["/manifest_uuid"] = new_manifest_uuid
+        self.manifest_uuid = new_manifest_uuid
+        super(MtimeCache, self).dump(new_manifest_uuid)
 
 
 class GitIgnoreCache(CacheFile, MutableMapping):  # type: ignore

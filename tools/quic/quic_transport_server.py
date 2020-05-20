@@ -56,7 +56,7 @@ class QuicTransportProtocol(QuicConnectionProtocol):
                     isinstance(event, StreamDataReceived) and
                     event.stream_id == 2):
                 # client indication process
-                prefix = 'Client inditation error: '
+                prefix = 'Client indication error: '
                 self.client_indication_data += event.data
                 if len(self.client_indication_data) > 65535:
                     raise Exception('too large data for client indication')

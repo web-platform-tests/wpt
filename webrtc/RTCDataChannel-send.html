@@ -57,6 +57,10 @@
     assert_throws_dom('InvalidStateError', () => channel.send(helloString));
   }, 'Calling send() when data channel is in connecting state should throw InvalidStateError');
 
+for (const options of [{}, {negotiated: true, id: 0}]) {
+
+const datachannel = `${options.negotiated? "Negotiated d" : "D"}atachannel`;
+
   /*
     6.2.  send()
       3.  Execute the sub step that corresponds to the type of the methods argument:
@@ -72,7 +76,7 @@
             attribute to data.
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t, options)
     .then(([channel1, channel2]) => {
       channel1.send(helloString);
       return awaitMessage(channel2)
@@ -82,10 +86,10 @@
 
       assert_equals(message, helloString);
     });
-  }, 'Data channel should be able to send simple string and receive as string');
+  }, `${datachannel} should be able to send simple string and receive as string`);
 
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t, options)
     .then(([channel1, channel2]) => {
       channel1.send(unicodeString);
       return awaitMessage(channel2)
@@ -95,9 +99,9 @@
 
       assert_equals(message, unicodeString);
     });
-  }, 'Data channel should be able to send unicode string and receive as unicode string');
+  }, `${datachannel} should be able to send unicode string and receive as unicode string`);
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t, options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloString);
@@ -108,7 +112,7 @@
 
       assert_equals(message, helloString);
     });
-  }, 'Data channel should ignore binaryType and always receive string message as string');
+  }, `${datachannel} should ignore binaryType and always receive string message as string`);
 
   /*
     6.2. send()
@@ -132,7 +136,7 @@
         Float32Array or Float64Array or DataView) ArrayBufferView;
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t, options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloBuffer);
@@ -143,7 +147,7 @@
 
       assert_equals_typed_array(messageBuffer, helloBuffer.buffer);
     });
-  }, 'Data channel should be able to send Uint8Array message and receive as ArrayBuffer');
+  }, `${datachannel} should be able to send Uint8Array message and receive as ArrayBuffer`);
 
   /*
     6.2. send()
@@ -154,7 +158,7 @@
             ArrayBuffer in bytes.
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t, options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloBuffer.buffer);
@@ -165,7 +169,7 @@
 
       assert_equals_typed_array(messageBuffer, helloBuffer.buffer);
     });
-  }, 'Data channel should be able to send ArrayBuffer message and receive as ArrayBuffer');
+  }, `${datachannel} should be able to send ArrayBuffer message and receive as ArrayBuffer`);
 
   /*
     6.2. send()
@@ -175,7 +179,7 @@
             the bufferedAmount attribute by the size of data, in bytes.
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t, options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloBlob);
@@ -186,7 +190,7 @@
 
       assert_equals_typed_array(messageBuffer, helloBuffer.buffer);
     });
-  }, 'Data channel should be able to send Blob message and receive as ArrayBuffer');
+  }, `${datachannel} should be able to send Blob message and receive as ArrayBuffer`);
 
   /*
     [WebSocket]
@@ -196,7 +200,7 @@
             to a new Blob object that represents data as its raw data.
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t, options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'blob';
       channel1.send(helloBuffer);
@@ -213,7 +217,7 @@
 
       assert_equals_typed_array(messageBuffer, helloBuffer.buffer);
     });
-  }, 'Data channel should be able to send ArrayBuffer message and receive as Blob');
+  }, `${datachannel} should be able to send ArrayBuffer message and receive as Blob`);
 
   /*
     6.2.  RTCDataChannel
@@ -224,7 +228,7 @@
         be initialized to the string "blob".
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t, options)
     .then(([channel1, channel2]) => {
       assert_equals(channel2.binaryType, 'blob',
         'Expect initial binaryType value to be blob');
@@ -243,7 +247,7 @@
 
       assert_equals_typed_array(messageBuffer, helloBuffer.buffer);
     });
-  }, 'Data channel binaryType should receive message as Blob by default');
+  }, `${datachannel} binaryType should receive message as Blob by default`);
 
   // Test sending 3 messages: helloBuffer, unicodeString, helloBlob
   async_test(t => {
@@ -262,7 +266,7 @@
       }
     });
 
-    createDataChannelPair()
+    createDataChannelPair(t, options)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel2.addEventListener('message', onMessage);
@@ -273,7 +277,7 @@
 
     }).catch(t.step_func(err =>
       assert_unreached(`Unexpected promise rejection: ${err}`)));
-  }, 'Sending multiple messages with different types should succeed and be received');
+  }, `${datachannel} sending multiple messages with different types should succeed and be received`);
 
   /*
     [Deferred]
@@ -301,7 +305,7 @@
 promise_test(async t => {
   let pc1 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
-  let [channel1, channel2] = await createDataChannelPair(pc1);
+  let [channel1, channel2] = await createDataChannelPair(t, options, pc1);
   let message = 'hello888'; // 8 bytes
   while (message.length <= pc1.sctp.maxMessageSize) {
     channel1.send(message);
@@ -314,5 +318,7 @@ promise_test(async t => {
   // If the byte size of "data" exceeds the value of maxMessageSize, throw
   // a TypeError.
   assert_throws_js(TypeError, () => channel1.send(message));
-}, 'Calling send() up to max size should succeed, above max size should fail');
+}, `${datachannel} send() up to max size should succeed, above max size should fail`);
+
+}
 </script>

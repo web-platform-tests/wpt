@@ -666,33 +666,46 @@ promise_test(async t => {
 }, 'Reusing a data channel id that is in use (after setRemoteDescription, negotiated via DCEP) ' +
   'should throw OperationError');
 
+
+for (const options of [{}, {negotiated: true, id: 0}]) {
+
+const datachannel = `${options.negotiated? "negotiated " : ""}datachannel`;
+
 // Based on https://bugzilla.mozilla.org/show_bug.cgi?id=1441723
 promise_test(async t => {
   const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
 
-  await createDataChannelPair(pc1, pc2);
+  await createDataChannelPair(t, options, pc1);
 
   const dc = pc1.createDataChannel('');
   assert_equals(dc.readyState, 'connecting', 'Channel should be in the connecting state');
-}, 'New data channel should be in the connecting state after creation (after connection ' +
-  'establishment)');
+}, `New ${datachannel} should be in the connecting state after creation ` +
+   `(after connection establishment)`);
 
 promise_test(async t => {
   const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
   const stream = await getNoiseStream({audio: true, video: true});
   t.add_cleanup(() => stopTracks(stream));
   const audio = stream.getAudioTracks()[0];
   const video = stream.getVideoTracks()[0];
   pc1.addTrack(audio, stream);
   pc1.addTrack(video, stream);
-  await createDataChannelPair(pc1, pc2);
-}, 'addTrack, then createDataChannel, should negotiate properly');
+  await createDataChannelPair(t, options, pc1);
+}, `addTrack, then creating ${datachannel}, should negotiate properly`);
+
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection({bundlePolicy: "max-bundle"});
+  t.add_cleanup(() => pc1.close());
+  const stream = await getNoiseStream({audio: true, video: true});
+  t.add_cleanup(() => stopTracks(stream));
+  const audio = stream.getAudioTracks()[0];
+  const video = stream.getVideoTracks()[0];
+  pc1.addTrack(audio, stream);
+  pc1.addTrack(video, stream);
+  await createDataChannelPair(t, options, pc1);
+}, `addTrack, then creating ${datachannel}, should negotiate properly when max-bundle is used`);
 
 promise_test(async t => {
   const pc1 = new RTCPeerConnection({bundlePolicy: "max-bundle"});
@@ -705,27 +718,14 @@ promise_test(async t => {
   const video = stream.getVideoTracks()[0];
   pc1.addTrack(audio, stream);
   pc1.addTrack(video, stream);
-  await createDataChannelPair(pc1, pc2);
-}, 'addTrack, then createDataChannel, should negotiate properly when max-bundle is used');
-
-promise_test(async t => {
-  const pc1 = new RTCPeerConnection({bundlePolicy: "max-bundle"});
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-  const stream = await getNoiseStream({audio: true, video: true});
-  t.add_cleanup(() => stopTracks(stream));
-  const audio = stream.getAudioTracks()[0];
-  const video = stream.getVideoTracks()[0];
-  pc1.addTrack(audio, stream);
-  pc1.addTrack(video, stream);
-  const [dc1, dc2] = await createDataChannelPair(pc1, pc2);
+  const [dc1, dc2] = await createDataChannelPair(t, options, pc1, pc2);
 
   pc2.getTransceivers()[0].stop();
   const dc1Closed = new Promise(r => dc1.onclose = r);
   await exchangeOfferAnswer(pc1, pc2);
   await dc1Closed;
-}, 'Stopping the bundle-tag when there is a DataChannel in the bundle should kill the DataChannel');
+}, `Stopping the bundle-tag when there is a ${datachannel} in the bundle ` +
+   `should kill the DataChannel`);
 
 /*
   Untestable
@@ -748,4 +748,5 @@ promise_test(async t => {
   Tested in RTCDataChannel-dcep.html
     - Transmission of '.label' and further options
 */
+}
 </script>

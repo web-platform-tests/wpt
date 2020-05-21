@@ -62,20 +62,19 @@ const unicodeBuffer = Uint8Array.of(
   0xe4, 0xb8, 0x96, 0xe7, 0x95, 0x8c,
   0xe4, 0xbd, 0xa0, 0xe5, 0xa5, 0xbd);
 
+for (const options of [{}, {negotiated: true, id: 0}]) {
+
+const datachannel = `${options.negotiated? "negotiated " : ""}datachannel`;
+
 /*
   Ensure .bufferedAmount is 0 initially for both sides.
  */
 promise_test(async (t) => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-
-  const [dc1, dc2] = await createDataChannelPair(pc1, pc2);
+  const [dc1, dc2] = await createDataChannelPair(t, options);
 
   assert_equals(dc1.bufferedAmount, 0, 'Expect bufferedAmount to be 0');
   assert_equals(dc2.bufferedAmount, 0, 'Expect bufferedAmount to be 0');
-}, 'bufferedAmount initial value should be 0 for both peers');
+}, `${datachannel} bufferedAmount initial value should be 0 for both peers`);
 
 /*
   6.2.  send()
@@ -86,12 +85,7 @@ promise_test(async (t) => {
           by the number of bytes needed to express data as UTF-8.
  */
 promise_test(async (t) => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-
-  const [dc1, dc2] = await createDataChannelPair(pc1, pc2);
+  const [dc1, dc2] = await createDataChannelPair(t, options);
 
   dc1.send(unicodeString);
   assert_equals(dc1.bufferedAmount, unicodeBuffer.byteLength,
@@ -100,7 +94,8 @@ promise_test(async (t) => {
   await awaitMessage(dc2);
   assert_equals(dc1.bufferedAmount, 0,
     'Expect sender bufferedAmount to be reduced after message is sent');
-}, 'bufferedAmount should increase to byte length of encoded unicode string sent');
+}, `${datachannel} bufferedAmount should increase to byte length of encoded` +
+   `unicode string sent`);
 
 /*
   6.2. send()
@@ -111,12 +106,7 @@ promise_test(async (t) => {
           ArrayBuffer in bytes.
  */
 promise_test(async (t) => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-
-  const [dc1, dc2] = await createDataChannelPair(pc1, pc2);
+  const [dc1, dc2] = await createDataChannelPair(t, options);
 
   dc1.send(helloBuffer.buffer);
   assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
@@ -125,7 +115,7 @@ promise_test(async (t) => {
   await awaitMessage(dc2);
   assert_equals(dc1.bufferedAmount, 0,
     'Expect sender bufferedAmount to be reduced after message is sent');
-}, 'bufferedAmount should increase to byte length of buffer sent');
+}, `${datachannel} bufferedAmount should increase to byte length of buffer sent`);
 
 /*
   6.2. send()
@@ -135,12 +125,7 @@ promise_test(async (t) => {
           the bufferedAmount attribute by the size of data, in bytes.
  */
 promise_test(async (t) => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-
-  const [dc1, dc2] = await createDataChannelPair(pc1, pc2);
+  const [dc1, dc2] = await createDataChannelPair(t, options);
 
   dc1.send(helloBlob);
   assert_equals(dc1.bufferedAmount, helloBlob.size,
@@ -149,28 +134,21 @@ promise_test(async (t) => {
   await awaitMessage(dc2);
   assert_equals(dc1.bufferedAmount, 0,
     'Expect sender bufferedAmount to be reduced after message is sent');
-}, 'bufferedAmount should increase to size of blob sent');
+}, `${datachannel} bufferedAmount should increase to size of blob sent`);
 
 // Test sending 3 messages: helloBuffer, unicodeString, helloBlob
 promise_test(async (t) => {
   const resolver = new Resolver();
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-
   let messageCount = 0;
 
-  const [dc1, dc2] = await createDataChannelPair(pc1, pc2);
-  const onMessage = t.step_func(() => {
+  const [dc1, dc2] = await createDataChannelPair(t, options);
+  dc2.onmessage = t.step_func(() => {
     if (++messageCount === 3) {
       assert_equals(dc1.bufferedAmount, 0,
         'Expect sender bufferedAmount to be reduced after message is sent');
       resolver.resolve();
     }
   });
-
-  dc2.addEventListener('message', onMessage);
 
   dc1.send(helloBuffer);
   assert_equals(dc1.bufferedAmount, helloString.length,
@@ -187,15 +165,10 @@ promise_test(async (t) => {
     'Expect bufferedAmount to be the total length of all messages queued to send');
 
   await resolver;
-}, 'bufferedAmount should increase by byte length for each message sent');
+}, `${datachannel} bufferedAmount should increase by byte length for each message sent`);
 
 promise_test(async (t) => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-
-  const [dc1] = await createDataChannelPair(pc1, pc2);
+  const [dc1] = await createDataChannelPair(t, options);
 
   dc1.send(helloBuffer.buffer);
   assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
@@ -204,15 +177,12 @@ promise_test(async (t) => {
   dc1.close();
   assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
     'Expect bufferedAmount to not decrease immediately after closing the channel');
-}, 'bufferedAmount should not decrease immediately after initiating closure');
+}, `${datachannel} bufferedAmount should not decrease immediately after initiating closure`);
 
 promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-
-  const [dc1] = await createDataChannelPair(pc1, pc2);
+  const [dc1] = await createDataChannelPair(t, options, pc1);
 
   dc1.send(helloBuffer.buffer);
   assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
@@ -221,36 +191,35 @@ promise_test(async (t) => {
   pc1.close();
   assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
     'Expect bufferedAmount to not decrease after closing the peer connection');
-}, 'bufferedAmount should not decrease after closing the peer connection');
+}, `${datachannel} bufferedAmount should not decrease after closing the peer connection`);
 
   promise_test(async t => {
-    const [channel1, channel2] = await createDataChannelPair();
+    const [channel1, channel2] = await createDataChannelPair(t, options);
     channel1.addEventListener('bufferedamountlow', t.step_func_done(() => {
       assert_true(channel1.bufferedAmount <= channel1.bufferedAmountLowThreshold);
     }));
     const eventWatcher = new EventWatcher(t, channel1, ['bufferedamountlow']);
     channel1.send(helloString);
     await eventWatcher.wait_for(['bufferedamountlow']);
-  }, 'Data channel bufferedamountlow event fires after send() is complete');
+  }, `${datachannel} bufferedamountlow event fires after send() is complete`);
 
   promise_test(async t => {
-    const [channel1, channel2] = await createDataChannelPair();
+    const [channel1, channel2] = await createDataChannelPair(t, options);
     channel1.send(helloString);
     assert_equals(channel1.bufferedAmount, helloString.length);
     await awaitMessage(channel2);
     assert_equals(channel1.bufferedAmount, 0);
-  }, 'Data channel bufferedamount is data.length on send(data)');
+  }, `${datachannel} bufferedamount is data.length on send(data)`);
 
   promise_test(async t => {
-    const [channel1, channel2] = await createDataChannelPair();
+    const [channel1, channel2] = await createDataChannelPair(t, options);
     channel1.send(helloString);
     assert_equals(channel1.bufferedAmount, helloString.length);
     assert_equals(channel1.bufferedAmount, helloString.length);
-  }, 'Data channel bufferedamount returns the same amount if no more data is' +
-     ' sent on the channel');
+  }, `${datachannel} bufferedamount returns the same amount if no more data is`);
 
   promise_test(async t => {
-    const [channel1, channel2] = await createDataChannelPair();
+    const [channel1, channel2] = await createDataChannelPair(t, options);
     let eventFireCount = 0;
     channel1.addEventListener('bufferedamountlow', t.step_func(() => {
       assert_true(channel1.bufferedAmount <= channel1.bufferedAmountLowThreshold);
@@ -262,11 +231,11 @@ promise_test(async (t) => {
     channel1.send(helloString);
     assert_equals(channel1.bufferedAmount, 2 * helloString.length);
     await eventWatcher.wait_for(['bufferedamountlow']);
-  }, 'Data channel bufferedamountlow event fires only once after multiple' +
-    ' consecutive send() calls');
+  }, `${datachannel} bufferedamountlow event fires only once after multiple` +
+     ` consecutive send() calls`);
 
   promise_test(async t => {
-    const [channel1, channel2] = await createDataChannelPair();
+    const [channel1, channel2] = await createDataChannelPair(t, options);
     const eventWatcher = new EventWatcher(t, channel1, ['bufferedamountlow']);
     channel1.send(helloString);
     assert_equals(channel1.bufferedAmount, helloString.length);
@@ -276,6 +245,6 @@ promise_test(async (t) => {
     assert_equals(channel1.bufferedAmount, helloString.length);
     await eventWatcher.wait_for(['bufferedamountlow']);
     assert_equals(await awaitMessage(channel2), helloString);
-  }, 'Data channel bufferedamountlow event fires after each sent message');
-
+  }, `${datachannel} bufferedamountlow event fires after each sent message`);
+}
 </script>

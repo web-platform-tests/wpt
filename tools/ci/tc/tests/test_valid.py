@@ -48,7 +48,9 @@ def test_verify_payload():
 
     # TODO(Hexcles): Change it to https://community-tc.services.mozilla.com/references/schemas/docker-worker/v1/payload.json
     # after the next Community-TC release (see https://bugzilla.mozilla.org/show_bug.cgi?id=1639732)..
-    r = requests.get("https://raw.githubusercontent.com/taskcluster/taskcluster/3ed511ef9119da54fc093e976b7b5955874c9b54/workers/docker-worker/schemas/v1/payload.json")
+    r = requests.get(
+        "https://raw.githubusercontent.com/taskcluster/taskcluster/"
+        "3ed511ef9119da54fc093e976b7b5955874c9b54/workers/docker-worker/schemas/v1/payload.json")
     r.raise_for_status()
     payload_schema = r.json()
 

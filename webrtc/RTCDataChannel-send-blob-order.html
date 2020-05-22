@@ -26,6 +26,6 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
 
     e = await new Promise(r => channel2.onmessage = r);
     assert_equals(e.data.byteLength, data2Size);
-  }, '${datachannel} should send data following the order of the send call');
+  }, `${datachannel} should send data following the order of the send call`);
 }
 </script>

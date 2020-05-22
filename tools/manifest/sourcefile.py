@@ -409,11 +409,11 @@ class SourceFile(object):
 
     @property
     def name_is_tentative(self):
+        # type: () -> bool
         """Check if the file name matches the conditions for the file to be a
-        tentative file
+        tentative file.
 
         See https://web-platform-tests.org/writing-tests/file-names.html#test-features"""
-        # type: () -> bool
         return "tentative" in self.meta_flags
 
     @property

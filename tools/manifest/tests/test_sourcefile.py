@@ -127,7 +127,7 @@ def test_name_is_tentative():
     assert s.name_is_tentative
 
     s = create("css/css-ui/appearance-revert-001.html")
-    assert not s._name_is_tentative
+    assert not s.name_is_tentative
 
 
 def test_worker():

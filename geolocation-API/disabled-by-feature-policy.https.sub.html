@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <body>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -20,10 +20,11 @@
         "granted",
         false
       );
+
       const posError = await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(reject, resolve);
       });
-      console.log(posError)
+
       assert_true(
         posError instanceof GeolocationPositionError,
         "Expected instance of GeolocationPositionError"

@@ -1,11 +1,11 @@
 import gzip as gzip_module
-from cStringIO import StringIO
+from six.moves import cStringIO as StringIO
 import os
 
 def main(request, response):
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    file_path = os.path.join(dir_path, 'resource_timing_test0.xml')
-    f = open(file_path, 'r')
+    file_path = os.path.join(dir_path, u'resource_timing_test0.xml')
+    f = open(file_path, u'r')
     output = f.read()
 
     out = StringIO()
@@ -13,8 +13,8 @@ def main(request, response):
       f.write(output)
     output = out.getvalue()
 
-    headers = [("Content-type", "text/plain"),
-               ("Content-Encoding", "gzip"),
-               ("Content-Length", len(output))]
+    headers = [(b"Content-type", b"text/plain"),
+               (b"Content-Encoding", b"gzip"),
+               (b"Content-Length", len(output))]
 
     return headers, output

@@ -1209,29 +1209,17 @@ IdlArray.prototype.assert_type_is = function(value, type)
             assert_regexp_match(value, /^([\x00-\ud7ff\ue000-\uffff]|[\ud800-\udbff][\udc00-\udfff])*$/);
             return;
 
-        case "Int8Array":
-        case "Int16Array":
-        case "Int32Array":
-        case "Uint8Array":
-        case "Uint16Array":
-        case "Uint32Array":
-        case "Uint8ClampedArray":
-        case "Float32Array":
-        case "Float64Array":
-        case "ArrayBuffer":
-        case "DataView":
-        case "Function":
-            assert_true(value instanceof self[type], "wrong type: not a " + type);
-            return;
-
         case "object":
             assert_in_array(typeof value, ["object", "function"], "wrong type: not object or function");
             return;
     }
 
+    // This is a catch-all for basic types (e.g. Int8Array). If a type needs
+    // more elaborate checking it should go in the switch statement above.
     if (!(type in this.members))
     {
-        throw new IdlHarnessError("Unrecognized type " + type);
+        assert_true(value instanceof self[type], "wrong type: not a " + type);
+        return;
     }
 
     if (this.members[type] instanceof IdlInterface)

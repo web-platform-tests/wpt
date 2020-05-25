@@ -83,3 +83,18 @@ function touchScrollInTarget(pixels_to_scroll, target, direction, pause_time_in_
 function touchFlingInTarget(pixels_to_scroll, target, direction) {
   touchScrollInTarget(pixels_to_scroll, target, direction, 0 /* pause_time */);
 }
+
+async function mouseActionsInTarget(target, origin, delta, pause_time_in_ms = 100) {
+  return new test_driver.Actions()
+    .addPointer("pointer1", "mouse")
+    .pointerMove(origin.x, origin.y, { origin: target })
+    .pointerDown()
+    .pointerMove(origin.x + delta.x, origin.y + delta.y, { origin: target })
+    .pointerMove(origin.x + delta.x * 2, origin.y + delta.y * 2, { origin: target })
+    .send()
+    .then(() => {
+      setTimeout(() => {
+        return new test_driver.Actions().pointerUp().send();
+      }, pause_time_in_ms);     
+    });
+}

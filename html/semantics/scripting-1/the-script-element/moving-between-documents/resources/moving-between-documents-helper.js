@@ -113,13 +113,13 @@ async function runTest(timing, destType, result, inlineOrExternal, type) {
       destType, null, null, null, hasBlockingStylesheet);
 
   const scriptOnLoad =
-    tScriptLoadEvent.unreached_func("Script load fired unexpectedly");
+    tScriptLoadEvent.unreached_func("Script load event fired unexpectedly");
   const scriptOnError = (event) => {
     // For Firefox: Prevent window.onerror is fired due to propagation
     // from <script>'s error event.
     event.stopPropagation();
 
-    tScriptErrorEvent.unreached_func("Script error fired unexpectedly")();
+    tScriptErrorEvent.unreached_func("Script error evennt fired unexpectedly")();
   };
 
   sourceWindow.didExecute = false;

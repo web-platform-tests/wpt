@@ -15,7 +15,7 @@ def main(request, response):
         return [(b"Content-Type", b"text/plain")], body
 
 
-    if origin != None:
+    if origin != b'none':
         response.headers.set(b"Access-Control-Allow-Origin", origin)
     if b'origin2' in request.GET:
         response.headers.append(b"Access-Control-Allow-Origin", request.GET.first(b'origin2'))

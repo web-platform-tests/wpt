@@ -52,7 +52,7 @@ def main(request, response):
     time.sleep(1)
     body += """
         <script id="s1" type="%s"
-                onload="tScriptLoadEvent.unreached_func('onload')"
+                onload="scriptOnLoad()"
                 onerror="scriptOnError(event)">
         if (!window.readyToEvaluate) {
           window.didExecute = "executed too early";
@@ -72,7 +72,7 @@ def main(request, response):
     body += """
         <script id="s1" type="%s"
                 src="slow-flag-setter.py?result=%s&cache=%s"
-                onload="tScriptLoadEvent.unreached_func('onload')"
+                onload="scriptOnLoad()"
                 onerror="scriptOnError(event)"></script>
       </streaming-element>
     """ % (type, result, random.random())
@@ -81,7 +81,7 @@ def main(request, response):
     body += """
         <script id="s1" type="%s"
                 src=""
-                onload="tScriptLoadEvent.unreached_func('onload')"
+                onload="scriptOnLoad()"
                 onerror="scriptOnError(event)"></script>
       </streaming-element>
     """ % (type,)

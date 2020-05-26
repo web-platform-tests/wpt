@@ -62,11 +62,10 @@ function runTest() {
         await waitForCompositorCommit();
         scrollend_arrived = false;
 
-        // Perform drag actiion on target div and wait for target_div to get scrollend event.
+        // Perform drag action on target div and wait for target_div to get scrollend event.
         var origin = { x: target_div.offsetWidth / 2, y: target_div.offsetHeight - 50 };
         var delta = { x: 0, y: 40 };
         await mouseActionsInTarget(target_div, origin, delta, 300);
-        assert_false(scrollend_arrived);
         await waitFor(() => { return scrollend_arrived; },
             'target_div did not receive scrollend event after dragging scroll on target.');
         assert_true(target_div.scrollTop > 0);
@@ -82,7 +81,9 @@ function runTest() {
         scrollend_arrived = false;
 
         // Hit the scrollbar of target div and wait for target_div to get scrollend event.
-        var origin = {x: target_div.offsetWidth - 5, y: target_div.offsetHeight - 50};
+        var scrollbar_width = target_div.offsetWidth - target_div.clientWidth;
+        assert_true(scrollbar_width > 0, "This test requires scrollbar.");
+        var origin = {x: target_div.offsetWidth - scrollbar_width / 2, y: target_div.offsetHeight - 50};
         var delta = {x: 0, y: 0};
         await mouseActionsInTarget(target_div, origin, delta, 100);
         await waitFor(() => { return scrollend_arrived; },
@@ -99,8 +100,11 @@ function runTest() {
         await waitForCompositorCommit();
         scrollend_arrived = false;
 
+
         // Drag the thumb of target div.
-        var origin = { x: target_div.offsetWidth - 5, y: 50 };
+        var scrollbar_width = target_div.offsetWidth - target_div.clientWidth;
+        assert_true(scrollbar_width > 0, "This test requires scrollbar.");
+        var origin = { x: target_div.offsetWidth - scrollbar_width / 2, y: 50 };
         var delta = { x: 0, y: 20 };
         await mouseActionsInTarget(target_div, origin, delta, 100);
         await waitFor(() => { return scrollend_arrived; },

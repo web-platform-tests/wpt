@@ -91,10 +91,7 @@ async function mouseActionsInTarget(target, origin, delta, pause_time_in_ms = 10
     .pointerDown()
     .pointerMove(origin.x + delta.x, origin.y + delta.y, { origin: target })
     .pointerMove(origin.x + delta.x * 2, origin.y + delta.y * 2, { origin: target })
-    .send()
-    .then(() => {
-      setTimeout(() => {
-        return new test_driver.Actions().pointerUp().send();
-      }, pause_time_in_ms);     
-    });
+    .pause(pause_time_in_ms)
+    .pointerUp()
+    .send();
 }

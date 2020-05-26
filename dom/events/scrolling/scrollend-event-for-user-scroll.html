@@ -42,7 +42,7 @@ function resetTargetScrollState() {
     target_div.scrollLeft = 0;
 }
 
-function checkFinialPosition(target, position, pause_time_in_ms) {
+function checkFinalPosition(target, position, pause_time_in_ms) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve();
@@ -69,7 +69,7 @@ function runTest() {
         await waitFor(() => { return scrollend_arrived; },
             'target_div did not receive scrollend event after dragging scroll on target.');
         assert_true(target_div.scrollTop > 0);
-        await checkFinialPosition(target_div, {x: target_div.scrollLeft, y: target_div.scrollTop}, 300);
+        await checkFinalPosition(target_div, {x: target_div.scrollLeft, y: target_div.scrollTop}, 300);
     }, 'Tests that the target_div gets scrollend event when dragging scroll on target.');
 
     promise_test(async (t) => {
@@ -89,7 +89,7 @@ function runTest() {
         await waitFor(() => { return scrollend_arrived; },
             'target_div did not receive scrollend event after clicking scrollbar on target.');
         assert_true(target_div.scrollTop > 0);
-        await checkFinialPosition(target_div, { x: target_div.scrollLeft, y: target_div.scrollTop }, 300);
+        await checkFinalPosition(target_div, { x: target_div.scrollLeft, y: target_div.scrollTop }, 300);
     }, 'Tests that the target_div gets scrollend event when click scrollbar on target.');
 
     promise_test(async (t) => {
@@ -110,7 +110,7 @@ function runTest() {
         await waitFor(() => { return scrollend_arrived; },
             'target_div did not receive scrollend event after dragging the thumb of target.');
         assert_true(target_div.scrollTop > 0);
-        await checkFinialPosition(target_div, { x: target_div.scrollLeft, y: target_div.scrollTop }, 300);
+        await checkFinalPosition(target_div, { x: target_div.scrollLeft, y: target_div.scrollTop }, 300);
     }, 'Tests that the target_div gets scrollend event when drag the thumb of target.');
 
     promise_test(async (t) => {
@@ -131,7 +131,7 @@ function runTest() {
         await waitFor(() => { return scrollend_arrived; },
             'target_div did not receive scrollend event after sending DOWN key to target.');
         assert_true(target_div.scrollTop > 0);
-        await checkFinialPosition(target_div, { x: target_div.scrollLeft, y: target_div.scrollTop }, 300);
+        await checkFinalPosition(target_div, { x: target_div.scrollLeft, y: target_div.scrollTop }, 300);
     }, 'Tests that the target_div gets scrollend event when send DOWN key to target.');
 }
 </script>

@@ -84,7 +84,7 @@ function touchFlingInTarget(pixels_to_scroll, target, direction) {
   touchScrollInTarget(pixels_to_scroll, target, direction, 0 /* pause_time */);
 }
 
-async function mouseActionsInTarget(target, origin, delta, pause_time_in_ms = 100) {
+function mouseActionsInTarget(target, origin, delta, pause_time_in_ms = 100) {
   return new test_driver.Actions()
     .addPointer("pointer1", "mouse")
     .pointerMove(origin.x, origin.y, { origin: target })

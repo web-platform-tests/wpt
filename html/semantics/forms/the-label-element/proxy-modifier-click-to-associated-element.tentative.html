@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<title>label element modifier click proxying via "for" attribute or nested labelable element</title>
+<link rel="author" title="Mu-An Chiou" href="mailto:hi@muan.co">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/forms.html#the-label-element:the-label-element-10">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<form id="test">
+  <input id="foo" type="checkbox" />
+  <label id="foo-label" for="foo">foo</label>
+
+  <label id="bar-label">
+    <input id="bar" type="checkbox" /> bar
+    <input id="baz" type="checkbox" /> baz
+  </label>
+</form>
+<script>
+  "use strict";
+
+  async_test(t => {
+    const label = document.getElementById("foo-label");
+    const input = document.getElementById("foo");
+
+    input.addEventListener("click", t.step_func_done());
+
+    label.dispatchEvent(new MouseEvent('click', { shiftKey: true }))
+
+  }, "label with for attribute should proxy click events to the associated element on shift click");
+
+  async_test(t => {
+    const label = document.getElementById("bar-label");
+    const input = document.getElementById("bar");
+
+    input.addEventListener("click", t.step_func_done());
+
+    label.dispatchEvent(new MouseEvent('click', { shiftKey: true }))
+
+  }, "label without for attribute should proxy click events to the first labelable child on shift click");
+
+  async_test(t => {
+    const label = document.getElementById("foo-label");
+    const input = document.getElementById("foo");
+
+    input.addEventListener("click", t.step_func_done());
+
+    label.dispatchEvent(new MouseEvent('click', { altKey: true }))
+
+  }, "label with for attribute should proxy click events to the associated element on alt click");
+
+  async_test(t => {
+    const label = document.getElementById("bar-label");
+    const input = document.getElementById("bar");
+
+    input.addEventListener("click", t.step_func_done());
+
+    label.dispatchEvent(new MouseEvent('click', { altKey: true }))
+
+  }, "label without for attribute should proxy click events to the first labelable child on alt click");
+
+  async_test(t => {
+    const label = document.getElementById("foo-label");
+    const input = document.getElementById("foo");
+
+    input.addEventListener("click", t.step_func_done());
+
+    label.dispatchEvent(new MouseEvent('click', { metaKey: true }))
+
+  }, "label with for attribute should proxy click events to the associated element on meta click");
+
+  async_test(t => {
+    const label = document.getElementById("bar-label");
+    const input = document.getElementById("bar");
+
+    input.addEventListener("click", t.step_func_done());
+
+    label.dispatchEvent(new MouseEvent('click', { metaKey: true }))
+
+  }, "label without for attribute should proxy click events to the first labelable child on meta click");
+
+
+</script>

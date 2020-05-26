@@ -40,7 +40,7 @@ promise_test(async () => {
       c.enqueue(2);
       c.enqueue(3);
       c.close();
-    },
+    }
   });
 
   const chunks = [];
@@ -59,7 +59,7 @@ promise_test(async () => {
         c.close();
       }
       i += 1;
-    },
+    }
   });
 
   const chunks = [];
@@ -68,6 +68,42 @@ promise_test(async () => {
   }
   assert_array_equals(chunks, [1, 2, 3]);
 }, 'Async-iterating a pull source');
+
+promise_test(async () => {
+  const s = new ReadableStream({
+    start(c) {
+      c.enqueue(undefined);
+      c.enqueue(undefined);
+      c.enqueue(undefined);
+      c.close();
+    }
+  });
+
+  const chunks = [];
+  for await (const chunk of s) {
+    chunks.push(chunk);
+  }
+  assert_array_equals(chunks, [undefined, undefined, undefined]);
+}, 'Async-iterating a push source with undefined values');
+
+promise_test(async () => {
+  let i = 1;
+  const s = new ReadableStream({
+    pull(c) {
+      c.enqueue(undefined);
+      if (i >= 3) {
+        c.close();
+      }
+      i += 1;
+    }
+  });
+
+  const chunks = [];
+  for await (const chunk of s) {
+    chunks.push(chunk);
+  }
+  assert_array_equals(chunks, [undefined, undefined, undefined]);
+}, 'Async-iterating a pull source with undefined values');
 
 promise_test(async () => {
   let i = 1;

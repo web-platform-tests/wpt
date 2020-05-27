@@ -5,26 +5,28 @@
 <link rel="help" href="https://drafts.csswg.org/css-grid/#layout-algorithm">
 <link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#flex-lines">
 <link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#propdef-flex-wrap">
+<link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#propdef-align-content">
 <link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#propdef-align-self">
 <link rel="help" href="https://drafts.csswg.org/css-align-3/#align-flex">
 <link rel="help" href="https://drafts.csswg.org/css-align-3/#align-grid">
 <link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
-<meta name="assert" content="The 'auto' inline-size of the grid item should fill the available space of its grid container, which shouldn't shrink wrap honoring the 'align-self: normal' (behaves as 'stretch') as flexbox item, despite the default behavior of single-line flexbox.">
+<meta name="assert" content="A single-line column flexbox shouldn't shrink-to-fit since its flex item is stretching in the main-axis, honoring the 'align-self: normal (behaves as 'stretch')'. The grid item's inline-size should be stretched as well, honoring its justify-self: 'normal' (behaves as 'stretch')">
 <link rel="stylesheet" href="/fonts/ahem.css">
 <style>
     body { overflow: hidden; }
     .flexbox {
         display: flex;
         flex-flow: column nowrap;
+        align-content: flex-start;
         width: 100px;
         height: 100px;
         font: 25px/1 Ahem;
+        color: green;
     }
     .grid {
         display: grid;
         align-items: baseline;
         background: red;
-        color: green;
     }
     .gridItem {
         background: green;

@@ -5,28 +5,28 @@
 <link rel="help" href="https://drafts.csswg.org/css-grid/#layout-algorithm">
 <link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#flex-lines">
 <link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#propdef-flex-wrap">
-<link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#propdef-justify-content">
+<link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#propdef-align-content">
 <link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#propdef-align-self">
 <link rel="help" href="https://drafts.csswg.org/css-align-3/#align-flex">
 <link rel="help" href="https://drafts.csswg.org/css-align-3/#align-grid">
 <link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
-<meta name="assert" content="The 'auto' inline-size of the grid item should fill the available space of its grid container, which shouldn't shrink wrap honoring the 'align-self: normal' (behaves as 'stretch') as flexbox item, since multiline flexbox depend on the 'justify-content: stretch' value.">
+<meta name="assert" content="The align-content: 'stretch' prevents the multi-line column flexbox to shrink-to-fit (default behavior), hence the grid container will be stretched, honoring its align-self: 'normal (behaves as 'stretch'), so that its grid item, honoring its justify-self: 'normal' (behaves as 'stretch') ">
 <link rel="stylesheet" href="/fonts/ahem.css">
 <style>
     body { overflow: hidden; }
     .flexbox {
         display: flex;
-        flex-flow: column;
-        justify-content: stretch;
+        flex-flow: column wrap;
+        align-content: stretch;
         width: 100px;
         height: 100px;
         font: 25px/1 Ahem;
+        color: green;
     }
     .grid {
         display: grid;
         align-items: baseline;
         background: red;
-        color: green;
     }
     .gridItem {
         background: green;

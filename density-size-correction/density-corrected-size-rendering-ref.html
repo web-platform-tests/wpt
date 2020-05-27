@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<body>
+<link rel="author" title="Noam Rosenthal" href="noam@webkit.org">
+<img src="resources/exif-resolution-none.jpg" width="100" height="50" class="test-img" />
+<img src="resources/exif-resolution-none.jpg" width="50" height="25" class="test-img" />
+<img src="resources/exif-resolution-none.jpg" width="200" height="100" class="test-img" />
+<img src="resources/exif-resolution-none.jpg" width="50" height="100" class="test-img" />
+<style>
+    body {
+        --default: url(resources/exif-resolution-none.jpg);
+    }
+    .default-after::after {content: var(--default); }
+    .default-bg {background-image: var(--default); }
+    .lores-bg {background-image: var(--default); background-size: 200px 100px; }
+    .hires-bg {background-image: var(--default); background-size: 50px 25px; }
+    .invalid-bg {background-image: var(--default); }
+    .non-uniform-bg {background-image: var(--default); background-size: 50px 100px; }
+    .box { width: 200px; height: 200px; display: inline-block; }
+    .tiled {background-repeat: repeat; }
+    .stretch {background-repeat: no-repeat; background-size: contain; }
+    .non-uniform-bg.stretch { background-size: 200px 200px; clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%, 0 0)  }
+</style>
+<br/>
+<div class="default-bg tiled box"></div>
+<div class="lores-bg tiled box"></div>
+<div class="hires-bg tiled box"></div>
+<div class="non-uniform-bg tiled box"></div>
+<div class="lores-bg stretch box"></div>
+<div class="default-bg stretch box"></div>
+<div class="non-uniform-bg stretch box"></div>
+<div class="lores-after box">
+    <img src="resources/exif-resolution-none.jpg" width="200" />
+</div>
+<div class="default-after box"></div>
+</body>
+</html>

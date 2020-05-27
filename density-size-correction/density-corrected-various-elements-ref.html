@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <title>Content-DPR: various elements</title>
+    <link rel="author" title="Noam Rosenthal" href="noam@webkit.org">
+    <style>
+      .row {
+        display: flex;
+      }
+
+      .row > * {
+        object-fit: none;
+        object-position: top left;
+        margin: 5px;
+        width: 100px;
+        height: 50px;
+        background: #CCCCCC;
+      }
+    </style>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const canvas = document.getElementById('canvas')
+        const image = new Image()
+        image.onload = () => {
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(image, 0, 0, 50, 25)
+        }
+        image.src = "resources/exif-resolution-none.jpg"
+    });
+    </script>
+  </head>
+  <body>
+    <p>There following boxes should be identical (the colorful boxes at the top-left quarter)</p>
+    <div class="row">
+      <div>
+        <img src="resources/exif-resolution-none.jpg" width="50" height="25" />
+      </div>
+      <div>
+        <img src="resources/exif-resolution-none.jpg" width="50" height="25" />
+      </div>
+      <div>
+        <img src="resources/exif-resolution-none.jpg" width="50" height="25" />
+      </div>
+      <canvas id="canvas" width="100" height="50">
+    </div>
+  </body>
+</html>

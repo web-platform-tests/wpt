@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<body>
+<link rel="author" title="Noam Rosenthal" href="noam@webkit.org">
+<link rel="match" href="density-corrected-size-rendering-ref.html" />
+<meta name="assert" content="Assert that images with EXIF density-corrected-size are rendered correctly">
+<img src="resources/exif-resolution-none.jpg" data-width="100" data-height="50" class="test-img" />
+<img src="resources/exif-resolution-valid-hires.jpg" data-width="50" data-height="25" class="test-img" />
+<img src="resources/exif-resolution-valid-lores.jpg" data-width="200" data-height="10" class="test-img" />
+<img src="resources/exif-resolution-valid-non-uniform.jpg" data-width="50" data-height="100" class="test-img" />
+<style>
+    body {
+        --lores: url(resources/exif-resolution-valid-lores.jpg);
+        --hires: url(resources/exif-resolution-valid-hires.jpg);
+        --default: url(resources/exif-resolution-none.jpg);
+        --non-uniform: url(resources/exif-resolution-valid-non-uniform.jpg);
+    }
+    .default-bg {background-image: var(--default); }
+    .lores-bg {background-image: var(--lores); }
+    .lores-after::after {content: var(--lores); }
+    .default-after::after {content: var(--default); }
+    .hires-bg {background-image: var(--hires); }
+    .invalid-bg {background-image: var(--invalid); }
+    .non-uniform-bg {background-image: var(--non-uniform); }
+    .box { width: 200px; height: 200px; display: inline-block; }
+    .tiled {background-repeat: repeat; }
+    .stretch {background-repeat: no-repeat; background-size: contain; }
+</style>
+<br/>
+<div class="default-bg tiled box"></div>
+<div class="lores-bg tiled box"></div>
+<div class="hires-bg tiled box"></div>
+<div class="non-uniform-bg tiled box"></div>
+<div class="lores-bg stretch box"></div>
+<div class="default-bg stretch box"></div>
+<div class="non-uniform-bg stretch box"></div>
+<div class="lores-after box"></div>
+<div class="default-after box"></div>
+</body>
+</html>

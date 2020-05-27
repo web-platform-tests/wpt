@@ -11,6 +11,9 @@
 <input type="month" id="month_input" min="2011-02" step="1" value="2010-02">
 <input type="time" id="time_input" min="21:13" step="60" value="20:13">
 <input type="week" id="week_input" min="2011-W02" step="1" value="2010-W02">
+<input type="number" id="number_input_nan" min="5">
+<input type="date" id="date_input_nan" min="2011-02-10">
+<input type="time" id="time_input_nan" min="21:13">
 
 <script>
     var input_number = document.getElementById("input_number");
@@ -37,11 +40,23 @@
       }, "Calling stepDown() on input - " + type + " - where value < min should not modify value.");
     }
 
+    function testStepDownNaN(id, value, type) {
+      test(() => {
+        let input = document.getElementById(id);
+        input.stepDown();
+        assert_equals(input.value, value, "value that's NaN should be updated to the min if (min > 0).");
+      }, "Calling stepDown() on input - " + type + " - where value is NaN should be updated to min if (min > 0).");
+    }
+
     testStepDownOverflow("number_input", "200", "number");
     testStepDownOverflow("date_input", "2010-02-10", "date");
     testStepDownOverflow("dtl_input", "2010-02-10T20:13", "datetime-local");
     testStepDownOverflow("month_input", "2010-02", "month");
     testStepDownOverflow("time_input", "20:13", "time");
     testStepDownOverflow("week_input", "2010-W02", "week");
+
+    testStepDownNaN("number_input_nan", "5", "number");
+    testStepDownNaN("date_input_nan", "2011-02-10", "date");
+    testStepDownNaN("time_input_nan", "21:13", "time");
 </script>
 </html>

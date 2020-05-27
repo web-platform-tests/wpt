@@ -28,6 +28,7 @@
     }, "Default font-family on <math> is not inherited");
 
     test(function () {
+        assert_equals(getFontFamily("math-not-inherited"), "math");
         assert_equals(getFontFamily("math-default"), "math");
     }, "Default font-family on <math> is 'math'");
   </script>

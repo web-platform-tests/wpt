@@ -10,7 +10,8 @@ async_test(t => {
     assert_equals(data.id, "");
     assert_equals(data.origin, "null");
     assert_false(data.sameOriginNoCORPSuccess); // This is effectively a no-op for this test
-    assert_true(data.crossOriginNoCORPFailure, "Cross-origin without CORP did not fail");
+    // data URLs are not trustworthy, so COEP shouldn't take effect.
+    assert_false(data.crossOriginNoCORPFailure, "COEP took effect unexpectedly");
   }));
   const frame = document.createElement("iframe");
   t.add_cleanup(() => frame.remove());

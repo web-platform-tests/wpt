@@ -1,5 +1,5 @@
 # This is the configuration file for Azure Pipelines, used to run tests on
-# macOS. Documentation to help understand this setup:
+# macOS and Windows. Documentation to help understand this setup:
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/triggers
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/multiple-phases
@@ -24,6 +24,11 @@ trigger:
 - triggers/edge_canary
 - triggers/safari_stable
 - triggers/safari_preview
+
+# Set safaridriver_diagnose to true to enable safaridriver diagnostics. The
+# logs won't appear in `./wpt run` output but will be uploaded as an artifact.
+variables:
+  safaridriver_diagnose: false
 
 jobs:
 # The affected tests jobs are unconditional for speed, as most PRs have one or
@@ -102,17 +107,13 @@ jobs:
   - template: tools/ci/azure/install_safari.yml
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
-  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel dev chrome infrastructure/
+  - script: ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel dev chrome infrastructure/
     displayName: 'Run tests (Chrome Dev)'
-  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel nightly firefox infrastructure/
+  - script: ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel nightly firefox infrastructure/
     displayName: 'Run tests (Firefox Nightly)'
-  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel preview safari infrastructure/
+  - script: ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel preview safari infrastructure/
     displayName: 'Run tests (Safari Technology Preview)'
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish results'
-    inputs:
-      artifactName: 'infrastructure'
-    condition: always()
+  - template: tools/ci/azure/publish_logs.yml
 
 - job: tools_unittest_mac
   displayName: 'tools/ unittests: macOS'
@@ -610,12 +611,13 @@ jobs:
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
   # --exclude is a workaround for https://github.com/web-platform-tests/wpt/issues/18995 + https://github.com/web-platform-tests/wpt/issues/20887 + https://github.com/web-platform-tests/wpt/issues/22175 + https://github.com/web-platform-tests/wpt/issues/23630
-  - script: no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info safari --exclude /pointerevents/pointerevent_pointercapture-not-lost-in-chorded-buttons.html --exclude /pointerevents/pointerevent_pointercapture_in_frame.html --exclude /web-share/share-sharePromise-internal-slot.https.html --exclude /webdriver/tests/perform_actions/pointer_tripleclick.py
+  - script: ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info safari --exclude /pointerevents/pointerevent_pointercapture-not-lost-in-chorded-buttons.html --exclude /pointerevents/pointerevent_pointercapture_in_frame.html --exclude /web-share/share-sharePromise-internal-slot.https.html --exclude /webdriver/tests/perform_actions/pointer_tripleclick.py
     displayName: 'Run tests'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:
       artifactName: 'safari-results'
+  - template: tools/ci/azure/publish_logs.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari
@@ -645,12 +647,13 @@ jobs:
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
   # --exclude is a workaround for https://github.com/web-platform-tests/wpt/issues/18995 + https://github.com/web-platform-tests/wpt/issues/20887 + https://github.com/web-platform-tests/wpt/issues/23630
-  - script: no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info --channel preview safari --exclude /pointerevents/pointerevent_pointercapture_in_frame.html --exclude /web-share/share-sharePromise-internal-slot.https.html --exclude /webdriver/tests/perform_actions/pointer_tripleclick.py
+  - script: ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info --channel preview safari --exclude /pointerevents/pointerevent_pointercapture_in_frame.html --exclude /web-share/share-sharePromise-internal-slot.https.html --exclude /webdriver/tests/perform_actions/pointer_tripleclick.py
     displayName: 'Run tests'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:
       artifactName: 'safari-preview-results'
+  - template: tools/ci/azure/publish_logs.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari_preview

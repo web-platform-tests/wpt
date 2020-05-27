@@ -179,9 +179,9 @@ class HtmlWrapperHandler(WrapperHandler):
 
     def check_exposure(self, request):
         if self.global_type:
-            globals = b""
+            globals = u""
             for (key, value) in self._get_metadata(request):
-                if key == b"global":
+                if key == "global":
                     globals = value
                     break
 
@@ -190,23 +190,23 @@ class HtmlWrapperHandler(WrapperHandler):
                                     self.global_type)
 
     def _meta_replacement(self, key, value):
-        if key == b"timeout":
-            if value == b"long":
+        if key == "timeout":
+            if value == "long":
                 return '<meta name="timeout" content="long">'
-        if key == b"title":
-            value = value.decode('utf-8').replace("&", "&amp;").replace("<", "&lt;")
+        if key == "title":
+            value = value.replace("&", "&amp;").replace("<", "&lt;")
             return '<title>%s</title>' % value
         return None
 
     def _script_replacement(self, key, value):
-        if key == b"script":
-            attribute = value.decode('utf-8').replace("&", "&amp;").replace('"', "&quot;")
+        if key == "script":
+            attribute = value.replace("&", "&amp;").replace('"', "&quot;")
             return '<script src="%s"></script>' % attribute
         return None
 
 
 class WorkersHandler(HtmlWrapperHandler):
-    global_type = b"dedicatedworker"
+    global_type = "dedicatedworker"
     path_replace = [(".any.worker.html", ".any.js", ".any.worker.js"),
                     (".worker.html", ".worker.js")]
     wrapper = """<!doctype html>
@@ -235,7 +235,7 @@ class WindowHandler(HtmlWrapperHandler):
 
 
 class AnyHtmlHandler(HtmlWrapperHandler):
-    global_type = b"window"
+    global_type = "window"
     path_replace = [(".any.html", ".any.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
@@ -255,7 +255,7 @@ self.GLOBAL = {
 
 
 class SharedWorkersHandler(HtmlWrapperHandler):
-    global_type = b"sharedworker"
+    global_type = "sharedworker"
     path_replace = [(".any.sharedworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
@@ -270,7 +270,7 @@ fetch_tests_from_worker(new SharedWorker("%(path)s%(query)s"));
 
 
 class ServiceWorkersHandler(HtmlWrapperHandler):
-    global_type = b"serviceworker"
+    global_type = "serviceworker"
     path_replace = [(".any.serviceworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
@@ -308,11 +308,11 @@ done();
         return None
 
     def _script_replacement(self, key, value):
-        if key == b"script":
-            attribute = value.decode('utf-8').replace("\\", "\\\\").replace('"', '\\"')
+        if key == "script":
+            attribute = value.replace("\\", "\\\\").replace('"', '\\"')
             return 'importScripts("%s")' % attribute
-        if key == b"title":
-            value = value.decode('utf-8').replace("\\", "\\\\").replace('"', '\\"')
+        if key == "title":
+            value = value.replace("\\", "\\\\").replace('"', '\\"')
             return 'self.META_TITLE = "%s";' % value
         return None
 
@@ -985,17 +985,22 @@ def run(**kwargs):
             signal.signal(signal.SIGTERM, handle_signal)
             signal.signal(signal.SIGINT, handle_signal)
 
-            while (all(item.is_alive() for item in iter_procs(servers)) and
+            while (all(subproc.is_alive() for subproc in iter_procs(servers)) and
                    not received_signal.is_set()):
-                for item in iter_procs(servers):
-                    item.join(1)
-            exited = [item for item in iter_procs(servers) if not item.is_alive()]
-            subject = "subprocess" if len(exited) == 1 else "subprocesses"
+                for subproc in iter_procs(servers):
+                    subproc.join(1)
 
-            logger.info("%s %s exited:" % (len(exited), subject))
-
-            for item in iter_procs(servers):
-                logger.info("Status of %s:\t%s" % (item.name, "running" if item.is_alive() else "not running"))
+            failed_subproc = 0
+            for subproc in iter_procs(servers):
+                if subproc.is_alive():
+                    logger.info('Status of subprocess "%s": running' % subproc.name)
+                else:
+                    if subproc.exitcode == 0:
+                        logger.info('Status of subprocess "%s": exited correctly' % subproc.name)
+                    else:
+                        logger.warning('Status of subprocess "%s": failed. Exit with non-zero status: %d' % (subproc.name, subproc.exitcode))
+                        failed_subproc += 1
+            return failed_subproc
 
 
 def main():

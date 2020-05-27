@@ -2,7 +2,7 @@ import hashlib
 import re
 import os
 from collections import deque
-from six import binary_type, iteritems, text_type
+from six import binary_type, ensure_text, iteritems, text_type
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
 
@@ -56,9 +56,9 @@ def replace_end(s, old, new):
 
 
 def read_script_metadata(f, regexp):
-    # type: (BinaryIO, Pattern[bytes]) -> Iterable[Tuple[bytes, bytes]]
+    # type: (BinaryIO, Pattern[bytes]) -> Iterable[Tuple[Text, Text]]
     """
-    Yields any metadata (pairs of bytestrings) from the file-like object `f`,
+    Yields any metadata (pairs of strings) from the file-like object `f`,
     as specified according to a supplied regexp.
 
     `regexp` - Regexp containing two groups containing the metadata name and
@@ -70,25 +70,25 @@ def read_script_metadata(f, regexp):
         if not m:
             break
 
-        yield (m.groups()[0], m.groups()[1])
+        yield (m.groups()[0].decode("utf8"), m.groups()[1].decode("utf8"))
 
 
 _any_variants = {
-    b"window": {"suffix": ".any.html"},
-    b"serviceworker": {"force_https": True},
-    b"sharedworker": {},
-    b"dedicatedworker": {"suffix": ".any.worker.html"},
-    b"worker": {"longhand": {b"dedicatedworker", b"sharedworker", b"serviceworker"}},
-    b"jsshell": {"suffix": ".any.js"},
-}  # type: Dict[bytes, Dict[str, Any]]
+    "window": {"suffix": ".any.html"},
+    "serviceworker": {"force_https": True},
+    "sharedworker": {},
+    "dedicatedworker": {"suffix": ".any.worker.html"},
+    "worker": {"longhand": {"dedicatedworker", "sharedworker", "serviceworker"}},
+    "jsshell": {"suffix": ".any.js"},
+}  # type: Dict[Text, Dict[Text, Any]]
 
 
 def get_any_variants(item):
-    # type: (bytes) -> Set[bytes]
+    # type: (Text) -> Set[Text]
     """
-    Returns a set of variants (bytestrings) defined by the given keyword.
+    Returns a set of variants (strings) defined by the given keyword.
     """
-    assert isinstance(item, binary_type), item
+    assert isinstance(item, text_type), item
 
     variant = _any_variants.get(item, None)
     if variant is None:
@@ -98,46 +98,46 @@ def get_any_variants(item):
 
 
 def get_default_any_variants():
-    # type: () -> Set[bytes]
+    # type: () -> Set[Text]
     """
-    Returns a set of variants (bytestrings) that will be used by default.
+    Returns a set of variants (strings) that will be used by default.
     """
-    return set({b"window", b"dedicatedworker"})
+    return set({"window", "dedicatedworker"})
 
 
 def parse_variants(value):
-    # type: (bytes) -> Set[bytes]
+    # type: (Text) -> Set[Text]
     """
-    Returns a set of variants (bytestrings) defined by a comma-separated value.
+    Returns a set of variants (strings) defined by a comma-separated value.
     """
-    assert isinstance(value, binary_type), value
+    assert isinstance(value, text_type), value
 
-    if value == b"":
+    if value == "":
         return get_default_any_variants()
 
     globals = set()
-    for item in value.split(b","):
+    for item in value.split(","):
         item = item.strip()
         globals |= get_any_variants(item)
     return globals
 
 
 def global_suffixes(value):
-    # type: (bytes) -> Set[Tuple[bytes, bool]]
+    # type: (Text) -> Set[Tuple[Text, bool]]
     """
     Yields tuples of the relevant filename suffix (a string) and whether the
     variant is intended to run in a JS shell, for the variants defined by the
     given comma-separated value.
     """
-    assert isinstance(value, binary_type), value
+    assert isinstance(value, text_type), value
 
     rv = set()
 
     global_types = parse_variants(value)
     for global_type in global_types:
         variant = _any_variants[global_type]
-        suffix = variant.get("suffix", ".any.%s.html" % global_type.decode("utf-8"))
-        rv.add((suffix, global_type == b"jsshell"))
+        suffix = variant.get("suffix", ".any.%s.html" % global_type)
+        rv.add((suffix, global_type == "jsshell"))
 
     return rv
 
@@ -190,24 +190,21 @@ class SourceFile(object):
                          ("css", "CSS2", "archive"),
                          ("css", "common")}  # type: Set[Tuple[bytes, ...]]
 
-    def __init__(self, tests_root, rel_path, url_base, hash=None, contents=None):
+    def __init__(self, tests_root, rel_path_str, url_base, hash=None, contents=None):
         # type: (AnyStr, AnyStr, Text, Optional[Text], Optional[bytes]) -> None
         """Object representing a file in a source tree.
 
         :param tests_root: Path to the root of the source tree
-        :param rel_path: File path relative to tests_root
+        :param rel_path_str: File path relative to tests_root
         :param url_base: Base URL used when converting file paths to urls
         :param contents: Byte array of the contents of the file or ``None``.
         """
 
+        rel_path = ensure_text(rel_path_str)
         assert not os.path.isabs(rel_path), rel_path
-
         if os.name == "nt":
             # do slash normalization on Windows
-            if isinstance(rel_path, binary_type):
-                rel_path = rel_path.replace(b"/", b"\\")
-            else:
-                rel_path = rel_path.replace(u"/", u"\\")
+            rel_path = rel_path.replace(u"/", u"\\")
 
         dir_path, filename = os.path.split(rel_path)
         name, ext = os.path.splitext(filename)
@@ -218,13 +215,13 @@ class SourceFile(object):
 
         meta_flags = name.split(".")[1:]
 
-        self.tests_root = tests_root  # type: Union[bytes, Text]
-        self.rel_path = rel_path  # type: Union[bytes, Text]
-        self.dir_path = dir_path  # type: Union[bytes, Text]
-        self.filename = filename  # type: Union[bytes, Text]
-        self.name = name  # type: Union[bytes, Text]
-        self.ext = ext  # type: Union[bytes, Text]
-        self.type_flag = type_flag  # type: Optional[Union[bytes, Text]]
+        self.tests_root = ensure_text(tests_root)  # type: Text
+        self.rel_path = rel_path  # type: Text
+        self.dir_path = dir_path  # type: Text
+        self.filename = filename  # type: Text
+        self.name = name  # type: Text
+        self.ext = ext  # type: Text
+        self.type_flag = type_flag  # type: Optional[Text]
         self.meta_flags = meta_flags  # type: Union[List[bytes], List[Text]]
         self.url_base = url_base
         self.contents = contents
@@ -282,7 +279,7 @@ class SourceFile(object):
 
     @cached_property
     def path(self):
-        # type: () -> Union[bytes, Text]
+        # type: () -> Text
         return os.path.join(self.tests_root, self.rel_path)
 
     @cached_property
@@ -411,6 +408,15 @@ class SourceFile(object):
         return self.type_flag == "crash" or "crashtests" in self.dir_path.split(os.path.sep)
 
     @property
+    def name_is_tentative(self):
+        # type: () -> bool
+        """Check if the file name matches the conditions for the file to be a
+        tentative file.
+
+        See https://web-platform-tests.org/writing-tests/file-names.html#test-features"""
+        return "tentative" in self.meta_flags
+
+    @property
     def markup_type(self):
         # type: () -> Optional[Text]
         """Return the type of markup contained in a file, based on its extension,
@@ -462,7 +468,7 @@ class SourceFile(object):
 
     @cached_property
     def script_metadata(self):
-        # type: () -> Optional[List[Tuple[bytes, bytes]]]
+        # type: () -> Optional[List[Tuple[Text, Text]]]
         if self.name_is_worker or self.name_is_multi_global or self.name_is_window:
             regexp = js_meta_re
         elif self.name_is_webdriver:
@@ -479,7 +485,7 @@ class SourceFile(object):
         """The timeout of a test or reference file. "long" if the file has an extended timeout
         or None otherwise"""
         if self.script_metadata:
-            if any(m == (b"timeout", b"long") for m in self.script_metadata):
+            if any(m == ("timeout", "long") for m in self.script_metadata):
                 return "long"
 
         if self.root is None:
@@ -641,8 +647,8 @@ class SourceFile(object):
             script_metadata = self.script_metadata
             assert script_metadata is not None
             for (key, value) in script_metadata:
-                if key == b"variant":
-                    rv.append(value.decode("utf-8"))
+                if key == "variant":
+                    rv.append(value)
         else:
             for element in self.variant_nodes:
                 if "content" in element.attrib:
@@ -691,7 +697,7 @@ class SourceFile(object):
         (`script_metadata()`).
         """
         if self.script_metadata:
-            if any(m == (b"quic", b"true") for m in self.script_metadata):
+            if any(m == ("quic", "true") for m in self.script_metadata):
                 return True
 
         if self.root is None:
@@ -864,11 +870,11 @@ class SourceFile(object):
                 )]
 
         elif self.name_is_multi_global:
-            globals = b""
+            globals = u""
             script_metadata = self.script_metadata
             assert script_metadata is not None
             for (key, value) in script_metadata:
-                if key == b"global":
+                if key == "global":
                     globals = value
                     break
 
@@ -992,9 +998,9 @@ class SourceFile(object):
 
         if drop_cached and "__cached_properties__" in self.__dict__:
             cached_properties = self.__dict__["__cached_properties__"]
-            for key in cached_properties:
-                if key in self.__dict__:
-                    del self.__dict__[key]
+            for prop in cached_properties:
+                if prop in self.__dict__:
+                    del self.__dict__[prop]
             del self.__dict__["__cached_properties__"]
 
         return rv

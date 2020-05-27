@@ -24,12 +24,14 @@ def test_no_user_prompt(session):
     assert_error(response, "no such alert")
 
 
-@pytest.mark.parametrize("tag,label", [
-    ("<button>ok</button>", "ok"),
-    ("<button aria-labelledby='one two'></button><div id='one'>ok</div><div id='two'>go</div>", "ok go"),
-    ("<button aria-label='foo'>bar</button>", "foo")]
-def test_get_computed_label(session, tag, label):
-    session.url=inline("{0}".format(tag))
-    element=session.find.css(tag, all=False)
-    result=get_computed_label(session, element.id)
+@pytest.mark.parametrize("html,tag,label", [
+    ("<button>ok</button>", "button", "ok"),
+    ("<button aria-labelledby=\"one two\"></button><div id=one>ok</div><div id=two>go</div>", "button", "ok go"),
+    ("<button aria-label=foo>bar</button>", "button", "foo"),
+    ("<label><input> foo</label>", "input", "foo"),
+    ("<label for=b>foo<label><input id=b>", "input", "foo")])
+def test_get_computed_label(session, html, tag, label):
+    session.url = inline("{0}".format(tag))
+    element = session.find.css(tag, all=False)
+    result = get_computed_label(session, element.id)
     assert_success(result, label)

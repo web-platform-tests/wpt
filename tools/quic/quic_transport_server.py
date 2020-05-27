@@ -15,10 +15,9 @@ from aioquic.quic.events import StreamDataReceived, QuicEvent
 from aioquic.tls import SessionTicket
 
 SERVER_NAME = 'aioquic-transport'
-
-handlers_path = None
-
 logger = logging.getLogger(__name__)
+
+handlers_path = ""
 
 
 class EventHandler:
@@ -175,6 +174,7 @@ def start(kwargs):
         max_datagram_frame_size=65536,
     )
 
+    global handlers_path
     handlers_path = os.path.abspath(os.path.expanduser(
         kwargs['handlers_path']))
     logger.info('port = %s', kwargs['port'])

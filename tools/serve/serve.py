@@ -530,7 +530,7 @@ def start_servers(host, ports, paths, routes, bind_address, config, **kwargs):
                          "h2": start_http2_server,
                          "ws": start_ws_server,
                          "wss": start_wss_server,
-                         "quic": start_quic_server}[scheme]
+                         "quic-transport": start_quic_transport_server}[scheme]
 
             server_proc = ServerProc(scheme=scheme)
             server_proc.start(init_func, host, port, paths, routes, bind_address,
@@ -704,9 +704,9 @@ def start_wss_server(host, port, paths, routes, bind_address, config, **kwargs):
         startup_failed(log=False)
 
 
-class QuicDaemon(object):
+class QuicTransportDaemon(object):
     def __init__(self, host, port, handlers_path=None, private_key=None, certificate=None, log_level=None):
-        args = ["python3", "wpt", "serve-quic"]
+        args = ["python3", "wpt", "serve-quic-transport"]
         if host:
             args += ["--host", host]
         if port:
@@ -746,17 +746,16 @@ class QuicDaemon(object):
                 sys.exit(1)
 
 
-def start_quic_server(host, port, paths, routes, bind_address, config, **kwargs):
+def start_quic_transport_server(host, port, paths, routes, bind_address, config, **kwargs):
     # Ensure that when we start this in a new process we have the global lock
     # in the logging module unlocked
     reload_module(logging)
     release_mozlog_lock()
     try:
-        return QuicDaemon(host,
+        return QuicTransportDaemon(host,
                           port,
-                          # TODO(Hexcles): Honour ssl_config once aioquic 0.8.8 is released.)
-                          # private_key=config.ssl_config["key_path"],
-                          # certificate=config.ssl_config["cert_path"],
+                          private_key=config.ssl_config["key_path"],
+                          certificate=config.ssl_config["cert_path"],
                           log_level=config.log_level)
     except Exception:
         startup_failed(log=False)
@@ -789,8 +788,8 @@ def build_config(override_path=None, **kwargs):
         enable_http2 = True
     if enable_http2:
         rv._default["ports"]["h2"] = [9000]
-    if kwargs.get("quic"):
-        rv._default["ports"]["quic"] = [10000]
+    if kwargs.get("quic_transport"):
+        rv._default["ports"]["quic-transport"] = [10000]
 
     if override_path and os.path.exists(override_path):
         with open(override_path) as f:
@@ -942,7 +941,7 @@ def get_parser():
                         help=argparse.SUPPRESS)
     parser.add_argument("--no-h2", action="store_false", dest="h2", default=None,
                         help="Disable the HTTP/2.0 server")
-    parser.add_argument("--quic", action="store_true", help="Enable QUIC server")
+    parser.add_argument("--quic-transport", action="store_true", help="Enable QUIC server for WebTransport")
     return parser
 
 

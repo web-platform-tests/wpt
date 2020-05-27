@@ -66,8 +66,8 @@ def run(venv, **kwargs):
 
 def main():
     # This is only used when executing the script directly. Users are
-    # responsible for managing venv themselves. `wpt serve-quic` does NOT use
-    # this code path.
+    # responsible for managing venv themselves. `wpt serve-quic-transport` does
+    # NOT use this code path.
     kwargs = vars(get_parser().parse_args())
     return run(None, **kwargs)
 

@@ -134,7 +134,7 @@ class TestEnvironment(object):
             "h2": [9000],
         }
         if self.enable_quic:
-            ports["quic"] = [10000]
+            ports["quic-transport"] = [10000]
         config.ports = ports
 
         if os.path.exists(override_path):
@@ -240,7 +240,7 @@ class TestEnvironment(object):
         if not failed and self.test_server_port:
             for scheme, servers in iteritems(self.servers):
                 # TODO(Hexcles): Find a way to test QUIC's UDP port.
-                if scheme == "quic":
+                if scheme == "quic-transport":
                     continue
                 for port, server in servers:
                     s = socket.socket()

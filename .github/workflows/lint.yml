@@ -1,0 +1,12 @@
+name: lint
+on: pull_request
+jobs:
+  lint:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Run lint
+      run: |
+        echo "::add-matcher::.github/lint-problem-matcher.json"
+        ./wpt lint --all

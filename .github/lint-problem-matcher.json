@@ -1,0 +1,17 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "lint",
+      "pattern": [
+        {
+          "regexp": "^(ERROR):lint:(.+?):(?:(\\d+):)?\\s*(.+)\\s+\\((.+)\\)$",
+          "file": 2,
+          "line": 3,
+          "severity": 1,
+          "message": 4,
+          "code": 5
+        }
+      ]
+    }
+  ]
+}

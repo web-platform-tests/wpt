@@ -1214,8 +1214,13 @@ IdlArray.prototype.assert_type_is = function(value, type)
             return;
     }
 
-    // This is a catch-all for basic types (e.g. Int8Array). If a type needs
-    // more elaborate checking it should go in the switch statement above.
+    // This is a catch-all for any IDL type name which follows JS class
+    // semantics. This includes some non-interface IDL types (e.g. Int8Array,
+    // Function, ...), as well as any interface types that are not in the IDL
+    // that is fed to the harness. If an IDL type does not follow JS class
+    // semantics then it should go in the switch statement above. If an IDL
+    // type needs full checking, then the test should include it in the IDL it
+    // feeds to the harness.
     if (!(type in this.members))
     {
         assert_true(value instanceof self[type], "wrong type: not a " + type);

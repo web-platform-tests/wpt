@@ -17,7 +17,7 @@ def main(request, response):
         elif arg.startswith(u"mime:"):
             headers.append((b"Content-Type", unquote(arg[5:]).encode("iso-8859-1")))
         elif arg.startswith(u"send:"):
-            text = unquote(arg[5:]).encode("iso-8859-1")
+            text = unquote(arg[5:])
 
             if not statusSent:
                 # Default to a 200 status code.

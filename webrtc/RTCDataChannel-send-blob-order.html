@@ -7,7 +7,7 @@
 <script>
 
 for (const options of [{}, {negotiated: true, id: 0}]) {
-  const datachannel = `${options.negotiated? "Negotiated d" : "D"}atachannel`;
+  const mode = `${options.negotiated? "Negotiated d" : "D"}atachannel`;
 
   promise_test(async t => {
     const data1 = new Blob(['blob']);
@@ -26,6 +26,6 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
 
     e = await new Promise(r => channel2.onmessage = r);
     assert_equals(e.data.byteLength, data2Size);
-  }, `${datachannel} should send data following the order of the send call`);
+  }, `${mode} should send data following the order of the send call`);
 }
 </script>

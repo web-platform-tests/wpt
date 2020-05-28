@@ -63,135 +63,134 @@ const unicodeBuffer = Uint8Array.of(
   0xe4, 0xbd, 0xa0, 0xe5, 0xa5, 0xbd);
 
 for (const options of [{}, {negotiated: true, id: 0}]) {
+  const mode = `${options.negotiated? "negotiated " : ""}datachannel`;
 
-const datachannel = `${options.negotiated? "negotiated " : ""}datachannel`;
+  /*
+    Ensure .bufferedAmount is 0 initially for both sides.
+   */
+  promise_test(async (t) => {
+    const [dc1, dc2] = await createDataChannelPair(t, options);
 
-/*
-  Ensure .bufferedAmount is 0 initially for both sides.
- */
-promise_test(async (t) => {
-  const [dc1, dc2] = await createDataChannelPair(t, options);
+    assert_equals(dc1.bufferedAmount, 0, 'Expect bufferedAmount to be 0');
+    assert_equals(dc2.bufferedAmount, 0, 'Expect bufferedAmount to be 0');
+  }, `${mode} bufferedAmount initial value should be 0 for both peers`);
 
-  assert_equals(dc1.bufferedAmount, 0, 'Expect bufferedAmount to be 0');
-  assert_equals(dc2.bufferedAmount, 0, 'Expect bufferedAmount to be 0');
-}, `${datachannel} bufferedAmount initial value should be 0 for both peers`);
+  /*
+    6.2.  send()
+      3.  Execute the sub step that corresponds to the type of the methods argument:
 
-/*
-  6.2.  send()
-    3.  Execute the sub step that corresponds to the type of the methods argument:
+          string object
+            Let data be the object and increase the bufferedAmount attribute
+            by the number of bytes needed to express data as UTF-8.
+   */
+  promise_test(async (t) => {
+    const [dc1, dc2] = await createDataChannelPair(t, options);
 
-        string object
-          Let data be the object and increase the bufferedAmount attribute
-          by the number of bytes needed to express data as UTF-8.
- */
-promise_test(async (t) => {
-  const [dc1, dc2] = await createDataChannelPair(t, options);
+    dc1.send(unicodeString);
+    assert_equals(dc1.bufferedAmount, unicodeBuffer.byteLength,
+      'Expect bufferedAmount to be the byte length of the unicode string');
 
-  dc1.send(unicodeString);
-  assert_equals(dc1.bufferedAmount, unicodeBuffer.byteLength,
-    'Expect bufferedAmount to be the byte length of the unicode string');
+    await awaitMessage(dc2);
+    assert_equals(dc1.bufferedAmount, 0,
+      'Expect sender bufferedAmount to be reduced after message is sent');
+  }, `${mode} bufferedAmount should increase to byte length of encoded` +
+     `unicode string sent`);
 
-  await awaitMessage(dc2);
-  assert_equals(dc1.bufferedAmount, 0,
-    'Expect sender bufferedAmount to be reduced after message is sent');
-}, `${datachannel} bufferedAmount should increase to byte length of encoded` +
-   `unicode string sent`);
+  /*
+    6.2. send()
+      3.  Execute the sub step that corresponds to the type of the methods argument:
+          ArrayBuffer object
+            Let data be the data stored in the buffer described by the ArrayBuffer
+            object and increase the bufferedAmount attribute by the length of the
+            ArrayBuffer in bytes.
+   */
+  promise_test(async (t) => {
+    const [dc1, dc2] = await createDataChannelPair(t, options);
 
-/*
-  6.2. send()
-    3.  Execute the sub step that corresponds to the type of the methods argument:
-        ArrayBuffer object
-          Let data be the data stored in the buffer described by the ArrayBuffer
-          object and increase the bufferedAmount attribute by the length of the
-          ArrayBuffer in bytes.
- */
-promise_test(async (t) => {
-  const [dc1, dc2] = await createDataChannelPair(t, options);
+    dc1.send(helloBuffer.buffer);
+    assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
+      'Expect bufferedAmount to increase to byte length of sent buffer');
 
-  dc1.send(helloBuffer.buffer);
-  assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
-    'Expect bufferedAmount to increase to byte length of sent buffer');
+    await awaitMessage(dc2);
+    assert_equals(dc1.bufferedAmount, 0,
+      'Expect sender bufferedAmount to be reduced after message is sent');
+  }, `${mode} bufferedAmount should increase to byte length of buffer sent`);
 
-  await awaitMessage(dc2);
-  assert_equals(dc1.bufferedAmount, 0,
-    'Expect sender bufferedAmount to be reduced after message is sent');
-}, `${datachannel} bufferedAmount should increase to byte length of buffer sent`);
+  /*
+    6.2. send()
+      3.  Execute the sub step that corresponds to the type of the methods argument:
+          Blob object
+            Let data be the raw data represented by the Blob object and increase
+            the bufferedAmount attribute by the size of data, in bytes.
+   */
+  promise_test(async (t) => {
+    const [dc1, dc2] = await createDataChannelPair(t, options);
 
-/*
-  6.2. send()
-    3.  Execute the sub step that corresponds to the type of the methods argument:
-        Blob object
-          Let data be the raw data represented by the Blob object and increase
-          the bufferedAmount attribute by the size of data, in bytes.
- */
-promise_test(async (t) => {
-  const [dc1, dc2] = await createDataChannelPair(t, options);
+    dc1.send(helloBlob);
+    assert_equals(dc1.bufferedAmount, helloBlob.size,
+      'Expect bufferedAmount to increase to size of sent blob');
 
-  dc1.send(helloBlob);
-  assert_equals(dc1.bufferedAmount, helloBlob.size,
-    'Expect bufferedAmount to increase to size of sent blob');
+    await awaitMessage(dc2);
+    assert_equals(dc1.bufferedAmount, 0,
+      'Expect sender bufferedAmount to be reduced after message is sent');
+  }, `${mode} bufferedAmount should increase to size of blob sent`);
 
-  await awaitMessage(dc2);
-  assert_equals(dc1.bufferedAmount, 0,
-    'Expect sender bufferedAmount to be reduced after message is sent');
-}, `${datachannel} bufferedAmount should increase to size of blob sent`);
+  // Test sending 3 messages: helloBuffer, unicodeString, helloBlob
+  promise_test(async (t) => {
+    const resolver = new Resolver();
+    let messageCount = 0;
 
-// Test sending 3 messages: helloBuffer, unicodeString, helloBlob
-promise_test(async (t) => {
-  const resolver = new Resolver();
-  let messageCount = 0;
+    const [dc1, dc2] = await createDataChannelPair(t, options);
+    dc2.onmessage = t.step_func(() => {
+      if (++messageCount === 3) {
+        assert_equals(dc1.bufferedAmount, 0,
+          'Expect sender bufferedAmount to be reduced after message is sent');
+        resolver.resolve();
+      }
+    });
 
-  const [dc1, dc2] = await createDataChannelPair(t, options);
-  dc2.onmessage = t.step_func(() => {
-    if (++messageCount === 3) {
-      assert_equals(dc1.bufferedAmount, 0,
-        'Expect sender bufferedAmount to be reduced after message is sent');
-      resolver.resolve();
-    }
-  });
+    dc1.send(helloBuffer);
+    assert_equals(dc1.bufferedAmount, helloString.length,
+      'Expect bufferedAmount to be the total length of all messages queued to send');
 
-  dc1.send(helloBuffer);
-  assert_equals(dc1.bufferedAmount, helloString.length,
-    'Expect bufferedAmount to be the total length of all messages queued to send');
+    dc1.send(unicodeString);
+    assert_equals(dc1.bufferedAmount,
+      helloString.length + unicodeBuffer.byteLength,
+      'Expect bufferedAmount to be the total length of all messages queued to send');
 
-  dc1.send(unicodeString);
-  assert_equals(dc1.bufferedAmount,
-    helloString.length + unicodeBuffer.byteLength,
-    'Expect bufferedAmount to be the total length of all messages queued to send');
+    dc1.send(helloBlob);
+    assert_equals(dc1.bufferedAmount,
+      helloString.length*2 + unicodeBuffer.byteLength,
+      'Expect bufferedAmount to be the total length of all messages queued to send');
 
-  dc1.send(helloBlob);
-  assert_equals(dc1.bufferedAmount,
-    helloString.length*2 + unicodeBuffer.byteLength,
-    'Expect bufferedAmount to be the total length of all messages queued to send');
+    await resolver;
+  }, `${mode} bufferedAmount should increase by byte length for each message sent`);
 
-  await resolver;
-}, `${datachannel} bufferedAmount should increase by byte length for each message sent`);
+  promise_test(async (t) => {
+    const [dc1] = await createDataChannelPair(t, options);
 
-promise_test(async (t) => {
-  const [dc1] = await createDataChannelPair(t, options);
+    dc1.send(helloBuffer.buffer);
+    assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
+      'Expect bufferedAmount to increase to byte length of sent buffer');
 
-  dc1.send(helloBuffer.buffer);
-  assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
-    'Expect bufferedAmount to increase to byte length of sent buffer');
+    dc1.close();
+    assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
+      'Expect bufferedAmount to not decrease immediately after closing the channel');
+  }, `${mode} bufferedAmount should not decrease immediately after initiating closure`);
 
-  dc1.close();
-  assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
-    'Expect bufferedAmount to not decrease immediately after closing the channel');
-}, `${datachannel} bufferedAmount should not decrease immediately after initiating closure`);
+  promise_test(async (t) => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const [dc1] = await createDataChannelPair(t, options, pc1);
 
-promise_test(async (t) => {
-  const pc1 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  const [dc1] = await createDataChannelPair(t, options, pc1);
+    dc1.send(helloBuffer.buffer);
+    assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
+      'Expect bufferedAmount to increase to byte length of sent buffer');
 
-  dc1.send(helloBuffer.buffer);
-  assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
-    'Expect bufferedAmount to increase to byte length of sent buffer');
-
-  pc1.close();
-  assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
-    'Expect bufferedAmount to not decrease after closing the peer connection');
-}, `${datachannel} bufferedAmount should not decrease after closing the peer connection`);
+    pc1.close();
+    assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
+      'Expect bufferedAmount to not decrease after closing the peer connection');
+  }, `${mode} bufferedAmount should not decrease after closing the peer connection`);
 
   promise_test(async t => {
     const [channel1, channel2] = await createDataChannelPair(t, options);
@@ -201,7 +200,7 @@ promise_test(async (t) => {
     const eventWatcher = new EventWatcher(t, channel1, ['bufferedamountlow']);
     channel1.send(helloString);
     await eventWatcher.wait_for(['bufferedamountlow']);
-  }, `${datachannel} bufferedamountlow event fires after send() is complete`);
+  }, `${mode} bufferedamountlow event fires after send() is complete`);
 
   promise_test(async t => {
     const [channel1, channel2] = await createDataChannelPair(t, options);
@@ -209,14 +208,14 @@ promise_test(async (t) => {
     assert_equals(channel1.bufferedAmount, helloString.length);
     await awaitMessage(channel2);
     assert_equals(channel1.bufferedAmount, 0);
-  }, `${datachannel} bufferedamount is data.length on send(data)`);
+  }, `${mode} bufferedamount is data.length on send(data)`);
 
   promise_test(async t => {
     const [channel1, channel2] = await createDataChannelPair(t, options);
     channel1.send(helloString);
     assert_equals(channel1.bufferedAmount, helloString.length);
     assert_equals(channel1.bufferedAmount, helloString.length);
-  }, `${datachannel} bufferedamount returns the same amount if no more data is`);
+  }, `${mode} bufferedamount returns the same amount if no more data is`);
 
   promise_test(async t => {
     const [channel1, channel2] = await createDataChannelPair(t, options);
@@ -231,7 +230,7 @@ promise_test(async (t) => {
     channel1.send(helloString);
     assert_equals(channel1.bufferedAmount, 2 * helloString.length);
     await eventWatcher.wait_for(['bufferedamountlow']);
-  }, `${datachannel} bufferedamountlow event fires only once after multiple` +
+  }, `${mode} bufferedamountlow event fires only once after multiple` +
      ` consecutive send() calls`);
 
   promise_test(async t => {
@@ -245,6 +244,6 @@ promise_test(async (t) => {
     assert_equals(channel1.bufferedAmount, helloString.length);
     await eventWatcher.wait_for(['bufferedamountlow']);
     assert_equals(await awaitMessage(channel2), helloString);
-  }, `${datachannel} bufferedamountlow event fires after each sent message`);
+  }, `${mode} bufferedamountlow event fires after each sent message`);
 }
 </script>

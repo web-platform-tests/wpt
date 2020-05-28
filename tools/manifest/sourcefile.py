@@ -865,6 +865,16 @@ class SourceFile(object):
                     self.rel_path
                 )]
 
+        elif self.name_is_webdriver:
+            rv = WebDriverSpecTest.item_type, [
+                WebDriverSpecTest(
+                    self.tests_root,
+                    self.rel_path,
+                    self.url_base,
+                    self.rel_url,
+                    timeout=self.timeout
+                )]
+
         elif self.name_is_visual:
             rv = VisualTest.item_type, [
                 VisualTest(
@@ -956,16 +966,6 @@ class SourceFile(object):
                 for variant in self.test_variants
             ]
             rv = TestharnessTest.item_type, tests
-
-        elif self.name_is_webdriver:
-            rv = WebDriverSpecTest.item_type, [
-                WebDriverSpecTest(
-                    self.tests_root,
-                    self.rel_path,
-                    self.url_base,
-                    self.rel_url,
-                    timeout=self.timeout
-                )]
 
         elif self.content_is_css_manual and not self.name_is_reference:
             rv = ManualTest.item_type, [

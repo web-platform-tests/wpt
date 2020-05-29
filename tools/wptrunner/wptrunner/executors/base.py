@@ -706,7 +706,7 @@ class ConnectionlessProtocol(Protocol):
         pass
 
 
-class WebDriverProtocol(Protocol):
+class WdspecProtocol(Protocol):
     server_cls = None
 
     implements = [ConnectionlessBaseProtocolPart]

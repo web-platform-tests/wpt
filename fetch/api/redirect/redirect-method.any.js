@@ -60,11 +60,13 @@ function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, met
       });
       assert_true(resp.redirected);
       return resp.text().then(function(text) {
+
         let expectedBody = "";
         if (expectedMethod == "POST") {
           expectedBody = opts.expectedBodyAsString || requestInit.body;
         }
         let expectedContentLength = expectedBody ? expectedBody.length.toString() : "NO";
+        console.log(expectedMethod, text, expectedBody)
         assert_equals(text, expectedBody, "request body");
         assert_equals(
           resp.headers.get("x-request-content-length"),

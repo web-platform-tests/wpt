@@ -5,6 +5,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-    document.createElement("link").relList.supports("manifest")
-}, 'link element should support a rel value of "manifest".');
+    const result = document.createElement("link").relList.supports("manifest")
+    assert_true(result, "Expected true if manifest is supported as a link relationship");
+}, 'link element supports a rel value of "manifest".');
 </script>

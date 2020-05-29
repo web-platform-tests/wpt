@@ -3,7 +3,7 @@ import traceback
 
 from six.moves.urllib.parse import urljoin
 
-from .base import WdspecExecutor, get_pages
+from .base import WdspecProtocol, WdspecExecutor, get_pages
 from .executorwebdriver import WebDriverProtocol, WebDriverRefTestExecutor, WebDriverRun
 from .protocol import PrintProtocolPart
 from ..webdriver_server import ChromeDriverServer
@@ -69,7 +69,6 @@ render('%s').then(result => callback(result))""" % pdf_base64)
 
 
 class ChromeDriverProtocol(WebDriverProtocol):
-    server_cls = ChromeDriverServer
     implements = WebDriverProtocol.implements + [ChromeDriverPrintProtocolPart]
 
 
@@ -119,5 +118,9 @@ class ChromeDriverPrintRefTestExecutor(WebDriverRefTestExecutor):
         return screenshots
 
 
+class ChromeDriverWdspecProtocol(WdspecProtocol):
+    server_cls = ChromeDriverServer
+
+
 class ChromeDriverWdspecExecutor(WdspecExecutor):
-    protocol_cls = ChromeDriverProtocol
+    protocol_cls = ChromeDriverWdspecProtocol

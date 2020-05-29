@@ -20,7 +20,7 @@ from .base import (ConnectionlessProtocol,
                    reftest_result_converter,
                    TimedRunner,
                    WdspecExecutor,
-                   WebDriverProtocol)
+                   WdspecProtocol)
 from .process import ProcessTestExecutor
 from ..browsers.base import browser_command
 from ..process import cast_env
@@ -281,7 +281,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
                                        " ".join(self.command))
 
 
-class ServoDriverProtocol(WebDriverProtocol):
+class ServoDriverProtocol(WdspecProtocol):
     server_cls = ServoDriverServer
 
 

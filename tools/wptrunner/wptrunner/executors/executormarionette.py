@@ -21,7 +21,7 @@ from .base import (CallbackHandler,
                    TestharnessExecutor,
                    TimedRunner,
                    WdspecExecutor,
-                   WebDriverProtocol,
+                   WdspecProtocol,
                    get_pages,
                    strip_server)
 from .protocol import (ActionSequenceProtocolPart,
@@ -1006,7 +1006,7 @@ class InternalRefTestImplementation(RefTestImplementation):
             self.logger.warning(traceback.format_exc())
 
 
-class GeckoDriverProtocol(WebDriverProtocol):
+class GeckoDriverProtocol(WdspecProtocol):
     server_cls = GeckoDriverServer
 
 

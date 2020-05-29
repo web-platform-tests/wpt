@@ -17,7 +17,7 @@ from aioquic.tls import SessionTicket
 SERVER_NAME = 'aioquic-transport'
 logger = logging.getLogger(__name__)
 
-handlers_path = ""
+handlers_path = ''
 
 
 class EventHandler:

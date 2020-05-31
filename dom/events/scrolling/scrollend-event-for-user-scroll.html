@@ -44,7 +44,7 @@ function resetTargetScrollState() {
 
 function checkFinalPosition(target, position, pause_time_in_ms) {
     return new Promise((resolve, reject) => {
-        setTimeout(() => {
+        step_timeout(() => {
             resolve();
             assert_equals(position.x, target.scrollLeft);
             assert_equals(position.y, target.scrollTop);

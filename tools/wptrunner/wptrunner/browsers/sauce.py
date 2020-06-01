@@ -79,8 +79,10 @@ def get_sauce_config(**kwargs):
     browser_name = kwargs["sauce_browser"]
     sauce_user = kwargs["sauce_user"]
     sauce_key = kwargs["sauce_key"]
+    datacenter = kwargs["sauce_datacenter"]
+    port = kwargs["sauce_port"]
 
-    hub_url = "%s:%s@localhost:4445" % (sauce_user, sauce_key)
+    hub_url = "%s:%s@%s:%s" % (sauce_user, sauce_key, datacenter, port)
     data = {
         "url": "http://%s/wd/hub" % hub_url,
         "browserName": browser_name,

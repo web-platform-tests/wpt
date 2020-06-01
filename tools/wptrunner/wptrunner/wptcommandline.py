@@ -322,6 +322,10 @@ scheme host and port.""")
                              help="Sauce Labs build identifier")
     sauce_group.add_argument("--sauce-tags", dest="sauce_tags", nargs="*",
                              help="Sauce Labs identifying tag", default=[])
+    sauce_group.add_argument("--sauce-data-center", dest="sauce_datacenter",
+                             help="Sauce Labs data-center", default="ondemand.saucelabs.com")
+    sauce_group.add_argument("--sauce-port", dest="sauce_port",
+                             help="Sauce Labs port", default="443")
     sauce_group.add_argument("--sauce-tunnel-id", dest="sauce_tunnel_id",
                              help="Sauce Connect tunnel identifier")
     sauce_group.add_argument("--sauce-user", dest="sauce_user",

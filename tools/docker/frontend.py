@@ -60,8 +60,8 @@ def lookup_tag(tag):
     import requests
     org, repo_version = tag.split("/", 1)
     repo, version = repo_version.rsplit(":", 1)
-    resp = requests.get("https://hub.docker.com/v2/repositories/webplatformtests/%s/tags/%s" %
-                        (repo, version))
+    resp = requests.get("https://hub.docker.com/v2/repositories/%s/%s/tags/%s" %
+                        (org, repo, version))
     if resp.status_code == 200:
         return True
     if resp.status_code == 404:
@@ -86,7 +86,7 @@ def push(venv, tag=None, force=False, *args, **kwargs):
         if not force:
             sys.exit(1)
     if tag is None:
-        error_log("Using tag %s from .taskcluster.yml" % taskcluster_tag)
+        logger.info("Using tag %s from .taskcluster.yml" % taskcluster_tag)
         tag = taskcluster_tag
 
     tag_re = re.compile(r"webplatformtests/wpt:\d\.\d+")

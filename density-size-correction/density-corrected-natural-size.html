@@ -2,26 +2,36 @@
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="./resources/piexif.js"></script>
+<script src="./resources/exify.js"></script>
 <link rel="author" title="Noam Rosenthal" href="noam@webkit.org">
-<img src="resources/exif-resolution-invalid-cm.jpg" data-width="100" data-height="50" class="test-img" />
-<img src="resources/exif-resolution-invalid-no-match.jpg" data-width="100" data-height="50" class="test-img" />
-<img src="resources/exif-resolution-invalid-partial.jpg" data-width="100" data-height="50" class="test-img" />
-<img src="resources/exif-resolution-no-change.jpg" data-width="100" data-height="50" class="test-img" />
-<img src="resources/exif-resolution-none.jpg" data-width="100" data-height="50" class="test-img" />
-<img src="resources/exif-resolution-valid-hires.jpg" data-width="50" data-height="25" class="test-img" />
-<img src="resources/exif-resolution-valid-lores.jpg" data-width="200" data-height="100" class="test-img" />
-<img src="resources/exif-resolution-valid-non-uniform.jpg" data-width="50" data-height="100" class="test-img" />
-<img src="resources/exif-resolution-with-orientation.jpg" data-width="100" data-height="200" class="test-img" />
 <script>
-    let run_test = () => {
-        test(() => {
-            [...document.querySelectorAll('.test-img')].forEach(img => {
-                assert_equals(img.naturalWidth, +img.dataset.width, `Density size correction for ${img.src}`);
-                assert_equals(img.naturalHeight, +img.dataset.height, `Density size correction for ${img.src}`);
-            })
-        }, "Test the image dimensions of different EXIF scenarios");
+    async function test_valid(input) {
+        const image = await createImageWithMetadata(input)
+        assert_equals(image.naturalWidth, input.preferredWidth)
+        assert_equals(image.naturalHeight, input.preferredHeight)
     }
-    window.addEventListener("load", run_test);
+    async function test_invalid(input) {
+        const image = await createImageWithMetadata(input)
+        assert_equals(image.naturalWidth, input.width)
+        assert_equals(image.naturalHeight, input.height)
+    }
+
+    async function test() {
+        await test_valid({width: 10, height: 20, preferredWidth: 20, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
+        await test_valid({width: 10, height: 20, preferredWidth: 2, preferredHeight: 4, resolutionX: 360, resolutionY: 360, resolutionUnit: 2})
+        await test_valid({width: 10, height: 20, preferredWidth: 20, preferredHeight: 10, resolutionX: 36, resolutionY: 144, resolutionUnit: 2})
+        await test_valid({width: 10, height: 20, preferredWidth: 10, preferredHeight: 40, resolutionX: 72, resolutionY: 36, resolutionUnit: 2})
+        await test_valid({width: 30, height: 30, preferredWidth: 90, preferredHeight: 30, resolutionX: 24, resolutionY: 72, resolutionUnit: 2})
+
+        await test_valid({width: 10, height: 20, preferredWidth: 20, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
+        await test_valid({width: 10, height: 20, preferredWidth: 20, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
+        await test_valid({width: 10, height: 20, preferredWidth: 20, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
+        await test_valid({width: 10, height: 20, preferredWidth: 20, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
+    }
+
+    promise_test(test)
+
 </script>
 
 </body>

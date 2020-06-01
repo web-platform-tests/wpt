@@ -18,19 +18,21 @@
     .box { width: 200px; height: 200px; display: inline-block; }
     .tiled {background-repeat: repeat; }
     .stretch {background-repeat: no-repeat; background-size: contain; }
-    .non-uniform-bg.stretch { background-size: 200px 200px; clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%, 0 0)  }
+    .non-uniform-bg.stretch { background-size: 100px 200px; background-size: scale-down;  }
 </style>
 <br/>
 <div class="default-bg tiled box"></div>
 <div class="lores-bg tiled box"></div>
 <div class="hires-bg tiled box"></div>
 <div class="non-uniform-bg tiled box"></div>
+<br/>
 <div class="lores-bg stretch box"></div>
 <div class="default-bg stretch box"></div>
 <div class="non-uniform-bg stretch box"></div>
 <div class="lores-after box">
     <img src="resources/exif-resolution-none.jpg" width="200" />
 </div>
+<br/>
 <div class="default-after box"></div>
 </body>
 </html>

@@ -202,4 +202,22 @@ promise_test(async t => {
                  "Animation finished event is sent on reaching max scroll.");
 }, 'Sending animation finished events by finished animation on reverse ' +
    'scrolling.');
+
+promise_test(async t => {
+    createScrollLinkedAnimation(t).play();
+    await document.getAnimations()[0].ready;
+
+    var scroller = document.getAnimations()[0].timeline.scrollSource;
+    const maxScroll = scroller.scrollHeight - scroller.clientHeight;
+
+    scroller.scrollTop = maxScroll;
+    await waitForNextFrame();
+    GCController.collectAll();
+
+    scroller.scrollTop = 0.5 * maxScroll;
+    await waitForNextFrame();
+
+    assert_equals(document.getAnimations().length, 1,
+      'Animation must remain active.');
+}, 'Finished scroll animation remains active and is not collected by GC.');
 </script>

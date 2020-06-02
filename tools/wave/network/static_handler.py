@@ -46,7 +46,7 @@ class StaticHandler(object):
             data = file.read()
 
         if file_path.split("/")[-1] == "wave-service.js":
-            data = str(data)
+            data = data.decode("UTF-8")
             data = data.replace("{{WEB_ROOT}}", str(self._web_root))
             data = data.replace("{{HTTP_PORT}}", str(self._http_port))
             data = data.replace("{{HTTPS_PORT}}", str(self._https_port))

@@ -261,13 +261,6 @@ for (const preventCancel of [false, true]) {
   }, `Cancellation behavior when manually calling return(); preventCancel = ${preventCancel}`);
 }
 
-promise_test(async t => {
-  const s = new ReadableStream();
-  const it = s[Symbol.asyncIterator]();
-  await it.return();
-  return promise_rejects_js(t, TypeError, it.return(), 'return should reject');
-}, 'Calling return() twice rejects');
-
 promise_test(async () => {
   const s = new ReadableStream({
     start(c) {
@@ -375,11 +368,20 @@ promise_test(async () => {
 promise_test(async t => {
   const rs = new ReadableStream();
   const it = rs.values();
-  await it.return();
+  await it.return('return value');
   const readResult = await it.next();
   assert_equals(readResult.done, true, 'done');
   assert_equals(readResult.value, undefined, 'undefined');
 }, 'calling next() after return() should result in { value: undefined, done: true }');
+
+promise_test(async t => {
+  const rs = new ReadableStream();
+  const it = rs.values();
+  await it.return('return value 1');
+  const iterResult = await it.return('return value 2');
+  assert_equals(iterResult.done, true, 'done');
+  assert_equals(iterResult.value, 'return value 2', 'undefined');
+}, 'calling return() after return() should result in { value: passedInValue, done: true }');
 
 for (const preventCancel of [false, true]) {
   test(() => {

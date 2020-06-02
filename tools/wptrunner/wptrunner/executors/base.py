@@ -424,7 +424,7 @@ class RefTestImplementation(object):
     def check_pass(self, hashes, screenshots, urls, relation, fuzzy):
         """Check if a test passes, and return a tuple of (pass, page_idx),
         where page_idx is the zero-based index of the first page on which a
-        differene occurs if any, or None if there are no differences"""
+        difference occurs if any, or None if there are no differences"""
 
         assert relation in ("==", "!=")
         lhs_hashes, rhs_hashes = hashes

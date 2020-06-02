@@ -4,7 +4,9 @@ import json
 import os
 from io import open
 
-DEFAULT_CONFIGURATION_FILE_PATH = "./tools/wave/config.default.json"
+from tools.wpt import wpt
+
+DEFAULT_CONFIGURATION_FILE_PATH = os.path.join(wpt.localpaths.repo_root, "./tools/wave/config.default.json")
 
 
 def load(configuration_file_path):
@@ -56,10 +58,10 @@ def load(configuration_file_path):
         "wave", default_configuration["wave"]).get(
         "persisting_interval", default_configuration["wave"]["persisting_interval"])
 
-    configuration["tests_directory_path"] = os.getcwdu()
+    configuration["tests_directory_path"] = os.getcwd()
 
     configuration["manifest_file_path"] = os.path.join(
-        os.getcwdu(), "MANIFEST.json")
+        os.getcwd(), "MANIFEST.json")
 
     configuration["api_titles"] = configuration.get(
         "wave", default_configuration["wave"]).get(

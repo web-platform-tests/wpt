@@ -780,63 +780,6 @@ def iter_procs(servers):
             yield server.proc
 
 
-def build_config(override_path=None, **kwargs):
-    rv = ConfigBuilder()
-
-    enable_http2 = kwargs.get("h2")
-    if enable_http2 is None:
-        enable_http2 = True
-    if enable_http2:
-        rv._default["ports"]["h2"] = [9000]
-    if kwargs.get("quic_transport"):
-        rv._default["ports"]["quic-transport"] = [10000]
-
-    if override_path and os.path.exists(override_path):
-        with open(override_path) as f:
-            override_obj = json.load(f)
-        rv.update(override_obj)
-
-    if kwargs.get("config_path"):
-        other_path = os.path.abspath(os.path.expanduser(kwargs.get("config_path")))
-        if os.path.exists(other_path):
-            with open(other_path) as f:
-                override_obj = json.load(f)
-            rv.update(override_obj)
-        else:
-            raise ValueError("Config path %s does not exist" % other_path)
-
-    overriding_path_args = [("doc_root", "Document root"),
-                            ("ws_doc_root", "WebSockets document root")]
-    for key, title in overriding_path_args:
-        value = kwargs.get(key)
-        if value is None:
-            continue
-        value = os.path.abspath(os.path.expanduser(value))
-        if not os.path.exists(value):
-            raise ValueError("%s path %s does not exist" % (title, value))
-        setattr(rv, key, value)
-
-    # Add Wave arguments to config to only use wave modules if necessary
-    # regarding the command serve-wave see: tools/serve/commands.json
-    if kwargs.get("report") or kwargs.get("is_wave"):
-        print("")
-        print("build_config: is_wave: {} report: {}".format(
-            kwargs.get("is_wave"),
-            kwargs.get("report")
-        ))
-        if not kwargs.get("is_wave"):
-            err_msg = (
-                "Argument --report can only be used with command "
-                "serve-wave, e.g. \"./wpt serve-wave --report\""
-            )
-            raise Exception(err_msg)
-        else:
-            setattr(rv, "is_wave", kwargs.get("is_wave"))
-            setattr(rv, "report", kwargs.get("report"))
-
-    return rv
-
-
 def _make_subdomains_product(s, depth=2):
     return {u".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth+1)))}
 
@@ -997,9 +940,6 @@ def get_parser():
     parser.add_argument("--no-h2", action="store_false", dest="h2", default=None,
                         help="Disable the HTTP/2.0 server")
     parser.add_argument("--quic-transport", action="store_true", help="Enable QUIC server for WebTransport")
-    # Added wave specific arguments
-    parser.add_argument("--report", action="store_true", dest="report",
-                        help="Flag for enabling the WPTReporting server")
     parser.set_defaults(report=False)
     parser.set_defaults(is_wave=False)
     return parser

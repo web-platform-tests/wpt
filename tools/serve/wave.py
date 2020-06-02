@@ -6,7 +6,12 @@ import localpaths
 import logging
 import os
 
-import serve
+try:
+    from serve import serve
+except ImportError:
+    import serve
+
+from tools.wpt import wpt
 
 global logger
 logger = logging.getLogger("wave")
@@ -39,8 +44,9 @@ def get_route_builder_func(report):
         wave_handler = WaveHandler()
         builder.add_handler("*", web_root + "*", wave_handler)
         # serving wave specifc testharnessreport.js
+        file_path = os.path.join(wpt.localpaths.repo_root, "tools/wave/resources/testharnessreport.js")
         builder.add_static(
-            "tools/wave/resources/testharnessreport.js",
+            file_path,
             {},
             "text/javascript;charset=utf8",
             "/resources/testharnessreport.js")

@@ -4,7 +4,10 @@ import json
 import sys
 import traceback
 import logging
-from urlparse import parse_qsl
+try:
+    from urllib.parse import parse_qsl
+except ImportError:
+    from urlparse import parse_qsl
 
 global logger
 logger = logging.getLogger("wave-api-handler")

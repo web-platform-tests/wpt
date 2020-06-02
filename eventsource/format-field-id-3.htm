@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>EventSource: lastEventId</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      const ID_PERSISTS = 1,
+      ID_CHANGES_AND_PERSISTS = 2,
+      ID_RESETS = 3
+
+      var test1 = async_test(document.title + " persists");
+      test1.step(function() {
+        let source = new EventSource("resources/last-event-id2.py?type=" + ID_PERSISTS),
+            counter = 0;
+        source.onmessage = function(e) {
+            test1.step(function () {
+                if (counter == 0) {
+                    assert_equals(e.lastEventId, "1");
+                } else if (counter == 1) {
+                    assert_equals(e.lastEventId, "1");
+                    test1.done();
+                    source.close();
+                } else {
+                    assert_unreached();
+                }
+                counter++;
+            });
+        }
+      });
+
+      var test2 = async_test(document.title + " changes and persists");
+      test2.step(function() {
+        let source = new EventSource("resources/last-event-id2.py?type=" + ID_CHANGES_AND_PERSISTS),
+            counter = 0;
+        source.onmessage = function(e) {
+            test2.step(function () {
+                if (counter == 0) {
+                  assert_equals(e.lastEventId, "1");
+                } else if (counter == 1) {
+                  assert_equals(e.lastEventId, "2");
+                } else if (counter == 2) {
+                  assert_equals(e.lastEventId, "2");
+                  test2.done();
+                  source.close();
+                } else {
+                    assert_unreached();
+                }
+                counter++;
+            });
+        }
+      });
+
+      var test3 = async_test(document.title + " resets");
+      test3.step(function() {
+        let source = new EventSource("resources/last-event-id2.py?type=" + ID_RESETS),
+            counter = 0;
+        source.onmessage = function(e) {
+            test3.step(function () {
+                if (counter == 0) {
+                  assert_equals(e.lastEventId, "1");
+                } else if (counter == 1) {
+                  assert_equals(e.lastEventId, "");
+                } else if (counter == 2) {
+                  assert_equals(e.lastEventId, "");
+                  test3.done();
+                  source.close();
+                } else {
+                    assert_unreached();
+                }
+                counter++;
+            });
+        }
+      });
+    </script>
+  </body>
+</html>
+

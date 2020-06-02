@@ -4,6 +4,8 @@
 // META: script=../resources/recording-streams.js
 'use strict';
 
+const error1 = new Error('error1');
+
 test(() => {
   assert_equals(ReadableStream.prototype[Symbol.asyncIterator], ReadableStream.prototype.values);
 }, '@@asyncIterator() method is === to values() method');
@@ -266,13 +268,35 @@ promise_test(async () => {
     start(c) {
       c.enqueue(0);
       c.close();
-    },
+    }
   });
   const it = s[Symbol.asyncIterator]();
   const next = await it.next();
   assert_equals(Object.getPrototypeOf(next), Object.prototype);
   assert_array_equals(Object.getOwnPropertyNames(next).sort(), ['done', 'value']);
 }, 'next()\'s fulfillment value has the right shape');
+
+promise_test(async t => {
+  let timesPulled = 0;
+  const s = new ReadableStream({
+    pull(c) {
+      if (timesPulled === 0) {
+        c.enqueue(0);
+        ++timesPulled;
+      } else {
+        c.error(error1);
+      }
+    }
+  });
+
+  const it = s[Symbol.asyncIterator]();
+
+  const iterResult1 = await it.next();
+  assert_equals(iterResult1.value, 0);
+  assert_equals(iterResult1.done, false);
+
+  await promise_rejects_exactly(t, error1, it.next());
+}, 'next() rejects if the stream errors');
 
 promise_test(async t => {
   const s = recordingReadableStream();
@@ -301,7 +325,7 @@ promise_test(async () => {
       c.enqueue(2);
       c.enqueue(3);
       c.close();
-    },
+    }
   });
 
   const chunks = [];
@@ -313,6 +337,34 @@ promise_test(async () => {
   const reader = s.getReader();
   await reader.closed;
 }, 'Acquiring a reader after exhaustively async-iterating a stream');
+
+promise_test(async t => {
+  let timesPulled = 0;
+  const s = new ReadableStream({
+    pull(c) {
+      if (timesPulled === 0) {
+        c.enqueue(0);
+        ++timesPulled;
+      } else {
+        c.error(error1);
+      }
+    }
+  });
+
+  const it = s[Symbol.asyncIterator]();
+
+  const iterResult1 = await it.next();
+  assert_equals(iterResult1.value, 0);
+  assert_equals(iterResult1.done, false);
+
+  await promise_rejects_exactly(t, error1, it.next(), 'next() should reject with the error');
+
+  await promise_rejects_exactly(t, error1, it.return('return value'), 'return() should reject with the error');
+
+  // i.e. it should not reject with a generic "this stream is locked" TypeError.
+  const reader = s.getReader();
+  await promise_rejects_exactly(t, error1, reader.closed, 'closed on the new reader should reject with the error');
+}, 'Acquiring a reader after return()ing from a stream that errors');
 
 promise_test(async () => {
   const s = new ReadableStream({

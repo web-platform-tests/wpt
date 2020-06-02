@@ -48,7 +48,7 @@
 </div>
 <div class="section" id="introduction">
 <h2>Introduction!<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>Let’s implement window resizing. We can do this via the <a class="reference external" href="https://w3c.github.io/webdriver/webdriver-spec.html#dfn-set-window-rect">Set Window Rect</a> command in WebDriver.</p>
+<p>Let’s implement window resizing. We can do this via the <a class="reference external" href="https://w3c.github.io/webdriver/#set-window-rect">Set Window Rect</a> command in WebDriver.</p>
 <p>First, we need to think of what the API will look like a little. We will be using WebDriver and Marionette for this, so we can look and see that they take in x, y coordinates, width and height integers.</p>
 <p>The first part of this will be browser agnostic, but later we will need to implement a specific layer for each browser (here we will do Firefox and Chrome).</p>
 </div>
@@ -65,7 +65,7 @@
 <span class="cm">    * Triggers browser window to be resized and relocated</span>
 <span class="cm">    *</span>
 <span class="cm">    * This matches the behaviour of the {@link</span>
-<span class="cm">    * https://w3c.github.io/webdriver/webdriver-spec.html#dfn-set-window-rect|WebDriver</span>
+<span class="cm">    * https://w3c.github.io/webdriver/#set-window-rect|WebDriver</span>
 <span class="cm">    * Set Window Rect command}.</span>
 <span class="cm">    *</span>
 <span class="cm">    * @param {Integer} x - The x coordinate of the top left of the window</span>
@@ -89,7 +89,7 @@
 <span class="cm">     * Triggers browser window to be resized and relocated</span>
 <span class="cm">     *</span>
 <span class="cm">     * This matches the behaviour of the {@link</span>
-<span class="cm">     * https://w3c.github.io/webdriver/webdriver-spec.html#dfn-set-window-rect|WebDriver</span>
+<span class="cm">     * https://w3c.github.io/webdriver/#set-window-rect|WebDriver</span>
 <span class="cm">     * Set Window Rect command}.</span>
 <span class="cm">     *</span>
 <span class="cm">     * @param {Integer} x - The x coordinate of the top left of the window</span>
@@ -330,7 +330,7 @@ back to the test on the resolving promise. The test can then deserialize the JSO
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">get_window_rect</span><span class="o">.</span><span class="n">get_window_rect</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The WebDriver command will return a <a class="reference external" href="https://www.w3.org/TR/webdriver1/#dfn-window-rect">WindowRect object</a>, which is a dictionary with keys <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>, and <code class="docutils literal notranslate"><span class="pre">height</span></code>.</p>
+<p>The WebDriver command will return a <a class="reference external" href="https://w3c.github.io/webdriver/#dfn-window-rect">WindowRect object</a>, which is a dictionary with keys <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>, and <code class="docutils literal notranslate"><span class="pre">height</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WebDriverGetWindowRectProtocolPart</span><span class="p">(</span><span class="n">GetWindowRectProtocolPart</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">get_window_rect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">webdriver</span><span class="o">.</span><span class="n">get_window_rect</span><span class="p">()</span>

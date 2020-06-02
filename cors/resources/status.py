@@ -1,3 +1,5 @@
+from wptserve.utils import isomorphic_encode
+
 def main(request, response):
     response.headers.set(b"Access-Control-Allow-Origin", request.headers.get(b"origin"))
     response.headers.set(b"Access-Control-Expose-Headers", b"X-Request-Method")
@@ -8,7 +10,7 @@ def main(request, response):
     if b'headers' in request.GET:
         response.headers.set(b"Access-Control-Allow-Headers",  request.GET.first(b'headers'))
 
-    response.headers.set(b"X-Request-Method", request.method.encode("iso-8859-1"))
+    response.headers.set(b"X-Request-Method", isomorphic_encode(request.method))
 
     response.headers.set(b"X-A-C-Request-Method", request.headers.get(b"Access-Control-Request-Method", b""))
 
@@ -19,7 +21,7 @@ def main(request, response):
     except ValueError:
         code = 200
 
-    text = request.GET.first(b"text", b"OMG").decode("iso-8859-1")
+    text = request.GET.first(b"text", b"OMG")
 
     if request.method == u"OPTIONS" and b"preflight" in request.GET:
         try:

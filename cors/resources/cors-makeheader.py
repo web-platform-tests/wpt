@@ -1,5 +1,7 @@
 import json
 
+from wptserve.utils import isomorphic_decode
+
 def main(request, response):
     origin = request.GET.first(b"origin", request.headers.get(b'origin'))
 
@@ -52,12 +54,12 @@ def main(request, response):
     headers = {}
     for name, values in request.headers.items():
         if len(values) == 1:
-            headers[name.decode("iso-8859-1")] = values[0].decode("iso-8859-1")
+            headers[isomorphic_decode(name)] = isomorphic_decode(values[0])
         else:
             #I have no idea, really
             headers[name] = values
 
-    headers[b'get_value'.decode("iso-8859-1")] = request.GET.first(b'get_value', b'').decode("iso-8859-1")
+    headers[isomorphic_decode(b'get_value')] = isomorphic_decode(request.GET.first(b'get_value', b''))
 
     body = json.dumps(headers)
 

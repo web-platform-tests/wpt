@@ -290,6 +290,11 @@ initalized so can depend on a fully-populated object.</p>
 <dd></dd></dl>
 
 <dl class="class">
+<dt id="wptrunner.executors.base.PrintRefTestExecutor">
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">PrintRefTestExecutor</code><span class="sig-paren">(</span><em>logger</em>, <em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.PrintRefTestExecutor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
 <dt id="wptrunner.executors.base.RefTestExecutor">
 <em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">RefTestExecutor</code><span class="sig-paren">(</span><em>logger</em>, <em>browser</em>, <em>server_config</em>, <em>timeout_multiplier=1</em>, <em>screenshot_cache=None</em>, <em>debug_info=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.RefTestExecutor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -401,24 +406,24 @@ specific test.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="wptrunner.executors.base.WebDriverProtocol">
-<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">WebDriverProtocol</code><span class="sig-paren">(</span><em>executor</em>, <em>browser</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WebDriverProtocol" title="Permalink to this definition">¶</a></dt>
+<dt id="wptrunner.executors.base.WdspecProtocol">
+<em class="property">class </em><code class="descclassname">wptrunner.executors.base.</code><code class="descname">WdspecProtocol</code><span class="sig-paren">(</span><em>executor</em>, <em>browser</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecProtocol" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="wptrunner.executors.base.WebDriverProtocol.after_connect">
-<code class="descname">after_connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WebDriverProtocol.after_connect" title="Permalink to this definition">¶</a></dt>
+<dt id="wptrunner.executors.base.WdspecProtocol.after_connect">
+<code class="descname">after_connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecProtocol.after_connect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run any post-connection steps. This happens after the ProtocolParts are
 initalized so can depend on a fully-populated object.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="wptrunner.executors.base.WebDriverProtocol.connect">
-<code class="descname">connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WebDriverProtocol.connect" title="Permalink to this definition">¶</a></dt>
+<dt id="wptrunner.executors.base.WdspecProtocol.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecProtocol.connect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect to browser via the HTTP server.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="wptrunner.executors.base.WebDriverProtocol.is_alive">
-<code class="descname">is_alive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WebDriverProtocol.is_alive" title="Permalink to this definition">¶</a></dt>
+<dt id="wptrunner.executors.base.WdspecProtocol.is_alive">
+<code class="descname">is_alive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecProtocol.is_alive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test that the connection is still alive.</p>
 <p>Because the remote communication happens over HTTP we need to
 make an explicit request to the remote.  It is allowed for
@@ -429,17 +434,41 @@ proof enough to us that the server is alive and kicking.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="wptrunner.executors.base.WebDriverProtocol.teardown">
-<code class="descname">teardown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WebDriverProtocol.teardown" title="Permalink to this definition">¶</a></dt>
+<dt id="wptrunner.executors.base.WdspecProtocol.teardown">
+<code class="descname">teardown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecProtocol.teardown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run cleanup steps after the tests are finished.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="function">
-<dt id="wptrunner.executors.base.hash_screenshot">
-<code class="descclassname">wptrunner.executors.base.</code><code class="descname">hash_screenshot</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.hash_screenshot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the sha1 checksum of a base64-encoded screenshot.</p>
+<dt id="wptrunner.executors.base.get_pages">
+<code class="descclassname">wptrunner.executors.base.</code><code class="descname">get_pages</code><span class="sig-paren">(</span><em>ranges_value</em>, <em>total_pages</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.get_pages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a set of page numbers to include in a print reftest.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ranges_value</strong> – String containing the range specifier from a meta element
+e.g. “1-2,4,6-“</li>
+<li><strong>total_pages</strong> – Integer total number of pages in the paginated output.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Retval:</th><td class="field-body"><p class="first last">Set containing integer page numbers to include in the comparison e.g.
+for the example ranges value and 10 total pages this would be
+{1,2,4,6,7,8,9,10}</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wptrunner.executors.base.hash_screenshots">
+<code class="descclassname">wptrunner.executors.base.</code><code class="descname">hash_screenshots</code><span class="sig-paren">(</span><em>screenshots</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.hash_screenshots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the sha1 checksum of a list of base64-encoded screenshots.</p>
 </dd></dl>
 
 <dl class="function">

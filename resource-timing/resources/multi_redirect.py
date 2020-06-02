@@ -1,3 +1,5 @@
+from wptserve.utils import isomorphic_encode
+
 def main(request, response):
     """Handler that causes multiple redirections. Redirect chain is as follows:
         1. Initial URL containing multi-redirect.py
@@ -24,7 +26,7 @@ def main(request, response):
     cross_origin = request.GET.first(b"cross_origin")
     final_resource = request.GET.first(b"final_resource")
 
-    tao_value = b"*";
+    tao_value = b"*"
     if b"tao_value" in request.GET:
         tao_value = request.GET.first(b"tao_value")
     tao_steps = 0
@@ -37,7 +39,7 @@ def main(request, response):
     redirect_url_path += b"&cross_origin=" + cross_origin
     redirect_url_path += b"&final_resource=" + final_resource
     redirect_url_path += b"&tao_value=" + tao_value
-    redirect_url_path += b"&tao_steps=" + str(next_tao_steps).encode("iso-8859-1")
+    redirect_url_path += b"&tao_steps=" + isomorphic_encode(str(next_tao_steps))
     redirect_url_path += b"&step="
     if tao_steps > 0:
         response.headers.set(b"timing-allow-origin", tao_value)

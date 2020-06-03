@@ -4,6 +4,7 @@ import subprocess
 from manifest import manifest
 import localpaths
 import logging
+import time
 import os
 
 try:
@@ -24,6 +25,7 @@ def get_route_builder_func(report):
         builder = serve.get_route_builder(aliases)
         logger.debug("Loading manifest ...")
         data = load_manifest()
+        logger.debug("Loaded manifest, launching WaveServer")
         from ..wave.wave_server import WaveServer
         wave_server = WaveServer()
         wave_server.initialize(
@@ -41,6 +43,7 @@ def get_route_builder_func(report):
         if not web_root.startswith("/"):
             web_root = "/" + web_root
 
+        logger.debug("Creating WaveHandler")
         wave_handler = WaveHandler()
         builder.add_handler("*", web_root + "*", wave_handler)
         # serving wave specifc testharnessreport.js
@@ -102,7 +105,10 @@ def is_wptreport_installed():
 def load_manifest():
     root = localpaths.repo_root
     path = os.path.join(root, "MANIFEST.json")
-    manifest_file = manifest.load_and_update(root, path, "/", parallel=False)
+    before = time.time()
+    manifest_file = manifest.load_and_update(root, path, "/", parallel=True)
+    after = time.time()
+    logger.debug("Loading manifest took %s seconds" % (after - before))
 
     supported_types = ["testharness", "manual"]
     data = {"items": {},

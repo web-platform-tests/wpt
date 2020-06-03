@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 SCRIPT_DIR=$(cd $(dirname "$0") && pwd -P)
 WPT_ROOT=$SCRIPT_DIR/../..
@@ -16,7 +16,8 @@ main() {
 
     # WMAS test runner integration tests
     cd tools/wave
-    tox
+    tox || echo "FAILED"
+    cat /tmp/log.txt
     cd $WPT_ROOT
 }
 

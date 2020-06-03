@@ -40,14 +40,14 @@ def test_serve():
         while True:
             if p.poll() is not None:
                 assert False, "WAVE Test Runner failed: Server not running."
-            if time.time() - start > 60:
-                assert False, "WAVE Test Runner failed: Server did not start responding within 60s."
+            if time.time() - start > 6 * 60:
+                assert False, "WAVE Test Runner failed: Server did not start responding within 6m."
             try:
                 resp = urlopen("http://web-platform.test:8080/_wave/api/sessions/public")
                 print(resp)
             except URLError:
-                print("URLError")
-                time.sleep(1)
+                print("Server not responding, waiting another 10s.")
+                time.sleep(10)
             else:
                 assert resp.code == 200
                 break

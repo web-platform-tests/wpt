@@ -19,9 +19,9 @@ rel=match>` element.
 The default page size for print reftests is 12.7 cm by 7.62 cm (5
 inches by 3 inches).
 
-All the features of odinary reftests also work with print reftests
+All the features of ordinary reftests also work with print reftests
 including [fuzzy matching](reftests.html#fuzzy-matching). Any fuzzy
-specifier applies to each image comparison performed i.e. seperately
+specifier applies to each image comparison performed i.e. separately
 for each page.
 
 ## Page Ranges

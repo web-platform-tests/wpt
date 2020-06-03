@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Test Assumptions &#8212; web-platform-tests  documentation</title>
+    <title>Print Reftests &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -16,8 +16,8 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="crashtest tests" href="crashtest.html" />
-    <link rel="prev" title="The Ahem Font" href="ahem.html" />
+    <link rel="next" title="Rendering Test Guidelines" href="rendering.html" />
+    <link rel="prev" title="Reftests" href="reftests.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -34,60 +34,44 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="test-assumptions">
-<h1>Test Assumptions<a class="headerlink" href="#test-assumptions" title="Permalink to this headline">¶</a></h1>
-<p>The tests make a number of assumptions of the user agent, and new
-tests can freely rely on these assumptions being true:</p>
-<ul>
-<li><p class="first">The device is a full-color device.</p>
-</li>
-<li><p class="first">The device has a viewport width of at least 800px.</p>
-</li>
-<li><p class="first">The UA imposes no minimum font size.</p>
-</li>
-<li><p class="first">The <code class="docutils literal notranslate"><span class="pre">medium</span></code> <code class="docutils literal notranslate"><span class="pre">font-size</span></code> computes to 16px.</p>
-</li>
-<li><p class="first">The canvas background is <code class="docutils literal notranslate"><span class="pre">white</span></code>.</p>
-</li>
-<li><p class="first">The initial value of <code class="docutils literal notranslate"><span class="pre">color</span></code> is <code class="docutils literal notranslate"><span class="pre">black</span></code>.</p>
-</li>
-<li><p class="first">The user stylesheet is empty (except where indicated by the tests).</p>
-</li>
-<li><p class="first">The device is interactive and uses scroll bars.</p>
-</li>
-<li><p class="first">The HTML <code class="docutils literal notranslate"><span class="pre">div</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">block;</span></code>, the
-<code class="docutils literal notranslate"><span class="pre">unicode-bidi</span></code> property may be declared, and no other property
-declarations.</p>
-<!-- unicode-bidi: isolate should be required; we currently don't
-assume this because Chrome and Safari are yet to ship this: see
-https://bugs.chromium.org/p/chromium/issues/detail?id=296863 and
-https://bugs.webkit.org/show_bug.cgi?id=65617 --></li>
-<li><p class="first">The HTML <code class="docutils literal notranslate"><span class="pre">span</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">inline;</span></code> and no other
-property declaration.</p>
-</li>
-<li><p class="first">The HTML <code class="docutils literal notranslate"><span class="pre">p</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">block;</span></code></p>
-</li>
-<li><p class="first">The HTML <code class="docutils literal notranslate"><span class="pre">li</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">list-item;</span></code></p>
-</li>
-<li><p class="first">The HTML <code class="docutils literal notranslate"><span class="pre">table</span></code> elements <code class="docutils literal notranslate"><span class="pre">table</span></code>, <code class="docutils literal notranslate"><span class="pre">tbody</span></code>, <code class="docutils literal notranslate"><span class="pre">tr</span></code>, and <code class="docutils literal notranslate"><span class="pre">td</span></code> are
-assigned the <code class="docutils literal notranslate"><span class="pre">display</span></code> values <code class="docutils literal notranslate"><span class="pre">table</span></code>, <code class="docutils literal notranslate"><span class="pre">table-row-group</span></code>,
-<code class="docutils literal notranslate"><span class="pre">table-row</span></code>, and <code class="docutils literal notranslate"><span class="pre">table-cell</span></code>, respectively.</p>
-</li>
-<li><p class="first">The UA implements reasonable line-breaking behavior; e.g., it is
-assumed that spaces between alphanumeric characters provide line
-breaking opportunities and that UAs will not break at every
-opportunity, but only near the end of a line unless a line break is
-forced.</p>
-</li>
-</ul>
-<p>Tests for printing behavior make some further assumptions:</p>
+  <div class="section" id="print-reftests">
+<h1>Print Reftests<a class="headerlink" href="#print-reftests" title="Permalink to this headline">¶</a></h1>
+<p>Print reftests are like ordinary <a class="reference internal" href="reftests.html"><span class="doc">reftests</span></a>, except that the
+output is rendered to pagninated form and then compared page-by-page
+with the reference.</p>
+<p>Print reftests are distinguished by the string <code class="docutils literal notranslate"><span class="pre">-print</span></code> in the
+filename immediately before the extension, or by being under a
+directory named <code class="docutils literal notranslate"><span class="pre">print</span></code>. Examples:</p>
 <ul class="simple">
-<li>The UA is set to print background colors and, if it supports
-graphics, background images.</li>
-<li>The UA implements reasonable page-breaking behavior; e.g., it is
-assumed that UAs will not break at every opportunity, but only near
-the end of a page unless a page break is forced.</li>
+<li><code class="docutils literal notranslate"><span class="pre">css/css-foo/bar-print.html</span></code> is a print reftest</li>
+<li><code class="docutils literal notranslate"><span class="pre">css/css-foo/print/bar.html</span></code> is a print reftest</li>
+<li><code class="docutils literal notranslate"><span class="pre">css/css-foo/bar-print-001.html</span></code> is <strong>not</strong> a print reftest</li>
 </ul>
+<p>Like ordinary reftests, the reference is specified using a <code class="docutils literal notranslate"><span class="pre">&lt;link</span> <span class="pre">rel=match&gt;</span></code> element.</p>
+<p>The default page size for print reftests is 12.7 cm by 7.62 cm (5
+inches by 3 inches).</p>
+<p>All the features of ordinary reftests also work with print reftests
+including <a class="reference external" href="reftests.html#fuzzy-matching">fuzzy matching</a>. Any fuzzy
+specifier applies to each image comparison performed i.e. separately
+for each page.</p>
+<div class="section" id="page-ranges">
+<h2>Page Ranges<a class="headerlink" href="#page-ranges" title="Permalink to this headline">¶</a></h2>
+<p>In some cases it may be desirable to only compare a subset of the
+output pages in the reftest. This is possible using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">reftest</span><span class="o">-</span><span class="n">pages</span> <span class="n">content</span><span class="o">=</span><span class="p">[</span><span class="nb">range</span><span class="o">-</span><span class="n">specifier</span><span class="p">]</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Where a range specifier has the form</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>range-specifier = &lt;specifier-item&gt; [&quot;,&quot; &lt;specifier-item&gt;]*
+specifier-item = &lt;int&gt; | &lt;int&gt;? &quot;-&quot; &lt;int&gt;?
+</pre></div>
+</div>
+<p>For example to specify rendering pages 1 and 2, 4, 6 and 7, and 9 and
+10 of a 10 page page document one could write:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">reftest</span><span class="o">-</span><span class="n">pages</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;-2,4,6,7,9-&quot;</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -114,7 +98,7 @@ the end of a page unless a page break is forced.</li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Writing Tests</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="general-guidelines.html">General Test Guidelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ahem.html">The Ahem Font</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Test Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assumptions.html">Test Assumptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="crashtest.html">crashtest tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="css-metadata.html">CSS Metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="css-user-styles.html">CSS User Stylesheets</a></li>
@@ -125,7 +109,7 @@ the end of a page unless a page break is forced.</li>
 <li class="toctree-l2"><a class="reference internal" href="manual.html">Manual Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reftest-tutorial.html">Writing a reftest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reftests.html">Reftests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="print-reftests.html">Print Reftests</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Print Reftests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rendering.html">Rendering Test Guidelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="server-features.html">Server Features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="submission-process.html">Submitting Tests</a></li>
@@ -151,8 +135,8 @@ the end of a page unless a page break is forced.</li>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Writing Tests</a><ul>
-      <li>Previous: <a href="ahem.html" title="previous chapter">The Ahem Font</a></li>
-      <li>Next: <a href="crashtest.html" title="next chapter">crashtest tests</a></li>
+      <li>Previous: <a href="reftests.html" title="previous chapter">Reftests</a></li>
+      <li>Next: <a href="rendering.html" title="next chapter">Rendering Test Guidelines</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -189,7 +173,7 @@ the end of a page unless a page break is forced.</li>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/writing-tests/assumptions.md.txt"
+      <a href="../_sources/writing-tests/print-reftests.md.txt"
           rel="nofollow">Page source</a>
     </div>
 

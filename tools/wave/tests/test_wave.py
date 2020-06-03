@@ -32,8 +32,7 @@ def test_serve():
     p = subprocess.Popen([os.path.join(wpt.localpaths.repo_root, "wpt"),
         "serve-wave",
         "--config",
-        os.path.join(wpt.localpaths.repo_root, "tools/wave/tests/config.json")],
-        preexec_fn=os.setsid)
+        os.path.join(wpt.localpaths.repo_root, "tools/wave/tests/config.json")])
 
     start = time.time()
     try:
@@ -52,4 +51,4 @@ def test_serve():
                 assert resp.code == 200
                 break
     finally:
-        os.killpg(p.pid, 15)
+        p.terminate()

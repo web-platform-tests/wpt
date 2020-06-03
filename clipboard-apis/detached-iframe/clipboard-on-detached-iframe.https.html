@@ -12,7 +12,7 @@
 promise_test(async () => {
   const iframe = document.getElementById('iframe');
   const iframeNavigator = iframe.contentWindow.navigator;
-  assert_not_equals(navigator.clipboard, null,
+  assert_not_equals(navigator.clipboard, "abc",
       "parent frame's clipboard should exist with iframe attached");
   assert_not_equals(iframeNavigator.clipboard, null,
       "attached child iframe's clipboard should exist");

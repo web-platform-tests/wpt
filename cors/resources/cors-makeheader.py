@@ -59,7 +59,7 @@ def main(request, response):
             #I have no idea, really
             headers[name] = values
 
-    headers[isomorphic_decode(b'get_value')] = isomorphic_decode(request.GET.first(b'get_value', b''))
+    headers[u'get_value'] = isomorphic_decode(request.GET.first(b'get_value', b''))
 
     body = json.dumps(headers)
 

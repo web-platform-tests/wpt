@@ -495,7 +495,9 @@ function getVideoSignal(v) {
   if (v.videoWidth < 21 || v.videoHeight < 21) {
     return null;
   }
-  const canvas = new OffscreenCanvas(v.videoWidth, v.videoHeight);
+  const canvas = document.createElement("canvas");
+  canvas.width = v.videoWidth;
+  canvas.height = v.videoHeight;
   let context = canvas.getContext('2d');
   context.drawImage(v, 0, 0, v.videoWidth, v.videoHeight);
   // Extract pixel value at position 20, 20

@@ -24,10 +24,14 @@
         await test_valid({width: 10, height: 20, preferredWidth: 10, preferredHeight: 40, resolutionX: 72, resolutionY: 36, resolutionUnit: 2})
         await test_valid({width: 30, height: 30, preferredWidth: 90, preferredHeight: 30, resolutionX: 24, resolutionY: 72, resolutionUnit: 2})
 
-        await test_valid({width: 10, height: 20, preferredWidth: 20, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
-        await test_valid({width: 10, height: 20, preferredWidth: 20, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
-        await test_valid({width: 10, height: 20, preferredWidth: 20, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
-        await test_valid({width: 10, height: 20, preferredWidth: 20, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
+        await test_invalid({width: 10, height: 20, preferredWidth: 20, preferredHeight: 30, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
+        await test_invalid({width: 10, height: 20, preferredWidth: 33, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
+        await test_invalid({width: 10, height: 20, preferredHeight: 40, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
+        await test_invalid({width: 10, height: 20, preferredWidth: 20, resolutionX: 36, resolutionY: 36, resolutionUnit: 2})
+        await test_invalid({width: 30, height: 30, preferredWidth: 90, preferredHeight: 30, resolutionY: 72, resolutionUnit: 2})
+        await test_invalid({width: 30, height: 30, preferredWidth: 90, preferredHeight: 30, resolutionX: 24, resolutionUnit: 2})
+        await test_invalid({width: 30, height: 30, preferredWidth: 90, preferredHeight: 30, resolutionX: 24, resolutionY: 72, resolutionUnit: 1})
+        await test_invalid({width: 3, height: 3, preferredHeight: 2000000, preferredWidth: 50})
     }
 
     promise_test(test)

@@ -14,6 +14,9 @@
 </div>
 
 <script>
+// Expecting errors attaching to illegal elements.
+setup({allow_uncaught_exception: true});
+
 test(() => {
   const host = document.querySelector('#host');
   const c1 = host.querySelector('#c1');

@@ -7,6 +7,9 @@
 <script src='../resources/shadow-dom-utils.js'></script>
 
 <script>
+// Expecting errors attaching to illegal elements.
+setup({allow_uncaught_exception: true});
+
 const shadowContent = '<span>Shadow tree</span><slot></slot>';
 function getDeclarativeContent(mode, delegatesFocus) {
   const delegatesFocusText = delegatesFocus ? ' shadowrootdelegatesfocus' : '';

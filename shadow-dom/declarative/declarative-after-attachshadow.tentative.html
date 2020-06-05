@@ -7,6 +7,9 @@
 
 <body>
 <script>
+// Expecting declarative shadow attachment errors.
+setup({allow_uncaught_exception: true});
+
 let gotHost = false;
 function myObserver(mutationsList, observer) {
   for (let mutation of mutationsList) {

@@ -312,7 +312,7 @@ tasks:
         - tox-python2
       description: >-
         Unit tests for tools running under Python 2.7, excluding wptrunner
-      command: ./tools/ci/ci_tools_unittest.sh
+      command: ./tools/ci/ci_tools_unittest.sh tools_unittest
       env:
         HYPOTHESIS_PROFILE: ci
       schedule-if:
@@ -326,7 +326,7 @@ tasks:
         - wpt-base
         - trigger-pr
         - tox-python3
-      command: ./tools/ci/ci_tools_unittest.sh
+      command: ./tools/ci/ci_tools_unittest.sh tools_unittest
       env:
         HYPOTHESIS_PROFILE: ci
       schedule-if:
@@ -340,12 +340,54 @@ tasks:
         - wpt-base
         - trigger-pr
         - tox-python38
-      command: ./tools/ci/ci_tools_unittest.sh
+      command: ./tools/ci/ci_tools_unittest.sh tools_unittest
       env:
         HYPOTHESIS_PROFILE: ci
       schedule-if:
         run-job:
           - tools_unittest
+
+  - tools/wptrunner/ unittests (Python 2):
+      description: >-
+        Unit tests for wptrunner, running under Python 2.7
+      use:
+        - wpt-base
+        - trigger-pr
+        - tox-python2
+      command: ./tools/ci/ci_tools_unittest.sh wptrunner_unittest
+      env:
+        HYPOTHESIS_PROFILE: ci
+      schedule-if:
+        run-job:
+          - wptrunner_unittest
+
+  - tools/wptrunner/ unittests (Python 3.6):
+      description: >-
+        Unit tests for wptrunner, running under Python 3.6
+      use:
+        - wpt-base
+        - trigger-pr
+        - tox-python36
+      command: ./tools/ci/ci_tools_unittest.sh wptrunner_unittest
+      env:
+        HYPOTHESIS_PROFILE: ci
+      schedule-if:
+        run-job:
+          - wptrunner_unittest
+
+  - tools/wptrunner/ unittests (Python 3.8):
+      description: >-
+        Unit tests for wptrunner, running under Python 3.8
+      use:
+        - wpt-base
+        - trigger-pr
+        - tox-python38
+      command: ./tools/ci/ci_tools_unittest.sh wptrunner_unittest
+      env:
+        HYPOTHESIS_PROFILE: ci
+      schedule-if:
+        run-job:
+          - wptrunner_unittest
 
   - tools/ integration tests (Python 2):
       description: >-

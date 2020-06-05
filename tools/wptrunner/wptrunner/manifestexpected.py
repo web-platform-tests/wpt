@@ -1,11 +1,13 @@
 import os
-import urlparse
 from collections import deque
+from six import string_types, text_type
+from six.moves.urllib.parse import urljoin
 
-from wptmanifest.backends import static
-from wptmanifest.backends.static import ManifestItem
 
-import expected
+from .wptmanifest.backends import static
+from .wptmanifest.backends.base import ManifestItem
+
+from . import expected
 
 """Manifest structure used to store expected results of a test.
 
@@ -14,6 +16,7 @@ has one or more TestNode children, one per test in the manifest.
 Each TestNode has zero or more SubtestNode children, one for each
 known subtest of the test.
 """
+
 
 def data_cls_getter(output_node, visited_node):
     # visited_node is intentionally unused
@@ -29,7 +32,7 @@ def data_cls_getter(output_node, visited_node):
 def bool_prop(name, node):
     """Boolean property"""
     try:
-        return node.get(name)
+        return bool(node.get(name))
     except KeyError:
         return None
 
@@ -42,11 +45,32 @@ def int_prop(name, node):
         return None
 
 
+def list_prop(name, node):
+    """List property"""
+    try:
+        list_prop = node.get(name)
+        if isinstance(list_prop, string_types):
+            return [list_prop]
+        return list(list_prop)
+    except KeyError:
+        return []
+
+
+def str_prop(name, node):
+    try:
+        prop = node.get(name)
+        if not isinstance(prop, string_types):
+            raise ValueError
+        return prop
+    except KeyError:
+        return None
+
+
 def tags(node):
     """Set of tags that have been applied to the test"""
     try:
         value = node.get("tags")
-        if isinstance(value, (str, unicode)):
+        if isinstance(value, text_type):
             return {value}
         return set(value)
     except KeyError:
@@ -55,7 +79,7 @@ def tags(node):
 
 def prefs(node):
     def value(ini_value):
-        if isinstance(ini_value, (str, unicode)):
+        if isinstance(ini_value, text_type):
             return tuple(pref_piece.strip() for pref_piece in ini_value.split(':', 1))
         else:
             # this should be things like @Reset, which are apparently type 'object'
@@ -63,7 +87,7 @@ def prefs(node):
 
     try:
         node_prefs = node.get("prefs")
-        if type(node_prefs) in (str, unicode):
+        if isinstance(node_prefs, text_type):
             rv = dict(value(node_prefs))
         else:
             rv = dict(value(item) for item in node_prefs)
@@ -75,7 +99,7 @@ def prefs(node):
 def set_prop(name, node):
     try:
         node_items = node.get(name)
-        if isinstance(node_items, (str, unicode)):
+        if isinstance(node_items, text_type):
             rv = {node_items}
         else:
             rv = set(node_items)
@@ -88,7 +112,7 @@ def leak_threshold(node):
     rv = {}
     try:
         node_items = node.get("leak-threshold")
-        if isinstance(node_items, (str, unicode)):
+        if isinstance(node_items, text_type):
             node_items = [node_items]
         for item in node_items:
             process, value = item.rsplit(":", 1)
@@ -145,7 +169,7 @@ def fuzzy_prop(node):
     if not isinstance(value, list):
         value = [value]
     for item in value:
-        if not isinstance(item, (str, unicode)):
+        if not isinstance(item, text_type):
             rv.append(item)
             continue
         parts = item.rsplit(":", 1)
@@ -198,7 +222,7 @@ def fuzzy_prop(node):
 
 
 class ExpectedManifest(ManifestItem):
-    def __init__(self, name, test_path, url_base):
+    def __init__(self, node, test_path, url_base):
         """Object representing all the tests in a particular manifest
 
         :param name: Name of the AST Node associated with this object.
@@ -207,13 +231,14 @@ class ExpectedManifest(ManifestItem):
         :param test_path: Path of the test file associated with this manifest.
         :param url_base: Base url for serving the tests in this manifest
         """
+        name = node.data
         if name is not None:
             raise ValueError("ExpectedManifest should represent the root node")
         if test_path is None:
             raise ValueError("ExpectedManifest requires a test path")
         if url_base is None:
             raise ValueError("ExpectedManifest requires a base url")
-        ManifestItem.__init__(self, name)
+        ManifestItem.__init__(self, node)
         self.child_map = {}
         self.test_path = test_path
         self.url_base = url_base
@@ -236,8 +261,8 @@ class ExpectedManifest(ManifestItem):
 
     @property
     def url(self):
-        return urlparse.urljoin(self.url_base,
-                                "/".join(self.test_path.split(os.path.sep)))
+        return urljoin(self.url_base,
+                       "/".join(self.test_path.split(os.path.sep)))
 
     @property
     def disabled(self):
@@ -268,6 +293,10 @@ class ExpectedManifest(ManifestItem):
         return prefs(self)
 
     @property
+    def lsan_disabled(self):
+        return bool_prop("lsan-disabled", self)
+
+    @property
     def lsan_allowed(self):
         return set_prop("lsan-allowed", self)
 
@@ -286,6 +315,18 @@ class ExpectedManifest(ManifestItem):
     @property
     def fuzzy(self):
         return fuzzy_prop(self)
+
+    @property
+    def expected(self):
+        return list_prop("expected", self)[0]
+
+    @property
+    def known_intermittent(self):
+        return list_prop("expected", self)[1:]
+
+    @property
+    def implementation_status(self):
+        return str_prop("implementation-status", self)
 
 
 class DirectoryManifest(ManifestItem):
@@ -318,6 +359,10 @@ class DirectoryManifest(ManifestItem):
         return prefs(self)
 
     @property
+    def lsan_disabled(self):
+        return bool_prop("lsan-disabled", self)
+
+    @property
     def lsan_allowed(self):
         return set_prop("lsan-allowed", self)
 
@@ -337,14 +382,18 @@ class DirectoryManifest(ManifestItem):
     def fuzzy(self):
         return fuzzy_prop(self)
 
+    @property
+    def implementation_status(self):
+        return str_prop("implementation-status", self)
+
 
 class TestNode(ManifestItem):
-    def __init__(self, name):
+    def __init__(self, node, **kwargs):
         """Tree node associated with a particular test in a manifest
 
         :param name: name of the test"""
-        assert name is not None
-        ManifestItem.__init__(self, name)
+        assert node.data is not None
+        ManifestItem.__init__(self, node, **kwargs)
         self.updated_expected = []
         self.new_expected = []
         self.subtests = {}
@@ -353,7 +402,7 @@ class TestNode(ManifestItem):
 
     @property
     def is_empty(self):
-        required_keys = set(["type"])
+        required_keys = {"type"}
         if set(self._data.keys()) != required_keys:
             return False
         return all(child.is_empty for child in self.children)
@@ -364,7 +413,7 @@ class TestNode(ManifestItem):
 
     @property
     def id(self):
-        return urlparse.urljoin(self.parent.url, self.name)
+        return urljoin(self.parent.url, self.name)
 
     @property
     def disabled(self):
@@ -395,6 +444,10 @@ class TestNode(ManifestItem):
         return prefs(self)
 
     @property
+    def lsan_disabled(self):
+        return bool_prop("lsan-disabled", self)
+
+    @property
     def lsan_allowed(self):
         return set_prop("lsan-allowed", self)
 
@@ -414,6 +467,18 @@ class TestNode(ManifestItem):
     def fuzzy(self):
         return fuzzy_prop(self)
 
+    @property
+    def expected(self):
+        return list_prop("expected", self)[0]
+
+    @property
+    def known_intermittent(self):
+        return list_prop("expected", self)[1:]
+
+    @property
+    def implementation_status(self):
+        return str_prop("implementation-status", self)
+
     def append(self, node):
         """Add a subtest to the current test
 
@@ -431,12 +496,6 @@ class TestNode(ManifestItem):
 
 
 class SubtestNode(TestNode):
-    def __init__(self, name):
-        """Tree node associated with a particular subtest in a manifest
-
-        :param name: name of the subtest"""
-        TestNode.__init__(self, name)
-
     @property
     def is_empty(self):
         if self._data:
@@ -456,7 +515,7 @@ def get_manifest(metadata_root, test_path, url_base, run_info):
     """
     manifest_path = expected.expected_path(metadata_root, test_path)
     try:
-        with open(manifest_path) as f:
+        with open(manifest_path, "rb") as f:
             return static.compile(f,
                                   run_info,
                                   data_cls_getter=data_cls_getter,
@@ -475,7 +534,7 @@ def get_dir_manifest(path, run_info):
                      values should be computed.
     """
     try:
-        with open(path) as f:
+        with open(path, "rb") as f:
             return static.compile(f,
                                   run_info,
                                   data_cls_getter=lambda x,y: DirectoryManifest)

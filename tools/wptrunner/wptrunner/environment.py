@@ -5,14 +5,19 @@ import signal
 import socket
 import sys
 import time
+from six import iteritems
 
 from mozlog import get_default_logger, handlers, proxy
 
-from wptlogging import LogLevelRewriter
-from wptserve.handlers import StringHandler
+from .wptlogging import LogLevelRewriter
 
 here = os.path.split(__file__)[0]
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))
+
+sys.path.insert(0, repo_root)
+from tools import localpaths  # noqa: F401
+
+from wptserve.handlers import StringHandler
 
 serve = None
 
@@ -46,9 +51,11 @@ class TestEnvironmentError(Exception):
 
 
 class TestEnvironment(object):
-    def __init__(self, test_paths, testharness_timeout_multipler, pause_after_test, debug_info, options, ssl_config, env_extras):
-        """Context manager that owns the test environment i.e. the http and
-        websockets servers"""
+    """Context manager that owns the test environment i.e. the http and
+    websockets servers"""
+    def __init__(self, test_paths, testharness_timeout_multipler,
+                 pause_after_test, debug_info, options, ssl_config, env_extras,
+                 enable_quic=False):
         self.test_paths = test_paths
         self.server = None
         self.config_ctx = None
@@ -64,6 +71,7 @@ class TestEnvironment(object):
         self.env_extras = env_extras
         self.env_extras_cms = None
         self.ssl_config = ssl_config
+        self.enable_quic = enable_quic
 
     def __enter__(self):
         self.config_ctx = self.build_config()
@@ -87,6 +95,7 @@ class TestEnvironment(object):
 
         self.servers = serve.start(self.config,
                                    self.get_routes())
+
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
             self.ignore_interrupts()
         return self
@@ -94,7 +103,7 @@ class TestEnvironment(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.process_interrupts()
 
-        for scheme, servers in self.servers.iteritems():
+        for scheme, servers in iteritems(self.servers):
             for port, server in servers:
                 server.kill()
         for cm in self.env_extras_cms:
@@ -117,12 +126,16 @@ class TestEnvironment(object):
 
         config = serve.ConfigBuilder()
 
-        config.ports = {
+        ports = {
             "http": [8000, 8001],
             "https": [8443],
             "ws": [8888],
             "wss": [8889],
+            "h2": [9000],
         }
+        if self.enable_quic:
+            ports["quic-transport"] = [10000]
+        config.ports = ports
 
         if os.path.exists(override_path):
             with open(override_path) as f:
@@ -169,6 +182,11 @@ class TestEnvironment(object):
 
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),
+                ("print_reftest_runner.html", {}, "text/html", "/print_reftest_runner.html"),
+                (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.js"), None,
+                 "text/javascript", "/_pdf_js/pdf.js"),
+                (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.worker.js"), None,
+                 "text/javascript", "/_pdf_js/pdf.worker.js"),
                 (self.options.get("testharnessreport", "testharnessreport.js"),
                  {"output": self.pause_after_test,
                   "timeout_multiplier": self.testharness_timeout_multipler,
@@ -187,10 +205,10 @@ class TestEnvironment(object):
             data += fp.read()
         with open(os.path.join(here, "testdriver-extra.js"), "rb") as fp:
             data += fp.read()
-        route_builder.add_handler(b"GET", b"/resources/testdriver.js",
+        route_builder.add_handler("GET", "/resources/testdriver.js",
                                   StringHandler(data, "text/javascript"))
 
-        for url_base, paths in self.test_paths.iteritems():
+        for url_base, paths in iteritems(self.test_paths):
             if url_base == "/":
                 continue
             route_builder.add_mount_point(url_base, paths["tests_path"])
@@ -203,10 +221,13 @@ class TestEnvironment(object):
     def ensure_started(self):
         # Pause for a while to ensure that the server has a chance to start
         total_sleep_secs = 30
-        each_sleep_secs = 0.01
-        for _ in xrange(int(total_sleep_secs / each_sleep_secs)):
-            failed = self.test_servers()
-            if not failed:
+        each_sleep_secs = 0.5
+        end_time = time.time() + total_sleep_secs
+        while time.time() < end_time:
+            failed, pending = self.test_servers()
+            if failed:
+                break
+            if not pending:
                 return
             time.sleep(each_sleep_secs)
         raise EnvironmentError("Servers failed to start: %s" %
@@ -214,18 +235,26 @@ class TestEnvironment(object):
 
     def test_servers(self):
         failed = []
+        pending = []
         host = self.config["server_host"]
-        for scheme, servers in self.servers.iteritems():
+        for scheme, servers in iteritems(self.servers):
             for port, server in servers:
-                if self.test_server_port:
+                if not server.is_alive():
+                    failed.append((scheme, port))
+
+        if not failed and self.test_server_port:
+            for scheme, servers in iteritems(self.servers):
+                # TODO(Hexcles): Find a way to test QUIC's UDP port.
+                if scheme == "quic-transport":
+                    continue
+                for port, server in servers:
                     s = socket.socket()
+                    s.settimeout(0.1)
                     try:
                         s.connect((host, port))
                     except socket.error:
-                        failed.append((host, port))
+                        pending.append((host, port))
                     finally:
                         s.close()
 
-                if not server.is_alive():
-                    failed.append((scheme, port))
-        return failed
+        return failed, pending

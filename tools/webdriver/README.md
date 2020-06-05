@@ -1,7 +1,7 @@
 # WebDriver client for Python
 
 This package provides Python bindings
-that conform to the [W3C WebDriver standard](https://w3c.github.io/webdriver/webdriver-spec.html),
+that conform to the [W3C WebDriver standard](https://w3c.github.io/webdriver/),
 which specifies a remote control protocol for web browsers.
 
 These bindings are written with determining
@@ -9,7 +9,7 @@ implementation compliance to the specification in mind,
 so that different remote end drivers
 can determine whether they meet the recognised standard.
 The client is used for the WebDriver specification tests
-in the [Web Platform Tests](https://github.com/web-platform-tests/wpt).
+in [web-platform-tests](https://github.com/web-platform-tests/wpt).
 
 ## Installation
 
@@ -24,11 +24,11 @@ which is useful if you want to contribute patches back:
 
     % cd /path/to/wdclient
     % python
-    Python 2.7.12+ (default, Aug  4 2016, 20:04:34) 
+    Python 2.7.12+ (default, Aug  4 2016, 20:04:34)
     [GCC 6.1.1 20160724] on linux2
     Type "help", "copyright", "credits" or "license" for more information.
     >>> import webdriver
-    >>> 
+    >>>
 
 If you are writing WebDriver specification tests for
 [WPT](https://github.com/web-platform-tests/wpt),

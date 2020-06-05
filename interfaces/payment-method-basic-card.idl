@@ -5,19 +5,20 @@
 
 dictionary BasicCardRequest {
   sequence<DOMString> supportedNetworks = [];
+  boolean requestSecurityCode = true;
 };
 
 dictionary BasicCardChangeDetails {
-  PaymentAddress? billingAddress;
+  PaymentAddress? billingAddress = null;
 };
 
 dictionary BasicCardResponse {
   required DOMString cardNumber;
-  DOMString cardholderName;
-  DOMString cardSecurityCode;
-  DOMString expiryMonth;
-  DOMString expiryYear;
-  PaymentAddress? billingAddress;
+  DOMString cardholderName = "";
+  DOMString cardSecurityCode = "";
+  DOMString expiryMonth = "";
+  DOMString expiryYear = "";
+  PaymentAddress? billingAddress = null;
 };
 
 dictionary BasicCardErrors {

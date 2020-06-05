@@ -299,13 +299,190 @@ promise_test(async t => {
 }, 'next() rejects if the stream errors');
 
 promise_test(async t => {
-  const s = recordingReadableStream();
-  const it = s[Symbol.asyncIterator]();
-  it.next();
+  let timesPulled = 0;
+  const s = new ReadableStream({
+    pull(c) {
+      if (timesPulled === 0) {
+        c.enqueue(0);
+        ++timesPulled;
+      } else {
+        c.error(error1);
+      }
+    }
+  });
 
-  await promise_rejects_js(t, TypeError, it.return(), 'return() should reject');
-  assert_array_equals(s.events, ['pull']);
-}, 'calling return() while there are pending reads rejects');
+  const it = s[Symbol.asyncIterator]();
+
+  const iterResult = await it.return('return value');
+  assert_equals(iterResult.value, 'return value');
+  assert_equals(iterResult.done, true);
+}, 'return() does not rejects if the has not errored yet');
+
+promise_test(async t => {
+  let timesPulled = 0;
+  const s = new ReadableStream({
+    pull(c) {
+      // Do not error in start() because doing so would prevent acquiring a reader/async iterator.
+      c.error(error1);
+    }
+  });
+
+  const it = s[Symbol.asyncIterator]();
+
+  await flushAsyncEvents();
+  await promise_rejects_exactly(t, error1, it.return('return value'));
+}, 'return() rejects if the stream has errored');
+
+promise_test(async t => {
+  let timesPulled = 0;
+  const s = new ReadableStream({
+    pull(c) {
+      if (timesPulled === 0) {
+        c.enqueue(0);
+        ++timesPulled;
+      } else {
+        c.error(error1);
+      }
+    }
+  });
+
+  const it = s[Symbol.asyncIterator]();
+
+  const iterResult1 = await it.next();
+  assert_equals(iterResult1.value, 0);
+  assert_equals(iterResult1.done, false);
+
+  await promise_rejects_exactly(t, error1, it.next());
+
+  const iterResult3 = await it.next();
+  assert_equals(iterResult3.value, undefined);
+  assert_equals(iterResult3.done, true);
+}, 'another next() after the stream errors gives { value: undefined, done: true }');
+
+promise_test(async t => {
+  let timesPulled = 0;
+  const s = new ReadableStream({
+    pull(c) {
+      if (timesPulled === 0) {
+        c.enqueue(0);
+        ++timesPulled;
+      } else {
+        c.error(error1);
+      }
+    }
+  });
+
+  const it = s[Symbol.asyncIterator]();
+
+  const iterResults = await Promise.allSettled([it.next(), it.next(), it.next()]);
+
+  assert_equals(iterResults[0].status, 'fulfilled', '1st next()');
+  assert_equals(iterResults[0].value.value, 0, '1st next()');
+  assert_equals(iterResults[0].value.done, false, '1st next()');
+
+  assert_equals(iterResults[1].status, 'rejected', '2nd next()');
+  assert_equals(iterResults[1].reason, error1, '2nd next()');
+
+  assert_equals(iterResults[2].status, 'fulfilled', '3rd next()');
+  assert_equals(iterResults[2].value.value, undefined, '3rd next()');
+  assert_equals(iterResults[2].value.done, true, '3rd next()');
+}, 'another next() after the stream errors gives { value: undefined, done: true }, no awaiting');
+
+promise_test(async t => {
+  let timesPulled = 0;
+  const s = new ReadableStream({
+    pull(c) {
+      if (timesPulled === 0) {
+        c.enqueue(0);
+        ++timesPulled;
+      } else {
+        c.error(error1);
+      }
+    }
+  });
+
+  const it = s[Symbol.asyncIterator]();
+
+  const iterResult1 = await it.next();
+  assert_equals(iterResult1.value, 0);
+  assert_equals(iterResult1.done, false);
+
+  await promise_rejects_exactly(t, error1, it.next());
+
+  const iterResult3 = await it.return('return value');
+  assert_equals(iterResult3.value, 'return value');
+  assert_equals(iterResult3.done, true);
+}, 'return() after next() reports an error gives { value: given value, done: true }');
+
+promise_test(async t => {
+  let timesPulled = 0;
+  const s = new ReadableStream({
+    pull(c) {
+      if (timesPulled === 0) {
+        c.enqueue(0);
+        ++timesPulled;
+      } else {
+        c.error(error1);
+      }
+    }
+  });
+
+  const it = s[Symbol.asyncIterator]();
+
+  const iterResults = await Promise.allSettled([it.next(), it.next(), it.return('return value')]);
+
+  assert_equals(iterResults[0].status, 'fulfilled');
+  assert_equals(iterResults[0].value.value, 0);
+  assert_equals(iterResults[0].value.done, false);
+
+  assert_equals(iterResults[1].status, 'rejected');
+  assert_equals(iterResults[1].reason, error1);
+
+  assert_equals(iterResults[2].status, 'fulfilled');
+  assert_equals(iterResults[2].value.value, 'return value');
+  assert_equals(iterResults[2].value.done, true);
+}, 'return() after next() reports an error gives { value: given value, done: true }, no awaiting');
+
+promise_test(async t => {
+  let timesPulled = 0;
+  const s = new ReadableStream({
+    pull(c) {
+      c.enqueue(timesPulled);
+      ++timesPulled;
+    }
+  });
+  const it = s[Symbol.asyncIterator]();
+
+  const iterResults = await Promise.allSettled([it.next(), it.return('return value')]);
+
+  assert_equals(iterResults[0].status, 'fulfilled');
+  assert_equals(iterResults[0].value.value, 0);
+  assert_equals(iterResults[0].value.done, false);
+
+  assert_equals(iterResults[1].status, 'fulfilled');
+  assert_equals(iterResults[1].value.value, 'return value');
+  assert_equals(iterResults[1].value.done, true);
+
+  assert_equals(timesPulled, 2);
+}, 'calling return() while there are pending reads queues up the return()');
+
+promise_test(async t => {
+  const rs = new ReadableStream();
+  const it = rs.values();
+  await it.return('return value');
+  const readResult = await it.next();
+  assert_equals(readResult.done, true, 'done');
+  assert_equals(readResult.value, undefined, 'undefined');
+}, 'calling next() after return() should result in { value: undefined, done: true }');
+
+promise_test(async t => {
+  const rs = new ReadableStream();
+  const it = rs.values();
+  await it.return('return value 1');
+  const iterResult = await it.return('return value 2');
+  assert_equals(iterResult.done, true, 'done');
+  assert_equals(iterResult.value, 'return value 2', 'undefined');
+}, 'calling return() after return() should result in { value: passedInValue, done: true }');
 
 test(() => {
   const s = new ReadableStream({
@@ -351,7 +528,7 @@ promise_test(async t => {
     }
   });
 
-  const it = s[Symbol.asyncIterator]();
+  const it = s[Symbol.asyncIterator]({ preventCancel: true });
 
   const iterResult1 = await it.next();
   assert_equals(iterResult1.value, 0);
@@ -359,7 +536,9 @@ promise_test(async t => {
 
   await promise_rejects_exactly(t, error1, it.next(), 'next() should reject with the error');
 
-  await promise_rejects_exactly(t, error1, it.return('return value'), 'return() should reject with the error');
+  const iterResult2 = await it.return('return value');
+  assert_equals(iterResult2.value, 'return value');
+  assert_equals(iterResult2.done, true);
 
   // i.e. it should not reject with a generic "this stream is locked" TypeError.
   const reader = s.getReader();
@@ -416,24 +595,6 @@ promise_test(async () => {
   assert_equals(readResult.value, 3, 'should read remaining chunk');
   await reader.closed;
 }, 'Acquiring a reader and reading the remaining chunks after partially async-iterating a stream with preventCancel = true');
-
-promise_test(async t => {
-  const rs = new ReadableStream();
-  const it = rs.values();
-  await it.return('return value');
-  const readResult = await it.next();
-  assert_equals(readResult.done, true, 'done');
-  assert_equals(readResult.value, undefined, 'undefined');
-}, 'calling next() after return() should result in { value: undefined, done: true }');
-
-promise_test(async t => {
-  const rs = new ReadableStream();
-  const it = rs.values();
-  await it.return('return value 1');
-  const iterResult = await it.return('return value 2');
-  assert_equals(iterResult.done, true, 'done');
-  assert_equals(iterResult.value, 'return value 2', 'undefined');
-}, 'calling return() after return() should result in { value: passedInValue, done: true }');
 
 for (const preventCancel of [false, true]) {
   test(() => {

@@ -46,11 +46,11 @@ async_test(t => {
   t.add_cleanup(() => w.close());
 
   w.onload = t.step_func(() => {
+    assert_true(w.location.href.endsWith("?to=navigate-require-corp.sub.html"));
     w.history.back();
-    t.step_timeout(() => {
-      assert_not_equals(w.document, null);
+    t.wait_for_callback(() => w.location.href.endsWith("/navigate-require-corp.sub.html"), () => {
       t.done();
-    }, 1500);
+    });
   });
 }, `"none" top-level: navigating a frame back from "require-corp" should succeed`);
 

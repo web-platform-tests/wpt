@@ -6,6 +6,15 @@
 
 const error1 = new Error('error1');
 
+function assert_iter_result(iterResult, value, done, message) {
+  const prefix = message === undefined ? '' : `${message} `;
+  assert_equals(typeof iterResult, 'object', `${prefix}type is object`);
+  assert_equals(Object.getPrototypeOf(iterResult), Object.prototype, `${prefix}[[Prototype]]`);
+  assert_array_equals(Object.getOwnPropertyNames(iterResult).sort(), ['done', 'value'], `${prefix}property names`);
+  assert_equals(iterResult.value, value, `${prefix}value`);
+  assert_equals(iterResult.done, done, `${prefix}done`);
+}
+
 test(() => {
   assert_equals(ReadableStream.prototype[Symbol.asyncIterator], ReadableStream.prototype.values);
 }, '@@asyncIterator() method is === to values() method');
@@ -123,23 +132,19 @@ promise_test(async () => {
   assert_array_equals(s.events, []);
 
   const read1 = await it.next();
-  assert_equals(read1.done, false);
-  assert_equals(read1.value, 1);
+  assert_iter_result(read1, 1, false);
   assert_array_equals(s.events, ['pull']);
 
   const read2 = await it.next();
-  assert_equals(read2.done, false);
-  assert_equals(read2.value, 2);
+  assert_iter_result(read2, 2, false);
   assert_array_equals(s.events, ['pull', 'pull']);
 
   const read3 = await it.next();
-  assert_equals(read3.done, false);
-  assert_equals(read3.value, 3);
+  assert_iter_result(read3, 3, false);
   assert_array_equals(s.events, ['pull', 'pull', 'pull']);
 
   const read4 = await it.next();
-  assert_equals(read4.done, true);
-  assert_equals(read4.value, undefined);
+  assert_iter_result(read4, undefined, true);
   assert_array_equals(s.events, ['pull', 'pull', 'pull']);
 }, 'Async-iterating a pull source manually');
 
@@ -198,8 +203,7 @@ promise_test(async () => {
 
   const reader = s.getReader();
   const readResult = await reader.read();
-  assert_equals(readResult.done, false);
-  assert_equals(readResult.value, 1);
+  assert_iter_result(readResult, 1, false);
   reader.releaseLock();
 
   const chunks = [];
@@ -263,19 +267,6 @@ for (const preventCancel of [false, true]) {
   }, `Cancellation behavior when manually calling return(); preventCancel = ${preventCancel}`);
 }
 
-promise_test(async () => {
-  const s = new ReadableStream({
-    start(c) {
-      c.enqueue(0);
-      c.close();
-    }
-  });
-  const it = s[Symbol.asyncIterator]();
-  const next = await it.next();
-  assert_equals(Object.getPrototypeOf(next), Object.prototype);
-  assert_array_equals(Object.getOwnPropertyNames(next).sort(), ['done', 'value']);
-}, 'next()\'s fulfillment value has the right shape');
-
 promise_test(async t => {
   let timesPulled = 0;
   const s = new ReadableStream({
@@ -292,8 +283,7 @@ promise_test(async t => {
   const it = s[Symbol.asyncIterator]();
 
   const iterResult1 = await it.next();
-  assert_equals(iterResult1.value, 0, '1st next() value');
-  assert_equals(iterResult1.done, false, '1st next() done');
+  assert_iter_result(iterResult1, 0, false, '1st next()');
 
   await promise_rejects_exactly(t, error1, it.next(), '2nd next()');
 }, 'next() rejects if the stream errors');
@@ -314,8 +304,7 @@ promise_test(async () => {
   const it = s[Symbol.asyncIterator]();
 
   const iterResult = await it.return('return value');
-  assert_equals(iterResult.value, 'return value', 'value');
-  assert_equals(iterResult.done, true, 'done');
+  assert_iter_result(iterResult, 'return value', true);
 }, 'return() does not rejects if the stream has not errored yet');
 
 promise_test(async t => {
@@ -349,14 +338,12 @@ promise_test(async t => {
   const it = s[Symbol.asyncIterator]();
 
   const iterResult1 = await it.next();
-  assert_equals(iterResult1.value, 0, '1st next() value');
-  assert_equals(iterResult1.done, false, '1st next() done');
+  assert_iter_result(iterResult1, 0, false, '1st next()');
 
   await promise_rejects_exactly(t, error1, it.next(), '2nd next()');
 
   const iterResult3 = await it.next();
-  assert_equals(iterResult3.value, undefined, '3rd next() value');
-  assert_equals(iterResult3.done, true, '3rd next() done');
+  assert_iter_result(iterResult3, undefined, true, '3rd next()');
 }, 'next() that succeeds; next() that reports an error; next()');
 
 promise_test(async () => {
@@ -377,15 +364,13 @@ promise_test(async () => {
   const iterResults = await Promise.allSettled([it.next(), it.next(), it.next()]);
 
   assert_equals(iterResults[0].status, 'fulfilled', '1st next() promise status');
-  assert_equals(iterResults[0].value.value, 0, '1st next() value');
-  assert_equals(iterResults[0].value.done, false, '1st next() done');
+  assert_iter_result(iterResults[0].value, 0, false, '1st next()');
 
   assert_equals(iterResults[1].status, 'rejected', '2nd next() promise status');
   assert_equals(iterResults[1].reason, error1, '2nd next() rejection reason');
 
   assert_equals(iterResults[2].status, 'fulfilled', '3rd next() promise status');
-  assert_equals(iterResults[2].value.value, undefined, '3rd next() value');
-  assert_equals(iterResults[2].value.done, true, '3rd next() done');
+  assert_iter_result(iterResults[2].value, undefined, true, '3rd next()');
 }, 'next() that succeeds; next() that reports an error(); next() [no awaiting]');
 
 promise_test(async t => {
@@ -404,14 +389,12 @@ promise_test(async t => {
   const it = s[Symbol.asyncIterator]();
 
   const iterResult1 = await it.next();
-  assert_equals(iterResult1.value, 0, '1st next() value');
-  assert_equals(iterResult1.done, false, '1st next() done');
+  assert_iter_result(iterResult1, 0, false, '1st next()');
 
   await promise_rejects_exactly(t, error1, it.next(), '2nd next()');
 
   const iterResult3 = await it.return('return value');
-  assert_equals(iterResult3.value, 'return value', 'return() value');
-  assert_equals(iterResult3.done, true, 'return() done');
+  assert_iter_result(iterResult3, 'return value', true, 'return()');
 }, 'next() that succeeds; next() that reports an error(); return()');
 
 promise_test(async () => {
@@ -432,15 +415,13 @@ promise_test(async () => {
   const iterResults = await Promise.allSettled([it.next(), it.next(), it.return('return value')]);
 
   assert_equals(iterResults[0].status, 'fulfilled', '1st next() promise status');
-  assert_equals(iterResults[0].value.value, 0, '1st next() value');
-  assert_equals(iterResults[0].value.done, false, '1st next() done');
+  assert_iter_result(iterResults[0].value, 0, false, '1st next()');
 
   assert_equals(iterResults[1].status, 'rejected', '2nd next() promise status');
   assert_equals(iterResults[1].reason, error1, '2nd next() rejection reason');
 
   assert_equals(iterResults[2].status, 'fulfilled', 'return() promise status');
-  assert_equals(iterResults[2].value.value, 'return value', 'return() value');
-  assert_equals(iterResults[2].value.done, true, 'return() done');
+  assert_iter_result(iterResults[2].value, 'return value', true, 'return()');
 }, 'next() that succeeds; next() that reports an error(); return() [no awaiting]');
 
 promise_test(async () => {
@@ -454,12 +435,10 @@ promise_test(async () => {
   const it = s[Symbol.asyncIterator]();
 
   const iterResult1 = await it.next();
-  assert_equals(iterResult1.value, 0, 'next() value');
-  assert_equals(iterResult1.done, false, 'next() done');
+  assert_iter_result(iterResult1, 0, false, 'next()');
 
   const iterResult2 = await it.return('return value');
-  assert_equals(iterResult2.value, 'return value', 'return() value');
-  assert_equals(iterResult2.done, true, 'return() done');
+  assert_iter_result(iterResult2, 'return value', true, 'return()');
 
   assert_equals(timesPulled, 2);
 }, 'next() that succeeds; return()');
@@ -477,12 +456,10 @@ promise_test(async () => {
   const iterResults = await Promise.allSettled([it.next(), it.return('return value')]);
 
   assert_equals(iterResults[0].status, 'fulfilled', 'next() promise status');
-  assert_equals(iterResults[0].value.value, 0, 'next() value');
-  assert_equals(iterResults[0].value.done, false, 'next() done');
+  assert_iter_result(iterResults[0].value, 0, false, 'next()');
 
   assert_equals(iterResults[1].status, 'fulfilled', 'return() promise status');
-  assert_equals(iterResults[1].value.value, 'return value', 'return() value');
-  assert_equals(iterResults[1].value.done, true, 'return() done');
+  assert_iter_result(iterResults[1].value, 'return value', true, 'return()');
 
   assert_equals(timesPulled, 2);
 }, 'next() that succeeds; return() [no awaiting]');
@@ -492,12 +469,10 @@ promise_test(async () => {
   const it = rs.values();
 
   const iterResult1 = await it.return('return value');
-  assert_equals(iterResult1.value, 'return value', 'return() value');
-  assert_equals(iterResult1.done, true, 'return() done');
+  assert_iter_result(iterResult1, 'return value', true, 'return()');
 
   const iterResult2 = await it.next();
-  assert_equals(iterResult2.value, undefined, 'next() value');
-  assert_equals(iterResult2.done, true, 'next() done');
+  assert_iter_result(iterResult2, undefined, true, 'next()');
 }, 'return(); next()');
 
 promise_test(async () => {
@@ -507,12 +482,10 @@ promise_test(async () => {
   const iterResults = await Promise.allSettled([it.return('return value'), it.next()]);
 
   assert_equals(iterResults[0].status, 'fulfilled', 'return() promise status');
-  assert_equals(iterResults[0].value.value, 'return value', 'return() value');
-  assert_equals(iterResults[0].value.done, true, 'return() done');
+  assert_iter_result(iterResults[0].value, 'return value', true, 'return()');
 
   assert_equals(iterResults[1].status, 'fulfilled', 'next() promise status');
-  assert_equals(iterResults[1].value.value, undefined, 'next() value');
-  assert_equals(iterResults[1].value.done, true, 'next() done');
+  assert_iter_result(iterResults[1].value, undefined, true, 'next()');
 }, 'return(); next() [no awaiting]');
 
 promise_test(async () => {
@@ -520,12 +493,10 @@ promise_test(async () => {
   const it = rs.values();
 
   const iterResult1 = await it.return('return value 1');
-  assert_equals(iterResult1.value, 'return value 1', '1st return() value');
-  assert_equals(iterResult1.done, true, '1st return() done');
+  assert_iter_result(iterResult1, 'return value 1', true, '1st return()');
 
   const iterResult2 = await it.return('return value 2');
-  assert_equals(iterResult2.value, 'return value 2', '2nd return() value');
-  assert_equals(iterResult2.done, true, '2nd return() done');
+  assert_iter_result(iterResult2, 'return value 2', true, '1st return()');
 }, 'return(); return()');
 
 promise_test(async () => {
@@ -535,12 +506,10 @@ promise_test(async () => {
   const iterResults = await Promise.allSettled([it.return('return value 1'), it.return('return value 2')]);
 
   assert_equals(iterResults[0].status, 'fulfilled', '1st return() promise status');
-  assert_equals(iterResults[0].value.value, 'return value 1', '1st return() value');
-  assert_equals(iterResults[0].value.done, true, '1st return() done');
+  assert_iter_result(iterResults[0].value, 'return value 1', true, '1st return()');
 
   assert_equals(iterResults[1].status, 'fulfilled', '2nd return() promise status');
-  assert_equals(iterResults[1].value.value, 'return value 2', '2nd return() value');
-  assert_equals(iterResults[1].value.done, true, '2nd return() done');
+  assert_iter_result(iterResults[1].value, 'return value 2', true, '1st return()');
 }, 'return(); return() [no awaiting]');
 
 test(() => {
@@ -550,7 +519,7 @@ test(() => {
       c.close();
     },
   });
-  const it = s.values();
+  s.values();
   assert_throws_js(TypeError, () => s.values(), 'values() should throw');
 }, 'values() throws if there\'s already a lock');
 
@@ -590,14 +559,12 @@ promise_test(async t => {
   const it = s[Symbol.asyncIterator]({ preventCancel: true });
 
   const iterResult1 = await it.next();
-  assert_equals(iterResult1.value, 0);
-  assert_equals(iterResult1.done, false);
+  assert_iter_result(iterResult1, 0, false, '1st next()');
 
-  await promise_rejects_exactly(t, error1, it.next(), 'next() should reject with the error');
+  await promise_rejects_exactly(t, error1, it.next(), '2nd next()');
 
   const iterResult2 = await it.return('return value');
-  assert_equals(iterResult2.value, 'return value');
-  assert_equals(iterResult2.done, true);
+  assert_iter_result(iterResult2, 'return value', true, 'return()');
 
   // i.e. it should not reject with a generic "this stream is locked" TypeError.
   const reader = s.getReader();
@@ -650,8 +617,7 @@ promise_test(async () => {
 
   const reader = s.getReader();
   const readResult = await reader.read();
-  assert_equals(readResult.done, false, 'should not be closed yet');
-  assert_equals(readResult.value, 3, 'should read remaining chunk');
+  assert_iter_result(readResult, 3, false);
   await reader.closed;
 }, 'Acquiring a reader and reading the remaining chunks after partially async-iterating a stream with preventCancel = true');
 

@@ -357,7 +357,7 @@ promise_test(async t => {
   const iterResult3 = await it.next();
   assert_equals(iterResult3.value, undefined, '3rd next() value');
   assert_equals(iterResult3.done, true, '3rd next() done');
-}, 'next() after next() reports an error');
+}, 'next() that succeeds; next() that reports an error; next()');
 
 promise_test(async () => {
   let timesPulled = 0;
@@ -386,7 +386,7 @@ promise_test(async () => {
   assert_equals(iterResults[2].status, 'fulfilled', '3rd next() promise status');
   assert_equals(iterResults[2].value.value, undefined, '3rd next() value');
   assert_equals(iterResults[2].value.done, true, '3rd next() done');
-}, 'next() after next() reports an error, no awaiting');
+}, 'next() that succeeds; next() that reports an error(); next() [no awaiting]');
 
 promise_test(async t => {
   let timesPulled = 0;
@@ -412,7 +412,7 @@ promise_test(async t => {
   const iterResult3 = await it.return('return value');
   assert_equals(iterResult3.value, 'return value', 'return() value');
   assert_equals(iterResult3.done, true, 'return() done');
-}, 'return() after next() reports an error');
+}, 'next() that succeeds; next() that reports an error(); return()');
 
 promise_test(async () => {
   let timesPulled = 0;
@@ -441,7 +441,7 @@ promise_test(async () => {
   assert_equals(iterResults[2].status, 'fulfilled', 'return() promise status');
   assert_equals(iterResults[2].value.value, 'return value', 'return() value');
   assert_equals(iterResults[2].value.done, true, 'return() done');
-}, 'return() after next() reports an error, no awaiting');
+}, 'next() that succeeds; next() that reports an error(); return() [no awaiting]');
 
 promise_test(async () => {
   let timesPulled = 0;
@@ -462,7 +462,7 @@ promise_test(async () => {
   assert_equals(iterResult2.done, true, 'return() done');
 
   assert_equals(timesPulled, 2);
-}, 'return() after next()');
+}, 'next() that succeeds; return()');
 
 promise_test(async () => {
   let timesPulled = 0;
@@ -485,7 +485,7 @@ promise_test(async () => {
   assert_equals(iterResults[1].value.done, true, 'return() done');
 
   assert_equals(timesPulled, 2);
-}, 'return() after next(), no awaiting');
+}, 'next() that succeeds; return() [no awaiting]');
 
 promise_test(async () => {
   const rs = new ReadableStream();
@@ -498,7 +498,7 @@ promise_test(async () => {
   const iterResult2 = await it.next();
   assert_equals(iterResult2.value, undefined, 'next() value');
   assert_equals(iterResult2.done, true, 'next() done');
-}, 'next() after return()');
+}, 'return(); next()');
 
 promise_test(async () => {
   const rs = new ReadableStream();
@@ -513,7 +513,7 @@ promise_test(async () => {
   assert_equals(iterResults[1].status, 'fulfilled', 'next() promise status');
   assert_equals(iterResults[1].value.value, undefined, 'next() value');
   assert_equals(iterResults[1].value.done, true, 'next() done');
-}, 'next() after return(), no awaiting');
+}, 'return(); next() [no awaiting]');
 
 promise_test(async () => {
   const rs = new ReadableStream();
@@ -526,7 +526,7 @@ promise_test(async () => {
   const iterResult2 = await it.return('return value 2');
   assert_equals(iterResult2.value, 'return value 2', '2nd return() value');
   assert_equals(iterResult2.done, true, '2nd return() done');
-}, 'return() after return()');
+}, 'return(); return()');
 
 promise_test(async () => {
   const rs = new ReadableStream();
@@ -541,7 +541,7 @@ promise_test(async () => {
   assert_equals(iterResults[1].status, 'fulfilled', '2nd return() promise status');
   assert_equals(iterResults[1].value.value, 'return value 2', '2nd return() value');
   assert_equals(iterResults[1].value.done, true, '2nd return() done');
-}, 'return() after return(), no awaiting');
+}, 'return(); return() [no awaiting]');
 
 test(() => {
   const s = new ReadableStream({

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Lists: getComputedStyle().counterIncrement</title>
+<link rel="help" href="https://drafts.csswg.org/css-lists-3/#propdef-counter-increment">
+<meta name="assert" content="counter-increment computed value is the keyword none or a list, each item an identifier paired with an integer.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+</head>
+<body>
+<div id="target"></div>
+<script>
+test_computed_value('counter-increment', 'none');
+
+test_computed_value('counter-increment', 'section -1');
+
+// Not yet tested:
+// Serialization with distinct and repeated counter names
+// https://github.com/w3c/csswg-drafts/issues/4216
+</script>
+</body>
+</html>

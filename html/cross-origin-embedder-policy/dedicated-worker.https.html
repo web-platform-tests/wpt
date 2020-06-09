@@ -46,7 +46,7 @@ promise_test(async (t) => {
 
 promise_test(async (t) => {
   const worker = await createWorker(t, true, false, {});
-  return new Promise(resolve => {
+  await new Promise(resolve => {
     worker.onerror = resolve;
   });
 }, 'COEP: none worker in COEP: require-corp frame');
@@ -83,7 +83,7 @@ promise_test(async (t) => {
 
 promise_test(async (t) => {
   const worker = await createWorker(t, true, false, {type: 'module'});
-  return new Promise(resolve => {
+  await new Promise(resolve => {
     worker.onerror = resolve;
   });
 }, 'COEP: none module worker in COEP: require-corp frame');

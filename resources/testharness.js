@@ -2079,6 +2079,29 @@ policies and contribution forms [3].
         wait_for_inner();
     };
 
+    Test.prototype.wait_for_done = function(cond, description, timeout=3000, interval=100) {
+        /**
+         * Poll for a function to return true, and invoke this.done()
+         * once it does, or assert if a timeout is reached. This is
+         * preferred over a simple step_timeout whenever possible
+         * since it allows the timeout to be longer to reduce
+         * intermittents without compromising test execution speed
+         * when the condition is quickly met.
+         *
+         * @param {Function} cond A function taking no arguments and
+         *                        returning a boolean. The callback is called
+         *                        when this function returns true.
+         * @param {string} description Error message to add to assert in case of
+         *                             failure.
+         * @param {number} timeout Timeout in ms. This is multiplied by the global
+         *                         timeout_multiplier
+         * @param {number} interval Polling interval in ms
+         *
+         **/
+
+         this.wait_for_callback(cond, () => this.done(), description, timeout, interval);
+    }
+
     Test.prototype.wait_for = function(cond, description, timeout=3000, interval=100) {
         /**
          * Poll for a function to return true, and resolve a promise
@@ -2091,17 +2114,17 @@ policies and contribution forms [3].
          * @param {Function} cond A function taking no arguments and
          *                        returning a boolean. The callback is called
          *                        when this function returns true.
-         * @param {number} timeout Timeout in ms. This is multiplied by the global
-         *                         timeout_multiplier
          * @param {string} description Error message to add to assert in case of
          *                             failure.
+         * @param {number} timeout Timeout in ms. This is multiplied by the global
+         *                         timeout_multiplier
          * @param {number} interval Polling interval in ms
          * @returns {Promise} Promise resolved once cond is met.
          *
          **/
 
         return new Promise(resolve => {
-            wait_for_callback(cond, resolve, description, timeout, interval);
+            this.wait_for_callback(cond, resolve, description, timeout, interval);
         });
     }
 

@@ -201,5 +201,43 @@ got [${failedByteActualValues.join(', ')}]`;
     this.expectContents(buffer, new Uint8Array(arrayBuffer));
   }
 
+  expectGPUError(filter, fn) {
+    this.device.pushErrorScope(filter);
+    const returnValue = fn();
+    const promise = this.device.popErrorScope();
+    this.eventualAsyncExpectation(async niceStack => {
+      const error = await promise;
+      let failed = false;
+
+      switch (filter) {
+        case 'none':
+          failed = error !== null;
+          break;
+
+        case 'out-of-memory':
+          failed = !(error instanceof GPUOutOfMemoryError);
+          break;
+
+        case 'validation':
+          failed = !(error instanceof GPUValidationError);
+          break;
+      }
+
+      if (failed) {
+        niceStack.message = `Expected ${filter} error`;
+        this.rec.expectationFailed(niceStack);
+      } else {
+        niceStack.message = `Captured ${filter} error`;
+
+        if (error instanceof GPUValidationError) {
+          niceStack.message += ` - ${error.message}`;
+        }
+
+        this.rec.debug(niceStack);
+      }
+    });
+    return returnValue;
+  }
+
 }
 //# sourceMappingURL=gpu_test.js.map

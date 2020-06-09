@@ -4,7 +4,7 @@
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-import * as C from '../../../../common/constants.js';
+import { TextureUsage } from '../../../../common/constants.js';
 import { params, poptions, pbool } from '../../../../common/framework/params_builder.js';
 import { assert, unreachable } from '../../../../common/framework/util/util.js';
 import { kTextureAspects, kTextureFormatInfo, kTextureFormats } from '../../../capability_info.js';
@@ -167,14 +167,14 @@ export function initializedStateAsStencil(state) {
 }
 
 function getRequiredTextureUsage(format, sampleCount, uninitializeMethod, readMethod) {
-  let usage = C.TextureUsage.CopyDst;
+  let usage = TextureUsage.CopyDst;
 
   switch (uninitializeMethod) {
     case UninitializeMethod.Creation:
       break;
 
     case UninitializeMethod.StoreOpClear:
-      usage |= C.TextureUsage.OutputAttachment;
+      usage |= TextureUsage.OutputAttachment;
       break;
 
     default:
@@ -184,21 +184,21 @@ function getRequiredTextureUsage(format, sampleCount, uninitializeMethod, readMe
   switch (readMethod) {
     case ReadMethod.CopyToBuffer:
     case ReadMethod.CopyToTexture:
-      usage |= C.TextureUsage.CopySrc;
+      usage |= TextureUsage.CopySrc;
       break;
 
     case ReadMethod.Sample:
-      usage |= C.TextureUsage.Sampled;
+      usage |= TextureUsage.Sampled;
       break;
 
     case ReadMethod.Storage:
-      usage |= C.TextureUsage.Storage;
+      usage |= TextureUsage.Storage;
       break;
 
     case ReadMethod.DepthTest:
     case ReadMethod.StencilTest:
     case ReadMethod.ColorBlending:
-      usage |= C.TextureUsage.OutputAttachment;
+      usage |= TextureUsage.OutputAttachment;
       break;
 
     default:
@@ -208,14 +208,14 @@ function getRequiredTextureUsage(format, sampleCount, uninitializeMethod, readMe
   if (sampleCount > 1) {
     // Copies to multisampled textures are not allowed. We need OutputAttachment to initialize
     // canary data in multisampled textures.
-    usage |= C.TextureUsage.OutputAttachment;
+    usage |= TextureUsage.OutputAttachment;
   }
 
   if (!kTextureFormatInfo[format].copyable) {
     // Copies are not possible. We need OutputAttachment to initialize
     // canary data.
     assert(kTextureFormatInfo[format].renderable);
-    usage |= C.TextureUsage.OutputAttachment;
+    usage |= TextureUsage.OutputAttachment;
   }
 
   return usage;
@@ -490,11 +490,11 @@ export class TextureZeroInitTest extends GPUTest {
       }) => {
         const usage = getRequiredTextureUsage(format, sampleCount, uninitializeMethod, readMethod);
 
-        if (usage & C.TextureUsage.OutputAttachment && !kTextureFormatInfo[format].renderable) {
+        if (usage & TextureUsage.OutputAttachment && !kTextureFormatInfo[format].renderable) {
           return false;
         }
 
-        if (usage & C.TextureUsage.Storage && !kTextureFormatInfo[format].storage) {
+        if (usage & TextureUsage.Storage && !kTextureFormatInfo[format].storage) {
           return false;
         }
 

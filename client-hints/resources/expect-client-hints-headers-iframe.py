@@ -12,7 +12,7 @@ def main(request, response):
     for value in values:
         should = (request.GET[value.lower()] == b"true")
         present = request.headers.get(value.lower()) or request.headers.get(value)
-        if present:  
+        if present:
             log += isomorphic_decode(value) + u" " + str(should) + u" " + isomorphic_decode(present) + u", "
         else:
             log += isomorphic_decode(value) + u" " + str(should) + u" " + str(present) + u", "

@@ -24,7 +24,7 @@ def lock(request, report_id):
   with request.server.stash.lock:
     # Loop until the lock is free
     if not wait_for_lock(request):
-      return (503, [], u"Cannot obtain lock")
+      return (503, [], b"Cannot obtain lock")
     request.server.stash.put(key=_LOCK_KEY, value=report_id)
     return b"Obtained lock for %s" % report_id
 
@@ -45,4 +45,4 @@ def main(request, response):
   elif op == b"unlock":
     return unlock(request, report_id)
   else:
-    return (400, [], u"Invalid op")
+    return (400, [], b"Invalid op")

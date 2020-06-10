@@ -1,4 +1,5 @@
  # -*- coding: utf-8 -*-
+from wptserve.utils import isomorphic_encode
 
 def main(request, response):
-    return "PASS" if request.GET.first('x') == 'å' else "FAIL"
+    return u"PASS" if request.GET.first(b'x') == isomorphic_encode('å') else u"FAIL"

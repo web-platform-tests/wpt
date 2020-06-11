@@ -11,7 +11,7 @@ promise_test(t => {
 
 promise_test(async t => {
   let iframe = document.createElement("iframe");
-  let iframe_loaded =  new Promise(resolve => iframe.onload = t.step_func(resolve));
+  let iframe_loaded =  new Promise(resolve => iframe.onload = resolve);
   iframe.src = "about:blank";
   document.body.appendChild(iframe);
 
@@ -25,7 +25,7 @@ promise_test(async t => {
   let iframe_B = document.createElement("iframe");
   iframe_B.src = "about:blank";
   iframe_C.src = "/common/blank.html";
-  let iframe_B_loaded = new Promise(resolve => iframe_B.onload = t.step_func(resolve));
+  let iframe_B_loaded = new Promise(resolve => iframe_B.onload = resolve);
   document.body.appendChild(iframe_B);
 
   // The about:blank frame must be able to load.
@@ -42,7 +42,7 @@ promise_test(async t => {
   // reliable event.
   assert_equals(iframe_C.contentWindow.location.href, "about:blank");
   assert_not_equals(iframe_C.contentDocument, null);
-  await t.wait_for(() => iframe_C.contentDocument === null);
+  await t.step_wait(() => iframe_C.contentDocument === null);
 }, "A(B(C)) A=require-corp, B=about:blank, C=no-require-corp => C can't load");
 
 </script>

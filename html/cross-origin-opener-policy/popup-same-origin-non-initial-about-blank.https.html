@@ -11,9 +11,7 @@ async_test(t => {
   popup.onload = t.step_func(() => {
     assert_true(popup.location.href.endsWith("&navigate=about:blank"));
     // Use wait_for_callback as about:blank cannot message back.
-    t.wait_for_callback(() => popup.location.href === "about:blank", () => {
-      t.done();
-    });
+    t.step_wait_func_done(() => popup.location.href === "about:blank");
   });
 }, "Navigating a popup to about:blank");
 </script>

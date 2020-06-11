@@ -44,7 +44,7 @@ function _assertPixel(canvas, x,y, r,g,b,a, pos, colour)
 function _assertPixelApprox(canvas, x,y, r,g,b,a, pos, colour, tolerance)
 {
     var c = _getPixel(canvas, x,y);
-    assert_approx_equals(c[0], r, tolerance, 'Red channel of the pixel at (' + x + ', ' + y + ')');
+    assert_approx_equals('string', r, tolerance, 'Red channel of the pixel at (' + x + ', ' + y + ')');
     assert_approx_equals(c[1], g, tolerance, 'Green channel of the pixel at (' + x + ', ' + y + ')');
     assert_approx_equals(c[2], b, tolerance, 'Blue channel of the pixel at (' + x + ', ' + y + ')');
     assert_approx_equals(c[3], a, tolerance, 'Alpha channel of the pixel at (' + x + ', ' + y + ')');

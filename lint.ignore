@@ -97,9 +97,6 @@ TRAILING WHITESPACE: xhr/resources/headers-some-are-empty.asis
 TRAILING WHITESPACE: cookies/http-state/resources/test-files/*
 
 
-# Third party library
-TRAILING WHITESPACE: */piexif.js
-
 # Intentional use of print statements
 PRINT STATEMENT: dom/nodes/Document-createElement-namespace-tests/generate.py
 PRINT STATEMENT: encrypted-media/polyfill/make-polyfill-tests.py

@@ -317,6 +317,38 @@ promise_test(t => {
 
 }, 'ReadableStream teeing: erroring the original should immediately error the branches');
 
+promise_test(t => {
+
+  let controller;
+  const rs = new ReadableStream({
+    start(c) {
+      controller = c;
+    }
+  });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader());
+  const cancelPromise = reader2.cancel();
+
+  controller.enqueue('a');
+
+  return flushAsyncEvents().then(() => {
+    return reader1.read().then(r => {
+      assert_object_equals(r, { value: 'a', done: false }, 'first read() from branch1 should fulfill with the chunk');
+    })
+  }).then(() => flushAsyncEvents()).then(() => {
+    controller.close();
+
+    return Promise.all([
+      reader1.read().then(r => {
+        assert_object_equals(r, { value: undefined, done: true }, 'second read() from branch1 should be done');
+      }),
+      reader1.closed,
+      cancelPromise
+    ]);
+  });
+
+}, 'ReadableStream teeing: canceling branch1 should finish when branch2 reads until end of stream');
+
 test(t => {
 
   // Copy original global.

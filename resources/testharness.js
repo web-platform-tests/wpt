@@ -2037,8 +2037,8 @@ policies and contribution forms [3].
         }), timeout * tests.timeout_multiplier);
     };
 
-    Test.prototype.wait_for_callback = function(cond, callback, description,
-                                                timeout=3000, interval=100) {
+    Test.prototype.step_wait_func = function(cond, func, description,
+                                             timeout=3000, interval=100) {
         /**
          * Poll for a function to return true, and call a callback
          * function once it does, or assert if a timeout is
@@ -2050,8 +2050,8 @@ policies and contribution forms [3].
          * @param {Function} cond A function taking no arguments and
          *                        returning a boolean. The callback is called
          *                        when this function returns true.
-         * @param {Function} callback A function taking no arguments to call once
-         *                            the condition is met.
+         * @param {Function} func A function taking no arguments to call once
+         *                        the condition is met.
          * @param {string} description Error message to add to assert in case of
          *                             failure.
          * @param {number} timeout Timeout in ms. This is multiplied by the global
@@ -2059,13 +2059,14 @@ policies and contribution forms [3].
          * @param {number} interval Polling interval in ms
          *
          **/
+
         var timeout_full = timeout * tests.timeout_multiplier;
         var remaining = Math.ceil(timeout_full / interval);
         var test_this = this;
 
         var wait_for_inner = test_this.step_func(() => {
             if (cond()) {
-                callback();
+                func();
             } else {
                 if(remaining === 0) {
                     assert(false, "wait_for", description,
@@ -2079,18 +2080,21 @@ policies and contribution forms [3].
         wait_for_inner();
     };
 
-    Test.prototype.wait_for_done = function(cond, description, timeout=3000, interval=100) {
+    Test.prototype.step_wait_func_done = function(cond, func, description,
+                                                  timeout=3000, interval=100) {
         /**
-         * Poll for a function to return true, and invoke this.done()
-         * once it does, or assert if a timeout is reached. This is
-         * preferred over a simple step_timeout whenever possible
-         * since it allows the timeout to be longer to reduce
-         * intermittents without compromising test execution speed
+         * Poll for a function to return true, and invoke a callback
+         * followed this.done() once it does, or assert if a timeout
+         * is reached. This is preferred over a simple step_timeout
+         * whenever possible since it allows the timeout to be longer
+         * to reduce intermittents without compromising test execution speed
          * when the condition is quickly met.
          *
          * @param {Function} cond A function taking no arguments and
          *                        returning a boolean. The callback is called
          *                        when this function returns true.
+         * @param {Function} func A function taking no arguments to call once
+         *                        the condition is met.
          * @param {string} description Error message to add to assert in case of
          *                             failure.
          * @param {number} timeout Timeout in ms. This is multiplied by the global
@@ -2099,10 +2103,15 @@ policies and contribution forms [3].
          *
          **/
 
-         this.wait_for_callback(cond, () => this.done(), description, timeout, interval);
+         this.step_wait_func(cond, () => {
+            if (func) {
+                func();
+            }
+            this.done();
+         }, description, timeout, interval);
     }
 
-    Test.prototype.wait_for = function(cond, description, timeout=3000, interval=100) {
+    Test.prototype.step_wait = function(cond, description, timeout=3000, interval=100) {
         /**
          * Poll for a function to return true, and resolve a promise
          * once it does, or assert if a timeout is reached. This is
@@ -2112,8 +2121,7 @@ policies and contribution forms [3].
          * when the condition is quickly met.
          *
          * @param {Function} cond A function taking no arguments and
-         *                        returning a boolean. The callback is called
-         *                        when this function returns true.
+         *                        returning a boolean.
          * @param {string} description Error message to add to assert in case of
          *                             failure.
          * @param {number} timeout Timeout in ms. This is multiplied by the global
@@ -2124,7 +2132,7 @@ policies and contribution forms [3].
          **/
 
         return new Promise(resolve => {
-            this.wait_for_callback(cond, resolve, description, timeout, interval);
+            this.step_wait_func(cond, resolve, description, timeout, interval);
         });
     }
 

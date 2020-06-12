@@ -349,6 +349,28 @@ promise_test(t => {
 
 }, 'ReadableStream teeing: canceling branch1 should finish when branch2 reads until end of stream');
 
+promise_test(t => {
+
+  let controller;
+  const theError = { name: 'boo!' };
+  const rs = new ReadableStream({
+    start(c) {
+      controller = c;
+    }
+  });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader());
+  const cancelPromise = reader2.cancel();
+
+  controller.error(theError);
+
+  return Promise.all([
+    promise_rejects_exactly(t, theError, reader1.read()),
+    cancelPromise
+  ]);
+
+}, 'ReadableStream teeing: canceling branch1 should finish when original stream errors');
+
 test(t => {
 
   // Copy original global.

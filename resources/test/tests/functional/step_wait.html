@@ -1,5 +1,7 @@
 <!doctype html>
 <title>Tests for step_wait</title>
+<script src="../../variants.js"></script>
+<meta name="variant" content="?keep-promise">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <div id=log></div>
@@ -27,5 +29,31 @@ promise_test(async t => {
 }, "step_wait() takes an argument");
 </script>
 <script type="text/json" id="expected">
-hmm
+{
+  "summarized_tests": [
+    {
+      "name": "Basic step_wait() test", 
+      "message": null, 
+      "properties": {}, 
+      "status_string": "PASS"
+    }, 
+    {
+      "name": "step_wait() isn't invoked too often", 
+      "message": null, 
+      "properties": {}, 
+      "status_string": "PASS"
+    }, 
+    {
+      "name": "step_wait() takes an argument", 
+      "message": "cond is not a function", 
+      "properties": {}, 
+      "status_string": "FAIL"
+    }
+  ], 
+  "type": "complete", 
+  "summarized_status": {
+    "status_string": "OK", 
+    "message": null
+  }
+}
 </script>

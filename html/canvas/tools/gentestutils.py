@@ -135,9 +135,9 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
             spec_assertions.append(s)
 
     tests = []
-    test_yaml_directory = "test-yamls/element"
+    test_yaml_directory = "yaml/element"
     if ISOFFSCREENCANVAS:
-        test_yaml_directory = "test-yamls/offscreen"
+        test_yaml_directory = "yaml/offscreen"
     TESTSFILES = [
         os.path.join(test_yaml_directory, f) for f in os.listdir(test_yaml_directory)
         if f.endswith(".yaml")]

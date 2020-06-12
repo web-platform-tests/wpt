@@ -10,8 +10,8 @@
 <body>
     <video id="video" controls autoplay playsinline></video>
     <script>
-    var pc1, pc2;
-    var localTrack, remoteTrack;
+    let pc1, pc2;
+    let localTrack, remoteTrack;
     promise_test(async (test) => {
         const localStream = await navigator.mediaDevices.getUserMedia({audio: true});
         localTrack = localStream.getAudioTracks()[0];
@@ -40,7 +40,7 @@
 
         // Let's remove ssrc lines
         let sdpLines = offer.sdp.split("\r\n");
-        offer.sdp = sdpLines.filter(line => line && line.length && !line.startsWith("a=ssrc")).join("\r\n") + "\r\n";
+        offer.sdp = sdpLines.filter(line => line && !line.startsWith("a=ssrc")).join("\r\n") + "\r\n";
 
         await pc2.setRemoteDescription(offer);
         let answer = await pc2.createAnswer();

@@ -1,0 +1,47 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>CSS Contain test: size containment has no effect on layout</title>
+<link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net">
+<meta name=assert content="While contain:size on an element affects how the
+                           element itself computes its size, it has no effect
+                           on the layout, and the end result is identical to
+                           what would have happened if the size of the element
+                           had been fixed ahead of time, with no other change.
+                           In particular, putting size containment on a grid
+                           does it to be sized as if the tracks were empty, but
+                           when it is then laid out, the tracks get their
+                           normal sized based on their content."
+<link rel="match" href="reference/contain-size-064-ref.html">
+<link rel="mismatch" href="reference/contain-size-064b-ref.html">
+<link rel=help href="https://drafts.csswg.org/css-contain-1/#containment-size">
+
+<style>
+#grid {
+    display: inline-grid;
+    grid: auto auto / auto auto; /* 2x2 auto sized */
+    contain: size;
+
+    background: red;
+    /* the grid and tracks are auto-sized.
+       Due to size containment, the grid should thus be 0x0 */
+}
+.green {
+    background: green;
+    /* After its size has been set to 0x0,
+       the grid's layout is computed.
+       The width and the height of the tracks should both be set
+       to some non-zero value due to the sizers in them.
+       This .green element then just fills its grid cell. */
+}
+.sizer {
+    color: transparent;
+}
+</style>
+
+<p>Test passes if there is a green box below and no red.
+
+<div id=grid>
+  <span class=green></span>
+  <span class=sizer>filler text</span>
+  <span class=sizer>filler text</span>
+</div>

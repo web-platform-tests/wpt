@@ -428,7 +428,7 @@ class Firefox(Browser):
         tc_platform = "%s%s" % (self.platform, platform_bits)
 
         archive_ext = ".zip" if uname[0] == "Windows" else ".tar.gz"
-        archive_name = "public/geckodriver%s" % archive_ext
+        archive_name = "public/build/geckodriver%s" % archive_ext
 
         try:
             resp = get_taskcluster_artifact(

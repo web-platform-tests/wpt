@@ -102,7 +102,7 @@ def main(request, response):
         return [(b"Content-Type", b"image/svg+xml")], b"<svg xmlns='http://www.w3.org/2000/svg'>%s</svg>" % isomorphic_encode(q)
     elif type == b'xmlstylesheet_css':
         return ([(b"Content-Type", b"application/xhtml+xml; charset=%s" % encoding)],
-                (b"""<?xml-stylesheet href="?q=&#x00E5;&amp;type=css&amp;encoding=%s"?><html xmlns="http://www.w3.org/1999/xhtml"/>""" % encoding)
+                (u"""<?xml-stylesheet href="?q=&#x00E5;&amp;type=css&amp;encoding=%s"?><html xmlns="http://www.w3.org/1999/xhtml"/>""" % isomorphic_decode(encoding))
                 .encode(isomorphic_decode(encoding)))
     elif type == b'png':
         if q == u'%E5':

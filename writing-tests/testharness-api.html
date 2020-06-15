@@ -365,8 +365,42 @@ full timeout rather than trying to guess an appropriate shorter
 timeout to use.</p>
 <p>In other cases it may be necessary to use a timeout (e.g., for a test
 that only passes if some event is <em>not</em> fired). In this case it is
-<em>not</em> permitted to use the standard <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> function. Instead one
-must use the <code class="docutils literal notranslate"><span class="pre">step_timeout</span></code> function:</p>
+<em>not</em> permitted to use the standard <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> function.</p>
+<p>Instead, one of these functions can be used:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">step_wait</span></code> (returns a promise)</li>
+<li><code class="docutils literal notranslate"><span class="pre">step_wait_func</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">step_wait_func_done</span></code></li>
+<li>As a last resort, <code class="docutils literal notranslate"><span class="pre">step_timeout</span></code></li>
+</ul>
+<div class="section" id="step-wait-step-wait-func-and-step-wait-func-done">
+<h3><code class="docutils literal notranslate"><span class="pre">step_wait</span></code>, <code class="docutils literal notranslate"><span class="pre">step_wait_func</span></code>, and <code class="docutils literal notranslate"><span class="pre">step_wait_func_done</span></code><a class="headerlink" href="#step-wait-step-wait-func-and-step-wait-func-done" title="Permalink to this headline">¶</a></h3>
+<p>These functions are preferred over <code class="docutils literal notranslate"><span class="pre">step_timeout</span></code> as they end when a condition or a timeout is reached, rather than just a timeout. This allows for setting a longer timeout while shortening the runtime of tests on faster machines.</p>
+<p><code class="docutils literal notranslate"><span class="pre">step_wait(cond,</span> <span class="pre">description,</span> <span class="pre">timeout=3000,</span> <span class="pre">interval=100)</span></code> is useful inside <code class="docutils literal notranslate"><span class="pre">promise_test</span></code>, e.g.:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="nx">t</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// …</span>
+  <span class="nx">await</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_wait</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">frame</span><span class="p">.</span><span class="nx">contentDocument</span> <span class="o">===</span> <span class="kc">null</span><span class="p">,</span> <span class="s2">&quot;Frame navigated to a cross-origin document&quot;</span><span class="p">);</span>
+  <span class="c1">// …</span>
+<span class="p">},</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">step_wait_func(cond,</span> <span class="pre">func,</span> <span class="pre">description,</span> <span class="pre">timeout=3000,</span> <span class="pre">interval=100)</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">step_wait_func(cond,</span> <span class="pre">func,</span> <span class="pre">description,</span> <span class="pre">timeout=3000,</span> <span class="pre">interval=100)</span></code> are useful inside <code class="docutils literal notranslate"><span class="pre">async_test</span></code>:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="nx">t</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="kr">const</span> <span class="nx">popup</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;resources/coop-coep.py?coop=same-origin&amp;coep=&amp;navigate=about:blank&quot;</span><span class="p">);</span>
+  <span class="nx">t</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">popup</span><span class="p">.</span><span class="nx">close</span><span class="p">());</span>
+  <span class="nx">assert_equals</span><span class="p">(</span><span class="nb">window</span><span class="p">,</span> <span class="nx">popup</span><span class="p">.</span><span class="nx">opener</span><span class="p">);</span>
+
+  <span class="nx">popup</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="nx">assert_true</span><span class="p">(</span><span class="nx">popup</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">.</span><span class="nx">endsWith</span><span class="p">(</span><span class="s2">&quot;&amp;navigate=about:blank&quot;</span><span class="p">));</span>
+    <span class="c1">// Use step_wait_func_done as about:blank cannot message back.</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">step_wait_func_done</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">popup</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span> <span class="o">===</span> <span class="s2">&quot;about:blank&quot;</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">},</span> <span class="s2">&quot;Navigating a popup to about:blank&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="step-timeout">
+<h3><code class="docutils literal notranslate"><span class="pre">step_timeout</span></code><a class="headerlink" href="#step-timeout" title="Permalink to this headline">¶</a></h3>
+<p>As a last resort one can use the <code class="docutils literal notranslate"><span class="pre">step_timeout</span></code> function:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">gotEvent</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
   <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
@@ -386,6 +420,7 @@ to produce unstable results in slow configurations.</p>
 produce stable results in all test environments.</p>
 <p>For single-page tests, <code class="docutils literal notranslate"><span class="pre">step_timeout</span></code> is also available as a global
 function.</p>
+</div>
 </div>
 <div class="section" id="harness-timeout">
 <h2>Harness Timeout<a class="headerlink" href="#harness-timeout" title="Permalink to this headline">¶</a></h2>

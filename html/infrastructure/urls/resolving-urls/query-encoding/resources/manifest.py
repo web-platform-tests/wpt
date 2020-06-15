@@ -1,12 +1,12 @@
 def main(request, response):
-    id = request.GET['id']
-    mode = request.GET['mode']
-    fallback_url = ""
-    if mode == "FALLBACK":
-        fallback_url = "fallback-namespace/"
-    manifest = u"""CACHE MANIFEST
+    id = request.GET[b'id']
+    mode = request.GET[b'mode']
+    fallback_url = b""
+    if mode == b"FALLBACK":
+        fallback_url = b"fallback-namespace/"
+    manifest = b"""CACHE MANIFEST
 
 %s:
 %s stash.py?q=\u00E5&id=%s&action=put
 """ % (mode, fallback_url, id)
-    return [("Content-Type", "text/cache-manifest; charset=%s" % request.GET['encoding'])], manifest.encode('utf-8') # charset should be ignored for cache manifests
+    return [(b"Content-Type", b"text/cache-manifest; charset=%s" % request.GET[b'encoding'])], manifest # charset should be ignored for cache manifests

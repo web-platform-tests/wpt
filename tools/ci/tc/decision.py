@@ -239,13 +239,39 @@ def create_tc_task(event, task, taskgroup_id, depends_on_ids, env_extra=None):
         },
         "extra": {
             "github_event": json.dumps(event)
-        }
+        },
+        "routes": ["checks"]
     }
     if env_extra:
         task_data["payload"]["env"].update(env_extra)
     if depends_on_ids:
         task_data["dependencies"] = depends_on_ids
         task_data["requires"] = "all-completed"
+    return task_id, task_data
+
+
+def create_sink_task(event, taskgroup_id, task_id_map):
+    depends_on_ids = list(map(lambda x: x[0], task_id_map.values()))
+
+    task_id = taskcluster.slugId()
+    task_data = {
+        "taskGroupId": taskgroup_id,
+        "created": taskcluster.fromNowJSON(""),
+        "deadline": taskcluster.fromNowJSON("24 hours"),
+        "provisionerId": "built-in",
+        "schedulerId": "taskcluster-github",
+        "workerType": "succeed",
+        "metadata": {
+            "name": "sink-task",
+            "description": "Sink task for all other tasks, indicates success",
+            "owner": get_owner(event),
+            "source": event["repository"]["clone_url"]
+        },
+        "payload": {},
+        "routes": ["checks"],
+        "dependencies": depends_on_ids,
+        "requires": "all-completed"
+    }
     return task_id, task_data
 
 
@@ -283,6 +309,13 @@ def build_task_graph(event, all_tasks, tasks):
 
     for task_name, task in iteritems(tasks):
         add_task(task_name, task)
+
+    # GitHub branch protection needs us to name explicit 'required' tasks -
+    # which doesn't suffice in the precense of a dynamic task graph. To work
+    # around this we declare a known 'sink' task that is scheduled only if all
+    # our required tasks for a given pull request succeed - we can then make
+    # the sink task the 'required' task for GitHub.
+    task_id_map['sink-task'] = create_sink_task(event, taskgroup_id, task_id_map)
 
     return task_id_map
 

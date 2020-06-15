@@ -923,6 +923,47 @@ def build_config(override_path=None, config_cls=ConfigBuilder, **kwargs):
     return rv
 
 
+def check_environ(logger, config):
+    is_windows = platform.uname()[0] == "Windows"
+
+    expected_hosts = set(config.domains_set)
+    if is_windows:
+        expected_hosts.update(config.not_domains_set)
+
+    missing_hosts = set(expected_hosts)
+    if is_windows:
+        hosts_path = r"%s\System32\drivers\etc\hosts" % os.environ.get("SystemRoot", r"C:\Windows")
+    else:
+        hosts_path = "/etc/hosts"
+
+    if os.path.abspath(os.curdir) == repo_root:
+        wpt_path = "wpt"
+    else:
+        wpt_path = os.path.join(repo_root, "wpt")
+
+    with open(hosts_path, "r") as f:
+        for line in f:
+            line = line.split("#", 1)[0].strip()
+            parts = line.split()
+            hosts = parts[1:]
+            for host in hosts:
+                missing_hosts.discard(host)
+        if missing_hosts:
+            if is_windows:
+                message = """Missing hosts file configuration. Run
+
+python %s make-hosts-file | Out-File %s -Encoding ascii -Append
+
+in PowerShell with Administrator privileges.""" % (wpt_path, hosts_path)
+            else:
+                message = """Missing hosts file configuration. Run
+
+%s make-hosts-file | sudo tee -a %s""" % ("./wpt" if wpt_path == "wpt" else wpt_path,
+                                          hosts_path)
+            logger.error(message)
+            raise ValueError(message)
+
+
 def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--latency", type=int,
@@ -940,6 +981,8 @@ def get_parser():
     parser.add_argument("--no-h2", action="store_false", dest="h2", default=None,
                         help="Disable the HTTP/2.0 server")
     parser.add_argument("--quic-transport", action="store_true", help="Enable QUIC server for WebTransport")
+    parser.add_argument("--no-check-environ", action="store_false", dest="check_environ",
+                        help="Don't validate the environment settings before starting the server")
     parser.set_defaults(report=False)
     parser.set_defaults(is_wave=False)
     return parser
@@ -954,6 +997,8 @@ def run(config_cls=ConfigBuilder, route_builder=None, **kwargs):
         global logger
         logger = config.logger
         set_logger(logger)
+        if kwargs.get("check_environ", False):
+            check_environ(logger, config)
         # Configure the root logger to cover third-party libraries.
         logging.getLogger().setLevel(config.log_level)
 

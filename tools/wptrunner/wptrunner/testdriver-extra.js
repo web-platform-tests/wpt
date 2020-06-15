@@ -126,6 +126,15 @@
         return pending_promise;
     };
 
+    window.test_driver_internal.post = function(endpoint, params) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.__wptrunner_message_queue.push({"type": "post", "endpoint": endpoint, params});
+        return pending_promise;
+    }
+
     window.test_driver_internal.set_permission = function(permission_params) {
         const pending_promise = new Promise(function(resolve, reject) {
             pending_resolve = resolve;

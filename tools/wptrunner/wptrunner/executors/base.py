@@ -771,7 +771,8 @@ class CallbackHandler(object):
         self.logger = logger
         self.callbacks = {
             "action": self.process_action,
-            "complete": self.process_complete
+            "complete": self.process_complete,
+            "post": self.process_post
         }
 
         self.actions = {cls.name: cls(self.logger, self.protocol) for cls in actions}
@@ -808,6 +809,33 @@ class CallbackHandler(object):
             raise
         else:
             self.logger.debug("Action %s completed with result %s" % (action, result))
+            return_message = {"result": result}
+            self._send_message("complete", "success", json.dumps(return_message))
+
+        return False, None
+
+    def process_post(self, url, payload):
+        endpoint = payload["endpoint"]
+        params = payload["params"]
+
+        # In webdriver impl this would be:
+        #   self.webdriver.send_session_command("POST", endpoint, params)
+        # In marionnete impl this would be:
+        #   endpoint_handlers = {
+        #     ('POST', 'permission'): SetPermissionHandler,
+        #   }
+        #   ...
+        #   def post_to_endpoint(endpoint, params):
+        #     endpoint_handlers[('POST', endpoint)](params)
+        try:
+            result = self.protocol.post_to_endpoint(endpoint, params)
+        except Exception:
+            self.logger.warning("Posting to endpoint %s failed" % endpoint)
+            self.logger.warning(traceback.format_exc())
+            self._send_message("complete", "error")
+            raise
+        else:
+            self.logger.debug("Posting to %s completed with result %s" % (endpoint, result))
             return_message = {"result": result}
             self._send_message("complete", "success", json.dumps(return_message))
 

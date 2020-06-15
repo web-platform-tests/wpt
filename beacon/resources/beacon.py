@@ -65,7 +65,7 @@ def main(request, response):
                 # The payload was sent as either a string, Blob, or BufferSource.
                 payload = request.body
 
-            payload_parts = list(filter(None, isomorphic_decode(payload).split(u":")))
+            payload_parts = list(filter(None, payload.split(b":")))
             if len(payload_parts) > 0:
                 payload_size = int(payload_parts[0])
 
@@ -77,9 +77,9 @@ def main(request, response):
                 else:
                     # Confirm the payload contains the correct characters.
                     for i in range(0, payload_size):
-                        if payload_parts[1][i] != u"*":
+                        if payload_parts[1][i:i+1] != b"*":
                             error = u"expected '*' at index %d but got '%s''" % (
-                                i, payload_parts[1][i])
+                                i, isomorphic_decode(payload_parts[1][i:i+1]))
                             break
 
             # Store the result in the stash so that it can be retrieved

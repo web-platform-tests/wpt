@@ -45,15 +45,14 @@ web-platform-tests working directory like this:</p>
 <p>The lint tool is also run automatically for every submitted pull request,
 and reviewers will not merge branches with tests that have lint errors, so
 you must either <a class="reference external" href="#fixing-lint-errors">fix all lint errors</a>, or you must
-<a class="reference external" href="#updating-the-whitelist">whitelist test files</a> to suppress the errors.</p>
+<a class="reference external" href="#updating-the-ignorelist">add an exception</a> to suppress the errors.</p>
 <div class="section" id="fixing-lint-errors">
 <h2>Fixing lint errors<a class="headerlink" href="#fixing-lint-errors" title="Permalink to this headline">¶</a></h2>
-<p>You must fix any errors the lint tool reports, unless an error is for
-something essential to a certain test or that for some other
-exceptional reason shouldn’t prevent the test from being merged; in
-those cases you can <a class="reference external" href="#updating-the-whitelist">whitelist test files</a>
-to suppress the errors. In all other cases, follow the instructions
-below to fix all errors reported.</p>
+<p>You must fix any errors the lint tool reports, unless an error is for something
+essential to a certain test or that for some other exceptional reason shouldn’t
+prevent the test from being merged; in those cases you can <a class="reference external" href="#updating-the-ignorelist">add an
+exception</a> to suppress the errors. In all other
+cases, follow the instructions below to fix all errors reported.</p>
 <!--
   This listing is automatically generated from the linting tool's Python source
   code.
@@ -236,27 +235,25 @@ achieves the intended effect (e.g., a logging call)</p>
 <dd>path ends with %s which collides with generated tests from %s files</dd>
 </dl>
 </div>
-<div class="section" id="updating-the-whitelist">
-<h2>Updating the whitelist<a class="headerlink" href="#updating-the-whitelist" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="updating-the-ignorelist">
+<h2>Updating the ignorelist<a class="headerlink" href="#updating-the-ignorelist" title="Permalink to this headline">¶</a></h2>
 <p>Normally you must <a class="reference external" href="#fixing-lint-errors">fix all lint errors</a>. But in the
 unusual case of error reports for things essential to certain tests or that
 for other exceptional reasons shouldn’t prevent a merge of a test, you can
-update and commit the <code class="docutils literal notranslate"><span class="pre">lint.whitelist</span></code> file in the web-platform-tests root
+update and commit the <code class="docutils literal notranslate"><span class="pre">lint.ignorelist</span></code> file in the web-platform-tests root
 directory to suppress errors the lint tool would report for a test file.</p>
-<p>To add a test file or directory to the whitelist, use the following format:</p>
+<p>To add a test file or directory to the list, use the following format:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERROR</span> <span class="n">TYPE</span><span class="p">:</span><span class="n">file</span><span class="o">/</span><span class="n">name</span><span class="o">/</span><span class="n">pattern</span>
 </pre></div>
 </div>
-<p>For example, to whitelist the file <code class="docutils literal notranslate"><span class="pre">example/file.html</span></code> such that all
-<code class="docutils literal notranslate"><span class="pre">TRAILING</span> <span class="pre">WHITESPACE</span></code> errors the lint tool would report for it are
-suppressed, add the following line to the <code class="docutils literal notranslate"><span class="pre">lint.whitelist</span></code> file:</p>
+<p>For example, to ignore all <code class="docutils literal notranslate"><span class="pre">TRAILING</span> <span class="pre">WHITESPACE</span></code> errors in the file
+<code class="docutils literal notranslate"><span class="pre">example/file.html</span></code>, add the following line to the <code class="docutils literal notranslate"><span class="pre">lint.ignorelist</span></code> file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TRAILING</span> <span class="n">WHITESPACE</span><span class="p">:</span><span class="n">example</span><span class="o">/</span><span class="n">file</span><span class="o">.</span><span class="n">html</span>
 </pre></div>
 </div>
-<p>To whitelist an entire directory rather than just one file, use the <code class="docutils literal notranslate"><span class="pre">*</span></code>
-wildcard. For example, to whitelist the <code class="docutils literal notranslate"><span class="pre">example</span></code> directory such that all
-<code class="docutils literal notranslate"><span class="pre">TRAILING</span> <span class="pre">WHITESPACE</span></code> errors the lint tool would report for any files in it
-are suppressed, add the following line to the <code class="docutils literal notranslate"><span class="pre">lint.whitelist</span></code> file:</p>
+<p>To ignore errors for an entire directory rather than just one file, use the <code class="docutils literal notranslate"><span class="pre">*</span></code>
+wildcard. For example, to ignore all <code class="docutils literal notranslate"><span class="pre">TRAILING</span> <span class="pre">WHITESPACE</span></code> errors in the
+<code class="docutils literal notranslate"><span class="pre">example</span></code> directory, add the following line to the <code class="docutils literal notranslate"><span class="pre">lint.ignorelist</span></code> file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TRAILING</span> <span class="n">WHITESPACE</span><span class="p">:</span><span class="n">example</span><span class="o">/*</span>
 </pre></div>
 </div>
@@ -264,13 +261,12 @@ are suppressed, add the following line to the <code class="docutils literal notr
 use
 <a class="reference external" href="https://docs.python.org/2/library/fnmatch.html">shell-style wildcards</a> to
 express other filename patterns or directory-name patterns.</p>
-<p>Finally, to whitelist just one line in a file, use the following format:</p>
+<p>Finally, to ignore just one line in a file, use the following format:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERROR</span> <span class="n">TYPE</span><span class="p">:</span><span class="n">file</span><span class="o">/</span><span class="n">name</span><span class="o">/</span><span class="n">pattern</span><span class="p">:</span><span class="n">line_number</span>
 </pre></div>
 </div>
-<p>For example, to whitelist just line 128 of the file <code class="docutils literal notranslate"><span class="pre">example/file.html</span></code>
-such that any <code class="docutils literal notranslate"><span class="pre">TRAILING</span> <span class="pre">WHITESPACE</span></code> error the lint tool would report for
-that line is suppressed, add the following to the <code class="docutils literal notranslate"><span class="pre">lint.whitelist</span></code> file:</p>
+<p>For example, to ignore the <code class="docutils literal notranslate"><span class="pre">TRAILING</span> <span class="pre">WHITESPACE</span></code> error for just line 128 of the
+file <code class="docutils literal notranslate"><span class="pre">example/file.html</span></code>, add the following to the <code class="docutils literal notranslate"><span class="pre">lint.ignorelist</span></code> file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TRAILING</span> <span class="n">WHITESPACE</span><span class="p">:</span><span class="n">example</span><span class="o">/</span><span class="n">file</span><span class="o">.</span><span class="n">html</span><span class="p">:</span><span class="mi">128</span>
 </pre></div>
 </div>

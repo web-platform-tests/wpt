@@ -12,7 +12,7 @@ def main(request, response):
   inlineOrExternal = request.GET.first(b"inlineOrExternal", b"null")
   hasBlockingStylesheet = request.GET.first(b"hasBlockingStylesheet", b"true") == b"true"
   result = request.GET.first(b"result", b"success")
-  type = b"text/javascript" if request.GET.first(b"type", b"classic") == b"classic" else b"module"
+  type = u"text/javascript" if request.GET.first(b"type", b"classic") == b"classic" else u"module"
 
   response.headers.set(b"Content-Type", b"text/html; charset=utf-8")
   response.headers.set(b"Transfer-Encoding", b"chunked")
@@ -62,7 +62,7 @@ def main(request, response):
         } else {
           window.didExecute = "executed";
         }
-    """ % (isomorphic_decode(type))
+    """ % type
     if result == b"parse-error":
       body += u"1=2 parse error\n"
 
@@ -78,7 +78,7 @@ def main(request, response):
                 onload="scriptOnLoad()"
                 onerror="scriptOnError(event)"></script>
       </streaming-element>
-    """ % (isomorphic_decode(type), isomorphic_decode(result), random.random())
+    """ % (type, isomorphic_decode(result), random.random())
   elif inlineOrExternal == b"empty-src":
     time.sleep(1)
     body += u"""
@@ -87,7 +87,7 @@ def main(request, response):
                 onload="scriptOnLoad()"
                 onerror="scriptOnError(event)"></script>
       </streaming-element>
-    """ % (isomorphic_decode(type),)
+    """ % (type,)
 
   #        // if readyToEvaluate is false, the script is probably
   #       // wasn't blocked by stylesheets as expected.

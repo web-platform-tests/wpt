@@ -8,8 +8,8 @@ def main(request, response):
   #
   # https://github.com/web-platform-tests/wpt/pull/5227
   if status[0] in [b"204", b"205"]:
-      body = u""
+      body = b""
   else:
-      body = u"data: data\n\n"
+      body = b"data: data\n\n"
 
   return status, headers, body

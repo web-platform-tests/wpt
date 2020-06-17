@@ -9,13 +9,13 @@ def main(request, response):
     if request.cookies.first(cookie_name, b"") == status_code:
         status = 200
         response.delete_cookie(cookie_name)
-        body = u"data: data\n\n"
+        body = b"data: data\n\n"
     else:
         response.set_cookie(cookie_name, status_code);
         status = (int(status_code), b"TEST")
-        body = u"retry: 2\n"
+        body = b"retry: 2\n"
         if b"ok_first" in request.GET:
-            body += u"data: ok\n\n"
+            body += b"data: ok\n\n"
 
     return status, headers, body
 

@@ -1,7 +1,7 @@
-from wptserve.utils import isomorphic_decode
+from wptserve.utils import isomorphic_encode
 
 def main(request, response):
-    content = u"<meta charset=utf-8>\n<script>document.write(document.characterSet)</script>"
+    content = b"<meta charset=utf-8>\n<script>document.write(document.characterSet)</script>"
 
     # This uses the following rather than
     #   response.headers.set("Content-Type", request.GET.first("type"));
@@ -9,10 +9,10 @@ def main(request, response):
     # to work around https://github.com/web-platform-tests/wpt/issues/8372.
 
     response.add_required_headers = False
-    output = u"HTTP/1.1 200 OK\r\n"
-    output += u"Content-Length: " + str(len(content)) + u"\r\n"
-    output += u"Content-Type: " + isomorphic_decode(request.GET.first(b"type")) + u"\r\n"
-    output += u"\r\n"
+    output = b"HTTP/1.1 200 OK\r\n"
+    output += b"Content-Length: " + isomorphic_encode(str(len(content))) + b"\r\n"
+    output += b"Content-Type: " + request.GET.first(b"type") + b"\r\n"
+    output += b"\r\n"
     output += content
     response.writer.write(output)
     response.close_connection = True

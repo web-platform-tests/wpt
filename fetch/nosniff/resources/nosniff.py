@@ -1,5 +1,3 @@
-from wptserve.utils import isomorphic_decode
-
 def main(request, response):
     response.add_required_headers = False
     output =  b"HTTP/1.1 220 YOU HAVE NO POWER HERE\r\n"

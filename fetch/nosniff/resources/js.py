@@ -1,5 +1,3 @@
-from wptserve.utils import isomorphic_decode
-
 def main(request, response):
     outcome = request.GET.first(b"outcome", b"f")
     type = request.GET.first(b"type", b"Content-Type missing")

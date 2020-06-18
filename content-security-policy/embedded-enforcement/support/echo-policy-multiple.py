@@ -1,5 +1,3 @@
-from wptserve.utils import isomorphic_decode
-
 def main(request, response):
     headers = [(b"Content-Type", b"text/html")]
     if b"policy" in request.GET:
@@ -9,7 +7,7 @@ def main(request, response):
     if b"policy3" in request.GET:
         headers.append((b"Content-Security-Policy", request.GET[b"policy3"]))
     message = request.GET[b"id"]
-    return headers, u'''
+    return headers, b'''
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,4 +22,4 @@ def main(request, response):
     </script>
 </body>
 </html>
-''' % (isomorphic_decode(message))
+''' % (message)

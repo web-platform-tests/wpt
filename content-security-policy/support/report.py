@@ -15,7 +15,7 @@ def retrieve_from_stash(request, key, timeout, default_value):
   return default_value
 
 def main(request, response):
-  op = request.GET.first(b"op");
+  op = request.GET.first(b"op")
   key = request.GET.first(b"reportID")
   cookie_key = re.sub(b'^....', b'cccc', key)
   count_key = re.sub(b'^....', b'dddd', key)
@@ -27,7 +27,7 @@ def main(request, response):
   timeout = float(timeout)
 
   if op == b"retrieve_report":
-    return [(b"Content-Type", b"application/json")], retrieve_from_stash(request, key, timeout, json.dumps({u'error': u'No such report.' , u'guid' : isomorphic_decode(key)}))
+    return [(b"Content-Type", b"application/json")], retrieve_from_stash(request, key, timeout, json.dumps({u'error': u'No such report.', u'guid' : isomorphic_decode(key)}))
 
   if op == b"retrieve_cookies":
     return [(b"Content-Type", b"application/json")], u"{ \"reportCookies\" : " + str(retrieve_from_stash(request, cookie_key, timeout, u"\"None\"")) + u"}"
@@ -61,4 +61,4 @@ def main(request, response):
     request.server.stash.put(key=count_key, value=count)
 
   # return acknowledgement report
-  return [(b"Content-Type", b"text/plain")], u"Recorded report " + str(report)
+  return [(b"Content-Type", b"text/plain")], b"Recorded report " + report

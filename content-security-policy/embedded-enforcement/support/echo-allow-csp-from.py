@@ -1,12 +1,10 @@
-from wptserve.utils import isomorphic_decode
-
 import json
 def main(request, response):
     headers = [(b"Content-Type", b"text/html")]
     if b"allow_csp_from" in request.GET:
         headers.append((b"Allow-CSP-From", request.GET[b"allow_csp_from"]))
     message = request.GET[b"id"]
-    return headers, u'''
+    return headers, b'''
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,4 +34,4 @@ def main(request, response):
     </script>
 </body>
 </html>
-''' % (isomorphic_decode(message), isomorphic_decode(message))
+''' % (message, message)

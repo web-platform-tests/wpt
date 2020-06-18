@@ -1,7 +1,5 @@
 from datetime import datetime
 
-from wptserve.utils import isomorphic_decode
-
 def main(request, response):
     last_event_id = request.headers.get(b"Last-Event-Id", b"")
     ident = request.GET.first(b'ident', b"test")

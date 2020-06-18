@@ -1,6 +1,6 @@
 /**
-* AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
-**/
+ * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
+ **/
 
 function keysOf(obj) {
   return Object.keys(obj);
@@ -8,16 +8,16 @@ function keysOf(obj) {
 
 function numericKeysOf(obj) {
   return Object.keys(obj).map(n => Number(n));
-} // Textures
+}
 
+// Textures
 
-export const kTextureFormatInfo =
-/* prettier-ignore */
-{
+export const kTextureFormatInfo = {
   // Try to keep these manually-formatted in a readable grid.
   // (Note: this list should always match the one in the spec.)
+
   // 8-bit formats
-  'r8unorm': {
+  r8unorm: {
     renderable: true,
     color: true,
     depth: false,
@@ -26,9 +26,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 1,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'r8snorm': {
+  r8snorm: {
     renderable: false,
     color: true,
     depth: false,
@@ -37,9 +37,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 1,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'r8uint': {
+  r8uint: {
     renderable: true,
     color: true,
     depth: false,
@@ -48,9 +48,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 1,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'r8sint': {
+  r8sint: {
     renderable: true,
     color: true,
     depth: false,
@@ -59,10 +59,10 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 1,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
   // 16-bit formats
-  'r16uint': {
+  r16uint: {
     renderable: true,
     color: true,
     depth: false,
@@ -71,9 +71,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 2,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'r16sint': {
+  r16sint: {
     renderable: true,
     color: true,
     depth: false,
@@ -82,9 +82,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 2,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'r16float': {
+  r16float: {
     renderable: true,
     color: true,
     depth: false,
@@ -93,9 +93,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 2,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rg8unorm': {
+  rg8unorm: {
     renderable: true,
     color: true,
     depth: false,
@@ -104,9 +104,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 2,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rg8snorm': {
+  rg8snorm: {
     renderable: false,
     color: true,
     depth: false,
@@ -115,9 +115,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 2,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rg8uint': {
+  rg8uint: {
     renderable: true,
     color: true,
     depth: false,
@@ -126,9 +126,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 2,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rg8sint': {
+  rg8sint: {
     renderable: true,
     color: true,
     depth: false,
@@ -137,10 +137,10 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 2,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
   // 32-bit formats
-  'r32uint': {
+  r32uint: {
     renderable: true,
     color: true,
     depth: false,
@@ -149,9 +149,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'r32sint': {
+  r32sint: {
     renderable: true,
     color: true,
     depth: false,
@@ -160,9 +160,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'r32float': {
+  r32float: {
     renderable: true,
     color: true,
     depth: false,
@@ -171,9 +171,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rg16uint': {
+  rg16uint: {
     renderable: true,
     color: true,
     depth: false,
@@ -182,9 +182,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rg16sint': {
+  rg16sint: {
     renderable: true,
     color: true,
     depth: false,
@@ -193,9 +193,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rg16float': {
+  rg16float: {
     renderable: true,
     color: true,
     depth: false,
@@ -204,9 +204,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rgba8unorm': {
+  rgba8unorm: {
     renderable: true,
     color: true,
     depth: false,
@@ -215,7 +215,7 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
   'rgba8unorm-srgb': {
     renderable: true,
@@ -226,9 +226,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rgba8snorm': {
+  rgba8snorm: {
     renderable: false,
     color: true,
     depth: false,
@@ -237,9 +237,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rgba8uint': {
+  rgba8uint: {
     renderable: true,
     color: true,
     depth: false,
@@ -248,9 +248,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rgba8sint': {
+  rgba8sint: {
     renderable: true,
     color: true,
     depth: false,
@@ -259,9 +259,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'bgra8unorm': {
+  bgra8unorm: {
     renderable: true,
     color: true,
     depth: false,
@@ -270,7 +270,7 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
   'bgra8unorm-srgb': {
     renderable: true,
@@ -281,10 +281,10 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
   // Packed 32-bit formats
-  'rgb10a2unorm': {
+  rgb10a2unorm: {
     renderable: true,
     color: true,
     depth: false,
@@ -293,9 +293,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rg11b10float': {
+  rg11b10float: {
     renderable: false,
     color: true,
     depth: false,
@@ -304,10 +304,10 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
   // 64-bit formats
-  'rg32uint': {
+  rg32uint: {
     renderable: true,
     color: true,
     depth: false,
@@ -316,9 +316,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 8,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rg32sint': {
+  rg32sint: {
     renderable: true,
     color: true,
     depth: false,
@@ -327,9 +327,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 8,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rg32float': {
+  rg32float: {
     renderable: true,
     color: true,
     depth: false,
@@ -338,9 +338,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 8,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rgba16uint': {
+  rgba16uint: {
     renderable: true,
     color: true,
     depth: false,
@@ -349,9 +349,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 8,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rgba16sint': {
+  rgba16sint: {
     renderable: true,
     color: true,
     depth: false,
@@ -360,9 +360,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 8,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rgba16float': {
+  rgba16float: {
     renderable: true,
     color: true,
     depth: false,
@@ -371,10 +371,10 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 8,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
   // 128-bit formats
-  'rgba32uint': {
+  rgba32uint: {
     renderable: true,
     color: true,
     depth: false,
@@ -383,9 +383,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 16,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rgba32sint': {
+  rgba32sint: {
     renderable: true,
     color: true,
     depth: false,
@@ -394,9 +394,9 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 16,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'rgba32float': {
+  rgba32float: {
     renderable: true,
     color: true,
     depth: false,
@@ -405,10 +405,10 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 16,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
   // Depth/stencil formats
-  'depth32float': {
+  depth32float: {
     renderable: true,
     color: false,
     depth: true,
@@ -417,15 +417,15 @@ export const kTextureFormatInfo =
     copyable: true,
     bytesPerBlock: 4,
     blockWidth: 1,
-    blockHeight: 1
+    blockHeight: 1,
   },
-  'depth24plus': {
+  depth24plus: {
     renderable: true,
     color: false,
     depth: true,
     stencil: false,
     storage: false,
-    copyable: false
+    copyable: false,
   },
   'depth24plus-stencil8': {
     renderable: true,
@@ -433,88 +433,61 @@ export const kTextureFormatInfo =
     depth: true,
     stencil: true,
     storage: false,
-    copyable: false
-  }
+    copyable: false,
+  },
 };
+
 export const kTextureFormats = keysOf(kTextureFormatInfo);
-export const kTextureDimensionInfo =
-/* prettier-ignore */
-{
+
+export const kTextureDimensionInfo = {
   '1d': {},
   '2d': {},
-  '3d': {}
+  '3d': {},
 };
+
 export const kTextureDimensions = keysOf(kTextureDimensionInfo);
-export const kTextureAspectInfo =
-/* prettier-ignore */
-{
-  'all': {},
+
+export const kTextureAspectInfo = {
+  all: {},
   'depth-only': {},
-  'stencil-only': {}
+  'stencil-only': {},
 };
+
 export const kTextureAspects = keysOf(kTextureAspectInfo);
+
 export const kTextureUsageInfo = {
   [GPUTextureUsage.COPY_SRC]: {},
   [GPUTextureUsage.COPY_DST]: {},
   [GPUTextureUsage.SAMPLED]: {},
   [GPUTextureUsage.STORAGE]: {},
-  [GPUTextureUsage.OUTPUT_ATTACHMENT]: {}
+  [GPUTextureUsage.OUTPUT_ATTACHMENT]: {},
 };
-export const kTextureUsages = numericKeysOf(kTextureUsageInfo); // Typedefs for bindings
+
+export const kTextureUsages = numericKeysOf(kTextureUsageInfo);
+
+// Typedefs for bindings
 
 // Bindings
+
 export const kMaxBindingsPerBindGroup = 16;
-export const kPerStageBindingLimits =
-/* prettier-ignore */
-{
-  'uniformBuf': {
-    class: 'uniformBuf',
-    max: 12
-  },
-  'storageBuf': {
-    class: 'storageBuf',
-    max: 4
-  },
-  'sampler': {
-    class: 'sampler',
-    max: 16
-  },
-  'sampledTex': {
-    class: 'sampledTex',
-    max: 16
-  },
-  'storageTex': {
-    class: 'storageTex',
-    max: 4
-  }
+
+export const kPerStageBindingLimits = {
+  uniformBuf: { class: 'uniformBuf', max: 12 },
+  storageBuf: { class: 'storageBuf', max: 4 },
+  sampler: { class: 'sampler', max: 16 },
+  sampledTex: { class: 'sampledTex', max: 16 },
+  storageTex: { class: 'storageTex', max: 4 },
 };
-export const kPerPipelineBindingLimits =
-/* prettier-ignore */
-{
-  'uniformBuf': {
-    class: 'uniformBuf',
-    maxDynamic: 8
-  },
-  'storageBuf': {
-    class: 'storageBuf',
-    maxDynamic: 4
-  },
-  'sampler': {
-    class: 'sampler',
-    maxDynamic: 0
-  },
-  'sampledTex': {
-    class: 'sampledTex',
-    maxDynamic: 0
-  },
-  'storageTex': {
-    class: 'storageTex',
-    maxDynamic: 0
-  }
+
+export const kPerPipelineBindingLimits = {
+  uniformBuf: { class: 'uniformBuf', maxDynamic: 8 },
+  storageBuf: { class: 'storageBuf', maxDynamic: 4 },
+  sampler: { class: 'sampler', maxDynamic: 0 },
+  sampledTex: { class: 'sampledTex', maxDynamic: 0 },
+  storageTex: { class: 'storageTex', maxDynamic: 0 },
 };
-const kBindableResource =
-/* prettier-ignore */
-{
+
+const kBindableResource = {
   uniformBuf: {},
   storageBuf: {},
   plainSamp: {},
@@ -523,107 +496,113 @@ const kBindableResource =
   storageTex: {},
   errorBuf: {},
   errorSamp: {},
-  errorTex: {}
+  errorTex: {},
 };
+
 export const kBindableResources = keysOf(kBindableResource);
-const kBindingKind =
-/* prettier-ignore */
-{
+
+const kBindingKind = {
   uniformBuf: {
     resource: 'uniformBuf',
     perStageLimitClass: kPerStageBindingLimits.uniformBuf,
-    perPipelineLimitClass: kPerPipelineBindingLimits.uniformBuf
+    perPipelineLimitClass: kPerPipelineBindingLimits.uniformBuf,
   },
   storageBuf: {
     resource: 'storageBuf',
     perStageLimitClass: kPerStageBindingLimits.storageBuf,
-    perPipelineLimitClass: kPerPipelineBindingLimits.storageBuf
+    perPipelineLimitClass: kPerPipelineBindingLimits.storageBuf,
   },
   plainSamp: {
     resource: 'plainSamp',
     perStageLimitClass: kPerStageBindingLimits.sampler,
-    perPipelineLimitClass: kPerPipelineBindingLimits.sampler
+    perPipelineLimitClass: kPerPipelineBindingLimits.sampler,
   },
   compareSamp: {
     resource: 'compareSamp',
     perStageLimitClass: kPerStageBindingLimits.sampler,
-    perPipelineLimitClass: kPerPipelineBindingLimits.sampler
+    perPipelineLimitClass: kPerPipelineBindingLimits.sampler,
   },
   sampledTex: {
     resource: 'sampledTex',
     perStageLimitClass: kPerStageBindingLimits.sampledTex,
-    perPipelineLimitClass: kPerPipelineBindingLimits.sampledTex
+    perPipelineLimitClass: kPerPipelineBindingLimits.sampledTex,
   },
   storageTex: {
     resource: 'storageTex',
     perStageLimitClass: kPerStageBindingLimits.storageTex,
-    perPipelineLimitClass: kPerPipelineBindingLimits.storageTex
-  }
-}; // Binding type info
+    perPipelineLimitClass: kPerPipelineBindingLimits.storageTex,
+  },
+};
+
+// Binding type info
 
 const kValidStagesAll = {
-  validStages: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE
+  validStages: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE,
 };
-const kValidStagesStorageWrite = {
-  validStages: GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE
-};
-export const kBufferBindingTypeInfo =
-/* prettier-ignore */
-{
+
+const kValidStagesStorageWrite = { validStages: GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE };
+
+export const kBufferBindingTypeInfo = {
   'uniform-buffer': {
     usage: GPUBufferUsage.UNIFORM,
     ...kBindingKind.uniformBuf,
-    ...kValidStagesAll
+    ...kValidStagesAll,
   },
   'storage-buffer': {
     usage: GPUBufferUsage.STORAGE,
     ...kBindingKind.storageBuf,
-    ...kValidStagesStorageWrite
+    ...kValidStagesStorageWrite,
   },
   'readonly-storage-buffer': {
     usage: GPUBufferUsage.STORAGE,
     ...kBindingKind.storageBuf,
-    ...kValidStagesAll
-  }
-};
-export const kBufferBindingTypes = keysOf(kBufferBindingTypeInfo);
-export const kSamplerBindingTypeInfo =
-/* prettier-ignore */
-{
-  'sampler': { ...kBindingKind.plainSamp,
-    ...kValidStagesAll
+    ...kValidStagesAll,
   },
-  'comparison-sampler': { ...kBindingKind.compareSamp,
-    ...kValidStagesAll
-  }
 };
+
+export const kBufferBindingTypes = keysOf(kBufferBindingTypeInfo);
+
+export const kSamplerBindingTypeInfo = {
+  sampler: { ...kBindingKind.plainSamp, ...kValidStagesAll },
+  'comparison-sampler': { ...kBindingKind.compareSamp, ...kValidStagesAll },
+};
+
 export const kSamplerBindingTypes = keysOf(kSamplerBindingTypeInfo);
-export const kTextureBindingTypeInfo =
-/* prettier-ignore */
-{
+
+export const kTextureBindingTypeInfo = {
   'sampled-texture': {
     usage: GPUTextureUsage.SAMPLED,
     ...kBindingKind.sampledTex,
-    ...kValidStagesAll
+    ...kValidStagesAll,
   },
   'writeonly-storage-texture': {
     usage: GPUTextureUsage.STORAGE,
     ...kBindingKind.storageTex,
-    ...kValidStagesStorageWrite
+    ...kValidStagesStorageWrite,
   },
   'readonly-storage-texture': {
     usage: GPUTextureUsage.STORAGE,
     ...kBindingKind.storageTex,
-    ...kValidStagesAll
-  }
+    ...kValidStagesAll,
+  },
 };
-export const kTextureBindingTypes = keysOf(kTextureBindingTypeInfo); // All binding types (merged from above)
 
-export const kBindingTypeInfo = { ...kBufferBindingTypeInfo,
+export const kTextureBindingTypes = keysOf(kTextureBindingTypeInfo);
+
+// All binding types (merged from above)
+
+export const kBindingTypeInfo = {
+  ...kBufferBindingTypeInfo,
   ...kSamplerBindingTypeInfo,
-  ...kTextureBindingTypeInfo
+  ...kTextureBindingTypeInfo,
 };
+
 export const kBindingTypes = keysOf(kBindingTypeInfo);
-export const kShaderStages = [GPUShaderStage.VERTEX, GPUShaderStage.FRAGMENT, GPUShaderStage.COMPUTE];
+
+export const kShaderStages = [
+  GPUShaderStage.VERTEX,
+  GPUShaderStage.FRAGMENT,
+  GPUShaderStage.COMPUTE,
+];
+
 export const kShaderStageCombinations = [0, 1, 2, 3, 4, 5, 6, 7];
-//# sourceMappingURL=capability_info.js.map

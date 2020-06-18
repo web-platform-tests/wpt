@@ -1,11 +1,9 @@
 /**
-* AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
-**/
+ * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
+ **/ import { resolveOnTimeout } from './util.js';
 
-import { resolveOnTimeout } from './util.js';
 export async function attemptGarbageCollection() {
   const w = self;
-
   if (w.GCController) {
     w.GCController.collect();
     return;
@@ -17,7 +15,9 @@ export async function attemptGarbageCollection() {
   }
 
   try {
-    w.QueryInterface(Components.interfaces.nsIInterfaceRequestor).getInterface(Components.interfaces.nsIDOMWindowUtils).garbageCollect();
+    w.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+      .getInterface(Components.interfaces.nsIDOMWindowUtils)
+      .garbageCollect();
     return;
   } catch (e) {}
 
@@ -32,22 +32,16 @@ export async function attemptGarbageCollection() {
   }
 
   let i;
-
   function gcRec(n) {
     if (n < 1) return;
-    let temp = {
-      i: 'ab' + i + i / 100000
-    };
+    let temp = { i: 'ab' + i + i / 100000 };
     temp = temp + 'foo';
     temp; // dummy use of unused variable
-
     gcRec(n - 1);
   }
-
   for (i = 0; i < 1000; i++) {
     gcRec(10);
   }
 
   return resolveOnTimeout(35); // Let the event loop run a few frames in case it helps.
 }
-//# sourceMappingURL=collect_garbage.js.map

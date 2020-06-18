@@ -1,30 +1,37 @@
 /**
-* AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
-**/
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+ * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
+ **/ function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    });
+  } else {
+    obj[key] = value;
+  }
+  return obj;
+}
 import { assert } from './util/util.js';
-export class SkipTestCase extends Error {} // A Fixture is a class used to instantiate each test case at run time.
+
+export class SkipTestCase extends Error {}
+
+// A Fixture is a class used to instantiate each test case at run time.
 // A new instance of the Fixture is created for every single test case
 // (i.e. every time the test function is run).
-
 export class Fixture {
   constructor(rec, params) {
-    _defineProperty(this, "params", void 0);
-
-    _defineProperty(this, "rec", void 0);
-
-    _defineProperty(this, "eventualExpectations", []);
-
-    _defineProperty(this, "numOutstandingAsyncExpectations", 0);
-
+    _defineProperty(this, 'params', void 0);
+    _defineProperty(this, 'rec', void 0);
+    _defineProperty(this, 'eventualExpectations', []);
+    _defineProperty(this, 'numOutstandingAsyncExpectations', 0);
     this.rec = rec;
     this.params = params;
-  } // This has to be a member function instead of an async `createFixture` function, because
+  }
+
+  // This has to be a member function instead of an async `createFixture` function, because
   // we need to be able to ergonomically override it in subclasses.
-
-
   async init() {}
 
   debug(msg) {
@@ -36,7 +43,11 @@ export class Fixture {
   }
 
   async finalize() {
-    assert(this.numOutstandingAsyncExpectations === 0, 'there were outstanding asynchronous expectations (e.g. shouldReject) at the end of the test');
+    assert(
+      this.numOutstandingAsyncExpectations === 0,
+      'there were outstanding asynchronous expectations (e.g. shouldReject) at the end of the test'
+    );
+
     await Promise.all(this.eventualExpectations);
   }
 
@@ -67,9 +78,7 @@ export class Fixture {
       this.rec.expectationFailed(niceStack);
       return;
     }
-
     const actualName = ex.name;
-
     if (actualName !== expectedName) {
       niceStack.message = `THREW ${actualName}, instead of ${expectedName}: ${ex}`;
       this.rec.expectationFailed(niceStack);
@@ -82,7 +91,6 @@ export class Fixture {
   shouldReject(expectedName, p, msg) {
     this.eventualAsyncExpectation(async niceStack => {
       const m = msg ? ': ' + msg : '';
-
       try {
         await p;
         niceStack.message = 'DID NOT REJECT' + m;
@@ -96,7 +104,6 @@ export class Fixture {
 
   shouldThrow(expectedName, fn, msg) {
     const m = msg ? ': ' + msg : '';
-
     try {
       fn();
       this.rec.expectationFailed(new Error('DID NOT THROW' + m));
@@ -112,9 +119,6 @@ export class Fixture {
     } else {
       this.rec.expectationFailed(new Error(msg));
     }
-
     return cond;
   }
-
 }
-//# sourceMappingURL=fixture.js.map

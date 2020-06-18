@@ -1,9 +1,10 @@
 /**
-* AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
-**/
+ * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
+ **/ import { parseQuery } from './query/parseQuery.js';
 
-import { parseQuery } from './query/parseQuery.js';
-import { loadTreeForQuery } from './tree.js'; // A listing file, e.g. either of:
+import { loadTreeForQuery } from './tree.js';
+
+// A listing file, e.g. either of:
 // - `src/webgpu/listing.ts` (which is dynamically computed, has a Promise<TestSuiteListing>)
 // - `out/webgpu/listing.js` (which is pre-baked, has a TestSuiteListing)
 
@@ -14,15 +15,19 @@ export class TestFileLoader {
   }
 
   async loadTree(query, subqueriesToExpand = []) {
-    return loadTreeForQuery(this, query, subqueriesToExpand.map(q => parseQuery(q)));
+    return loadTreeForQuery(
+      this,
+      query,
+      subqueriesToExpand.map(q => parseQuery(q))
+    );
   }
 
   async loadCases(query) {
     const tree = await this.loadTree(query);
     return tree.iterateLeaves();
   }
-
 }
+
 export class DefaultTestFileLoader extends TestFileLoader {
   async listing(suite) {
     return (await import(`../../${suite}/listing.js`)).listing;
@@ -31,6 +36,4 @@ export class DefaultTestFileLoader extends TestFileLoader {
   import(path) {
     return import(`../../${path}`);
   }
-
 }
-//# sourceMappingURL=file_loader.js.map

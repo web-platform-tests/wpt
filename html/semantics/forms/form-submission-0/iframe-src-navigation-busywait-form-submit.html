@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Joey Arhar" href="mailto:jarhar@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<iframe id=frameid name=framename src="resources/src.html"></iframe>
+<form id=formid target=framename action="resources/form.html"></form>
+
+<script>
+  function busyWait(milliseconds) {
+    const endTime = new Date().getTime() + milliseconds;
+    let currentTime = new Date().getTime();
+    while (currentTime < endTime)
+      currentTime = new Date().getTime();
+  }
+
+  async_test(t => {
+    frameid.onload = t.step_func_done(() => {
+      assert_equals(
+        frameid.contentDocument.location.pathname,
+        '/html/semantics/forms/form-submission-0/resources/form.html');
+    });
+    busyWait(500);
+    formid.submit();
+  });
+</script>

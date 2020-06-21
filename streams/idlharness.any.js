@@ -59,7 +59,7 @@ idl_test(
     idl_array.add_objects({
       ReadableStream: ["new ReadableStream()"],
       ReadableStreamDefaultReader: ["(new ReadableStream()).getReader()"],
-      ReadableStreamBYOBReader: ["(new ReadableStream({ type: 'bytes' })).getReader('byob')"],
+      ReadableStreamBYOBReader: ["(new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' })"],
       ReadableStreamDefaultController: ["self.readableStreamDefaultController"],
       ReadableByteStreamController: ["self.readableByteStreamController"],
       ReadableStreamBYOBRequest: ["self.readableStreamByobRequest"],

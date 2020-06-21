@@ -2629,6 +2629,35 @@ IdlInterface.prototype.test_member_iterable = function(member)
     }.bind(this), this.name + " interface: iterable<" + member.idlType.map(function(t) { return t.idlType; }).join(", ") + ">");
 };
 
+IdlInterface.prototype.test_member_async_iterable = function(member)
+{
+    subsetTestByKey(this.name, test, function()
+    {
+        var isPairIterator = member.idlType.length === 2;
+        var proto = this.get_interface_object().prototype;
+        var iteratorDesc = Object.getOwnPropertyDescriptor(proto, Symbol.asyncIterator);
+
+        assert_true(iteratorDesc.writable, "@@asyncIterator property should be writable");
+        assert_true(iteratorDesc.configurable, "@@asyncIterator property should be configurable");
+        assert_false(iteratorDesc.enumerable, "@@asyncIterator property should not be enumerable");
+        assert_equals(typeof iteratorDesc.value, "function", "@@asyncIterator property should be a function");
+        assert_equals(iteratorDesc.value.length, 0, "@@asyncIterator function object length should be 0");
+        assert_equals(iteratorDesc.value.name, isPairIterator ? "entries" : "values", "@@asyncIterator function object should have the right name");
+
+        if (isPairIterator) {
+            assert_equals(proto["entries"], proto[Symbol.asyncIterator], "entries method should be the same as @@asyncIterator method");
+            ["entries", "keys", "values"].forEach(property => {
+                var desc = Object.getOwnPropertyDescriptor(proto, property);
+                assert_equals(typeof desc.value, "function", property + " property should be a function");
+                assert_equals(desc.value.length, 0, property + " function object length should be 0");
+                assert_equals(desc.value.name, property, property + " function object should have the right name");
+            });
+        } else {
+            assert_equals(proto["values"], proto[Symbol.asyncIterator], "values method should be the same as @@asyncIterator method");
+        }
+    }.bind(this), this.name + " interface: async iterable<" + member.idlType.map(function(t) { return t.idlType; }).join(", ") + ">");
+};
+
 IdlInterface.prototype.test_member_stringifier = function(member)
 {
     subsetTestByKey(this.name, test, function()
@@ -2745,7 +2774,11 @@ IdlInterface.prototype.test_members = function()
             break;
 
         case "iterable":
-            this.test_member_iterable(member);
+            if (member.async) {
+              this.test_member_async_iterable(member);
+            } else {
+              this.test_member_iterable(member);
+            }
             break;
         default:
             // TODO: check more member types.

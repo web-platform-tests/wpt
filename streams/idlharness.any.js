@@ -29,8 +29,9 @@ idl_test(
 
     try {
       const stream = new ReadableStream({
-        pull() {
-          self.readableStreamByobRequest = controller.byobRequest;
+        pull(c) {
+          self.readableStreamByobRequest = c.byobRequest;
+          c.enqueue(new Uint8Array(0));
         },
         type: 'bytes'
       });

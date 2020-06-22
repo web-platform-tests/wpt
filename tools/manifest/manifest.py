@@ -2,6 +2,7 @@ import io
 import itertools
 import json
 import os
+from atomicwrites import atomic_write
 from copy import deepcopy
 from multiprocessing import Pool, cpu_count
 from six import (
@@ -385,6 +386,8 @@ def load_and_update(tests_root,  # type: bytes
                              allow_cached=allow_cached)
         except ManifestVersionMismatch:
             logger.info("Manifest version changed, rebuilding")
+        except ManifestError:
+            logger.warning("Failed to load manifest, rebuilding")
 
         if manifest is not None and manifest.url_base != url_base:
             logger.info("Manifest url base did not match, rebuilding")
@@ -411,7 +414,7 @@ def write(manifest, manifest_path):
     dir_name = os.path.dirname(manifest_path)
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
-    with open(manifest_path, "w") as f:
+    with atomic_write(manifest_path, overwrite=True) as f:
         # Use ',' instead of the default ', ' separator to prevent trailing
         # spaces: https://docs.python.org/2/library/json.html#json.dump
         json.dump(manifest.to_json(caller_owns_obj=True), f,

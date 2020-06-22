@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-animations-2/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
+<style>
+
+  #container > * {
+    font-size: 1000px;
+    width: 1000px;
+  }
+
+  @keyframes anim1 {
+    from { font-size: 10px; width: 10em; }
+    to { font-size: 20px; width: 20em; }
+  }
+  #element1 {
+    animation: anim1 10s -5s linear paused;
+  }
+
+  @keyframes anim2 {
+    from { --x: 10px; width: calc(10 * var(--x)); }
+    to { --x: 20px; width: calc(20 * var(--x)); }
+  }
+  #element2 {
+    animation: anim2 10s -5s linear paused;
+  }
+
+  @property --y {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 2000px;
+  }
+  @keyframes anim3 {
+    from { --y: 10px; width: calc(10 * var(--y)); }
+    to { --y: 20px; width: calc(20 * var(--y)); }
+  }
+  #element3 {
+    animation: anim3 10s -5s linear paused;
+  }
+
+  @keyframes anim4 {
+    from { font-size: 10px; width: 10em; }
+    to { font-size: 20px; width: 20em; }
+  }
+  #element4 {
+    font-size: 30px !important;
+    animation: anim4 10s -5s linear paused;
+  }
+
+  @keyframes anim5 {
+    from { width: 10em; }
+    to { width: 20em; }
+  }
+  #element5 {
+    font-size: 10px;
+    animation: anim5 10s -5s linear paused;
+    transition: font-size 3600s steps(2, start);
+  }
+  #element5.big {
+    font-size: 30px;
+  }
+
+</style>
+
+<div id=container>
+  <div id=element1></div>
+  <div id=element2></div>
+  <div id=element3></div>
+  <div id=element4></div>
+  <div id=element5></div>
+</div>
+
+<script>
+
+const isCSSAnimation = a => a.constructor.name == 'CSSAnimation';
+const getKeyframes = elem => elem.getAnimations().filter(isCSSAnimation)[0].effect.getKeyframes();
+const merge = (k1, k2) => {
+  let r = {};
+  Object.keys(k1).forEach(k => r[k] = k1[k]);
+  Object.keys(k2).forEach(k => r[k] = k2[k]);
+  return r;
+};
+// Adds 'easing', 'composite' etc, which we're not interested in this test.
+function inflate(frames) {
+  let r = [];
+  let i = 0;
+  for (let frame of frames) {
+    const base = { offset: i, computedOffset: i, easing: 'linear', composite: 'auto' };
+    r.push(merge(base, frame));
+    i++;
+  }
+  return r;
+}
+
+function assert_partial_frame_lists_equal(actual, expected) {
+  assert_frame_lists_equal(actual, inflate(expected));
+}
+
+test(() => {
+  assert_equals(getComputedStyle(element1).fontSize, '15px', 'Sanity check');
+  assert_equals(getComputedStyle(element1).width, '225px', 'Sanity check');
+
+  assert_partial_frame_lists_equal(getKeyframes(element1), [
+    {fontSize:'10px', width:'150px'},
+    {fontSize:'20px', width:'300px'},
+  ]);
+}, 'Font-relative unit with simultaneous font-size animation');
+
+test(() => {
+  assert_equals(getComputedStyle(element2).getPropertyValue('--x'), ' 20px', 'Sanity check');
+  assert_equals(getComputedStyle(element2).width, '300px', 'Sanity check');
+
+  assert_partial_frame_lists_equal(getKeyframes(element2), [
+    {['--x']:' 10px', width:'200px'},
+    {['--x']:' 20px', width:'400px'},
+  ]);
+}, 'Variable reference to unregistered custom property');
+
+test(() => {
+  assert_equals(getComputedStyle(element3).getPropertyValue('--y'), '15px', 'Sanity check');
+  assert_equals(getComputedStyle(element3).width, '225px', 'Sanity check');
+
+  assert_partial_frame_lists_equal(getKeyframes(element3), [
+    {['--y']:'10px', width:'150px'},
+    {['--y']:'20px', width:'300px'},
+  ]);
+}, 'Variable reference to registered custom property');
+
+test(() => {
+  assert_equals(getComputedStyle(element4).fontSize, '30px', 'Sanity check');
+  assert_equals(getComputedStyle(element4).width, '450px', 'Sanity check');
+
+  // Note: Not 100% sure whether 'fontSize' should get the value from the
+  // !important decl here. I think so.
+  assert_partial_frame_lists_equal(getKeyframes(element4), [
+    {fontSize:'30px', width:'300px'},
+    {fontSize:'30px', width:'600px'},
+  ]);
+}, 'Font-relative units with !important font-size');
+
+test(() => {
+  getComputedStyle(element5).fontSize;
+  // Start transition:
+  element5.classList.toggle('big');
+  assert_equals(getComputedStyle(element5).fontSize, '20px', 'Sanity check');
+  assert_equals(getComputedStyle(element5).width, '300px', 'Sanity check');
+  assert_partial_frame_lists_equal(getKeyframes(element5), [
+    {width:'200px'},
+    {width:'400px'},
+  ]);
+}, 'Font-relative units with font-size transition');
+
+</script>

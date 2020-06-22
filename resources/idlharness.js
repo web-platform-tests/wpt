@@ -2777,9 +2777,9 @@ IdlInterface.prototype.test_members = function()
 
         case "iterable":
             if (member.async) {
-              this.test_member_async_iterable(member);
+                this.test_member_async_iterable(member);
             } else {
-              this.test_member_iterable(member);
+                this.test_member_iterable(member);
             }
             break;
         default:

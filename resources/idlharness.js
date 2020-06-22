@@ -2654,6 +2654,8 @@ IdlInterface.prototype.test_member_async_iterable = function(member)
             });
         } else {
             assert_equals(proto["values"], proto[Symbol.asyncIterator], "values method should be the same as @@asyncIterator method");
+            assert_false("entries" in proto, "should not have an entries method");
+            assert_false("keys" in proto, "should not have a keys method");
         }
     }.bind(this), this.name + " interface: async iterable<" + member.idlType.map(function(t) { return t.idlType; }).join(", ") + ">");
 };

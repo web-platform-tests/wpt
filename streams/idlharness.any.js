@@ -28,17 +28,20 @@ idl_test(
     } catch {}
 
     try {
+      let resolvePullCalledPromise;
+      const pullCalledPromise = new Promise(resolve => {
+        resolvePullCalledPromise = resolve;
+      });
       const stream = new ReadableStream({
         pull(c) {
           self.readableStreamByobRequest = c.byobRequest;
-          c.enqueue(new Uint8Array(0));
+          resolvePullCalledPromise();
         },
         type: 'bytes'
       });
-
       const reader = stream.getReader({ mode: 'byob' });
-
-      await reader.read(new Uint8Array(1));
+      reader.read(new Uint8Array(1));
+      await pullCalledPromise;
     } catch {}
 
     try {

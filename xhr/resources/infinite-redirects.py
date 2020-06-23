@@ -21,4 +21,4 @@ def main(request, response):
     headers = [(b"Cache-Control", b"no-cache"),
                (b"Pragma", b"no-cache"),
                (b"Location", isomorphic_encode(new_location))]
-    return 301, headers, b"Hello guest. You have been redirected to " + isomorphic_encode(new_location)
+    return 301, headers, u"Hello guest. You have been redirected to " + new_location

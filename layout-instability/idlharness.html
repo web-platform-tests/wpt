@@ -27,6 +27,8 @@ idl_test(
       return;
     }
 
+    // TODO: Ensure that a layout has happened.
+
     self.layoutShift = await new Promise((resolve, reject) => {
       const observer = new PerformanceObserver(entryList => {
         resolve(entryList.getEntries()[0]);

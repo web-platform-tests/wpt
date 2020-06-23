@@ -1,4 +1,4 @@
-from six import binary_type, integer_types, text_type
+from six import integer_types
 
 from six.moves.urllib.parse import parse_qs
 
@@ -25,10 +25,10 @@ def makeCookieHeader(name, value, otherAttrs):
     def makeAV(a, v):
         if None == v or b"" == v:
             return a
-        if isinstance(v, (binary_type, text_type)):
+        if isinstance(v, integer_types): 
+            return b"%s=%i" % (a, v)
+        else:
             return b"%s=%s" % (a, v)
-        elif isinstance(v, integer_types):
-            return b"%s=%d" % (a, v)
 
     # ensure cookie name is always first
     attrs = [b"%s=%s" % (name, value)]

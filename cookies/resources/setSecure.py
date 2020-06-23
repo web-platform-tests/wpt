@@ -1,12 +1,14 @@
 from helpers import makeCookieHeader, readParameter, setNoCacheAndCORSHeaders
 
+from wptserve.utils import isomorphic_encode
+
 def main(request, response):
     """Respond to `/cookie/set/secure?{value}` by setting two cookies:
     alone_secure={value};secure;path=/`
     alone_insecure={value};path=/"""
     headers = setNoCacheAndCORSHeaders(request, response)
-    value = request.url_parts.query
+    value = isomorphic_encode(request.url_parts.query)
 
-    headers.append(makeCookieHeader(u"alone_secure", value, {u"secure": u"",u"path": u"/"}))
-    headers.append(makeCookieHeader(u"alone_insecure", value, {u"path": u"/"}))
-    return headers, u'{"success": true}'
+    headers.append(makeCookieHeader(b"alone_secure", value, {b"secure": b"", b"path": b"/"}))
+    headers.append(makeCookieHeader(b"alone_insecure", value, {b"path": b"/"}))
+    return headers, b'{"success": true}'

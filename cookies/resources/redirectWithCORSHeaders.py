@@ -19,4 +19,4 @@ def main(request, response):
 
     headers.append((b"Location", location))
 
-    return status, headers, u""
+    return status, headers, b""

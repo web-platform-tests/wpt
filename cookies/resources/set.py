@@ -12,4 +12,4 @@ def main(request, response):
     cookie = unquote(request.url_parts.query)
     headers.append((b"Set-Cookie", isomorphic_encode(cookie)))
 
-    return headers, u'{"success": true}'
+    return headers, b'{"success": true}'

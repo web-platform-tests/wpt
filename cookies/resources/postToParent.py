@@ -35,5 +35,5 @@ def main(request, response):
   });
 </script>
 """
-    new_cookies = { isomorphic_decode(key): isomorphic_decode(val) for key, val in cookies.items() }
-    return headers, tmpl % json.dumps(new_cookies)
+    decoded_cookies = {isomorphic_decode(key): isomorphic_decode(val) for key, val in cookies.items()}
+    return headers, tmpl % json.dumps(decoded_cookies)

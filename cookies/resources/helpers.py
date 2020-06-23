@@ -1,3 +1,5 @@
+from six import binary_type, integer_types, text_type
+
 from six.moves.urllib.parse import parse_qs
 
 from wptserve.utils import isomorphic_encode
@@ -21,20 +23,23 @@ def setNoCacheAndCORSHeaders(request, response):
 def makeCookieHeader(name, value, otherAttrs):
     """Make a Set-Cookie header for a cookie with the name, value and attributes provided."""
     def makeAV(a, v):
-        if None == v or u"" == v:
+        if None == v or b"" == v:
             return a
-        return "%s=%s" % (a, v)
+        if isinstance(v, (binary_type, text_type)):
+            return b"%s=%s" % (a, v)
+        elif isinstance(v, integer_types):
+            return b"%s=%d" % (a, v)
 
     # ensure cookie name is always first
-    attrs = [u"%s=%s" % (name, value)]
-    attrs.extend(makeAV(a, v) for (a,v) in otherAttrs.items())
-    return (b"Set-Cookie", isomorphic_encode(u"; ".join((attrs))))
+    attrs = [b"%s=%s" % (name, value)]
+    attrs.extend(makeAV(a, v) for (a, v) in otherAttrs.items())
+    return (b"Set-Cookie", b"; ".join((attrs)))
 
 def makeDropCookie(name, secure):
-    attrs = {u"MaxAge": 0, u"path": u"/"}
+    attrs = {b"MaxAge": 0, b"path": b"/"}
     if secure:
-        attrs[u"secure"] = u""
-    return makeCookieHeader(name, u"", attrs)
+        attrs[b"secure"] = b""
+    return makeCookieHeader(name, b"", attrs)
 
 def readParameter(request, paramName, requireValue):
     """Read a parameter from the request. Raise if requireValue is set and the
@@ -43,7 +48,7 @@ def readParameter(request, paramName, requireValue):
     param = params[paramName][0].strip()
     if len(param) == 0:
         raise Exception(u"Empty or missing name parameter.")
-    return param
+    return isomorphic_encode(param)
 
 def readCookies(request):
     """Read the cookies from the client present in the request."""
@@ -54,4 +59,3 @@ def readCookies(request):
             # need to modify the test to take cookie names and value lists?
             cookies[key] = cookie.value
     return cookies
-

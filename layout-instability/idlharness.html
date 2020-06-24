@@ -28,6 +28,14 @@ idl_test(
     }
 
     // TODO: Ensure that a layout has happened.
+    // Theory - need a layout to happen.
+    await new Promise((resolve, reject) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          resolve();
+        });
+      });
+    });
 
     self.layoutShift = await new Promise((resolve, reject) => {
       const observer = new PerformanceObserver(entryList => {

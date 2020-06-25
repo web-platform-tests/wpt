@@ -6,6 +6,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/WebIDLParser.js"></script>
 <script src="/resources/idlharness.js"></script>
+<script src="resources/util.js"></script>
 <script>
 'use strict';
 
@@ -29,13 +30,7 @@ idl_test(
 
     // Make sure that the image has initially been laid out, so that the movement
     // later is counted as a layout shift.
-    await new Promise((resolve, reject) => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          resolve();
-        });
-      });
-    });
+    await waitForAnimationFrames(2);
 
     self.layoutShift = await new Promise((resolve, reject) => {
       const observer = new PerformanceObserver(entryList => {

@@ -1,11 +1,13 @@
 import time
 
+from six import PY3
+
 def main(request, response):
-    headers = [('Content-Type', 'application/javascript'),
-               ('Cache-Control', 'max-age=0')]
+    headers = [(b'Content-Type', b'application/javascript'),
+               (b'Cache-Control', b'max-age=0')]
     # Add timestamp to the worker so update() finds a new worker every time.
-    body = '''
+    body = u'''
 // %s
 importScripts('update-during-installation-worker.js');
-    '''.strip() % time.clock()
+    '''.strip() % time.perf_counter() if PY3 else time.clock()
     return headers, body

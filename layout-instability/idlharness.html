@@ -27,8 +27,8 @@ idl_test(
       return;
     }
 
-    // TODO: Ensure that a layout has happened.
-    // Theory - need a layout to happen.
+    // Make sure that the image has initially been laid out, so that the movement
+    // later is counted as a layout shift.
     await new Promise((resolve, reject) => {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {

@@ -11,17 +11,17 @@ def get_reporting_group(host, endpoint):
 
 def main(request, response):
     coop = request.GET.first("coop")
-    coopReportOnly = request.GET.first("coop-report-only") if "coop-report-only" in request.GET else ""
+    coopReportOnly = request.GET.first("coop-report-only", None)
     coep = request.GET.first("coep")
-    coepReportOnly = request.GET.first("coep-report-only") if "coep-report-only" in request.GET else ""
+    coepReportOnly = request.GET.first("coep-report-only", None)
     redirect = request.GET.first("redirect", None)
     if coop != "":
         response.headers.set("Cross-Origin-Opener-Policy", coop)
-    if coop != "":
+    if coopReportOnly is not None:
         response.headers.set("Cross-Origin-Opener-Policy-Report-Only", coopReportOnly)
     if coep != "":
         response.headers.set("Cross-Origin-Embedder-Policy", coep)
-    if coep != "":
+    if coepReportOnly is not None:
          response.headers.set("Cross-Origin-Embedder-Policy-Report-Only", coepReportOnly)
     if 'cache' in request.GET:
         response.headers.set('Cache-Control', 'max-age=3600')

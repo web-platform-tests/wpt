@@ -25,7 +25,7 @@ def makeCookieHeader(name, value, otherAttrs):
     def makeAV(a, v):
         if None == v or b"" == v:
             return a
-        if isinstance(v, integer_types): 
+        if isinstance(v, integer_types):
             return b"%s=%i" % (a, v)
         else:
             return b"%s=%s" % (a, v)

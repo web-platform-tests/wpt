@@ -1,6 +1,9 @@
 import time
 
-body = '''
+from six import PY3
+
+
+body = u'''
 onactivate = (e) => e.waitUntil(clients.claim());
 var resolve_wait_until;
 var wait_until = new Promise(resolve => {
@@ -14,12 +17,12 @@ onmessage = (e) => {
   };'''
 
 def main(request, response):
-    headers = [('Cache-Control', 'no-cache, must-revalidate'),
-               ('Pragma', 'no-cache'),
-               ('Content-Type', 'application/javascript')]
+    headers = [(b'Cache-Control', b'no-cache, must-revalidate'),
+               (b'Pragma', b'no-cache'),
+               (b'Content-Type', b'application/javascript')]
 
-    skipWaiting = ''
-    if 'skip-waiting' in request.GET:
-      skipWaiting = 'skipWaiting();'
+    skipWaiting = u''
+    if b'skip-waiting' in request.GET:
+        skipWaiting = u'skipWaiting();'
 
-    return headers, '/* %s %s */ %s %s' % (time.time(), time.clock(), skipWaiting, body)
+    return headers, u'/* %s %s */ %s %s' % (time.time(), time.perf_counter() if PY3 else time.clock(), skipWaiting, body)

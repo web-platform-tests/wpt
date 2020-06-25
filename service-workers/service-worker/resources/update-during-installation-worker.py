@@ -9,5 +9,5 @@ def main(request, response):
     body = u'''
 // %s
 importScripts('update-during-installation-worker.js');
-    '''.strip() % time.perf_counter() if PY3 else time.clock()
+    '''.strip() % (time.perf_counter() if PY3 else time.clock())
     return headers, body

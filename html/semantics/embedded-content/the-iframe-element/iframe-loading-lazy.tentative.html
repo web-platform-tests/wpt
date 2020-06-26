@@ -2,52 +2,105 @@
 <head>
   <title>Iframes with loading='lazy' load when in the viewport</title>
   <link rel="author" title="Scott Little" href="mailto:sclittle@chromium.org">
-  <link rel="help" href="https://github.com/scott-little/lazyload">
+  <link rel="author" title="Dom Farolino" href="mailto:dom@chromium.org">
+  <link rel="help" href="https://github.com/whatwg/html/pull/5579">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
 
 <script>
-  const t = async_test("Test that iframes with loading='lazy' load once they " +
-                       "enter the viewport.");
+  const t = async_test();
 
   let has_window_loaded = false;
   let has_in_viewport_loaded = false;
+  let has_in_viewport_srcdoc_loaded = false;
+  let has_below_viewport_loaded = false;
+  let has_below_viewport_srcdoc_loaded = false;
+  let has_below_viewport_srcdoc_subresource_loaded = false;
 
   const in_viewport_iframe_onload = t.step_func(() => {
     assert_false(has_in_viewport_loaded,
-                 "The in_viewport element should load only once.");
+                 "The in_viewport iframe should load only once.");
     has_in_viewport_loaded = true;
+  });
+
+  const in_viewport_srcdoc_iframe_onload = t.step_func(() => {
+    assert_false(has_in_viewport_srcdoc_loaded,
+                 "The in_viewport iframe should load only once.");
+    has_in_viewport_srcdoc_loaded = true;
   });
 
   window.addEventListener("load", t.step_func(() => {
     assert_true(has_in_viewport_loaded,
-                "The in_viewport element should have loaded before " +
+                "The in_viewport iframe should have loaded before " +
                 "window.load().");
-    assert_false(has_window_loaded,
-                 "The window.load() event should only fire once.");
+    assert_true(has_in_viewport_srcdoc_loaded,
+                "The in_viewport srcdoc iframe should have loaded before " +
+                "window.load().");
+
     has_window_loaded = true;
-    document.getElementById("below_viewport").scrollIntoView();
+    document.getElementById("below_viewport_srcdoc").scrollIntoView();
   }));
 
-  const below_viewport_iframe_onload = t.step_func_done(() => {
+  const below_viewport_iframe_onload = t.step_func(() => {
     assert_true(has_window_loaded,
                 "The window.load() event should have fired before " +
                 "below_viewport loaded.");
+    has_below_viewport_loaded = true;
+    check_if_done();
   });
+
+  const below_viewport_srcdoc_iframe_onload = t.step_func(() => {
+    assert_true(has_window_loaded,
+                "The window.load() event should have fired before " +
+                "below_viewport srcdoc loaded.");
+    has_below_viewport_srcdoc_loaded = true;
+    check_if_done();
+  });
+
+  // Must make this accessible to the srcdoc iframe's body.
+  window.below_viewport_srcdoc_iframe_subresource_onload = t.step_func(() => {
+    assert_true(has_window_loaded,
+                "The window.load() event should have fired before " +
+                "below_viewport srcdoc subresource loaded.");
+
+    has_below_viewport_srcdoc_subresource_loaded = true;
+    check_if_done();
+  });
+
+  // This method gets called once for each below-viewport iframe load. The
+  // second time it is called, the test finished.
+  function check_if_done() {
+    if (has_below_viewport_loaded && has_below_viewport_srcdoc_loaded &&
+        has_below_viewport_srcdoc_subresource_loaded) {
+      t.done();
+    }
+  }
+
 </script>
 
 <body>
   <iframe id="in_viewport" src="resources/subframe.html?in-viewport"
           loading="lazy" width="200px" height="100px"
           onload="in_viewport_iframe_onload();"></iframe>
-  <div style="height:1000vh;"></div>
+  <iframe id="in_viewport_srcdoc"
+          srcdoc="<body><img src='/common/square.png?in-viewport'></body>"
+          loading="lazy" width="200px" height="100px"
+          onload="in_viewport_srcdoc_iframe_onload();"></iframe>
+
+  <div style="height:2000vh;"></div>
   <iframe id="below_viewport" src="resources/subframe.html?below-viewport"
           loading="lazy" width="200px" height="100px"
           onload="below_viewport_iframe_onload();"></iframe>
+  <iframe id="below_viewport_srcdoc"
+          srcdoc="<body><img src='/common/square.png?below-viewport'
+                  onload='parent.below_viewport_srcdoc_iframe_subresource_onload();'></body>"
+          loading="lazy" width="200px" height="100px"
+          onload="below_viewport_srcdoc_iframe_onload();"></iframe>
+
 
   <!-- This async script loads very slowly in order to ensure that, if the
-       below_viewport element has started loading, it has a chance to finish
+       below_viewport* elements have started loading, it has a chance to finish
        loading before window.load() happens, so that the test will dependably
        fail in that case instead of potentially passing depending on how long
        different resource fetches take. -->

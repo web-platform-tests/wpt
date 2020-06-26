@@ -47,7 +47,7 @@ def main(request, response):
                 #keep url parameters in location
                 url_parameters = {}
                 for item in request.GET.items():
-                    url_parameters[item[0]] = item[1][0]
+                    url_parameters[isomorphic_decode(item[0])] = isomorphic_decode(item[1][0])
                 url += urlencode(url_parameters)
                 #make sure location changes during redirection loop
                 url += u"&count=" + str(stashed_data[b'count'])

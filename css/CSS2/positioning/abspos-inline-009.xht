@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Test that an absolute does not provide a break opportunity within an inline</title>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com"/>
+  <link rel="help" href="https://www.w3.org/TR/CSS21/visuren.html#absolute-positioning"/>
+  <link rel="match" href="../../reference/ref-filled-green-100px-square-only.html"/>
+  <meta name="flags" content="ahem" />
+  <link rel="stylesheet" href="../../../fonts/ahem.css"/>
+  <meta name="assert" contents="An absolutely positioned object does not provide a break opportunity"/>
+  <style>
+   .block {
+       font: 50px/1 Ahem;
+       color: green;
+       width: 1em;
+   }
+   .pos {
+       position: absolute;
+       color: white;
+   }
+  </style>
+ </head>
+ <body>
+  <p>Test passes if there is a filled green square.</p>
+  <div class="block">
+   AA
+   A<div class="pos">A</div>A
+  </div>
+ </body>
+</html>

@@ -11,7 +11,7 @@ def main(request, response):
         value = values[0]
         content.append(b"%s=%s:%s:%d," % (key,
                                           isomorphic_encode(value.filename),
-                                          isomorphic_encode(value.headers[u"Content-Type"]) if value.headers[u"Content-Type"] != None else None,
+                                          isomorphic_encode(value.headers[u"Content-Type"]) if value.headers[u"Content-Type"] is not None else b"None",
                                           len(value.file.read())))
 
     return b"".join(content)

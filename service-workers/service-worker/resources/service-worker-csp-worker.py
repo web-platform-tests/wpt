@@ -170,7 +170,7 @@ def main(request, response):
     headers = []
     headers.append((b'Content-Type', b'application/javascript'))
     directive = request.GET[b'directive']
-    body = u'ERROR: Unknown directive'
+    body = b'ERROR: Unknown directive'
     if directive == b'default':
         headers.append((b'Content-Security-Policy', b"default-src 'self'"))
         body = bodyDefault

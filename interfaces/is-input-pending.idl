@@ -17,6 +17,6 @@ interface IsInputPendingOptions {
    boolean isInputPending(optional IsInputPendingOptions isInputPendingOptions);
 };
 
-partial interface Window {
+partial interface Navigator {
   readonly attribute Scheduling scheduling;
 };

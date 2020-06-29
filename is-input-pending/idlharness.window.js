@@ -9,7 +9,7 @@ idl_test(
   async idl_array => {
     idl_array.add_objects({
       IsInputPendingOptions: ['new IsInputPendingOptions'],
-      Scheduling: ['window.scheduling'],
+      Scheduling: ['navigator.scheduling'],
     });
   }
 );

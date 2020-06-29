@@ -12,7 +12,7 @@ const invalid_namespace_test = (t, resolver) => {
       window.removeEventListener("error", handler);
     });
 
-    t.step_timeout(resolve, 10);
+    t.step_timeout(resolve, 0);
   });
 
   assert_throws_dom("NAMESPACE_ERR", () => {

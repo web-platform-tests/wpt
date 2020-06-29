@@ -10,11 +10,11 @@
 "use strict";
 
 promise_test(t => {
-  return invalid_namespace_test(t, () => null);
+  return invalid_namespace_test(t, () => undefined);
 }, "undefined");
 
 promise_test(t => {
-  return invalid_namespace_test(t, () => undefined);
+  return invalid_namespace_test(t, () => null);
 }, "null");
 
 test(t => {

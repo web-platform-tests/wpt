@@ -1,7 +1,6 @@
+import random
+
 import time
-
-from six import PY3
-
 
 body = u'''
 onactivate = (e) => e.waitUntil(clients.claim());
@@ -25,4 +24,4 @@ def main(request, response):
     if b'skip-waiting' in request.GET:
         skipWaiting = u'skipWaiting();'
 
-    return headers, u'/* %s %s */ %s %s' % (time.time(), time.perf_counter() if PY3 else time.clock(), skipWaiting, body)
+    return headers, u'/* %s %s */ %s %s' % (time.time(), random.random(), skipWaiting, body)

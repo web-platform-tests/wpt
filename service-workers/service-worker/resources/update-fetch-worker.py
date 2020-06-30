@@ -1,6 +1,5 @@
+import random
 import time
-
-from six import PY3
 
 def main(request, response):
     # no-cache itself to ensure the user agent finds a new version for each update.
@@ -15,6 +14,5 @@ def main(request, response):
 
     extra_body = u"self.onfetch = (event) => { event.respondWith(fetch(event.request)); };"
 
-    # Return a different script for each access.  Use .time() and .clock() for
-    # best time resolution across different platforms.
-    return headers, u'/* %s %s */ %s' % (time.time(), time.perf_counter() if PY3 else time.clock(), extra_body)
+    # Return a different script for each access.
+    return headers, u'/* %s %s */ %s' % (time.time(), random.random(), extra_body)

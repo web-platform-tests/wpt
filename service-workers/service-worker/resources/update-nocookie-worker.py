@@ -1,6 +1,5 @@
+import random
 import time
-
-from six import PY3
 
 def main(request, response):
     # no-cache itself to ensure the user agent finds a new version for each update.
@@ -11,6 +10,5 @@ def main(request, response):
     content_type = b'application/javascript'
 
     headers.append((b'Content-Type', content_type))
-    # Return a different script for each access.  Use .time() and .clock() for
-    # best time resolution across different platforms.
-    return headers, u'// %s %s' % (time.time(), time.perf_counter() if PY3 else time.clock())
+    # Return a different script for each access.
+    return headers, u'// %s %s' % (time.time(), random.random())

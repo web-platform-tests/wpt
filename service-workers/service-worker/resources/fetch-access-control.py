@@ -44,7 +44,7 @@ def main(request, response):
         # have a "Range" header with a byte range. Respond with that range.
         if b"PartialContent" in request.GET:
           if length < 1:
-            return 500, headers, u"file is too small for range requests"
+            return 500, headers, b"file is too small for range requests"
           start = 0
           end = length - 1
           if b"Range" in request.headers:

@@ -2528,7 +2528,7 @@ IdlInterface.prototype.test_members = function()
 {
     for (var i = 0; i < this.members.length; i++)
     {
-        var member = this.members[i];
+        const member = this.members[i];
         if (member.untested) {
             continue;
         }
@@ -2704,7 +2704,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
 
     for (var i = 0; i < this.members.length; i++)
     {
-        var member = this.members[i];
+        const member = this.members[i];
         if (member.untested) {
             continue;
         }

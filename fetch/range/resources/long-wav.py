@@ -6,7 +6,7 @@ import time
 import re
 import struct
 
-from wptserve.utils import isomorphic_decode, isomorphic_encode
+from wptserve.utils import isomorphic_decode
 
 def create_wav_header(sample_rate, bit_depth, channels, duration):
     bytes_per_sample = int(bit_depth / 8)
@@ -18,29 +18,29 @@ def create_wav_header(sample_rate, bit_depth, channels, duration):
     # ChunkID
     data += b'RIFF'
     # ChunkSize
-    data += struct.pack(b'<L', 36 + sub_chunk_2_size)
+    data += struct.pack('<L', 36 + sub_chunk_2_size)
     # Format
     data += b'WAVE'
     # Subchunk1ID
     data += b'fmt '
     # Subchunk1Size
-    data += struct.pack(b'<L', 16)
+    data += struct.pack('<L', 16)
     # AudioFormat
-    data += struct.pack(b'<H', 1)
+    data += struct.pack('<H', 1)
     # NumChannels
-    data += struct.pack(b'<H', channels)
+    data += struct.pack('<H', channels)
     # SampleRate
-    data += struct.pack(b'<L', sample_rate)
+    data += struct.pack('<L', sample_rate)
     # ByteRate
-    data += struct.pack(b'<L', byte_rate)
+    data += struct.pack('<L', byte_rate)
     # BlockAlign
-    data += struct.pack(b'<H', block_align)
+    data += struct.pack('<H', block_align)
     # BitsPerSample
-    data += struct.pack(b'<H', bit_depth)
+    data += struct.pack('<H', bit_depth)
     # Subchunk2ID
     data += b'data'
     # Subchunk2Size
-    data += struct.pack(b'<L', sub_chunk_2_size)
+    data += struct.pack('<L', sub_chunk_2_size)
 
     return data
 
@@ -104,9 +104,9 @@ def main(request, response):
             if bytes_remaining_to_send < len(initial_write):
                 initial_write = initial_write[0:bytes_remaining_to_send]
 
-        content_range = u"bytes {}-{}/{}".format(start, end or total_length - 1, total_length)
+        content_range = b"bytes %d-%d/%d" % (start, end or total_length - 1, total_length)
 
-        response.headers.set(b"Content-Range", isomorphic_encode(content_range))
+        response.headers.set(b"Content-Range", content_range)
     else:
         initial_write = create_wav_header(sample_rate, bit_depth, channels, duration)
 

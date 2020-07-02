@@ -28,7 +28,7 @@ def main(request, response):
         filename = u"green-256x256.png"
 
       path = os.path.join(os.path.dirname(isomorphic_decode(__file__)), u"../../../images", filename)
-      body = open(path, u"rb").read()
+      body = open(path, "rb").read()
 
       response.add_required_headers = False
       response.writer.write_status(200)

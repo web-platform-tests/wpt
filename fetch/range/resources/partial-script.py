@@ -2,7 +2,6 @@
 This generates a partial response containing valid JavaScript.
 """
 
-
 def main(request, response):
     require_range = request.GET.first(b'require-range', b'')
     pretend_offset = int(request.GET.first(b'pretend-offset', b'0'))
@@ -21,7 +20,7 @@ def main(request, response):
     to_send = b'self.scriptExecuted = true;'
     length = len(to_send)
 
-    content_range = u"bytes {}-{}/{}".format(
+    content_range = b"bytes %d-%d/%d" % (
         pretend_offset, pretend_offset + length - 1, pretend_offset + length)
 
     response.headers.set(b"Content-Range", content_range)

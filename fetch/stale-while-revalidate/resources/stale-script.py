@@ -1,10 +1,8 @@
 import random, string
 
-from wptserve.utils import isomorphic_encode
-
 def id_token():
    letters = string.ascii_lowercase
-   return u''.join(random.choice(letters) for i in range(20))
+   return b''.join(random.choice(letters).encode("utf-8") for i in range(20))
 
 def main(request, response):
     token = request.GET.first(b"token", None)
@@ -29,6 +27,6 @@ def main(request, response):
       unique_id = id_token()
       headers = [(b"Content-Type", b"text/javascript"),
                  (b"Cache-Control", b"private, max-age=0, stale-while-revalidate=60"),
-                 (b"Unique-Id", isomorphic_encode(unique_id))]
-      content = u"report('{}')".format(unique_id)
+                 (b"Unique-Id", unique_id)]
+      content = b"report('%s')" % unique_id
       return 200, headers, content

@@ -52,6 +52,7 @@ RUN apt-get -qqy install \
 RUN apt-get -y autoremove
 
 RUN pip install --upgrade pip
+RUN pip install taskcluster
 RUN pip install virtualenv
 
 ENV TZ "UTC"

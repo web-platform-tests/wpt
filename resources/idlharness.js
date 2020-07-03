@@ -2603,12 +2603,6 @@ IdlInterface.prototype.test_member_iterable = function(member)
 {
     subsetTestByKey(this.name, test, function()
     {
-        if (!this.should_have_interface_object()) {
-            return;
-        }
-
-        this.assert_interface_object_exists();
-
         var isPairIterator = member.idlType.length === 2;
         var proto = this.get_interface_object().prototype;
         var iteratorDesc = Object.getOwnPropertyDescriptor(proto, Symbol.iterator);

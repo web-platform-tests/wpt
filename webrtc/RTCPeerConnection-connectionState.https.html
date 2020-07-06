@@ -288,4 +288,43 @@
     assert_true(pc2.connectionState === 'closed');
     await new Promise(r => t.step_timeout(r, 100));
   }, 'Closing a PeerConnection should not fire connectionstatechange event');
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    const stream = await getNoiseStream({ audio: true, video: true });
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+
+    stream.getTracks().forEach(track => pc1.addTrack(track, stream));
+
+    pc1.onicecandidate = event => {
+      const { candidate } = event;
+      if(candidate && candidate.sdpMLineIndex === 0 && pc2.signalingState !== 'closed') {
+        pc2.addIceCandidate(candidate);
+      }
+    };
+    pc2.onicecandidate = event => {
+      const { candidate } = event;
+      if(candidate && candidate.sdpMLineIndex === 0 && pc1.signalingState !== 'closed') {
+        pc1.addIceCandidate(candidate);
+      }
+    };
+
+    const offer = await pc1.createOffer();
+    const sdp = offer.sdp.replace('a=group:BUNDLE ', 'a=group:SOMETHINGELSE ');
+    await pc2.setRemoteDescription({type: 'offer', sdp});
+    await pc1.setLocalDescription(offer);
+
+    const answer = await pc2.createAnswer();
+    await pc1.setRemoteDescription(answer);
+    await pc2.setLocalDescription(answer);
+
+    await listenToConnected(pc1);
+    await new Promise(r => t.step_timeout(r, 1000)); // wait a bit more...
+    console.log('PC2 connectionState', pc2.connectionState,
+                'DTLS states', pc2.getReceivers().map(r => r.transport.state),
+                'ICE states', pc2.getReceivers().map(r => r.transport.iceTransport.state)
+    );
+  }, 'Something something unbundled partially connected');
 </script>

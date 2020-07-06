@@ -1,0 +1,17 @@
+{
+    "shortcuts": [{
+        "name": "pass",
+        "short_name": "",
+        "description": "",
+        "url": "https://example.com",
+        "icons": []
+    }, {
+        "name": "pass",
+        "short_name": "",
+        "description": "",
+        "url": "",
+        "icons": [{
+            "src": "pass.png"
+        }]
+    }]
+}

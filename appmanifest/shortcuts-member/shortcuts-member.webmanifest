@@ -1,0 +1,12 @@
+{
+    "shortcuts": [{
+        "name": "pass",
+        "short_name": "",
+        "description": "",
+        "url": "shortcuts-member-manual.html",
+        "icons": [{
+            "src": "pass.png",
+            "sizes": "256x256"
+        }]
+    }]
+}

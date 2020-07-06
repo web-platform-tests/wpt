@@ -15,19 +15,19 @@ def check_task_statuses(task_ids):
     Returns 0 if all tasks passed completed successfully, 1 otherwise."""
 
     queue = taskcluster.Queue({'rootUrl': os.environ['TASKCLUSTER_PROXY_URL']})
-    ret = 0
+    success = True
     for task in task_ids:
         status = queue.status(task)
         state = status['status']['state']
         if state == 'failed' or state == 'exception':
             logger.error('Task {0} failed with state "{1}"'.format(task, state))
-            ret = 1
+            success = False
         elif state != 'completed':
             logger.error('Task {0} had unexpected state "{1}"'.format(task, state))
-            ret = 1
-    if ret == 0:
+            success = False
+    if success:
         logger.info('All tasks completed successfully')
-    return ret
+    return 0 if success else 1
 
 
 def get_parser():

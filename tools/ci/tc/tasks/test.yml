@@ -495,5 +495,3 @@ tasks:
         - wpt-base
       command: "./wpt tc-sink-task"
       requires: all-resolved
-      features:
-        taskclusterProxy: true

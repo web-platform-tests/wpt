@@ -233,7 +233,6 @@ def create_tc_task(event, task, taskgroup_id, depends_on_ids, env_extra=None):
         "payload": {
             "artifacts": task.get("artifacts"),
             "command": command,
-            "features": task.get("features", {}),
             "image": task.get("image"),
             "maxRunTime": task.get("maxRunTime"),
             "env": task.get("env", {}),

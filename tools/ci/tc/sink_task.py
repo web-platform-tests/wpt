@@ -14,7 +14,7 @@ def check_task_statuses(task_ids):
 
     Returns 0 if all tasks passed completed successfully, 1 otherwise."""
 
-    queue = taskcluster.Queue({'rootUrl': os.environ['TASKCLUSTER_PROXY_URL']})
+    queue = taskcluster.Queue({'rootUrl': os.environ['TASKCLUSTER_ROOT_URL']})
     success = True
     for task in task_ids:
         status = queue.status(task)

@@ -155,6 +155,10 @@ function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
         t.done();
       i.onloadReceived = true;
     });
+    // Let the fail test after 10s if we have no feedback the frame was loaded.
+    setTimeout(t.step_func(function () {
+      assert_unreached('Timeout while waiting for frame to load.');
+    }), 10000);
   }
   document.body.appendChild(i);
 }

@@ -7,7 +7,7 @@
 
 idl_test(
   ['audio-output'],
-  ['html', 'dom'],
+  ['mediacapture-streams', 'html', 'dom'],
   idl_array => {
     self.audio = document.createElement('audio');
     self.video = document.createElement('video');

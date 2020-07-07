@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>IDBObjectStore.putAll() - put records with inline keys</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+    var db,
+      t = async_test(),
+      record1 = { key: 1, property: "data_one" },
+      record2 = { key: 2, property: "data_two" },
+      record3 = { key: 3, property: "data_three" },
+      records = [record1, record2, record3];
+
+    var open_rq = createdb(t);
+    open_rq.onupgradeneeded = function(e) {
+        db = e.target.result;
+        var objStore = db.createObjectStore("store", { keyPath: "key" });
+
+        objStore.putAll(records);
+    };
+
+    open_rq.onsuccess = function(e) {
+        var store = db.transaction("store")
+                    .objectStore("store");
+        var rq1 = store.get(record1.key);
+        var rq2 = store.get(record2.key);
+        var rq3 = store.get(record3.key);
+
+        rq1.onsuccess = t.step_func(function(e) {
+            assert_equals(e.target.result.property, record1.property);
+            assert_equals(e.target.result.key, record1.key);
+            t.done();
+        });
+
+        rq2.onsuccess = t.step_func(function(e) {
+            assert_equals(e.target.result.property, record2.property);
+            assert_equals(e.target.result.key, record2.key);
+            t.done();
+        });
+
+        rq3.onsuccess = t.step_func(function(e) {
+            assert_equals(e.target.result.property, record3.property);
+            assert_equals(e.target.result.key, record3.key);
+            t.done();
+        });
+    };
+</script>
+
+<div id="log"></div>

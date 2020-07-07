@@ -479,6 +479,9 @@ when the <code class="docutils literal notranslate"><span class="pre">timeout()<
 with some existing test framework that has its own timeout mechanism).</p>
 <p><code class="docutils literal notranslate"><span class="pre">allow_uncaught_exception</span></code> - don’t treat an uncaught exception as an error;
 needed when e.g. testing the <code class="docutils literal notranslate"><span class="pre">window.onerror</span></code> handler.</p>
+<p><code class="docutils literal notranslate"><span class="pre">hide_test_state</span></code> - hide the test state output while the test is
+running; This is helpful when the output of the test state may interfere
+the test results.</p>
 <p><code class="docutils literal notranslate"><span class="pre">timeout_multiplier</span></code> - Multiplier to apply to per-test timeouts.</p>
 <p><code class="docutils literal notranslate"><span class="pre">single_test</span></code> - Test authors may set this property to <code class="docutils literal notranslate"><span class="pre">true</span></code> to enable <a class="reference external" href="#single-page-tests">the
 “single page test” mode of testharness.js</a>; the current

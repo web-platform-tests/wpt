@@ -1,4 +1,6 @@
 {
+    "name": "Shortcut test",
+    "scope": "/",
     "shortcuts": [{
         "short_name": "",
         "description": "",

@@ -12,7 +12,7 @@
 
   function create_test(host, as, expected) {
     async_test(t => {
-      let nonce = token();
+      let nonce = make_token();
       let key = as + nonce;
 
       let e = document.createElement('link');

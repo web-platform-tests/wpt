@@ -18,7 +18,7 @@ promise_test(async (t) => {
   const worker_url = local(encode(worker_path + header_coep));
   // As we don't want the service worker to control any page, generate a
   // one-time scope.
-  const SCOPE = new URL(`resources/${token()}.html`, location).pathname;
+  const SCOPE = new URL(`resources/${make_token()}.html`, location).pathname;
   const reg =
     await service_worker_unregister_and_register(t, worker_url, SCOPE);
   add_completion_callback(() => reg.unregister());
@@ -39,7 +39,7 @@ promise_test(async (t) => {
   const worker_url = local(encode(worker_path + header_coep_report_only));
   // As we don't want the service worker to control any page, generate a
   // one-time scope.
-  const SCOPE = new URL(`resources/${token()}.html`, location).pathname;
+  const SCOPE = new URL(`resources/${make_token()}.html`, location).pathname;
   const reg =
     await service_worker_unregister_and_register(t, worker_url, SCOPE);
   add_completion_callback(() => reg.unregister());

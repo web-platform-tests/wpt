@@ -23,7 +23,7 @@ function resolve(url) {
 function insertIframe(className) {
   var iframe = document.createElement('iframe');
   iframe.className = className;
-  iframe.src = 'iframed.sub.html?id=' + token();
+  iframe.src = 'iframed.sub.html?id=' + make_token();
   document.body.appendChild(iframe);
 }
 insertIframe('narrow');

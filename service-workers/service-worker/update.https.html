@@ -14,7 +14,7 @@ const SCOPE = 'resources/simple.txt';
 // Create a service worker (update-worker.py). The response to update() will be
 // different based on the mode.
 async function prepare_ready_registration_with_mode(t, mode) {
-  const key = token();
+  const key = make_token();
   const worker_url = `resources/update-worker.py?Key=${key}&Mode=${mode}`;
   const expected_url = normalizeURL(worker_url);
   const registration = await service_worker_unregister_and_register(
@@ -33,7 +33,7 @@ async function prepare_ready_registration_with_mode(t, mode) {
 // |initial_worker| and |updated_worker| later.
 async function prepare_ready_registration_with_file(
     t, initial_worker, updated_worker) {
-  const key = token();
+  const key = make_token();
   const worker_url = `resources/update-worker-from-file.py?` +
       `First=${initial_worker}&Second=${updated_worker}&Key=${key}`;
   const expected_url = normalizeURL(worker_url);

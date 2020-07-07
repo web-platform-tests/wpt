@@ -41,9 +41,9 @@ let property= [
 origin.forEach(([origin_name, origin]) => {
   property.forEach(([property, op]) =>  {
     promise_test(async t => {
-      const report_token = token();
-      const executor_token = token();
-      const callback_token = token();
+      const report_token = make_token();
+      const executor_token = make_token();
+      const callback_token = make_token();
 
       const reportTo = reportToHeaders(report_token);
       const openee_url = origin+ executor_path +

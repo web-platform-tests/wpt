@@ -7,7 +7,7 @@
 <script src=/common/utils.js></script>
 <script>
   // Open a window with XML document which loads resources via <?xml-stylesheet/> tag
-  let nonce = token();
+  let nonce = make_token();
   let w = window.open("resources/xslt-test.sub.xml?token=" + nonce);
   window.addEventListener('message', function(e) {
     if (e.source != w)

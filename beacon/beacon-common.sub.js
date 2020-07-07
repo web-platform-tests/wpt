@@ -107,7 +107,7 @@ function CreateFormDataFromPayload(payload) {
 //     sendData [optional]: A function that sends the beacon with given a URL and payload.
 function runTests(testCases, suffix = '', buildUrl = self.buildUrl, sendData = self.sendData) {
     for (const testCase of testCases) {
-        const id = token();
+        const id = make_token();
         async_test((test) => {
             const url = buildUrl(id);
             assert_true(sendData(url, testCase.data), 'sendBeacon should succeed');

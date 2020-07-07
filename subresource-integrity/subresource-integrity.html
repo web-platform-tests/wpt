@@ -27,70 +27,70 @@
     new SRIScriptTest(
         true,
         "Same-origin with correct sha256 hash.",
-        `${same_origin_prefix}script.js?${token()}`,
+        `${same_origin_prefix}script.js?${make_token()}`,
         "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="
     ).execute();
 
     new SRIScriptTest(
         true,
         "Same-origin with correct sha384 hash.",
-        `${same_origin_prefix}script.js?${token()}`,
+        `${same_origin_prefix}script.js?${make_token()}`,
         "sha384-cINXh+nCzEHPWzXS7eoT+vYMBpyqczOybRLNU3XAButFWCRhHT5hLByIbPRqIm2f"
     ).execute();
 
     new SRIScriptTest(
         true,
         "Same-origin with correct sha512 hash.",
-        `${same_origin_prefix}script.js?${token()}`,
+        `${same_origin_prefix}script.js?${make_token()}`,
         "sha512-KZdenhzBd7X7Q/vmaOSyvFz1CGdoVt26xzCZjlkU9lfBEK+V/ougGys7iYDi0+tOHIQSQa87bIqx95R7GU7I9Q=="
     ).execute();
 
     new SRIScriptTest(
         true,
         "Same-origin with empty integrity.",
-        `${same_origin_prefix}script.js?${token()}`,
+        `${same_origin_prefix}script.js?${make_token()}`,
         ""
     ).execute();
 
     new SRIScriptTest(
         false,
         "Same-origin with incorrect hash.",
-        `${same_origin_prefix}script.js?${token()}`,
+        `${same_origin_prefix}script.js?${make_token()}`,
         "sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
     new SRIScriptTest(
         true,
         "Same-origin with multiple sha256 hashes, including correct.",
-        `${same_origin_prefix}script.js?${token()}`,
+        `${same_origin_prefix}script.js?${make_token()}`,
         "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA= sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
     new SRIScriptTest(
         true,
         "Same-origin with multiple sha256 hashes, including unknown algorithm.",
-        `${same_origin_prefix}script.js?${token()}`,
+        `${same_origin_prefix}script.js?${make_token()}`,
         "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA= foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
     new SRIScriptTest(
         true,
         "Same-origin with sha256 mismatch, sha512 match",
-        `${same_origin_prefix}script.js?${token()}`,
+        `${same_origin_prefix}script.js?${make_token()}`,
         "sha512-KZdenhzBd7X7Q/vmaOSyvFz1CGdoVt26xzCZjlkU9lfBEK+V/ougGys7iYDi0+tOHIQSQa87bIqx95R7GU7I9Q== sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
     new SRIScriptTest(
         false,
         "Same-origin with sha256 match, sha512 mismatch",
-        `${same_origin_prefix}script.js?${token()}`,
+        `${same_origin_prefix}script.js?${make_token()}`,
         "sha512-deadbeefspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="
     ).execute();
 
     new SRIScriptTest(
         true,
         "<crossorigin='anonymous'> with correct hash, ACAO: *",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        `${xorigin_prefix}script.js?${make_token()}&pipe=header(Access-Control-Allow-Origin,*)`,
         "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=",
         "anonymous"
     ).execute();
@@ -98,7 +98,7 @@
     new SRIScriptTest(
         false,
         "<crossorigin='anonymous'> with incorrect hash, ACAO: *",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        `${xorigin_prefix}script.js?${make_token()}&pipe=header(Access-Control-Allow-Origin,*)`,
         "sha256-deadbeefcSLlbFZCj1OACLxTxVck2TOrBTEdUbwz1yU=",
         "anonymous"
     ).execute();
@@ -106,7 +106,7 @@
     new SRIScriptTest(
         true,
         "<crossorigin='use-credentials'> with correct hash, CORS-eligible",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Credentials,true)|header(Access-Control-Allow-Origin,${location.origin})`,
+        `${xorigin_prefix}script.js?${make_token()}&pipe=header(Access-Control-Allow-Credentials,true)|header(Access-Control-Allow-Origin,${location.origin})`,
         "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=",
         "use-credentials"
     ).execute();
@@ -114,7 +114,7 @@
     new SRIScriptTest(
         false,
         "<crossorigin='use-credentials'> with incorrect hash CORS-eligible",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Credentials,true)|header(Access-Control-Allow-Origin,${location.origin})`,
+        `${xorigin_prefix}script.js?${make_token()}&pipe=header(Access-Control-Allow-Credentials,true)|header(Access-Control-Allow-Origin,${location.origin})`,
         "sha256-deadbeef2S+pTRZgiw3DWrhC6JLDlt2zRyGpwH7unU8=",
         "use-credentials"
     ).execute();
@@ -122,7 +122,7 @@
     new SRIScriptTest(
         false,
         "<crossorigin='anonymous'> with CORS-ineligible resource",
-        `${xorigin_prefix}script.js?${token()}`, /* no ACAO header makes this CORS-ineligible */
+        `${xorigin_prefix}script.js?${make_token()}`, /* no ACAO header makes this CORS-ineligible */
         "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=",
         "anonymous"
     ).execute();
@@ -130,35 +130,35 @@
     new SRIScriptTest(
         false,
         "Cross-origin, not CORS request, with correct hash",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        `${xorigin_prefix}script.js?${make_token()}&pipe=header(Access-Control-Allow-Origin,*)`,
         "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="
     ).execute();
 
     new SRIScriptTest(
         false,
         "Cross-origin, not CORS request, with hash mismatch",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        `${xorigin_prefix}script.js?${make_token()}&pipe=header(Access-Control-Allow-Origin,*)`,
         "sha256-deadbeef01Y0yKSx3/UoIKtIY2UQ9+H8WGyyMuOWOC0="
     ).execute();
 
     new SRIScriptTest(
         true,
         "Cross-origin, empty integrity",
-        `${xorigin_prefix}script.js?${token()}&pipe=header(Access-Control-Allow-Origin,*)`,
+        `${xorigin_prefix}script.js?${make_token()}&pipe=header(Access-Control-Allow-Origin,*)`,
         ""
     ).execute();
 
     new SRIScriptTest(
         true,
         "Same-origin with correct hash, options.",
-        `${same_origin_prefix}script.js?${token()}`,
+        `${same_origin_prefix}script.js?${make_token()}`,
         "sha256-Bu681KMnQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA=?foo=bar?spam=eggs"
     ).execute();
 
     new SRIScriptTest(
         true,
         "Same-origin with unknown algorithm only.",
-        `${same_origin_prefix}script.js?${token()}`,
+        `${same_origin_prefix}script.js?${make_token()}`,
         "foo666-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E="
     ).execute();
 

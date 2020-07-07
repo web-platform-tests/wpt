@@ -11,7 +11,7 @@
   <body>
     <script>
     promise_test(function() {
-      var cacheBuster = token(); // ensures first request is uncached
+      var cacheBuster = make_token(); // ensures first request is uncached
       var url = "../resources/cache.py?v=" + cacheBuster;
       var etag;
 

@@ -6,7 +6,7 @@
 
 function safelist(headers, expectPreflight = false) {
   promise_test(async t => {
-    const uuid = token(),
+    const uuid = make_token(),
           url = CROSSDOMAIN + "resources/preflight.py?token=" + uuid,
           checkURL = "resources/preflight.py?check&token=" + uuid,
           request = () => fetch(url, { method: "POST", headers, body: "data" });

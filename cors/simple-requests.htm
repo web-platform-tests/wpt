@@ -20,7 +20,7 @@ function check_simple(method, headers)
 {
     test(function() {
         var client = new XMLHttpRequest()
-        var uuid_token = token();
+        var uuid_token = make_token();
         client.open(method, CROSSDOMAIN + 'resources/preflight.py?token='
                             + uuid_token, false)
         for (head in headers)
@@ -70,7 +70,7 @@ var simple_async = async_test("Check simple headers (async)")
 simple_async.step(function (){
     var time = new Date().getTime(),
         client = new XMLHttpRequest()
-    var uuid_token = token();
+    var uuid_token = make_token();
     client.open('POST', CROSSDOMAIN + 'resources/preflight.py?token='
                         + uuid_token, true)
 

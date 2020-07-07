@@ -1,7 +1,7 @@
 const RESOURCES_DIR = "/html/semantics/links/downloading-resources/resources/";
 
 function testOriginHeader(expectedOrigin) {
-  var id = self.token();
+  var id = self.make_token();
   let testUrl = RESOURCES_DIR + "inspect-header.py?header=origin&cmd=put&id=" + id;
 
   promise_test(function(test) {

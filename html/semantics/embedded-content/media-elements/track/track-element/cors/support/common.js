@@ -1,5 +1,5 @@
 setup(function(){
-    window.id = token();
+    window.id = make_token();
     var p = document.createElement('p');
     p.innerHTML = 'Test id: <samp>'+id+'</samp>';
     document.body.appendChild(p);

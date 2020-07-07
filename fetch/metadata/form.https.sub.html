@@ -12,7 +12,7 @@
 
   function create_test(host, user_activated, expectations) {
     async_test(t => {
-      let nonce = token();
+      let nonce = make_token();
       let w = window.open("", nonce);
       let f = document.createElement('form');
 

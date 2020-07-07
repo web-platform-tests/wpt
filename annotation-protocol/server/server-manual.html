@@ -293,7 +293,7 @@ function runTests( container_url, annotation_url ) {
       "value": "I like this page!"
     },
     "target": "http://www.example.com/index.html",
-    "canonical": 'urn:uuid:' + token()
+    "canonical": 'urn:uuid:' + make_token()
   };
 
   var theCreation = request("POST", container_url, [ [ 'Content-Type', MEDIA_TYPE ] ], theAnnotation);

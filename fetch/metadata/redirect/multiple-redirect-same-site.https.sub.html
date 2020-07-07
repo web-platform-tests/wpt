@@ -7,7 +7,7 @@
 <script src=/common/utils.js></script>
 <body></body>
 <script>
-  let nonce = token();
+  let nonce = make_token();
 
   promise_test(t => {
     return new Promise((resolve, reject) => {

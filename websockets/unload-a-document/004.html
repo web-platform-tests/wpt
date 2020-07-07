@@ -8,7 +8,7 @@
 <script>
 var uuid;
 var t = async_test();
-t.step(function() {uuid = token()});
+t.step(function() {uuid = make_token()});
 var navigate = t.step_func(function() {
   document.getElementsByTagName("iframe")[0].src = 'data:text/html,<body onload="history.back()">';
 });

@@ -14,7 +14,7 @@
       test(function() {
         var client = new XMLHttpRequest(),
           urlstart = location.host + location.pathname.replace(/\/[^\/]*$/, '/'),
-          user = token();
+          user = make_token();
         client.open("GET", location.protocol+'//'+urlstart + "resources/auth1/auth.py", false, user, 'pass')
         client.setRequestHeader("x-user", user)
         client.send(null)

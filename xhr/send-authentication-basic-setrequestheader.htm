@@ -16,7 +16,7 @@
       test.step(function() {
         var client = new XMLHttpRequest(),
           urlstart = location.host + location.pathname.replace(/\/[^\/]*$/, '/'),
-          user = token()
+          user = make_token()
         client.open("GET", location.protocol+'//'+urlstart + "resources/auth2/auth.py", false)
         client.setRequestHeader("x-user", user)
         client.setRequestHeader('Authorization', 'Basic ' + btoa(user + ":pass"))

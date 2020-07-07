@@ -13,7 +13,7 @@ See: https://html.spec.whatwg.org/#the-list-of-available-images
 <iframe id="child" srcdoc=""></iframe>
 <script>
 
-var request_token = token();
+var request_token = make_token();
 let image_src = "resources/stale-image.py?token=" + request_token;
 
 let loadImage = async () => {

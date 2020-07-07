@@ -18,7 +18,7 @@
 <body>
   <div id="fontTest">Downgraded font</div>
   <script>
-  let nonce = token();
+  let nonce = make_token();
   let expected = { "site": "", "user": "", "mode": "", "dest": "" };
 
   // Validate various scenarios handle a request that redirects from https => http correctly and avoids disclosure of any Sec- headers.

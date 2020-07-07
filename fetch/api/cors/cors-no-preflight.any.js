@@ -4,7 +4,7 @@
 
 function corsNoPreflight(desc, baseURL, method, headerName, headerValue) {
 
-  var uuid_token = token();
+  var uuid_token = make_token();
   var url = baseURL + dirname(location.pathname) + RESOURCES_DIR + "preflight.py";
   var urlParameters = "?token=" + uuid_token + "&max_age=0";
   var requestInit = {"mode": "cors", "method": method, "headers":{}};

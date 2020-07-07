@@ -14,7 +14,7 @@ async function fetchJson(url) {
 }
 
 promise_test(async () => {
-  const stateKey = token();
+  const stateKey = make_token();
   const controller = new AbortController();
   await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}`,
               {
@@ -39,7 +39,7 @@ promise_test(async () => {
 }, 'aborting a keepalive fetch should work');
 
 promise_test(async t => {
-  const key = token();
+  const key = make_token();
   const iframeEl = document.querySelector('iframe');
 
   // Tell the iframe to start the fetch, and wait until it says it has.

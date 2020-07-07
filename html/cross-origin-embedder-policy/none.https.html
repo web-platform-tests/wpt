@@ -3,7 +3,7 @@
 <title>Cross-Origin-Embedder-Policy header and nested navigable resource without such header</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=/common/utils.js></script> <!-- Use token() to allow running tests in parallel -->
+<script src=/common/utils.js></script> <!-- Use make_token() to allow running tests in parallel -->
 <script src="/common/get-host-info.sub.js"></script>
 <div id=log></div>
 <script>
@@ -54,7 +54,7 @@ async_test(t => {
 
 async_test(t => {
   let pageLoaded = false;
-  const bc = new BroadcastChannel(token());
+  const bc = new BroadcastChannel(make_token());
   let finished = false;
   let doneCheck = _ => {
     if (finished && pageLoaded) {
@@ -69,7 +69,7 @@ async_test(t => {
     doneCheck();
   });
 
-  const bc2 = new BroadcastChannel(token());
+  const bc2 = new BroadcastChannel(make_token());
   bc2.onmessage = t.step_func((event) => {
     finished = true;
     let payload = event.data;
@@ -84,7 +84,7 @@ async_test(t => {
 
 async_test(t => {
   const frame = document.createElement("iframe");
-  const id = token();
+  const id = make_token();
   t.add_cleanup(() => frame.remove());
   window.addEventListener('message', t.step_func((e) => {
     if (e.data === id) {

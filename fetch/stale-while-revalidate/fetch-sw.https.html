@@ -34,7 +34,7 @@
   }
 
   promise_test(async (test) => {
-    var request_token = token();
+    var request_token = make_token();
     const uri = 'resources/stale-script.py?token=' + request_token;
 
     await setupRegistrationAndWaitToBeControlled(test, 'resources/stale-script.py');

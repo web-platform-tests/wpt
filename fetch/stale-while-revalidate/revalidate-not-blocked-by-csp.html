@@ -8,7 +8,7 @@
 <script>
 
 // Regression test for https://crbug.com/1070117.
-var request_token = token();
+var request_token = make_token();
 let image_src = "resources/stale-image.py?token=" + request_token;
 
 let loadImage = async () => {

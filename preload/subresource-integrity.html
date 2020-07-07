@@ -57,7 +57,7 @@
         `Same-origin ${destination} with correct sha256 hash.`, /* name */
         1,                                                      /* number_of_requests */
         destination,                                            /* destination */
-        same_origin_prefix + destination + ext + `?${token()}`, /* resource_url (for preload + subresource) */
+        same_origin_prefix + destination + ext + `?${make_token()}`, /* resource_url (for preload + subresource) */
         {integrity: sha256},                                    /* link_attrs */
         {}                                                      /* subresource_attrs */
     )
@@ -68,7 +68,7 @@
         `Same-origin ${destination} with correct sha384 hash.`,
         1,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: sha384},
         {}
     )
@@ -79,7 +79,7 @@
         `Same-origin ${destination} with correct sha512 hash.`,
         1,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: sha512},
         {}
     )
@@ -90,7 +90,7 @@
         `Same-origin ${destination} with empty integrity.`,
         1,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {},
         {}
     )
@@ -101,7 +101,7 @@
         `Same-origin ${destination} with incorrect hash.`,
         1,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: "sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"},
         {}
     )
@@ -112,7 +112,7 @@
         `Same-origin ${destination} with multiple sha256 hashes, including correct.`,
         1,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: `${sha256} sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead`},
         {}
     )
@@ -123,7 +123,7 @@
         `Same-origin ${destination} with multiple sha256 hashes, including unknown algorithm.`,
         1,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: `${sha256} foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead`},
         {}
     )
@@ -134,7 +134,7 @@
         `Same-origin ${destination} with sha256 mismatch, sha512 match`,
         1,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: `${sha512} sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead`},
         {}
     )
@@ -145,7 +145,7 @@
         `Same-origin ${destination} with sha256 match, sha512 mismatch`,
         1,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: `sha512-deadbeefspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== ${sha256}`},
         {}
     )
@@ -156,7 +156,7 @@
         `<crossorigin='anonymous'> ${destination} with correct hash, ACAO: *`,
         1,
         destination,
-        xorigin_prefix + destination + ext + `?${token()}` + anonymous,
+        xorigin_prefix + destination + ext + `?${make_token()}` + anonymous,
         {integrity: sha256, crossOrigin: 'anonymous'},
         {crossOrigin: "anonymous"}
     )
@@ -167,7 +167,7 @@
         `<crossorigin='anonymous'> ${destination} with incorrect hash, ACAO: *`,
         1,
         destination,
-        xorigin_prefix + destination + ext + `?${token()}` + anonymous,
+        xorigin_prefix + destination + ext + `?${make_token()}` + anonymous,
         {integrity: "sha256-sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead", crossOrigin: "anonymous"},
         {crossOrigin: "anonymous"}
     )
@@ -178,7 +178,7 @@
         `<crossorigin='use-credentials'> ${destination} with correct hash, CORS-eligible`,
         1,
         destination,
-        xorigin_prefix + destination + ext + `?${token()}` + use_credentials,
+        xorigin_prefix + destination + ext + `?${make_token()}` + use_credentials,
         {integrity: sha256, crossOrigin: "use-credentials"},
         {crossOrigin: "use-credentials"}
     )
@@ -189,7 +189,7 @@
         `<crossorigin='use-credentials'> ${destination} with incorrect hash CORS-eligible`,
         1,
         destination,
-        xorigin_prefix + destination + ext + `?${token()}` + use_credentials,
+        xorigin_prefix + destination + ext + `?${make_token()}` + use_credentials,
         {integrity: "sha256-deadbeef2S+pTRZgiw3DWrhC6JLDlt2zRyGpwH7unU8=", crossOrigin: "use-credentials"},
         {crossOrigin: "use-credentials"}
     )
@@ -201,7 +201,7 @@
         1,
         destination,
         // not piping ACAO header makes this CORS-ineligible
-        xorigin_prefix + destination + ext + `?${token()}`,
+        xorigin_prefix + destination + ext + `?${make_token()}`,
         {integrity: sha256, crossOrigin: "anonymous"},
         {crossOrigin: "anonymous"}
     )
@@ -212,7 +212,7 @@
         `Cross-origin ${destination}, not CORS request, with correct hash`,
         1,
         destination,
-        xorigin_prefix + destination + ext + `?${token()}` + anonymous,
+        xorigin_prefix + destination + ext + `?${make_token()}` + anonymous,
         {integrity: sha256},
         {}
     )
@@ -223,7 +223,7 @@
         `Cross-origin ${destination}, not CORS request, with hash mismatch`,
         1,
         destination,
-        xorigin_prefix + destination + ext + `?${token()}` + anonymous,
+        xorigin_prefix + destination + ext + `?${make_token()}` + anonymous,
         {integrity: "sha256-deadbeef01Y0yKSx3/UoIKtIY2UQ9+H8WGyyMuOWOC0="},
         {}
     )
@@ -234,7 +234,7 @@
         `Cross-origin ${destination}, empty integrity`,
         1,
         destination,
-        xorigin_prefix + destination + ext + `?${token()}` + anonymous,
+        xorigin_prefix + destination + ext + `?${make_token()}` + anonymous,
         {},
         {}
     )
@@ -245,7 +245,7 @@
         `Same-origin ${destination} with correct hash, options.`,
         1,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: `${sha256}?foo=bar?spam=eggs`},
         {}
     )
@@ -256,7 +256,7 @@
         `Same-origin ${destination} with unknown algorithm only.`,
         1,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: "foo666-8aBiAJl3ukQwSJ6eTs5wl6hGjnOtyXjcTRdAf89uIfY="},
         {}
     )
@@ -271,7 +271,7 @@
         `Same-origin ${destination} with matching digest re-uses preload with matching digest.`,
         1,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: sha256},
         {integrity: sha256}
       )
@@ -282,7 +282,7 @@
         `Same-origin ${destination} with non-matching digest does not re-use preload with matching digest.`,
         2,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: sha256},
         {integrity: "sha256-deadbeefQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="}
       )
@@ -293,7 +293,7 @@
         `Same-origin ${destination} with matching digest does not re-use preload with non-matching digest.`,
         2,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: "sha256-deadbeefQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="},
         {integrity: sha256}
       )
@@ -304,7 +304,7 @@
         `Same-origin ${destination} with non-matching digest does not re-use preload with non-matching digest.`,
         2,
         destination,
-        same_origin_prefix + destination + ext + `?${token()}`,
+        same_origin_prefix + destination + ext + `?${make_token()}`,
         {integrity: "sha256-deadbeefQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="},
         {integrity: "sha256-deaddeadbeefYHFvsYdWumweeFAw0hJDTFt9seErghA="}
       )

@@ -57,7 +57,7 @@ promise_test(async t => {
   // Trigger a cross-origin range request using media
   const url = new URL('long-wav.py', w.location);
   url.searchParams.set('action', 'range-header-passthrough-test');
-  url.searchParams.set('range-received-key', token());
+  url.searchParams.set('range-received-key', make_token());
   url.hostname = REMOTE_HOST;
   appendAudio(w.document, url);
 

@@ -40,7 +40,7 @@ const noBodyStatus = new Set([204, 304])
 
 function makeTest (test) {
   return function () {
-    var uuid = token()
+    var uuid = make_token()
     var requests = expandTemplates(test)
     var fetchFunctions = makeFetchFunctions(requests, uuid)
     return runTest(fetchFunctions, requests, uuid)

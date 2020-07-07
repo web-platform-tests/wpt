@@ -65,7 +65,7 @@ promise_test(async () => {
   const stashTakeURL = new URL('resources/stash-take.py', location);
 
   function changeToken() {
-    const stashToken = token();
+    const stashToken = make_token();
     wavURL.searchParams.set('accept-encoding-key', stashToken);
     stashTakeURL.searchParams.set('key', stashToken);
   }

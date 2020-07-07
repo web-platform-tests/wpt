@@ -126,7 +126,7 @@ function server_state(uuid) {
 }
 function make_test(type, info) {
   return function(test) {
-    var uuid = token();
+    var uuid = make_token();
     var identifier = (type == "tag" ? Math.random() : now.toGMTString());
     var content = Math.random().toString();
     var url = make_url(uuid, type, identifier, content, info);

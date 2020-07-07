@@ -13,7 +13,7 @@ function headerNames(headers) {
 */
 function corsPreflight(desc, corsUrl, method, allowed, headers, safeHeaders) {
   return promise_test(function(test) {
-    var uuid_token = token();
+    var uuid_token = make_token();
     return fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(response) {
       var url = corsUrl + (corsUrl.indexOf("?") === -1 ? "?" : "&");
       var urlParameters = "token=" + uuid_token + "&max_age=0";

@@ -9,7 +9,7 @@ async_test(t => {
   window.test = t; // Make the test available globally so the blob URL can use it
   window.furtherPopup = null;
 
-  const bc = new BroadcastChannel(token());
+  const bc = new BroadcastChannel(make_token());
   bc.onmessage = t.step_func_done(({ data }) => {
     assert_equals(data.name.length, 0);
     assert_false(data.opener);

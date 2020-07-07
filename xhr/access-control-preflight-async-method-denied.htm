@@ -9,7 +9,7 @@
   </head>
   <body>
     <script type="text/javascript">
-    const uuid = token();
+    const uuid = make_token();
     const url = get_host_info().HTTP_REMOTE_ORIGIN +
           "/xhr/resources/access-control-preflight-denied.py?token=" + uuid;
 

@@ -7,7 +7,7 @@ function corsOrigin(desc, baseURL, method, origin, shouldPass) {
   if (!origin)
     origin = baseURL;
 
-  var uuid_token = token();
+  var uuid_token = make_token();
   var urlParameters = "?token=" + uuid_token + "&max_age=0&origin=" + encodeURIComponent(origin) + "&allow_methods=" + method;
   var url = baseURL + dirname(location.pathname) + RESOURCES_DIR + "preflight.py";
   var requestInit = {"mode": "cors", "method": method};

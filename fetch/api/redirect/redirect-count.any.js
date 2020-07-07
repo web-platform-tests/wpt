@@ -3,7 +3,7 @@
 // META: timeout=long
 
 function redirectCount(desc, redirectUrl, redirectLocation, redirectStatus, maxCount, shouldPass) {
-  var uuid_token = token();
+  var uuid_token = make_token();
 
   var urlParameters = "?token=" + uuid_token + "&max_age=0";
   urlParameters += "&redirect_status=" + redirectStatus;

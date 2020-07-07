@@ -3,7 +3,7 @@
 // META: script=/common/get-host-info.sub.js
 
 function corsPreflightResponseValidation(desc, corsUrl, allowHeaders, allowMethods) {
-  var uuid_token = token();
+  var uuid_token = make_token();
   var url = corsUrl;
   var requestInit = {"mode": "cors"};
   /* Force preflight */

@@ -17,7 +17,7 @@
   }
 
   async_test(function(t) {
-    var id = token();
+    var id = make_token();
     var doc = (new DOMParser()).parseFromString('<link rel="stylesheet" href="stylesheet.py?id=' + id + '"></link>', 'text/html');
     var link = doc.querySelector('link');
     document.head.appendChild(link);
@@ -25,7 +25,7 @@
   }, 'Create a document, adopt the node');
 
   async_test(function(t) {
-    var id = token();
+    var id = make_token();
     var d = document.createElement('div');
     document.body.appendChild(d);
     d.innerHTML = '<link rel="stylesheet" href="stylesheet.py?id=' + id + '"></link>';

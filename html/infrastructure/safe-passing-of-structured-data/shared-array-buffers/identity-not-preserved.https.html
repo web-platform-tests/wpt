@@ -14,7 +14,7 @@
 "use strict";
 
 async_test(t => {
-  const testId = token();
+  const testId = make_token();
   const sab = new SharedArrayBuffer(1);
   window.addEventListener("message", t.step_func(({ data }) => {
     if (data.testId !== testId) {
@@ -30,7 +30,7 @@ async_test(t => {
 }, "postMessaging to this window does not give back the same SharedArrayBuffer (but does use the same backing block)");
 
 async_test(t => {
-  const testId = token();
+  const testId = make_token();
   const sab = new SharedArrayBuffer();
   const worker = new Worker("../resources/echo-worker.js");
 
@@ -47,7 +47,7 @@ async_test(t => {
 }, "postMessaging to a worker and back does not give back the same SharedArrayBuffer");
 
 async_test(t => {
-  const testId = token();
+  const testId = make_token();
   const sab = new SharedArrayBuffer();
   window.addEventListener("message", t.step_func(({ data }) => {
     if (data.testId !== testId) {

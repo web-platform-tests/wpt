@@ -8,7 +8,7 @@ var cors_url = get_host_info().HTTP_REMOTE_ORIGIN +
               "preflight.py";
 
 promise_test((test) => {
-  var uuid_token = token();
+  var uuid_token = make_token();
   var request_url =
       cors_url + "?token=" + uuid_token + "&max_age=12000&allow_methods=POST" +
       "&allow_headers=x-test-header";

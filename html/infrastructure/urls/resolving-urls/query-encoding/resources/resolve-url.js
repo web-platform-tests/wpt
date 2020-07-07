@@ -449,7 +449,7 @@ onload = function() {
   // feImage, image, use
   function test_svg(func, tag) {
     subsetTestByKey('svg', async_test, function() {
-      var uuid = token();
+      var uuid = make_token();
       var id = 'test_svg_'+tag;
       var svg = document.createElementNS(ns.svg, 'svg');
       var parent = func(svg, id);
@@ -572,7 +572,7 @@ onload = function() {
   function test_cache_manifest(mode) {
     subsetTestByKey('appcache', async_test, function() {
       var iframe = document.createElement('iframe');
-      var uuid = token();
+      var uuid = make_token();
       iframe.src = 'resources/page-using-manifest.py?id='+uuid+'&encoding='+encoding+'&mode='+mode;
       document.body.appendChild(iframe);
       this.add_cleanup(function() {
@@ -592,7 +592,7 @@ onload = function() {
     var desc = ['CSS', (use_style_element ? '<style>' : '<link> (' + encoding + ')'),  tmpl].join(' ');
     subsetTestByKey('css', async_test, function(){
       css_is_supported(tmpl, expected_cssom, this);
-      var uuid = token();
+      var uuid = make_token();
       var id = 'test_css_' + uuid;
       var url = 'url(stash.py?q=%s&action=put&id=' + uuid + ')';
       tmpl = tmpl.replace(/<id>/g, id).replace(/<url>/g, url);

@@ -11,7 +11,7 @@
 
   function create_test(host, expected) {
     async_test(t => {
-      let nonce = token();
+      let nonce = make_token();
       let key = "prefetch" + nonce;
 
       let e = document.createElement('link');

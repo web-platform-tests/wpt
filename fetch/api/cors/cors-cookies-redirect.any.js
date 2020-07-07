@@ -24,7 +24,7 @@ promise_test(async (test) => {
 function doTest(usePreflight) {
     promise_test(async (test) => {
         var url = redirectUrl;
-        var uuid_token = token();
+        var uuid_token = make_token();
         var urlParameters = "?token=" + uuid_token + "&max_age=0";
         urlParameters += "&redirect_status=301";
         urlParameters += "&location=" + encodeURIComponent(urlCheckCookies);

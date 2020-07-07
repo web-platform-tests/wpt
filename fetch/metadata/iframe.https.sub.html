@@ -26,7 +26,7 @@
         i.src = url;
         document.body.appendChild(i);
       } else if (user_activated == USER) {
-        let uuid = token();
+        let uuid = make_token();
         i.name = uuid;
         let a = document.createElement('a');
         a.href = url;

@@ -19,7 +19,7 @@
   function create_test(unload_request_origin, expectations) {
     async_test(t => {
       // STEP 1: Create an iframe.
-      let nonce = token();
+      let nonce = make_token();
       let key = "unload-test-" + nonce;
       let url = unload_request_origin +
           "/fetch/metadata/resources/record-header.py?file=" + key;

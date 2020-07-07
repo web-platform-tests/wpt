@@ -3,7 +3,7 @@ import string
 
 from wptserve.utils import isomorphic_encode
 
-def id_token():
+def id_make_token():
    letters = string.ascii_lowercase
    return u''.join(random.choice(letters) for i in range(20))
 
@@ -55,7 +55,7 @@ def main(request, response):
       content = u""
       return 200, headers, content
     else:
-      unique_id = id_token()
+      unique_id = id_make_token()
       headers = [(b"Content-Type", b"text/html"),
                  (b"Cache-Control", b"private, max-age=0, stale-while-revalidate=60"),
                  (b"Unique-Id", isomorphic_encode(unique_id))]

@@ -2,7 +2,7 @@
 // META: script=/common/get-host-info.sub.js
 // META: script=/common/utils.js
 
-    const uuid = token();
+    const uuid = make_token();
 
     async_test(function(test) {
       const xhr = new XMLHttpRequest;

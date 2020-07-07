@@ -3,7 +3,7 @@
 
 promise_test(async (test) => {
   const origin = get_host_info().REMOTE_ORIGIN;
-  const id = token();
+  const id = make_token();
   const store = `${origin}/beacon/resources/beacon.py?cmd=store&id=${id}`;
   const monitor = `/beacon/resources/beacon.py?cmd=stat&id=${id}`;
 

@@ -1,7 +1,7 @@
 const RESOURCES_DIR = "/html/semantics/links/downloading-resources/resources/";
 
 function testReferrerHeader(expectedReferrer) {
-  let id = self.token();
+  let id = self.make_token();
   let testUrl = RESOURCES_DIR + "inspect-header.py?header=referer&cmd=put&id=" + id;
 
   promise_test(function(test) {

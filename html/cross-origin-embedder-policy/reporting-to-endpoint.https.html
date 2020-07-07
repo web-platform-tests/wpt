@@ -85,7 +85,7 @@ async_test(async (t) => {
       iframe.addEventListener('load', resolve, {once: true});
     });
 
-    const url = `${REMOTE_ORIGIN}/common/text-plain.txt?${token()}`;
+    const url = `${REMOTE_ORIGIN}/common/text-plain.txt?${make_token()}`;
     const init = { mode: 'no-cors', cache: 'no-store' };
     // The response comes from cross-origin, and doesn't have a CORP
     // header, so it is blocked.
@@ -122,7 +122,7 @@ async_test(async (t) => {
       w.document.body.appendChild(frame);
     }
 
-    const url = `${REMOTE_ORIGIN}/common/blank.html?${token()}`;
+    const url = `${REMOTE_ORIGIN}/common/blank.html?${make_token()}`;
     // The nested frame comes from cross-origin and doesn't have a CORP
     // header, so it is blocked.
     attachFrame(url);
@@ -145,7 +145,7 @@ async_test(async (t) => {
     t.add_cleanup(() => iframe.remove());
 
     iframe.src = 'resources/reporting-empty-frame.html';
-    const targetUrl = `/common/blank.html?${token()}`;
+    const targetUrl = `/common/blank.html?${make_token()}`;
     iframe.addEventListener('load', () => {
       const nested = iframe.contentDocument.createElement('iframe');
       nested.src = targetUrl;

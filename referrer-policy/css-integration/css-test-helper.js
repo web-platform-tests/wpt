@@ -22,7 +22,7 @@ var svg_test_properties = [
 function runSvgTests(testProperties, testDescription, testFunction) {
   for (const property of testProperties) {
     let current = {
-      id: token(),
+      id: make_token(),
       property: property,
     };
 

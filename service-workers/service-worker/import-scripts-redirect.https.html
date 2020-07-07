@@ -33,7 +33,7 @@ promise_test(async t => {
   "an imported script redirects, and the body changes during the update check");
 
 promise_test(async t => {
-    const key = token();
+    const key = make_token();
     const scope = 'resources/import-scripts-redirect';
     await service_worker_unregister(t, scope);
     let reg = await navigator.serviceWorker.register(

@@ -14,7 +14,7 @@ function wait25ms(test) {
 }
 
 promise_test(async (test) => {
-  var request_token = token();
+  var request_token = make_token();
 
   const response = await fetch(`resources/stale-script.py?token=` + request_token);
   // Wait until resource is completely fetched to allow caching before next fetch.

@@ -17,7 +17,7 @@
       test.step(function() {
         var client = new XMLHttpRequest(),
             urlstart = location.host + location.pathname.replace(/\/[^\/]*$/, '/'),
-            user = token()
+            user = make_token()
         client.open("GET", location.protocol + "//www1." + urlstart + "resources/" + pathsuffix, false)
         client.setRequestHeader("x-user", user)
         client.setRequestHeader("x-pass", 'pass')

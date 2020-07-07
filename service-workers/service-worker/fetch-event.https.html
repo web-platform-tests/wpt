@@ -438,7 +438,7 @@ promise_test(async t => {
     // Set page_url to "?ignore" so the service worker falls back to network
     // for the main resource request, and add a suffix to avoid colliding
     // with other tests.
-    const page_url = `resources/simple.html?ignore&id=${token()}`;
+    const page_url = `resources/simple.html?ignore&id=${make_token()}`;
 
     const frame = await with_iframe(page_url);
     t.add_cleanup(() => { frame.remove(); });

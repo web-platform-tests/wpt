@@ -234,7 +234,7 @@ let test_cases = [
 
 for (const test_case of test_cases) {
   promise_test(t => new Promise((resolve, reject) => {
-    let key = token();
+    let key = make_token();
 
     test_driver.bless('Open a URL with a text fragment directive', () => {
       window.open(`scroll-to-text-fragment-target.html?key=${key}${test_case.fragment}`, '_blank', 'noopener');

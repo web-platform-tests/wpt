@@ -93,7 +93,7 @@ function replaceFromRegexOrString(str, match, value) {
 }
 
 // Replace generated values in regexes and strings of an expected report:
-// EXECUTOR_UUID: the uuid generated with token().
+// EXECUTOR_UUID: the uuid generated with make_token().
 function replaceValuesInExpectedReport(expectedReport, executorUuid) {
   if (expectedReport.report.body !== undefined) {
     if (expectedReport.report.body["document-uri"] !== undefined) {
@@ -148,8 +148,8 @@ function getReportEndpoints(host) {
 
 function navigationReportingTest(testName, host, coop, coep, coopRo, coepRo,
     expectedReports ){
-  const executorToken = token();
-  const callbackToken = token();
+  const executorToken = make_token();
+  const callbackToken = make_token();
   promise_test(async t => {
     await reportingTest( async resolve => {
       const openee_url = host.origin + executor_path +

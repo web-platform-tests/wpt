@@ -8,7 +8,7 @@ const SEARCH_PARAMS = new URL(location.href).searchParams;
 const ORIGIN1 = SEARCH_PARAMS.get('origin1') || '';
 const ORIGIN2 = SEARCH_PARAMS.get('origin2') || '';
 const WITH_HEADERS = !!SEARCH_PARAMS.has('with-headers');
-const TOKEN = token();
+const TOKEN = make_token();
 
 const url =
     `${ORIGIN1}/fetch/api/resources/redirect.py?` +

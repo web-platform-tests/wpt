@@ -20,7 +20,7 @@ function check_simple(method, headers)
 {
     test(function() {
         var client = new XMLHttpRequest()
-        var uuid_token = token();
+        var uuid_token = make_token();
         client.open(method, CROSSDOMAIN + 'resources/preflight.py?token='
                             + uuid_token, false)
         for (head in headers)

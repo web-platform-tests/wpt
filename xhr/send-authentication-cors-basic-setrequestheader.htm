@@ -12,7 +12,7 @@
       async_test(test => {
         var client = new XMLHttpRequest(),
             urlstart = location.host + location.pathname.replace(/\/[^\/]*$/, '/'),
-            user = token()
+            user = make_token()
         client.open("GET", location.protocol+'//www1.'+urlstart + "resources/auth2/corsenabled.py", false)
         client.withCredentials = true
         client.setRequestHeader("x-user", user)

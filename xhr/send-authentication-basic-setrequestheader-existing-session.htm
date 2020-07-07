@@ -20,7 +20,7 @@
         // hence it first sends a normal request, gets a 401 response that will not be passed on to the JS, and sends a new
         // request with an Authorization header before returning
         // (Note: this test will only work as expected if run once per browsing session)
-        var open_user = token()
+        var open_user = make_token()
         client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.py", false, open_user, 'open-pass')
         client.setRequestHeader('X-User', open_user)
         // initial request - this will get a 401 response and re-try with HTTP auth
@@ -32,7 +32,7 @@
         // Here the URL is known to require authentication (from the request above), and the UA has cached open-user:open-pass credentials
         // However, these session credentials should now be overridden by the setRequestHeader() call so the UA should immediately
         // send basic Authorization header with credentials user:pass. (This part is perhaps not well specified anywhere)
-        var user = token();
+        var user = make_token();
         client.open("GET", location.protocol+'//'+urlstart + "resources/auth4/auth.py", true)
         client.setRequestHeader("x-user", user)
         client.setRequestHeader('Authorization', 'Basic ' + btoa(user + ":pass"))

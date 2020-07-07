@@ -9,7 +9,7 @@
 <script>
   function create_test(host, expectations) {
     async_test(t => {
-      let nonce = token();
+      let nonce = make_token();
       let a = document.createElement('a');
       a.download = '';
       a.text = nonce;

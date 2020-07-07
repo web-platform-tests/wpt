@@ -19,19 +19,19 @@ const coep_header = '|header(Cross-Origin-Embedder-Policy,require-corp)';
 
 promise_test(async t => {
   // The test window.
-  const this_window_token = token();
+  const this_window_token = make_token();
 
   // The "opener" window. This has COOP and a reporter.
-  const opener_report_token= token();
-  const opener_token = token();
+  const opener_report_token= make_token();
+  const opener_token = make_token();
   const opener_reportTo = reportToHeaders(opener_report_token);
   const opener_url = same_origin + executor_path + opener_reportTo.header +
     opener_reportTo.coopSameOriginHeader + coep_header +
     `&uuid=${opener_token}`;
 
   // The "openee" window. This is cross origin with the "opener".
-  const openee_report_token= token();
-  const openee_token = token();
+  const openee_report_token= make_token();
+  const openee_token = make_token();
   const openee_url = same_origin + executor_path + `&uuid=${openee_token}`;
 
   // 1. Create the opener window.

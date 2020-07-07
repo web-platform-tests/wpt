@@ -13,7 +13,7 @@
 <body>
   <script>
     promise_test(async t => {
-      const nonce = token();
+      const nonce = make_token();
       const key = "serviceworker-same-origin" + nonce;
 
       // Register a service worker and check the request header.

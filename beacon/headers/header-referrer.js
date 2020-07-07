@@ -4,7 +4,7 @@ var referrerOrigin = self.location.origin + '/';
 var referrerUrl = self.location.href;
 
 function testReferrerHeader(testBase, expectedReferrer, mayBeBlockedAsMixedContent = false) {
-  var id = self.token();
+  var id = self.make_token();
   var testUrl = testBase + "inspect-header.py?header=referer&cmd=put&id=" + id;
 
   promise_test(function(test) {

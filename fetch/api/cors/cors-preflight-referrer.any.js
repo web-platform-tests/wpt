@@ -3,7 +3,7 @@
 // META: script=/common/get-host-info.sub.js
 
 function corsPreflightReferrer(desc, corsUrl, referrerPolicy, referrer, expectedReferrer) {
-  var uuid_token = token();
+  var uuid_token = make_token();
   var url = corsUrl;
   var urlParameters = "?token=" + uuid_token + "&max_age=0";
   var requestInit = {"mode": "cors", "referrerPolicy": referrerPolicy};

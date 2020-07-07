@@ -55,7 +55,7 @@ function stackTests(errorFactory, description) {
   }, description + ' (worker)');
 
   async_test(t => {
-    const thisTestId = token();
+    const thisTestId = make_token();
 
     const error = errorFactory();
     const originalStack = error.stack;

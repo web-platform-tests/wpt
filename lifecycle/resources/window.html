@@ -12,7 +12,7 @@
 const freezingStepName = 'testOnFreeze';
 
 function testFetch(keepalive) {
-  var request_token = token();
+  var request_token = make_token();
   var name = 'testfetch' + (keepalive ? 'with' : 'without') + 'keepalive';
   window.opener.add_step(name);
 
@@ -28,7 +28,7 @@ function testFetch(keepalive) {
 }
 
 function testXHR(async) {
-  var request_token = token();
+  var request_token = make_token();
   var name = 'test' + (async ? 'Async' : 'Sync') + 'XHR';
   window.opener.add_step(name);
   var xhr = new XMLHttpRequest();
@@ -52,7 +52,7 @@ function testXHR(async) {
 }
 
 function testSendBeacon() {
-  var request_token = token();
+  var request_token = make_token();
   var name = 'testSendBeacon';
   window.opener.add_step(name);
   if (navigator.sendBeacon("beacon.py?token=" + request_token, "")) {

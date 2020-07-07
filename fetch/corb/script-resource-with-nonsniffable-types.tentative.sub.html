@@ -21,7 +21,7 @@ function test(mime_type, is_blocking_expected) {
 
   async_test(function(t) {
     var script = document.createElement("script")
-    var script_has_run_token = "script_has_run" + token();
+    var script_has_run_token = "script_has_run" + make_token();
 
     // With and without CORB there should be no error, but without CORB the
     // original script body will be preserved and |window.script_has_run| will

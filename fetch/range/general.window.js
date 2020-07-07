@@ -12,7 +12,7 @@ promise_test(async t => {
 promise_test(async () => {
   const wavURL = new URL('resources/long-wav.py', location);
   const stashTakeURL = new URL('resources/stash-take.py', location);
-  const stashToken = token();
+  const stashToken = make_token();
   wavURL.searchParams.set('accept-encoding-key', stashToken);
   stashTakeURL.searchParams.set('key', stashToken);
 

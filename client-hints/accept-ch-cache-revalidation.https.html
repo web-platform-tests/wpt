@@ -14,7 +14,7 @@ function wait25ms(test) {
 }
 
 promise_test(async (test) => {
-  var request_token = token();
+  var request_token = make_token();
   var client_hint_headers = [
     "device-memory",
     "dpr",

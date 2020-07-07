@@ -11,7 +11,7 @@ function corsRedirect(desc, redirectUrl, redirectLocation, redirectStatus, expec
   var requestInit = {"mode": "cors", "redirect": "follow", "headers" : [["x-w3c", "test"]]};
 
   promise_test(function(test) {
-    var uuid_token = token();
+    var uuid_token = make_token();
     return fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(resp) {
       return fetch(redirectUrl + "?token=" + uuid_token + "&max_age=0" + urlParametersSuccess, requestInit).then(function(resp) {
         assert_equals(resp.status, 200, "Response's status is 200");
@@ -20,7 +20,7 @@ function corsRedirect(desc, redirectUrl, redirectLocation, redirectStatus, expec
     });
   }, desc + " (preflight after redirection success case)");
   promise_test(function(test) {
-    var uuid_token = token();
+    var uuid_token = make_token();
     return fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(resp) {
       return promise_rejects_js(test, TypeError, fetch(redirectUrl + "?token=" + uuid_token + "&max_age=0" + urlParametersFailure, requestInit));
     });

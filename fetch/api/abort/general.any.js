@@ -216,8 +216,8 @@ promise_test(async t => {
 
   const controller = new AbortController();
   const signal = controller.signal;
-  const stateKey = token();
-  const abortKey = token();
+  const stateKey = make_token();
+  const abortKey = make_token();
   requestAbortKeys.push(abortKey);
   controller.abort();
 
@@ -243,7 +243,7 @@ promise_test(async t => {
   const fetches = [];
 
   for (let i = 0; i < 3; i++) {
-    const abortKey = token();
+    const abortKey = make_token();
     requestAbortKeys.push(abortKey);
 
     fetches.push(
@@ -269,7 +269,7 @@ promise_test(async t => {
   const fetches = [];
 
   for (let i = 0; i < 3; i++) {
-    const abortKey = token();
+    const abortKey = make_token();
     requestAbortKeys.push(abortKey);
 
     fetches.push(
@@ -287,8 +287,8 @@ promise_test(async t => {
 
   const controller = new AbortController();
   const signal = controller.signal;
-  const stateKey = token();
-  const abortKey = token();
+  const stateKey = make_token();
+  const abortKey = make_token();
   requestAbortKeys.push(abortKey);
 
   await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
@@ -315,8 +315,8 @@ promise_test(async t => {
 
   const controller = new AbortController();
   const signal = controller.signal;
-  const stateKey = token();
-  const abortKey = token();
+  const stateKey = make_token();
+  const abortKey = make_token();
   requestAbortKeys.push(abortKey);
 
   const url = new URL(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, location);
@@ -353,8 +353,8 @@ for (const bodyMethod of BODY_METHODS) {
 
     const controller = new AbortController();
     const signal = controller.signal;
-    const stateKey = token();
-    const abortKey = token();
+    const stateKey = make_token();
+    const abortKey = make_token();
     requestAbortKeys.push(abortKey);
 
     const response = await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
@@ -385,8 +385,8 @@ promise_test(async t => {
 
   const controller = new AbortController();
   const signal = controller.signal;
-  const stateKey = token();
-  const abortKey = token();
+  const stateKey = make_token();
+  const abortKey = make_token();
   requestAbortKeys.push(abortKey);
 
   const response = await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
@@ -414,8 +414,8 @@ promise_test(async t => {
 
   const controller = new AbortController();
   const signal = controller.signal;
-  const stateKey = token();
-  const abortKey = token();
+  const stateKey = make_token();
+  const abortKey = make_token();
   requestAbortKeys.push(abortKey);
 
   const response = await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });

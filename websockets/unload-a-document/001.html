@@ -13,7 +13,7 @@ var t = async_test();
 var w;
 var uuid;
 t.step(function() {
-  uuid = token()
+  uuid = make_token()
   w = window.open("001-1.html");
   add_result_callback(function() {
     w.close();

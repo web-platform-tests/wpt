@@ -64,7 +64,7 @@ function get(obj, name, default_val) {
  * Generate a new UUID.
  * @returns {string}
  */
-function token() {
+function make_token() {
     var uuid = [to_hex(rand_int(32), 8),
                 to_hex(rand_int(16), 4),
                 to_hex(0x4000 | rand_int(12), 4),

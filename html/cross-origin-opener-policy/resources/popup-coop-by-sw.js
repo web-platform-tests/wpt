@@ -1,4 +1,4 @@
-const test_token = token();
+const test_token = make_token();
 const bc = new BroadcastChannel(test_token);
 
 // Define a page served entirely from the ServiceWorker.

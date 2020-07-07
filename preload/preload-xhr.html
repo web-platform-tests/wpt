@@ -6,7 +6,7 @@
 
 const dummyContent = '<?xml version="1.0" encoding="utf-8"?>\n<root>Text.me</root>\n';
 promise_test(async (t) => {
-  const url = `resources/dummy.xml?token=${token()}`;
+  const url = `resources/dummy.xml?token=${make_token()}`;
   const link = document.createElement('link');
   link.rel = 'preload';
   link.as = 'fetch';
@@ -29,7 +29,7 @@ promise_test(async (t) => {
 }, 'Make an XHR request immediately after creating link rel=preload.');
 
 promise_test(async (t) => {
-  const url = `resources/dummy.xml?token=${token()}`;
+  const url = `resources/dummy.xml?token=${make_token()}`;
   const link = document.createElement('link');
   link.rel = 'preload';
   link.as = 'fetch';

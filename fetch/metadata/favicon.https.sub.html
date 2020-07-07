@@ -9,7 +9,7 @@
 <script>
   promise_test(t => {
     return new Promise((resolve, reject) => {
-      let nonce = token();
+      let nonce = make_token();
       let key = "image" + nonce;
 
       let e = document.createElement('link');
@@ -28,7 +28,7 @@
 
   promise_test(t => {
     return new Promise((resolve, reject) => {
-      let nonce = token();
+      let nonce = make_token();
       let key = "image" + nonce;
 
       let e = document.createElement('link');
@@ -47,7 +47,7 @@
 
   promise_test(t => {
     return new Promise((resolve, reject) => {
-      let nonce = token();
+      let nonce = make_token();
       let key = "image" + nonce;
 
       let e = document.createElement('link');

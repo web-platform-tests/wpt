@@ -41,8 +41,8 @@ for (const method in methodsToTest) {
   cache_test(async (cache, test) => {
     const controller = new AbortController();
     const signal = controller.signal;
-    const stateKey = token();
-    const abortKey = token();
+    const stateKey = make_token();
+    const abortKey = make_token();
     const request = new Request(
         `../../../fetch/api/resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`,
         { signal });

@@ -12,7 +12,7 @@
 // Test security restriction for user activation
 for (let user_activation of [true, false]) {
   promise_test(t => new Promise((resolve, reject) => {
-    let key = token();
+    let key = make_token();
 
     if (user_activation) {
       test_driver.bless('Open a URL with a text fragment directive', () => {
@@ -39,7 +39,7 @@ const crossOriginTarget = "http://{{hosts[alt][www]}}:{{ports[http][0]}}/scroll-
 // Test security restriction for no window opener
 for (let noopener of [true, false]) {
   promise_test(t => new Promise((resolve, reject) => {
-    let key = token();
+    let key = make_token();
 
     test_driver.bless('Open a URL with a text fragment directive', () => {
       if (noopener) {
@@ -63,7 +63,7 @@ for (let noopener of [true, false]) {
 
 // Test security restriction for no activation in an iframe
 promise_test(t => new Promise((resolve, reject) => {
-  let key = token();
+  let key = make_token();
 
   let frame = document.createElement('iframe');
   document.body.appendChild(frame);

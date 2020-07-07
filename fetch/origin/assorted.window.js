@@ -4,7 +4,7 @@
 const origins = get_host_info();
 
 promise_test(async function () {
-  const stash = token(),
+  const stash = make_token(),
         redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
 
   // Cross-origin -> same-origin will result in setting the tainted origin flag for the second
@@ -21,7 +21,7 @@ promise_test(async function () {
 }, "Origin header and 308 redirect");
 
 promise_test(async function () {
-  const stash = token(),
+  const stash = make_token(),
         redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
 
   let url = origins.HTTP_ORIGIN + redirectPath + "?stash=" + stash;
@@ -44,7 +44,7 @@ promise_test(async function () {
 }, "Origin header and GET navigation");
 
 promise_test(async function () {
-  const stash = token(),
+  const stash = make_token(),
         redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
 
   let url = origins.HTTP_ORIGIN + redirectPath + "?stash=" + stash;
@@ -78,7 +78,7 @@ promise_test(async function () {
 
 function navigationReferrerPolicy(referrerPolicy, destination, expectedOrigin) {
   return async function () {
-    const stash = token();
+    const stash = make_token();
     const referrerPolicyPath = "/fetch/origin/resources/referrer-policy.py";
     const redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
 
@@ -117,7 +117,7 @@ function navigationReferrerPolicy(referrerPolicy, destination, expectedOrigin) {
 
 function fetchReferrerPolicy(referrerPolicy, destination, fetchMode, expectedOrigin, httpMethod) {
   return async function () {
-    const stash = token();
+    const stash = make_token();
     const redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
 
     let fetchUrl =

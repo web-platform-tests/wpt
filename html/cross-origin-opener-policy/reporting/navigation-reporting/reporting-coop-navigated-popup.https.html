@@ -1,7 +1,7 @@
 <title>Cross-Origin-Opener-Policy: a navigated popup with reporting</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src="/common/utils.js"></script> <!-- Use token() to allow running tests in parallel -->
+<script src="/common/utils.js"></script> <!-- Use make_token() to allow running tests in parallel -->
 <script src="../resources/dispatcher.js"></script>
 <script src="../resources/reporting-common.js"></script>
 
@@ -15,9 +15,9 @@
 // during the navigation in the popup (step 3). The current document (the opener)
 // endpoint should not receive any report as no switch ocurred on 2.
 promise_test( async t => {
-  const callbackToken = token();
-  const noCoopToken = token();
-  const coopToken= token();
+  const callbackToken = make_token();
+  const noCoopToken = make_token();
+  const coopToken= make_token();
   await reportingTest( async resolve => {
     const noCOOPUrl = executor_path +
       `|header(report-to,${encodeURIComponent(getReportEndpoints(location.origin))})` +

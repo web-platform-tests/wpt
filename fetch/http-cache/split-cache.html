@@ -54,7 +54,7 @@ function performFullTest(is_cross_site_test, load_resource_in_iframe, name) {
     ]
   }
 
-  var uuid = token()
+  var uuid = make_token()
   var local_requests = expandTemplates(test)
   var fetchFns = makeFetchFunctions(local_requests, uuid)
 

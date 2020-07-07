@@ -6,7 +6,7 @@
 promise_test(async t => {
   const controller = new AbortController();
   controller.abort();
-  const key = token();
+  const key = make_token();
   const wsUrl = new URL(
       `/fetch/api/resources/stash-put.py?key=${key}&value=connected`,
       location.href);

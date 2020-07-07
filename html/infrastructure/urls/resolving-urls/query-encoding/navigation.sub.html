@@ -88,7 +88,7 @@ function test_follow_link(tag) {
 // follow hyperlink with ping attribute
 function test_follow_link_ping(tag) {
   async_test(function() {
-    var uuid = token();
+    var uuid = make_token();
     var elm = document.createElement(tag);
     // check if ping is supported
     assert_true('ping' in elm, 'ping not supported');

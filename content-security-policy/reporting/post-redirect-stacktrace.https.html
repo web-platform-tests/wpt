@@ -14,7 +14,7 @@ const CROSS_SITE = get_host_info().HTTPS_NOTSAMESITE_ORIGIN;
 
 const blank_path = "/common/blank.html"
 const redirect = url => 
-  `/content-security-policy/reporting/support/redirect-throw-function.sub.py?token=${token()}`;
+  `/content-security-policy/reporting/support/redirect-throw-function.sub.py?token=${make_token()}`;
 
 const script_path = "/content-security-policy/reporting/support/throw-function.js"
 const script_ref = "#ref"

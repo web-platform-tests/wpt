@@ -4,7 +4,7 @@
 
 /* Check preflight is ok if status is ok status (200  to 299)*/
 function corsPreflightStatus(desc, corsUrl, preflightStatus) {
-  var uuid_token = token();
+  var uuid_token = make_token();
   var url = corsUrl;
   var requestInit = {"mode": "cors"};
   /* Force preflight */

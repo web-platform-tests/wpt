@@ -17,7 +17,7 @@
 
     <script>
       promise_test(function(css_test) {
-        let id = token();
+        let id = make_token();
         let url_prefix = location.protocol + "//www1." + location.hostname + ":" + location.port;
         let css_url = url_prefix +
           "/common/security-features/subresource/stylesheet.py?id=" + id +

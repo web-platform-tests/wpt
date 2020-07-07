@@ -17,9 +17,9 @@ const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
 const coep_header = '|header(Cross-Origin-Embedder-Policy,require-corp)';
 
 promise_test(async t => {
-  const report_token = token();
-  const executor_token = token();
-  const callback_token = token();
+  const report_token = make_token();
+  const executor_token = make_token();
+  const callback_token = make_token();
 
   const reportTo = reportToHeaders(report_token);
   const openee_url = cross_origin + executor_path +

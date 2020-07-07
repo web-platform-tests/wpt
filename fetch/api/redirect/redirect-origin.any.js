@@ -3,7 +3,7 @@
 // META: script=/common/get-host-info.sub.js
 
 function testOriginAfterRedirection(desc, method, redirectUrl, redirectLocation, redirectStatus, expectedOrigin) {
-    var uuid_token = token();
+    var uuid_token = make_token();
     var url = redirectUrl;
     var urlParameters = "?token=" + uuid_token + "&max_age=0";
     urlParameters += "&redirect_status=" + redirectStatus;

@@ -131,8 +131,7 @@ def test_verify_payload():
       'wpt-chrome-dev-crashtest-1',
       'wpt-firefox-nightly-print-reftest-1',
       'wpt-chrome-dev-print-reftest-1',
-      'lint',
-      'sink-task'}),
+      'lint'}),
     ("pr_event.json", True, {".taskcluster.yml",".travis.yml","tools/ci/start.sh"},
      {'download-firefox-nightly',
       'lint',
@@ -259,8 +258,7 @@ def test_verify_payload():
       'wpt-servo-nightly-testharness-9',
       'wpt-servo-nightly-wdspec-1',
       'wpt-servo-nightly-wdspec-2',
-      'wpt-servo-nightly-crashtest-1',
-      'sink-task',})
+      'wpt-servo-nightly-crashtest-1'})
 ])
 def test_schedule_tasks(event_path, is_pr, files_changed, expected):
     with mock.patch("tools.ci.tc.decision.get_fetch_rev", return_value=(None, None, None)):

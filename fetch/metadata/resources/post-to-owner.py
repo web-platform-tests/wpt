@@ -7,7 +7,6 @@ def main(request, response):
         (b"Content-Type", b"text/html"),
         (b"Cache-Control", b"no-cache, no-store, must-revalidate")
     ]
-    request.headers.get(b"sec-fetch-dest", b"")
 
     body = u"""
         <!DOCTYPE html>

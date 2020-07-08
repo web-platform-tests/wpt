@@ -285,16 +285,15 @@ def build_task_graph(event, all_tasks, tasks):
     for task_name, task in iteritems(tasks):
         if task_name == "sink-task":
             # sink-task will be created below at the end of the ordered dict,
-            # so that all other tasks will have been created.
+            # so that it can depend on all other tasks.
             continue
         add_task(task_name, task)
 
-    # GitHub branch protection needs us to name explicit required tasks - which
-    # doesn't suffice when using a dynamic task graph. To work around this we
-    # declare a sink task that depends on all the other tasks completing, and
-    # checks if they have succeeded. We can then make the sink task the sole
-    # required task for GitHub.
-    # sink-task is only scheduled on PRs.
+    # GitHub branch protection for pull requests needs us to name explicit
+    # required tasks - which doesn't suffice when using a dynamic task graph.
+    # To work around this we declare a sink task that depends on all the other
+    # tasks completing, and checks if they have succeeded. We can then
+    # make the sink task the sole required task for pull requests.
     sink_task = tasks.get("sink-task")
     if sink_task:
         logger.info("Scheduling sink-task")

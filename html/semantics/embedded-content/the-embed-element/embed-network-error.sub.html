@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Network errors with embed elements</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+"use strict";
+
+async_test(t => {
+  const embed = document.createElement("embed");
+  embed.src = "//{{hosts[][nonexistent]}}/";
+  embed.onload = () => t.done();
+  embed.onerror = t.unreached_func("error event must not fire");
+  document.body.append(embed);
+}, "nonexistent host");
+
+async_test(t => {
+  const embed = document.createElement("embed");
+  embed.src = "resources/not-embeddable.html";
+  embed.onload = () => t.done();
+  embed.onerror = t.unreached_func("error event must not fire");
+  document.body.append(embed);
+}, "X-Frame-Options prevents embedding");
+</script>

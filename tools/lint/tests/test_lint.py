@@ -464,7 +464,7 @@ def test_ignore_glob(caplog):
     # clean.
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["ref/absolute.html", "ref/existent_relative.html"], "normal", "*solu*")
+            rv = lint(_dummy_repo, ["ref/absolute.html", "ref/existent_relative.html"], "normal", ["*solu*"])
             assert rv == 0
             # Also confirm that only one file is checked
             assert mocked_check_path.call_count == 1

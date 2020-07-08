@@ -867,8 +867,8 @@ def create_parser():
     parser.add_argument("--repo-root", type=ensure_text,
                         help="The WPT directory. Use this "
                         "option if the lint script exists outside the repository")
-    parser.add_argument("--ignore-glob", type=ensure_text,
-                        help="Additional file glob to ignore.")
+    parser.add_argument("--ignore-glob", type=ensure_text, action="append",
+                        help="Additional file glob to ignore (repeat to add more)")
     parser.add_argument("--all", action="store_true", help="If no paths are passed, try to lint the whole "
                         "working directory, not just files that changed")
     return parser
@@ -894,12 +894,12 @@ def main(**kwargs_str):
 
     paths = lint_paths(kwargs, repo_root)
 
-    ignore_glob = kwargs.get("ignore_glob") or ""
+    ignore_glob = kwargs.get("ignore_glob", [])
 
     return lint(repo_root, paths, output_format, ignore_glob)
 
 
-def lint(repo_root, paths, output_format, ignore_glob=""):
+def lint(repo_root, paths, output_format, ignore_glob=None):
     # type: (Text, List[Text], Text, Text) -> int
     error_count = defaultdict(int)  # type: Dict[Text, int]
     last = None
@@ -908,7 +908,7 @@ def lint(repo_root, paths, output_format, ignore_glob=""):
         ignorelist, skipped_files = parse_ignorelist(f)
 
     if ignore_glob:
-        skipped_files.add(ignore_glob)
+        skipped_files |= set(ignore_glob)
 
     output_errors = {"json": output_errors_json,
                      "markdown": output_errors_markdown,

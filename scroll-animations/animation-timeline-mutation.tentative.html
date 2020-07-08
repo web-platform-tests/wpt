@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<link rel="help" href="https://drafts.csswg.org/web-animations-1/#setting-the-timeline">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/web-animations/testcommon.js"></script>
+<style>
+  #scrollers {
+    height: 0px;
+    overflow: hidden;
+  }
+  #scrollers > div {
+    overflow: auto;
+    height: 100px;
+    width: 100px;
+  }
+  #scrollers > div > div {
+    height: 500px;
+    width: 500px;
+  }
+  #elements > div {
+    width: 0px;
+  }
+</style>
+<div id=scrollers>
+  <div id=scroller_10><div></div></div>
+  <div id=scroller_50><div></div></div>
+  <div id=scroller_70><div></div></div>
+</div>
+<div id=elements></div>
+<script>
+  scroller_10.scrollTop = 10;
+  scroller_50.scrollTop = 50;
+  scroller_70.scrollTop = 70;
+
+  function createElement() {
+    let element = document.createElement('div');
+    elements.append(element);
+    element.offsetTop; // Force a layout box for the element.
+    return element;
+  }
+
+  function createScrollTimeline(source) {
+    return new ScrollTimeline({
+      scrollSource: source,
+      timeRange: 10000,
+      startScrollOffset: '0px',
+      endScrollOffset: '100px',
+    });
+  }
+
+  function animate(element, timeline) {
+    return element.animate([
+        { width: '100px' },
+        { width: '200px' }
+      ],
+      {
+        timeline: timeline,
+        duration: 10000
+      });
+  }
+
+  promise_test(async t => {
+    let element = createElement();
+    let scrollTimeline1 = createScrollTimeline(scroller_10);
+    let scrollTimeline2 = createScrollTimeline(scroller_50);
+
+    let animation = animate(element, scrollTimeline1);
+    await animation.ready;
+
+    assert_equals(animation.currentTime, 1000);
+
+    animation.timeline = scrollTimeline2;
+    assert_equals(animation.currentTime, 5000);
+
+    animation.timeline = scrollTimeline1;
+    assert_equals(animation.currentTime, 1000);
+  }, 'Switch between two ScrollTimelines');
+
+  promise_test(async t => {
+    let element = createElement();
+    let scrollTimeline = createScrollTimeline(scroller_70);
+
+    let animation = animate(element, document.timeline);
+    await animation.ready;
+
+    assert_equals(animation.currentTime, 0);
+
+    animation.timeline = scrollTimeline;
+    animation.startTime = 0;
+    assert_equals(animation.currentTime, 7000);
+
+    animation.timeline = document.timeline;
+    animation.startTime = document.timeline.currentTime;
+    assert_equals(animation.currentTime, 0);
+  }, 'Switch between document.timeline and ScrollTimeline');
+
+  promise_test(async t => {
+    let element = createElement();
+    let scrollTimeline = createScrollTimeline(scroller_50);
+
+    let animation = animate(element, scrollTimeline);
+    await animation.ready;
+
+    assert_equals(animation.currentTime, 5000);
+
+    animation.timeline = null;
+    assert_equals(animation.currentTime, null);
+
+    animation.timeline = scrollTimeline;
+    assert_equals(animation.currentTime, 5000);
+  }, 'Setting timeline to null');
+
+</script>

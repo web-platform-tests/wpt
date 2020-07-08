@@ -493,5 +493,6 @@ tasks:
         Sink task for all other tasks; indicates success
       use:
         - wpt-base
+        - trigger-pr
       command: "./wpt tc-sink-task"
       requires: all-resolved

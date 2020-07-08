@@ -290,15 +290,16 @@ def build_task_graph(event, all_tasks, tasks):
     # declare a sink task that depends on all the other tasks completing, and
     # checks if they have succeeded. We can then make the sink task the sole
     # required task for GitHub.
-    is_pr, _ = get_triggers(event)
-    if is_pr:
-        logger.info("Event is a pull request, scheduling sink-task")
+    # sink-task is only scheduled on PRs.
+    sink_task = tasks.get("sink-task")
+    if sink_task:
+        logger.info("Scheduling sink-task")
         depends_on_ids = [x[0] for x in task_id_map.values()]
-        sink_task = all_tasks["sink-task"]
         sink_task["command"] += " {0}".format(" ".join(depends_on_ids))
-        task_id_map["sink-task"] = create_tc_task(event, sink_task, taskgroup_id, depends_on_ids)
+        task_id_map["sink-task"] = create_tc_task(
+            event, sink_task, taskgroup_id, depends_on_ids)
     else:
-        logger.info("Event is not a pull-request, skipping sink-task")
+        logger.info("sink-task is not scheduled")
 
     return task_id_map
 

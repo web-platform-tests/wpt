@@ -536,10 +536,13 @@ class Chrome(Browser):
     requirements = "requirements_chrome.txt"
 
     def download(self, dest=None, channel=None, rename=None):
-        raise NotImplementedError
+        if channel != "nightly":
+            raise NotImplementedError("We can only download Chrome Nightly (Chromium ToT) for you.")
+        url_base = self.latest_chromium_snapshot_url()
 
     def install(self, dest=None, channel=None):
-        raise NotImplementedError
+        if channel != "nightly":
+            raise NotImplementedError("We can only install Chrome Nightly (Chromium ToT) for you.")
 
     def platform_string(self):
         platform = {
@@ -574,6 +577,12 @@ class Chrome(Browser):
             platform += "_x64"
 
         return platform
+
+    def latest_chromium_snapshot_url(self):
+        arch = self.chromium_platform_string()
+        revision_url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/LAST_CHANGE" % arch
+        revision = get(revision_url).text.strip()
+        return "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/" % arch, revision
 
     def find_binary(self, venv_path=None, channel=None):
         if uname[0] == "Linux":
@@ -626,11 +635,7 @@ class Chrome(Browser):
             get(url)
         except requests.RequestException:
             # Fall back to the tip-of-tree Chromium build.
-            revision_url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/LAST_CHANGE" % (
-                self.chromium_platform_string())
-            revision = get(revision_url).text.strip()
-            url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/chromedriver_%s.zip" % (
-                self.chromium_platform_string(), revision, self.platform_string())
+            url = "%s/chromedriver_%s.zip" % self.latest_chromium_snapshot_url(), self.platform_string()
         return url
 
     def _latest_chromedriver_url(self, chrome_version):

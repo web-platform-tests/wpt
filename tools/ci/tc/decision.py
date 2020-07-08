@@ -47,7 +47,7 @@ def fetch_event_data(queue):
 
 def filter_triggers(event, all_tasks):
     is_pr, branch = get_triggers(event)
-    triggered = {}
+    triggered = OrderedDict()
     for name, task in iteritems(all_tasks):
         if "trigger" in task:
             if is_pr and "pull-request" in task["trigger"]:
@@ -102,7 +102,7 @@ def get_extra_jobs(event):
 
 
 def filter_schedule_if(event, tasks):
-    scheduled = {}
+    scheduled = OrderedDict()
     run_jobs = None
     for name, task in iteritems(tasks):
         if "schedule-if" in task:
@@ -283,6 +283,10 @@ def build_task_graph(event, all_tasks, tasks):
         task_id_map[task_name] = (task_id, task_data)
 
     for task_name, task in iteritems(tasks):
+        if task_name == "sink-task":
+            # sink-task will be created below at the end of the ordered dict,
+            # so that all other tasks will have been created.
+            continue
         add_task(task_name, task)
 
     # GitHub branch protection needs us to name explicit required tasks - which

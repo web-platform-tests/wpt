@@ -27,7 +27,10 @@ tests = [
     (u'script-src', u'<script src={}></script>', u'true'),
     (u'script-src-unsupported-type', u'<script src={} type=text/plain></script>', u'false'),
     (u'img-src', u'<img src={}>', u'true'),
+    (u'picture-source-unsupported-type', u'<picture><source srcset={} type=text/plain><img></picture>', u'false'),
+    (u'picture-source-nomatch-media', u'<picture><source srcset={} media="not all"><img></picture>', u'false'),
     (u'picture-source-no-img', u'<picture><source srcset={}></picture>', u'false'),
+    (u'picture-source-br-img', u'<picture><source srcset={}><br><img></picture>', u'true'),
 ]
 
 preamble = u"""<!DOCTYPE html>

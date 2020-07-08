@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<meta charset="utf-8">
+<title>letter-spacing at element boundaries</title>
+<link rel='author' title='Elika J. Etemad' href='http://fantasai.inkedblade.net/contact'>
+<link rel='help' href='https://www.w3.org/TR/css-text-3/#letter-spacing'>
+<link rel='help' href='https://www.w3.org/TR/css-text-decor-4/#emphasis-marks'>
+<link rel='match' href='letter-spacing-111-ref.html'>
+<meta name="assert" content="Emphasis marks are centered on characters, not characters + spacing.">
+<style type='text/css'>
+  @import "/fonts/ahem.css";
+  .contain {
+    font: 20px/1 Ahem;
+    border: solid blue;
+    margin: 1em;
+    float: left; }
+  .ls1 {
+    letter-spacing: 1em;
+  }
+  .control p {
+    white-space: pre-wrap;
+  }
+  p {
+    letter-spacing: 0;
+    margin: 0;
+    border-bottom: solid 1px gray;
+    text-emphasis: dot;
+  }
+</style>
+
+<div id='instructions'>Test passes if the pattern is identical in both blue boxes.</div>
+
+<div class="contain">
+  <p class="ls1">ABC</p>
+</div>
+
+<div class="contain control">
+  <p>A B C
+</div>

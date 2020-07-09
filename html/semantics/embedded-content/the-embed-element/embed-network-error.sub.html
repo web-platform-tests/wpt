@@ -14,7 +14,7 @@ async_test(t => {
   embed.onload = () => t.done();
   embed.onerror = t.unreached_func("error event must not fire");
   document.body.append(embed);
-}, "nonexistent host");
+}, "new embed: nonexistent host");
 
 async_test(t => {
   const embed = document.createElement("embed");
@@ -22,5 +22,33 @@ async_test(t => {
   embed.onload = () => t.done();
   embed.onerror = t.unreached_func("error event must not fire");
   document.body.append(embed);
-}, "X-Frame-Options prevents embedding");
+}, "new embed: X-Frame-Options prevents embedding");
+
+async_test(t => {
+  const embed = document.createElement("embed");
+  embed.src = "/common/blank.html";
+  embed.name = "existingEmbed1";
+  embed.onload = t.step_func(() => {
+    embed.onload = () => t.done();
+    embed.onerror = t.unreached_func("error event must not fire 2");
+
+    frames.existingEmbed1.location.href = "//{{hosts[][nonexistent]}}/";
+  });
+  embed.onerror = t.unreached_func("error event must not fire 1");
+  document.body.append(embed);
+}, "navigating an existing embed: nonexistent host");
+
+async_test(t => {
+  const embed = document.createElement("embed");
+  embed.src = "/common/blank.html";
+  embed.name = "existingEmbed2";
+  embed.onload = t.step_func(() => {
+    embed.onload = () => t.done();
+    embed.onerror = t.unreached_func("error event must not fire 2");
+
+    frames.existingEmbed2.location.href = "resources/not-embeddable.html";
+  });
+  embed.onerror = t.unreached_func("error event must not fire 1");
+  document.body.append(embed);
+}, "navigating an existing embed: X-Frame-Options prevents embedding");
 </script>

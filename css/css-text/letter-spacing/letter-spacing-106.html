@@ -4,7 +4,7 @@
 <title>letter-spacing at element boundaries</title>
 <link rel='author' title='Elika J. Etemad' href='http://fantasai.inkedblade.net/contact'>
 <link rel='help' href='https://www.w3.org/TR/css-text-3/#letter-spacing'>
-<link rel='match' href='reference/letter-spacing-103-ref.html'>
+<link rel='match' href='reference/letter-spacing-106-ref.html'>
 <meta name="assert" content="Letter spacing affects unwrapped min-content and max-content sizes.">
 <style type='text/css'>
   @import "/fonts/ahem.css";
@@ -18,18 +18,16 @@
   }
   .ls1 {
     letter-spacing: 1em;
-    text-decoration: fuchsia line-through;
   }
   .ls3 {
     letter-spacing: 3em;
   }
   .control p {
-    white-space: pre-wrap;
+    white-space: pre;
   }
   p {
     letter-spacing: 0;
     margin: 0;
-    border-bottom: solid 1px gray;
     word-break: break-all;
     float: left;
     clear: left;
@@ -100,25 +98,4 @@
 <!-- middle containing space -->
 <p>AAA   BBB</p>
 <p>AAA     B B B</p>
-</div>
-
-<div class="contain">
-<div class="squash" style="font-size: 15px;">
-<p class="ls1">AAABBB</p>
-<!-- middle owned by containing block: simple -->
-<p><span class="ls1"><span class="ls0">A</span><span class="ls0">B</span></span></p>
-<p><span class="ls1">AAA</span><span class="ls1">BBB</span></p>
-<!-- middle owned by containing block: double nesting -->
-<p class="ls3"><span class="ls1"><span class="ls0">AAA</span></span><span class="ls1">BBB</span></p>
-<p class="ls3"><span class="ls0"><span class="ls1">AAA</span></span><span class="ls1">BBB</span></p>
-<!-- middle owned by inline: simple -->
-<p><span class="ls1"><span class="ls0">AAA</span><span class="ls0">BBB</span></span></p>
-<p><span><span class="ls1">AAA</span><span class="ls1">BBB</span></span></p>
-<!-- middle owned by inline: double nesting -->
-<p><span><span class="ls1"><span class="ls0">AAA</span></span><span class="ls1">BBB</span></span></p>
-<p><span class="ls3"><span class="ls0"><span class="ls1">AAA</span></span><span class="ls1">BBB</span></span></p>
-<!-- middle containing space -->
-<p class="ls1"><span class="ls0">AAA</span> <span class="ls0">BBB</span></p>
-<p><span class="ls3"><span class="ls1"><span class="ls0">AAA</span> </span><span class="ls1">BBB</span></span></p>
-</div>
 </div>

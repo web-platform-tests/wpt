@@ -129,8 +129,7 @@ components:
 
 tasks:
   # The scheduling order of tasks is NOT determined by the order in which they
-  # are defined, but by their dependencies (depends-on); sink-task is always
-  # scheduled the last.
+  # are defined, but by their dependencies (depends-on).
 
   # Run full suites on push
   - $map:
@@ -492,6 +491,8 @@ tasks:
         run-job:
           - wptrunner_infrastructure
 
+  # Note: even though sink-task does not have `depends-on`, it depends on all
+  # other tasks (dynamically added by tools/ci/tc/decision.py).
   - sink-task:
       description: >-
         Sink task for all other tasks; indicates success

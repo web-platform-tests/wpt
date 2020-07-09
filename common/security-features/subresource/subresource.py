@@ -1,5 +1,5 @@
 import os, json
-from six.moves.urllib.parse import parse_qsl, SplitResult, urlencode, urlsplit,  urlunsplit
+from six.moves.urllib.parse import parse_qsl, SplitResult, urlencode, urlsplit, urlunsplit
 
 from wptserve.utils import isomorphic_decode, isomorphic_encode
 
@@ -121,7 +121,7 @@ def preprocess_stash_action(request, response):
 
     key = request.GET[b"key"]
     stash = request.server.stash
-    path = request.GET.get(b"path", request.url.split(u'?'))[0]
+    path = request.GET.get(b"path", isomorphic_encode(request.url.split(u'?')[0]))
 
     if action == b"put":
         value = isomorphic_decode(request.GET[b"value"])
@@ -187,11 +187,10 @@ def respond(request,
     new_val = []
     for key, val in request.headers.items():
         if len(val) == 1:
-            new_headers[isomorphic_decode(key)] = isomorphic_decode(val[0])
+            new_val = isomorphic_decode(val[0])
         else:
-            for i in val:
-                new_val.append(isomorphic_decode(i))
-            new_headers[isomorphic_decode(key)] = new_val
+            new_val = [isomorphic_decode(x) for x in val]
+        new_headers[isomorphic_decode(key)] = new_val
 
     server_data = {u"headers": json.dumps(new_headers, indent = 4)}
 

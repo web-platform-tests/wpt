@@ -7,26 +7,23 @@
   @import "/fonts/ahem.css";
   .contain {
     font: 20px/1 Ahem;
-    border: solid blue;
-    margin: 1em;
-    float: left; }
+    margin: 1em; }
   .control p {
     white-space: pre-wrap;
   }
   p {
     letter-spacing: 0;
     margin: 0;
-    border-bottom: solid 1px gray;
     text-emphasis: dot;
   }
 </style>
 
-<div id='instructions'>Test passes if the pattern is identical in both blue boxes.</div>
+<div id='instructions'>Test passes if the blue pattern is identical to the black one.</div>
 
 <div class="contain control">
   <p>A B C
 </div>
 
-<div class="contain control">
+<div class="contain control" style="color:blue">
   <p>A B C
 </div>

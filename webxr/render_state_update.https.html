@@ -10,14 +10,9 @@ let fakeDeviceInitParams = TRACKED_IMMERSIVE_DEVICE;
 
 let testSessionEnded = function(session, fakeDeviceController, t) {
   return new Promise((resolve, reject) => {
-      resolve(session.end().then(() => {
-          try {
-              session.updateRenderState({});
-              assert_unreached("updateRenderState should fail when created with an ended session");
-          } catch (err) {
-              assert_equals(err.name, 'InvalidStateError');
-          }
-      }));
+    resolve(session.end().then(() => {
+      assert_throws_dom('InvalidStateError', () => session.updateRenderState({}));
+    }));
   });
 };
 
@@ -25,8 +20,7 @@ let testSessionEnded = function(session, fakeDeviceController, t) {
 let testBaseLayer = function(session, fakeDeviceController, t, sessionObjects) {
   return new Promise((resolve, reject) => {
     navigator.xr.test.simulateUserActivation(() => {
-      navigator.xr.requestSession('immersive-ar').then((tempSession) => {
-        assert(tempSession);
+      navigator.xr.requestSession('inline').then((tempSession) => {
         assert_not_equals(session, tempSession);
         assert_throws_dom('InvalidStateError', () => session.updateRenderState({ baseLayer : new XRWebGLLayer(tempSession, sessionObjects.gl), }));
       });
@@ -37,12 +31,7 @@ let testBaseLayer = function(session, fakeDeviceController, t, sessionObjects) {
 
 let testFieldOfView = function(session, fakeDeviceController, t) {
   return new Promise((resolve, reject) => {
-    try {
-      session.updateRenderState({ inlineVerticalFieldOfView : Math.PI, });
-      assert_unreached("updateRenderState should fail when specifying an inlineVerticalFieldOfView with immersive sessions");
-    } catch (err) {
-      assert_equals(err.name, 'InvalidStateError');
-    }
+    assert_throws_dom('InvalidStateError', () => session.updateRenderState({ inlineVerticalFieldOfView : Math.PI, }));
     resolve();
   });
 };

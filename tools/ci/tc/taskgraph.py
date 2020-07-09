@@ -160,7 +160,7 @@ def load_tasks(tasks_data):
         tasks.extend(resolve_chunks(task))
 
     tasks = [substitute_variables(task_data) for task_data in tasks]
-    return OrderedDict([(task["name"], task) for task in tasks])
+    return OrderedDict([(t["name"], t) for t in tasks])
 
 
 def load_tasks_from_path(path):

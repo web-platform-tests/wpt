@@ -62,6 +62,14 @@ promise_test(t => {
 promise_test(t => {
   const promise = createTestPromise(t);
 
+  setTimeout(eval, 0, `import('../imports-a.js?label=direct eval').then(window.continueTest, window.errorTest)`);
+
+  return promise.then(assertSuccessful);
+}, "setTimeout + eval must inherit the nonce from the triggering script, thus execute");
+
+promise_test(t => {
+  const promise = createTestPromise(t);
+
   Function(`import('../imports-a.js?label=the Function constructor').then(window.continueTest, window.errorTest)`)();
 
   return promise.then(assertSuccessful);

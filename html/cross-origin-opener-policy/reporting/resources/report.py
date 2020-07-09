@@ -1,5 +1,7 @@
 import json, uuid
 
+from six import PY3
+
 from wptserve.utils import isomorphic_decode
 
 def main(request, response):
@@ -12,7 +14,12 @@ def main(request, response):
 
     key = 0
     if b'endpoint' in request.GET:
-        key = uuid.uuid5(uuid.NAMESPACE_OID, isomorphic_decode(request.GET[b'endpoint'])).urn
+        # Use Python version checking here due to the issue reported on uuid5 handling unicode
+        # type of name argument at https://bugs.python.org/issue34145
+        if PY3:
+            key = uuid.uuid5(uuid.NAMESPACE_OID, isomorphic_decode(request.GET[b'endpoint'])).urn
+        else:
+            key = uuid.uuid5(uuid.NAMESPACE_OID, request.GET[b'endpoint']).urn
 
     if key == 0:
         response.status = 400

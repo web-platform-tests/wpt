@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Testing which global a MessagePort's owner is</title>
+<title>Making the current page become non-active must prevent message transmission</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -17,21 +17,21 @@ const incumbentIframe = document.querySelector("#incumbent");
 const currentIframe = document.querySelector("#current");
 
 window.onload = () => {
-  promise_test(async () => {
+  promise_test(async t => {
     const messageChannel = frames[0].createMessageChannel();
 
     await new Promise((resolve, reject) => {
-      incumbentIframe.onload = () => resolve();
-      incumbentIframe.onerror = () => reject(new Error("Could not navigate the iframe"));
-      incumbentIframe.src = "/common/blank.html";
+      currentIframe.onload = () => resolve();
+      currentIframe.onerror = () => reject(new Error("Could not navigate the iframe"));
+      currentIframe.src = "/common/blank.html";
     });
 
-    await new Promise((resolve, reject) => {
-      messageChannel.port1.onmessage = () => resolve();
-      messageChannel.port1.onmessageerror = () => reject("messageerror event recieved");
-      messageChannel.port2.postMessage("boo");
-    });
-  }, "Making the incumbent page become non-active must not prevent message transmission");
+    messageChannel.port1.onmessage = t.unreached_func("message event recieved");
+    messageChannel.port1.onmessageerror = t.unreached_func("messageerror event recieved");
+    messageChannel.port2.postMessage("boo");
+
+    await new Promise(resolve => t.step_timeout(resolve, 3000));
+  });
 
   done();
 };

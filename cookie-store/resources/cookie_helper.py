@@ -22,11 +22,11 @@ import encodings, re
 
 from six.moves.urllib.parse import parse_qs, quote
 
-from wptserve.utils import isomorphic_decode, isomorphic_encode
+from wptserve.utils import isomorphic_encode
 
 # NOTE: These are intentionally very lax to permit testing
-DISALLOWED_IN_COOKIE_NAME_RE = re.compile(r'[;\0-\x1f\x7f]')
-DISALLOWED_IN_HEADER_RE = re.compile(r'[\0-\x1f\x7f]')
+DISALLOWED_IN_COOKIE_NAME_RE = re.compile(br'[;\0-\x1f\x7f]')
+DISALLOWED_IN_HEADER_RE = re.compile(br'[\0-\x1f\x7f]')
 
 # Ensure common charset names do not end up with different
 # capitalization or punctuation
@@ -40,7 +40,7 @@ def main(request, response):
       u'GET',
       u'POST',
   ), u'request method was neither GET nor POST: %r' % request.method
-  qd = (request.url.encode("utf-8").split(b'#')[0].split(b'?', 1) + [b''])[1]
+  qd = (isomorphic_encode(request.url).split(b'#')[0].split(b'?', 1) + [b''])[1]
   if request.method == u'POST':
     qd += b'&' + request.body
   args = parse_qs(qd, keep_blank_values = True)
@@ -54,13 +54,13 @@ def main(request, response):
         name, rest = set_cookie.split(b'=', 1)
         assert re.search(
             DISALLOWED_IN_COOKIE_NAME_RE,
-            isomorphic_decode(name)
+            name
         ) is None, b'name had disallowed characters: %r' % name
       else:
         rest = set_cookie
       assert re.search(
           DISALLOWED_IN_HEADER_RE,
-          isomorphic_decode(rest)
+          rest
       ) is None, b'rest had disallowed characters: %r' % rest
       headers.append((b'set-cookie', set_cookie))
       body.append(u'set-cookie=' + quote(set_cookie, b''))
@@ -69,5 +69,5 @@ def main(request, response):
     if cookie is not None:
       body.append(u'cookie=' + quote(cookie, b''))
   body = u'\r\n'.join(body)
-  headers.append((b'content-length', isomorphic_encode(str(len(body)))))
+  headers.append((b'content-length', len(body)))
   return 200, headers, body

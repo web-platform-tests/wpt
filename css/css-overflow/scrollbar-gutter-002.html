@@ -1,0 +1,118 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Overflow: test scrollbar-gutter: stable with classic scrollbars</title>
+<link rel="author" title="Felipe Erias Morandeira" href="mailto:felipeerias@gmail.com"/>
+<link rel="help" href="https://www.w3.org/TR/css-overflow-4/#scollbar-gutter-property"/>
+<meta name="assert" content="Test scrollbar-gutter: stable with custom classic scrollbars">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<style>
+
+    .container {
+        scrollbar-gutter: stable;
+        writing-mode: horizontal-tb;
+        overflow-x: auto;
+        height: 200px;
+        width: 200px;
+        margin: 0px;
+        padding: 0px;
+        border: none;
+        background: deepskyblue;
+    }
+
+    .content {
+        height: 100%;
+        width: 100%;
+        background: lightsalmon;
+    }
+
+    /* ensure that we are using classic scrollbars */
+    .classic {
+        scrollbar-width: 20px;
+        scrollbar-color: hsla(0, 0%, 20%, 0.6) hsla(0, 0%, 40%, 0.3);
+    }
+    .classic::-webkit-scrollbar {
+        width: 20px;
+    }
+    .classic::-webkit-scrollbar-track {
+        background-color: hsla(0, 0%, 40%, 0.3);
+    }
+    .classic::-webkit-scrollbar-thumb {
+        background-color: hsla(0, 0%, 20%, 0.6);
+        border-radius: 10px;
+    }
+
+    /* overflow values */
+    .auto    { overflow-y: auto;    }
+    .scroll  { overflow-y: scroll;  }
+    .visible { overflow-y: visible; }
+    .hidden  { overflow-y: hidden;  }
+    .clip    { overflow-y: clip;    }
+
+</style>
+<script type="text/javascript">
+
+    function performTest() {
+        test(function() {
+            let container = document.getElementById('container_auto');
+            let content = document.getElementById('content_auto');
+            assert_equals(container.clientWidth, content.clientWidth, "auto/stable clientWidth");
+            assert_not_equals(container.offsetWidth, content.offsetWidth, "auto/stable offsetWidth");
+        }, "Unexpected layout with overflow: auto and scrollbar-gutter: stable");
+
+        test(function() {
+            container = document.getElementById('container_scroll');
+            content = document.getElementById('content_scroll');
+            assert_equals(container.clientWidth, content.clientWidth, "scroll/stable clientWidth");
+            assert_not_equals(container.offsetWidth, content.offsetWidth, "scroll/stable offsetWidth");
+        }, "Unexpected layout with overflow: scroll and scrollbar-gutter: stable");
+
+        test(function() {
+            container = document.getElementById('container_visible');
+            content = document.getElementById('content_visible');
+            assert_equals(container.clientWidth, content.clientWidth, "visible/stable clientWidth");
+            assert_equals(container.offsetWidth, content.offsetWidth, "visible/stable offsetWidth");
+        }, "Unexpected layout with overflow: visible and scrollbar-gutter: stable");
+
+        test(function() {
+            container = document.getElementById('container_hidden');
+            content = document.getElementById('content_hidden');
+            assert_equals(container.clientWidth, content.clientWidth, "hidden/stable clientWidth");
+            assert_equals(container.offsetWidth, content.offsetWidth, "hidden/stable offsetWidth");
+        }, "Unexpected layout with overflow: hidden and scrollbar-gutter: stable");
+
+        test(function() {
+            container = document.getElementById('container_clip');
+            content = document.getElementById('content_clip');
+            assert_equals(container.clientWidth, content.clientWidth, "clip/stable clientWidth");
+            assert_equals(container.offsetWidth, content.offsetWidth, "clip/stable offsetWidth");
+        }, "Unexpected layout with overflow: clip and scrollbar-gutter: stable");
+    }
+
+</script>
+<body onload="performTest()">
+
+    Test scrollbar-gutter: stable
+
+    <div class="container classic auto" id="container_auto">
+        <div class="content" id="content_auto">overflow-y: auto</div>
+    </div>
+
+    <div class="container classic scroll" id="container_scroll">
+        <div class="content" id="content_scroll">overflow-y: scroll</div>
+    </div>
+
+    <div class="container classic visible" id="container_visible">
+        <div class="content" id="content_visible">overflow-y: visible</div>
+    </div>
+
+    <div class="container classic hidden" id="container_hidden">
+        <div class="content" id="content_hidden">overflow-y: hidden</div>
+    </div>
+
+    <div class="container classic clip" id="container_clip">
+        <div class="content" id="content_clip">overflow-y: clip</div>
+    </div>
+
+</body>

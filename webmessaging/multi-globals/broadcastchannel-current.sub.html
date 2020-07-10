@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>The current page being cross-origin must prevent the BroadcastChannel message from being seen</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<!-- This is the entry global -->
+
+<iframe src="support/incumbent-document-domain.sub.html" id="incumbent"></iframe>
+<iframe src="http://{{hosts[][www]}}:{{ports[http][0]}}/webmessaging/multi-globals/support/current-document-domain.sub.html" id="current"></iframe>
+
+<script>
+"use strict";
+document.domain = "{{hosts[][]}}";
+
+setup({ explicit_done: true });
+
+const incumbentIframe = document.querySelector("#incumbent");
+const currentIframe = document.querySelector("#current");
+
+window.onload = () => {
+  promise_test(async t => {
+    const createdCrossOrigin = frames[0].createBroadcastChannel("current");
+    const createdSameOrigin = new BroadcastChannel("current");
+
+    createdSameOrigin.onmessage = t.unreached_func("message event fired");
+    createdSameOrigin.onmessageerror = t.unreached_func("messageerror event fired");
+
+    createdCrossOrigin.postMessage("the message");
+
+    await new Promise(resolve => t.step_timeout(resolve, 3000));
+  });
+
+  done();
+};
+</script>

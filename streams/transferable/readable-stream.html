@@ -209,21 +209,15 @@ promise_test(async t => {
                    'original stream should be errored');
 }, 'transferring a non-serializable chunk should error both sides');
 
-promise_test(async () => {
+promise_test(async t => {
   const rs = await createTransferredReadableStream({
     start(controller) {
       controller.error('foo');
     }
   });
   const reader = rs.getReader();
-  let threw = false;
-  try {
-    await reader.read();
-  } catch (e) {
-    threw = true;
-    assert_equals(e, 'foo', 'error should be passed through');
-  }
-  assert_true(threw, 'reader.read() should throw');
+  return promise_rejects_exactly(t, 'foo', reader.read(),
+                                 'error should be passed through');
 }, 'errors should be passed through');
 
 promise_test(async () => {

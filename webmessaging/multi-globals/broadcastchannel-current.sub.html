@@ -28,7 +28,16 @@ window.onload = () => {
 
     createdCrossOrigin.postMessage("the message");
 
-    await new Promise(resolve => t.step_timeout(resolve, 3000));
+    // BroadcastChannel messages are guaranteed to be ordered within an event loop, as they all use
+    // the DOM manipulation task source. So, any messages from the "current" channel, if they are
+    // going to be erroneously delivered, would have to be delivered before those from this
+    // channel. I.e., if we recieve a message from this channel without first recieving one from
+    // the "current" channel, then the test passes.
+    const testEnder = new BroadcastChannel("current / test-ender");
+    const testEnder2 = new BroadcastChannel("current / test-ender");
+
+    testEnder.postMessage("end test");
+    await new Promise(resolve => testEnder2.onmessage = resolve);
   });
 
   done();

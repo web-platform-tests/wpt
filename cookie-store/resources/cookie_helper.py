@@ -72,7 +72,7 @@ def main(request, response):
         body.append('set-cookie=' + quote(set_cookie, '', encoding='iso-8859-1'))
       else:
         body.append('set-cookie=' + quote(set_cookie, ''))
-      
+
   else:
     cookie = request.headers.get(b'cookie')
     if cookie is not None:

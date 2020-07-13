@@ -9,7 +9,11 @@ steps:
 - ${{ if eq(parameters.channel, 'preview') }}:
   - script: |
       HOMEBREW_NO_AUTO_UPDATE=1 brew cask install tools/ci/azure/safari-technology-preview.rb
-      sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
+      # Workaround for ISSUE
+      echo "Calling safari-technology-preview-enable-remote.applescript"
+      ./tools/ci/azure/safari-technology-preview-enable-remote.applescript
+      echo "Does plist exist?"
+      cat ~/Library/WebDriver/com.apple.SafariTechnologyPreview.plist || true
       defaults write com.apple.SafariTechnologyPreview WebKitJavaScriptCanOpenWindowsAutomatically 1
       defaults write com.apple.SafariTechnologyPreview ExperimentalServerTimingEnabled 1
     displayName: 'Install Safari Technology Preview'

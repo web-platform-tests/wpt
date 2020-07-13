@@ -67,7 +67,7 @@ def main(request, response):
           DISALLOWED_IN_HEADER_RE,
           isomorphic_encode(rest)
       ) is None, 'rest had disallowed characters: %r' % rest
-      headers.append((b'set-cookie', set_cookie))
+      headers.append((b'set-cookie', isomorphic_encode(set_cookie)))
       if PY3:
         body.append('set-cookie=' + quote(set_cookie, '', encoding='iso-8859-1'))
       else:

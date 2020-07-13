@@ -63,6 +63,8 @@ function setupAndRegisterTests() {
       const maxScroll = scroller.scrollHeight - scroller.clientHeight;
       const timeRange = animation.timeline.timeRange;
       scroller.scrollTop = 0.2 * maxScroll;
+      // Force scrolling to be applied now.
+      scroller.scrollTop;
 
       // Make the timeline inactive.
       scroller.style.display = "none"
@@ -96,7 +98,7 @@ function setupAndRegisterTests() {
 
       // Make the timeline active.
       scroller.style.display = "";
-      // Wait for new animation frame  which allows the timeline to compute new
+      // Wait for new animation frame which allows the timeline to compute new
       // current time.
       await waitForNextFrame();
 

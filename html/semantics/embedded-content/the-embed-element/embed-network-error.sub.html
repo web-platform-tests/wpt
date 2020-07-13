@@ -18,7 +18,7 @@ async_test(t => {
 
 async_test(t => {
   const embed = document.createElement("embed");
-  embed.src = "resources/not-embeddable.html";
+  embed.src = "../resources/not-embeddable.html";
   embed.onload = () => t.done();
   embed.onerror = t.unreached_func("error event must not fire");
   document.body.append(embed);
@@ -46,7 +46,7 @@ async_test(t => {
     embed.onload = () => t.done();
     embed.onerror = t.unreached_func("error event must not fire 2");
 
-    frames.existingEmbed2.location.href = "resources/not-embeddable.html";
+    frames.existingEmbed2.location.href = "../resources/not-embeddable.html";
   });
   embed.onerror = t.unreached_func("error event must not fire 1");
   document.body.append(embed);

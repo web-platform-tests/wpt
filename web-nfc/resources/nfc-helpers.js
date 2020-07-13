@@ -154,8 +154,8 @@ function createUrlRecord(url, isAbsUrl) {
   return createRecord('url', url, test_record_id);
 }
 
-function createNDEFWriteOptions(ignoreRead) {
-  return {ignoreRead};
+function createNDEFWriteOptions(overwrite) {
+  return {overwrite};
 }
 
 // Compares NDEFMessageSource that was provided to the API

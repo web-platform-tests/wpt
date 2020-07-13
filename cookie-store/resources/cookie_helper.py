@@ -20,9 +20,11 @@
 # The response has 200 status and content-type: text/plain; charset=<charset>
 import encodings, re
 
+from six import PY3
+
 from six.moves.urllib.parse import parse_qs, quote
 
-from wptserve.utils import isomorphic_encode
+from wptserve.utils import isomorphic_decode, isomorphic_encode
 
 # NOTE: These are intentionally very lax to permit testing
 DISALLOWED_IN_COOKIE_NAME_RE = re.compile(br'[;\0-\x1f\x7f]')
@@ -43,31 +45,41 @@ def main(request, response):
   qd = (isomorphic_encode(request.url).split(b'#')[0].split(b'?', 1) + [b''])[1]
   if request.method == u'POST':
     qd += b'&' + request.body
-  args = parse_qs(qd, keep_blank_values = True)
+  if PY3:
+    args = parse_qs(qd.decode("iso-8859-1"), keep_blank_values=True, encoding='iso-8859-1')
+  else:
+    args = parse_qs(qd, keep_blank_values=True)
   charset = encodings.codecs.lookup(args.get(u'charset', [u'utf-8'])[-1]).name
   charset = CHARSET_OVERRIDES.get(charset, charset)
   headers = [(b'content-type', b'text/plain; charset=' + isomorphic_encode(charset))]
   body = []
   if request.method == u'POST':
-    for set_cookie in args.get(b'set-cookie', []):
-      if b'=' in set_cookie.split(b';', 1)[0]:
-        name, rest = set_cookie.split(b'=', 1)
+    for set_cookie in args.get('set-cookie', []):
+      if '=' in set_cookie.split(';', 1)[0]:
+        name, rest = set_cookie.split('=', 1)
         assert re.search(
             DISALLOWED_IN_COOKIE_NAME_RE,
-            name
-        ) is None, b'name had disallowed characters: %r' % name
+            isomorphic_encode(name)
+        ) is None, 'name had disallowed characters: %r' % name
       else:
         rest = set_cookie
       assert re.search(
           DISALLOWED_IN_HEADER_RE,
-          rest
-      ) is None, b'rest had disallowed characters: %r' % rest
+          isomorphic_encode(rest)
+      ) is None, 'rest had disallowed characters: %r' % rest
       headers.append((b'set-cookie', set_cookie))
-      body.append(u'set-cookie=' + quote(set_cookie, b''))
+      if PY3:
+        body.append('set-cookie=' + quote(set_cookie, '', encoding='iso-8859-1'))
+      else:
+        body.append('set-cookie=' + quote(set_cookie, ''))
+      
   else:
     cookie = request.headers.get(b'cookie')
     if cookie is not None:
-      body.append(u'cookie=' + quote(cookie, b''))
-  body = u'\r\n'.join(body)
+      if PY3:
+        body.append('cookie=' + quote(isomorphic_decode(cookie), '', encoding="iso-8859-1"))
+      else:
+        body.append('cookie=' + quote(cookie, ''))
+  body = '\r\n'.join(body)
   headers.append((b'content-length', len(body)))
   return 200, headers, body

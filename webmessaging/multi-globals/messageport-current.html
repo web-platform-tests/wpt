@@ -11,14 +11,13 @@
 
 <script>
 "use strict";
-setup({ explicit_done: true });
-
 const incumbentIframe = document.querySelector("#incumbent");
 const currentIframe = document.querySelector("#current");
 
-window.onload = () => {
+window.addEventListener("load", () => {
   promise_test(async t => {
-    const messageChannel = frames[0].createMessageChannel();
+    // This will invoke the constructor from currentIframe, but with incumbentIframe as the incumbent.
+    const messageChannel = incumbentIframe.contentWindow.createMessageChannel();
 
     await new Promise((resolve, reject) => {
       currentIframe.onload = () => resolve();
@@ -32,7 +31,5 @@ window.onload = () => {
 
     await new Promise(resolve => t.step_timeout(resolve, 3000));
   });
-
-  done();
-};
+});
 </script>

@@ -13,6 +13,6 @@ def main(request, response):
 
     else:
         response.set_error(400, u"Bad Command")
-        return u"ERROR: Bad Command!"
+        return b"ERROR: Bad Command!"
 
-    return headers, u""
+    return headers, b""

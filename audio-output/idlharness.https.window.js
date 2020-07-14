@@ -13,7 +13,8 @@ idl_test(
     self.video = document.createElement('video');
     idl_array.add_objects({
       HTMLAudioElement: ['audio'],
-      HTMLVideoElement: ['video']
+      HTMLVideoElement: ['video'],
+      MediaDevices: ['navigator.mediaDevices'],
     });
   }
 );

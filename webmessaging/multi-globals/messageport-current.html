@@ -29,6 +29,10 @@ window.addEventListener("load", () => {
     messageChannel.port1.onmessageerror = t.unreached_func("messageerror event recieved");
     messageChannel.port2.postMessage("boo");
 
+    // We are testing that neither of the above two events fire. We assume that a 3 second timeout
+    // is good enough. We can't use any other API for an end condition because each MessagePort has
+    // its own independent port message queue, which has no ordering guarantees relative to other
+    // APIs.
     await new Promise(resolve => t.step_timeout(resolve, 3000));
   });
 });

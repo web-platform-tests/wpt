@@ -15,8 +15,8 @@ function getPreservesPitch(audio) {
     if ("mozPreservesPitch" in HTMLAudioElement.prototype) {
         return audio.mozPreservesPitch;
     }
-    if ("wekbitPreservesPitch" in HTMLAudioElement.prototype) {
-        return audio.wekbitPreservesPitch;
+    if ("webkitPreservesPitch" in HTMLAudioElement.prototype) {
+        return audio.webkitPreservesPitch;
     }
     return undefined;
 }
@@ -27,8 +27,8 @@ function setPreservesPitch(audio, value) {
         audio.preservesPitch = value;
     } else if ("mozPreservesPitch" in HTMLAudioElement.prototype) {
         audio.mozPreservesPitch = value;
-    } else if ("wekbitPreservesPitch" in HTMLAudioElement.prototype) {
-        audio.wekbitPreservesPitch = value;
+    } else if ("webkitPreservesPitch" in HTMLAudioElement.prototype) {
+        audio.webkitPreservesPitch = value;
     }
 }
 
@@ -42,13 +42,14 @@ test(function(t) {
 
     setPreservesPitch(audio, false);
     assert_false(getPreservesPitch(audio));
-}, "Test that presevesPitch is on by default");
+}, "Test that preservesPitch is on by default");
 
 function testPreservesPitch(preservesPitch, playbackRate, expectedPitch, description) {
     promise_test(async t => {
         let audio = document.createElement('audio');
-
-        var detector = getPitchDetector(audio, t);
+        t.add_cleanup(() => audio.pause());
+        let detector = getPitchDetector(audio);
+        t.add_cleanup(() => detector.stop());
 
         // This file contains 5 seconds of a 440hz sine wave.
         audio.src = "/media/sine440.mp3";
@@ -66,13 +67,15 @@ function testPreservesPitch(preservesPitch, playbackRate, expectedPitch, descrip
             });
         }
 
-        await test_driver.bless("Play audio element", () => audio.play() )
+        await test_driver.bless("Play audio", () => {
+            return Promise.all([audio.play(), detector.start()]);
+        });
 
         // Wait until we have at least played some audio. Otherwise, the
         // detector might return a pitch of 0Hz.
         await waitUntil(0.5);
 
-        var pitch = detector();
+        var pitch = detector.detect();
 
         // 25Hz is larger than the margin we get from 48kHz and 44.1kHz
         // audio being analyzed by a FFT of size 2048. If we get something
@@ -83,7 +86,6 @@ function testPreservesPitch(preservesPitch, playbackRate, expectedPitch, descrip
 
         assert_approx_equals(pitch.value, expectedPitch, pitch.margin,
             "The actual pitch should be close to the expected pitch.");
-
     }, description);
 }
 

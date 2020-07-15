@@ -4,9 +4,8 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 var FFT_SIZE = 2048;
 
-function getPitchDetector(media, t) {
+function getPitchDetector(media) {
   var audioContext = new AudioContext();
-  t.add_cleanup(() => audioContext.close());
 
   var sourceNode = audioContext.createMediaElementSource(media);
 
@@ -16,7 +15,11 @@ function getPitchDetector(media, t) {
   sourceNode.connect(analyser);
   analyser.connect(audioContext.destination);
 
-  return () => getPitch(analyser);
+  return {
+    start() { return audioContext.resume(); },
+    detect() { return getPitch(analyser); },
+    stop() { return audioContext.close(); },
+  };
 }
 
 function getPitch(analyser) {

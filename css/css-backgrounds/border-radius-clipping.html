@@ -10,14 +10,13 @@
   <link rel="match" href="reference/border-radius-clipping-ref.html">
 
   <meta content="" name="flag">
-  <meta name="assert" content="When set with 'overflow: hidden', an outer container must clip background of its child element at its corners. In this test, the outer container has a 'border-radius' declaration which implies that the clipping must occur at its curves.">
+  <meta name="assert" content="When set with 'overflow: hidden', an outer container must clip background area of its child element at its corners. In this test, the outer container has a 'border-radius' declaration which implies that the clipping must occur at its curves.">
 
   <style>
   div#parent
     {
-      background-color: red;
+      border: transparent solid 20px;
       border-radius: 50%;
-      height: 100px;
       overflow: hidden;
       width: 100px;
     }
@@ -25,9 +24,9 @@
   div#son
     {
       background-color: red;
-      background-image: url("support/pattern-gr-rr-200x200.png");
-      height: 200px;
-      width: 200px;
+      background-image: url("support/100x100-green-with-red-corners.png");
+      height: 100px;
+      width: 100px;
     }
   </style>
 

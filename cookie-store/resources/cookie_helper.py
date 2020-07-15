@@ -20,7 +20,7 @@
 # The response has 200 status and content-type: text/plain; charset=<charset>
 import encodings, re
 
-from six import PY3
+from six import binary_type, PY3
 
 from six.moves.urllib.parse import parse_qs, quote
 
@@ -37,6 +37,22 @@ CHARSET_OVERRIDES = {
     for charset in (u'utf-8', u'iso-8859-1',)
 }
 
+def quote_str(cookie_str):
+  if PY3:
+    if isinstance(cookie_str, binary_type):
+      cookie_str = isomorphic_decode(cookie_str)
+    return quote(cookie_str, '', encoding='iso-8859-1')
+  else:
+    return quote(cookie_str, '')
+
+def parse_qs_str(query_str):
+  if PY3:
+    if isinstance(query_str, binary_type):
+      query_str = isomorphic_decode(query_str)
+    return parse_qs(query_str, keep_blank_values=True, encoding='iso-8859-1')
+  else:
+    return parse_qs(query_str, keep_blank_values=True)
+
 def main(request, response):
   assert request.method in (
       u'GET',
@@ -45,10 +61,8 @@ def main(request, response):
   qd = (isomorphic_encode(request.url).split(b'#')[0].split(b'?', 1) + [b''])[1]
   if request.method == u'POST':
     qd += b'&' + request.body
-  if PY3:
-    args = parse_qs(qd.decode("iso-8859-1"), keep_blank_values=True, encoding='iso-8859-1')
-  else:
-    args = parse_qs(qd, keep_blank_values=True)
+  args = parse_qs_str(qd)
+
   charset = encodings.codecs.lookup(args.get(u'charset', [u'utf-8'])[-1]).name
   charset = CHARSET_OVERRIDES.get(charset, charset)
   headers = [(b'content-type', b'text/plain; charset=' + isomorphic_encode(charset))]
@@ -68,18 +82,12 @@ def main(request, response):
           isomorphic_encode(rest)
       ) is None, 'rest had disallowed characters: %r' % rest
       headers.append((b'set-cookie', isomorphic_encode(set_cookie)))
-      if PY3:
-        body.append('set-cookie=' + quote(set_cookie, '', encoding='iso-8859-1'))
-      else:
-        body.append('set-cookie=' + quote(set_cookie, ''))
+      body.append('set-cookie=' + quote_str(set_cookie))
 
   else:
     cookie = request.headers.get(b'cookie')
     if cookie is not None:
-      if PY3:
-        body.append('cookie=' + quote(isomorphic_decode(cookie), '', encoding="iso-8859-1"))
-      else:
-        body.append('cookie=' + quote(cookie, ''))
+      body.append('cookie=' + quote_str(cookie))
   body = '\r\n'.join(body)
   headers.append((b'content-length', len(body)))
   return 200, headers, body

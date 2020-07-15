@@ -16,7 +16,7 @@ test_driver.bless("audio playback", () => {
   ctx.onstatechange = () => {
     assert_equals(ctx.state, "running", "state after statechange event");
     // Now create another context and ensure it starts out in the "suspended"
-    // state even.
+    // state too, ensuring it's not synchronously "running".
     const ctx2 = new AudioContext();
     assert_equals(ctx2.state, "suspended", "initial state of 2nd context");
     done();

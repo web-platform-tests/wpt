@@ -3,7 +3,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script>
+<script type="module">
   import { getOppositeOrientation } from "/screen-orientation/resources/orientation-utils.js";
   promise_test(async t => {
     await test_driver.bless("request full screen", () => {

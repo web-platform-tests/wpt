@@ -39,8 +39,7 @@ test(() => {
   const writer = ts.writable.getWriter();
   assert_throws_dom('DataCloneError', () => postMessage(ts, '*', [ts]),
                     'postMessage should throw');
-  // Readable side should not be locked.
-  const reader = ts.readable.getReader();
+  assert_false(ts.readable.locked, 'readable side should not get locked');
 }, 'a TransformStream with a locked writable should not be transferable');
 
 test(() => {
@@ -48,8 +47,7 @@ test(() => {
   const reader = ts.readable.getReader();
   assert_throws_dom('DataCloneError', () => postMessage(ts, '*', [ts]),
                     'postMessage should throw');
-  // Writable side should not be locked.
-  const writer = ts.writable.getWriter();
+  assert_false(ts.writable.locked, 'writable side should not get locked');
 }, 'a TransformStream with a locked readable should not be transferable');
 
 test(() => {

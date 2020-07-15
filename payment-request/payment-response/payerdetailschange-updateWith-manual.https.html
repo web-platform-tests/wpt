@@ -24,7 +24,7 @@ function runTest(button) {
     await response.retry({
       payer: { name: "Change me!" },
     });
-    await promise_rejects(t, "InvalidStateError", eventPromise);
+    await promise_rejects_dom(t, "InvalidStateError", eventPromise);
     await response.complete("success");
   }, button.textContent.trim());
 }
@@ -52,5 +52,5 @@ function runTest(button) {
 </ol>
 <small>
   If you find a buggy test, please <a href="https://github.com/web-platform-tests/wpt/issues">file a bug</a>
-  and tag one of the <a href="https://github.com/web-platform-tests/wpt/blob/master/payment-request/OWNERS">owners</a>.
+  and tag one of the <a href="https://github.com/web-platform-tests/wpt/blob/master/payment-request/META.yml">owners</a>.
 </small>

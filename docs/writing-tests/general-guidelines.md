@@ -31,17 +31,22 @@ css/ directory, regardless of where they are in the directory structure.
 ### HTTPS
 
 By default, tests are served over plain HTTP. If a test requires HTTPS
-it must be given a filename containing `.https` before the extension,
-e.g. `test-secure.https.html`. For more details see the documentation
-on [file names][file-name-flags].
+it must be given a filename containing `.https.` e.g.,
+`test-secure.https.html`, or be the generated service worker test of a
+`.https`-less `.any` test. For more details see the documentation on
+[file names][file-name-flags].
+
+### HTTP2
+
+If a test must be served from an HTTP/2 server, it must be given a
+filename containing `.h2`.
 
 #### Support Files
 
-Various support files are available in in the `/common/` and `/media/`
-directories (web-platform-tests) and `/support/` (in css/). Reusing
-existing resources is encouraged where possible, as is adding
-generally useful files to these common areas rather than to specific
-test suites.
+Various support files are available in in the directories named `/common/`,
+`/media/`, and `/css/support/`. Reusing existing resources is encouraged where
+possible, as is adding generally-useful files to these common areas rather than
+to specific test suites.
 
 
 #### Tools
@@ -61,9 +66,17 @@ subdirectory and put your script there.
 
 ### File Formats
 
-Tests must be HTML or XML (inc. XHTML and SVG) files; some
-testharness.js tests
-are [auto-generated from JS files][server features].
+Tests are generally formatted as HTML (including XHTML) or XML (including SVG).
+Some test types support other formats:
+
+- [testharness.js tests](testharness) may be expressed as JavaScript files
+  ([the WPT server automatically generates the HTML documents for these][server
+  features])
+- [WebDriver specification tests](wdspec) are expressed as Python files
+
+The best way to determine how to format a new test is to look at how similar
+tests have been formatted. You can also ask for advice in [the project's IRC
+room][IRC].
 
 
 ### Character Encoding
@@ -113,10 +126,10 @@ assumptions that can be relied on are documented [here][assumptions];
 tests that rely on anything else should be manual tests that document
 their assumptions.
 
-Aside from the [Ahem font][ahem], fonts cannot be relied on to be
-either installed or to have specific metrics. As such, in most cases
-when a known font is needed Ahem should be used. In other cases,
-`@font-face` should be used.
+Fonts cannot be relied on to be either installed or to have specific
+metrics. As such, in most cases when a known font is needed, [Ahem][ahem]
+should be used and loaded as a web font. In other cases, `@font-face`
+should be used.
 
 
 ### Be Self-Contained
@@ -162,7 +175,7 @@ see the [lint-tool documentation][lint-tool].
 
 But in the unusual case of error reports for things essential to a certain
 test or that for other exceptional reasons shouldn't prevent a merge of a
-test, update and commit the `lint.whitelist` file in the web-platform-tests
+test, update and commit the `lint.ignore` file in the web-platform-tests
 root directory to suppress the error reports. For details on doing that,
 see the [lint-tool documentation][lint-tool].
 
@@ -179,6 +192,7 @@ for CSS have some additional requirements for:
 [server features]: server-features
 [assumptions]: assumptions
 [ahem]: ahem
+[IRC]: irc://irc.w3.org:6667/testing
 [lint-tool]: lint-tool
 [css-metadata]: css-metadata
 [css-user-styles]: css-user-styles

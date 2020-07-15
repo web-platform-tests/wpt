@@ -1,8 +1,0 @@
-<script>
-'use strict';
-
-navigator.sms.receive().catch(error => {
-  window.parent.postMessage({errorType: error.name}, '*');
-});
-
-</script>

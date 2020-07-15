@@ -1,4 +1,4 @@
-// META: global=worker,jsshell
+// META: global=window,worker,jsshell
 'use strict';
 
 // Tests which patch the global environment are kept separate to avoid
@@ -106,4 +106,37 @@ promise_test(async t => {
   const reader = oldReadableStreamGetReader.call(rs);
   // stream should be cancelled
   await reader.closed;
-}, 'ReadableStream getIterator() should use the original values of getReader() and ReadableStreamDefaultReader methods');
+}, 'ReadableStream async iterator should use the original values of getReader() and ReadableStreamDefaultReader ' +
+   'methods');
+
+test(t => {
+  const oldPromiseThen = Promise.prototype.then;
+  Promise.prototype.then = () => {
+    throw new Error('patched then() called');
+  };
+  t.add_cleanup(() => {
+    Promise.prototype.then = oldPromiseThen;
+  });
+  const [branch1, branch2] = new ReadableStream().tee();
+  assert_true(isReadableStream(branch1), 'branch1 should be a ReadableStream');
+  assert_true(isReadableStream(branch2), 'branch2 should be a ReadableStream');
+}, 'tee() should not call Promise.prototype.then()');
+
+test(t => {
+  const oldPromiseThen = Promise.prototype.then;
+  Promise.prototype.then = () => {
+    throw new Error('patched then() called');
+  };
+  t.add_cleanup(() => {
+    Promise.prototype.then = oldPromiseThen;
+  });
+  let readableController;
+  const rs = new ReadableStream({
+    start(c) {
+      readableController = c;
+    }
+  });
+  const ws = new WritableStream();
+  rs.pipeTo(ws);
+  readableController.close();
+}, 'pipeTo() should not call Promise.prototype.then()');

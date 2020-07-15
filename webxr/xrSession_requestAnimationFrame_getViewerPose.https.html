@@ -16,7 +16,9 @@
 
     let fakeDeviceInitParams = {
       supportsImmersive: true,
-      views: VALID_VIEWS
+      supportedModes: ["inline", "immersive-vr"],
+      views: VALID_VIEWS,
+      supportedFeatures: ALL_FEATURES
     };
 
     // A valid pose matrix/transform for  when we don't care about specific values
@@ -36,7 +38,6 @@
         .then((referenceSpace) => new Promise((resolve, reject) => {
           let counter = 0;
           function onFrame(time, vrFrame) {
-            session.requestAnimationFrame(onFrame);
             if (counter == 0) {
               t.step( () => {
                 // Expecting to not get a pose since none has been supplied
@@ -47,6 +48,14 @@
                 // Check that pose does not update pose within the same frame.
                 assert_equals(vrFrame.getViewerPose(referenceSpace), null);
               });
+
+              // In order to avoid race conditions, after we've set the viewer
+              // pose, we queue up the next requestAnimationFrame. This should
+              // ensure that the next frame will be able to get the appropriate
+              // pose.
+              // Note that since the next frame will immediately resolve and end
+              // the test we only need to request a new frame once, here.
+              session.requestAnimationFrame(onFrame);
             } else {
               t.step( () => {
                 let pose = vrFrame.getViewerPose(referenceSpace);
@@ -68,7 +77,7 @@
     };
 
     xr_session_promise_test(nonImmersiveTestName, testFunction,
-      fakeDeviceInitParams, 'inline');
+      fakeDeviceInitParams, 'inline', { 'requiredFeatures': ['local'] });
     xr_session_promise_test(immersiveTestName, testFunction,
       fakeDeviceInitParams, 'immersive-vr');
 

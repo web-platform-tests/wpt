@@ -28,6 +28,14 @@ const VALID_POSE_TRANSFORM = {
 const VALID_PROJECTION_MATRIX =
     [1, 0, 0, 0, 0, 1, 0, 0, 3, 2, -1, -1, 0, 0, -0.2, 0];
 
+// This is a decomposed version of the above.
+const VALID_FIELD_OF_VIEW = {
+    upDegrees: 71.565,
+    downDegrees: -45,
+    leftDegrees:-63.4349,
+    rightDegrees: 75.9637
+};
+
 // A valid input grip matrix for  when we don't care about specific values
 const VALID_GRIP = [1, 0, 0, 0,
                     0, 1, 0, 0,
@@ -40,20 +48,15 @@ const VALID_GRIP_TRANSFORM = {
 };
 
 // A valid input pointer offset for  when we don't care about specific values
-const VALID_POINTER_OFFSET = [1, 0, 0, 0,
-                              0, 1, 0, 0,
-                              0, 0, 1, 0,
-                              0, 0, 1, 1];
+const VALID_POINTER = [1, 0, 0, 0,
+                       0, 1, 0, 0,
+                       0, 0, 1, 0,
+                       0, 0, 1, 1];
 
 const VALID_POINTER_TRANSFORM = {
     position: [0, 0, 1],
     orientation: [0, 0, 0, 1]
 };
-
-const VALID_GRIP_WITH_POINTER_OFFSET = [1, 0, 0, 0,
-                                        0, 1, 0, 0,
-                                        0, 0, 1, 0,
-                                        4, 3, 3, 1];
 
 // A Valid Local to floor matrix/transform for when we don't care about specific
 // values.  Note that these should be identical, just different representations.
@@ -63,7 +66,7 @@ const VALID_FLOOR_ORIGIN_MATRIX = [1, 0,    0,  0,
                                      1, 1.65, -1, 1];
 
 const VALID_FLOOR_ORIGIN = {
-    position: [1.0, 1.65, -1.0],
+    position: [-1.0, -1.65, 1.0],
     orientation: [0, 0, 0, 1]
 };
 
@@ -77,8 +80,8 @@ const VALID_BOUNDS = [
 ];
 
 const VALID_RESOLUTION = {
-    width: 20,
-    height: 20
+    width: 200,
+    height: 200
 };
 
 const LEFT_OFFSET = {
@@ -112,16 +115,40 @@ const NON_IMMERSIVE_VIEWS = [{
     }
 ];
 
+const ALL_FEATURES = [
+  'viewer',
+  'local',
+  'local-floor',
+  'bounded-floor',
+  'unbounded',
+  'hit-test',
+  'dom-overlay',
+  'light-estimation',
+  'anchors',
+];
+
 const TRACKED_IMMERSIVE_DEVICE = {
     supportsImmersive: true,
+    supportedModes: [ "inline", "immersive-vr"],
     views: VALID_VIEWS,
-    viewerOrigin: IDENTITY_TRANSFORM
+    viewerOrigin: IDENTITY_TRANSFORM,
+    supportedFeatures: ALL_FEATURES
+};
+
+const IMMERSIVE_AR_DEVICE = {
+  supportsImmersive: true,
+  supportedModes: [ "inline", "immersive-ar"],
+  views: VALID_VIEWS,
+  viewerOrigin: IDENTITY_TRANSFORM,
+  supportedFeatures: ALL_FEATURES
 };
 
 const VALID_NON_IMMERSIVE_DEVICE = {
     supportsImmersive: false,
+    supportedModes: ["inline"],
     views: NON_IMMERSIVE_VIEWS,
-    viewerOrigin: IDENTITY_TRANSFORM
+    viewerOrigin: IDENTITY_TRANSFORM,
+    supportedFeatures: ALL_FEATURES
 };
 
 const VALID_CONTROLLER = {
@@ -136,4 +163,11 @@ const RIGHT_CONTROLLER = {
     targetRayMode: "tracked-pointer",
     pointerOrigin: VALID_POINTER_TRANSFORM,
     profiles: []
-}
+};
+
+const SCREEN_CONTROLLER = {
+    handedness: "none",
+    targetRayMode: "screen",
+    pointerOrigin: VALID_POINTER_TRANSFORM,
+    profiles: []
+};

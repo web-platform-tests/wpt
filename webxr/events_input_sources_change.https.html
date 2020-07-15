@@ -24,6 +24,7 @@ let testFunction = function(session, fakeDeviceController, t) {
     t.step(() => {
       inputChangeEvents++;
       assert_equals(event.session, session);
+      validateSameObject(event);
 
       // The first change event should be adding our controller.
       if (inputChangeEvents === 1) {
@@ -69,6 +70,23 @@ let testFunction = function(session, fakeDeviceController, t) {
     });
   }
 
+  // Verifies that the same object is returned each time attributes are accessed
+  // on an XRInputSourcesChangeEvent, as required by the spec.
+  function validateSameObject(event) {
+    let eventSession = event.session;
+    let added = event.added;
+    let removed = event.removed;
+
+    t.step(() => {
+      assert_equals(eventSession, event.session,
+        "XRInputSourcesChangeEvent.session returns the same object.");
+      assert_equals(added, event.added,
+        "XRInputSourcesChangeEvent.added returns the same object.");
+      assert_equals(removed, event.removed,
+        "XRInputSourcesChangeEvent.removed returns the same object.");
+    });
+  }
+
   session.addEventListener('inputsourceschange', onInputSourcesChange, false);
 
   // Create our input source and immediately toggle the primary input so that
@@ -83,7 +101,7 @@ let testFunction = function(session, fakeDeviceController, t) {
 
   // Make our input source disappear after one frame, and wait an additional
   // frame for that disappearance to propogate.
-  session.requestAnimationFrame((time, xrFrame) => {
+  requestSkipAnimationFrame(session, (time, xrFrame) => {
     input_source.disconnect();
     session.requestAnimationFrame((time, xrFrame) => {});
   });

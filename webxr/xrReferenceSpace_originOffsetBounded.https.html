@@ -28,15 +28,17 @@ const VIEWS_WITH_OFFSET = [{
 }];
 
 const FLOOR_TRANSFORM = {
-  position: [0.1, 0.2, 0.3],
+  position: [-0.1, -0.2, -0.3],
   orientation: [0, 0, 0, 1]
 };
 
 const fakeDeviceInitParams = {
   supportsImmersive: true,
+  supportedModes: ["inline", "immersive-vr"],
   views: VIEWS_WITH_OFFSET,
   viewerOrigin: IDENTITY_TRANSFORM,
   floorOrigin: FLOOR_TRANSFORM,
+  supportedFeatures: ALL_FEATURES,
   boundsCoordinates: [
     { x:  1, z: -1.5 },
     { x:  1, z:  1.5 },
@@ -52,7 +54,7 @@ function testFunction(session, fakeDeviceController, t) {
   };
 
   const LOCAL_POINTER_TRANSFORM = {
-    position: [0.01, 0.02, 0.03],
+    position: [1.01, 2.02, 3.03],
     orientation: [0, 0, 0, 1]
   }
 
@@ -60,11 +62,12 @@ function testFunction(session, fakeDeviceController, t) {
     handedness: "right",
     targetRayMode: "tracked-pointer",
     pointerOrigin: LOCAL_POINTER_TRANSFORM,
-    gripOrigin: INITIAL_GRIP_TRANSFORM
+    gripOrigin: INITIAL_GRIP_TRANSFORM,
+    profiles: []
   });
 
   return new Promise((resolve, reject) => {
-    session.requestAnimationFrame((time, frame) => {
+    requestSkipAnimationFrame(session, (time, frame) => {
       let input_source = session.inputSources[0];
 
       session.requestReferenceSpace('bounded-floor').then((referenceSpace) => {
@@ -85,9 +88,9 @@ function testFunction(session, fakeDeviceController, t) {
             let grip_matrix = grip_pose.transform.matrix;
             let ray_matrix = input_pose.transform.matrix;
 
-            assert_matrix_approx_equals(expected_view_matrix, view_matrix);
-            assert_matrix_approx_equals(expected_grip_matrix, grip_matrix);
-            assert_matrix_approx_equals(expected_ray_matrix, ray_matrix);
+            assert_matrix_approx_equals(view_matrix, expected_view_matrix);
+            assert_matrix_approx_equals(grip_matrix, expected_grip_matrix);
+            assert_matrix_approx_equals(ray_matrix, expected_ray_matrix);
 
             assert_equals(reference_space.boundsGeometry.length, expected_bounds_geometry.length);
             for (var i = 0; i < reference_space.boundsGeometry.length; ++i) {
@@ -238,6 +241,6 @@ function testFunction(session, fakeDeviceController, t) {
 };
 
 xr_session_promise_test(
-  testName, testFunction, fakeDeviceInitParams, 'immersive-vr');
+  testName, testFunction, fakeDeviceInitParams, 'immersive-vr', { 'requiredFeatures': ['bounded-floor'] });
 
 </script>

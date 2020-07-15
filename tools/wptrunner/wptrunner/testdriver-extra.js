@@ -3,6 +3,7 @@
 (function(){
     let pending_resolve = null;
     let pending_reject = null;
+    let result = null;
     window.addEventListener("message", function(event) {
         const data = event.data;
 
@@ -15,9 +16,10 @@
         }
 
         if (data.status === "success") {
-            pending_resolve();
+            result = JSON.parse(data.message).result
+            pending_resolve(result);
         } else {
-            pending_reject();
+            pending_reject(`${data.status}: ${data.message}`);
         }
     });
 
@@ -106,7 +108,7 @@
                             else
                                 action.frame = {frame: frame};
                             action.origin = {selector: get_selector(action.origin)};
-                        } 
+                        }
                     }
                 }
             }
@@ -121,6 +123,78 @@
             pending_reject = reject;
         });
         window.__wptrunner_message_queue.push({"type": "action", "action": "generate_test_report", "message": message});
+        return pending_promise;
+    };
+
+    window.test_driver_internal.set_permission = function(permission_params) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.__wptrunner_message_queue.push({"type": "action", "action": "set_permission", permission_params});
+        return pending_promise;
+    };
+
+    window.test_driver_internal.add_virtual_authenticator = function(config) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.__wptrunner_message_queue.push({"type": "action", "action": "add_virtual_authenticator", config});
+        return pending_promise;
+    };
+
+    window.test_driver_internal.remove_virtual_authenticator = function(authenticator_id) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.__wptrunner_message_queue.push({"type": "action", "action": "remove_virtual_authenticator", authenticator_id});
+        return pending_promise;
+    };
+
+    window.test_driver_internal.add_credential = function(authenticator_id, credential) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.__wptrunner_message_queue.push({"type": "action", "action": "add_credential", authenticator_id, credential});
+        return pending_promise;
+    };
+
+    window.test_driver_internal.get_credentials = function(authenticator_id) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.__wptrunner_message_queue.push({"type": "action", "action": "get_credentials", authenticator_id});
+        return pending_promise;
+    };
+
+    window.test_driver_internal.remove_credential = function(authenticator_id, credential_id) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.__wptrunner_message_queue.push({"type": "action", "action": "remove_credential", authenticator_id, credential_id});
+        return pending_promise;
+    };
+
+    window.test_driver_internal.remove_all_credentials = function(authenticator_id) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.__wptrunner_message_queue.push({"type": "action", "action": "remove_all_credentials", authenticator_id});
+        return pending_promise;
+    };
+
+    window.test_driver_internal.set_user_verified = function(authenticator_id, uv) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.__wptrunner_message_queue.push({"type": "action", "action": "set_user_verified", authenticator_id, uv});
         return pending_promise;
     };
 })();

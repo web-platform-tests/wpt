@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <title>Makes sure that preloaded resources trigger the onerror event</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/preload/resources/preload_helper.js"></script>
@@ -28,7 +29,7 @@
 <link rel=preload href="non-existent/dummy.xml?empty" onerror="emptyFailed = true;">
 <body>
 <script>
-    setup({explicit_done: true});
+    setup({single_test: true});
 
     var iterations = 0;
 

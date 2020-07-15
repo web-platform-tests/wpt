@@ -6,7 +6,7 @@
 
    idlharness
    testharness-api
-   testdriver-tutorial
+   testdriver-extension-tutorial
    testdriver
 ```
 
@@ -16,14 +16,18 @@ of a page, and where human interaction isn't required; these tests are
 written in JavaScript using a framework called `testharness.js`. It is
 documented in two sections:
 
-  * [testharness.js Documentation](testharness-api) — An introduction
+  * [testharness.js Documentation](testharness-api.md) — An introduction
     to the library and a detailed API reference.
 
-  * [idlharness.js Documentation](idlharness) — A library for testing
+  * [idlharness.js Documentation](idlharness.md) — A library for testing
      IDL interfaces using `testharness.js`.
 
-See [server features](server-features) for advanced testing features that are commonly used
-with testharness.js. See also the [general guidelines](general-guidelines) for all test types.
+See [server features](server-features.md) for advanced testing features that are commonly used
+with testharness.js. See also the [general guidelines](general-guidelines.md) for all test types.
+
+This page describes testharness.js exhaustively; [the tutorial on writing a
+testharness.js test](testharness-tutorial) provides a concise guide to writing
+a test--a good place to start for newcomers to the project.
 
 ## Variants
 
@@ -112,8 +116,8 @@ creating a `FileAPI/FileReaderSync.worker.js` as follows:
 ```js
 importScripts("/resources/testharness.js");
 test(function () {
-    var blob = new Blob(["Hello"]);
-    var fr = new FileReaderSync();
+    const blob = new Blob(["Hello"]);
+    const fr = new FileReaderSync();
     assert_equals(fr.readAsText(blob), "Hello");
 }, "FileReaderSync#readAsText.");
 done();
@@ -134,7 +138,7 @@ creating a `FileAPI/Blob-constructor.any.js` as follows:
 
 ```js
 test(function () {
-    var blob = new Blob();
+    const blob = new Blob();
     assert_equals(blob.size, 0);
     assert_equals(blob.type, "");
     assert_false(blob.isClosed);
@@ -148,16 +152,13 @@ It is possible to customize the set of scopes with a metadata comment, such as
 
 ```
 // META: global=sharedworker
-//       ==> would run in the default window and dedicated worker scopes,
-//           as well as the shared worker scope
-// META: global=!default,serviceworker
-//       ==> would only run in the service worker scope
-// META: global=!window
-//       ==> would run in the default dedicated worker scope, but not the
-//           window scope
+//       ==> would run in the shared worker scope
+// META: global=window,serviceworker
+//       ==> would only run in the window and service worker scope
+// META: global=dedicatedworker
+//       ==> would run in the default dedicated worker scope
 // META: global=worker
-//       ==> would run in the default window scope, as well as in the
-//           dedicated, shared and service worker scopes
+//       ==> would run in the dedicated, shared, and service worker scopes
 ```
 
 For a test file <code><var>x</var>.any.js</code>, the available scope keywords
@@ -165,18 +166,22 @@ are:
 
 * `window` (default): to be run at <code><var>x</var>.any.html</code>
 * `dedicatedworker` (default): to be run at <code><var>x</var>.any.worker.html</code>
-* `serviceworker`: to be run at <code><var>x</var>.https.any.serviceworker.html</code>
+* `serviceworker`: to be run at <code><var>x</var>.any.serviceworker.html</code> (`.https` is implied)
 * `sharedworker`: to be run at <code><var>x</var>.any.sharedworker.html</code>
 * `jsshell`: to be run in a JavaScript shell, without access to the DOM
   (currently only supported in SpiderMonkey, and skipped in wptrunner)
-* `default`: shorthand for the default scopes
-* `worker`: shorthand for the dedicated, shared and service worker scopes
+* `worker`: shorthand for the dedicated, shared, and service worker scopes
 
 To check if your test is run from a window or worker you can use the following two methods that will
 be made available by the framework:
 
     self.GLOBAL.isWindow()
     self.GLOBAL.isWorker()
+
+Although [the global `done` function must be explicitly invoked for most
+dedicated worker tests and shared worker
+tests](testharness-api.html#determining-when-all-tests-are-complete), it is
+automatically invoked for tests defined using the "multi-global" pattern.
 
 ### Specifying a test title in auto-generated boilerplate tests
 

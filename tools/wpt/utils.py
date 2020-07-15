@@ -5,15 +5,17 @@ import tarfile
 import zipfile
 from io import BytesIO
 
-try:
-    from typing import Any, Callable
-except ImportError:
-    pass
+MYPY = False
+if MYPY:
+    from typing import Any
+    from typing import Callable
+    from typing import Dict
 
 logger = logging.getLogger(__name__)
 
 
 class Kwargs(dict):
+    # type: Dict[Any, Any]
     def set_if_none(self,
                     name,            # type: str
                     value,           # type: Any
@@ -46,7 +48,7 @@ def call(*args):
     """
     logger.debug(" ".join(args))
     try:
-        return subprocess.check_output(args)
+        return subprocess.check_output(args).decode('utf8')
     except subprocess.CalledProcessError as e:
         logger.critical("%s exited with return code %i" %
                         (e.cmd, e.returncode))

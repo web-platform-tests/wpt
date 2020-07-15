@@ -3,8 +3,10 @@ from .base import get_timeout_multiplier   # noqa: F401
 from ..webdriver_server import ChromeDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
-                                           WebDriverRefTestExecutor)  # noqa: F401
-from ..executors.executorchrome import ChromeDriverWdspecExecutor  # noqa: F401
+                                           WebDriverRefTestExecutor,  # noqa: F401
+                                           WebDriverCrashtestExecutor)  # noqa: F401
+from ..executors.executorchrome import (ChromeDriverWdspecExecutor,  # noqa: F401
+                                        ChromeDriverPrintRefTestExecutor)  # noqa: F401
 
 
 __wptrunner__ = {"product": "chrome",
@@ -12,7 +14,9 @@ __wptrunner__ = {"product": "chrome",
                  "browser": "ChromeBrowser",
                  "executor": {"testharness": "WebDriverTestharnessExecutor",
                               "reftest": "WebDriverRefTestExecutor",
-                              "wdspec": "ChromeDriverWdspecExecutor"},
+                              "print-reftest": "ChromeDriverPrintRefTestExecutor",
+                              "wdspec": "ChromeDriverWdspecExecutor",
+                              "crashtest": "WebDriverCrashtestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -61,7 +65,9 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         chrome_options["binary"] = kwargs["binary"]
 
     # Here we set a few Chrome flags that are always passed.
-    chrome_options["args"] = []
+    # ChromeDriver's "acceptInsecureCerts" capability only controls the current
+    # browsing context, whereas the CLI flag works for workers, too.
+    chrome_options["args"] = ["--ignore-certificate-errors"]
     # Allow audio autoplay without a user gesture.
     chrome_options["args"].append("--autoplay-policy=no-user-gesture-required")
     # Allow WebRTC tests to call getUserMedia.
@@ -77,7 +83,9 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         chrome_options["args"].extend(kwargs["binary_args"])
 
     # Pass the --headless flag to Chrome if WPT's own --headless flag was set
-    if kwargs["headless"] and "--headless" not in chrome_options["args"]:
+    # or if we're running print reftests because of crbug.com/753118
+    if ((kwargs["headless"] or test_type == "print-reftest") and
+        "--headless" not in chrome_options["args"]):
         chrome_options["args"].append("--headless")
 
     executor_kwargs["capabilities"] = capabilities

@@ -13,6 +13,23 @@ function toMojoCentralState(state) {
   }
 }
 
+// Converts bluetooth.mojom.WriteType to a string. If |writeType| is
+// invalid, this method will throw.
+function writeTypeToString(writeType) {
+  switch (writeType) {
+    case bluetooth.mojom.WriteType.kNone:
+      return 'none';
+    case bluetooth.mojom.WriteType.kWriteDefaultDeprecated:
+      return 'default-deprecated';
+    case bluetooth.mojom.WriteType.kWriteWithResponse:
+      return 'with-response';
+    case bluetooth.mojom.WriteType.kWriteWithoutResponse:
+      return 'without-response';
+    default:
+      throw `Unknown bluetooth.mojom.WriteType: ${writeType}`;
+  }
+}
+
 // Canonicalizes UUIDs and converts them to Mojo UUIDs.
 function canonicalizeAndConvertToMojoUUID(uuids) {
   let canonicalUUIDs = uuids.map(val => ({uuid: BluetoothUUID.getService(val)}));
@@ -82,6 +99,7 @@ class FakeBluetooth {
     this.fake_bluetooth_ptr_ = new bluetooth.mojom.FakeBluetoothPtr();
     Mojo.bindInterface(bluetooth.mojom.FakeBluetooth.name,
         mojo.makeRequest(this.fake_bluetooth_ptr_).handle, 'process');
+    this.fake_central_ = null;
   }
 
   // Set it to indicate whether the platform supports BLE. For example,
@@ -105,12 +123,16 @@ class FakeBluetooth {
   // See Bluetooth 4.2 Vol 3 Part C 2.2.2 "Roles when Operating over an
   // LE Physical Transport".
   async simulateCentral({state}) {
+    if (this.fake_central_)
+      throw 'simulateCentral() should only be called once';
+
     await this.setLESupported(true);
 
     let {fakeCentral: fake_central_ptr} =
       await this.fake_bluetooth_ptr_.simulateCentral(
         toMojoCentralState(state));
-    return new FakeCentral(fake_central_ptr);
+    this.fake_central_ = new FakeCentral(fake_central_ptr);
+    return this.fake_central_;
   }
 
   // Returns true if there are no pending responses.
@@ -161,8 +183,12 @@ class FakeCentral {
   // from a device. If central is currently scanning, the device will appear on
   // the list of discovered devices.
   async simulateAdvertisementReceived(scanResult) {
+    // Create a deep-copy to prevent the original |scanResult| from being
+    // modified when the UUIDs, manufacturer, and service data are converted.
+    let clonedScanResult = JSON.parse(JSON.stringify(scanResult));
+
     if ('uuids' in scanResult.scanRecord) {
-      scanResult.scanRecord.uuids =
+      clonedScanResult.scanRecord.uuids =
           canonicalizeAndConvertToMojoUUID(scanResult.scanRecord.uuids);
     }
 
@@ -171,13 +197,13 @@ class FakeCentral {
     // the fields are undefined, set the hasValue field as false and value as 0.
     // Otherwise, set the hasValue field as true and value with the field value.
     const has_appearance = 'appearance' in scanResult.scanRecord;
-    scanResult.scanRecord.appearance = {
+    clonedScanResult.scanRecord.appearance = {
       hasValue: has_appearance,
       value: (has_appearance ? scanResult.scanRecord.appearance : 0)
     }
 
     const has_tx_power = 'txPower' in scanResult.scanRecord;
-    scanResult.scanRecord.txPower = {
+    clonedScanResult.scanRecord.txPower = {
       hasValue: has_tx_power,
       value: (has_tx_power ? scanResult.scanRecord.txPower : 0)
     }
@@ -185,21 +211,31 @@ class FakeCentral {
     // Convert manufacturerData from a record<DOMString, BufferSource> into a
     // map<uint8, array<uint8>> for Mojo.
     if ('manufacturerData' in scanResult.scanRecord) {
-      scanResult.scanRecord.manufacturerData = convertToMojoMap(
-          scanResult.scanRecord.manufacturerData, Number);
+      clonedScanResult.scanRecord.manufacturerData =
+          convertToMojoMap(scanResult.scanRecord.manufacturerData, Number);
     }
 
     // Convert serviceData from a record<DOMString, BufferSource> into a
     // map<string, array<uint8>> for Mojo.
     if ('serviceData' in scanResult.scanRecord) {
-      scanResult.scanRecord.serviceData.serviceData = convertToMojoMap(
+      clonedScanResult.scanRecord.serviceData.serviceData = convertToMojoMap(
           scanResult.scanRecord.serviceData, BluetoothUUID.getService);
     }
 
     await this.fake_central_ptr_.simulateAdvertisementReceived(
-        new bluetooth.mojom.ScanResult(scanResult));
+        new bluetooth.mojom.ScanResult(clonedScanResult));
 
-    return this.fetchOrCreatePeripheral_(scanResult.deviceAddress);
+    return this.fetchOrCreatePeripheral_(clonedScanResult.deviceAddress);
+  }
+
+  // Simulates a change in the central device described by |state|. For example,
+  // setState('powered-off') can be used to simulate the central device powering
+  // off.
+  //
+  // This method should be used for any central state changes after
+  // simulateCentral() has been called to create a FakeCentral object.
+  async setState(state) {
+    await this.fake_central_ptr_.setState(toMojoCentralState(state));
   }
 
   // Create a fake_peripheral object from the given address.
@@ -433,16 +469,19 @@ class FakeRemoteGATTCharacteristic {
     return isNotifying;
   }
 
-  // Gets the last successfully written value to the characteristic.
-  // Returns null if no value has yet been written to the characteristic.
+  // Gets the last successfully written value to the characteristic and its
+  // write type. Write type is one of 'none', 'default-deprecated',
+  // 'with-response', 'without-response'. Returns {lastValue: null,
+  // lastWriteType: 'none'} if no value has yet been written to the
+  // characteristic.
   async getLastWrittenValue() {
-    let {success, value} =
-      await this.fake_central_ptr_.getLastWrittenCharacteristicValue(
-          ...this.ids_);
+    let {success, value, writeType} =
+        await this.fake_central_ptr_.getLastWrittenCharacteristicValue(
+            ...this.ids_);
 
     if (!success) throw 'getLastWrittenCharacteristicValue failed';
 
-    return value;
+    return {lastValue: value, lastWriteType: writeTypeToString(writeType)};
   }
 
   // Removes the fake GATT Characteristic from its fake service.

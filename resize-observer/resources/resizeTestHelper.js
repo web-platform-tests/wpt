@@ -9,7 +9,7 @@
   Features:
   - can queue multiple notification steps in a test
   - handles timeouts
-  - returns Promise that is fullfilled when test completes.
+  - returns Promise that is fulfilled when test completes.
     Use to chain tests (since parallel async ResizeObserver tests
     would conflict if reusing same DOM elements).
 
@@ -104,7 +104,9 @@ ResizeTestHelper.prototype = {
         this._currentStep.timeout();
       }
       else {
-        assert_unreached("Timed out waiting for notification. (" + ResizeTestHelper.TIMEOUT + "ms)");
+        this._harnessTest.step(() => {
+          assert_unreached("Timed out waiting for notification. (" + ResizeTestHelper.TIMEOUT + "ms)");
+        });
       }
       this._nextStep();
     });

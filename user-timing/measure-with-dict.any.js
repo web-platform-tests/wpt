@@ -30,10 +30,12 @@ async_test(function (t) {
         { entryType: "measure", name: "measure15", detail: null, startTime: timeStamp1, duration: timeStamp2 - timeStamp1 },
         { entryType: "measure", name: "measure16", detail: null, startTime: timeStamp1 },
         { entryType: "measure", name: "measure17", detail: { customInfo: 159 }, startTime: timeStamp3, duration: timeStamp2 - timeStamp3 },
-        { entryType: "measure", name: "measure18", detail: null, startTime: 0 },
-        { entryType: "measure", name: "measure19", detail: null, startTime: 0 },
+        { entryType: "measure", name: "measure18", detail: null, startTime: timeStamp1, duration: timeStamp2 - timeStamp1 },
+        { entryType: "measure", name: "measure19", detail: null, startTime: timeStamp1, duration: timeStamp2 - timeStamp1 },
         { entryType: "measure", name: "measure20", detail: null, startTime: 0 },
-        { entryType: "measure", name: "measure21", detail: null, startTime: 0 }];
+        { entryType: "measure", name: "measure21", detail: null, startTime: 0 },
+        { entryType: "measure", name: "measure22", detail: null, startTime: 0 },
+        { entryType: "measure", name: "measure23", detail: null, startTime: 0 }];
     const observer = new PerformanceObserver(
         t.step_func(function (entryList, obs) {
           measureEntries =
@@ -80,26 +82,30 @@ async_test(function (t) {
         self.performance.measure("measure16", { start: 'mark1', end: undefined, detail: null }));
     returnedEntries.push(
         self.performance.measure("measure17", { start: timeStamp3, end: 'mark2', detail: { customInfo: 159 }}));
+    returnedEntries.push(
+        self.performance.measure("measure18", { start: timeStamp1, duration: timeStamp2 - timeStamp1 }));
+    returnedEntries.push(
+        self.performance.measure("measure19", { duration: timeStamp2 - timeStamp1, end: timeStamp2 }));
     // {}, null, undefined, invalid-dict passed to startOrOptions are interpreted as start time being 0.
-    returnedEntries.push(self.performance.measure("measure18", {}, 'mark1'));
-    returnedEntries.push(self.performance.measure("measure19", null, 'mark1'));
-    returnedEntries.push(self.performance.measure("measure20", undefined, 'mark1'));
-    returnedEntries.push(self.performance.measure("measure21", { invalidDict:1 }, 'mark1'));
+    returnedEntries.push(self.performance.measure("measure20", {}, 'mark1'));
+    returnedEntries.push(self.performance.measure("measure21", null, 'mark1'));
+    returnedEntries.push(self.performance.measure("measure22", undefined, 'mark1'));
+    returnedEntries.push(self.performance.measure("measure23", { invalidDict:1 }, 'mark1'));
     checkEntries(returnedEntries, expectedEntries);
 }, "measure entries' detail and start/end are customizable");
 
 test(function() {
     this.add_cleanup(cleanupPerformanceTimeline);
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       self.performance.measure("optionsAndNumberEnd", {'start': 2}, 12);
     }, "measure should throw a TypeError when passed an options object and an end time");
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       self.performance.measure("optionsAndMarkEnd", {'start': 2}, 'mark1');
     }, "measure should throw a TypeError when passed an options object and an end mark");
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       self.performance.measure("negativeStartInOptions", {'start': -1});
     }, "measure cannot have a negative time stamp.");
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       self.performance.measure("negativeEndInOptions", {'end': -1});
     }, "measure cannot have a negative time stamp for end.");
 }, "measure should throw a TypeError when passed an invalid argument combination");

@@ -12,24 +12,25 @@ def stash_write(request, key, value):
 
 
 def main(request, response):
-    stateKey = request.GET.first("stateKey", "")
-    abortKey = request.GET.first("abortKey", "")
+    stateKey = request.GET.first(b"stateKey", b"")
+    abortKey = request.GET.first(b"abortKey", b"")
 
     if stateKey:
         stash_write(request, stateKey, 'open')
 
-    response.headers.set("Content-type", "text/plain")
+    response.headers.set(b"Content-type", b"text/plain")
     response.write_status_headers()
 
     # Writing an initial 2k so browsers realise it's there. *shrug*
-    response.writer.write("." * 2048)
+    response.writer.write(u"." * 2048)
 
     while True:
         if not response.writer.flush():
             break
         if abortKey and request.server.stash.take(abortKey, url_dir(request)):
             break
-        response.writer.write(".")
+        if not response.writer.write(u"."):
+            break
         time.sleep(0.01)
 
     if stateKey:

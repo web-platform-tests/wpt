@@ -48,6 +48,11 @@ if MYPY:
     # ignores the error.
     Ignorelist = Dict[Text, Dict[Text, Set[Optional[int]]]]
 
+    try:
+        from xml.etree import cElementTree as ElementTree
+    except ImportError:
+        from xml.etree import ElementTree as ElementTree  # type: ignore
+
 
 logger = None  # type: Optional[logging.Logger]
 
@@ -521,9 +526,9 @@ def check_parsed(repo_root, path, f):
         if timeout_value != "long":
             errors.append(rules.InvalidTimeout.error(path, (timeout_value,)))
 
-    required_elements = []
+    required_elements = []  # type: List[Text]
 
-    testharnessreport_nodes = None
+    testharnessreport_nodes = []  # type: List[ElementTree.Element]
     if source_file.testharness_nodes:
         test_type = source_file.manifest_items()[0]
         if test_type not in ("testharness", "manual"):
@@ -551,7 +556,7 @@ def check_parsed(repo_root, path, f):
                                                         "timeout": len(source_file.timeout_nodes) > 0}.items()
                                  if value)
 
-    testdriver_vendor_nodes = None
+    testdriver_vendor_nodes = []  # type: List[ElementTree.Element]
     if source_file.testdriver_nodes:
         if len(source_file.testdriver_nodes) > 1:
             errors.append(rules.MultipleTestdriver.error(path))

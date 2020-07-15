@@ -29,6 +29,15 @@ from .router import Router
 from .utils import HTTPException
 from .constants import h2_headers
 
+# We need to stress test browsers to send/receive lots of headers, but Python
+# stdlib has an arbitrary limit of 100 headers. Hitting the limit would produce
+# an exception which is silently caught in Python 2 but leads to HTTP 431 in
+# Python 3, so we have to moneky patch this limit.
+# See also https://github.com/web-platform-tests/wpt/pull/24451 .
+from six.moves import http_client
+assert isinstance(getattr(http_client, '_MAXHEADERS'), int)
+setattr(http_client, '_MAXHEADERS', 512)
+
 """
 HTTP server designed for testing purposes.
 

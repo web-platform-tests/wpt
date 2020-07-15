@@ -1,0 +1,111 @@
+<!-- There are additional tests in /webidl/current-realm.html -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test objects are created in the correct global</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+
+<!-- This page is the entry global -->
+
+<iframe src="resources/incumbent.html" id="incumbent"></iframe>
+<iframe src="resources/current.html" id="current"></iframe>
+<iframe src="resources/relevant.html" id="relevant"></iframe>
+
+<script>
+"use strict";
+
+setup({ explicit_done: true });
+
+const incumbentFrame = document.querySelector("#incumbent");
+const currentFrame = document.querySelector("#current");
+const relevantFrame = document.querySelector("#relevant");
+
+const bodyMethods = ["arrayBuffer", "blob", "formData", "json", "text"];
+
+function isObjectFromGlobal(object, global) {
+   return object instanceof global.Object;
+}
+
+function assert_response(response, global, globalInWords) {
+  assert_true(isObjectFromGlobal(response, global), `response should use the ${globalInWords} global`);
+  assert_true(isObjectFromGlobal(response.headers, global), `response.headers should use the ${globalInWords} global`);
+  if (response.body !== null) {
+    assert_true(isObjectFromGlobal(response.body, global), `response.body should use the ${globalInWords} global`);
+  }
+}
+
+window.addEventListener("load", () => {
+  test(t => {
+    // This will invoke the method from currentFrame, but with incumbentFrame as the incumbent, and
+    // relevantFrame as the relevant.
+    const errorResponse = incumbentFrame.contentWindow.runResponseError();
+    assert_equals(errorResponse.status, 0);
+    assert_equals(errorResponse.body, null);
+
+    assert_response(errorResponse, currentFrame.contentWindow, "current");
+  }, "Response.error()");
+
+  test(t => {
+    const redirectResponse = incumbentFrame.contentWindow.runResponseRedirect("/", 302);
+    assert_equals(redirectResponse.status, 302);
+    assert_equals(redirectResponse.body, null);
+
+    assert_response(redirectResponse, currentFrame.contentWindow, "current");
+  }, "Response.redirect()");
+
+  promise_test(async t => {
+    const responsePromise = incumbentFrame.contentWindow.runFetch("data:,x");
+
+    assert_true(isObjectFromGlobal(responsePromise, relevantFrame.contentWindow), "fetch()'s promise should use the relevant global");
+
+    const response = await responsePromise;
+    assert_not_equals(response.body, null);
+
+    assert_response(response, relevantFrame.contentWindow, "relevant");
+  }, "fetch()");
+
+  bodyMethods.forEach(method => {
+    promise_test(async t => {
+      // This data URL was chosen as it works for formData() and json()
+      const response = await incumbentFrame.contentWindow.runFetch("data:application/x-www-form-urlencoded,[]");
+
+      const bodyPromise = response[method]();
+
+      assert_true(isObjectFromGlobal(bodyPromise, relevantFrame.contentWindow), `Response's ${method}()'s promise should use the relevant global`);
+
+      // Primitive types don't have a global
+      if (method === "text") {
+        return;
+      }
+
+      const body = await bodyPromise;
+
+      assert_true(isObjectFromGlobal(body, relevantFrame.contentWindow), `Response's ${method}()'s object should use the relevant global`);
+    }, `Response's ${method}()`);
+  });
+
+  promise_test(async t => {
+    const response = await incumbentFrame.contentWindow.runFetch("data:,");
+
+    // Consume the response
+    await response.arrayBuffer();
+
+    // Verify rejected promises
+    return Promise.all(bodyMethods.map(method => {
+      const rejectedPromise = response[method]();
+      assert_true(isObjectFromGlobal(rejectedPromise, relevantFrame.contentWindow), `Response's ${method}()'s rejected promise should use the relevant global`)
+      return promise_rejects_js(t, relevantFrame.contentWindow.TypeError, rejectedPromise);
+    }));
+  }, `Response's Body methods and rejected promises`);
+
+  promise_test(async t => {
+    const request = new Request("../resources/echo-content.py");
+
+    const response = await incumbentFrame.contentWindow.runFetch(request);
+    assert_equals(response.headers.get("X-Request-Referer"), new URL("resources/relevant.html", location).href);
+  }, "fetch() with Request from other global");
+
+  done();
+});
+</script>

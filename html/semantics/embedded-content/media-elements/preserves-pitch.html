@@ -56,34 +56,27 @@ function testPreservesPitch(preservesPitch, playbackRate, expectedPitch, descrip
         audio.playbackRate = playbackRate;
         setPreservesPitch(audio, preservesPitch);
 
-        function waitUntil(time) {
-            return new Promise((resolve) => {
-                audio.ontimeupdate = () => {
-                    if (audio.currentTime >= time) {
-                        resolve();
-                    }
-                };
-            });
+        function promiseTimeUpdate() {
+            return new Promise((resolve) => audio.ontimeupdate = resolve);
+        }
+
+        function verifyPitch() {
+            var pitch = detector();
+
+            // 25Hz is larger than the margin we get from 48kHz and 44.1kHz
+            // audio being analyzed by a FFT of size 2048. If we get something
+            // different, there is an error within the test's calculations (or
+            // we might be dealing a larger sample rate).
+            assert_less_than(pitch.margin, 25,
+                "Test error: the margin should be reasonably small.")
+
+            assert_approx_equals(pitch.value, expectedPitch, pitch.margin,
+                "The actual pitch should be close to the expected pitch.");
         }
 
         await test_driver.bless("Play audio element", () => audio.play() )
-
-        // Wait until we have at least played some audio. Otherwise, the
-        // detector might return a pitch of 0Hz.
-        await waitUntil(0.5);
-
-        var pitch = detector();
-
-        // 25Hz is larger than the margin we get from 48kHz and 44.1kHz
-        // audio being analyzed by a FFT of size 2048. If we get something
-        // different, there is an error within the test's calculations (or
-        // we might be dealing a larger sample rate).
-        assert_less_than(pitch.margin, 25,
-            "Test error: the margin should be reasonably small.")
-
-        assert_approx_equals(pitch.value, expectedPitch, pitch.margin,
-            "The actual pitch should be close to the expected pitch.");
-
+          .then(promiseTimeUpdate)
+          .then(verifyPitch);
     }, description);
 }
 

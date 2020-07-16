@@ -50,7 +50,8 @@ class TestRequestHandler(TestUsingServer):
             # Additional headers are added by urllib.request.
             assert len(request.headers) > len(headers)
             for k, v in headers.items():
-                assert request.headers.get(k) == v
+                assert request.headers.get(k) == \
+                    wptserve.utils.isomorphic_encode(v)
             return "OK"
 
         route = ("GET", "/test/headers", handler)

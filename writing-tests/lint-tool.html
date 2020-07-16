@@ -99,6 +99,10 @@ cross-platform “Unix” line endings instead of, e.g., DOS line endings).</p>
 <dd><p class="first">File has identical basename path (path excluding extension) as other file(s) (found extensions: %s)</p>
 <strong>To fix:</strong><p class="last">rename files so they have unique basename paths</p>
 </dd>
+<dt><code class="docutils literal notranslate"><span class="pre">EARLY-TESTDRIVER-VENDOR</span></code></dt>
+<dd><p class="first">Test file has an instance of <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testdriver-vendor.js'&gt;</span></code> prior to <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testdriver.js'&gt;</span></code></p>
+<strong>To fix:</strong><p class="last">flip the order</p>
+</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">EARLY-TESTHARNESSREPORT</span></code></dt>
 <dd><p class="first">Test file has an instance of <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code> prior to <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharness.js'&gt;</span></code></p>
 <strong>To fix:</strong><p class="last">flip the order</p>

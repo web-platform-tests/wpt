@@ -2,7 +2,7 @@ import time
 
 
 def url_dir(request):
-    return '/'.join(request.url_parts.path.split('/')[:-1]) + '/'
+    return u'/'.join(request.url_parts.path.split(u'/')[:-1]) + u'/'
 
 
 def stash_write(request, key, value):

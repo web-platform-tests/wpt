@@ -49,7 +49,7 @@ class TestRequestHandler(TestUsingServer):
         def handler(request, response):
             # Additional headers are added by urllib.request.
             assert len(request.headers) > len(headers)
-            for k, v in headers:
+            for k, v in headers.items():
                 assert request.headers.get(k) == v
             return "OK"
 

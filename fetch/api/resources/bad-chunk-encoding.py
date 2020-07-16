@@ -1,7 +1,5 @@
 import time
 
-from six.moves import range
-
 def main(request, response):
     delay = float(request.GET.first(b"ms", 1000)) / 1E3
     count = int(request.GET.first(b"count", 50))

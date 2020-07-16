@@ -207,7 +207,7 @@ def check_ahem_copy(repo_root, path):
 
 
 def check_tentative_directories(repo_root, path):
-    # type: (str, str) -> List[rules.Error]
+    # type: (Text, Text) -> List[rules.Error]
     path_parts = path.split(os.path.sep)
     for directory in path_parts[:-1]:
         if "tentative" in directory and directory != "tentative":

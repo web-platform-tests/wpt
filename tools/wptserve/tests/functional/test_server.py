@@ -43,17 +43,20 @@ class TestRequestHandler(TestUsingServer):
         self.assertEqual(cm.exception.code, 500)
 
     def test_many_headers(self):
+        headers = {"X-Val%d" % i: str(i) for i in range(256)}
+
         @wptserve.handlers.handler
         def handler(request, response):
-            assert len(request.headers) == 260
+            # Additional headers are added by urllib.request.
+            assert len(request.headers) > len(headers)
+            for k, v in headers:
+                assert request.headers.get(k) == v
             return "OK"
 
         route = ("GET", "/test/headers", handler)
         self.server.router.register(*route)
-        headers = {"X-Val%d" % i: str(i) for i in range(256)}
         resp = self.request("/test/headers", headers=headers)
-
-        self.assertEqual(resp.status, 200)
+        self.assertEqual(200, resp.getcode())
 
 
 class TestFileHandlerH2(TestUsingH2Server):

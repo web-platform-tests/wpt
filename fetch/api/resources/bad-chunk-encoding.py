@@ -1,6 +1,6 @@
 import time
 
-from six.moves import xrange
+from six.moves import range
 
 def main(request, response):
     delay = float(request.GET.first(b"ms", 1000)) / 1E3
@@ -9,7 +9,7 @@ def main(request, response):
     response.headers.set(b"Transfer-Encoding", b"chunked")
     response.write_status_headers()
     time.sleep(delay)
-    for i in xrange(count):
+    for i in range(count):
         response.writer.write_content(b"a\r\nTEST_CHUNK\r\n")
         time.sleep(delay)
     response.writer.write_content(b"garbage")

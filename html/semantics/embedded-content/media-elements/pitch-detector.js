@@ -4,11 +4,14 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 var FFT_SIZE = 2048;
 
-function getPitchDetector(media, t) {
-  var audioContext = new AudioContext();
-  t.add_cleanup(() => audioContext.close());
+var audioContext;
+var sourceNode;
 
-  var sourceNode = audioContext.createMediaElementSource(media);
+function getPitchDetector(media) {
+  if(!audioContext) {
+    audioContext = new AudioContext();
+    sourceNode = audioContext.createMediaElementSource(media);
+  }
 
   var analyser = audioContext.createAnalyser();
   analyser.fftSize = FFT_SIZE;
@@ -16,14 +19,22 @@ function getPitchDetector(media, t) {
   sourceNode.connect(analyser);
   analyser.connect(audioContext.destination);
 
-  // Returns the frequency value for the nth FFT bin.
-  var binConverter = (bin) => audioContext.sampleRate*(bin/FFT_SIZE);
-
-  return () => getPitch(analyser, binConverter);
+  return {
+      ensureStart() { return audioContext.resume(); },
+      detect() { return getPitch(analyser); },
+      cleanup() {
+        sourceNode.disconnect();
+        analyser.disconnect();
+      },
+  };
 }
 
-function getPitch(analyser, binConverter) {
-  var buf = new Uint8Array(FFT_SIZE/2);
+function getPitch(analyser) {
+  // Returns the frequency value for the nth FFT bin.
+  var binConverter = (bin) =>
+    (audioContext.sampleRate/2)*((bin)/(analyser.frequencyBinCount-1));
+
+  var buf = new Uint8Array(analyser.frequencyBinCount);
   analyser.getByteFrequencyData(buf);
   return findDominantFrequency(buf, binConverter);
 }
@@ -40,9 +51,8 @@ function findDominantFrequency(buf, binConverter) {
     }
   }
 
-  // The distance between bins is always constant and corresponds to
-  // (1/FFT_SIZE)th of the sample rate. Use the frequency value of the 1st bin
-  // as the margin directly, instead of calculating an average from the values
-  // of the neighboring bins.
+  // The spread of frequencies within bins is constant and corresponds to
+  // (1/(FFT_SIZE-1))th of the sample rate. Use the value of bin #1 as a
+  // shorthand for that value.
   return { value:binConverter(bin), margin:binConverter(1) };
 }

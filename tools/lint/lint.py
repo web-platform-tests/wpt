@@ -568,7 +568,9 @@ def check_parsed(repo_root, path, f):
             if len(testdriver_vendor_nodes) > 1:
                 errors.append(rules.MultipleTestdriverVendor.error(path))
 
-        required_elements.extend(["testdriver", "testdriver-vendor"])
+        required_elements.append("testdriver")
+        if len(testdriver_vendor_nodes) > 0:
+            required_elements.append("testdriver-vendor")
 
     if required_elements:
         seen_elements = defaultdict(bool)

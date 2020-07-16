@@ -1,9 +1,9 @@
 def main(request, response):
-    if request.method == 'OPTIONS':
+    if request.method == u'OPTIONS':
         # CORS preflight
-        response.headers.set(b'Access-Control-Allow-Origin', '*')
-        response.headers.set(b'Access-Control-Allow-Methods', '*')
-        response.headers.set(b'Access-Control-Allow-Headers', '*')
+        response.headers.set(b'Access-Control-Allow-Origin', b'*')
+        response.headers.set(b'Access-Control-Allow-Methods', b'*')
+        response.headers.set(b'Access-Control-Allow-Headers', b'*')
         return 'done'
 
     url_dir = '/'.join(request.url_parts.path.split('/')[:-1]) + '/'

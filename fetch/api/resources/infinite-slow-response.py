@@ -22,14 +22,12 @@ def main(request, response):
     response.write_status_headers()
 
     # Writing an initial 2k so browsers realise it's there. *shrug*
-    response.writer.write(u"." * 2048)
+    response.writer.write(b"." * 2048)
 
     while True:
-        if not response.writer.flush():
+        if not response.writer.write(b"."):
             break
         if abortKey and request.server.stash.take(abortKey, url_dir(request)):
-            break
-        if not response.writer.write(u"."):
             break
         time.sleep(0.01)
 

@@ -173,6 +173,7 @@ class BrowserSetup(object):
     def setup(self, kwargs):
         self.setup_kwargs(kwargs)
 
+
 def safe_unsetenv(env_var):
     """Safely remove an environment variable.
 
@@ -183,6 +184,7 @@ def safe_unsetenv(env_var):
         del os.environ[env_var]
     except KeyError:
         pass
+
 
 class Firefox(BrowserSetup):
     name = "firefox"
@@ -255,11 +257,6 @@ class FirefoxAndroid(BrowserSetup):
     name = "firefox_android"
     browser_cls = browser.FirefoxAndroid
 
-    def install(self, channel):
-        # The install needs to happen in setup so that we have access to all the kwargs
-        self._install_browser = True
-        return None
-
     def setup_kwargs(self, kwargs):
         from . import android
         import mozdevice
@@ -286,13 +283,6 @@ class FirefoxAndroid(BrowserSetup):
             emulator = android.install(logger, reinstall=False, no_prompt=not self.prompt)
             android.start(logger, emulator=emulator, reinstall=False)
 
-        install = False
-        if hasattr(self, "_install_browser"):
-            if self.prompt_install("geckoview-test"):
-                install = True
-                apk_path = self.browser.install(self.venv.path,
-                                                channel=kwargs["browser_channel"])
-
         if "ADB_PATH" not in os.environ:
             adb_path = os.path.join(android.get_sdk_path(None),
                                     "platform-tools",
@@ -303,9 +293,9 @@ class FirefoxAndroid(BrowserSetup):
         device = mozdevice.ADBDevice(adb=adb_path,
                                      device=kwargs["device_serial"])
 
-        if install:
+        if self.browser.apk_path:
             device.uninstall_app(app)
-            device.install_app(apk_path)
+            device.install_app(self.browser.apk_path)
         elif not device.is_app_installed(app):
             raise WptrunError("app %s not installed on device %s" %
                               (app, kwargs["device_serial"]))

@@ -35,6 +35,7 @@ async function getCrossOriginIsolatedFor(t, url) {
 }
 
 function generateTest(origin, value, expectation) {
+  // We use async_test, not promise_test here to run tests in parallel.
   async_test((t) => {
     let pipe = PIPE;
     if (value !== undefined) {

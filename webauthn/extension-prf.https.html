@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>WebAuthn PRF extension</title>
+<meta name="timeout" content="long">
+<link rel="help" href="https://w3c.github.io/webauthn/#prf-extension">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="helpers.js"></script>
+<script src="resources/utils.js"></script>
+<script>
+
+function getAssertionWithPRF(allowList, prf, uv='discouraged') {
+    let args = cloneObject(getCredentialDefaultArgs);
+    let challengeBytes = new Uint8Array(16);
+    window.crypto.getRandomValues(challengeBytes);
+    args.options.publicKey.challenge = challengeBytes.buffer;
+
+    args.options.publicKey.allowCredentials = [];
+    for (let i = 0; i < allowList.length; i++) {
+        args.options.publicKey.allowCredentials.push({type: 'public-key', id: allowList[i]});
+    }
+    args.options.publicKey.extensions = {prf};
+    args.options.publicKey.userVerification = uv;
+
+    return navigator.credentials.get(args.options);
+}
+
+function arrayBuffersEqual(a, b) {
+    if (a.byteLength != b.byteLength) {
+        return false;
+    }
+    const a8 = new Uint8Array(a);
+    const b8 = new Uint8Array(b);
+    for (let i = 0; i < a.byteLength; i++) {
+        if (a8[i] != b8[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function testPRF() {
+    // Tests interaction with an authenticator that supports hmac_secret and
+    // thus the PRF extension.
+
+    const authenticatorArgs = {
+        protocol: "ctap2",
+        hasHMACSecret: true,
+    };
+    standardSetup(function() {
+        promise_test(async t => {
+            const cred = await createCredential({options: {publicKey: {extensions: {prf: {}}}}});
+            assert_true('prf' in cred.getClientExtensionResults(), "prf extension not supported by user agent");
+
+            // salt1 and salt2 are two arbitrary values.
+            const salt1 = new ArrayBuffer(8);
+            const salt2 = new ArrayBuffer(8);
+            (new Uint8Array(salt2))[0] = 1;
+
+            // Using evalByCredential in a create() call is invalid.
+            await promise_rejects_dom(t, "NotSupportedError", createCredential({options: {publicKey: {extensions: {prf: {evalByCredential: {"QQ": {first: salt1}}}}}}}));
+
+            let assertedCred = await getAssertionWithPRF([cred.rawId], {});
+            assert_true('prf' in assertedCred.getClientExtensionResults(), "prf extension not supported by user agent for assertion");
+
+            // Using evalByCredential with an empty allowCredentials list is invalid.
+            await promise_rejects_dom(t, "NotSupportedError", getAssertionWithPRF([], {evalByCredential: {"QQ": {first: salt1}}}));
+            // Specifying "preferred" user verification with PRF is invalid in a get call.
+            await promise_rejects_dom(t, "NotSupportedError", getAssertionWithPRF([cred.rawId], {}, "preferred"));
+
+            // The following tests require support from the authenticator.
+            assert_true(cred.getClientExtensionResults().prf.enabled, "prf extension not supported by authenticator");
+
+            assertedCred = await getAssertionWithPRF([cred.rawId], {eval: {first: salt1}});
+            const salt1Result = assertedCred.getClientExtensionResults().prf.results.first;
+            assertedCred = await getAssertionWithPRF([cred.rawId], {eval: {first: salt1}});
+            // For a given credential, PRF output at the same point should be
+            // consistent.
+            assert_true(arrayBuffersEqual(salt1Result, assertedCred.getClientExtensionResults().prf.results.first), "PRF results inconsistent");
+
+            assertedCred = await getAssertionWithPRF([cred.rawId], {eval: {first: salt2}});
+            const salt2Result = assertedCred.getClientExtensionResults().prf.results.first;
+            // For a given credential, PRF output at any different point should
+            // be different. (Only probabilistically true, but at extremely high
+            // rates, i.e. 2^-256.)
+            assert_false(arrayBuffersEqual(salt1Result, assertedCred.getClientExtensionResults().prf.results.first), "PRF results constant");
+
+            // Should be able to evaluate two inputs in a single call.
+            assertedCred = await getAssertionWithPRF([cred.rawId], {eval: {first: salt1, second: salt2}});
+            assert_true(arrayBuffersEqual(salt1Result, assertedCred.getClientExtensionResults().prf.results.first), "Dual PRF results incorrect");
+            assert_true(arrayBuffersEqual(salt2Result, assertedCred.getClientExtensionResults().prf.results.second), "Dual PRF results incorrect");
+
+            // Should be able to pass in a map of credential IDs to input and
+            // have the correct one evaluated.
+            let byCred = new Object();
+            byCred["AA"] = {first: salt1Result};
+            byCred[cred.id] = {first: salt1};
+            byCred["_w"] = {first: salt2Result};
+
+            assertedCred = await getAssertionWithPRF([cred.rawId], {evalByCredential: byCred});
+            assert_true(arrayBuffersEqual(salt1Result, assertedCred.getClientExtensionResults().prf.results.first), "evalByCredential results incorrect");
+
+            // This is not a valid base64url and thus should cause an error.
+            byCred["\x00"] = {first: salt1};
+            await promise_rejects_dom(t, "NotSupportedError", getAssertionWithPRF([cred.rawId], {evalByCredential: byCred}));
+
+            t.done();
+        });
+    }, authenticatorArgs);
+}
+
+testPRF();
+/* JSHINT */
+/* globals standardSetup, createCredential */
+</script>
+</head>
+<body></body>
+</html>

@@ -30,7 +30,7 @@ async function getCrossOriginIsolatedFor(t, url) {
   const e = await new Promise((resolve) => {
     mc.port1.onmessage = resolve;
   });
-  assert_equals(typeof(e.data), 'boolean');  
+  assert_equals(typeof(e.data), 'boolean');
   return e.data;
 }
 

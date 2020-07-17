@@ -2,33 +2,42 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Pseudo-Elements Test: active selection and empty &lt;div&gt; element</title>
+  <title>CSS Pseudo-Elements Test: active selection and 3 empty elements</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
   <link rel="match" href="reference/ref-nothing-below.xht">
 
-  <!--
-
-  Issue 1018465: [CSS4-Pseudo] Active selection and hard wrap (or hard return)
-  line break: ::selection should not select <br>
-  https://bugs.chromium.org/p/chromium/issues/detail?id=1018465
-
-  -->
-
   <meta content="" name="flags">
-  <meta name="assert" content="The &lt;div&gt; element in this test is an empty element. Its background color can be painted but specifying its color should generate no rendering effect of any kind. Since the 'background-color' has not been specified, then it defaults as 'transparent'. Therefore nothing should be painted or viewable in this test.">
+  <meta name="assert" content="The &lt;div id=&quot;subtest1&quot;&gt; element and the &lt;hr&gt; element in this test are empty elements. Their background color can be painted but specifying their 'color' should generate no rendering effect of any kind. Since the 'background-color' has not been specified in the ::selection pseudo-element, then it defaults to 'transparent'. The &lt;div id=&quot;subtest3&quot;&gt; element is also an empty element since the 2 &amp;NewLine; character references are line break control characters. Their background color can not be painted. Therefore, in this test, nothing should be painted or viewable. The fact that lines break at preserved newline characters thanks to 'white-space: pre' does not change that.">
 
   <style>
-  div
+  div#subtest1 , hr#subtest2
     {
       background-color: transparent; /* or initial or unset */
       height: 100px;
     }
 
-  div::selection
+  hr#subtest2
+    {
+      border: none 0px;
+    }
+
+  div#subtest1::selection , hr#subtest2::selection
     {
       color: red;
+    }
+
+  div#subtest3
+    {
+      background-color: transparent; /* or initial or unset */
+      font-size: 100px;
+      white-space: pre; /* or pre-line or pre-wrap or break-spaces */
+    }
+
+  div#subtest3::selection
+    {
+      background-color: red;
     }
   </style>
 
@@ -48,4 +57,12 @@
 
   <p>Test passes if there is nothing below.</p>
 
-  <div id="test">&nbsp;</div>
+  <div id="test">
+
+    <div id="subtest1">&nbsp;</div>
+
+    <hr id="subtest2">
+
+    <div id="subtest3">&NewLine;&NewLine;</div>
+
+  </div>

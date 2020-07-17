@@ -41,7 +41,7 @@
       }));
 
     document.body.appendChild(i);
-  }, "`XFO: ALLOWFROM` allows same-origin framing.");
+  }, "`XFO: ALLOW-FROM` allows same-origin framing.");
 
   async_test(t => {
     var i = document.createElement('iframe');
@@ -54,7 +54,7 @@
       }));
 
     document.body.appendChild(i);
-  }, "`XFO: ALLOWFROM` allows cross-origin framing.");
+  }, "`XFO: ALLOW-FROM` allows cross-origin framing.");
 
   async_test(t => {
     var i = document.createElement('iframe');
@@ -67,7 +67,7 @@
       }));
 
     document.body.appendChild(i);
-  }, "`XFO: ALLOWFROM=` allows same-origin framing.");
+  }, "`XFO: ALLOW-FROM=` allows same-origin framing.");
 
   async_test(t => {
     var i = document.createElement('iframe');
@@ -80,7 +80,7 @@
       }));
 
     document.body.appendChild(i);
-  }, "`XFO: ALLOWFROM=` allows cross-origin framing.");
+  }, "`XFO: ALLOW-FROM=` allows cross-origin framing.");
 
   async_test(t => {
     var i = document.createElement('iframe');

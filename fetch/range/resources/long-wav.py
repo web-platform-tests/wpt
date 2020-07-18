@@ -118,7 +118,7 @@ def main(request, response):
     bytes_remaining_to_send -= len(initial_write)
 
     while bytes_remaining_to_send > 0:
-        if not response.writer.flush():
+        if not response.writer.write(b"."):
             break
 
         to_send = b'\x00' * min(bytes_remaining_to_send, sample_rate)

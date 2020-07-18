@@ -23,6 +23,6 @@ def main(request, response):
     for i in range(count): # pylint: disable=unused-variable
         time.sleep(single_delay)
         response.writer.write_content(u"\n")
-        if not response.writer.flush():
+        if not response.writer.write(b"."):
           return
     request.server.stash.put(token, True)

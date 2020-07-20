@@ -12,6 +12,10 @@ logger = logging.getLogger()
 
 
 def test_all_browser_abc():
+    # Make sure all subclasses of Browser implement all abstract methods
+    # (except some known base classes). This is a basic sanity test in case
+    # we change the ABC interface of Browser as we only instantiate some
+    # products in unit tests.
     classes = inspect.getmembers(browser)
     for name, cls in classes:
         if cls in (browser.Browser, browser.ChromeAndroidBase):

@@ -6,15 +6,15 @@
 <canvas />
 
 <script>
-xr_promise_test("Ensure that XRWebGLLayer's constructor throws appropriate errors",
-  (t) => {
+
+const xrConstructorTest = (glContextType) => (t) => {
   let webglCanvas = document.getElementsByTagName('canvas')[0];
   let glAttributes = {
     alpha: false,
     antialias: false,
     xrCompatible: false,
   };
-  let gl = webglCanvas.getContext('webgl', glAttributes);
+  let gl = webglCanvas.getContext(glContextType, glAttributes);
   return navigator.xr.test.simulateDeviceConnection(TRACKED_IMMERSIVE_DEVICE)
     .then(() => {
       return navigator.xr.requestSession('inline')
@@ -80,6 +80,25 @@ xr_promise_test("Ensure that XRWebGLLayer's constructor throws appropriate error
         });
       });
     });
-});
+}
+
+xr_promise_test(
+  "Ensure that XRWebGLLayer's constructor throws appropriate errors",
+  xrConstructorTest('webgl'),
+);
+
+if ('WebGL2RenderingContext' in window) {
+  xr_promise_test(
+    "Ensure that XRWebGLLayer's constructor supports webgl2",
+    xrConstructorTest('webgl2'),
+  );
+}
+
+if ('WebGL2ComputeRenderingContext' in window) {
+  xr_promise_test(
+    "Ensure that XRWebGLLayer's constructor supports webgl2-compute",
+    xrConstructorTest('webgl2-compute'),
+  );
+}
 
 </script>

@@ -52,6 +52,9 @@ def create_parser():
     parser.add_argument("--install-browser", action="store_true",
                         help="Install the browser from the release channel specified by --channel "
                         "(or the nightly channel by default).")
+    parser.add_argument("--install-webdriver", action="store_true",
+                        help="Install WebDriver from the release channel specified by --channel "
+                        "(or the nightly channel by default).")
     parser._add_container_actions(wptcommandline.create_parser())
     return parser
 
@@ -217,7 +220,9 @@ Consider installing certutil via your OS package manager or directly.""")
             kwargs["certutil_binary"] = certutil
 
         if kwargs["webdriver_binary"] is None and "wdspec" in kwargs["test_types"]:
-            webdriver_binary = self.browser.find_webdriver()
+            webdriver_binary = None
+            if not kwargs["install_webdriver"]:
+                webdriver_binary = self.browser.find_webdriver()
 
             if webdriver_binary is None:
                 install = self.prompt_install("geckodriver")
@@ -314,7 +319,9 @@ class Chrome(BrowserSetup):
             else:
                 raise WptrunError("Unable to locate Chrome binary")
         if kwargs["webdriver_binary"] is None:
-            webdriver_binary = self.browser.find_webdriver()
+            webdriver_binary = None
+            if not kwargs["install_webdriver"]:
+                webdriver_binary = self.browser.find_webdriver()
 
             if webdriver_binary is None:
                 install = self.prompt_install("chromedriver")
@@ -355,7 +362,9 @@ class ChromeAndroid(BrowserSetup):
             kwargs["package_name"] = self.browser.find_binary(
                 channel=browser_channel)
         if kwargs["webdriver_binary"] is None:
-            webdriver_binary = self.browser.find_webdriver()
+            webdriver_binary = None
+            if not kwargs["install_webdriver"]:
+                webdriver_binary = self.browser.find_webdriver()
 
             if webdriver_binary is None:
                 install = self.prompt_install("chromedriver")
@@ -397,7 +406,9 @@ class AndroidWeblayer(BrowserSetup):
         if kwargs.get("device_serial"):
             self.browser.device_serial = kwargs["device_serial"]
         if kwargs["webdriver_binary"] is None:
-            webdriver_binary = self.browser.find_webdriver()
+            webdriver_binary = None
+            if not kwargs["install_webdriver"]:
+                webdriver_binary = self.browser.find_webdriver()
 
             if webdriver_binary is None:
                 install = self.prompt_install("chromedriver")
@@ -422,7 +433,9 @@ class AndroidWebview(BrowserSetup):
         if kwargs.get("device_serial"):
             self.browser.device_serial = kwargs["device_serial"]
         if kwargs["webdriver_binary"] is None:
-            webdriver_binary = self.browser.find_webdriver()
+            webdriver_binary = None
+            if not kwargs["install_webdriver"]:
+                webdriver_binary = self.browser.find_webdriver()
 
             if webdriver_binary is None:
                 install = self.prompt_install("chromedriver")
@@ -445,7 +458,9 @@ class Opera(BrowserSetup):
 
     def setup_kwargs(self, kwargs):
         if kwargs["webdriver_binary"] is None:
-            webdriver_binary = self.browser.find_webdriver()
+            webdriver_binary = None
+            if not kwargs["install_webdriver"]:
+                webdriver_binary = self.browser.find_webdriver()
 
             if webdriver_binary is None:
                 install = self.prompt_install("operadriver")
@@ -475,7 +490,9 @@ class EdgeChromium(BrowserSetup):
             else:
                 raise WptrunError("Unable to locate Edge binary")
         if kwargs["webdriver_binary"] is None:
-            webdriver_binary = self.browser.find_webdriver()
+            webdriver_binary = None
+            if not kwargs["install_webdriver"]:
+                webdriver_binary = self.browser.find_webdriver()
 
             # Install browser if none are found or if it's found in venv path
             if webdriver_binary is None or webdriver_binary in self.venv.bin_path:

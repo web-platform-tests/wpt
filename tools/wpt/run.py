@@ -229,7 +229,10 @@ Consider installing certutil via your OS package manager or directly.""")
 
                 if install:
                     logger.info("Downloading geckodriver")
-                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path)
+                    webdriver_binary = self.browser.install_webdriver(
+                        dest=self.venv.bin_path,
+                        channel=kwargs["browser_channel"],
+                        browser_binary=kwargs["binary"])
             else:
                 logger.info("Using webdriver binary %s" % webdriver_binary)
 
@@ -330,6 +333,7 @@ class Chrome(BrowserSetup):
                     logger.info("Downloading chromedriver")
                     webdriver_binary = self.browser.install_webdriver(
                         dest=self.venv.bin_path,
+                        channel=browser_channel,
                         browser_binary=kwargs["binary"],
                     )
             else:
@@ -373,6 +377,7 @@ class ChromeAndroid(BrowserSetup):
                     logger.info("Downloading chromedriver")
                     webdriver_binary = self.browser.install_webdriver(
                         dest=self.venv.bin_path,
+                        channel=browser_channel,
                         browser_binary=kwargs["package_name"],
                     )
             else:
@@ -415,7 +420,9 @@ class AndroidWeblayer(BrowserSetup):
 
                 if install:
                     logger.info("Downloading chromedriver")
-                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path)
+                    webdriver_binary = self.browser.install_webdriver(
+                        dest=self.venv.bin_path,
+                        channel=kwargs["browser_channel"])
             else:
                 logger.info("Using webdriver binary %s" % webdriver_binary)
 
@@ -442,7 +449,9 @@ class AndroidWebview(BrowserSetup):
 
                 if install:
                     logger.info("Downloading chromedriver")
-                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path)
+                    webdriver_binary = self.browser.install_webdriver(
+                        dest=self.venv.bin_path,
+                        channel=kwargs["browser_channel"])
             else:
                 logger.info("Using webdriver binary %s" % webdriver_binary)
 
@@ -467,7 +476,9 @@ class Opera(BrowserSetup):
 
                 if install:
                     logger.info("Downloading operadriver")
-                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path)
+                    webdriver_binary = self.browser.install_webdriver(
+                        dest=self.venv.bin_path,
+                        channel=kwargs["browser_channel"])
             else:
                 logger.info("Using webdriver binary %s" % webdriver_binary)
 
@@ -500,7 +511,9 @@ class EdgeChromium(BrowserSetup):
 
                 if install:
                     logger.info("Downloading msedgedriver")
-                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path, channel=browser_channel)
+                    webdriver_binary = self.browser.install_webdriver(
+                        dest=self.venv.bin_path,
+                        channel=browser_channel)
             else:
                 logger.info("Using webdriver binary %s" % webdriver_binary)
 

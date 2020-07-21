@@ -1,4 +1,4 @@
-from six import  int2byte
+from six import int2byte
 
 def main(request, response):
     headers = [(b"Content-type", b"text/html;charset=shift-jis")]

@@ -172,6 +172,16 @@ function makeImageCaptureTest(hasPanTiltZoomPermissionGranted) {
 
     assert_equals(capabilities.torch, mockCapabilities.supportsTorch,
                   'torch');
+
+    const mediaSettingsRanges = Object.keys(capabilities).filter(
+      (capability) => capability instanceof MediaSettingsRange
+    );
+    for (const mediaSettingsRange of mediaSettingsRanges) {
+      assert_equals(typeof mediaSettingsRange.toJSON, "function");
+      const json = mediaSettingsRange.toJSON();
+      assert_equals(typeof json, "object");
+      assert_object_equals(json, mediaSettingsRange);
+    }
   });
 }
 

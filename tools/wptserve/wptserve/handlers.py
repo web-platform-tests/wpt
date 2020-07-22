@@ -120,9 +120,19 @@ class DirectoryHandler(object):
                    {"link": link, "name": escape(item), "class": class_,
                     "headers": dot_headers_markup})
 
+def parse_qs_with_semicolon(query_string):
+    """Parse a query string using Python's built-in query string parser, but
+    do not interpret the semicolon character (";") as a parameter delimiter"""
+    placeholder = "__wpt-semicolon-placeholder__"
+    sanitized = query_string.replace(";", placeholder)
+    parsed = parse_qs(sanitized)
+    return {
+        key.replace(placeholder, ";"): [value.replace(placeholder, ";") for value in values]
+        for key, values in parsed.items()
+    }
 
 def wrap_pipeline(path, request, response):
-    query = parse_qs(request.url_parts.query)
+    query = parse_qs_with_semicolon(request.url_parts.query)
     pipe_string = ""
 
     if ".sub." in path:

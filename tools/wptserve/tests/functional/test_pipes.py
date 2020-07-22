@@ -38,6 +38,10 @@ class TestHeader(TestUsingServer):
         resp = self.request("/document.txt", query="pipe=header(X-Test,1)|header(X-Test,2,True)")
         self.assert_multiple_headers(resp, "X-Test", ["1", "2"])
 
+    def test_semicolon(self):
+        resp = self.request("/document.txt", query="pipe=header(Refresh,3;url=http://example.com)")
+        self.assertEqual(resp.info()["Refresh"], "3;url=http://example.com")
+
 class TestSlice(TestUsingServer):
     def test_both_bounds(self):
         resp = self.request("/document.txt", query="pipe=slice(1,10)")

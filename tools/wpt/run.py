@@ -725,7 +725,7 @@ def setup_logging(kwargs, default_config=None, formatter_defaults=None):
     return logger
 
 
-def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
+def setup_wptrunner(venv, **kwargs):
     from wptrunner import wptcommandline
     from six import iteritems
 
@@ -739,10 +739,10 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
     if kwargs["product"] not in product_setup:
         raise WptrunError("Unsupported product %s" % kwargs["product"])
 
-    setup_cls = product_setup[kwargs["product"]](venv, prompt)
+    setup_cls = product_setup[kwargs["product"]](venv, kwargs["prompt"])
     setup_cls.install_requirements()
 
-    affected_revish = kwargs.pop("affected", None)
+    affected_revish = kwargs.get("affected")
     if affected_revish is not None:
         # TODO: Consolidate with `./wpt tests-affected --ignore-rules`:
         # https://github.com/web-platform-tests/wpt/issues/14560
@@ -761,7 +761,7 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
         kwargs["test_list"] += test_list
         kwargs["default_exclude"] = True
 
-    if install_browser and not kwargs["channel"]:
+    if kwargs["install_browser"] and not kwargs["channel"]:
         logger.info("--install-browser is given but --channel is not set, default to nightly channel")
         kwargs["channel"] = "nightly"
 
@@ -775,15 +775,23 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
         else:
             logger.info("Valid channels for %s not known; using argument unmodified" % kwargs["product"])
             kwargs["browser_channel"] = kwargs["channel"]
-        del kwargs["channel"]
 
-    if install_browser:
+    if kwargs["install_browser"]:
         logger.info("Installing browser")
         kwargs["binary"] = setup_cls.install(channel=channel)
 
     setup_cls.setup(kwargs)
 
-    wptcommandline.check_args(kwargs)
+    # Remove kwargs we handle here
+    wptrunner_kwargs = kwargs.copy()
+    for kwarg in ["affected",
+                  "install_browser",
+                  "install_webdriver",
+                  "channel",
+                  "prompt"]:
+        del wptrunner_kwargs[kwarg]
+
+    wptcommandline.check_args(wptrunner_kwargs)
 
     wptrunner_path = os.path.join(wpt_root, "tools", "wptrunner")
 
@@ -792,28 +800,21 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
 
     # Only update browser_version if it was not given as a command line
     # argument, so that it can be overridden on the command line.
-    if not kwargs["browser_version"]:
-        kwargs["browser_version"] = setup_cls.browser.version(
-            binary=kwargs.get("binary") or kwargs.get("package_name"),
-            webdriver_binary=kwargs.get("webdriver_binary"),
+    if not wptrunner_kwargs["browser_version"]:
+        wptrunner_kwargs["browser_version"] = setup_cls.browser.version(
+            binary=wptrunner_kwargs.get("binary") or wptrunner_kwargs.get("package_name"),
+            webdriver_binary=wptrunner_kwargs.get("webdriver_binary"),
         )
 
-    return kwargs
+    return wptrunner_kwargs
 
 
 def run(venv, **kwargs):
     setup_logging(kwargs)
 
-    # Remove arguments that aren't passed to wptrunner
-    prompt = kwargs.pop("prompt", True)
-    install_browser = kwargs.pop("install_browser", False)
+    wptrunner_kwargs = setup_wptrunner(venv, **kwargs)
 
-    kwargs = setup_wptrunner(venv,
-                             prompt=prompt,
-                             install_browser=install_browser,
-                             **kwargs)
-
-    rv = run_single(venv, **kwargs) > 0
+    rv = run_single(venv, **wptrunner_kwargs) > 0
 
     return rv
 

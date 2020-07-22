@@ -7,22 +7,21 @@
 <meta name=assert content="grid-template-areas must define at least one cell to be valid.">
 
 <script>
-
 function testValidGta(val) {
-	test(()=>{
-		const root = document.children[0];
-		root.style.gridTemplateAreas = "";
-		root.style.gridTemplateAreas = val;
-		assert_not_equals(root.style.gridTemplateAreas, "");
-	}, `"grid-template-areas: ${val};" should be valid.`);
+  test(()=>{
+    const root = document.children[0];
+    root.style.gridTemplateAreas = "";
+    root.style.gridTemplateAreas = val;
+    assert_not_equals(root.style.gridTemplateAreas, "");
+  }, `"grid-template-areas: ${val};" should be valid.`);
 }
 function testInvalidGta(val) {
-	test(()=>{
-		const root = document.children[0];
-		root.style.gridTemplateAreas = "";
-		root.style.gridTemplateAreas = val;
-		assert_equals(root.style.gridTemplateAreas, "");
-	}, `"grid-template-areas: ${val};" should be invalid.`);
+  test(()=>{
+    const root = document.children[0];
+    root.style.gridTemplateAreas = "";
+    root.style.gridTemplateAreas = val;
+    assert_equals(root.style.gridTemplateAreas, "");
+  }, `"grid-template-areas: ${val};" should be invalid.`);
 }
 
 testValidGta("'a'");
@@ -32,5 +31,4 @@ testInvalidGta("''");
 testInvalidGta("'' ''");
 testInvalidGta("'$'");
 testInvalidGta("'  '");
-
 </script>

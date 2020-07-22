@@ -29,12 +29,7 @@
   }, `<iframe sandbox="${sandboxValue}"> ${document.title}`);
 });
 
-// Verify the contents of the sandboxing flag set that is used in the
-// navigation check:
-//
-// 1. that it is not the "sandboxing flags" of the source browsing context
-//    (i.e. the iframe)
-// 2. that it was not created by copying the sandboxing flag set
+// Verify that the popup does not have sandboxing flags set
 async_test(t => {
   const frame = document.createElement("iframe");
   const channel = new BroadcastChannel(token());

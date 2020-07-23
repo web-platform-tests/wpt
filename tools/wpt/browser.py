@@ -3,7 +3,6 @@ import platform
 import re
 import shutil
 import stat
-import errno
 import subprocess
 import tempfile
 from abc import ABCMeta, abstractmethod
@@ -13,7 +12,7 @@ from distutils.spawn import find_executable
 from six.moves.urllib.parse import urlsplit
 import requests
 
-from .utils import call, get, untar, unzip
+from .utils import call, get, untar, unzip, rmtree
 
 uname = platform.uname()
 
@@ -29,15 +28,6 @@ def _get_fileversion(binary, logger=None):
         if logger is not None:
             logger.warning("Failed to call %s in PowerShell" % command)
         return None
-
-
-def handle_remove_readonly(func, path, exc):
-    excvalue = exc[1]
-    if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
-        os.chmod(path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
-        func(path)
-    else:
-        raise
 
 
 def get_ext(filename):
@@ -374,7 +364,7 @@ class Firefox(Browser):
         # If we don't have a recent download, grab and extract the latest one
         if not have_cache:
             if os.path.exists(dest):
-                shutil.rmtree(dest)
+                rmtree(dest)
             os.makedirs(dest)
 
             url = self.get_profile_bundle_url(version, channel)
@@ -389,7 +379,7 @@ class Firefox(Browser):
                     path = os.path.join(profiles, name)
                     shutil.move(path, dest)
             finally:
-                shutil.rmtree(extract_dir)
+                rmtree(extract_dir)
         else:
             self.logger.info("Using cached test prefs from %s" % dest)
 
@@ -687,9 +677,10 @@ class Chrome(Browser):
         unzip(get(url).raw, dest)
         chromedriver_dir = os.path.join(
             dest, 'chromedriver_%s' % self._chromedriver_platform_string())
-        if os.path.isfile(os.path.join(chromedriver_dir, "chromedriver")):
-            shutil.move(os.path.join(chromedriver_dir, "chromedriver"), dest)
-            shutil.rmtree(chromedriver_dir)
+        unzipped_path = find_executable("chromedriver", chromedriver_dir)
+        assert unzipped_path is not None
+        shutil.move(unzipped_path, dest)
+        rmtree(chromedriver_dir)
         return find_executable("chromedriver", dest)
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
@@ -921,7 +912,7 @@ class Opera(Browser):
 
         operadriver_dir = os.path.join(dest, "operadriver_%s" % self.platform_string())
         shutil.move(os.path.join(operadriver_dir, "operadriver"), dest)
-        shutil.rmtree(operadriver_dir)
+        rmtree(operadriver_dir)
 
         path = find_executable("operadriver")
         st = os.stat(path)
@@ -1018,7 +1009,7 @@ class EdgeChromium(Browser):
         driver_notes_path = os.path.join(dest, "Driver_notes")
         if os.path.isdir(driver_notes_path):
             print("Delete %s folder" % driver_notes_path)
-            shutil.rmtree(driver_notes_path, ignore_errors=False, onerror=handle_remove_readonly)
+            rmtree(driver_notes_path)
 
         self.logger.info("Downloading MSEdgeDriver from %s" % url)
         unzip(get(url).raw, dest)

@@ -742,7 +742,7 @@ class ResponseWriter(object):
         if not self._headers_complete:
             self._response.content = data
             self.end_headers()
-        self.write_raw_content(data)
+        return self.write_raw_content(data)
 
     def write_raw_content(self, data):
         """Writes the data 'as is'"""
@@ -750,11 +750,11 @@ class ResponseWriter(object):
             raise ValueError('data cannot be None')
         if isinstance(data, (text_type, binary_type)):
             # Deliberately allows both text and binary types. See `self.encode`.
-            self.write(data)
+            return self.write(data)
         else:
-            self.write_content_file(data)
+            return self.write_content_file(data)
         if not self._response.explicit_flush:
-            self.flush()
+            return self.flush()
 
     def write(self, data):
         """Write directly to the response, converting unicode to bytes
@@ -776,10 +776,13 @@ class ResponseWriter(object):
             if not buf:
                 break
             try:
-                self._wfile.write(buf)
+                result = self._wfile.write(buf)
             except socket.error:
                 break
         data.close()
+        if result:
+            return True
+        return False
 
     def encode(self, data):
         """Convert unicode to bytes according to response.encoding."""

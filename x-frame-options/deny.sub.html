@@ -48,6 +48,20 @@
 
   async_test(t => {
     var i = document.createElement('iframe');
+    i.src = "./support/xfo.py?value=\"denY\"";
+
+    assert_no_message_from(i, t);
+
+    i.onload = t.step_func_done(_ => {
+      assert_equals(i.contentDocument, null);
+      i.remove();
+    });
+
+    document.body.appendChild(i);
+  }, "`XFO: \"denY\"` blocks same-origin framing.");
+
+  async_test(t => {
+    var i = document.createElement('iframe');
     i.src = "http://{{domains[www]}}:{{ports[http][0]}}/x-frame-options/support/xfo.py?value=denY";
 
     assert_no_message_from(i, t);
@@ -59,6 +73,20 @@
 
     document.body.appendChild(i);
   }, "`XFO: denY` blocks cross-origin framing.");
+
+  async_test(t => {
+    var i = document.createElement('iframe');
+    i.src = "http://{{domains[www]}}:{{ports[http][0]}}/x-frame-options/support/xfo.py?value=\"denY\"";
+
+    assert_no_message_from(i, t);
+
+    i.onload = t.step_func_done(_ => {
+      assert_equals(i.contentDocument, null);
+      i.remove();
+    });
+
+    document.body.appendChild(i);
+  }, "`XFO: \"denY\"` blocks cross-origin framing.");
 
   async_test(t => {
     var i = document.createElement('iframe');

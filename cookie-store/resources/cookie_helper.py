@@ -39,17 +39,13 @@ CHARSET_OVERRIDES = {
 
 def quote_str(cookie_str):
   if PY3:
-    if isinstance(cookie_str, binary_type):
-      cookie_str = isomorphic_decode(cookie_str)
-    return quote(cookie_str, '', encoding='iso-8859-1')
+    return quote(isomorphic_decode(cookie_str), '', encoding=u'iso-8859-1')
   else:
     return quote(cookie_str, '')
 
 def parse_qs_str(query_str):
   if PY3:
-    if isinstance(query_str, binary_type):
-      query_str = isomorphic_decode(query_str)
-    return parse_qs(query_str, keep_blank_values=True, encoding='iso-8859-1')
+    return parse_qs(isomorphic_decode(query_str), keep_blank_values=True, encoding=u'iso-8859-1')
   else:
     return parse_qs(query_str, keep_blank_values=True)
 

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<title>Testing evaluation order</title>
+
+<script>
+// Workaround to prevent Window.onerror event handlers added by
+// testharness.js, which cause additional microtask checkpoints
+// on Chromium that affect test results.
+const originalEventListener = window.addEventListener;
+window.addEventListener = (name, handler, options) => {
+  if (name !== "error") {
+    originalEventListener(name, handler, options);
+  }
+};
+</script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+window.addEventListener = originalEventListener;
+</script>
+
+<script>
+    setup({allow_uncaught_exception: true});
+
+    window.log = [];
+    function unreachable() { log.push("unexpected"); }
+
+    window.addEventListener("error",
+        ev => {
+          log.push("Window error event");
+          queueMicrotask(() => {log.push("Microtask queued at Window error event"); });
+        });
+    window.addEventListener("onunhandledrejection", unreachable);
+
+    const test_load = async_test("Test evaluation order of modules");
+
+    window.addEventListener("load", testDone);
+    function testDone() {
+      test_load.step(() => {
+        assert_array_equals(log,
+            // Expectation before TLA
+            // Expectation after TLA; Chromium's current impl
+            ["Evaluate",
+             "Microtask queued at Evaluate",
+             "script load event"]
+        );
+      });
+      test_load.done();
+    }
+</script>
+
+<script type="module" src="success.js"
+    onerror="unreachable()" onload="log.push('script load event')"></script>

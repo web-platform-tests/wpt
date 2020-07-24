@@ -753,8 +753,6 @@ class ResponseWriter(object):
             return self.write(data)
         else:
             return self.write_content_file(data)
-        if not self._response.explicit_flush:
-            return self.flush()
 
     def write(self, data):
         """Write directly to the response, converting unicode to bytes
@@ -771,18 +769,19 @@ class ResponseWriter(object):
         """Write a file-like object directly to the response in chunks.
         Does not flush."""
         self.content_written = True
+        success = True
         while True:
             buf = data.read(self.file_chunk_size)
             if not buf:
+                success = False
                 break
             try:
-                result = self._wfile.write(buf)
+                self._wfile.write(buf)
             except socket.error:
+                success = False
                 break
         data.close()
-        if result:
-            return True
-        return False
+        return success
 
     def encode(self, data):
         """Convert unicode to bytes according to response.encoding."""

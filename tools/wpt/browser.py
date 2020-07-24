@@ -12,7 +12,7 @@ from distutils.spawn import find_executable
 from six.moves.urllib.parse import urlsplit
 import requests
 
-from .utils import call, get, untar, unzip, rmtree
+from .utils import call, get, rmtree, untar, unzip
 
 uname = platform.uname()
 
@@ -592,11 +592,11 @@ class Chrome(Browser):
 
     def _latest_chromium_snapshot_url(self):
         # Make sure we use the same revision in an invocation.
+        architecture = self._chromium_platform_string()
         if self._last_change is None:
-            arch = self._chromium_platform_string()
-            revision_url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/LAST_CHANGE" % arch
+            revision_url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/LAST_CHANGE" % architecture
             self._last_change = get(revision_url).text.strip()
-        return "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/" % (arch, self._last_change)
+        return "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/" % (architecture, self._last_change)
 
     def find_nightly_binary(self, dest, channel):
         binary = "Chromium" if uname[0] == "Darwin" else "chrome"

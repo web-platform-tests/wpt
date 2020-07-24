@@ -16,7 +16,7 @@ except ImportError:
 
 import pytest
 
-from tools.wpt import wpt, utils
+from tools.wpt import utils, wpt
 
 
 here = os.path.abspath(os.path.dirname(__file__))

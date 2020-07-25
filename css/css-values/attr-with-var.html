@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>attr() can contain var() in the fallback value</title>
+  <meta name="assert" content="The fallback value of attr() can be a var()" />
+  <link rel="author" title="Mike Bremford" href="https://bfo.com"/>
+  <link rel="help" href="http://www.w3.org/TR/css-values-4/#attr-notation"/>
+  <link rel="match" href="reference/200-200-green.html" />
+  <style>
+      html, body { margin: 0px; padding: 0px; }
+      html { background: white; overflow: hidden; }
+      html { --color: green }
+      #outer { position: relative; background: red; width: 200px; height: 200px; }
+      #outer { background: attr(data-att1 color, var(--color)); }
+  </style>
+</head>
+<body>
+  <div id="outer" data-att1="foo"></div>
+</body>
+</html>

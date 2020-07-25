@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <title>attr() test with namespaces</title>
+  <meta name="assert" content="The attr() name can include namespaces. If the namespace is undefined, the declaration is invalid at compute time, not at parse time" />
+  <link rel="author" title="Mike Bremford" href="https://bfo.com"/>
+  <link rel="help" href="http://www.w3.org/TR/css-values-4/#attr-notation"/>
+  <link rel="match" href="reference/200-200-green.html" />
+  <style>
+      @namespace foo "http://test.com";
+      html, body { margin: 0px; padding: 0px; }
+      html { background: white; overflow: hidden; }
+      div { width: 200px; height: 50px; background: red }
+      #div1 { background: attr(|data-att color) }
+      #div2 { background: attr(foo|data-att color) }
+      #div3 { background: red; background: attr(missing|data-att color, green) } /* invalid at compute time */
+      #div4 { background: green; background: attr(*|data-att color, red) } /* invalid at parse time */
+  </style>
+</head>
+<body>
+  <div id="div1" data-att="green"></div>
+  <div xmlns:test="http://test.com" id="div2" test:data-att="green"></div>
+  <div xmlns:test="http://test.com" id="div3" test:data-att="green"></div>
+  <div xmlns:test="http://test.com" id="div4" test:data-att="green"></div>
+</body>
+</html>

@@ -5,11 +5,12 @@
   <title>CSS Values and Units Test: attr() function with valid and invalid data types</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <!-- Revised 2020-07-25 by Mike Bremford <https://bfo.com> to reflect the new attr() rules -->
   <link href="http://www.w3.org/TR/css3-values/#attr-notation" rel="help">
   <link rel="match" href="../reference/ref-filled-green-100px-square.xht">
 
   <meta name="flags" content="invalid">
-  <meta content="When the data type of an attr() function is invalid or when the fallback value does not match the data type, then the attr() function generates an invalid declaration." name="assert">
+  <meta content="When the data type of an attr() function is invalid, the fallback is used instead without any type checking." name="assert">
 
   <style>
   div
@@ -29,14 +30,18 @@
     {
       background-color: green;
       width: 100px;
-      width: attr(attr-test-invalid1 number, 0);
+      min-width: 200px;
+      min-width: attr(attr-test-invalid1 number, 0);
     }
 
     /*
-    '0' can be both a number and a length. But here,
-    in this sub-test, the width CSS property requires
-    a length type and not a number type. So, the
-    attr() function generates an invalid declaration.
+    '0' can be both a number and a length. The 2020
+    revisions to the attr() parsing rules mean that
+    the fallback value is used only when the named
+    attribute is missing or cannot be parsed as the
+    specified type, which it can't in hie case. So
+    the fallback is substituted directly, and
+    "min-width: 0" is a valid declaration.
     */
 
   div#reference-overlapped-red
@@ -50,21 +55,20 @@
 
   div#invalid2
     {
-      background-color: red;
+      background-color: orange;
       bottom: 100px;
-      width: 0px;
-      width: attr(attr-test-invalid2 length, 100);
+      width: 100px;
+      width: attr(attr-test-invalid2 length, 0px);
     }
 
     /*
-    '100' is not a valid length value.
-    So, the attr() function generates an invalid
-    declaration.
+    The attribute values is an invalid length, so the
+    fallback is used.
     */
 
   div#invalid3
     {
-      background-color: red;
+      background-color: lime;
       bottom: 100px;
       width: 0px;
       width: attr(attr-test-invalid3 number, 100px);
@@ -81,10 +85,10 @@
 
   <div id="valid1" attr-test-valid1="100px"></div>
 
-  <div id="invalid1" attr-test-invalid1="foo"></div>
+  <div id="invalid1" attr-test-invalidl1="foo"></div>
 
   <div id="reference-overlapped-red"></div>
 
   <div id="invalid2" attr-test-invalid2="bar"></div>
 
-  <div id="invalid3" attr-test-invalid3="baz"></div>
+  <div id="invalid3" attr-test-invalid3="100"></div>

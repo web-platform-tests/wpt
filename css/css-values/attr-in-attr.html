@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>attr() can contain attr() in the fallback value</title>
+  <meta name="assert" content="The fallback value of attr() can itself be an attr()" />
+  <link rel="author" title="Mike Bremford" href="https://bfo.com"/>
+  <link rel="help" href="http://www.w3.org/TR/css-values-4/#attr-notation"/>
+  <link rel="match" href="reference/200-200-green.html" />
+  <style>
+      html, body { margin: 0px; padding: 0px; }
+      html { background: white; overflow: hidden; }
+      #outer { position: relative; background: red; width: 200px; height: 200px; }
+      #outer { background: attr(data-att1 color, attr(data-att2 color)); }
+  </style>
+</head>
+<body>
+  <div id="outer" data-att1="foo" data-att2="green"></div>
+</body>
+</html>

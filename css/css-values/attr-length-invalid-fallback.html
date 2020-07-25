@@ -7,7 +7,8 @@
 		Attribute references (length)
 	</title>
 	<meta name="assert" content="
-		When the attr() fallback is an invalid length, the delcaration is correctly ignored.
+                If the attr() subsitution value is valid, the fact the declaration is
+                invalid does not affect the validity of the declaration.
 	" />
 	<meta name="flags" content="invalid">
 	<link
@@ -15,6 +16,7 @@
 		title="François REMY"
 		href="mailto:fremycompany.developer@yahoo.fr"
 	/ >
+        <!-- Revised 2020-07-25 by Mike Bremford <https://bfo.com> to reflect the new attr() rules -->
 
 	<link rel="help" href="http://www.w3.org/TR/css3-values/#attr-notation"/>
 
@@ -30,14 +32,14 @@
 			html { background: white; overflow: hidden; }
 			#outer { position: relative; background: green; }
 
-			#outer { width: 200px; width: attr(data-test length, invalid); height: 200px; }
+			#outer { width: 300px; width: attr(data-test length, invalid); height: 200px; }
 
 	</style>
 
 </head>
 <body>
 
-	<div id="outer" data-test="300px"></div>
+	<div id="outer" data-test="200px"></div>
 
 </body>
 </html>

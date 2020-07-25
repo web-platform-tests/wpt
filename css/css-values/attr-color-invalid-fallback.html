@@ -7,7 +7,7 @@
 		Attribute references (colors)
 	</title>
 	<meta name="assert" content="
-		When the fallback value of an attr() function is invalid, the delcaration is ignored.
+		The fallback value of an attr() function is not considered unless the attribute substitution value is missing
 	" />
 	<meta name="flags" content="invalid">
 	<link
@@ -15,6 +15,7 @@
 		title="François REMY"
 		href="mailto:fremycompany.developer@yahoo.fr"
 	/ >
+        <!-- Revised 2020-07-25 by Mike Bremford <https://bfo.com> to reflect the new attr() rules -->
 
 	<link rel="help" href="http://www.w3.org/TR/css3-values/#attr-notation"/>
 
@@ -37,7 +38,7 @@
 </head>
 <body>
 
-	<div id="outer" data-test="red"></div>
+	<div id="outer" data-test="green"></div>
 
 </body>
 </html>

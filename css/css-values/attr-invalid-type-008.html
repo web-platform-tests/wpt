@@ -10,7 +10,7 @@
   <link rel="match" href="../reference/ref-filled-green-100px-square.xht">
 
   <meta name="flags" content="invalid">
-  <meta content="When the data type of an attr() function is invalid, the fallback is used instead without any type checking." name="assert">
+  <meta content="When the data type of an attr() function is invalid or when the fallback value does not match the data type, the fallback is used instead without any type checking." name="assert">
 
   <style>
   div
@@ -55,7 +55,7 @@
 
   div#invalid2
     {
-      background-color: orange;
+      background-color: red;
       bottom: 100px;
       width: 100px;
       width: attr(attr-test-invalid2 length, 0px);
@@ -68,7 +68,7 @@
 
   div#invalid3
     {
-      background-color: lime;
+      background-color: red;
       bottom: 100px;
       width: 0px;
       width: attr(attr-test-invalid3 number, 100px);
@@ -85,7 +85,7 @@
 
   <div id="valid1" attr-test-valid1="100px"></div>
 
-  <div id="invalid1" attr-test-invalidl1="foo"></div>
+  <div id="invalid1" attr-test-invalid1="foo"></div>
 
   <div id="reference-overlapped-red"></div>
 

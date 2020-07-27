@@ -86,7 +86,7 @@ def test_ahem_copy_negative(path):
 def test_tentative_directories(path):
     path = os.path.join(*path.split("/"))
     expected_error = ("TENTATIVE-DIRECTORY-NAME",
-                      "Directories for tentative files must be named exactly 'tentative'",
+                      "Directories for tentative tests must be named exactly 'tentative'",
                       path,
                       None)
 

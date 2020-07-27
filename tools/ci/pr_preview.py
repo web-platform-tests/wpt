@@ -132,7 +132,6 @@ class Project(object):
 
         return {pr['number']: pr for pr in data['items']}
 
-    @guard('core')
     def pull_request_is_from_fork(self, pull_request):
         pr_number = pull_request['number']
         logger.info('Checking if pull request %s is from a fork', pr_number)
@@ -140,10 +139,7 @@ class Project(object):
         # We may already have this information; if so no need to make another
         # API call.
         if 'head' not in pull_request:
-            url = '{}/repos/{}/pulls/{}'.format(
-                self._host, self._github_project, pr_number
-            )
-            pull_request = gh_request('GET', url)
+            pull_request = self.get_pull_request(pr_number)
 
         repo_name = pull_request['head']['repo']['full_name']
         is_fork = repo_name != self._github_project
@@ -233,13 +229,17 @@ class Remote(object):
         # for pushing changes.
         self._token = os.environ['DEPLOY_TOKEN']
 
-    def get_revision(self, refspec):
-        output = subprocess.check_output([
+    def _git(self, command):
+        return subprocess.check_output([
             'git',
             '-c',
             'credential.username={}'.format(self._token),
             '-c',
             'core.askPass=true',
+        ] + command)
+
+    def get_revision(self, refspec):
+        output = self._git([
             'ls-remote',
             'origin',
             'refs/{}'.format(refspec)
@@ -255,31 +255,27 @@ class Remote(object):
 
         logger.info('Deleting ref "%s"', refspec)
 
-        subprocess.check_call([
-            'git',
-            '-c',
-            'credential.username={}'.format(self._token),
-            '-c',
-            'core.askPass=true',
+        self._git([
             'push',
             'origin',
             '--delete',
             full_ref
         ])
 
-    def get_pr_open_numbers(self):
-        """Returns a list of pull requests matching refs/prs-open/{pr}"""
+    def get_pull_requests_with_open_ref(self):
+        '''Returns pull requests that have an open ref.
+
+        This checks for all refs that match the pattern 'refs/prs-open/{pr}',
+        and then returns them as a list of pull request numbers. Note that this
+        method does not query github; this is only the open pull requests as
+        far as WPT knows.
+        '''
 
         refspec = 'refs/prs-open/*'
 
         logger.info('Fetching all ref names matching "%s"', refspec)
 
-        output = subprocess.check_output([
-            'git',
-            '-c',
-            'credential.username={}'.format(self._token),
-            '-c',
-            'core.askPass=true',
+        output = self._git([
             'ls-remote',
             'origin',
             refspec,
@@ -343,7 +339,7 @@ def synchronize(host, github_project, window):
     # ensure that closed pull requests are deleted, extend the list of pull
     # requests to look at with any that have an existing refs/prs-open/{pr} ref
     # in the repo.
-    existing_pr_numbers = remote.get_pr_open_numbers()
+    existing_pr_numbers = remote.get_pull_requests_with_open_ref()
     for pr_number in existing_pr_numbers:
         if pr_number in pull_requests:
             continue

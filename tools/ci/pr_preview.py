@@ -103,6 +103,15 @@ class Project(object):
         self._host = host
         self._github_project = github_project
 
+    @guard('core')
+    def get_pull_request(self, number):
+        url = '{}/repos/{}/pulls/{}'.format(
+            self._host, self._github_project, number
+        )
+
+        logger.info('Fetching Pull Request %s', number)
+        return gh_request('GET', url)
+
     @guard('search')
     def get_pull_requests(self, updated_since):
         window_start = time.strftime('%Y-%m-%dT%H:%M:%SZ', updated_since)
@@ -121,20 +130,22 @@ class Project(object):
         if data['incomplete_results']:
             raise Exception('Incomplete results')
 
-        return data['items']
+        return {pr['number']: pr for pr in data['items']}
 
     @guard('core')
     def pull_request_is_from_fork(self, pull_request):
         pr_number = pull_request['number']
-        url = '{}/repos/{}/pulls/{}'.format(
-            self._host, self._github_project, pr_number
-        )
-
         logger.info('Checking if pull request %s is from a fork', pr_number)
 
-        data = gh_request('GET', url)
+        # We may already have this information; if so no need to make another
+        # API call.
+        if 'head' not in pull_request:
+            url = '{}/repos/{}/pulls/{}'.format(
+                self._host, self._github_project, pr_number
+            )
+            pull_request = gh_request('GET', url)
 
-        repo_name = data['head']['repo']['full_name']
+        repo_name = pull_request['head']['repo']['full_name']
         is_fork = repo_name != self._github_project
 
         logger.info(
@@ -256,6 +267,32 @@ class Remote(object):
             full_ref
         ])
 
+    def get_pr_open_numbers(self):
+        """Returns a list of pull requests matching refs/prs-open/{pr}"""
+
+        refspec = 'refs/prs-open/*'
+
+        logger.info('Fetching all ref names matching "%s"', refspec)
+
+        output = subprocess.check_output([
+            'git',
+            '-c',
+            'credential.username={}'.format(self._token),
+            '-c',
+            'core.askPass=true',
+            'ls-remote',
+            'origin',
+            refspec,
+        ])
+
+        if not output:
+            return []
+
+        ref_names = [line.split()[1] for line in output.decode('utf-8').splitlines()]
+        logger.info('%s ref names found', len(ref_names))
+        return [int(ref_name.split('/')[2]) for ref_name in ref_names]
+
+
 def is_open(pull_request):
     return not pull_request['closed_at']
 
@@ -301,7 +338,19 @@ def synchronize(host, github_project, window):
         time.gmtime(time.time() - window)
     )
 
-    for pull_request in pull_requests:
+    # It is possible we may miss some pull requests if this script breaks or is
+    # not run for a while and the PR falls outside the checked window. To
+    # ensure that closed pull requests are deleted, extend the list of pull
+    # requests to look at with any that have an existing refs/prs-open/{pr} ref
+    # in the repo.
+    existing_pr_numbers = remote.get_pr_open_numbers()
+    for pr_number in existing_pr_numbers:
+        if pr_number in pull_requests:
+            continue
+        pull_request = project.get_pull_request(pr_number)
+        pull_requests[pull_request['number']] = pull_request
+
+    for pull_request in pull_requests.values():
         logger.info('Processing Pull Request #%(number)d', pull_request)
 
         refspec_trusted = 'prs-trusted-for-preview/{number}'.format(

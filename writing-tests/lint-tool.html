@@ -236,7 +236,11 @@ achieves the intended effect (e.g., a logging call)</p>
 <code class="docutils literal notranslate"><span class="pre">{{host}}:{{ports[http][0]}}</span></code> or a generic hostname like <code class="docutils literal notranslate"><span class="pre">example.org</span></code></p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">WEB-PLATFORM.TEST</span></code></dt>
-<dd>Internal web-platform.test domain used</dd>
+<dd><p class="first">Internal web-platform.test domain used</p>
+<strong>To fix:</strong><p class="last">use <a class="reference external" href="https://web-platform-tests.org/writing-tests/server-pipes.html#sub">server-side substitution</a>,
+along with the <a class="reference external" href="https://web-platform-tests.org/writing-tests/file-names.html#test-features"><code class="docutils literal notranslate"><span class="pre">.sub</span></code> filename-flag</a>,
+to replace web-platform.test with <code class="docutils literal notranslate"><span class="pre">{{domains[]}}</span></code></p>
+</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">WEBIDL2.JS</span></code></dt>
 <dd>Legacy webidl2.js script used</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">WORKER</span> <span class="pre">COLLISION</span></code></dt>

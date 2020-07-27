@@ -1149,9 +1149,8 @@ channel.) This flag overrides –browser-channel.</p>
 </div>
 <div class="section" id="tests-affected">
 <h3>tests-affected<a class="headerlink" href="#tests-affected" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tests</span><span class="o">-</span><span class="n">affected</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">rules</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="o">...</span><span class="p">]]]</span>
-                   <span class="p">[</span><span class="o">--</span><span class="n">modified</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">new</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">null</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">--</span><span class="n">metadata</span> <span class="n">METADATA_ROOT</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tests</span><span class="o">-</span><span class="n">affected</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">rule</span> <span class="n">IGNORE_RULE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">modified</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">new</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">null</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metadata</span> <span class="n">METADATA_ROOT</span><span class="p">]</span>
                    <span class="p">[</span><span class="n">revish</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -1174,10 +1173,8 @@ channel.) This flag overrides –browser-channel.</p>
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>--ignore-rules</kbd></td>
-<td><p class="first">Rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything</p>
-<p class="last">Default: set([‘resources/testharness*’])</p>
-</td></tr>
+<kbd>--ignore-rule</kbd></td>
+<td>Override the rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything. This flag can be used multiple times for multiple rules. Specifying this flag overrides the default: resources/testharness*, resources/testdriver*</td></tr>
 <tr><td class="option-group">
 <kbd>--modified</kbd></td>
 <td><p class="first">Include files under version control that have been modified or staged</p>
@@ -1663,8 +1660,8 @@ channel.) This flag overrides –browser-channel.</p>
 </div>
 <div class="section" id="files-changed">
 <h3>files-changed<a class="headerlink" href="#files-changed" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">files</span><span class="o">-</span><span class="n">changed</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">rules</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="p">[</span><span class="n">IGNORE_RULES</span> <span class="o">...</span><span class="p">]]]</span>
-                  <span class="p">[</span><span class="o">--</span><span class="n">modified</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">new</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">null</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">files</span><span class="o">-</span><span class="n">changed</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">rule</span> <span class="n">IGNORE_RULE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">modified</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">new</span><span class="p">]</span>
+                  <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">null</span><span class="p">]</span>
                   <span class="p">[</span><span class="n">revish</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -1687,10 +1684,8 @@ channel.) This flag overrides –browser-channel.</p>
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>--ignore-rules</kbd></td>
-<td><p class="first">Rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything</p>
-<p class="last">Default: set([‘resources/testharness*’])</p>
-</td></tr>
+<kbd>--ignore-rule</kbd></td>
+<td>Override the rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything. This flag can be used multiple times for multiple rules. Specifying this flag overrides the default: resources/testharness*, resources/testdriver*</td></tr>
 <tr><td class="option-group">
 <kbd>--modified</kbd></td>
 <td><p class="first">Include files under version control that have been modified or staged</p>

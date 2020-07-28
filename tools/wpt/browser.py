@@ -604,9 +604,11 @@ class Chrome(Browser):
         return "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/" % (architecture, self._last_change)
 
     def find_nightly_binary(self, dest):
-        binary = "Chromium" if uname[0] == "Darwin" else "chrome"
+        if uname[0] == "Darwin":
+            return find_executable("Chromium",
+                                   os.path.join(dest, self._chromium_package_name(), "Chromium.app", "Contents", "MacOS"))
         # find_executable will add .exe on Windows automatically.
-        return find_executable(binary, os.path.join(dest, self._chromium_package_name()))
+        return find_executable("chrome", os.path.join(dest, self._chromium_package_name()))
 
     def find_binary(self, venv_path=None, channel=None):
         if channel == "nightly":

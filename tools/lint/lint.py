@@ -899,8 +899,8 @@ def create_parser():
                         "option if the lint script exists outside the repository")
     parser.add_argument("--ignore-glob", type=ensure_text, action="append",
                         help="Additional file glob to ignore (repeat to add more). "
-                        "Globs are matched against full paths using fnmatch; "
-                        "separators are not treated specially.")
+                        "Globs are matched against paths relative to REPO_ROOT "
+                        "using fnmatch, except that path separators are normalized.")
     parser.add_argument("--all", action="store_true", help="If no paths are passed, try to lint the whole "
                         "working directory, not just files that changed")
     return parser

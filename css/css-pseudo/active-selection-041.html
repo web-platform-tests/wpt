@@ -8,10 +8,10 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-painting">
-  <link rel="match" href="reference/active-selection-041-ref.html">
+  <link rel="mismatch" href="reference/active-selection-041-notref.html">
 
   <meta content="should" name="flags">
-  <meta name="assert" content="In this test, a filled red image is selected and is overlaid with a blue background color. The specification states that, for replaced content, the UA should create a semi-transparent wash to coat the content. This test checks precisely this.">
+  <meta name="assert" content="In this test, a filled yellow image is selected and is overlaid with an opaque blue background color. The specification states that, for replaced content, the UA should create a semi-transparent wash to coat the content. But such semi-transparent wash could use a transparency of 0.3 or 0.5 or 0.7: so, we do not know. Therefore we can not predict the rendered end result. All we can be sure of is that the image, once selected, must not be identical to its original non-selected version. This test checks precisely and only this.">
 
   <!--
   "
@@ -21,6 +21,20 @@
   "
   coming from
   https://www.w3.org/TR/css-pseudo-4/#highlight-painting
+  -->
+
+  <!--
+  July 28th 2020
+
+  Firefox 68.10.0 ESR will create a resulting
+  background color of #7F7F80, which looks like
+  dark gray.
+
+  Chrome 83.0.4103.116 will create a resulting
+  background color of #33CCCC which looks like
+  dark blue.
+
+  July 28th 2020
   -->
 
   <style>
@@ -35,20 +49,6 @@
     }
 
   /*
-  "
-  For replaced content, the associated overlay must
-  cover at least the entire replaced object, and may
-  extend outward to include the element's entire
-  content box.
-
-  The overlay may also include other other areas
-  within the border-box of an element; in this
-  case, those areas belong to the innermost such
-  element that contains the area.
-  "
-  coming from
-  https://www.w3.org/TR/css-pseudo-4/#highlight-bounds
-
   Chromium 80+ will highlight space
   below and above content box while
   Firefox 72+ only highlights the image itself.
@@ -59,7 +59,10 @@
   img::selection
     {
       background-color: blue;
-      /* equivalent to rgb(0, 0, 255) or rgb(0%, 0%, 100%) or rgba(0, 0, 255, 1) or #0000FF */
+      /*
+      equivalent to rgb(0, 0, 255) or rgb(0%, 0%, 100%)
+      or rgba(0, 0, 255, 1) or #0000FF
+      */
     }
   </style>
 
@@ -78,6 +81,6 @@
 
   <body onload="startTest();">
 
-  <p>Test passes if there is a filled purple square and <strong>no red</strong>.
+  <p>Test passes if there is a filled square which is <strong>not yellow</strong>.
 
-  <div id="test"><img src="support/60x60-red.png" width="100" height="100" alt="Image download support must be enabled"></div>
+  <div id="test"><img src="../support/swatch-yellow.png" width="100" height="100" alt="Image download support must be enabled"></div>

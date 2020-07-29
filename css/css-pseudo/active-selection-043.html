@@ -4,14 +4,28 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Pseudo-Elements Test: active selection and image</title>
+  <title>CSS Pseudo-Elements Test: active selection and image (complex)</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
-  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-painting">
-  <link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-bounds">
+  <link rel="match" href="../reference/ref-nothing-below.xht">
 
   <meta content="" name="flags">
-  <meta name="assert" content="In this test, a filled green image is selected. Since there is no 'background-color' specified for the overlaid, then the background color must remain transparent. A 'color' declaration alone should have no rendering effect on elements (like &lt;hr&gt;, &lt;br&gt;) which are, by definition, with no content. Therefore, there should be no red in this test.">
+  <meta name="assert" content="In this test, a filled red image has a padding belt painted red and a red border. This test checks that the associated overlay for an image must not leak outside the image's border box.">
+
+  <!--
+
+  "
+   For replaced content, the associated overlay must cover
+   at least the entire replaced object, and may extend
+   outward to include the element's entire content box.
+   The overlay may also include other other areas within
+   the border-box of an element (...)
+  "
+  coming from
+  https://www.w3.org/TR/css-pseudo-4/#highlight-bounds
+
+  -->
 
   <style>
   div
@@ -21,20 +35,32 @@
 
   img
     {
-      vertical-align: top;
+      background-color: red;
+      /* so that the padding belt is painted red */
+      border: red solid 10px;
+      padding: 10px;
     }
 
   /*
-  Chromium 80+ will highlight the descender space
+  Chromium 80+ highlights the descender space
   below the baseline on which the image "sits" while
   Firefox 72+ only highlights the image itself.
-  Therefore this 'vertical-align: top' declaration
-  to work around this possible behavior.
   */
 
   img::selection
     {
+      background-color: red;
       color: red;
+    }
+
+  span#masking
+    {
+      background-color: white;
+      display: inline-block;
+      height: 100px;
+      position: relative;
+      right: 100px;
+      width: 100px;
     }
   </style>
 
@@ -53,6 +79,6 @@
 
   <body onload="startTest();">
 
-  <p>Test passes if there is a filled green square and <strong>no red</strong>.
+  <p>Test passes if there is nothing below.
 
-  <div id="test"><img src="support/60x60-green.png" width="100" height="100" alt="Image download support must be enabled"></div>
+  <div id="test"><img src="support/60x60-red.png" alt="Image download support must be enabled"><span id="masking"></span></div>

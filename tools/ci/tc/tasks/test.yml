@@ -303,6 +303,7 @@ tasks:
               --channel=${vars.channel}
               --verify
               --verify-no-chaos-mode
+              --github-checks-text-file="/home/test/artifacts/checkrun.md"
 
         - wpt-${vars.browser}-${vars.channel}-results:
             use:

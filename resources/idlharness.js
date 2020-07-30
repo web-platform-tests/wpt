@@ -3462,8 +3462,6 @@ IdlNamespace.prototype.test_self = function ()
 
     subsetTestByKey(this.name, test, () => {
         assert_equals(typeof namespaceObject, "object");
-        assert_true(typeof namespaceObject === "object");
-        assert_false(typeof namespaceObject === "function");
     }, `${this.name} namespace: typeof is "object"`);
 };
 

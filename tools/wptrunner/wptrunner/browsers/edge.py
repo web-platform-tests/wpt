@@ -1,7 +1,6 @@
 from __future__ import print_function
 import time
 import subprocess
-from wptserve.utils import isomorphic_encode
 from .base import Browser, ExecutorBrowser, require_arg
 from ..webdriver_server import EdgeDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
@@ -93,12 +92,12 @@ class EdgeBrowser(Browser):
             if b'MicrosoftWebDriver.exe' not in procs:
                 # Edge driver process already exited, don't wait for browser process to exit
                 break
-            elif isomorphic_encode(edge_proc_name) in procs:
+            elif edge_proc_name.encode() in procs:
                 time.sleep(0.5)
             else:
                 break
 
-        if isomorphic_encode(edge_proc_name) in procs:
+        if edge_proc_name.encode() in procs:
             # close Edge process if it is still running
             subprocess.call(['taskkill.exe', '/f', '/im', 'microsoftedge*'])
 

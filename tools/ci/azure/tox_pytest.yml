@@ -7,7 +7,21 @@ steps:
   parameters:
     packages: tox
 
-- script: tox -c ${{ parameters.directory }} -e ${{ parameters.toxenv }} -- --junitxml=results.xml
+- script: |
+    echo "running tox"
+    tox -c ${{ parameters.directory }} -e ${{ parameters.toxenv }} -- --junitxml=results.xml || true
+    echo "grepping for mozinstall in tools/wpt/.tox"
+    grep -r "mozinstall" tools/wpt/.tox || true
+    echo "grepping for 'should give us the mounted path' there too"
+    grep -r -A5 "should give us the mounted path" tools/wpt/.tox/ || true
+    echo "what _venv do we have?"
+    ls | grep _venv
+    echo "grepping for mozinstall in _venv3/"
+    grep -r "mozinstall" _venv3/ || true
+    echo "grepping for 'should give us the mounted path' there too"
+    grep -r -A5 "should give us the mounted path" _venv3/ || true
+    echo "ok, where all are the mozinstall.pys"
+    find . -name mozinstall.py
   displayName: 'Run tests'
 
 - task: PublishTestResults@2

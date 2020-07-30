@@ -3439,6 +3439,18 @@ IdlNamespace.prototype.test_member_attribute = function (member)
 
 IdlNamespace.prototype.test_self = function ()
 {
+    /**
+     * TODO(lukebjerring): Assert:
+     * - "Note that unlike interfaces or dictionaries, namespaces do not create types."
+     */
+
+    subsetTestByKey(this.name, test, () => {
+        assert_true(this.extAttrs.every(o => o.name === "Exposed" || o.name === "SecureContext"),
+            "Only the [Exposed] and [SecureContext] extended attributes are applicable to namespaces");
+        assert_true(this.has_extended_attribute("Exposed"),
+            "Namespaces must be annotated with the [Exposed] extended attribute");
+    }, `${this.name} namespace: extended attributes`);
+
     const namespaceObject = self[this.name];
 
     subsetTestByKey(this.name, test, () => {
@@ -3467,19 +3479,9 @@ IdlNamespace.prototype.test_self = function ()
 
 IdlNamespace.prototype.test = function ()
 {
-    /**
-     * TODO(lukebjerring): Assert:
-     * - "Note that unlike interfaces or dictionaries, namespaces do not create types."
-     */
-
-    subsetTestByKey(this.name, test, () => {
-        assert_true(this.extAttrs.every(o => o.name === "Exposed" || o.name === "SecureContext"),
-            "Only the [Exposed] and [SecureContext] extended attributes are applicable to namespaces");
-        assert_true(this.has_extended_attribute("Exposed"),
-            "Namespaces must be annotated with the [Exposed] extended attribute");
-    }, `${this.name} namespace: extended attributes`);
-
-    this.test_self();
+    if (!this.untested) {
+        this.test_self();
+    }
 
     for (const v of Object.values(this.members)) {
         switch (v.type) {

@@ -3469,7 +3469,15 @@ IdlNamespace.prototype.test_self = function ()
 
     subsetTestByKey(this.name, test, () => {
         assert_true(namespaceObject instanceof Object);
-        assert_equals(Object.getPrototypeOf(namespaceObject), Object.prototype);
+
+        if (this.name === "console") {
+            // https://console.spec.whatwg.org/#console-namespace
+            const namespacePrototype = Object.getPrototypeOf(namespaceObject);
+            assert_equals(Reflect.ownKeys(namespacePrototype).length, 0);
+            assert_equals(Object.getPrototypeOf(namespacePrototype), Object.prototype);
+        } else {
+            assert_equals(Object.getPrototypeOf(namespaceObject), Object.prototype);
+        }
     }, `${this.name} namespace: [[Prototype]] is Object.prototype`);
 
     subsetTestByKey(this.name, test, () => {

@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 from io import open
 
 import jsone
@@ -9,7 +8,6 @@ import pytest
 import requests
 import yaml
 from jsonschema import validate
-from six import PY3
 
 from tools.ci.tc import decision
 

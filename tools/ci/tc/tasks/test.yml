@@ -10,6 +10,13 @@ components:
       public/results:
         path: /home/test/artifacts
         type: directory
+    extra:
+      github:
+        customCheckRun:
+          # We set both textArtifactName and annotationsArtifactName due
+          # to https://github.com/taskcluster/taskcluster/issues/3191
+          textArtifactName: public/results/checkrun.md
+          annotationsArtifactName: public/results/checkrun.md
 
   wpt-testharness:
     chunks: 16

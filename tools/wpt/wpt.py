@@ -26,6 +26,10 @@ def load_commands():
             for command, props in iteritems(data):
                 assert "path" in props
                 assert "script" in props
+                if "install" in props and "requirements" in props:
+                    logging.warn("Command %s has both install and "
+                                 "requirements in %s; please merge them.",
+                                 command, abs_path)
                 rv[command] = {
                     "path": os.path.join(base_dir, props["path"]),
                     "script": props["script"],
@@ -38,6 +42,8 @@ def load_commands():
                     "requirements": [os.path.join(base_dir, item)
                                      for item in props.get("requirements", [])]
                 }
+                if rv[command]["install"] or rv[command]["requirements"]:
+                    assert rv[command]["virtualenv"]
     return rv
 
 

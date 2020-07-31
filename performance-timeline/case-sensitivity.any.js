@@ -1,13 +1,23 @@
   test(function () {
-    assert_equals(typeof self.performance, "object");
-    assert_equals(typeof self.performance.getEntriesByType, "function");
-    var lowerList = self.performance.getEntriesByType("resource");
-    var upperList = self.performance.getEntriesByType("RESOURCE");
-    var mixedList = self.performance.getEntriesByType("ReSoUrCe");
+    const type = [
+        'resource',
+        'mark',
+        'feature',
+        'paint',
+    ];
+    type.forEach(function(name) {
+      assert_equals(typeof self.performance, "object");
+      assert_equals(typeof self.performance.getEntriesByType, "function");
+      var nameUppercased = name.toUpperCase();
+      var nameCapitalized = name[0].toUpperCase() + name.substring(1);
+      var lowerList = self.performance.getEntriesByType(name);
+      var upperList = self.performance.getEntriesByType(nameUpperCased);
+      var mixedList = self.performance.getEntriesByType(nameCapitalized);
 
-    assert_not_equals(lowerList.length, 0, "Resource entries exist");
-    assert_equals(upperList.length, 0, "getEntriesByType('RESOURCE').length");
-    assert_equals(mixedList.length, 0, "getEntriesByType('ReSoUrCe').length");
+      assert_not_equals(lowerList.length, 0, "Resource entries exist");
+      assert_equals(upperList.length, 0, "getEntriesByType('" + nameCapitalized + "').length");
+      assert_equals(mixedList.length, 0, "getEntriesByType('" + nameCapitalized + "').length");
+    });
 
   }, "getEntriesByType values are case sensitive");
 

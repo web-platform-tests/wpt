@@ -37,8 +37,6 @@ def venv():
     venv = Virtualenv()
     yield venv
 
-    print('shutil.rmtree of:')
-    print(venv.path)
     shutil.rmtree(venv.path)
 
 

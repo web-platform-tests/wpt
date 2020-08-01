@@ -487,8 +487,11 @@ jobs:
     parallel: 10 # chosen to make runtime ~2h
   timeoutInMinutes: 180
   pool:
-    name: 'Hosted Windows Client'
+    vmImage: 'windows-2019'
   steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.8.x'
   - template: tools/ci/azure/system_info.yml
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/install_python.yml
@@ -523,11 +526,13 @@ jobs:
     parallel: 10 # chosen to make runtime ~2h
   timeoutInMinutes: 180
   pool:
-    name: 'Hosted Windows Client'
+    vmImage: 'windows-2019'
   steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.8.x'
   - template: tools/ci/azure/system_info.yml
   - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/install_python.yml
   - template: tools/ci/azure/pip_install.yml
     parameters:
       packages: virtualenv

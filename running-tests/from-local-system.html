@@ -67,9 +67,6 @@ wherever you currently set your PATH.</p>
 </div>
 <div class="section" id="windows-setup">
 <h3>Windows Setup<a class="headerlink" href="#windows-setup" title="Permalink to this headline">¶</a></h3>
-<p><strong>Note:</strong> In general, Windows Subsystem for Linux will provide the smoothest
-user experience for running web-platform-tests on Windows, where installation
-and usage are similar to Linux.</p>
 <p>Download and install <a class="reference external" href="https://www.python.org/downloads">Python 2.7</a>. The
 installer includes <code class="docutils literal notranslate"><span class="pre">pip</span></code> by default.</p>
 <p>Add <code class="docutils literal notranslate"><span class="pre">C:\Python27</span></code> and <code class="docutils literal notranslate"><span class="pre">C:\Python27\Scripts</span></code> to your <code class="docutils literal notranslate"><span class="pre">%Path%</span></code>
@@ -83,6 +80,15 @@ by the Python binary i.e. assuming <code class="docutils literal notranslate"><s
 started using:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python wpt serve
 </pre></div>
+</div>
+<div class="section" id="windows-subsystem-for-linux">
+<h4>Windows Subsystem for Linux<a class="headerlink" href="#windows-subsystem-for-linux" title="Permalink to this headline">¶</a></h4>
+<p>Optionally on Windows you can use the <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/about">Windows Subsystem for
+Linux</a> (WSL). If doing so,
+installation and usage are similar to the Linux instructions. Be aware that WSL
+may attempt to override <code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code> each time it is launched, which would then
+require you to re-run <a class="reference external" href="#hosts-file-setup"><code class="docutils literal notranslate"><span class="pre">hosts</span></code> File Setup</a>. This behavior
+<a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/wsl-config#network">can be configured</a>.</p>
 </div>
 </div>
 <div class="section" id="hosts-file-setup">

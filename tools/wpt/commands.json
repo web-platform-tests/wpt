@@ -5,6 +5,9 @@
     "parser": "create_parser",
     "help": "Run tests in a browser",
     "virtualenv": true,
+    "install": [
+      "zstandard"
+    ],
     "requirements": [
       "../wptrunner/requirements.txt"
     ]

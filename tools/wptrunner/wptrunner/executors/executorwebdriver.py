@@ -446,6 +446,11 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             done, rv = handler(result)
             if done:
                 break
+
+        # TESTING: attempt to detect problems during the test that caused them,
+        # not at the start of the next test.
+        protocol.testharness.close_old_windows()
+
         return rv
 
     def wait_for_load(self, protocol):

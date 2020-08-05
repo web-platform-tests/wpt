@@ -12,9 +12,10 @@ There's also a load of [general guidelines](general-guidelines) that apply to al
 
 There are various different ways of writing tests:
 
-* [JavaScript tests (testharness.js)](testharness) are preferred and should be used where possible.
-  They are built with the testharness.js unit testing framework, and consist of assertions written
-  in JavaScript. A high-level [testharness.js tutorial](testharness-tutorial) is available.
+* [JavaScript tests (testharness.js)](testharness) are preferred for testing APIs and may be used
+  for other features too. They are built with the testharness.js unit testing framework, and consist
+  of assertions written in JavaScript. A high-level [testharness.js tutorial](testharness-tutorial)
+  is available.
 
 * Rendering tests should be used to verify that the browser graphically
   displays pages as expected. See the [rendering test guidelines](rendering)
@@ -54,12 +55,26 @@ Once you've written tests, please submit them using
 the [typical GitHub Pull Request workflow](submission-process); please
 make sure you run the [`lint` script](lint-tool) before opening a pull request!
 
-## Other Resources
+## Table of Contents
 
 ```eval_rst
 .. toctree::
    :maxdepth: 1
 
+   testharness
+   testharness-tutorial
+   rendering
+   reftests
+   reftest-tutorial
+   print-reftests
+   visual
+   crashtest
+   wdspec
+   manual
+   file-names
+   server-features
+   submission-process
+   lint-tool
    ahem
    assumptions
    css-metadata

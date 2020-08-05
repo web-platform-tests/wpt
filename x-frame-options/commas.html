@@ -16,6 +16,30 @@ xfo_simple_tests({
 });
 
 xfo_simple_tests({
+  headerValue: `DENY,SAMEORIGIN`,
+  sameOriginAllowed: false,
+  crossOriginAllowed: false
+});
+
+xfo_simple_tests({
+  headerValue: `SAMEORIGIN,SAMEORIGIN`,
+  sameOriginAllowed: true,
+  crossOriginAllowed: false
+});
+
+xfo_simple_tests({
+  headerValue: `SAMEORIGIN,INVALID`,
+  sameOriginAllowed: true,
+  crossOriginAllowed: false
+});
+
+xfo_simple_tests({
+  headerValue: `INVALID,SAMEORIGIN`,
+  sameOriginAllowed: true,
+  crossOriginAllowed: false
+});
+
+xfo_simple_tests({
   headerValue: `,SAMEORIGIN,,DENY,`,
   sameOriginAllowed: false,
   crossOriginAllowed: false

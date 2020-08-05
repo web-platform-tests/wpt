@@ -8,7 +8,7 @@ testing plan](making-a-testing-plan) will help you decide what to write.
 
 There's also a load of [general guidelines](general-guidelines) that apply to all tests.
 
-## Choose Your Category
+## Test Types
 
 There are various different ways of writing tests:
 

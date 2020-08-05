@@ -1,17 +1,3 @@
-function assert_no_message_from(frame, test) {
-  wait_for_message_from(frame, test)
-    .then(test.unreached_func("Frame should not have sent a message."));
-}
-
-function wait_for_message_from(frame, test) {
-  return new Promise((resolve, reject) => {
-    window.addEventListener("message", test.step_func(e => {
-      if (e.source == frame.contentWindow)
-        resolve(e);
-    }));
-  });
-}
-
 function xfo_simple_tests({ headerValue, headerValue2, cspValue, sameOriginAllowed, crossOriginAllowed }) {
   const value2QueryString = headerValue2 !== undefined ? `&value2=${headerValue2}` : ``;
   const cspQueryString = cspValue !== undefined ? `&csp_value=${cspValue}` : ``;
@@ -40,19 +26,19 @@ function xfo_test({ url, check, message }) {
 
     switch (check) {
       case "loaded message": {
-        wait_for_message_from(i, t).then(t.step_func_done(e => {
+        waitForMessageFrom(i, t).then(t.step_func_done(e => {
           assert_equals(e.data, "Loaded");
         }));
         break;
       }
       case "failed message": {
-        wait_for_message_from(i, t).then(t.step_func_done(e => {
+        waitForMessageFrom(i, t).then(t.step_func_done(e => {
           assert_equals(e.data, "Failed");
         }));
         break;
       }
       case "no message": {
-        assert_no_message_from(i, t);
+        waitForMessageFrom(i, t).then(t.unreached_func("Frame should not have sent a message."));
         i.onload = t.step_func_done(() => {
           assert_equals(i.contentDocument, null);
         });
@@ -66,4 +52,14 @@ function xfo_test({ url, check, message }) {
     document.body.append(i);
     t.add_cleanup(() => i.remove());
   }, message);
+}
+
+function waitForMessageFrom(frame, test) {
+  return new Promise(resolve => {
+    window.addEventListener("message", test.step_func(e => {
+      if (e.source == frame.contentWindow) {
+        resolve(e);
+      }
+    }));
+  });
 }

@@ -62,6 +62,7 @@ make sure you run the [`lint` script](lint-tool) before opening a pull request!
    :maxdepth: 1
 
    general-guidelines
+   making-a-testing-plan
    testharness
    testharness-tutorial
    rendering

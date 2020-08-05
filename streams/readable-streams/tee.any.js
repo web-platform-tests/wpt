@@ -331,11 +331,9 @@ promise_test(t => {
 
   controller.enqueue('a');
 
-  return flushAsyncEvents().then(() => {
-    return reader1.read().then(r => {
-      assert_object_equals(r, { value: 'a', done: false }, 'first read() from branch1 should fulfill with the chunk');
-    })
-  }).then(() => flushAsyncEvents()).then(() => {
+  return reader1.read().then(r => {
+    assert_object_equals(r, { value: 'a', done: false }, 'first read() from branch1 should fulfill with the chunk');
+  }).then(() => {
     controller.close();
 
     return Promise.all([

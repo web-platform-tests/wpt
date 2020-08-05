@@ -43,4 +43,18 @@ xfo_simple_tests({
   sameOriginAllowed: true,
   crossOriginAllowed: false
 });
+
+xfo_simple_tests({
+  headerValue: `ALLOWALL`,
+  headerValue2: `SAMEORIGIN`,
+  sameOriginAllowed: true,
+  crossOriginAllowed: false
+});
+
+xfo_simple_tests({
+  headerValue: `SAMEORIGIN`,
+  headerValue2: `ALLOWALL`,
+  sameOriginAllowed: true,
+  crossOriginAllowed: false
+});
 </script>

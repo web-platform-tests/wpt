@@ -61,6 +61,7 @@ make sure you run the [`lint` script](lint-tool) before opening a pull request!
 .. toctree::
    :maxdepth: 1
 
+   general-guidelines
    testharness
    testharness-tutorial
    rendering

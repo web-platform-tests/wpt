@@ -45,6 +45,20 @@ xfo_simple_tests({
 });
 
 xfo_simple_tests({
+  headerValue: `INVALID`,
+  headerValue2: `DENY`,
+  sameOriginAllowed: false,
+  crossOriginAllowed: false
+});
+
+xfo_simple_tests({
+  headerValue: `DENY`,
+  headerValue2: `INVALID`,
+  sameOriginAllowed: false,
+  crossOriginAllowed: false
+});
+
+xfo_simple_tests({
   headerValue: `ALLOWALL`,
   headerValue2: `SAMEORIGIN`,
   sameOriginAllowed: true,

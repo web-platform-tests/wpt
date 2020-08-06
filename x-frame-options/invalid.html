@@ -46,6 +46,12 @@ xfo_simple_tests({
 });
 
 xfo_simple_tests({
+  headerValue: `"SAMEORIGIN,DENY"`,
+  sameOriginAllowed: true,
+  crossOriginAllowed: true
+});
+
+xfo_simple_tests({
   headerValue: ``,
   sameOriginAllowed: true,
   crossOriginAllowed: true

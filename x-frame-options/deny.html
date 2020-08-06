@@ -22,6 +22,12 @@ xfo_simple_tests({
 });
 
 xfo_simple_tests({
+  headerValue: `  DENY `,
+  sameOriginAllowed: false,
+  crossOriginAllowed: false
+});
+
+xfo_simple_tests({
   headerValue: `DENY`,
   cspValue: `default-src 'self'`,
   sameOriginAllowed: false,

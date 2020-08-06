@@ -21,6 +21,12 @@ xfo_simple_tests({
   crossOriginAllowed: false
 });
 
+xfo_simple_tests({
+  headerValue: `  SAMEORIGIN `,
+  sameOriginAllowed: true,
+  crossOriginAllowed: false
+});
+
 xfo_test({
   url: `./support/nested.py?origin=http://{{host}}:{{ports[http][0]}}&value=SAMEORIGIN&loadShouldSucceed=true`,
   check: "loaded message",

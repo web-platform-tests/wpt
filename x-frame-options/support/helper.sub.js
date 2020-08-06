@@ -31,7 +31,7 @@ function simpleXFOTestsInner({ urlPrefix, allowed, headerValue, headerValue2, cs
   xfo_test({
     url: `${urlPrefix}/x-frame-options/support/xfo.py?value=${headerValue}${value2QueryString}${cspQueryString}`,
     check: allowed ? "loaded message" : "no message",
-    message: `${valueMessageString}${value2MaybeMessageString} ${allowed ? "allows" : "blocks"} ${sameOrCross} framing${cspMessageString}`
+    message: `\`${valueMessageString}${value2MaybeMessageString}\` ${allowed ? "allows" : "blocks"} ${sameOrCross} framing${cspMessageString}`
   });
 
   if (headerValue2 !== undefined && headerValue2 !== headerValue) {
@@ -39,21 +39,21 @@ function simpleXFOTestsInner({ urlPrefix, allowed, headerValue, headerValue2, cs
     xfo_test({
       url: `${urlPrefix}/x-frame-options/support/xfo.py?value=${headerValue2}&value2=${headerValue}${cspQueryString}`,
       check: allowed ? "loaded message" : "no message",
-      message: `${value2MessageString};${valueMessageString} ${allowed ? "allows" : "blocks"} ${sameOrCross} framing${cspMessageString}`
+      message: `\`${value2MessageString};${valueMessageString}\` ${allowed ? "allows" : "blocks"} ${sameOrCross} framing${cspMessageString}`
     });
 
     // Comma variant
     xfo_test({
       url: `${urlPrefix}/x-frame-options/support/xfo.py?value=${headerValue},${headerValue2}${cspQueryString}`,
       check: allowed ? "loaded message" : "no message",
-      message: `${valueMessageString},${value2MessageString} ${allowed ? "allows" : "blocks"} ${sameOrCross} framing${cspMessageString}`
+      message: `\`${valueMessageString},${value2MessageString}\` ${allowed ? "allows" : "blocks"} ${sameOrCross} framing${cspMessageString}`
     });
 
     // Comma + reversed variant
     xfo_test({
       url: `${urlPrefix}/x-frame-options/support/xfo.py?value=${headerValue2},${headerValue}${cspQueryString}`,
       check: allowed ? "loaded message" : "no message",
-      message: `${value2MessageString},${valueMessageString} ${allowed ? "allows" : "blocks"} ${sameOrCross} framing${cspMessageString}`
+      message: `\`${value2MessageString},${valueMessageString}\` ${allowed ? "allows" : "blocks"} ${sameOrCross} framing${cspMessageString}`
     });
   }
 }

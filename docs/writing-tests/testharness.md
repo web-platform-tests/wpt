@@ -1,23 +1,16 @@
 # JavaScript Tests (testharness.js)
 
-```eval_rst
-.. toctree::
-   :maxdepth: 1
-
-   idlharness
-   testharness-api
-   testdriver-extension-tutorial
-   testdriver
-```
-
-testharness.js tests are the correct type of test to write in any
+JavaScript tests are the correct type of test to write in any
 situation where you are not specifically interested in the rendering
 of a page, and where human interaction isn't required; these tests are
-written in JavaScript using a framework called `testharness.js`. It is
-documented in two sections:
+written in JavaScript using a framework called `testharness.js`.
+
+A high-level overview is provided below and more information can be found here:
 
   * [testharness.js Documentation](testharness-api.md) — An introduction
-    to the library and a detailed API reference.
+    to the library and a detailed API reference. [The tutorial on writing a
+    testharness.js test](testharness-tutorial) provides a concise guide to writing
+    a test — a good place to start for newcomers to the project.
 
   * [idlharness.js Documentation](idlharness.md) — A library for testing
      IDL interfaces using `testharness.js`.
@@ -25,9 +18,179 @@ documented in two sections:
 See [server features](server-features.md) for advanced testing features that are commonly used
 with testharness.js. See also the [general guidelines](general-guidelines.md) for all test types.
 
-This page describes testharness.js exhaustively; [the tutorial on writing a
-testharness.js test](testharness-tutorial) provides a concise guide to writing
-a test--a good place to start for newcomers to the project.
+## Window tests
+
+### Without HTML boilerplate (`.window.js`)
+
+Create a JavaScript file whose filename ends in `.window.js` to have the necessary HTML boilerplate
+generated for you at `.window.html`. I.e., for `test.window.js` the server will ensure
+`test.window.html` is available.
+
+In this JavaScript file you can place one or more tests, as follows:
+```js
+test(() => {
+  // Place assertions and logic here
+  assert_equals(document.characterSet, "UTF-8");
+}, "Ensure HTML boilerplate uses UTF-8"); // This is the title of the test
+```
+
+See the [testharness.js API](testharness-api.md) for more information on asynchronous
+(`async_test()`) and promise tests (`promise_test()`).
+
+If you only need to test a single thing, you could also use:
+```js
+// META: title=Ensure HTML boilerplate uses UTF-8
+setup({ single_test: true });
+assert_equals(document.characterSet, "UTF-8");
+done();
+```
+
+### With HTML boilerplate
+
+You need to be a bit more explicit and include the `testharness.js` framework directly as well as an
+additional file used by implementations:
+
+```html
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    test(() => {
+      assert_equals(document.characterSet, "UTF-8");
+    }, "Ensure UTF-8 declaration is observed");
+  </script>
+```
+
+Here too you could avoid the wrapper `test()` function:
+
+```html
+<!doctype html>
+<meta charset=utf-8>
+<title>Ensure UTF-8 declaration is observed</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    setup({ single_test: true });
+    assert_equals(document.characterSet, "UTF-8");
+    done();
+  </script>
+```
+
+In this case the test title is taken from the `title` element.
+
+## Dedicated worker tests (`.worker.js`)
+
+Create a JavaScript file that imports `testharness.js` and whose filename ends in `.worker.js` to
+have the necessary HTML boilerplate generated for you at `.worker.html`.
+
+For example, one could write a test for the `FileReaderSync` API by
+creating a `FileAPI/FileReaderSync.worker.js` as follows:
+
+```js
+importScripts("/resources/testharness.js");
+test(function () {
+    const blob = new Blob(["Hello"]);
+    const fr = new FileReaderSync();
+    assert_equals(fr.readAsText(blob), "Hello");
+}, "FileReaderSync#readAsText.");
+done();
+```
+
+This test could then be run from `FileAPI/FileReaderSync.worker.html`.
+
+(Removing the need for `importScripts()` and `done()` is tracked in
+[issue #11529](https://github.com/web-platform-tests/wpt/issues/11529).)
+
+## Tests for other or multiple globals (`.any.js`)
+
+Tests for features that exist in multiple global scopes can be written in a way
+that they are automatically run in several scopes. In this case, the test is a
+JavaScript file with extension `.any.js`, which can use all the usual APIs.
+
+By default, the test runs in a window scope and a dedicated worker scope.
+
+For example, one could write a test for the `Blob` constructor by
+creating a `FileAPI/Blob-constructor.any.js` as follows:
+
+```js
+test(function () {
+    const blob = new Blob();
+    assert_equals(blob.size, 0);
+    assert_equals(blob.type, "");
+    assert_false(blob.isClosed);
+}, "The Blob constructor.");
+```
+
+This test could then be run from `FileAPI/Blob-constructor.any.worker.html` as well
+as `FileAPI/Blob-constructor.any.html`.
+
+It is possible to customize the set of scopes with a metadata comment, such as
+
+```
+// META: global=sharedworker
+//       ==> would run in the shared worker scope
+// META: global=window,serviceworker
+//       ==> would only run in the window and service worker scope
+// META: global=dedicatedworker
+//       ==> would run in the default dedicated worker scope
+// META: global=worker
+//       ==> would run in the dedicated, shared, and service worker scopes
+```
+
+For a test file <code><var>x</var>.any.js</code>, the available scope keywords
+are:
+
+* `window` (default): to be run at <code><var>x</var>.any.html</code>
+* `dedicatedworker` (default): to be run at <code><var>x</var>.any.worker.html</code>
+* `serviceworker`: to be run at <code><var>x</var>.any.serviceworker.html</code> (`.https` is implied)
+* `sharedworker`: to be run at <code><var>x</var>.any.sharedworker.html</code>
+* `jsshell`: to be run in a JavaScript shell, without access to the DOM
+  (currently only supported in SpiderMonkey, and skipped in wptrunner)
+* `worker`: shorthand for the dedicated, shared, and service worker scopes
+
+To check if your test is run from a window or worker you can use the following two methods that will
+be made available by the framework:
+
+    self.GLOBAL.isWindow()
+    self.GLOBAL.isWorker()
+
+Although [the global `done()` function must be explicitly invoked for most
+dedicated worker tests and shared worker
+tests](testharness-api.html#determining-when-all-tests-are-complete), it is
+automatically invoked for tests defined using the "multi-global" pattern.
+
+## Other features of `.window.js`, `.worker.js` and `.any.js`
+
+### Specifying a test title
+
+Use `// META: title=This is the title of the test` at the beginning of the resource.
+
+### Including other JavaScript files
+
+Use `// META: script=link/to/resource.js` at the beginning of the resource. For example,
+
+```
+// META: script=/common/utils.js
+// META: script=resources/utils.js
+```
+
+can be used to include both the global and a local `utils.js` in a test.
+
+### Specifying a timeout of long
+
+Use `// META: timeout=long` at the beginning of the resource.
+
+### Specifying test [variants](#variants)
+
+Use `// META: variant=url-suffix` at the beginning of the resource. For example,
+
+```
+// META: variant=
+// META: variant=?wss
+```
 
 ## Variants
 
@@ -85,128 +248,14 @@ expression).
 </script>
 ```
 
-## Auto-generated test boilerplate
+## Table of Contents
 
-While most JavaScript tests require a certain amount of HTML
-boilerplate to include the test library, etc., tests which are
-expressible purely in script (e.g. tests for workers) can have all the
-needed HTML and script boilerplate auto-generated.
+```eval_rst
+.. toctree::
+   :maxdepth: 1
 
-### Standalone window tests
-
-Tests that only require a script file running in window scope can use
-standalone window tests. In this case the test is a javascript file
-with the extension `.window.js`. This is sourced from a generated
-document which sources `testharness.js`, `testharnessreport.js` and
-the test script. For a source script with the name
-`example.window.js`, the corresponding test resource will be
-`example.window.html`.
-
-### Standalone workers tests
-
-Tests that only require assertions in a dedicated worker scope can use
-standalone workers tests. In this case, the test is a JavaScript file
-with extension `.worker.js` that imports `testharness.js`. The test can
-then use all the usual APIs, and can be run from the path to the
-JavaScript file with the `.js` removed.
-
-For example, one could write a test for the `FileReaderSync` API by
-creating a `FileAPI/FileReaderSync.worker.js` as follows:
-
-```js
-importScripts("/resources/testharness.js");
-test(function () {
-    const blob = new Blob(["Hello"]);
-    const fr = new FileReaderSync();
-    assert_equals(fr.readAsText(blob), "Hello");
-}, "FileReaderSync#readAsText.");
-done();
-```
-
-This test could then be run from `FileAPI/FileReaderSync.worker.html`.
-
-### Multi-global tests
-
-Tests for features that exist in multiple global scopes can be written in a way
-that they are automatically run in several scopes. In this case, the test is a
-JavaScript file with extension `.any.js`, which can use all the usual APIs.
-
-By default, the test runs in a window scope and a dedicated worker scope.
-
-For example, one could write a test for the `Blob` constructor by
-creating a `FileAPI/Blob-constructor.any.js` as follows:
-
-```js
-test(function () {
-    const blob = new Blob();
-    assert_equals(blob.size, 0);
-    assert_equals(blob.type, "");
-    assert_false(blob.isClosed);
-}, "The Blob constructor.");
-```
-
-This test could then be run from `FileAPI/Blob-constructor.any.worker.html` as well
-as `FileAPI/Blob-constructor.any.html`.
-
-It is possible to customize the set of scopes with a metadata comment, such as
-
-```
-// META: global=sharedworker
-//       ==> would run in the shared worker scope
-// META: global=window,serviceworker
-//       ==> would only run in the window and service worker scope
-// META: global=dedicatedworker
-//       ==> would run in the default dedicated worker scope
-// META: global=worker
-//       ==> would run in the dedicated, shared, and service worker scopes
-```
-
-For a test file <code><var>x</var>.any.js</code>, the available scope keywords
-are:
-
-* `window` (default): to be run at <code><var>x</var>.any.html</code>
-* `dedicatedworker` (default): to be run at <code><var>x</var>.any.worker.html</code>
-* `serviceworker`: to be run at <code><var>x</var>.any.serviceworker.html</code> (`.https` is implied)
-* `sharedworker`: to be run at <code><var>x</var>.any.sharedworker.html</code>
-* `jsshell`: to be run in a JavaScript shell, without access to the DOM
-  (currently only supported in SpiderMonkey, and skipped in wptrunner)
-* `worker`: shorthand for the dedicated, shared, and service worker scopes
-
-To check if your test is run from a window or worker you can use the following two methods that will
-be made available by the framework:
-
-    self.GLOBAL.isWindow()
-    self.GLOBAL.isWorker()
-
-Although [the global `done` function must be explicitly invoked for most
-dedicated worker tests and shared worker
-tests](testharness-api.html#determining-when-all-tests-are-complete), it is
-automatically invoked for tests defined using the "multi-global" pattern.
-
-### Specifying a test title in auto-generated boilerplate tests
-
-Use `// META: title=This is the title of the test` at the beginning of the resource.
-
-### Including other JavaScript resources in auto-generated boilerplate tests
-
-Use `// META: script=link/to/resource.js` at the beginning of the resource. For example,
-
-```
-// META: script=/common/utils.js
-// META: script=resources/utils.js
-```
-
-can be used to include both the global and a local `utils.js` in a test.
-
-### Specifying a timeout of long in auto-generated boilerplate tests
-
-Use `// META: timeout=long` at the beginning of the resource.
-
-### Specifying test [variants](#variants) in auto-generated boilerplate tests
-
-Use `// META: variant=url-suffix` at the beginning of the resource. For example,
-
-```
-// META: variant=
-// META: variant=?wss
+   idlharness
+   testharness-api
+   testdriver-extension-tutorial
+   testdriver
 ```

@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Iframe Network Partition Checker</title>
+  <meta name="help" href="https://fetch.spec.whatwg.org/#network-partition-keys">
+  <meta name="timeout" content="normal">
+  <script src="SUBRESOURCE_PREFIX:&dispatch=fetch_file&path=common/utils.js"></script>
+  <script src="SUBRESOURCE_PREFIX:&dispatch=fetch_file&path=resources/testharness.js"></script>
+  <script src="SUBRESOURCE_PREFIX:&dispatch=fetch_file&path=fetch/connection-pool/resources/network-partition-key.js"></script>
+</head>
+<body>
+<script>
+  // Listen for events from the iframe. Pass on the success or error message back to the opener,
+  // ignoring testharness.js internal messages.
+  function message_listener(event) {
+    if (event.data.result === 'success' || event.data.result === 'error') {
+      window.opener.postMessage(event.data, '*');
+      window.removeEventListener('message', message_listener);
+    }
+  }
+  window.addEventListener('message', message_listener);
+</script>
+<iframe src="SUBRESOURCE_PREFIX:&dispatch=fetch_file&path=fetch/connection-pool/resources/network-partition-checker.html"></iframe>
+</body>
+</html>

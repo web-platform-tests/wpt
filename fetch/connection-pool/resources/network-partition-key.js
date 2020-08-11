@@ -1,5 +1,5 @@
 // Runs multiple fetches that validate connections see only a single partition_id.
-// Runs requests in parallel so that they use multiple connections to maximize the
+// Requests are run in parallel so that they use multiple connections to maximize the
 // chance of exercising all matching connections in the connection pool. Only returns
 // once all requests have completed to make cleaning up server state non-racy.
 function check_partition_ids(location) {

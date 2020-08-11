@@ -1,4 +1,4 @@
-// This tests the partition key of both fetches to subresouce_origin made by the worker and
+// This tests the partition key of fetches to subresouce_origin made by the worker and
 // imported scripts from subresource_origin.
 importScripts('SUBRESOURCE_PREFIX:&dispatch=fetch_file&path=common/utils.js');
 importScripts('SUBRESOURCE_PREFIX:&dispatch=fetch_file&path=resources/testharness.js');

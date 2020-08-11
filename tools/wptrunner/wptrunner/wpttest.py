@@ -94,11 +94,14 @@ class RunInfo(dict):
         self._update_mozinfo(metadata_root)
         self.update(mozinfo.info)
 
+        print('STEPHEN RUNINFO MARKER')
         from .update.tree import GitTree
         try:
             # GitTree.__init__ throws if we are not in a git tree.
-            rev = GitTree(log_error=False).rev
+            rev = GitTree(log_error=True).rev
+            print('STEPHEN Things went right, rev: "' + str(rev) + '"')
         except (OSError, subprocess.CalledProcessError):
+            print('STEPHEN Something went wrong; rev=none')
             rev = None
         if rev:
             self["revision"] = rev

@@ -6,30 +6,34 @@
 <script src="/common/utils.js"></script>
 <body>
 <script>
-async_test(t => {
-  // check for message from the popup
-  const uuid = token();
-  const bc = new BroadcastChannel(uuid);
-  bc.onmessage = t.unreached_func('popup was opened');
+setup({single_test: true});
+// check that the popup's URL is not loaded
+const uuid = token();
+async function assert_popup_not_loaded() {
+  const response = await fetch(`/fetch/api/resources/stash-take.py?key=${uuid}`);
+  assert_equals(await response.json(), null); // is "loaded" if it loads
+}
 
-  // check for message from the iframe
-  window.onmessage = t.step_func(e => {
-    assert_equals(e.data, null, 'return value of window.open');
-    t.step_timeout(t.done, 1000); // allow some time to pass in case the popup was opened
-  });
-  const iframe = document.createElement('iframe');
-  iframe.sandbox = 'allow-scripts allow-same-origin';
-  iframe.srcdoc = `
-    <script>
-      let result;
-      try {
-        result = window.open('resources/broadcast-done.sub.html?uuid=${uuid}', '_blank');
-      } catch(ex) {
-        result = String(ex);
-      }
-      parent.postMessage(result, '*');
-    <\/script>
-  `;
-  document.body.appendChild(iframe);
-});
+// check for message from the iframe
+window.onmessage = e => {
+  assert_equals(e.data, 'null', 'return value of window.open (stringified)');
+  step_timeout(async () => {
+    await assert_popup_not_loaded();
+    done();
+  }, 1000);
+};
+const iframe = document.createElement('iframe');
+iframe.sandbox = 'allow-scripts';
+iframe.srcdoc = `
+  <script>
+    let result;
+    try {
+      result = window.open('/fetch/api/resources/stash-put.py?key=${uuid}&value=loaded', '_blank');
+    } catch(ex) {
+      result = ex;
+    }
+    parent.postMessage(String(result), '*');
+  <\/script>
+`;
+document.body.appendChild(iframe);
 </script>

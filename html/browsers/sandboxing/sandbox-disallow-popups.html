@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>window.open in sandbox iframe</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<body>
+<script>
+async_test(t => {
+  // check for message from the popup
+  const uuid = token();
+  const bc = new BroadcastChannel(uuid);
+  bc.onmessage = t.unreached_func('popup was opened');
+
+  // check for message from the iframe
+  window.onmessage = t.step_func(e => {
+    assert_equals(e.data, null, 'return value of window.open');
+    t.step_timeout(t.done, 1000); // allow some time to pass in case the popup was opened
+  });
+  const iframe = document.createElement('iframe');
+  iframe.sandbox = 'allow-scripts allow-same-origin';
+  iframe.srcdoc = `
+    <script>
+      let result;
+      try {
+        result = window.open('resources/broadcast-done.sub.html?uuid=${uuid}', '_blank');
+      } catch(ex) {
+        result = String(ex);
+      }
+      parent.postMessage(result, '*');
+    <\/script>
+  `;
+  document.body.appendChild(iframe);
+});
+</script>

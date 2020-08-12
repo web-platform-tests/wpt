@@ -560,8 +560,15 @@ class Chrome(Browser):
         os.remove(installer_path)
         return self.find_nightly_binary(dest)
 
-    def install_mojojs(self, dest):
-        url = self._latest_chromium_snapshot_url() + "mojojs.zip"
+    def install_mojojs(self, dest, channel, browser_binary):
+        if channel == "nightly":
+            url = self._latest_chromium_snapshot_url() + "mojojs.zip"
+        else:
+            chrome_version = self.version(binary=browser_binary)
+            assert chrome_version, "Cannot determine the version of Chrome"
+            # Remove channel suffixes (e.g. " dev").
+            chrome_version = chrome_version.split(' ')[0]
+            url = "https://storage.googleapis.com/chrome-wpt-mojom/%s/linux64/mojojs.zip" % chrome_version
         self.logger.info("Downloading Mojo bindings from %s" % url)
         unzip(get(url).raw, dest)
 

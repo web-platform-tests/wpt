@@ -36,7 +36,7 @@ function check_partition_ids(location) {
           });
         }));
   }
-  
+
   // Wait for all promises to complete.
   return Promise.allSettled(fetches).then(function (results) {
     results.forEach(function (result) {

@@ -155,6 +155,14 @@ with the <code class="docutils literal notranslate"><span class="pre">.html</spa
 <dd><p class="first">Missing <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code></p>
 <strong>To fix:</strong><p class="last">ensure each test file contains <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code></p>
 </dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MOJOM-JS</span></code></dt>
+<dd><p class="first">Don’t check *.mojom.js files into WPT</p>
+<strong>To fix:</strong><p class="last">Check if the file is already included in mojojs.zip:
+https://source.chromium.org/chromium/chromium/src/+/master:chrome/tools/build/linux/FILES.cfg
+If yes, use <code class="docutils literal notranslate"><span class="pre">loadMojoResources</span></code> from <code class="docutils literal notranslate"><span class="pre">resources/test-only-api.js</span></code> to load
+it; if not, contact ecosystem-infra&#64;chromium.org for adding new files
+to mojojs.zip.</p>
+</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">MULTIPLE-TESTDRIVER</span></code></dt>
 <dd>More than one <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testdriver.js'&gt;</span></code></dd>
 <dt><code class="docutils literal notranslate"><span class="pre">MULTIPLE-TESTDRIVER-VENDOR</span></code></dt>

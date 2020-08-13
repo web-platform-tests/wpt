@@ -921,7 +921,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
         if not isinstance(self.implementation, InternalRefTestImplementation):
             if self.close_after_done and self.has_window:
                 self.protocol.marionette.close()
-                switch_to_window(self.protocol.marionette,
+                _switch_to_window(self.protocol.marionette,
                                  self.protocol.marionette.window_handles[-1])
                 self.has_window = False
 

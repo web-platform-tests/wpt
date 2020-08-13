@@ -87,7 +87,7 @@ class MojomJSFile(Rule):
     to_fix = """
         Check if the file is already included in mojojs.zip:
         https://source.chromium.org/chromium/chromium/src/+/master:chrome/tools/build/linux/FILES.cfg
-        If yes, use loadMojoResources from resources/test-only-api.js to load
+        If yes, use `loadMojoResources` from `resources/test-only-api.js` to load
         it; if not, contact ecosystem-infra@chromium.org for adding new files
         to mojojs.zip.
     """

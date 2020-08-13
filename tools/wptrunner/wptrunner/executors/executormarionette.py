@@ -56,11 +56,21 @@ def do_delayed_imports():
         from marionette_driver import marionette, errors
 
 
-# Workaround for https://github.com/web-platform-tests/wpt/issues/24924; for
-# Firefox stable 79 and marionettedriver >= 3.1.0 we need to support the old
-# 'name' property.
 def _switch_to_window(marionette, handle):
-    marionette._send_message("WebDriver:SwitchToWindow", {"handle": handle, "name": handle, "focus": True})
+    """Switch to the specified window; subsequent commands will be
+    directed at the new window.
+
+    This is a workaround for issue 24924[0]; marionettedriver 3.1.0 dropped the
+    'name' parameter from its switch_to_window command, but it is still needed
+    for at least Firefox 79.
+
+    [0]: https://github.com/web-platform-tests/wpt/issues/24924
+
+    :param marionette: The Marionette instance
+    :param handle: The id of the window to switch to.
+    """
+    marionette._send_message("WebDriver:SwitchToWindow",
+                             {"handle": handle, "name": handle, "focus": True})
     marionette.window = handle
 
 

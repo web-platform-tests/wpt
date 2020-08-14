@@ -248,7 +248,7 @@ async_test(t => {
   input.onclick = t.step_func(ev => {
     assert_true(input.checked);
     ev.preventDefault();
-    setTimeout(t.step_func_done(() => {
+    queueMicrotask(t.step_func_done(() => {
       assert_false(input.checked);
     }));
   });
@@ -262,7 +262,7 @@ async_test(t => {
   input.onclick = t.step_func(ev => {
     assert_true(input.checked);
     ev.preventDefault();
-    setTimeout(t.step_func_done(() => {
+    queueMicrotask(t.step_func_done(() => {
       assert_false(input.checked);
     }));
   });
@@ -276,7 +276,7 @@ async_test(t => {
   const ev = new MouseEvent("click", { cancelable: true });
   ev.preventDefault();
   input.dispatchEvent(ev);
-  setTimeout(t.step_func_done(() => assert_false(input.checked)));
+  queueMicrotask(t.step_func_done(() => assert_false(input.checked)));
 }, `disabled checkbox should get legacy-canceled-activation behavior 2`);
 
 async_test(t => {
@@ -286,7 +286,7 @@ async_test(t => {
   const ev = new MouseEvent("click", { cancelable: true });
   ev.preventDefault();
   input.dispatchEvent(ev);
-  setTimeout(t.step_func_done(() => assert_false(input.checked)));
+  queueMicrotask(t.step_func_done(() => assert_false(input.checked)));
 }, `disabled radio should get legacy-canceled-activation behavior 2`);
 
 async_test(function(t) {

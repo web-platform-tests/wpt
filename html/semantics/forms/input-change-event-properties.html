@@ -69,9 +69,9 @@ promise_test(async () => {
   el.oninput = e => inputEvent = e;
   el.onchange = e => changeEvent = e;
 
-  // Safari (Mac) needs two down arrow keys and a space. Other browsers only need a single down
-  // arrow key but don't mind the extra keystrokes.
-  await test_driver.send_keys(el, "\uE015"); // down arrow key
+  // Safari (Mac) needs click and and a space. Other browsers only need a single down
+  // arrow key but don't mind the extra actions.
+  await test_driver.click(el);
   await test_driver.send_keys(el, "\uE015"); // down arrow key
   await test_driver.send_keys(el, " ");      // spacebar
   await test_driver.click(clickMeToUnfocusOtherThings);

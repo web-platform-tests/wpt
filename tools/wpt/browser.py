@@ -569,8 +569,20 @@ class Chrome(Browser):
             # Remove channel suffixes (e.g. " dev").
             chrome_version = chrome_version.split(' ')[0]
             url = "https://storage.googleapis.com/chrome-wpt-mojom/%s/linux64/mojojs.zip" % chrome_version
+
+        last_url_file = os.path.join(dest, "mojojs", "gen", "DOWNLOADED_FROM")
+        if os.path.exists(last_url_file):
+            with open(last_url_file, "rt") as f:
+                last_url = f.read().strip()
+            if last_url == url:
+                self.logger.info("Mojo bindings already up to date")
+                return
+            rmtree(os.path.join(dest, "mojojs", "gen"))
+
         self.logger.info("Downloading Mojo bindings from %s" % url)
         unzip(get(url).raw, dest)
+        with open(last_url_file, "wt") as f:
+            f.write(url)
 
     def _chromedriver_platform_string(self):
         platform = self.platforms.get(uname[0])

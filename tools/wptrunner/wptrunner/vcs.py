@@ -3,6 +3,8 @@ from functools import partial
 
 from mozlog import get_default_logger
 
+from wptserve.utils import isomorphic_decode
+
 logger = None
 
 def vcs(bin_name):
@@ -54,7 +56,7 @@ def bind_to_repo(vcs_func, repo, log_error=True):
 
 def is_git_root(path, log_error=True):
     try:
-        rv = git("rev-parse", "--show-cdup", repo=path, log_error=log_error)
+        rv = git("rev-parse", "--show-cdup", repo=isomorphic_decode(path), log_error=log_error)
     except subprocess.CalledProcessError:
         return False
     return rv == "\n"

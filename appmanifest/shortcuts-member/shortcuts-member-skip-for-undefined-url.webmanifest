@@ -2,7 +2,7 @@
     "name": "Shortcut test",
     "scope": "/",
     "shortcuts": [{
-        "name": "pass",
+        "name": "fail",
         "short_name": "",
         "description": "",
         "icons": []

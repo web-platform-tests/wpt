@@ -1,8 +1,7 @@
 import base64
 import imghdr
-import struct
 
-from six import ensure_binary, text_type, PY3
+from six import ensure_binary, text_type
 
 from webdriver import Element, NoSuchAlertException, WebDriverException
 
@@ -86,13 +85,15 @@ def assert_response_headers(headers):
     # In Python 2, HTTPResponse normalizes header keys to lowercase, whereas
     # Python 3 preserves the case. See
     # https://github.com/web-platform-tests/wpt/pull/22858#issuecomment-612656097
-    if PY3:
+    # For Firefox, the response header names are converted to lowercase strings for consistent lookups.
+    # https://www.selenium.dev/selenium/docs/api/javascript/module/selenium-webdriver/lib/http_exports_Response.html
+    try:
         assert 'Content-Type' in headers
         assert 'application/json; charset=utf-8' == headers['Content-Type']
-    else:
+
+    except AssertionError:
         assert 'content-type' in headers
         assert 'application/json; charset=utf-8' == headers['content-type']
-
 
 def assert_dialog_handled(session, expected_text, expected_retval):
     # If there were any existing dialogs prior to the creation of this

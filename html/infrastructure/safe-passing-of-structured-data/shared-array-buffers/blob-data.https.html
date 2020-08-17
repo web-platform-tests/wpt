@@ -57,7 +57,7 @@ test(() => {
 }, "${name}: self.origin");
 
 test(() => {
-  assert_equals(${crossOriginIsolated}, self.crossOriginIsolated);
+  assert_true(self.crossOriginIsolated);
 }, "${name}: self.crossOriginIsolated");
 
 test(() => {

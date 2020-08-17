@@ -35,8 +35,8 @@ context.fillRect(0, 0, 10, 10);
 
 // These tests verify that MediaStreamTrack.getConstraints() exists and that,
 // returns the constraints passed beforehand with applyConstraints.
-var makeAsyncTest = function(c) {
-  async_test(function(t) {
+var makePromiseTest = function(c) {
+  promise_test(function(t) {
     var stream = canvas.captureStream();
     var videoTrack = stream.getVideoTracks()[0];
 
@@ -44,7 +44,7 @@ var makeAsyncTest = function(c) {
 
     // Method applyConstraints() will fail since there is no Image Capture
     // service in this Layout Test, but |constraintsIn| should be cached.
-    videoTrack.applyConstraints(constraintsIn)
+    return videoTrack.applyConstraints(constraintsIn)
         .then(() => { /* ignore */ })
         .catch((e) => { /* ignore */ })
         .then(t.step_func(() => {
@@ -66,11 +66,11 @@ for (key in constraints) {
   var one_constraint = {};
   one_constraint[key] = constraints[key];
   generate_tests(
-      makeAsyncTest,
+      makePromiseTest,
       [[ 'MediaStreamTrack.getConstraints(), key: ' + key, one_constraint ]]);
 }
 
-generate_tests(makeAsyncTest, [[
+generate_tests(makePromiseTest, [[
                  'MediaStreamTrack.getConstraints(), complete ', constraints
                ]]);
 

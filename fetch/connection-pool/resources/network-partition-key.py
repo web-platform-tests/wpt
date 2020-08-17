@@ -18,18 +18,19 @@ def main(request, response):
     if not uuid or not dispatch or not partition_id:
         return simple_response(request, response, 404, b"Not found", b"Invalid query parameters")
 
-    # Check partition_id against server_state, and update server_state.
+    # Unless nocheck_partition is true, check partition_id against server_state, and update server_state.
     stash = request.server.stash
     test_failed = False
-    # Need to grab the lock to access the Stash, since requests are made in parallel.
-    with stash.lock:
-        address_key = str(request.client_address)
-        server_state = stash.take(uuid) or { "test_failed": False }
-        if address_key in server_state and server_state[address_key] != partition_id:
-            server_state["test_failed"] = True
-        server_state[address_key] = partition_id
-        test_failed = server_state["test_failed"]
-        stash.put(uuid, server_state)
+    if (request.GET.first(b"nocheck_partition", None) != "True"):
+        # Need to grab the lock to access the Stash, since requests are made in parallel.
+        with stash.lock:
+            address_key = str(request.client_address)
+            server_state = stash.take(uuid) or { "test_failed": False }
+            if address_key in server_state and server_state[address_key] != partition_id:
+                server_state["test_failed"] = True
+            server_state[address_key] = partition_id
+            test_failed = server_state["test_failed"]
+            stash.put(uuid, server_state)
 
     origin = request.headers.get(b"Origin")
     if origin:
@@ -49,6 +50,8 @@ def main(request, response):
 
     if dispatch == u"clean_up":
         stash.take(uuid)
+        if test_failed:
+          return simple_response(request, response, 200, b"OK", b"Test failed, but cleanup completed.")
         return simple_response(request, response, 200, b"OK", b"cleanup complete")
 
     return simple_response(request, response, 404, b"Not Found", b"Unrecognized dispatch parameter: " + dispatch)
@@ -81,6 +84,10 @@ def handle_fetch_file(request, response, partition_id, uuid):
     # Basic security check.
     if not path.startswith(base_path):
         return simple_response(request, response, 404, b"Not found", b"Invalid path")
+
+    sandbox = request.GET.first(b"sandbox", None)
+    if sandbox == "true":
+        response.headers.set(b"Content-Security-Policy", "sandbox allow-scripts")
 
     file = open(path, mode="r")
     body = file.read()

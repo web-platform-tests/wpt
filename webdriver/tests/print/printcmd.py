@@ -15,8 +15,8 @@ def do_print(session, options):
 
 
 def assert_pdf(data):
-    assert data.startswith(b"%PDF-"), b"Decoded data starts with the PDF signature"
-    assert data.endswith(b"%%EOF\n"), b"Decoded data ends with the EOF flag"
+    assert data.startswith(b"%PDF-"), "Decoded data starts with the PDF signature"
+    assert data.endswith(b"%%EOF\n"), "Decoded data ends with the EOF flag"
 
 
 def test_no_browsing_context(session, closed_window):

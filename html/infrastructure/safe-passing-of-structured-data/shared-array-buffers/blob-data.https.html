@@ -1,6 +1,5 @@
 <!doctype html>
 <meta charset=utf-8>
-<meta timeout=long>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
@@ -71,11 +70,11 @@ const workerScript = `
 importScripts("${url.origin}/resources/testharness.js");
 importScripts("${url.href}resources/test-incrementer.js");
 
-${httpWorkerIncrementerTest("blob worker")}
+// ${httpWorkerIncrementerTest("blob worker")}
 
-${blobWorkerIncrementerTest("blob worker", self.location.origin)}
+// ${blobWorkerIncrementerTest("blob worker", self.location.origin)}
 
-${propertyTests("blob worker", true)}
+// ${propertyTests("blob worker", true)}
 
 done();
 `;
@@ -105,9 +104,9 @@ importScripts("${url.origin}/resources/testharness.js?pipe=header(Cross-Origin-R
 
 /* Cannot use httpWorkerIncrementerTest() here as the HTTP URL is not same origin. */
 
-${blobWorkerIncrementerTest("data worker")}
+// ${blobWorkerIncrementerTest("data worker")}
 
-${propertyTests("data worker", false)}
+// ${propertyTests("data worker", false)}
 
 done();
 `;

@@ -104,9 +104,9 @@ importScripts("${url.origin}/resources/testharness.js?pipe=header(Cross-Origin-R
 
 /* Cannot use httpWorkerIncrementerTest() here as the HTTP URL is not same origin. */
 
-// ${blobWorkerIncrementerTest("data worker")}
+${blobWorkerIncrementerTest("data worker")}
 
-// ${propertyTests("data worker", false)}
+${propertyTests("data worker", false)}
 
 done();
 `;

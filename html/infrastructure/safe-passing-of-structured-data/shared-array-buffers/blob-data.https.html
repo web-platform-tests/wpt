@@ -50,14 +50,14 @@ self.postMessage({ origin: self.origin, view });
 `;
 }
 
-function propertyTests(name, crossOriginIsolated) {
+function propertyTests(name) {
   return `
 test(() => {
   assert_equals(self.origin, self.location.origin);
 }, "${name}: self.origin");
 
 test(() => {
-  assert_equals(${crossOriginIsolated}, self.crossOriginIsolated);
+  assert_true(self.crossOriginIsolated);
 }, "${name}: self.crossOriginIsolated");
 
 test(() => {
@@ -70,11 +70,11 @@ const workerScript = `
 importScripts("${url.origin}/resources/testharness.js");
 importScripts("${url.href}resources/test-incrementer.js");
 
-// ${httpWorkerIncrementerTest("blob worker")}
+${httpWorkerIncrementerTest("blob worker")}
 
-// ${blobWorkerIncrementerTest("blob worker", self.location.origin)}
+${blobWorkerIncrementerTest("blob worker", self.location.origin)}
 
-// ${propertyTests("blob worker", true)}
+${propertyTests("blob worker")}
 
 done();
 `;
@@ -90,7 +90,7 @@ ${httpWorkerIncrementerTest("blob frame")}
 
 ${blobWorkerIncrementerTest("blob frame", self.location.origin)}
 
-${propertyTests("blob frame", true)}
+${propertyTests("blob frame")}
 <\/script>
 `;
 
@@ -106,7 +106,7 @@ importScripts("${url.origin}/resources/testharness.js?pipe=header(Cross-Origin-R
 
 ${blobWorkerIncrementerTest("data worker")}
 
-${propertyTests("data worker", false)}
+${propertyTests("data worker")}
 
 done();
 `;
@@ -121,7 +121,7 @@ const dataFrameScript = `
 
 ${blobWorkerIncrementerTest("data frame")}
 
-${propertyTests("data frame", false)}
+${propertyTests("data frame")}
 <\/script>
 `;
 

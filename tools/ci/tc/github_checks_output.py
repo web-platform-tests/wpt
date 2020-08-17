@@ -1,6 +1,7 @@
 MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
+    from typing import Any
     from typing import Optional
     from typing import Text
 
@@ -18,7 +19,7 @@ class GitHubChecksOutputter(object):
         self.path = path
 
     def output(self, line):
-        # type: (Text) -> None
+        # type: (Any) -> None
         with open(self.path, 'a') as f:
             f.write(line)
             f.write('\n')

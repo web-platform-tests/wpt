@@ -15,7 +15,7 @@ test(function() {
   	  const wrapper = document.createElement('div');
   	  const html = `<${c}><${e}></${c}`
   	  wrapper.innerHTML = html;
-  	  assert_false(wrapper.innerHTML == html, "The inner HTML should get mutated");
+  	  assert_not_equals(wrapper.innerHTML, html, "The inner HTML should get mutated");
 
   	  const tagname = e[0]=='/' ? e.substr(1) : e;
   	  const element = wrapper.getElementsByTagName(tagname)[0];

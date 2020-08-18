@@ -30,7 +30,7 @@
         var contentEl = document.getElementById(contentId);
         var marginLeftVal = getComputedStyle(contentEl).getPropertyValue('margin-left');
         if (assertTrue) assert_equals(marginLeftVal, "2px");
-        else assert_false(marginLeftVal == "2px");
+        else assert_not_equals(marginLeftVal, "2px");
       }
 
       t1.step(function() {

@@ -25,7 +25,7 @@ def vcs(bin_name):
 
         proc_kwargs = {}
         if repo is not None:
-            proc_kwargs["cwd"] = repo
+            proc_kwargs["cwd"] = isomorphic_decode(repo)
         if stdout is not None:
             proc_kwargs["stdout"] = stdout
         if stdin is not None:
@@ -56,7 +56,7 @@ def bind_to_repo(vcs_func, repo, log_error=True):
 
 def is_git_root(path, log_error=True):
     try:
-        rv = git("rev-parse", "--show-cdup", repo=isomorphic_decode(path), log_error=log_error)
+        rv = git("rev-parse", "--show-cdup", repo=path, log_error=log_error)
     except subprocess.CalledProcessError:
         return False
     return rv == "\n"

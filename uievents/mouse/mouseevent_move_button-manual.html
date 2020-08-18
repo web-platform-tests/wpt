@@ -53,7 +53,7 @@
 
                 on_event(lightgreen, "mousedown", function (event) {
                     test.step(function() {assert_equals(button, -1, "There must only be one mouse down event.");});
-                    test.step(function() {assert_true(event.button != 0, "Must not be primary button.");});
+                    test.step(function() {assert_not_equals(event.button, 0, "Must not be primary button.");});
                     button = event.button;
                 });
                 on_event(lightyellow, "click", function (event) {

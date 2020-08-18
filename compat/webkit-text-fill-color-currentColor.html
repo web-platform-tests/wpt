@@ -13,7 +13,7 @@ test(function() {
   var webkiTextFillColor = cs.getPropertyValue('-webkit-text-fill-color');
 
   assert_equals(textDecorationColor, color);
-  assert_true(textDecorationColor != webkiTextFillColor);
+  assert_not_equals(textDecorationColor, webkiTextFillColor);
 });
 
 </script>

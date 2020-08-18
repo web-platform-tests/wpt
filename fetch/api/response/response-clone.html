@@ -109,7 +109,7 @@ function testReadableStreamClone(initialBuffer, bufferType)
         var buffer;
         return stream1.getReader().read().then(function(data) {
             assert_false(data.done);
-            assert_true(data.value === initialBuffer, "Buffer of being-cloned response stream is the same as the original buffer");
+            assert_equals(data.value, initialBuffer, "Buffer of being-cloned response stream is the same as the original buffer");
             return stream2.getReader().read();
         }).then(function(data) {
             assert_false(data.done);

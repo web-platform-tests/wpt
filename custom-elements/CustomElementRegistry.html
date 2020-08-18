@@ -716,7 +716,7 @@ promise_test(function () {
         assert_false('resolved' in promise, 'The promise returned by "whenDefined" must not be resolved until the end of the next microtask');
         assert_false('rejected' in promise, 'The promise returned by "whenDefined" must not be rejected until the end of the next microtask');
 
-        promiseAfterDefine = customElements.whenDefined('element-defined-after-whendefined', ElementDefinedAfterWhenDefined);
+        promiseAfterDefine = customElements.whenDefined('element-defined-after-whendefined');
         promiseAfterDefine.then(function (value) { promiseAfterDefine.resolved = value; }, function (value) { promiseAfterDefine.rejected = value; });
         assert_not_equals(promiseAfterDefine, promise, '"whenDefined" must return a resolved promise once the custom element is defined');
         assert_false('resolved' in promiseAfterDefine, 'The promise returned by "whenDefined" must not be resolved until the end of the next microtask');

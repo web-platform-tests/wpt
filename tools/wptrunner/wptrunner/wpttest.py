@@ -101,7 +101,7 @@ class RunInfo(dict):
         except (OSError, subprocess.CalledProcessError):
             rev = None
         if rev:
-            self["revision"] = rev
+            self["revision"] = rev.decode("utf-8")
 
         self["python_version"] = sys.version_info.major
         self["product"] = product
@@ -135,7 +135,7 @@ class RunInfo(dict):
             if path in dirs:
                 break
             dirs.add(str(path))
-            path = os.path.split(path)[0]
+            path = os.path.dirname(path)
 
         mozinfo.find_and_update_from_json(*dirs)
 

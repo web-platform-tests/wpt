@@ -25,15 +25,8 @@ def vcs(bin_name):
 
         proc_kwargs = {}
         if repo is not None:
-            # Make sure repo is str type to work in different sub-versions of Python 3
-            # https://docs.python.org/3/library/subprocess.html
-            # "If cwd is not None, the function changes the working directory to cwd before
-            # executing the child. cwd can be a string, bytes or path-like object. In particular,
-            # the function looks for executable (or for the first item in args) relative to cwd
-            # if the executable path is a relative path.
-            # Changed in version 3.6: cwd parameter accepts a path-like object on POSIX.
-            # Changed in version 3.7: cwd parameter accepts a path-like object on Windows.
-            # Changed in version 3.8: cwd parameter accepts a bytes object on Windows."
+            # Make sure `cwd` is str type to work in different sub-versions of Python 3.
+            # Before 3.8, bytes were not accepted on Windows for `cwd`.
             proc_kwargs["cwd"] = isomorphic_decode(repo)
         if stdout is not None:
             proc_kwargs["stdout"] = stdout

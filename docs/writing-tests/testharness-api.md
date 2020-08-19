@@ -515,7 +515,7 @@ properties of the test harness (enumerated in the following section).
 Both setup functions recognize the following properties:
 
 `explicit_done` - Wait for an explicit call to done() before declaring all
-tests complete (see below; implicitly true for single page tests)
+tests complete (see below; always true for single page tests)
 
 `output_document` - The document to which results should be logged. By default
 this is the current document but could be an ancestor document in some cases
@@ -527,6 +527,10 @@ with some existing test framework that has its own timeout mechanism).
 
 `allow_uncaught_exception` - don't treat an uncaught exception as an error;
 needed when e.g. testing the `window.onerror` handler.
+
+`hide_test_state` - hide the test state output while the test is
+running; This is helpful when the output of the test state may interfere
+the test results.
 
 `timeout_multiplier` - Multiplier to apply to per-test timeouts.
 

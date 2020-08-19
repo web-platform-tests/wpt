@@ -9,8 +9,8 @@
 async function cleanupSandboxedFileSystem() {
   const dir =
       await self.getOriginPrivateDirectory();
-  for await (let entry of dir.getEntries())
-    await dir.removeEntry(entry.name, {recursive: entry.isDirectory});
+  for await (let entry of dir.values())
+    await dir.removeEntry(entry.name, {recursive: entry.kind === 'directory'});
 }
 
 function directory_test(func, description) {

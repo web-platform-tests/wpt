@@ -19,7 +19,7 @@ from .font import FontInstaller
 from .testrunner import ManagerGroup
 from .browsers.base import NullBrowser
 
-here = os.path.split(__file__)[0]
+here = os.path.dirname(__file__)
 
 logger = None
 
@@ -218,7 +218,8 @@ def run_tests(config, test_paths, product, **kwargs):
                                  product.env_options,
                                  ssl_config,
                                  env_extras,
-                                 kwargs["enable_quic"]) as test_environment:
+                                 kwargs["enable_quic"],
+                                 kwargs["enable_mojojs"]) as test_environment:
             recording.set(["startup", "ensure_environment"])
             try:
                 test_environment.ensure_started()

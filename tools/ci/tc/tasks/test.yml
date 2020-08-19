@@ -4,12 +4,19 @@ components:
     workerType: ci
     schedulerId: taskcluster-github
     deadline: "24 hours"
-    image: webplatformtests/wpt:0.37
+    image: webplatformtests/wpt:0.46
     maxRunTime: 7200
     artifacts:
       public/results:
         path: /home/test/artifacts
         type: directory
+    extra:
+      github:
+        customCheckRun:
+          # We set both textArtifactName and annotationsArtifactName due
+          # to https://github.com/taskcluster/taskcluster/issues/3191
+          textArtifactName: public/results/checkrun.md
+          annotationsArtifactName: public/results/checkrun.md
 
   wpt-testharness:
     chunks: 16
@@ -52,6 +59,7 @@ components:
     command: >-
       ./tools/ci/taskcluster-run.py
       ${vars.browser}
+      ${vars.channel}
       --
       --channel=${vars.channel}
       --log-wptreport=../artifacts/wpt_report.json
@@ -60,6 +68,7 @@ components:
       --this-chunk=${chunks.id}
       --total-chunks=${chunks.total}
       --test-type=${vars.suite}
+
   trigger-master:
     trigger:
       branch:
@@ -128,6 +137,9 @@ components:
         - affected_tests
 
 tasks:
+  # The scheduling order of tasks is NOT determined by the order in which they
+  # are defined, but by their dependencies (depends-on).
+
   # Run full suites on push
   - $map:
       for:
@@ -135,8 +147,6 @@ tasks:
             suite: testharness
         - vars:
             suite: reftest
-        - vars:
-            suite: print-reftest
         - vars:
             suite: wdspec
         - vars:
@@ -159,6 +169,13 @@ tasks:
             - vars:
                 browser: firefox
                 channel: stable
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                # Chromium ToT
+                browser: chrome
+                channel: nightly
               use:
                 - trigger-daily
                 - trigger-push
@@ -211,6 +228,70 @@ tasks:
                   of ${chunks.total}), run in the ${vars.channel} release of
                   ${vars.browser}.
 
+  # print-reftest are currently only supported by Chrome and Firefox.
+  - $map:
+      for:
+        - vars:
+            suite: print-reftest
+      do:
+        $map:
+          for:
+            - vars:
+                browser: firefox
+                channel: nightly
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: firefox
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: firefox
+                channel: stable
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                # Chromium ToT
+                browser: chrome
+                channel: nightly
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: dev
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: stable
+              use:
+                - trigger-daily
+                - trigger-push
+          do:
+            - ${vars.browser}-${vars.channel}-${vars.suite}:
+                use:
+                  - wpt-base
+                  - run-options
+                  - wpt-run
+                  - browser-${vars.browser}
+                  - wpt-${vars.suite}
+                description: >-
+                  A subset of WPT's "${vars.suite}" tests (chunk number ${chunks.id}
+                  of ${chunks.total}), run in the ${vars.channel} release of
+                  ${vars.browser}.
+
   - $map:
       for:
         - vars:
@@ -234,10 +315,12 @@ tasks:
               ./tools/ci/taskcluster-run.py
               --commit-range base_head
               ${vars.browser}
+              ${vars.channel}
               --
               --channel=${vars.channel}
               --verify
               --verify-no-chaos-mode
+              --github-checks-text-file="/home/test/artifacts/checkrun.md"
 
         - wpt-${vars.browser}-${vars.channel}-results:
             use:
@@ -253,6 +336,7 @@ tasks:
               ./tools/ci/taskcluster-run.py
               --commit-range base_head
               ${vars.browser}
+              ${vars.channel}
               --
               --channel=${vars.channel}
               --no-fail-on-unexpected
@@ -275,6 +359,7 @@ tasks:
               ./tools/ci/taskcluster-run.py
               --commit-range task_head
               ${vars.browser}
+              ${vars.channel}
               --
               --channel=${vars.channel}
               --no-fail-on-unexpected
@@ -334,6 +419,9 @@ tasks:
         - trigger-pr
         - tox-python3
       command: ./tools/ci/ci_tools_unittest.sh
+      install:
+        - python3.6
+        - python3.6-dev
       env:
         HYPOTHESIS_PROFILE: ci
       schedule-if:
@@ -386,6 +474,8 @@ tasks:
       command: ./tools/ci/ci_tools_integration_test.sh
       install:
         - libnss3-tools
+        - python3.6
+        - python3.6-dev
       options:
         oom-killer: true
         browser:
@@ -487,3 +577,14 @@ tasks:
       schedule-if:
         run-job:
           - wptrunner_infrastructure
+
+  # Note: even though sink-task does not have `depends-on`, it depends on all
+  # other tasks (dynamically added by tools/ci/tc/decision.py).
+  - sink-task:
+      description: >-
+        Sink task for all other tasks; indicates success
+      use:
+        - wpt-base
+        - trigger-pr
+      command: "./wpt tc-sink-task"
+      requires: all-resolved

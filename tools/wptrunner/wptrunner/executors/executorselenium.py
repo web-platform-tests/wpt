@@ -24,7 +24,7 @@ from .protocol import (BaseProtocolPart,
                        TestDriverProtocolPart)
 from ..testrunner import Stop
 
-here = os.path.join(os.path.split(__file__)[0])
+here = os.path.dirname(__file__)
 
 webdriver = None
 exceptions = None
@@ -155,7 +155,7 @@ class SeleniumTestharnessProtocolPart(TestharnessProtocolPart):
         """
         while True:
             try:
-                self.webdriver.execute_script(self.window_loaded_script, asynchronous=True)
+                self.webdriver.execute_async_script(self.window_loaded_script)
                 break
             except exceptions.JavascriptException:
                 pass

@@ -45,6 +45,8 @@ TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.ico
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.wasm
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.bmp
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.sxg
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.wbn
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.avif
 
 ## .gitignore
 W3C-TEST.ORG: .gitignore
@@ -216,6 +218,7 @@ SET TIMEOUT: webvtt/*
 SET TIMEOUT: workers/*
 SET TIMEOUT: xhr/resources/init.htm
 SET TIMEOUT: xhr/resources/xmlhttprequest-timeout.js
+SET TIMEOUT: focus/support/focus-restoration-in-different-site-iframes-outer.sub.html
 
 # generate_tests implementation and sample usage
 GENERATE_TESTS: resources/test/tests/functional/generate-callback.html
@@ -688,6 +691,7 @@ MISSING-LINK: css/filter-effects/*.any.js
 
 # Tests that use WebKit/Blink testing APIs
 LAYOUTTESTS APIS: import-maps/common/resources/common-test-helper.js
+LAYOUTTESTS APIS: resources/test-only-api.js
 LAYOUTTESTS APIS: resources/chromium/enable-hyperlink-auditing.js
 LAYOUTTESTS APIS: resources/chromium/generic_sensor_mocks.js
 LAYOUTTESTS APIS: resources/chromium/nfc-mock.js
@@ -705,19 +709,28 @@ WEB-PLATFORM.TEST:signed-exchange/resources/generate-test-sxgs.sh
 # Web Bundle files have hard-coded URLs
 WEB-PLATFORM.TEST:web-bundle/resources/generate-test-wbns.sh
 WEB-PLATFORM.TEST:web-bundle/resources/wbn/*.wbn
+WEB-PLATFORM.TEST:web-bundle/subresource-loading/subresource-loading-from-web-bundle.tentative.html
 
 # Tests that depend on resources in /gen/ in Chromium:
 # https://github.com/web-platform-tests/wpt/issues/16455
 # Please consult with ecosystem-infra@chromium.org before adding more.
-MISSING DEPENDENCY: idle-detection/interceptor.https.html
-MISSING DEPENDENCY: credential-management/support/otpcredential-helper.js
-MISSING DEPENDENCY: web-nfc/resources/nfc-helpers.js
-MISSING DEPENDENCY: shape-detection/resources/shapedetection-helpers.js
-MISSING DEPENDENCY: webxr/resources/webxr_util.js
+MISSING DEPENDENCY: bluetooth/resources/bluetooth-test.js
 MISSING DEPENDENCY: contacts/resources/helpers.js
+MISSING DEPENDENCY: credential-management/support/otpcredential-helper.js
 MISSING DEPENDENCY: generic-sensor/resources/generic-sensor-helpers.js
+MISSING DEPENDENCY: idle-detection/interceptor.https.html
 MISSING DEPENDENCY: orientation-event/resources/orientation-event-helpers.js
+MISSING DEPENDENCY: resources/test-only-api.js
 MISSING DEPENDENCY: screen_enumeration/resources/screenenumeration-helpers.js
+MISSING DEPENDENCY: shape-detection/resources/shapedetection-helpers.js
+MISSING DEPENDENCY: web-nfc/resources/nfc-helpers.js
+MISSING DEPENDENCY: webusb/resources/usb-helpers.js
+MISSING DEPENDENCY: webxr/resources/webxr_util.js
+
+# TODO(Hexcles): delete these files once we include them in mojojs.zip.
+MOJOM-JS: resources/chromium/image_capture.mojom.js
+MOJOM-JS: resources/chromium/sensor_provider.mojom.js
+MOJOM-JS: resources/chromium/sensor.mojom.js
 
 # Tests that are false positives for using Ahem as a system font
 AHEM SYSTEM FONT: acid/acid3/test.html

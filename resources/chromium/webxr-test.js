@@ -3,14 +3,13 @@
 // This polyfill library implements the WebXR Test API as specified here:
 // https://github.com/immersive-web/webxr-test-api
 
-// The standingTransform is floor_from_mojo and represented as such here.
-const default_standing = new gfx.mojom.Transform();
-default_standing.matrix = [1, 0, 0, 0,
-                           0, 1, 0, 0,
-                           0, 0, 1, 0,
-                           0, 1.65, 0, 1];
+const defaultMojoFromFloor = new gfx.mojom.Transform();
+defaultMojoFromFloor.matrix = [1, 0,     0, 0,
+                               0, 1,     0, 0,
+                               0, 0,     1, 0,
+                               0, -1.65, 0, 1];
 const default_stage_parameters = {
-  standingTransform: default_standing,
+  mojoFromFloor: defaultMojoFromFloor,
   bounds: null
 };
 
@@ -64,6 +63,21 @@ class ChromeXRTest {
   }
 
   simulateUserActivation(callback) {
+    if (window.top !== window) {
+      // test_driver.click only works for the toplevel frame. This alternate
+      // Chrome-specific method is sufficient for starting an XR session in an
+      // iframe, and is used in platform-specific tests.
+      //
+      // TODO(https://github.com/web-platform-tests/wpt/issues/20282): use
+      // a cross-platform method if available.
+      xr_debug('simulateUserActivation', 'use eventSender');
+      document.addEventListener('click', callback);
+      eventSender.mouseMoveTo(0, 0);
+      eventSender.mouseDown();
+      eventSender.mouseUp();
+      document.removeEventListener('click', callback);
+      return;
+    }
     const button = document.createElement('button');
     button.textContent = 'click to continue test';
     button.style.display = 'block';
@@ -267,6 +281,10 @@ class FakeXRAnchorController {
     return this.dirty_;
   }
 
+  get paused() {
+    return this.paused_;
+  }
+
   markProcessed() {
     this.dirty_ = false;
   }
@@ -276,48 +294,26 @@ class FakeXRAnchorController {
   }
 }
 
-class FakeXRAnchorCreationEvent extends Event {
-  constructor(type, eventInitDict) {
-    super(type, eventInitDict);
-
-    this.success_ = false;
-    this.requestedAnchorOrigin_ = {};
-    this.isAttachedToEntity_ = false;
-    this.anchorController_ = new FakeXRAnchorController();
-
-    if(eventInitDict.requestedAnchorOrigin != null) {
-      this.requestedAnchorOrigin_ = eventInitDict.requestedAnchorOrigin;
-    }
-
-    if(eventInitDict.isAttachedToEntity != null) {
-      this.isAttachedToEntity_ = eventInitDict.isAttachedToEntity;
-    }
+// Internal only for now, needs to be moved into WebXR Test API.
+class FakeXRHitTestSourceController {
+  constructor(id) {
+    this.id_ = id;
+    this.deleted_ = false;
   }
 
-  get requestedAnchorOrigin() {
-    return this.requestedAnchorOrigin_;
+  get deleted() {
+    return this.deleted_;
   }
 
-  get isAttachedToEntity() {
-    return this.isAttachedToEntity_;
-  }
-
-  get success() {
-    return this.success_;
-  }
-
-  set success(value) {
-    this.success_ = value;
-  }
-
-  get anchorController() {
-    return this.anchorController_;
+  // Internal setter:
+  set deleted(value) {
+    this.deleted_ = value;
   }
 }
 
 // Implements XRFrameDataProvider and XRPresentationProvider. Maintains a mock
 // for XRPresentationProvider. Implements FakeXRDevice test API.
-class MockRuntime extends EventTarget {
+class MockRuntime {
   // Mapping from string feature names to the corresponding mojo types.
   // This is exposed as a member for extensibility.
   static featureToMojoMap = {
@@ -339,8 +335,6 @@ class MockRuntime extends EventTarget {
   };
 
   constructor(fakeDeviceInit, service) {
-    super();
-
     this.sessionClient_ = new device.mojom.XRSessionClientPtr();
     this.presentation_provider_ = new MockXRPresentationProvider();
 
@@ -368,6 +362,8 @@ class MockRuntime extends EventTarget {
     this.anchor_controllers_ = new Map();
     // ID of the next anchor to be assigned.
     this.next_anchor_id_ = 1;
+    // Anchor creation callback (initially null, can be set by tests).
+    this.anchor_creation_callback_ = null;
 
     let supportedModes = [];
     if (fakeDeviceInit.supportedModes) {
@@ -529,12 +525,11 @@ class MockRuntime extends EventTarget {
       this.stageParameters_.bounds = this.bounds_;
     }
 
-    this.stageParameters_.standingTransform = new gfx.mojom.Transform();
+    this.stageParameters_.mojoFromFloor = new gfx.mojom.Transform();
 
-    // floorOrigin is passed in as mojoFromFloor; however, standingTransform is
-    // floorFromMojo so we need to invert the result of |getMatrixFromTransform|
-    this.stageParameters_.standingTransform.matrix =
-      XRMathHelper.inverse(getMatrixFromTransform(floorOrigin));
+    // floorOrigin is passed in as mojoFromFloor.
+    this.stageParameters_.mojoFromFloor.matrix =
+      getMatrixFromTransform(floorOrigin);
 
     this.onStageParametersUpdated();
   }
@@ -566,6 +561,14 @@ class MockRuntime extends EventTarget {
     const source = new MockXRInputSource(fakeInputSourceInit, index, this);
     this.input_sources_.set(index, source);
     return source;
+  }
+
+  setAnchorCreationCallback(callback) {
+    this.anchor_creation_callback_ = callback;
+  }
+
+  setHitTestSourceCreationCallback(callback) {
+    this.hit_test_source_creation_callback_ = callback;
   }
 
   // Helper methods
@@ -706,50 +709,67 @@ class MockRuntime extends EventTarget {
 
   // XRFrameDataProvider implementation.
   getFrameData(options) {
-    const mojo_space_reset = this.send_mojo_space_reset_;
-    this.send_mojo_space_reset_ = false;
+    return new Promise((resolve) => {
 
-    const stage_parameters_updated = this.stageParametersUpdated_;
-    this.stageParametersUpdated_ = false;
-    if (this.pose_) {
-      this.pose_.poseIndex++;
-    }
+      const populatePose = () => {
+        const mojo_space_reset = this.send_mojo_space_reset_;
+        this.send_mojo_space_reset_ = false;
 
-    // Setting the input_state to null tests a slightly different path than
-    // the browser tests where if the last input source is removed, the device
-    // code always sends up an empty array, but it's also valid mojom to send
-    // up a null array.
-    let input_state = null;
-    if (this.input_sources_.size > 0) {
-      input_state = [];
-      for (const input_source of this.input_sources_.values()) {
-        input_state.push(input_source.getInputSourceState());
+        const stage_parameters_updated = this.stageParametersUpdated_;
+        this.stageParametersUpdated_ = false;
+        if (this.pose_) {
+          this.pose_.poseIndex++;
+        }
+
+        // Setting the input_state to null tests a slightly different path than
+        // the browser tests where if the last input source is removed, the device
+        // code always sends up an empty array, but it's also valid mojom to send
+        // up a null array.
+        let input_state = null;
+        if (this.input_sources_.size > 0) {
+          input_state = [];
+          for (const input_source of this.input_sources_.values()) {
+            input_state.push(input_source.getInputSourceState());
+          }
+        }
+
+        const frameData = {
+          pose: this.pose_,
+          mojoSpaceReset: mojo_space_reset,
+          inputState: input_state,
+          timeDelta: {
+            // window.performance.now() is in milliseconds, so convert to microseconds.
+            microseconds: window.performance.now() * 1000,
+          },
+          frameId: this.next_frame_id_,
+          bufferHolder: null,
+          bufferSize: {},
+          stageParameters: this.stageParameters_,
+          stageParametersUpdated: stage_parameters_updated,
+        };
+
+        this.next_frame_id_++;
+
+        this._calculateHitTestResults(frameData);
+
+        this._calculateAnchorInformation(frameData);
+
+        this._injectAdditionalFrameData(options, frameData);
+
+        resolve({frameData});
+      };
+
+      if(this.sessionOptions_.mode == device.mojom.XRSessionMode.kInline) {
+        // Inline sessions should not have a delay introduced since it causes them
+        // to miss a vsync blink-side and delays propagation of changes that happened
+        // within a rAFcb by one frame (e.g. setViewerOrigin() calls would take 2 frames
+        // to propagate).
+        populatePose();
+      } else {
+        // For immerive sessions, add additional delay to allow for anchor creation
+        // promises to run.
+        setTimeout(populatePose, 3);  // note: according to MDN, the timeout is not exact
       }
-    }
-
-    const frameData = {
-      pose: this.pose_,
-      mojoSpaceReset: mojo_space_reset,
-      inputState: input_state,
-      timeDelta: {
-        // window.performance.now() is in milliseconds, so convert to microseconds.
-        microseconds: window.performance.now() * 1000,
-      },
-      frameId: this.next_frame_id_++,
-      bufferHolder: null,
-      bufferSize: {},
-      stageParameters: this.stageParameters_,
-      stageParametersUpdated: stage_parameters_updated,
-    };
-
-    this._calculateHitTestResults(frameData);
-
-    this._calculateAnchorInformation(frameData);
-
-    this._injectAdditionalFrameData(options, frameData);
-
-    return Promise.resolve({
-      frameData: frameData,
     });
   }
 
@@ -768,6 +788,7 @@ class MockRuntime extends EventTarget {
 
   closeDataProvider() {
     this.dataProviderBinding_.close();
+    this.sessionOptions_ = null;
   }
 
   // XREnvironmentIntegrationProvider implementation:
@@ -787,14 +808,29 @@ class MockRuntime extends EventTarget {
       });
     }
 
-    // Store the subscription information as-is:
+    // Reserve the id for hit test source:
     const id = this.next_hit_test_id_++;
-    this.hitTestSubscriptions_.set(id, { nativeOriginInformation, entityTypes, ray });
+    const hitTestParameters = { isTransient: false, profileName: null };
+    const controller = new FakeXRHitTestSourceController(id);
 
-    return Promise.resolve({
-      result : device.mojom.SubscribeToHitTestResult.SUCCESS,
-      subscriptionId : id
-    });
+
+    return this._shouldHitTestSourceCreationSucceed(hitTestParameters, controller)
+      .then((succeeded) => {
+        if(succeeded) {
+          // Store the subscription information as-is (including controller):
+          this.hitTestSubscriptions_.set(id, { nativeOriginInformation, entityTypes, ray, controller });
+
+          return Promise.resolve({
+            result : device.mojom.SubscribeToHitTestResult.SUCCESS,
+            subscriptionId : id
+          });
+        } else {
+          return Promise.resolve({
+            result : device.mojom.SubscribeToHitTestResult.FAILURE_GENERIC,
+            subscriptionId : 0
+          });
+        }
+      });
   }
 
   subscribeToHitTestForTransientInput(profileName, entityTypes, ray){
@@ -806,18 +842,58 @@ class MockRuntime extends EventTarget {
       });
     }
 
-    // Store the subscription information as-is:
     const id = this.next_hit_test_id_++;
-    this.transientHitTestSubscriptions_.set(id, { profileName, entityTypes, ray });
+    const hitTestParameters = { isTransient: true, profileName: profileName };
+    const controller = new FakeXRHitTestSourceController(id);
 
-    return Promise.resolve({
-      result : device.mojom.SubscribeToHitTestResult.SUCCESS,
-      subscriptionId : id
-    });
+    // Check if we have hit test source creation callback.
+    // If yes, ask it if the hit test source creation should succeed.
+    // If no, for back-compat, assume the hit test source creation succeeded.
+    return this._shouldHitTestSourceCreationSucceed(hitTestParameters, controller)
+      .then((succeeded) => {
+        if(succeeded) {
+          // Store the subscription information as-is (including controller):
+          this.transientHitTestSubscriptions_.set(id, { profileName, entityTypes, ray, controller });
+
+          return Promise.resolve({
+            result : device.mojom.SubscribeToHitTestResult.SUCCESS,
+            subscriptionId : id
+          });
+        } else {
+          return Promise.resolve({
+            result : device.mojom.SubscribeToHitTestResult.FAILURE_GENERIC,
+            subscriptionId : 0
+          });
+        }
+      });
+  }
+
+  unsubscribeFromHitTest(subscriptionId) {
+    let controller = null;
+    if(this.transientHitTestSubscriptions_.has(subscriptionId)){
+      controller = this.transientHitTestSubscriptions_.get(subscriptionId).controller;
+      this.transientHitTestSubscriptions_.delete(subscriptionId);
+    } else if(this.hitTestSubscriptions_.has(subscriptionId)){
+      controller = this.hitTestSubscriptions_.get(subscriptionId).controller;
+      this.hitTestSubscriptions_.delete(subscriptionId);
+    }
+
+    if(controller) {
+      controller.deleted = true;
+    }
   }
 
   createAnchor(nativeOriginInformation, nativeOriginFromAnchor) {
     return new Promise((resolve) => {
+      if(this.anchor_creation_callback_ == null) {
+        resolve({
+          result : device.mojom.CreateAnchorResult.FAILURE,
+          anchorId : 0
+        });
+
+        return;
+      }
+
       const mojoFromNativeOrigin = this._getMojoFromNativeOrigin(nativeOriginInformation);
       if(mojoFromNativeOrigin == null) {
         resolve({
@@ -830,36 +906,45 @@ class MockRuntime extends EventTarget {
 
       const mojoFromAnchor = XRMathHelper.mul4x4(mojoFromNativeOrigin, nativeOriginFromAnchor);
 
-      const createAnchorEvent = new FakeXRAnchorCreationEvent("anchorcreate", {
+      const anchorCreationParameters = {
         requestedAnchorOrigin: mojoFromAnchor,
         isAttachedToEntity: false,
-      });
+      };
 
-      this.dispatchEvent(createAnchorEvent);
+      const anchorController = new FakeXRAnchorController();
 
-      if(createAnchorEvent.success) {
-        let anchor_controller = createAnchorEvent.anchorController;
-        const anchor_id = this.next_anchor_id_;
-        this.next_anchor_id_++;
+      this.anchor_creation_callback_(anchorCreationParameters, anchorController)
+            .then((result) => {
+              if(result) {
+                // If the test allowed the anchor creation,
+                // store the anchor controller & return success.
 
-        // If the test allowed the anchor creation,
-        // store the anchor controller & return success.
-        this.anchor_controllers_.set(anchor_id, anchor_controller);
-        anchor_controller.device = this;
-        anchor_controller.id = anchor_id;
+                const anchor_id = this.next_anchor_id_;
+                this.next_anchor_id_++;
 
-        resolve({
-          result : device.mojom.CreateAnchorResult.SUCCESS,
-          anchorId : anchor_id
-        });
+                this.anchor_controllers_.set(anchor_id, anchorController);
+                anchorController.device = this;
+                anchorController.id = anchor_id;
 
-        return;
-      }
-
-      resolve({
-        result : device.mojom.CreateAnchorResult.FAILURE,
-        anchorId : 0
-      });
+                resolve({
+                  result : device.mojom.CreateAnchorResult.SUCCESS,
+                  anchorId : anchor_id
+                });
+              } else {
+                // The test has rejected anchor creation.
+                resolve({
+                  result : device.mojom.CreateAnchorResult.FAILURE,
+                  anchorId : 0
+                });
+              }
+            })
+            .catch(() => {
+              // The test threw an error, treat anchor creation as failed.
+              resolve({
+                result : device.mojom.CreateAnchorResult.FAILURE,
+                anchorId : 0
+              });
+            });
     });
   }
 
@@ -897,6 +982,7 @@ class MockRuntime extends EventTarget {
         const dataProviderRequest = mojo.makeRequest(dataProviderPtr);
         this.dataProviderBinding_ = new mojo.Binding(
             device.mojom.XRFrameDataProvider, this, dataProviderRequest);
+        this.sessionOptions_ = sessionOptions;
 
         const clientReceiver = mojo.makeRequest(this.sessionClient_);
 
@@ -980,7 +1066,7 @@ class MockRuntime extends EventTarget {
         const anchorData = new device.mojom.XRAnchorData();
         anchorData.id = id;
         if(!controller.paused) {
-          anchorData.pose = XRMathHelper.decomposeRigidTransform(
+          anchorData.mojoFromAnchor = XRMathHelper.decomposeRigidTransform(
             controller.getAnchorOrigin());
         }
 
@@ -992,6 +1078,17 @@ class MockRuntime extends EventTarget {
   }
 
   // Private functions - hit test implementation:
+
+  // Returns a Promise<bool> that signifies whether hit test source creation should succeed.
+  // If we have a hit test source creation callback installed, invoke it and return its result.
+  // If it's not installed, for back-compat just return a promise that resolves to true.
+  _shouldHitTestSourceCreationSucceed(hitTestParameters, controller) {
+    if(this.hit_test_source_creation_callback_) {
+      return this.hit_test_source_creation_callback_(hitTestParameters, controller);
+    } else {
+      return Promise.resolve(true);
+    }
+  }
 
   // Modifies passed in frameData to add hit test results.
   _calculateHitTestResults(frameData) {
@@ -1259,12 +1356,11 @@ class MockRuntime extends EventTarget {
         case device.mojom.XRReferenceSpaceType.kLocal:
           return XRMathHelper.identity();
         case device.mojom.XRReferenceSpaceType.kLocalFloor:
-          if (this.stageParameters_ == null || this.stageParameters_.standingTransform == null) {
+          if (this.stageParameters_ == null || this.stageParameters_.mojoFromFloor == null) {
             console.warn("Standing transform not available.");
             return null;
           }
-          // this.stageParameters_.standingTransform = floor_from_mojo aka native_origin_from_mojo
-          return XRMathHelper.inverse(this.stageParameters_.standingTransform.matrix);
+          return this.stageParameters_.mojoFromFloor.matrix;
         case device.mojom.XRReferenceSpaceType.kViewer:
           return mojo_from_viewer;
         case device.mojom.XRReferenceSpaceType.kBoundedFlor:

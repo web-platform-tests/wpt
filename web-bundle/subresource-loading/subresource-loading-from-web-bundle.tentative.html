@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<title>Subresource loading with link rel="webbundle"</title>
+<link
+  rel="help"
+  href="https://github.com/WICG/webpackage/blob/master/explainers/subresource-loading.md"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <link id="link-web-bundle" rel="webbundle" href="../resources/wbn/subresource.wbn"
+        resources="https://subresource-wbn.example/root.js https://subresource-wbn.example/submodule.js" />
+  <script>
+    promise_test(async () => {
+      const module = await import('https://subresource-wbn.example/root.js');
+      assert_equals(module.result, 'OK');
+    }, "Subresource loading with WebBundle");
+
+    promise_test(async () => {
+      const link = document.createElement("link");
+      link.rel = "webbundle";
+      link.href = "../resources/wbn/dynamic1.wbn";
+      link.resources.add('http://web-platform.test:8001/web-bundle/resources/dynamic/resource1.js',
+                         'http://web-platform.test:8001/web-bundle/resources/dynamic/resource2.js',
+                         'http://web-platform.test:8001/web-bundle/resources/dynamic/resource4.js');
+      document.body.appendChild(link);
+
+      const module = await import('http://web-platform.test:8001/web-bundle/resources/dynamic/resource1.js');
+      assert_equals(module.result, 'resource1 from dynamic1.wbn');
+
+      link.href = "../resources/wbn/dynamic2.wbn";
+      const module2 = await import('http://web-platform.test:8001/web-bundle/resources/dynamic/resource2.js');
+      assert_equals(module2.result, 'resource2 from dynamic2.wbn');
+
+      // A resource not specified in the resources attribute, but in the bundle.
+      const module3 = await import('http://web-platform.test:8001/web-bundle/resources/dynamic/resource3.js');
+      assert_equals(module3.result, 'resource3 from network');
+
+      document.body.removeChild(link);
+      const module4 = await import('http://web-platform.test:8001/web-bundle/resources/dynamic/resource4.js');
+      assert_equals(module4.result, 'resource4 from network');
+    }, 'Dynamically adding / updating / removing "<link rel=webbundle>"');
+
+    promise_test(() => {
+      return addLinkAndWaitForLoad("../resources/wbn/dynamic1.wbn?test-event");
+    }, '<link rel="webbundle"> fires a load event on load success');
+
+    promise_test((t) => {
+      return addLinkAndWaitForError("../resources/wbn/nonexistent.wbn");
+    }, '<link rel="webbundle"> fires an error event on load failure');
+
+    promise_test(async () => {
+      const wbn_url = 'http://web-platform.test:8001/web-bundle/resources/wbn/subresource.wbn?test-resources-update';
+      const resource_url = 'https://subresource-wbn.example/submodule.js';
+      const link = await addLinkAndWaitForLoad(wbn_url);
+      link.resources.add(resource_url);
+      const resp = await fetch(resource_url, {cache: 'no-store'});
+      assert_true(resp.ok);
+      assert_equals(performance.getEntriesByName(wbn_url).length, 1);
+    }, 'Updating resource= attribute should not reload the bundle');
+
+    function addLinkAndWaitForLoad(url) {
+      return new Promise((resolve, reject) => {
+        const link = document.createElement("link");
+        link.rel = "webbundle";
+        link.href = url;
+        link.onload = () => resolve(link);
+        link.onerror = reject;
+        document.body.appendChild(link);
+      });
+    }
+
+    function addLinkAndWaitForError(url) {
+      return new Promise((resolve, reject) => {
+        const link = document.createElement("link");
+        link.rel = "webbundle";
+        link.href = url;
+        link.onload = reject;
+        link.onerror = () => resolve(link);
+        document.body.appendChild(link);
+      });
+    }
+  </script>
+</body>

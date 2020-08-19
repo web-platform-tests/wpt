@@ -7,7 +7,11 @@
 <div id="log"></div>
 
 <script type="module">
-import { insertIframe, testSameAgentCluster } from "./resources/helpers.mjs";
+import {
+  insertIframe,
+  testSameAgentCluster,
+  testGetter
+} from "./resources/helpers.mjs";
 
 promise_setup(async () => {
   await insertIframe("{{hosts[][www]}}", "?1");
@@ -16,4 +20,7 @@ promise_setup(async () => {
 // All isolation requests are ignored, since this is over insecure HTTP.
 // So both end up in the site-keyed agent cluster.
 testSameAgentCluster([self, 0]);
+
+testGetter(self, false, "parent");
+testGetter(0, false, "child");
 </script>

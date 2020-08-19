@@ -3,7 +3,7 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Streams Standard (https://streams.spec.whatwg.org/)
 
-[Exposed=(Window,Worker,Worklet)]
+[Exposed=(Window,Worker,Worklet), Transferable]
 interface ReadableStream {
   constructor(optional object underlyingSource, optional QueuingStrategy strategy = {});
 
@@ -58,26 +58,38 @@ callback UnderlyingSourceCancelCallback = Promise<void> (optional any reason);
 
 enum ReadableStreamType { "bytes" };
 
+interface mixin ReadableStreamGenericReader {
+  readonly attribute Promise<void> closed;
+
+  Promise<void> cancel(optional any reason);
+};
+
 [Exposed=(Window,Worker,Worklet)]
 interface ReadableStreamDefaultReader {
   constructor(ReadableStream stream);
 
-  readonly attribute Promise<void> closed;
-
-  Promise<void> cancel(optional any reason);
-  Promise<any> read();
+  Promise<ReadableStreamDefaultReadResult> read();
   void releaseLock();
+};
+ReadableStreamDefaultReader includes ReadableStreamGenericReader;
+
+dictionary ReadableStreamDefaultReadResult {
+ any value;
+ boolean done;
 };
 
 [Exposed=(Window,Worker,Worklet)]
 interface ReadableStreamBYOBReader {
   constructor(ReadableStream stream);
 
-  readonly attribute Promise<void> closed;
-
-  Promise<void> cancel(optional any reason);
-  Promise<any> read(ArrayBufferView view);
+  Promise<ReadableStreamBYOBReadResult> read(ArrayBufferView view);
   void releaseLock();
+};
+ReadableStreamBYOBReader includes ReadableStreamGenericReader;
+
+dictionary ReadableStreamBYOBReadResult {
+ ArrayBufferView value;
+ boolean done;
 };
 
 [Exposed=(Window,Worker,Worklet)]
@@ -107,7 +119,7 @@ interface ReadableStreamBYOBRequest {
   void respondWithNewView(ArrayBufferView view);
 };
 
-[Exposed=(Window,Worker,Worklet)]
+[Exposed=(Window,Worker,Worklet), Transferable]
 interface WritableStream {
   constructor(optional object underlyingSink, optional QueuingStrategy strategy = {});
 
@@ -127,7 +139,7 @@ dictionary UnderlyingSink {
 };
 
 callback UnderlyingSinkStartCallback = any (WritableStreamDefaultController controller);
-callback UnderlyingSinkWriteCallback = Promise<void> (WritableStreamDefaultController controller, optional any chunk);
+callback UnderlyingSinkWriteCallback = Promise<void> (any chunk, WritableStreamDefaultController controller);
 callback UnderlyingSinkCloseCallback = Promise<void> ();
 callback UnderlyingSinkAbortCallback = Promise<void> (optional any reason);
 
@@ -150,7 +162,7 @@ interface WritableStreamDefaultController {
   void error(optional any e);
 };
 
-[Exposed=(Window,Worker,Worklet)]
+[Exposed=(Window,Worker,Worklet), Transferable]
 interface TransformStream {
   constructor(optional object transformer,
               optional QueuingStrategy writableStrategy = {},
@@ -170,7 +182,7 @@ dictionary Transformer {
 
 callback TransformerStartCallback = any (TransformStreamDefaultController controller);
 callback TransformerFlushCallback = Promise<void> (TransformStreamDefaultController controller);
-callback TransformerTransformCallback = Promise<void> (TransformStreamDefaultController controller, optional any chunk);
+callback TransformerTransformCallback = Promise<void> (any chunk, TransformStreamDefaultController controller);
 
 [Exposed=(Window,Worker,Worklet)]
 interface TransformStreamDefaultController {

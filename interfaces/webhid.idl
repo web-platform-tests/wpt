@@ -1,0 +1,137 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: WebHID API (https://wicg.github.io/webhid/)
+
+dictionary HIDDeviceFilter {
+    unsigned long vendorId;
+    unsigned short productId;
+    unsigned short usagePage;
+    unsigned short usage;
+};
+
+dictionary HIDDeviceRequestOptions {
+    required sequence<HIDDeviceFilter> filters;
+};
+
+[
+    Exposed=Window,
+    SecureContext
+]
+interface HID : EventTarget {
+    attribute EventHandler onconnect;
+    attribute EventHandler ondisconnect;
+    Promise<sequence<HIDDevice>> getDevices();
+    Promise<sequence<HIDDevice>> requestDevice(
+        HIDDeviceRequestOptions options);
+};
+
+[SecureContext] partial interface Navigator {
+    [SameObject] readonly attribute HID hid;
+};
+
+dictionary HIDConnectionEventInit : EventInit {
+    required HIDDevice device;
+};
+
+[
+    Exposed=Window,
+    SecureContext
+] interface HIDConnectionEvent : Event {
+    constructor(DOMString type, HIDConnectionEventInit eventInitDict);
+    [SameObject] readonly attribute HIDDevice device;
+};
+
+dictionary HIDInputReportEventInit : EventInit {
+    required HIDDevice device;
+    required octet reportId;
+    required DataView data;
+};
+
+[
+    Exposed=Window,
+    SecureContext
+] interface HIDInputReportEvent : Event {
+    constructor(DOMString type, HIDInputReportEventInit eventInitDict);
+    [SameObject] readonly attribute HIDDevice device;
+    readonly attribute octet reportId;
+    readonly attribute DataView data;
+};
+
+enum HIDUnitSystem {
+    "none", "si-linear", "si-rotation", "english-linear",
+    "english-rotation", "vendor-defined", "reserved"
+};
+
+[
+    Exposed=Window,
+    SecureContext
+] interface HIDReportItem {
+    readonly attribute boolean isAbsolute;
+    readonly attribute boolean isArray;
+    readonly attribute boolean isRange;
+    readonly attribute boolean hasNull;
+    readonly attribute FrozenArray<unsigned long> usages;
+    readonly attribute unsigned long usageMinimum;
+    readonly attribute unsigned long usageMaximum;
+    readonly attribute unsigned long designatorMinimum;
+    readonly attribute unsigned long designatorMaximum;
+    readonly attribute unsigned long stringMinimum;
+    readonly attribute unsigned long stringMaximum;
+    readonly attribute unsigned short reportSize;
+    readonly attribute unsigned short reportCount;
+    readonly attribute byte unitExponent;
+    readonly attribute unsigned long unit;
+    readonly attribute long logicalMinimum;
+    readonly attribute long logicalMaximum;
+    readonly attribute long physicalMinimum;
+    readonly attribute long physicalMaximum;
+};
+
+[
+    Exposed=Window,
+    SecureContext
+] interface HIDReportInfo {
+    readonly attribute octet reportId;
+    readonly attribute FrozenArray<HIDReportItem> items;
+};
+
+dictionary HIDFieldOptions {
+    required octet reportId;
+    required unsigned long fieldIndex;
+    boolean isFeatureReport;
+};
+
+[
+    Exposed=Window,
+    SecureContext
+] interface HIDCollectionInfo {
+    readonly attribute unsigned short usagePage;
+    readonly attribute unsigned short usage;
+    readonly attribute FrozenArray<HIDCollectionInfo> children;
+    readonly attribute FrozenArray<HIDReportInfo> inputReports;
+    readonly attribute FrozenArray<HIDReportInfo> outputReports;
+    readonly attribute FrozenArray<HIDReportInfo> featureReports;
+    readonly attribute FrozenArray<octet> reportIds;
+
+    double getField(BufferSource reportData, HIDFieldOptions options);
+    void setField(BufferSource reportData, HIDFieldOptions options,
+                  double value);
+};
+
+[
+    Exposed=Window,
+    SecureContext
+] interface HIDDevice : EventTarget {
+    attribute EventHandler oninputreport;
+    readonly attribute boolean opened;
+    readonly attribute unsigned short vendorId;
+    readonly attribute unsigned short productId;
+    readonly attribute DOMString productName;
+    readonly attribute FrozenArray<HIDCollectionInfo> collections;
+    Promise<void> open();
+    Promise<void> close();
+    Promise<void> sendReport([EnforceRange] octet reportId, BufferSource data);
+    Promise<void> sendFeatureReport([EnforceRange] octet reportId, BufferSource data);
+    Promise<DataView> receiveFeatureReport([EnforceRange] octet reportId);
+};

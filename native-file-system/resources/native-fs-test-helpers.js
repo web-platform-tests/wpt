@@ -21,7 +21,7 @@ const directory_promise = (async () => {
   const entries = await self.showDirectoryPicker();
   assert_true(entries instanceof FileSystemHandle);
   assert_true(entries instanceof FileSystemDirectoryHandle);
-  for await (const entry of entries.getEntries()) {
+  for await (const entry of entries) {
     assert_unreached('Selected directory is not empty');
   }
   return entries;
@@ -32,22 +32,23 @@ function directory_test(func, description) {
     const directory = await directory_promise;
     // To be resilient against tests not cleaning up properly, cleanup before
     // every test.
-    for await (let entry of directory.getEntries()) {
-      await directory.removeEntry(entry.name, {recursive: entry.isDirectory});
+    for await (let entry of directory.values()) {
+      await directory.removeEntry(
+          entry.name, {recursive: entry.kind === 'directory'});
     }
     await func(t, directory);
   }, description);
 }
 
 directory_test(async (t, dir) => {
-  assert_equals(await dir.queryPermission({writable: false}), 'granted');
+  assert_equals(await dir.queryPermission({mode: 'read'}), 'granted');
 }, 'User succesfully selected an empty directory.');
 
 directory_test(async (t, dir) => {
-  const status = await dir.queryPermission({writable: true});
+  const status = await dir.queryPermission({mode: 'readwrite'});
   if (status == 'granted')
     return;
 
   await window.test_driver.bless('ask for write permission');
-  assert_equals(await dir.requestPermission({writable: true}), 'granted');
+  assert_equals(await dir.requestPermission({mode: 'readwrite'}), 'granted');
 }, 'User granted write access.');

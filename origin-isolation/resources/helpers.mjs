@@ -2,15 +2,15 @@
  * Inserts an iframe usable for origin isolation testing, and returns a promise
  * fulfilled when the iframe is loaded and its document.domain is set. The
  * iframe will point to the send-origin-isolation-header.py file, on the
- * designated hostname
- * @param {string} hostname - The hostname used to calculate the iframe's src=""
+ * designated host
+ * @param {string} host - The host used to calculate the iframe's src=""
  * @param {string=} header - The value of the Origin-Isolation header that the
  *   iframe will set. Omit this to set no header.
  * @returns {HTMLIFrameElement} The created iframe element
  */
-export async function insertIframe(hostname, header) {
+export async function insertIframe(host, header) {
   const iframe = document.createElement("iframe");
-  const navigatePromise = navigateIframe(iframe, hostname, header);
+  const navigatePromise = navigateIframe(iframe, host, header);
   document.body.append(iframe);
   await navigatePromise;
   await setBothDocumentDomains(iframe.contentWindow);
@@ -21,15 +21,14 @@ export async function insertIframe(hostname, header) {
  * Navigates an iframe to a page for origin isolation testing, similar to
  * insertIframe but operating on an existing iframe.
  * @param {HTMLIFrameElement} iframeEl - The <iframe> element to navigate
- * @param {string} hostname - The hostname used to calculate the iframe's new
- *   src=""
+ * @param {string} host - The host to calculate the iframe's new src=""
  * @param {string=} header - The value of the Origin-Isolation header that the
  *   newly-navigated-to page will set. Omit this to set no header.
  * @returns {Promise} a promise fulfilled when the load event fires, or rejected
  *   if the error event fires
  */
-export function navigateIframe(iframeEl, hostname, header) {
-  const url = getIframeURL(hostname, header);
+export function navigateIframe(iframeEl, host, header) {
+  const url = getIframeURL(host, header);
 
   const waitPromise = waitForIframe(iframeEl, url);
   iframeEl.src = url;
@@ -80,12 +79,18 @@ export function testSameAgentCluster(testFrames, testLabelPrefix) {
 
     promise_test(async () => {
       const frameWindow = frames[testFrames[1]];
+      const frameElement = document.querySelectorAll("iframe")[testFrames[1]];
 
       // Must not throw
       frameWindow.document;
 
       // Must not throw
       frameWindow.location.href;
+
+      assert_not_equals(frameElement.contentDocument, null, "contentDocument");
+
+      const whatHappened = await accessFrameElement(frameWindow);
+      assert_equals(whatHappened, "frameElement accessed successfully");
     }, `${prefix}setting document.domain must give sync access`);
   } else {
     // Between the two children at the index given by testFrames[0] and
@@ -102,6 +107,9 @@ export function testSameAgentCluster(testFrames, testLabelPrefix) {
 
       const whatHappened2 = await accessLocationHrefBetween(testFrames);
       assert_equals(whatHappened2, "accessed location.href successfully");
+
+      // We don't test contentDocument/frameElement for these because accessing
+      // those via siblings has to go through the parent anyway.
     }, `${prefix}setting document.domain must give sync access`);
   }
 }
@@ -131,13 +139,20 @@ export function testDifferentAgentClusters(testFrames, testLabelPrefix) {
 
     promise_test(async () => {
       const frameWindow = frames[testFrames[1]];
+      const frameElement = document.querySelectorAll("iframe")[testFrames[1]];
 
       assert_throws_dom("SecurityError", DOMException, () => {
         frameWindow.document;
       });
+
       assert_throws_dom("SecurityError", DOMException, () => {
         frameWindow.location.href;
       });
+
+      assert_equals(frameElement.contentDocument, null, "contentDocument");
+
+      const whatHappened = await accessFrameElement(frameWindow);
+      assert_equals(whatHappened, "null");
     }, `${prefix}setting document.domain must not give sync access`);
   } else {
     // Between the two children at the index given by testFrames[0] and
@@ -154,7 +169,36 @@ export function testDifferentAgentClusters(testFrames, testLabelPrefix) {
 
       const whatHappened2 = await accessLocationHrefBetween(testFrames);
       assert_equals(whatHappened2, "SecurityError");
+
+      // We don't test contentDocument/frameElement for these because accessing
+      // those via siblings has to go through the parent anyway.
     }, `${prefix}setting document.domain must not give sync access`);
+  }
+}
+
+/**
+ * Creates a promise_test() to check the value of the originIsolated getter in
+ * the given testFrame.
+ * @param {Window|number} testFrame - Either self, or a frame index to test.
+ * @param {boolean} expected - The expected value for originIsolated.
+ * @param {string=} testLabelPrefix - A prefix used in the test names. This can
+ *   be omitted if the function is only used once in a test file.
+ */
+export function testGetter(testFrame, expected, testLabelPrefix) {
+  const prefix = testLabelPrefix === undefined ? "" : `${testLabelPrefix}: `;
+
+  if (testFrame === self) {
+    // Need to use promise_test() even though it's sync because we use
+    // promise_setup() in many tests.
+    promise_test(async () => {
+      assert_equals(self.originIsolated, expected);
+    }, `${prefix}originIsolated must equal ${expected}`);
+  } else {
+    promise_test(async () => {
+      const frameWindow = frames[testFrame];
+      const result = await accessOriginIsolated(frameWindow);
+      assert_equals(result, expected);
+    }, `${prefix}originIsolated must equal ${expected}`);
   }
 }
 
@@ -197,9 +241,16 @@ export async function setBothDocumentDomains(frameWindow) {
   assert_equals(whatHappened, "document.domain is set");
 }
 
-function getIframeURL(hostname, header) {
+async function accessOriginIsolated(frameWindow) {
+  // This function is coupled to ./send-origin-isolation-header.py, which ensures
+  // that sending such a message will result in a message back.
+  frameWindow.postMessage({ command: "get originIsolated" }, "*");
+  return waitForMessage(frameWindow);
+}
+
+function getIframeURL(host, header) {
   const url = new URL("send-origin-isolation-header.py", import.meta.url);
-  url.hostname = hostname;
+  url.host = host;
   if (header !== undefined) {
     url.searchParams.set("header", header);
   }
@@ -229,6 +280,11 @@ async function accessLocationHrefBetween(testFrames) {
 
   sourceFrame.postMessage({ command: "access location.href", indexIntoParentFrameOfDestination }, "*");
   return waitForMessage(sourceFrame);
+}
+
+async function accessFrameElement(frameWindow) {
+  frameWindow.postMessage({ command: "access frameElement" }, "*");
+  return waitForMessage(frameWindow);
 }
 
 function waitForMessage(expectedSource) {

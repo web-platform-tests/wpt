@@ -29,14 +29,14 @@ let tests = [
   [SAME_ORIGIN, "$same-origin", true], // the item type is unrecognized
   [SAME_ORIGIN, "same-origin same-origin", true],
   [SAME_ORIGIN, "same-origin,same-origin", true],
-  [SAME_ORIGIN, "\tsame-origin", true],
-  [SAME_ORIGIN, "same-origin\t", true],
   [SAME_ORIGIN, "*same-origin ", true],
 
   // All of the following should be recognized as "same-origin" (hence the
   // "expected opener" value of `false`).
   [SAME_ORIGIN, " same-origin", false],
   [SAME_ORIGIN, "same-origin ", false],
+  [SAME_ORIGIN, "\tsame-origin", true],
+  [SAME_ORIGIN, "same-origin\t", true],
   [SAME_ORIGIN, "same-origin;same-origin", false],
   [SAME_ORIGIN, "same-origin; foo=bar", false],
 ];

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<head>
+  <script>
+    if ({{GET[parent_csp]}}) {
+      var meta = document.createElement('meta');
+      meta.httpEquiv = 'Content-Security-Policy';
+      meta.content = "style-src 'self'";
+      document.head.appendChild(meta);
+    }
+  </script>
+</head>
+<body>
+  <script>
+    function sendResultToOpener(result_index, result) {
+      window.opener.postMessage({
+        'test_index': '{{GET[test_index]}}',
+        'result_index': result_index,
+        'result': result
+      }, '*');
+    }
+
+    window.addEventListener('message', e => {
+      sendResultToOpener(e.data['result_index'], e.data['result']);
+    });
+
+    var child_csp = "";
+    if ({{GET[child_csp]}}) {
+      child_csp = `<meta http-equiv="Content-Security-Policy" content="img-src 'self'">`;
+    }
+    var child_html =
+     `<head>
+        ` + child_csp + `
+      </head>
+      <body>
+        <script>
+          function sendResultToParent(result_index, result) {
+            window.parent.postMessage({ 'result_index': result_index, 'result': result }, '*');
+          }
+
+          window.addEventListener('securitypolicyviolation', e => {
+            if (e.violatedDirective == 'img-src') {
+              if (e.blockedURI.endsWith('pass.png'))
+                sendResultToParent(5, false);
+              else
+                sendResultToParent(4, false);
+            } else {
+              if (e.blockedURI.endsWith('fonts.css'))
+                sendResultToParent(3, false);
+              else
+                sendResultToParent(2, false);
+            }
+          });
+        </scr` + `ipt>
+        <link href='data:text/css,#dummy{color:red}' onload='sendResultToParent(2,true)' rel='stylesheet' type='text/css'>
+        <link href='{{location[server]}}/content-security-policy/support/fonts.css' onload='sendResultToParent(3,true)' rel='stylesheet' type='text/css'>
+        <img src='data:image/gif;base64,R0lGODdhAgADAKEDAAAA//8AAAD/AP///ywAAAAAAgADAAACBEwkAAUAOw==' onload='sendResultToParent(4,true)'>
+        <img src='{{location[server]}}/content-security-policy/support/pass.png' onload='sendResultToParent(5,true)'>
+      </body>`;
+
+      var i = document.createElement('iframe');
+      i.src = 'data:text/html,' + encodeURIComponent(child_html);
+      document.body.appendChild(i);
+  </script>
+</body>

@@ -1,0 +1,17 @@
+<head>
+<script>
+  var i = document.createElement("img");
+  i.onload = function() {
+    window.opener.postMessage("pass", "*");
+    if (window.location.hash !== "#reloaded") {
+      window.location.hash = "#reloaded";
+      window.location.reload();
+    }
+  };
+  i.onerror = function() { window.opener.postMessage("fail", "*"); };
+  i.src = '/content-security-policy/support/pass.png';
+  document.head.appendChild(i);
+</script>
+</head>
+<body>
+</body>

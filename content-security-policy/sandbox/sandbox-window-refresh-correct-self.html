@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+
+<body>
+    <script>
+      var t = async_test("Refreshing sandboxed window still creates correct 'self'");
+
+      var imgs_loaded = 0;
+      window.onmessage = t.step_func(function(e) {
+        if (e.data == 'fail') {
+          assert_true(false, "Should have loaded image");
+        } else if (++imgs_loaded == 2) {
+          t.done();
+        }
+      });
+
+      w = window.open("support/sandboxed-window-load-img-and-reload.sub.html","_blank","width=400,height=400");
+    </script>
+</body>
+
+</html>

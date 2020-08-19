@@ -9,38 +9,35 @@
 
 <body>
     <p>
-        The origin of an URL is called "unique" when it is considered to be
-        different from every origin, including itself. The origin of a
-        data-url is unique. When the current origin is unique, the CSP source
-        'self' must not match any URL.
+      The origin of an URL is called "unique" when it is considered to be
+      different from every origin, including itself. The origin of a
+      data-url is unique. When the current origin is unique, the CSP source
+      'self' must use its inherited policy's 'self' origin.
+      https://w3c.github.io/webappsec-csp/#policy-self-origin
     </p>
     <script>
         var iframe = document.createElement("iframe");
         iframe.src = encodeURI(`data:text/html,
           <script>
-              /* Add the CSP: frame-src: 'self'. */
+              /* Add the CSP: frame-src: 'self'.
+                 Because this is a local-scheme iframe, 'self' will be inherited
+                 from the outside frame and will be the same as the top frame's 'self'. */
               var meta = document.createElement('meta');
               meta.httpEquiv = 'Content-Security-Policy';
               meta.content = "frame-src 'self'";
               document.getElementsByTagName('head')[0].appendChild(meta);
-
-              /* Notify the parent the iframe has been blocked. */
-              window.addEventListener('securitypolicyviolation', e => {
-                  if (e.originalPolicy == "frame-src 'self'")
-                      window.parent.postMessage('Test PASS', '*');
-              });
           </scr`+`ipt>
 
-          This iframe should be blocked by CSP:
-          <iframe src='data:text/html,blocked_iframe'></iframe>
+          This iframe should not be blocked by CSP:
+          <iframe src='{{location[server]}}/content-security-policy/frame-src/support/frame-post-message-to-top.html'></iframe>
         `);
         if (window.async_test) {
-            async_test(t => { 
+            async_test(t => {
                 window.addEventListener("message", e => {
                     if (e.data == "Test PASS")
                       t.done();
                 });
-            }, "Iframe's url must not match with 'self'. It must be blocked.");
+            }, "Iframe's url must still match with 'self'. It must not be blocked.");
         }
         document.body.appendChild(iframe);
     </script>

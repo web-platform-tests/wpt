@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+
+<script>
+  // Test variables:
+  // 1. Should parent frame have the "style-src 'self'" CSP
+  // 2. Should `data:` child frame have the "img-src 'self'" CSP
+  // 3. Expected result of `data:` stylesheet request (true == allowed)
+  // 4. Expected result of `http:` stylesheet request
+  // 5. Expected result of `data:` image request
+  // 6. Expected result of `http:` image request
+  // 7. Test description
+  var tests = [
+    [ true, false, false, true, true, true, "Test with only parent having CSP" ],
+    [ false, true, true, true, false, true, "Test with only child having CSP" ],
+    [ true, true, false, true, false, true, "Test with both parent and child having CSP" ],
+  ];
+
+  function buildErrorDescription(result_index, test_index) {
+    var message = "(";
+
+    if (result_index == 2) message += "'data:' stylesheet";
+    else if (result_index == 3) message += "'http:' stylesheet";
+    else if (result_index == 4) message += "'data:' image";
+    else message += "'http:' image";
+
+    expected = "blocked";
+    if (tests[test_index][result_index]) expected = "allowed";
+
+    actual = "allowed";
+    if (tests[test_index][result_index]) actual = "blocked";
+
+    message += " should have been " + expected + " but was " + actual + ").";
+
+    return message;
+  }
+
+  function doTest(test, index) {
+    var t = async_test(test[6]);
+    var received_messages = 0;
+
+    window.addEventListener('message', t.step_func(e => {
+      if (e.data['test_index'] != index)
+        return;
+
+      assert_equals(test[e.data['result_index']], e.data['result'], buildErrorDescription(e.data['result_index'], index));
+      if (++received_messages == 4)
+        t.done();
+    }));
+
+    window.open('support/parent-frame-with-data-child-frame.sub.html?parent_csp=' + test[0] + '&child_csp=' + test[1] + '&test_index=' + index);
+  }
+
+  tests.forEach((test, index) => {
+    doTest(test, index);
+  });
+
+</script>
+</body>

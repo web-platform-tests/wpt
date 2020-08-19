@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCPeerConnection.prototype.createOffer</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  const pc = new RTCPeerConnection();
+  const offer = await generateVideoReceiveOnlyOffer(pc);
+  let video_section_found = false;
+  for (let section of offer.sdp.split(/\r\nm=/)) {
+    if (section.search('video') != 0) {
+      continue;
+    }
+    video_section_found = true;
+    // RTPMAP lines have the format a=rtpmap:<pt> <codec>/<clock rate>
+    let rtpmap_regex = /\r\na=rtpmap:(\d+) (\S+)\/\d+\r\n/g;
+    let match = rtpmap_regex.exec(offer.sdp);
+    let payload_type_map = new Array();
+    while (match) {
+      payload_type_map[match[1]] = match[2];
+      match = rtpmap_regex.exec(offer.sdp);
+    }
+    assert_true(payload_type_map.indexOf('VP8') > -1,
+                'VP8 is supported');
+    assert_true(payload_type_map.indexOf('H264') > -1,
+                'H.264 is supported');
+    // TODO: Verify that one of the H.264 PTs supports constrained baseline
+  }
+  assert_true(video_section_found);
+}, 'H.264 and VP8 should be supported in initial offer');
+
+promise_test(async t => {
+  const {codecs} = RTCRtpSender.getCapabilities('video');
+  const h264 = codecs.find(c => c.mimeType === 'video/H264');
+  assert_not_equals(h264, undefined);
+}, 'Look for H264');
+</script>

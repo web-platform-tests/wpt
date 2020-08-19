@@ -44,9 +44,7 @@ function createIframe(t, values) {
   ['Require-corp'],
   ['"require-corp"'], // HTTP structured header "string" item
   [':cmVxdWlyZS1jb3Jw:'], // HTTP structured header "byte sequence" item
-  ['\trequire-corp\t'],
-  [' \trequire-corp'],
-  ['require-corp\t '],
+  ['require-corp;\tfoo=bar'],
   ['require-corp require-corp'],
   ['require-corp,require-corp'],
   ['require-corp', 'require-corp'],
@@ -64,6 +62,9 @@ function createIframe(t, values) {
 [
   ['require-corp'],
   [' require-corp '],
+  ['\trequire-corp\t'], // leading and trailing OWS is not part of the field-value per HTTP
+  [' \trequire-corp'],
+  ['require-corp\t '],
   ['require-corp; foo=bar'],
   ['require-corp;require-corp'],
 

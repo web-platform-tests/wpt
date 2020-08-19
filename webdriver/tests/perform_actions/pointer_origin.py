@@ -62,7 +62,7 @@ def test_pointer_outside(session, mouse_chain):
 
 
 def test_element_center_point(session, mouse_chain):
-    session.url = origin_doc("width: 100px; height: 50px; background: green;")
+    session.url = origin_doc("height: 50px; width: 100px; background: green;")
     elem = session.find.css("#inner", all=False)
     center = get_inview_center(elem.rect, get_viewport_rect(session))
 

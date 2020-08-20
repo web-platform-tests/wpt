@@ -102,3 +102,15 @@ function run_coop_test_iframe (documentTitle, iframe_origin, popup_origin, popup
       document.body.append(frame);
   }, `${documentTitle} with ${iframe_origin.name} iframe opening popup a ${popup_origin.name} with COOP: ${format_value(popup_coop)}`);
 }
+
+// Need to wait until the page is fully loaded before navigating
+// so that it creates a history entry properly.
+const fullyLoaded = new Promise((resolve, reject) => {
+  addEventListener('load', () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve();
+      });
+    });
+  });
+});

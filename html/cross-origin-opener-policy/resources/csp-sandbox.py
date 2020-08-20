@@ -12,9 +12,18 @@ def main(request, response):
     response.content = b"""
 <!doctype html>
 <meta charset=utf-8>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/html/cross-origin-opener-policy/resources/common.js"></script>
 <script>
   const params = new URL(location).searchParams;
   params.delete("sandbox");
-  window.open(`/html/cross-origin-opener-policy/resources/coop-coep.py?${params}`);
+  const navigate = params.get("navigate");
+  if (navigate) {
+    fullyLoaded.then(() => {
+      self.location = navigate;
+    });
+  } else {
+    window.open(`/html/cross-origin-opener-policy/resources/coop-coep.py?${params}`);
+  }
 </script>
 """

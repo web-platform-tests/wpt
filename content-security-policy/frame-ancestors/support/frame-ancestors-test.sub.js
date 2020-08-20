@@ -104,6 +104,8 @@ function iframeLoaded({isPoll, expectBlock}) {
 }
 
 function originFrameShouldBe(child, expectation, policy) {
+    // In Python 3, "'" has been converted to HEX value '&#x27;'.  
+    policy = policy.replace(new RegExp("&"+"#"+"x27;", "g"), "'")
     if (child == "cross" && expectation == "blocked") crossOriginFrameShouldBeBlocked(policy);
     if (child == "same" && expectation == "blocked") sameOriginFrameShouldBeBlocked(policy);
     if (child == "cross" && expectation == "allowed") crossOriginFrameShouldBeAllowed(policy);

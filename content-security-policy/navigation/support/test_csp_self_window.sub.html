@@ -4,5 +4,6 @@
 
 <script>
   var window_url = decodeURIComponent("{{GET[window_url]}}").replace('&lt;', '<').replace('&gt;', '>');
+  window_url = window_url.replace(new RegExp("&"+"#"+"x27;", "g"), "'")
   window.open(window_url, "_self");
 </script>

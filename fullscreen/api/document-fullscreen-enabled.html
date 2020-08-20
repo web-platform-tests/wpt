@@ -9,7 +9,7 @@ test(function()
 {
     assert_true(document.fullscreenEnabled, "top-level document");
     const iframe = document.querySelector("iframe");
-    assert_true(iframes.contentDocument.fullscreenEnabled, "same-origin iframe");
+    assert_true(iframe.contentDocument.fullscreenEnabled, "same-origin iframe");
 });
 
 // The cross-origin iframe case is tested in

@@ -35,8 +35,8 @@ let tests = [
   // "expected opener" value of `false`).
   [SAME_ORIGIN, " same-origin", false],
   [SAME_ORIGIN, "same-origin ", false],
-  [SAME_ORIGIN, "\tsame-origin", true],
-  [SAME_ORIGIN, "same-origin\t", true],
+  [SAME_ORIGIN, "\tsame-origin", false],
+  [SAME_ORIGIN, "same-origin\t", false],
   [SAME_ORIGIN, "same-origin;same-origin", false],
   [SAME_ORIGIN, "same-origin; foo=bar", false],
 ];

@@ -1,13 +1,18 @@
 from __future__ import unicode_literals
 
+import os
 import sys
 import tempfile
 
 import pytest
 
 from mozlog import structured
-from ..testloader import TestFilter as Filter
+from ..testloader import TestFilter as Filter, TestLoader as Loader
 from .test_wpttest import make_mock_manifest
+
+here = os.path.dirname(__file__)
+sys.path.insert(0, os.path.join(here, os.pardir, os.pardir, os.pardir))
+from manifest.manifest import Manifest as WPTManifest
 
 structured.set_default_logger(structured.structuredlog.StructuredLogger("TestLoader"))
 
@@ -16,6 +21,50 @@ skip: true
 [test_\u53F0]
   skip: false
 """
+
+
+def test_loader_h2_tests():
+    manifest_json = {
+        "items": {
+            "testharness": {
+                "a": {
+                    "foo.html": [
+                        "abcdef123456",
+                        # TODO: This isn't what MANIFEST.json looks like. It
+                        # has 'null' here rather than the full HTML. But if
+                        # this manifest is loaded by load_json, it ultimately
+                        # ends up in the URLManifestItem __init__ with a url
+                        # value of the string 'null'. This then gets saved in
+                        # _url, and in the url @property we end up with rel_url
+                        # == 'null', return '/null' (rather than fall back to
+                        # the path).
+                        ["a/foo.html", {}],
+                    ],
+                    "bar.h2.html": [
+                        "uvwxyz987654",
+                        ["a/bar.h2.html", {}],
+                    ],
+                }
+            }
+        },
+        "url_base": "/",
+        "version": 8,
+    }
+    manifest = WPTManifest.from_json("/", manifest_json)
+
+    # By default, the loader should include the h2 test.
+    loader = Loader({manifest: {"metadata_path": ""}}, ["testharness"], None)
+    assert "testharness" in loader.tests
+    assert len(loader.tests["testharness"]) == 2
+    assert len(loader.disabled_tests) == 0
+
+    # We can also instruct it to skip them.
+    loader = Loader({manifest: {"metadata_path": ""}}, ["testharness"], None, include_h2=False)
+    assert "testharness" in loader.tests
+    assert len(loader.tests["testharness"]) == 1
+    assert "testharness" in loader.disabled_tests
+    assert len(loader.disabled_tests["testharness"]) == 1
+    assert loader.disabled_tests["testharness"][0].url == "/a/bar.h2.html"
 
 
 @pytest.mark.xfail(sys.platform == "win32",

@@ -11,6 +11,12 @@
   <style>
   div
     {
+      float: left;
+      font-size: 300%;
+    }
+
+  span#outer
+    {
       background-color: rgba(0%, 50%, 100%, 0.5);
       /*
       a very lite blue color
@@ -18,11 +24,9 @@
       https://www.colorhexa.com/7fbfff
       */
       color: yellow;
-      float: left;
-      font-size: 300%;
     }
 
-  span
+  span#inner
     {
       background-color: #7FBF80; /* lime-green-ish */
     }
@@ -45,7 +49,6 @@
 
   <body onload="startTest();">
 
-
   <p>PREREQUISITE: User agent needs to have an enabled and capable grammar error module. If it does not, then this test does not apply to such user agent.
 
   <p>Test passes
@@ -57,4 +60,4 @@
     <li>if there is no red.
   </ul>
 
-  <div contenteditable="true" id="reference">Many <span>thing</span> can happen.</div>
+  <div contenteditable="true" id="reference"><span id="outer">Many <span id="inner">thing</span> can happen.</span></div>

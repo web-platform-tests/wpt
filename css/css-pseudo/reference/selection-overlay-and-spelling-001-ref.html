@@ -11,6 +11,12 @@
   <style>
   div
     {
+      float: left;
+      font-size: 300%;
+    }
+
+  span#outer
+    {
       background-color: rgba(0%, 50%, 100%, 0.5);
       /*
       a very lite blue color
@@ -18,11 +24,9 @@
       https://www.colorhexa.com/7fbfff
       */
       color: yellow;
-      float: left;
-      font-size: 300%;
     }
 
-  span
+  span#inner
     {
       background-color: #7FBF80; /* lime-green-ish */
     }
@@ -43,4 +47,4 @@
   The bad spelling of Txet is intentional and part of this test
   -->
 
-  <div><span>Txet</span> sample</div>
+  <div><span id="outer"><span id="inner">Txet</span> sample</span></div>

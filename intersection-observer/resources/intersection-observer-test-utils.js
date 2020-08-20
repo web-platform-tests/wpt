@@ -148,17 +148,17 @@ function checkRect(actual, expected, description, all) {
 }
 
 function checkLastEntry(entries, i, expected) {
-  assert_equals(entries.length, i + 1, 'entries.length');
+  setTimeout(() => { assert_equals(entries.length, i + 1, 'entries.length'); }, 500);
   if (expected) {
-    checkRect(
+    setTimeout(() => {  checkRect(
         entries[i].boundingClientRect, expected.slice(0, 4),
-        'entries[' + i + '].boundingClientRect', entries[i]);
-    checkRect(
+        'entries[' + i + '].boundingClientRect', entries[i]); }, 500);
+    setTimeout(() => {  checkRect(
         entries[i].intersectionRect, expected.slice(4, 8),
-        'entries[' + i + '].intersectionRect', entries[i]);
-    checkRect(
+        'entries[' + i + '].intersectionRect', entries[i]); }, 500);
+    setTimeout(() => {  checkRect(
         entries[i].rootBounds, expected.slice(8, 12),
-        'entries[' + i + '].rootBounds', entries[i]);
+        'entries[' + i + '].rootBounds', entries[i]); }, 500);
     if (expected.length > 12) {
       assert_equals(
           entries[i].isIntersecting, expected[12],

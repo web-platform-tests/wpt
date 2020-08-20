@@ -1,15 +1,15 @@
 def main(request, response):
-    coop = request.GET.first("coop")
-    coep = request.GET.first("coep")
-    sandbox = request.GET.first("sandbox")
+    coop = request.GET.first(b"coop")
+    coep = request.GET.first(b"coep")
+    sandbox = request.GET.first(b"sandbox")
     if coop != "":
-        response.headers.set("Cross-Origin-Opener-Policy", coop)
+        response.headers.set(b"Cross-Origin-Opener-Policy", coop)
     if coep != "":
-        response.headers.set("Cross-Origin-Embedder-Policy", coep)
-    response.headers.set("Content-Security-Policy", "sandbox " + sandbox + ";")
+        response.headers.set(b"Cross-Origin-Embedder-Policy", coep)
+    response.headers.set(b"Content-Security-Policy", b"sandbox " + sandbox + b";")
 
     # Open a popup to coop-coep.py with the same parameters (except sandbox)
-    response.content = """
+    response.content = b"""
 <!doctype html>
 <meta charset=utf-8>
 <script>

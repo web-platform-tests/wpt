@@ -50,7 +50,7 @@ function url_test(t, url, channelName, hasOpener, openerDOMAccess, callback) {
 }
 
 function coop_coep_test(t, host, coop, coep, channelName, hasOpener, openerDOMAccess, callback) {
-  url_test(t, `${host.origin}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=${encodeURIComponent(coop)}&coep=${coep}&channel=${channelName}`, channelName, hasOpener, openerDOMAccess, callback);
+  url_test(t, `${host.origin}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=${encodeURIComponent(coop)}&coep=${coep}&channel=${encodeURIComponent(channelName)}`, channelName, hasOpener, openerDOMAccess, callback);
 }
 
 function coop_test(t, host, coop, channelName, hasOpener, callback) {

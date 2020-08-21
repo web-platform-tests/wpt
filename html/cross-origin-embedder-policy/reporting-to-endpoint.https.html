@@ -58,7 +58,7 @@ function checkCorpReportExistence(reports, blockedUrl, contextUrl, disposition) 
       return;
     }
   }
-  assert_unreached(`A report whose blocked-url is ${blockedUrl} and url is ${contextUrl} is not found.`);
+  assert_unreached(`A report whose blockedURL is ${blockedUrl} and url is ${contextUrl} is not found.`);
 }
 
 function checkNavigationReportExistence(reports, blockedUrl, contextUrl, disposition) {
@@ -74,7 +74,7 @@ function checkNavigationReportExistence(reports, blockedUrl, contextUrl, disposi
       return;
     }
   }
-  assert_unreached(`A report whose blocked-url is ${blockedUrl} and url is ${contextUrl} is not found.`);
+  assert_unreached(`A report whose blockedURL is ${blockedUrl} and url is ${contextUrl} is not found.`);
 }
 
 async_test(async (t) => {

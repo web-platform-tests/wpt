@@ -27,7 +27,7 @@ function checkReport(report, contextUrl, blockedUrl, disposition, destination) {
   assert_equals(report.body.type, 'corp');
   assert_equals(report.body.blockedURL, blockedUrl);
   assert_equals(report.body.disposition, disposition);
-  assert_equals(report.body.disposition, destination);
+  assert_equals(report.body.destination, destination);
 }
 
 async function fetchInFrame(t, frameUrl, url) {

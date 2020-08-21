@@ -165,7 +165,7 @@ function checkLastEntry(entries, i, expected) {
           'entries[' + i + '].isIntersecting');
     }
   } }, 500);
-} 
+}
 
 function checkJsonEntry(actual, expected) {
   checkRect(

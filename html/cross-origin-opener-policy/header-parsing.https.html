@@ -19,6 +19,7 @@ let tests = [
   [SAME_ORIGIN, "\u000csame-origin\u000c", true], // form feed
   [SAME_ORIGIN, "\u000dsame-origin\u000d", true], // carriage return
   [SAME_ORIGIN, "Same-origin", true],
+  [SAME_ORIGIN, "same-origin\0", true],
   [SAME_ORIGIN, "same-origin;\tfoo=bar", true],
   [SAME_ORIGIN, "same-origin ;foo=bar", true],
   [SAME_ORIGIN, "same-origin; foo=bar;", true],

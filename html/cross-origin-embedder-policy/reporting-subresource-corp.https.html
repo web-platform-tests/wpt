@@ -173,10 +173,10 @@ for (const env of ENVIRONMENTS) {
   }
 }
 
-// A test for non-empty destination.
+// A test for a non-empty destination.
 promise_test(async (t) => {
   const reports = [];
-  const frame = await with_iframe(frameUrl);
+  const frame = await with_iframe(FRAME_URL);
   t.add_cleanup(() => frame.remove());
 
   const observer = new frame.contentWindow.ReportingObserver((rs) => {
@@ -194,8 +194,8 @@ promise_test(async (t) => {
   await wait(200);
 
   assert_equals(reports.length, 2);
-  checkReport(reports[0], frameUrl, url, 'reporting', 'script');
-  checkReport(reports[1], frameUrl, url, 'enforce', 'script');
+  checkReport(reports[0], FRAME_URL, url, 'reporting', 'script');
+  checkReport(reports[1], FRAME_URL, url, 'enforce', 'script');
 }, 'destination: script');
 
 </script>

@@ -52,8 +52,8 @@ function checkCorpReportExistence(reports, blockedUrl, contextUrl, disposition) 
         report.body.type !== 'corp') {
       continue;
     }
-    if (report.body.blockedURL === blockedUrl) {
-      assert_equals(report.body.disposition, disposition);
+    if (report.body.blockedURL === blockedUrl &&
+        report.body.disposition === disposition) {
       assert_equals(report.body.destination, '');
       return;
     }
@@ -69,8 +69,8 @@ function checkNavigationReportExistence(reports, blockedUrl, contextUrl, disposi
         report.body.type !== 'navigation') {
       continue;
     }
-    if (report.body.blockedURL === blockedUrl) {
-      assert_equals(report.body.disposition, disposition);
+    if (report.body.blockedURL === blockedUrl &&
+        report.body.disposition === disposition) {
       return;
     }
   }

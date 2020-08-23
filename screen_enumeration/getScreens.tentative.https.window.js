@@ -44,8 +44,8 @@ promise_test(async t => {
   let iframe = document.body.appendChild(document.createElement('iframe'));
   assert_greater_than((await iframe.contentWindow.getScreens()).length, 0);
 
-   await new Promise(resolve => {
-    iframe.contentWindow.onunload = async () => {
+  return new Promise(resolve => {
+    iframe.contentWindow.onunload = t.step_func(async () => {
       // TODO(crbug.com/1106132): This should reject or resolve; not hang.
       // assert_greater_than((await iframe.contentWindow.getScreens()).length, 0);
 
@@ -58,7 +58,7 @@ promise_test(async t => {
       assert_equals(iframe.contentWindow, null);
       await promise_rejects_dom(t, 'InvalidStateError', constructor, iframeGetScreens());
       resolve();
-    }
+    });
 
     document.body.removeChild(iframe);
   });

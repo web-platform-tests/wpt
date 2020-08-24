@@ -30,19 +30,11 @@ def test_loader_h2_tests():
                 "a": {
                     "foo.html": [
                         "abcdef123456",
-                        # TODO: This isn't what MANIFEST.json looks like. It
-                        # has 'null' here rather than the full HTML. But if
-                        # this manifest is loaded by load_json, it ultimately
-                        # ends up in the URLManifestItem __init__ with a url
-                        # value of the string 'null'. This then gets saved in
-                        # _url, and in the url @property we end up with rel_url
-                        # == 'null', return '/null' (rather than fall back to
-                        # the path).
-                        ["a/foo.html", {}],
+                        None,
                     ],
                     "bar.h2.html": [
                         "uvwxyz987654",
-                        ["a/bar.h2.html", {}],
+                        None,
                     ],
                 }
             }

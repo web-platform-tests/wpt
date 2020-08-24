@@ -30,11 +30,11 @@ def test_loader_h2_tests():
                 "a": {
                     "foo.html": [
                         "abcdef123456",
-                        None,
+                        [None, {}],
                     ],
                     "bar.h2.html": [
                         "uvwxyz987654",
-                        None,
+                        [None, {}],
                     ],
                 }
             }

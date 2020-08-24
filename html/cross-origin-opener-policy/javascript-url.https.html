@@ -31,11 +31,11 @@ BroadcastChannels.</p>
     |              |   |  (COOP under test)  |
     |              |   |         |           |
     |              |   |    open(https:)     |
-    |              |   |     childCOOP       |    .- observer -.
-    |              |   |         '--------------> |            |
-    |              |   '---------------------'    '------------'
-    |              |             |                      |
-    |  validate    | <--status---+----------------------'
+    |              |   |     childCOOP       |    .- child -.
+    |              |   |         '--------------> |         |
+    |              |   '---------------------'    '---------'
+    |              |             |                     |
+    |  validate    | <--status---+---------------------'
     '--------------'
 </pre>
 
@@ -84,6 +84,10 @@ const { HTTPS_ORIGIN, HTTPS_REMOTE_ORIGIN } = get_host_info();
 function assert_isolated(results) {
   assert_equals(results.childName, '', 'child name');
   assert_false(results.childOpener, 'child opener');
+  // The test subject's reference to the  "child" window must report "closed"
+  // when COOP enforces isolation because the document initially created during
+  // the window open steps must be discarded when a new document object is
+  // created at the end of the navigation.
   assert_true(results.childClosed, 'child closed');
 }
 

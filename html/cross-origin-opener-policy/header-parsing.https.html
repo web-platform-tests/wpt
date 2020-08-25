@@ -13,32 +13,32 @@ let tests = [
 
   // None of the following should be recognized as "same-origin" (hence the
   // "expected opener" value of `true`).
-  [SAME_ORIGIN, "same%FForigin", true], // non-ASCII byte 0xFF
-  [SAME_ORIGIN, encodeURIComponent("same-origin;"), true],
-  [SAME_ORIGIN, encodeURIComponent("\u000bsame-origin\u000b"), true], // vertical tab
-  [SAME_ORIGIN, encodeURIComponent("\u000csame-origin\u000c"), true], // form feed
-  [SAME_ORIGIN, encodeURIComponent("\u000dsame-origin\u000d"), true], // carriage return
-  [SAME_ORIGIN, encodeURIComponent("Same-origin"), true],
-  [SAME_ORIGIN, encodeURIComponent("same-origin;\tfoo=bar"), true],
-  [SAME_ORIGIN, encodeURIComponent("same-origin ;foo=bar"), true],
-  [SAME_ORIGIN, encodeURIComponent("same-origin; foo=bar;"), true],
-  [SAME_ORIGIN, encodeURIComponent("\"same-origin\""), true], // HTTP structured fields "string" item
-  [SAME_ORIGIN, encodeURIComponent(":c2FtZS1vcmlnaW4=:"), true], // HTTP structured fields "byte sequence" item
-  [SAME_ORIGIN, encodeURIComponent("?1"), true], // HTTP structured fields "boolean" item
-  [SAME_ORIGIN, encodeURIComponent("1"), true], // HTTP structured fields "integer or decimal" item
-  [SAME_ORIGIN, encodeURIComponent("$same-origin"), true], // the item type is unrecognized
-  [SAME_ORIGIN, encodeURIComponent("same-origin same-origin"), true],
-  [SAME_ORIGIN, encodeURIComponent("same-origin,same-origin"), true],
-  [SAME_ORIGIN, encodeURIComponent("*same-origin "), true],
+  [SAME_ORIGIN, "same\u2014origin", true], // non-ASCII character (em dash)
+  [SAME_ORIGIN, "same-origin;", true],
+  [SAME_ORIGIN, "\u000bsame-origin\u000b", true], // vertical tab
+  [SAME_ORIGIN, "\u000csame-origin\u000c", true], // form feed
+  [SAME_ORIGIN, "\u000dsame-origin\u000d", true], // carriage return
+  [SAME_ORIGIN, "Same-origin", true],
+  [SAME_ORIGIN, "same-origin;\tfoo=bar", true],
+  [SAME_ORIGIN, "same-origin ;foo=bar", true],
+  [SAME_ORIGIN, "same-origin; foo=bar;", true],
+  [SAME_ORIGIN, "\"same-origin\"", true], // HTTP structured fields "string" item
+  [SAME_ORIGIN, ":c2FtZS1vcmlnaW4=:", true], // HTTP structured fields "byte sequence" item
+  [SAME_ORIGIN, "?1", true], // HTTP structured fields "boolean" item
+  [SAME_ORIGIN, "1", true], // HTTP structured fields "integer or decimal" item
+  [SAME_ORIGIN, "$same-origin", true], // the item type is unrecognized
+  [SAME_ORIGIN, "same-origin same-origin", true],
+  [SAME_ORIGIN, "same-origin,same-origin", true],
+  [SAME_ORIGIN, "*same-origin ", true],
 
   // All of the following should be recognized as "same-origin" (hence the
   // "expected opener" value of `false`).
-  [SAME_ORIGIN, encodeURIComponent(" same-origin"), false],
-  [SAME_ORIGIN, encodeURIComponent("same-origin "), false],
-  [SAME_ORIGIN, encodeURIComponent("\tsame-origin"), false],
-  [SAME_ORIGIN, encodeURIComponent("same-origin\t"), false],
-  [SAME_ORIGIN, encodeURIComponent("same-origin;same-origin"), false],
-  [SAME_ORIGIN, encodeURIComponent("same-origin; foo=bar"), false],
+  [SAME_ORIGIN, " same-origin", false],
+  [SAME_ORIGIN, "same-origin ", false],
+  [SAME_ORIGIN, "\tsame-origin", false],
+  [SAME_ORIGIN, "same-origin\t", false],
+  [SAME_ORIGIN, "same-origin;same-origin", false],
+  [SAME_ORIGIN, "same-origin; foo=bar", false],
 ];
 
 run_coop_tests("unspecified", tests);

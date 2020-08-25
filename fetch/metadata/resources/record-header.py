@@ -147,3 +147,7 @@ NETWORK:
     </xsl:copy>
   </xsl:template>
 </xsl:stylesheet>"""
+
+    if key.startswith(b"script"):
+      response.headers.set(b"Content-Type", b"application/javascript")
+      return b"void 0;"

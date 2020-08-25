@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <script src="/common/get-host-info.sub.js"></script>
+<body>
 <script>
 'use strict';
 const params = new URLSearchParams(location.search);
 const childURL = JSON.stringify(encodeURIComponent(params.get('childURL')));
 const childName = JSON.stringify(params.get('childName'));
-location.assign(`javascript:\`<script>
+location.assign(`javascript:\`<body><script>
 const child = window.open(${childURL}, ${childName});
 const bc = new BroadcastChannel(${childName});
 

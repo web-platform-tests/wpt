@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wptserve: Web Platform Test Server &#8212; web-platform-tests  documentation</title>
+    <title>pywebsocket3 &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -16,8 +16,7 @@
     <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Introduction" href="introduction.html" />
-    <link rel="prev" title="wptrunner Internals" href="../../wptrunner/docs/internals.html" />
+    <link rel="prev" title="wptserve" href="../../wptserve/README.html" />
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
@@ -34,53 +33,39 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="wptserve-web-platform-test-server">
-<h1>wptserve: Web Platform Test Server<a class="headerlink" href="#wptserve-web-platform-test-server" title="Permalink to this headline">¶</a></h1>
-<p>A python-based HTTP server specifically targeted at being used for
-testing the web platform. This means that extreme flexibility —
-including the possibility of HTTP non-conformance — in the response is
-supported.</p>
-<p>Contents:</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#request-handling">Request Handling</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="server.html#module-wptserve.server"><code class="docutils literal notranslate"><span class="pre">Interface</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="router.html">Router</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="router.html#module-wptserve.router"><code class="docutils literal notranslate"><span class="pre">Interface</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="request.html">Request</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="request.html#module-wptserve.request"><code class="docutils literal notranslate"><span class="pre">Interface</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="response.html">Response</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="response.html#module-wptserve.response"><code class="docutils literal notranslate"><span class="pre">Interface</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="stash.html">Stash</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="stash.html#module-wptserve.stash"><code class="docutils literal notranslate"><span class="pre">Interface</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="handlers.html#python-handlers">Python Handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="handlers.html#json-handlers">JSON Handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="handlers.html#python-file-handlers">Python File Handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="handlers.html#asis-handlers">asis Handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="handlers.html#file-handlers">File Handlers</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pipes.html">Pipes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pipes.html#module-wptserve.pipes"><code class="docutils literal notranslate"><span class="pre">Interface</span></code></a></li>
-</ul>
-</li>
-</ul>
+  <div class="section" id="pywebsocket3">
+<h1>pywebsocket3<a class="headerlink" href="#pywebsocket3" title="Permalink to this headline">¶</a></h1>
+<p>The pywebsocket project aims to provide a <a class="reference external" href="https://tools.ietf.org/html/rfc6455">WebSocket</a> standalone server.</p>
+<p>pywebsocket is intended for <strong>testing</strong> or <strong>experimental</strong> purposes.</p>
+<p>Run this to read the general document:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pydoc mod_pywebsocket
+</pre></div>
 </div>
+<p>Please see <a class="reference external" href="https://github.com/GoogleChromeLabs/pywebsocket3/wiki">Wiki</a> for more details.</p>
+</div>
+<div class="section" id="install">
+<h1>INSTALL<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h1>
+<p>To install this package to the system, run this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py build
+$ sudo python setup.py install
+</pre></div>
+</div>
+<p>To install this package as a normal user, run this instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py build
+$ python setup.py install --user
+</pre></div>
+</div>
+</div>
+<div class="section" id="launch">
+<h1>LAUNCH<a class="headerlink" href="#launch" title="Permalink to this headline">¶</a></h1>
+<p>To use pywebsocket as standalone server, run this to read the document:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pydoc mod_pywebsocket.standalone
+</pre></div>
+</div>
+</div>
+<div class="section" id="disclaimer">
+<h1>Disclaimer<a class="headerlink" href="#disclaimer" title="Permalink to this headline">¶</a></h1>
+<p>This is not an officially supported Google product</p>
 </div>
 
 
@@ -120,8 +105,7 @@ supported.</p>
 <ul>
   <li><a href="../../../index.html">Documentation overview</a><ul>
   <li><a href="../../../admin/index.html">Project Administration</a><ul>
-      <li>Previous: <a href="../../wptrunner/docs/internals.html" title="previous chapter">wptrunner Internals</a></li>
-      <li>Next: <a href="introduction.html" title="next chapter">Introduction</a></li>
+      <li>Previous: <a href="../../wptserve/README.html" title="previous chapter">wptserve</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -158,7 +142,7 @@ supported.</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../../../_sources/tools/wptserve/docs/index.rst.txt"
+      <a href="../../../_sources/tools/third_party/pywebsocket3/README.md.txt"
           rel="nofollow">Page source</a>
     </div>
 

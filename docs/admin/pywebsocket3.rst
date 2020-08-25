@@ -1,5 +1,5 @@
-pywebsocket3
-====================
+pywebsocket3: A Standalone WebSocket Server for testing purposes
+================================================================
 
 .. contents::
    :local:

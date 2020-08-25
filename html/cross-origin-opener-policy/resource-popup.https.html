@@ -46,136 +46,46 @@ const coop_resource_test = ({parentCoop, resourceCoop, resource, resourceName, v
   }, `${resource} - parent COOP: "${parentCoop}"; child COOP: "${resourceCoop}"`);
 };
 
-coop_resource_test({
-  parentCoop: '',
-  resourceCoop: 'same-origin',
-  resource: '/common/dummy.xml',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, null);
-    assert_equals(data.closed, true);
-  }
-});
+const resources = [
+  '/common/dummy.xml',
+  '/images/red.png',
+  '/common/text-plain.txt',
+  '/media/2x2-green.mp4',
+];
 
-coop_resource_test({
-  parentCoop: 'same-origin',
-  resourceCoop: '',
-  resource: '/common/dummy.xml',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, null);
-    assert_equals(data.closed, true);
-  }
-});
+for (const resource of resources) {
+  coop_resource_test({
+    parentCoop: '',
+    resourceCoop: 'same-origin',
+    resource,
+    resourceName: 'foobar',
+    validate(data) {
+      assert_equals(data.name, null);
+      assert_equals(data.closed, true);
+    }
+  });
 
-coop_resource_test({
-  parentCoop: 'same-origin',
-  resourceCoop: 'same-origin',
-  resource: '/common/dummy.xml',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, 'foobar');
-    assert_equals(data.closed, false);
-  }
-});
+  coop_resource_test({
+    parentCoop: 'same-origin',
+    resourceCoop: '',
+    resource,
+    resourceName: 'foobar',
+    validate(data) {
+      assert_equals(data.name, null);
+      assert_equals(data.closed, true);
+    }
+  });
 
-coop_resource_test({
-  parentCoop: '',
-  resourceCoop: 'same-origin',
-  resource: '/images/red.png',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, null);
-    assert_equals(data.closed, true);
-  }
-});
-
-coop_resource_test({
-  parentCoop: 'same-origin',
-  resourceCoop: '',
-  resource: '/images/red.png',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, null);
-    assert_equals(data.closed, true);
-  }
-});
-
-coop_resource_test({
-  parentCoop: 'same-origin',
-  resourceCoop: 'same-origin',
-  resource: '/images/red.png',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, 'foobar');
-    assert_equals(data.closed, false);
-  }
-});
-
-coop_resource_test({
-  parentCoop: '',
-  resourceCoop: 'same-origin',
-  resource: '/common/text-plain.txt',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, null);
-    assert_equals(data.closed, true);
-  }
-});
-
-coop_resource_test({
-  parentCoop: 'same-origin',
-  resourceCoop: '',
-  resource: '/common/text-plain.txt',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, null);
-    assert_equals(data.closed, true);
-  }
-});
-
-coop_resource_test({
-  parentCoop: 'same-origin',
-  resourceCoop: 'same-origin',
-  resource: '/common/text-plain.txt',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, 'foobar');
-    assert_equals(data.closed, false);
-  }
-});
-
-coop_resource_test({
-  parentCoop: '',
-  resourceCoop: 'same-origin',
-  resource: '/media/2x2-green.mp4',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, null);
-    assert_equals(data.closed, true);
-  }
-});
-
-coop_resource_test({
-  parentCoop: 'same-origin',
-  resourceCoop: '',
-  resource: '/media/2x2-green.mp4',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, null);
-    assert_equals(data.closed, true);
-  }
-});
-
-coop_resource_test({
-  parentCoop: 'same-origin',
-  resourceCoop: 'same-origin',
-  resource: '/media/2x2-green.mp4',
-  resourceName: 'foobar',
-  validate(data) {
-    assert_equals(data.name, 'foobar');
-    assert_equals(data.closed, false);
-  }
-});
+  coop_resource_test({
+    parentCoop: 'same-origin',
+    resourceCoop: 'same-origin',
+    resource,
+    resourceName: 'foobar',
+    validate(data) {
+      assert_equals(data.name, 'foobar');
+      assert_equals(data.closed, false);
+    }
+  });
+}
 </script>
 </html>

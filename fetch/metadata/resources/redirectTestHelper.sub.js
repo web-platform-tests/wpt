@@ -70,25 +70,6 @@ function testPrefetch(nonce, testNamePrefix, urlHelperMethod, expectedResults) {
 // the test page itself.
 function RunCommonRedirectTests(testNamePrefix, urlHelperMethod, expectedResults) {
   async_test(t => {
-    let i = document.createElement('iframe');
-    i.src = urlHelperMethod('resources/post-to-owner.py?iframe-navigation' + nonce);
-    window.addEventListener('message', t.step_func(e => {
-      if (e.source != i.contentWindow) {
-        return;
-      }
-      let expectation = { ...expectedResults };
-      if (expectation['mode'] != '')
-        expectation['mode'] = 'navigate';
-      if (expectation['dest'] == 'font')
-        expectation['dest'] = 'iframe';
-      assert_header_equals(e.data, expectation, testNamePrefix + ' iframe');
-      t.done();
-    }));
-
-    document.body.appendChild(i);
-  }, testNamePrefix + ' iframe');
-
-  async_test(t => {
     let testWindow = window.open(urlHelperMethod('resources/post-to-owner.py?top-level-navigation' + nonce));
     t.add_cleanup(_ => testWindow.close());
     window.addEventListener('message', t.step_func(e => {

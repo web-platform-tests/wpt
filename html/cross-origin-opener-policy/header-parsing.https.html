@@ -13,7 +13,7 @@ let tests = [
 
   // None of the following should be recognized as "same-origin" (hence the
   // "expected opener" value of `true`).
-  [SAME_ORIGIN, { percentEscaped: "same%FForigin" }, true], // non-ASCII byte
+  [SAME_ORIGIN, { percentEncoded: "same%FForigin" }, true], // non-ASCII byte
   [SAME_ORIGIN, "same-origin;", true],
   [SAME_ORIGIN, "\u000bsame-origin\u000b", true], // vertical tab
   [SAME_ORIGIN, "\u000csame-origin\u000c", true], // form feed

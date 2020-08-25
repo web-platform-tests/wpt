@@ -17,7 +17,7 @@ const collect = (win) => {
 
     const observer = new win.ReportingObserver(resolve);
     observer.observe();
-  }).then((reports) => reports[0].toJSON().type);
+  }).then((reports) => reports[0].type);
   // Although CSP also makes use of ReportingObserver, monitoring this event
   // allows the test to provide value to implementations that have not yet
   // integrated CSP and Reporting.

@@ -66,6 +66,7 @@ cases:
       element-img-environment-change.sub.html: [{}]
       element-input-image.sub.html: [{}]
       element-link-icon.sub.html: [{}]
+      element-link-prefetch.optional.sub.html: [{}]
       element-meta-refresh.optional.sub.html: [{}]
       element-picture.sub.html: [{}]
       element-script.sub.html:
@@ -132,6 +133,7 @@ cases:
       element-img-environment-change.sub.html: [{}]
       element-input-image.sub.html: [{}]
       element-link-icon.sub.html: [{}]
+      element-link-prefetch.optional.sub.html: [{}]
       element-meta-refresh.optional.sub.html: [{}]
       element-picture.sub.html: [{}]
       element-script.sub.html:
@@ -207,6 +209,7 @@ cases:
       element-img-environment-change.sub.html: [{}]
       element-input-image.sub.html: [{}]
       element-link-icon.sub.html: [{}]
+      element-link-prefetch.optional.sub.html: [{}]
       element-meta-refresh.optional.sub.html: [{}]
       element-picture.sub.html: [{}]
       element-script.sub.html:
@@ -303,6 +306,7 @@ cases:
       element-img-environment-change.sub.html: [{}]
       element-input-image.sub.html: [{}]
       element-link-icon.sub.html: [{}]
+      element-link-prefetch.optional.sub.html: [{}]
       element-meta-refresh.optional.sub.html: [{}]
       element-picture.sub.html: [{}]
       element-script.sub.html:
@@ -354,6 +358,7 @@ cases:
       element-iframe.sub.html: []
       element-img-environment-change.sub.html: []
       element-link-icon.sub.html: []
+      element-link-prefetch.optional.sub.html: []
       element-picture.sub.html: []
       element-script.sub.html: []
       fetch.sub.html: []
@@ -471,6 +476,14 @@ cases:
       element-input-image.sub.html:
         - expected: no-cors
       element-link-icon.sub.html:
+        - expected: no-cors
+        - expected: cors
+          elementAttrs: { crossorigin: '' }
+        - expected: cors
+          elementAttrs: { crossorigin: anonymous }
+        - expected: cors
+          elementAttrs: { crossorigin: use-credentials }
+      element-link-prefetch.optional.sub.html:
         - expected: no-cors
         - expected: cors
           elementAttrs: { crossorigin: '' }
@@ -602,6 +615,32 @@ cases:
         - expected: image
       element-link-icon.sub.html:
         - expected: empty
+      element-link-prefetch.optional.sub.html:
+        - expected: empty
+        - elementAttrs: { as: audio }
+          expected: audio
+        - elementAttrs: { as: document }
+          expected: document
+        - elementAttrs: { as: embed }
+          expected: embed
+        - elementAttrs: { as: fetch }
+          expected: fetch
+        - elementAttrs: { as: font }
+          expected: font
+        - elementAttrs: { as: image }
+          expected: image
+        - elementAttrs: { as: object }
+          expected: object
+        - elementAttrs: { as: script }
+          expected: script
+        - elementAttrs: { as: style }
+          expected: style
+        - elementAttrs: { as: track }
+          expected: track
+        - elementAttrs: { as: video }
+          expected: video
+        - elementAttrs: { as: worker }
+          expected: worker
       element-meta-refresh.optional.sub.html:
         - expected: document
       element-picture.sub.html:
@@ -695,6 +734,8 @@ cases:
       element-input-image.sub.html:
         - expected: NULL
       element-link-icon.sub.html:
+        - expected: NULL
+      element-link-prefetch.optional.sub.html:
         - expected: NULL
       element-meta-refresh.optional.sub.html:
         - expected: NULL

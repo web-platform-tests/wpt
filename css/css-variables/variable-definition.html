@@ -40,7 +40,14 @@
         { varName:"--var",     expectedValue:"value  ", style:"--var:value  ",              testName:" trailing white space (double space) 2"},
         { varName:"--var",     expectedValue:"value1 ",  style:"--var:value1 !important;", testName:"!important"},
         { varName:"--var",     expectedValue:"value1",  style:"--var:value1!important;--var:value2;", testName:"!important 2"},
-        { varName:"--var",     expectedValue:"value1 ", style:"--var:value1 !important;--var:value2;", testName:"!important (with space)"}
+        { varName:"--var",     expectedValue:"value1 ", style:"--var:value1 !important;--var:value2;", testName:"!important (with space)"},
+        { varName:"--var",     expectedValue:" /*hello*/", style:"--var: /*hello*/",              testName:"comment"},
+        { varName:"--var",     expectedValue:" url(test.svg#a)", style:"--var: url(test.svg#a)",  testName:"URL"},
+        { varName:"--var",     expectedValue:"\"value\"", style:"--var:\"value\"",                testName:"double quotes"},
+        { varName:"--var",     expectedValue:"'value'", style:"--var:'value'",                    testName:"single quotes"},
+        { varName:"--var",     expectedValue:"a.1",     style:"--var:a.1",                        testName:"ident followed by decimal number"},
+        { varName:"--var",     expectedValue:"5257114e-22df-4378-a8e7-61897860f71e", style:"--var:5257114e-22df-4378-a8e7-61897860f71e", testName:"GUID"},
+        { varName:"--var",     expectedValue:"11111111", style:"--var:11111111",                  testName:"large number"},
     ];
 
     templates.forEach(function (template) {

@@ -10,8 +10,11 @@
 function createIframe(t, values) {
   const parent = document.createElement('iframe');
   const child = document.createElement('iframe');
-  const params = new URLSearchParams(values.map((value) => ['value', value]));
-  parent.setAttribute('src', `resources/empty-coep.py?${params}`);
+  const params = values.map((value) => {
+    const percentEncodedValue = typeof value === "object" ? value.percentEncoded : encodeURIComponent(value);
+    return `value=${percentEncodedValue}`;
+  });
+  parent.setAttribute('src', `resources/empty-coep.py?${params.join("&")}`);
   document.body.appendChild(parent);
   t.add_cleanup(() => parent.remove());
 
@@ -36,7 +39,7 @@ function createIframe(t, values) {
   [],
   [''],
   ['jibberish'],
-  ['require\u2014corp'], // non-ASCII character (em dash)
+  [{ percentEncoded: 'require%FFcorp' }], // non-ASCII byte
   ['require-corp;'],
   ['\u000brequire-corp\u000b'], // vertical tab
   ['\u000crequire-corp\u000c'], // form feed

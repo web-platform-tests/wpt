@@ -44,12 +44,12 @@ cases:
         description: Not sent to non-trustworthy cross-site destination
     template_axes:
       # Unused
+      appcache-manifest.sub.https.html: []
       # The `audioWorklet` interface is only available in secure contexts
       # https://webaudio.github.io/web-audio-api/#BaseAudioContext
       audioworklet.https.sub.html: []
       cors-preflight.sub.html: []
 
-      appcache-manifest.sub.https.html: [{}]
       css-images.sub.html:
         - filename_flags: [tentative]
       css-font-face.sub.html:
@@ -367,8 +367,8 @@ cases:
       window-history.sub.html: []
       worker-dedicated-constructor.sub.html: []
       worker-dedicated-importscripts.sub.html: []
-
-      appcache-manifest.sub.https.html: [{}]
+      # Avoid duplicate subtest for 'sec-fetch-site - HTTPS downgrade-upgrade'
+      appcache-manifest.sub.https.html: []
       css-images.sub.html:
         - filename_flags: [tentative]
       element-a.sub.html: [{}]

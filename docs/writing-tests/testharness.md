@@ -12,11 +12,14 @@ A high-level overview is provided below and more information can be found here:
     testharness.js test](testharness-tutorial) provides a concise guide to writing
     a test — a good place to start for newcomers to the project.
 
+  * [testdriver.js Automation](testdriver.md) — Automating end user actions, such as moving or
+    clicking a mouse.
+
   * [idlharness.js Documentation](idlharness.md) — A library for testing
      IDL interfaces using `testharness.js`.
 
 See [server features](server-features.md) for advanced testing features that are commonly used
-with testharness.js. See also the [general guidelines](general-guidelines.md) for all test types.
+with JavaScript tests. See also the [general guidelines](general-guidelines.md) for all test types.
 
 ## Window tests
 
@@ -34,9 +37,6 @@ test(() => {
 }, "Ensure HTML boilerplate uses UTF-8"); // This is the title of the test
 ```
 
-See the [testharness.js API](testharness-api.md) for more information on asynchronous
-(`async_test()`) and promise tests (`promise_test()`).
-
 If you only need to test a single thing, you could also use:
 ```js
 // META: title=Ensure HTML boilerplate uses UTF-8
@@ -44,6 +44,9 @@ setup({ single_test: true });
 assert_equals(document.characterSet, "UTF-8");
 done();
 ```
+
+See [asynchronous (`async_test()`)](testharness-api.md#asynchronous-tests) and
+[promise tests (`promise_test()`)](testharness-api.md#promise-tests) for more involved setups.
 
 ### With HTML boilerplate
 
@@ -254,8 +257,8 @@ expression).
 .. toctree::
    :maxdepth: 1
 
-   idlharness
    testharness-api
-   testdriver-extension-tutorial
    testdriver
+   testdriver-extension-tutorial
+   idlharness
 ```

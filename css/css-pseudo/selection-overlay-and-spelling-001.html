@@ -40,7 +40,16 @@
   div
     {
       font-size: 60px;
-      line-height: 90px;
+      line-height: 1;
+      /*
+      We deliberately set line-height to 1 in order
+      to avoid/work around a possible difference
+      of rendering of highlight overlay among browsers.
+      In Chrome 80+, the selection highlight
+      overlay will extent vertically to include line
+      box top and line box bottom. This is not
+      the case in Firefox 68+.
+      */
     }
 
   div::selection

@@ -86,7 +86,7 @@ and outside callers should not use it.
   exception is tested, every string registered for it with `add_objects()`
   will be evaluated, and tests will be run on the result to verify that it
   correctly implements that interface or exception.  This is the only way to
-  test anything about `[NoInterfaceObject]` interfaces, and there are many
+  test anything about `[LegacyNoInterfaceObject]` interfaces, and there are many
   tests that can't be run on any interface without an object to fiddle with.
 
   The interface has to be the *primary* interface of all the objects

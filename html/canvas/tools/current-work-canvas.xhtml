@@ -575,14 +575,14 @@ interface <dfn id="canvasrenderingcontext2d">CanvasRenderingContext2D</dfn> {
 <a href="#canvasrenderingcontext2d" id="2dcontext:canvasrenderingcontext2d-15">CanvasRenderingContext2D</a> implements <a href="#canvastextdrawingstyles" id="2dcontext:canvastextdrawingstyles">CanvasTextDrawingStyles</a>;
 <a href="#canvasrenderingcontext2d" id="2dcontext:canvasrenderingcontext2d-16">CanvasRenderingContext2D</a> implements <a href="#canvaspath" id="2dcontext:canvaspath">CanvasPath</a>;
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvasstate">CanvasState</dfn> {
   // state
   void <a href="#dom-context-2d-save-2" id="2dcontext:dom-context-2d-save-2">save</a>(); // push state on state stack
   void <a href="#dom-context-2d-restore-2" id="2dcontext:dom-context-2d-restore-2">restore</a>(); // pop state stack and restore state
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvastransform">CanvasTransform</dfn> {
   // transformations (default transform is the identity matrix)
   void <a href="#dom-context-2d-scale-2" id="2dcontext:dom-context-2d-scale-2">scale</a>(unrestricted double x, unrestricted double y);
@@ -597,14 +597,14 @@ interface <dfn id="canvastransform">CanvasTransform</dfn> {
 
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvascompositing">CanvasCompositing</dfn> {
   // compositing
   attribute unrestricted double <a href="#dom-context-2d-globalalpha-2" id="2dcontext:dom-context-2d-globalalpha-2">globalAlpha</a>; // (default 1.0)
   attribute DOMString <a href="#dom-context-2d-globalcompositeoperation-2" id="2dcontext:dom-context-2d-globalcompositeoperation-2">globalCompositeOperation</a>; // (default source-over)
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvasimagesmoothing">CanvasImageSmoothing</dfn> {
   // image smoothing
   attribute boolean <a href="#dom-context-2d-imagesmoothingenabled-2" id="2dcontext:dom-context-2d-imagesmoothingenabled-2">imageSmoothingEnabled</a>; // (default true)
@@ -612,7 +612,7 @@ interface <dfn id="canvasimagesmoothing">CanvasImageSmoothing</dfn> {
 
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvasfillstrokestyles">CanvasFillStrokeStyles</dfn> {
   // colors and styles (see also the <a href="#canvaspathdrawingstyles" id="2dcontext:canvaspathdrawingstyles-2">CanvasPathDrawingStyles</a> and <a href="#canvastextdrawingstyles" id="2dcontext:canvastextdrawingstyles-2">CanvasTextDrawingStyles</a> interfaces)
   attribute (DOMString or CanvasGradient or CanvasPattern) <a href="#dom-context-2d-strokestyle-2" id="2dcontext:dom-context-2d-strokestyle-2">strokeStyle</a>; // (default black)
@@ -623,7 +623,7 @@ interface <dfn id="canvasfillstrokestyles">CanvasFillStrokeStyles</dfn> {
 
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvasshadowstyles">CanvasShadowStyles</dfn> {
   // shadows
   attribute unrestricted double <a href="#dom-context-2d-shadowoffsetx-2" id="2dcontext:dom-context-2d-shadowoffsetx-2">shadowOffsetX</a>; // (default 0)
@@ -632,13 +632,13 @@ interface <dfn id="canvasshadowstyles">CanvasShadowStyles</dfn> {
   attribute DOMString <a href="#dom-context-2d-shadowcolor-2" id="2dcontext:dom-context-2d-shadowcolor-2">shadowColor</a>; // (default transparent black)
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvasfilters">CanvasFilters</dfn> {
   // filters
   attribute DOMString <a href="#dom-context-2d-filter" id="2dcontext:dom-context-2d-filter">filter</a>; // (default &quot;none&quot;)
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvasrect">CanvasRect</dfn> {
   // rects
   void <a href="#dom-context-2d-clearrect-2" id="2dcontext:dom-context-2d-clearrect-2">clearRect</a>(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h);
@@ -646,7 +646,7 @@ interface <dfn id="canvasrect">CanvasRect</dfn> {
   void <a href="#dom-context-2d-strokerect-2" id="2dcontext:dom-context-2d-strokerect-2">strokeRect</a>(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h);
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvasdrawpath">CanvasDrawPath</dfn> {
   // path API (see also <a href="#canvaspath" id="2dcontext:canvaspath-2">CanvasPath</a>)
   void <a href="#dom-context-2d-beginpath-2" id="2dcontext:dom-context-2d-beginpath-2">beginPath</a>();
@@ -664,7 +664,7 @@ interface <dfn id="canvasdrawpath">CanvasDrawPath</dfn> {
 };
 
 [Exposed=Window,
- NoInterfaceObject]
+ LegacyNoInterfaceObject]
 interface <dfn id="canvasuserinterface">CanvasUserInterface</dfn> {
   void <a href="#dom-context-2d-drawfocusifneeded-2" id="2dcontext:dom-context-2d-drawfocusifneeded-2">drawFocusIfNeeded</a>(<a data-x-internal="element" href="https://dom.spec.whatwg.org/#interface-element" id="2dcontext:element">Element</a> element);
   void <a href="#dom-context-2d-drawfocusifneeded-2" id="2dcontext:dom-context-2d-drawfocusifneeded-2-2">drawFocusIfNeeded</a>(<a href="#path2d" id="2dcontext:path2d-6">Path2D</a> path, <a data-x-internal="element" href="https://dom.spec.whatwg.org/#interface-element" id="2dcontext:element-2">Element</a> element);
@@ -673,7 +673,7 @@ interface <dfn id="canvasuserinterface">CanvasUserInterface</dfn> {
 };
 
 [Exposed=Window,
- NoInterfaceObject]
+ LegacyNoInterfaceObject]
 interface <dfn id="canvastext">CanvasText</dfn> {
   // text (see also the <a href="#canvaspathdrawingstyles" id="2dcontext:canvaspathdrawingstyles-3">CanvasPathDrawingStyles</a> and <a href="#canvastextdrawingstyles" id="2dcontext:canvastextdrawingstyles-3">CanvasTextDrawingStyles</a> interfaces)
   void <a href="#dom-context-2d-filltext-2" id="2dcontext:dom-context-2d-filltext-2">fillText</a>(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
@@ -681,7 +681,7 @@ interface <dfn id="canvastext">CanvasText</dfn> {
   <a href="#textmetrics" id="2dcontext:textmetrics">TextMetrics</a> <a href="#dom-context-2d-measuretext-2" id="2dcontext:dom-context-2d-measuretext-2">measureText</a>(DOMString text);
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvasdrawimage">CanvasDrawImage</dfn> {
   // drawing images
   void <a href="#dom-context-2d-drawimage" id="2dcontext:dom-context-2d-drawimage">drawImage</a>(<a href="#canvasimagesource" id="2dcontext:canvasimagesource-2">CanvasImageSource</a> image, unrestricted double dx, unrestricted double dy);
@@ -689,7 +689,7 @@ interface <dfn id="canvasdrawimage">CanvasDrawImage</dfn> {
   void <a href="#dom-context-2d-drawimage" id="2dcontext:dom-context-2d-drawimage-3">drawImage</a>(<a href="#canvasimagesource" id="2dcontext:canvasimagesource-4">CanvasImageSource</a> image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvasimagedata">CanvasImageData</dfn> {
   // <a href="#pixel-manipulation" id="2dcontext:pixel-manipulation">pixel manipulation</a>
   <a href="#imagedata" id="2dcontext:imagedata">ImageData</a> <a href="#dom-context-2d-createimagedata-2" id="2dcontext:dom-context-2d-createimagedata-2">createImageData</a>(long sw, long sh);
@@ -705,7 +705,7 @@ enum <dfn id="canvastextalign">CanvasTextAlign</dfn> { &quot;<a href="#dom-conte
 enum <dfn id="canvastextbaseline">CanvasTextBaseline</dfn> { &quot;<a href="#dom-context-2d-textbaseline-top" id="2dcontext:dom-context-2d-textbaseline-top">top</a>&quot;, &quot;<a href="#dom-context-2d-textbaseline-hanging" id="2dcontext:dom-context-2d-textbaseline-hanging">hanging</a>&quot;, &quot;<a href="#dom-context-2d-textbaseline-middle" id="2dcontext:dom-context-2d-textbaseline-middle">middle</a>&quot;, &quot;<a href="#dom-context-2d-textbaseline-alphabetic" id="2dcontext:dom-context-2d-textbaseline-alphabetic">alphabetic</a>&quot;, &quot;<a href="#dom-context-2d-textbaseline-ideographic" id="2dcontext:dom-context-2d-textbaseline-ideographic">ideographic</a>&quot;, &quot;<a href="#dom-context-2d-textbaseline-bottom" id="2dcontext:dom-context-2d-textbaseline-bottom">bottom</a>&quot; };
 enum <dfn id="canvasdirection">CanvasDirection</dfn> { &quot;<a href="#dom-context-2d-direction-ltr" id="2dcontext:dom-context-2d-direction-ltr">ltr</a>&quot;, &quot;<a href="#dom-context-2d-direction-rtl" id="2dcontext:dom-context-2d-direction-rtl">rtl</a>&quot;, &quot;<a href="#dom-context-2d-direction-inherit" id="2dcontext:dom-context-2d-direction-inherit">inherit</a>&quot; };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvaspathdrawingstyles">CanvasPathDrawingStyles</dfn> {
   // line caps/joins
   attribute unrestricted double <a href="#dom-context-2d-linewidth-2" id="2dcontext:dom-context-2d-linewidth-2">lineWidth</a>; // (default 1)
@@ -720,7 +720,7 @@ interface <dfn id="canvaspathdrawingstyles">CanvasPathDrawingStyles</dfn> {
 };
 
 [Exposed=Window,
- NoInterfaceObject]
+ LegacyNoInterfaceObject]
 interface <dfn id="canvastextdrawingstyles">CanvasTextDrawingStyles</dfn> {
   // text
   attribute DOMString <a href="#dom-context-2d-font-2" id="2dcontext:dom-context-2d-font-2">font</a>; // (default 10px sans-serif)
@@ -729,7 +729,7 @@ interface <dfn id="canvastextdrawingstyles">CanvasTextDrawingStyles</dfn> {
   attribute <a href="#canvasdirection" id="2dcontext:canvasdirection">CanvasDirection</a> <a href="#dom-context-2d-direction-2" id="2dcontext:dom-context-2d-direction-2">direction</a>; // (default: &quot;inherit&quot;)
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[LegacyNoInterfaceObject, Exposed=(Window,Worker)]
 interface <dfn id="canvaspath">CanvasPath</dfn> {
   // shared path API methods
   void <a href="#dom-context-2d-closepath-2" id="2dcontext:dom-context-2d-closepath-2">closePath</a>();

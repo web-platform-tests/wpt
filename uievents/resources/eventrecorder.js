@@ -76,7 +76,7 @@
 
 // ----------------------
 
-// [NoInterfaceObject]
+// [LegacyNoInterfaceObject]
 // interface EventRecorderRegistration {
 //    void addRecordedEventListener(SupportedEventTypes type, EventListener? handler, optional boolean capturePhase = false);
 //    void removeRecordedEventListener(SupportedEventTypes type, EventListener? handler, optional boolean capturePhase = false);

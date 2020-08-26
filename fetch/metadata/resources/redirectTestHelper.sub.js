@@ -109,18 +109,6 @@ function RunCommonRedirectTests(testNamePrefix, urlHelperMethod, expectedResults
   }, testNamePrefix + ' embed');
 
   promise_test(t => {
-    let key = 'fetch-redirect' + nonce;
-    let expectation = { ...expectedResults };
-    if (expectation['mode'] != '')
-      expectation['mode'] = 'cors';
-    if (expectation['dest'] == 'font')
-      expectation['dest'] = 'empty';
-    return fetch(urlHelperMethod('resources/echo-as-json.py?' + key))
-      .then(r => r.json())
-      .then(j => {assert_header_equals(j, expectation, testNamePrefix + ' fetch() api');});
-  }, testNamePrefix + ' fetch() api');
-
-  promise_test(t => {
     return new Promise((resolve, reject) => {
       let key = 'object-https-redirect' + nonce;
       let e = document.createElement('object');

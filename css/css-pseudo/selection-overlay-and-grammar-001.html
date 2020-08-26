@@ -11,20 +11,28 @@
   <link rel="match" href="reference/selection-overlay-and-grammar-001-ref.html">
 
   <meta content="" name="flags">
-  <meta name="assert" content="In this test, the div::selection pseudo-element must be drawn over the div::grammar-error overlay. The test predicts that, since div::selection uses a semi-transparent very lite blue background layer, the resulting background color for div::grammar-error will be lime-green-ish (#7FBF80: slightly desaturated lime green).">
+  <meta name="assert" content="In this test, the div::selection pseudo-element must be drawn over the div::grammar-error overlay.">
 
   <!--
 
+  The initial version of this test was relying on color
+  composition and was predicting a lime-green-ish (#7FBF80:
+  slightly desaturated lime green) background color for "thing".
+
   "#7fbf80 color description : Slightly desaturated lime green"
   https://www.colorhexa.com/7fbf80
+
+  This test does not rely on color composition but the
+  test nevertheless verifies the ::selection overlay drawn
+  over the ::grammar-error overlay.
 
   -->
 
   <style>
   div
     {
-      float: left;
-      font-size: 300%;
+      font-size: 60px;
+      line-height: 90px;
     }
 
   div::selection

@@ -11,11 +11,26 @@
   <style>
   div
     {
-      float: left;
-      font-size: 300%;
+      font-size: 60px;
+      line-height: 90px;
     }
 
   span#outer
+    {
+      color: transparent;
+    }
+
+  span#inner
+    {
+      background-color: yellow;
+    }
+
+  div#overlapping-line
+    {
+      margin-top: -90px; /* -1lh unfortunately is not implemented */
+    }
+
+  div#overlapping-line > span
     {
       background-color: rgba(0%, 50%, 100%, 0.5);
       /*
@@ -24,11 +39,6 @@
       https://www.colorhexa.com/7fbfff
       */
       color: yellow;
-    }
-
-  span#inner
-    {
-      background-color: #7FBF80; /* lime-green-ish */
     }
   </style>
 
@@ -47,4 +57,6 @@
   The bad spelling of Txet is intentional and part of this test
   -->
 
-  <div><span id="outer"><span id="inner">Txet</span> sample</span></div>
+  <div id="overlapped-line"><span id="outer"><span id="inner">Txet</span> sample</span></div>
+
+  <div id="overlapping-line"><span>Txet sample</span></div>

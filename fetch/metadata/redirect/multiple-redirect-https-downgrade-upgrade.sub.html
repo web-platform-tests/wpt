@@ -6,35 +6,14 @@
 <script src=/fetch/metadata/resources/redirectTestHelper.sub.js></script>
 <script src=/common/security-features/resources/common.sub.js></script>
 <script src=/common/utils.js></script>
-<style>
-  @font-face {
-    font-family: myDowngradeUpgradeFont;
-    src: url(https://{{host}}:{{ports[https][0]}}/fetch/api/resources/redirect.py?location=http%3A%2F%2F{{host}}%3A{{ports[http][0]}}%2Ffetch%2Fapi%2Fresources%2Fredirect.py%3Flocation%3Dhttps%253A%252F%252F{{host}}%253A{{ports[https][0]}}%252Ffetch%252Fmetadata%252Fresources%252Frecord-header.py%253Ffile%253Dfont-https-downgrade-upgrade{{$id:uuid()}});
-  }
-  #fontTest {
-    font-family: myDowngradeUpgradeFont;
-  }
-</style>
 <body>
-<div id="fontTest">Downgraded then upgraded font</div>
 <script>
-  let nonce = "{{$id}}";
+  let nonce = token();
   let expected = {"site": "cross-site", "user": "", "mode": "cors", "dest": "font"};
 
   // Validate various scenarios handle a request that redirects from https => http => https
   // correctly and avoids disclosure of any Sec- headers.
   RunCommonRedirectTests("Https downgrade-upgrade", MultipleRedirectTo, expected);
-
-  document.fonts.ready.then(function () {
-    promise_test(t => {
-      return new Promise((resolve, reject) => {
-        let key = "font-https-downgrade-upgrade{{$id}}";
-        return validate_expectations(key, expected, "Https downgrade-upgrade font => No headers")
-            .then(_ => resolve())
-            .catch(e => reject(e));
-      });
-    }, "Https downgrade-upgrade font => No headers");
-  });
 
   promise_test(() => {
     return requestViaImage(secureRedirectURL + encodeURIComponent(

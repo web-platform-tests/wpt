@@ -215,8 +215,8 @@ split up in ranges of subtests. For example:
 <meta name="variant" content="?1-1000">
 <meta name="variant" content="?1001-2000">
 <meta name="variant" content="?2001-last">
-<script src="/resources/testharness.js">
-<script src="/resources/testharnessreport.js">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <script src="/common/subset-tests.js">
 <script>
  const tests = [
@@ -239,9 +239,9 @@ expression).
 <meta name="variant" content="?include=Foo">
 <meta name="variant" content="?include=Bar">
 <meta name="variant" content="?exclude=(Foo|Bar)">
-<script src="/resources/testharness.js">
-<script src="/resources/testharnessreport.js">
-<script src="/common/subset-tests-by-key.js">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/subset-tests-by-key.js"></script>
 <script>
    subsetTestByKey("Foo", async_test, () => { ... }, "Testing foo");
    ...

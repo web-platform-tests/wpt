@@ -14,12 +14,4 @@
   // Validate various scenarios handle a request that redirects from http => https correctly and add the proper Sec- headers.
   RunCommonRedirectTests("Http upgrade", upgradeRedirectTo, expected);
 </script>
-
-<script src="http://{{host}}:{{ports[http][0]}}/fetch/api/resources/redirect.py?location=https%3A%2F%2F{{host}}%3A{{ports[https][0]}}%2Ffetch%2Fmetadata%2Fresources%2Fecho-as-script.py"></script>
-<script>
-  test(t => {
-    t.add_cleanup(_ => { header = null; });
-    assert_header_equals(header, { "site": "cross-site", "user": "", "mode": "no-cors", "dest": "script" }, "Http upgrade script => No headers");
-  }, "Http upgrade script => No headers");
-</script>
 </body>

@@ -14,12 +14,4 @@
   // Validate various scenarios handle a request that redirects from https => http correctly and avoids disclosure of any Sec- headers.
   RunCommonRedirectTests("Https downgrade", downgradeRedirectTo, expected);
 </script>
-
-<script src="https://{{host}}:{{ports[https][0]}}/fetch/api/resources/redirect.py?location=http%3A%2F%2F{{host}}%3A{{ports[http][0]}}%2Ffetch%2Fmetadata%2Fresources%2Fecho-as-script.py"></script>
-<script>
-  test(t => {
-    t.add_cleanup(_ => { header = null; });
-    assert_no_headers(header, "Https downgrade script => No headers");
-  }, "Https downgrade script => No headers");
-</script>
 </body>

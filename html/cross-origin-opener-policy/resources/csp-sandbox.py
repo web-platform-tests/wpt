@@ -19,7 +19,7 @@ def main(request, response):
   params.delete("sandbox");
   const navigate = params.get("navigate");
   if (navigate) {
-    fullyLoaded.then(() => {
+    fullyLoaded().then(() => {
       self.location = navigate;
     });
   } else {

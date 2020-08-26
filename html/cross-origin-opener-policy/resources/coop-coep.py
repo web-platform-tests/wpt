@@ -27,18 +27,18 @@ def main(request, response):
 <meta charset=utf-8>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/html/cross-origin-opener-policy/resources/common.js"></script>
-<body></body>
+<body>
 <script>
   const params = new URL(location).searchParams;
   const navHistory = params.get("navHistory");
   const avoidBackAndForth = params.get("avoidBackAndForth");
   const navigate = params.get("navigate");
   if (navHistory !== null) {
-    fullyLoaded.then(() => {
+    fullyLoaded().then(() => {
       history.go(Number(navHistory));
     });
   } else if (navigate !== null && (history.length === 1 || !avoidBackAndForth)) {
-    fullyLoaded.then(() => {
+    fullyLoaded().then(() => {
       self.location = navigate;
     });
   } else {
@@ -64,4 +64,5 @@ def main(request, response):
     document.body.appendChild(iframe);
   }
 </script>
+</body>
 """

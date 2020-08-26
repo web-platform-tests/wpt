@@ -19,7 +19,7 @@
       assert_throws_dom("SecurityError", () => { popup.document; }, 'same-origin check');
     });
     const navigateTo = `/html/cross-origin-opener-policy/resources/coop-coep.py?coop=same-origin&coep=&channel=${channel.name}`;
-    popup = window.open(`resources/csp-sandbox.py?coop=&coep=&sandbox=${sandboxValue}&channel=&navigate=${encodeURIComponent(navigateTo)}`, sandboxValue);
+    popup = window.open(`resources/csp-sandbox.py?coop=&coep=&sandbox=${sandboxValue}&channel=&navigate=${encodeURIComponent(navigateTo)}`, sandboxValue.replace(/ /g, '_'));
     t.add_cleanup(() => { popup.close(); });
     addEventListener('load', t.step_func(() => {
       t.step_timeout(() => {

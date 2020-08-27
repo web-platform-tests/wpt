@@ -15,8 +15,16 @@
     channel.onmessage = t.step_func_done(e => {
       assert_equals(e.data.name, '', 'e.data.name');
       assert_false(e.data.opener, 'e.data.opener');
+      // `popup` is still the WindowProxy that holds the CSP sandbox document, not the
+      // after-navigation COOP document. The CSP sandbox only applies to the before navigation
+      // document/window.
       assert_true(popup.closed, 'popup.closed');
-      assert_throws_dom("SecurityError", () => { popup.document; }, 'same-origin check');
+      // Same-origin check (with the CSP sandbox document) should not throw when 'allow-same-origin'
+      if (sandboxValue.includes('allow-same-origin')) {
+        assert_true(!!popup.document, 'same-origin check');
+      } else {
+        assert_throws_dom("SecurityError", () => { popup.document; }, 'same-origin check');
+      }
     });
     const navigateTo = `/html/cross-origin-opener-policy/resources/coop-coep.py?coop=same-origin&coep=&channel=${channel.name}`;
     popup = window.open(`resources/csp-sandbox.py?coop=&coep=&sandbox=${sandboxValue}&channel=&navigate=${encodeURIComponent(navigateTo)}`, sandboxValue.replace(/ /g, '_'));

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8"/>
 <link rel="author" href="mtrzos@google.com" title="Maciek Trzos">
-<title>Tentative: request for embed with HTML document source</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/fetch/metadata/resources/helper.js></script>
@@ -22,6 +21,23 @@
   };
 
   for (let site in origins) {
+    promise_test(t => {
+      return new Promise((resolve, reject) => {
+        let key = "embed-" + site + "-" + nonce;
+
+        let el = document.createElement('embed');
+        el.src = origins[site] + "/fetch/metadata/resources/record-header.py?file=" + key;
+        el.onload = _ => {
+          let expected = {"dest": "embed", "site": site, "user": "", "mode": "navigate"};
+          validate_expectations(key, expected, site + " embed")
+            .then(resolve)
+            .catch(reject);
+        };
+
+        document.body.appendChild(el);
+      })
+    }, "Wrapper: " + site + " embed");
+
     promise_test(t => {
       return new Promise((resolve, reject) => {
         let key = "post-embed-" + site + "-" + nonce;

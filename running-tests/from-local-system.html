@@ -41,7 +41,8 @@
 <h2>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this headline">¶</a></h2>
 <p>Running the tests requires <code class="docutils literal notranslate"><span class="pre">python</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>, as well as updating
 the system <code class="docutils literal notranslate"><span class="pre">hosts</span></code> file.</p>
-<p>Note that Python 2.7 is required. Using Python 3 is not supported.</p>
+<p>Python 3 is supported and preferred, but for now it is still possible to use
+Python 2.7 if necessary.</p>
 <p>The required setup is different depending on your operating system.</p>
 <div class="section" id="linux-setup">
 <h3>Linux Setup<a class="headerlink" href="#linux-setup" title="Permalink to this headline">¶</a></h3>
@@ -51,6 +52,9 @@ the system <code class="docutils literal notranslate"><span class="pre">hosts</s
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get install python python-pip virtualenv
 </pre></div>
 </div>
+<p>It is important to have a package that provides a <code class="docutils literal notranslate"><span class="pre">python</span></code> binary. On Fedora,
+for example, that means installing the <code class="docutils literal notranslate"><span class="pre">python-unversioned-command</span></code> package. On
+Ubuntu Focal and later, the package is called <code class="docutils literal notranslate"><span class="pre">python-is-python3</span></code>.</p>
 </div>
 <div class="section" id="macos-setup">
 <h3>macOS Setup<a class="headerlink" href="#macos-setup" title="Permalink to this headline">¶</a></h3>

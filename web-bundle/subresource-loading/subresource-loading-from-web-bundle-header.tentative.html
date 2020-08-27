@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>Subresource loading with link rel="webbundle" HTTP header</title>
+<link
+  rel="help"
+  href="https://github.com/WICG/webpackage/blob/master/explainers/subresource-loading.md"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    promise_test(async () => {
+      const module = await import('http://web-platform.test:8001/root.js');
+      assert_equals(module.result, 'OK');
+    }, "Subresource loading with WebBundle using link HTTP header");
+  </script>
+</body>

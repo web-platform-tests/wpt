@@ -1,0 +1,1 @@
+Link: <../resources/wbn/subresource.wbn>;rel=webbundle;resources="http://web-platform.test:8001/root.js http://web-platform.test:8001/submodule.js"

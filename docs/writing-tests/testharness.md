@@ -205,11 +205,12 @@ for example:
 <meta name="variant" content="?wss">
 ```
 
-The test can then do different things based on the URL.
+Test runners will execute the test for each variant specified, appending the corresponding content
+attribute value to the URL of the test as they do so.
 
 There are two utility scripts in that work well together with variants,
 `/common/subset-tests.js` and `/common/subset-tests-by-key.js`, where
-a test that would otherwise have too many tests to be useful can be
+a test that would otherwise have too many tests to complete inside the timeout can be
 split up in ranges of subtests. For example:
 
 ```html

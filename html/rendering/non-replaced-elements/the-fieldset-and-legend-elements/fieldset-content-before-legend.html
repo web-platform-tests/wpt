@@ -2,6 +2,13 @@
 <title>fieldset content before legend</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<style>
+fieldset {
+  /* Paddings might have fractional values by default, and they can cause
+     rounding differences between the test element and the reference element. */
+  padding: 0;
+}
+</style>
 <fieldset id=test>
   X
   <legend>legend</legend>

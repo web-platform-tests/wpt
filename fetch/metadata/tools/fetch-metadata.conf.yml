@@ -51,6 +51,8 @@ cases:
       # Service workers are only available in secure context
       fetch-via-serviceworker.https.sub.html: []
       cors-preflight.sub.html: []
+      # Service workers are only available in secure context
+      serviceworker.https.sub.html: []
 
       css-images.sub.html:
         - filename_flags: [tentative]
@@ -155,6 +157,7 @@ cases:
       window-location.sub.html: [{}]
       script-module-import-dynamic.sub.html: [{}]
       script-module-import-static.sub.html: [{}]
+      serviceworker.https.sub.html: [{}]
       svg-image.sub.html: [{}]
       window-history.sub.html: [{}]
       worker-dedicated-importscripts.sub.html: [{}]
@@ -184,6 +187,8 @@ cases:
       cors-preflight.sub.html: []
       # Service workers are only available in secure context
       fetch-via-serviceworker.https.sub.html: []
+      # Service workers' redirect mode is "error"
+      serviceworker.https.sub.html: []
       # Interstitial locations in an HTTP redirect chain are not added to the
       # session history, so these requests cannot be initiated using the
       # History API.
@@ -280,6 +285,8 @@ cases:
       # preflight requests are only issued on the basis of the origin of the
       # initial request.
       cors-preflight.sub.html: []
+      # Service Workers' redirect mode is "error"
+      serviceworker.https.sub.html: []
       # Interstitial locations in an HTTP redirect chain are not added to the
       # session history, so these requests cannot be initiated using the
       # History API.
@@ -372,6 +379,8 @@ cases:
       header-link.sub.html: []
       script-module-import-static.sub.html: []
       script-module-import-dynamic.sub.html: []
+      # Service Workers' redirect mode is "error"
+      serviceworker.https.sub.html: []
       cors-preflight.sub.html: []
       # Interstitial locations in an HTTP redirect chain are not added to the
       # session history, so these requests cannot be initiated using the
@@ -573,6 +582,11 @@ cases:
           elementAttrs: { crossorigin: anonymous }
         - expected: cors
           elementAttrs: { crossorigin: use-credentials }
+      serviceworker.https.sub.html:
+        - expected: same-origin
+          options: { type: 'classic' }
+        # https://github.com/whatwg/html/pull/5875
+        - expected: same-origin
       worker-dedicated-constructor.sub.html:
         - expected: same-origin
         - options: { type: module }
@@ -691,6 +705,8 @@ cases:
         - expected: script
       script-module-import-static.sub.html:
         - expected: script
+      serviceworker.https.sub.html:
+        - expected: serviceworker
       # Implemented as "image" in Chromium and Firefox, but specified as
       # "empty"
       # https://github.com/w3c/svgwg/issues/782
@@ -795,6 +811,8 @@ cases:
       script-module-import-dynamic.sub.html:
         - expected: NULL
       script-module-import-static.sub.html:
+        - expected: NULL
+      serviceworker.https.sub.html:
         - expected: NULL
       svg-image.sub.html:
         - expected: NULL

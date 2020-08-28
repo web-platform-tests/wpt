@@ -13,8 +13,8 @@ partial interface Document {
   void exitPointerLock();
 };
 
-partial interface DocumentOrShadowRoot {
-  readonly attribute Element? pointerLockElement;
+partial interface mixin DocumentOrShadowRoot {
+  readonly attribute Element ? pointerLockElement;
 };
 
 partial interface MouseEvent {

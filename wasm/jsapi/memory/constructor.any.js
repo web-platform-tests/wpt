@@ -1,23 +1,6 @@
-// META: global=jsshell
+// META: global=window,dedicatedworker,jsshell
 // META: script=/wasm/jsapi/assertions.js
-
-function assert_Memory(memory, expected) {
-  assert_equals(Object.getPrototypeOf(memory), WebAssembly.Memory.prototype,
-                "prototype");
-  assert_true(Object.isExtensible(memory), "extensible");
-
-  // https://github.com/WebAssembly/spec/issues/840
-  assert_equals(memory.buffer, memory.buffer, "buffer should be idempotent");
-  assert_equals(Object.getPrototypeOf(memory.buffer), ArrayBuffer.prototype,
-                "prototype of buffer");
-  assert_true(Object.isExtensible(memory.buffer), "buffer extensibility");
-  assert_equals(memory.buffer.byteLength, 0x10000 * expected.size, "size of buffer");
-  if (expected.size > 0) {
-    const array = new Uint8Array(memory.buffer);
-    assert_equals(array[0], 0, "first element of buffer");
-    assert_equals(array[array.byteLength - 1], 0, "last element of buffer");
-  }
-}
+// META: script=/wasm/jsapi/memory/assertions.js
 
 test(() => {
   assert_function_name(WebAssembly.Memory, "Memory", "WebAssembly.Memory");
@@ -28,12 +11,12 @@ test(() => {
 }, "length");
 
 test(() => {
-  assert_throws(new TypeError(), () => new WebAssembly.Memory());
+  assert_throws_js(TypeError, () => new WebAssembly.Memory());
 }, "No arguments");
 
 test(() => {
   const argument = { "initial": 0 };
-  assert_throws(new TypeError(), () => WebAssembly.Memory(argument));
+  assert_throws_js(TypeError, () => WebAssembly.Memory(argument));
 }, "Calling");
 
 test(() => {
@@ -50,14 +33,14 @@ test(() => {
     {},
   ];
   for (const invalidArgument of invalidArguments) {
-    assert_throws(new TypeError(),
-                  () => new WebAssembly.Memory(invalidArgument),
-                  `new Memory(${format_value(invalidArgument)})`);
+    assert_throws_js(TypeError,
+                     () => new WebAssembly.Memory(invalidArgument),
+                     `new Memory(${format_value(invalidArgument)})`);
   }
 }, "Invalid descriptor argument");
 
 test(() => {
-  assert_throws(new TypeError(), () => new WebAssembly.Memory({ "initial": undefined }));
+  assert_throws_js(TypeError, () => new WebAssembly.Memory({ "initial": undefined }));
 }, "Undefined initial value in descriptor");
 
 const outOfRangeValues = [
@@ -71,16 +54,16 @@ const outOfRangeValues = [
 
 for (const value of outOfRangeValues) {
   test(() => {
-    assert_throws(new TypeError(), () => new WebAssembly.Memory({ "initial": value }));
+    assert_throws_js(TypeError, () => new WebAssembly.Memory({ "initial": value }));
   }, `Out-of-range initial value in descriptor: ${format_value(value)}`);
 
   test(() => {
-    assert_throws(new TypeError(), () => new WebAssembly.Memory({ "initial": 0, "maximum": value }));
+    assert_throws_js(TypeError, () => new WebAssembly.Memory({ "initial": 0, "maximum": value }));
   }, `Out-of-range maximum value in descriptor: ${format_value(value)}`);
 }
 
 test(() => {
-  assert_throws(new RangeError(), () => new WebAssembly.Memory({ "initial": 10, "maximum": 9 }));
+  assert_throws_js(RangeError, () => new WebAssembly.Memory({ "initial": 10, "maximum": 9 }));
 }, "Initial value exceeds maximum");
 
 test(() => {

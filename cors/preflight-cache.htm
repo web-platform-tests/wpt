@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <title>CORS - preflight cache</title>
+<meta name="timeout" content="long">
 <meta name=author title="Odin Hørthe Omdal" href="mailto:odiho@opera.com">
 
 <script src=/resources/testharness.js></script>
@@ -58,6 +59,15 @@ test(function() {
     did_preflight(false, client, {token: id})
 },
 'preflight for x-print should be cached')
+
+test(function() {
+    var time = new Date().getTime()
+    var client = new XMLHttpRequest()
+
+    var id = did_preflight(true, client, {extra:'max_age='})
+    did_preflight(false, client, {extra:'max_age=', token: id})
+},
+'age = blank, should be cached')
 
 test(function() {
     var time = new Date().getTime()

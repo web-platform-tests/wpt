@@ -21,7 +21,7 @@ logging.basicConfig()
 
 wptserve.logger.set_logger(logging.getLogger())
 
-here = os.path.split(__file__)[0]
+here = os.path.dirname(__file__)
 doc_root = os.path.join(here, "docroot")
 
 
@@ -75,7 +75,7 @@ class TestUsingServer(unittest.TestCase):
             req.add_data(body)
 
         if auth is not None:
-            req.add_header("Authorization", b"Basic %s" % base64.b64encode((b"%s:%s" % auth)))
+            req.add_header("Authorization", b"Basic %s" % base64.b64encode(b"%s:%s" % auth))
 
         return urlopen(req)
 

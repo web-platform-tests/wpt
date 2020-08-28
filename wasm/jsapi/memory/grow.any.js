@@ -1,32 +1,10 @@
-// META: global=jsshell
-
-function assert_ArrayBuffer(actual, expected, message) {
-  // https://github.com/WebAssembly/spec/issues/840
-  assert_equals(Object.getPrototypeOf(actual), ArrayBuffer.prototype,
-                `${message}: prototype`);
-  if (expected.detached) {
-    // https://github.com/tc39/ecma262/issues/678
-    let byteLength;
-    try {
-      byteLength = actual.byteLength;
-    } catch (e) {
-      byteLength = 0;
-    }
-    assert_equals(byteLength, 0, `${message}: detached size`);
-  } else {
-    assert_equals(actual.byteLength, 0x10000 * expected.size, `${message}: size`);
-    if (expected.size > 0) {
-      const array = new Uint8Array(actual);
-      assert_equals(array[0], 0, `${message}: first element`);
-      assert_equals(array[array.byteLength - 1], 0, `${message}: last element`);
-    }
-  }
-}
+// META: global=window,dedicatedworker,jsshell
+// META: script=/wasm/jsapi/memory/assertions.js
 
 test(() => {
   const argument = { "initial": 0 };
   const memory = new WebAssembly.Memory(argument);
-  assert_throws(new TypeError(), () => memory.grow());
+  assert_throws_js(TypeError, () => memory.grow());
 }, "Missing arguments");
 
 test(t => {
@@ -50,7 +28,7 @@ test(t => {
   const fn = WebAssembly.Memory.prototype.grow;
 
   for (const thisValue of thisValues) {
-    assert_throws(new TypeError(), () => fn.call(thisValue, argument), `this=${format_value(thisValue)}`);
+    assert_throws_js(TypeError, () => fn.call(thisValue, argument), `this=${format_value(thisValue)}`);
   }
 }, "Branding");
 
@@ -144,7 +122,7 @@ test(() => {
   const oldMemory = memory.buffer;
   assert_ArrayBuffer(oldMemory, { "size": 1 }, "Buffer before growing");
 
-  assert_throws(new RangeError(), () => memory.grow(2));
+  assert_throws_js(RangeError, () => memory.grow(2));
   assert_equals(memory.buffer, oldMemory);
   assert_ArrayBuffer(memory.buffer, { "size": 1 }, "Buffer before trying to grow");
 }, "Zero initial growing too much");
@@ -165,7 +143,7 @@ for (const value of outOfRangeValues) {
   test(() => {
     const argument = { "initial": 0 };
     const memory = new WebAssembly.Memory(argument);
-    assert_throws(new TypeError(), () => memory.grow(value));
+    assert_throws_js(TypeError, () => memory.grow(value));
   }, `Out-of-range argument: ${format_value(value)}`);
 }
 
@@ -183,3 +161,29 @@ test(() => {
   assert_ArrayBuffer(oldMemory, { "detached": true }, "Old buffer after growing");
   assert_ArrayBuffer(newMemory, { "size": 2 }, "New buffer after growing");
 }, "Stray argument");
+
+test(() => {
+  const argument = { "initial": 1, "maximum": 2, "shared": true };
+  const memory = new WebAssembly.Memory(argument);
+  const oldMemory = memory.buffer;
+  assert_ArrayBuffer(oldMemory, { "size": 1, "shared": true }, "Buffer before growing");
+
+  const result = memory.grow(1);
+  assert_equals(result, 1);
+
+  const newMemory = memory.buffer;
+  assert_not_equals(oldMemory, newMemory);
+  assert_ArrayBuffer(oldMemory, { "size": 1, "shared": true }, "Old buffer after growing");
+  assert_ArrayBuffer(newMemory, { "size": 2, "shared": true }, "New buffer after growing");
+
+  // The old and new buffers must have the same value for the
+  // [[ArrayBufferData]] internal slot.
+  const oldArray = new Uint8Array(oldMemory);
+  const newArray = new Uint8Array(newMemory);
+  assert_equals(oldArray[0], 0, "old first element");
+  assert_equals(newArray[0], 0, "new first element");
+  oldArray[0] = 1;
+  assert_equals(oldArray[0], 1, "old first element");
+  assert_equals(newArray[0], 1, "new first element");
+
+}, "Growing shared memory does not detach old buffer");

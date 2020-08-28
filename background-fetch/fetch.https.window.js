@@ -1,5 +1,7 @@
+// META: script=/common/get-host-info.sub.js
 // META: script=/service-workers/service-worker/resources/test-helpers.sub.js
 // META: script=resources/utils.js
+
 'use strict';
 
 // Covers basic functionality provided by BackgroundFetchManager.fetch().
@@ -21,8 +23,8 @@ promise_test(async test => {
     serviceWorkerRegistration.active, null,
     'There must not be an activated worker');
 
-  await promise_rejects(
-    test, new TypeError(),
+  await promise_rejects_js(
+    test, TypeError,
     serviceWorkerRegistration.backgroundFetch.fetch(
       uniqueId(), ['resources/feature-name.txt']),
       'fetch() must reject on pending and installing workers');
@@ -32,15 +34,15 @@ promise_test(async test => {
 backgroundFetchTest(async (test, backgroundFetch) => {
   // 6.3.1.6: If |requests| is empty, then return a promise rejected with a
   //          TypeError.
-  await promise_rejects(
-    test, new TypeError(), backgroundFetch.fetch(uniqueId(), []),
+  await promise_rejects_js(
+    test, TypeError, backgroundFetch.fetch(uniqueId(), []),
     'Empty sequences are treated as NULL');
 
   // 6.3.1.7.1: Let |internalRequest| be the request of the result of invoking
   //            the Request constructor with |request|. If this throws an
   //            exception, return a promise rejected with the exception.
-  await promise_rejects(
-    test, new TypeError(),
+  await promise_rejects_js(
+    test, TypeError,
     backgroundFetch.fetch(uniqueId(), 'https://user:pass@domain/secret.txt'),
     'Exceptions thrown in the Request constructor are rethrown');
 
@@ -50,8 +52,8 @@ backgroundFetchTest(async (test, backgroundFetch) => {
     const request =
       new Request('resources/feature-name.txt', {mode: 'no-cors'});
 
-    await promise_rejects(
-      test, new TypeError(), backgroundFetch.fetch(uniqueId(), request),
+    await promise_rejects_js(
+      test, TypeError, backgroundFetch.fetch(uniqueId(), request),
       'Requests must not be in no-cors mode');
   }
 
@@ -60,7 +62,7 @@ backgroundFetchTest(async (test, backgroundFetch) => {
 backgroundFetchTest(async (test, backgroundFetch) => {
   // 6.3.1.9.2: If |bgFetchMap[id]| exists, reject |promise| with a TypeError
   //            and abort these steps.
-  return promise_rejects(test, new TypeError(), Promise.all([
+  return promise_rejects_js(test, TypeError, Promise.all([
     backgroundFetch.fetch('my-id', 'resources/feature-name.txt?1'),
     backgroundFetch.fetch('my-id', 'resources/feature-name.txt?2')
   ]));
@@ -168,7 +170,7 @@ backgroundFetchTest(async (test, backgroundFetch) => {
 
   // Very large download total that will definitely exceed the quota.
   const options = {downloadTotal: Number.MAX_SAFE_INTEGER};
-  await promise_rejects(
+  await promise_rejects_dom(
     test, 'QUOTA_EXCEEDED_ERR',
     backgroundFetch.fetch(registrationId, 'resources/feature-name.txt', options),
     'This fetch should have thrown a quota exceeded error');
@@ -263,64 +265,16 @@ backgroundFetchTest(async (test, backgroundFetch) => {
 }, 'Fetches with mixed content should fail.');
 
 backgroundFetchTest(async (test, backgroundFetch) => {
-  const registrationId = 'matchexistingrequest';
-  const registration =
-    await backgroundFetch.fetch(registrationId, 'resources/feature-name.txt');
-
-  assert_equals(registration.id, registrationId);
+  const filePath = '/background-fetch/resources/feature-name.txt';
+  const registration = await backgroundFetch.fetch(
+    uniqueId(),
+    `https://${get_host_info().REMOTE_HOST}${filePath}`);
 
   const {type, eventRegistration, results} = await getMessageFromServiceWorker();
-  assert_equals('backgroundfetchsuccess', type);
+  assert_equals(type, 'backgroundfetchfail');
   assert_equals(results.length, 1);
 
+  assert_equals(results[0], null);
   assert_equals(eventRegistration.id, registration.id);
-  assert_equals(eventRegistration.result, 'success');
-  assert_equals(eventRegistration.failureReason, '');
-
-  assert_true(results[0].url.includes('resources/feature-name.txt'));
-  assert_equals(results[0].status, 200);
-  assert_equals(results[0].text, 'Background Fetch');
-
-}, 'Matching to a single request should work');
-
-backgroundFetchTest(async (test, backgroundFetch) => {
-  const registrationId = 'matchmissingrequest';
-  const registration =
-    await backgroundFetch.fetch(registrationId, 'resources/feature-name.txt');
-
-  assert_equals(registration.id, registrationId);
-
-  const {type, eventRegistration, results} = await getMessageFromServiceWorker();
-  assert_equals('backgroundfetchsuccess', type);
-  assert_equals(results.length, 0);
-
-  assert_equals(eventRegistration.id, registration.id);
-  assert_equals(eventRegistration.result, 'success');
-  assert_equals(eventRegistration.failureReason, '');
-
-}, 'Matching to a non-existing request should work');
-
-backgroundFetchTest(async (test, backgroundFetch) => {
-  const registrationId = 'matchexistingrequesttwice';
-  const registration =
-    await backgroundFetch.fetch(registrationId, 'resources/feature-name.txt');
-
-  assert_equals(registration.id, registrationId);
-
-  const {type, eventRegistration, results} = await getMessageFromServiceWorker();
-  assert_equals('backgroundfetchsuccess', type);
-  assert_equals(results.length, 2);
-
-  assert_equals(eventRegistration.id, registration.id);
-  assert_equals(eventRegistration.result, 'success');
-  assert_equals(eventRegistration.failureReason, '');
-
-  assert_true(results[0].url.includes('resources/feature-name.txt'));
-  assert_equals(results[0].status, 200);
-  assert_equals(results[0].text, 'Background Fetch');
-
-  assert_true(results[1].url.includes('resources/feature-name.txt'));
-  assert_equals(results[1].status, 200);
-  assert_equals(results[1].text, 'Background Fetch');
-
-}, 'Matching multiple times on the same request works as expected.');
+  assert_equals(eventRegistration.downloaded, 0);
+}, 'Responses failing CORS checks are not leaked');

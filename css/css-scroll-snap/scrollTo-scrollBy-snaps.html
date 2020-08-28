@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1" />
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#scroll-snap-type" />
+<meta name="viewport" content="user-scalable=no">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-body {
+html {
   margin: 0px;
   overflow: scroll;
   scroll-snap-type: both mandatory;
@@ -23,8 +24,8 @@ div {
 .space {
   left: 0px;
   top: 0px;
-  width: 2100px;
-  height: 2100px;
+  width: 4000px;
+  height: 4000px;
 }
 .target {
   width: 600px;
@@ -74,7 +75,9 @@ var viewport = document.scrollingElement;
 [
   [{left: 800}, 1000, 0],
   [{top: 900}, 0, 1000],
-  [{left: 900, top: 800}, 1000, 1000]
+  [{left: 900, top: 800}, 1000, 1000],
+  [{left: 800, top: -100}, 1000, 0], /* outside bounds on y axis */
+  [{left: 10000, top: -100}, 1000, 0] /* outside bounds on both axes */
 ].forEach(([input, expectedX, expectedY]) => {
   test(() => {
     divScroller.scrollTo(0, 0);
@@ -149,7 +152,7 @@ var viewport = document.scrollingElement;
     window.scrollTo(0, 0);
     assert_equals(window.scrollX, 0);
     assert_equals(window.scrollY, 0);
-    window.scrollTo(input);
+    window.scrollBy(input);
     assert_equals(window.scrollX, expectedX);
     assert_equals(window.scrollY, expectedY);
   }, `scrollBy(${format_dict(input)}) on window lands on (${expectedX}, ${expectedY})`);

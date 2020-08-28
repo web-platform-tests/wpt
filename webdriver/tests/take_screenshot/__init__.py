@@ -1,6 +1,21 @@
-def document_dimensions(session):
+def element_dimensions(session, element):
     return tuple(session.execute_script("""
-        let devicePixelRatio = window.devicePixelRatio;
-        let rect = document.documentElement.getBoundingClientRect();
-        return [Math.floor(rect.width * devicePixelRatio), Math.floor(rect.height * devicePixelRatio)];
+        const {devicePixelRatio} = window;
+        let {width, height} = arguments[0].getBoundingClientRect();
+
+        return [
+          Math.floor(width * devicePixelRatio),
+          Math.floor(height * devicePixelRatio),
+        ];
+        """, args=(element,)))
+
+
+def viewport_dimensions(session):
+    return tuple(session.execute_script("""
+        const {devicePixelRatio, innerHeight, innerWidth} = window;
+
+        return [
+          Math.floor(innerWidth * devicePixelRatio),
+          Math.floor(innerHeight * devicePixelRatio)
+        ];
         """))

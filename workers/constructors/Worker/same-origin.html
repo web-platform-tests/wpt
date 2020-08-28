@@ -1,6 +1,7 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>same-origin checks; the script is in a script element</title>
+<meta name="timeout" content="long">
 <link rel=help href="https://html.spec.whatwg.org/multipage/workers.html#dom-worker">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -17,13 +18,13 @@ function testWorkerHelper(t, script) {
       assert_true(e instanceof Event);
     });
   } catch (e) {
-    assert_throws("SecurityError", () => {throw e}, "DOMExceptions thrown on cross-origin Worker construction must be SecurityErrors");
+    assert_throws_dom("SecurityError", () => {throw e}, "DOMExceptions thrown on cross-origin Worker construction must be SecurityErrors");
     t.done();
   }
 }
 
 test(function() {
-  assert_throws("SecurityError", function() { new Worker('unsupported:'); });
+  assert_throws_dom("SecurityError", function() { new Worker('unsupported:'); });
 }, "unsupported_scheme");
 
 async_test(function() {

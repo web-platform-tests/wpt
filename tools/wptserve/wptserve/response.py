@@ -1,18 +1,21 @@
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from six.moves.http_cookies import BaseCookie, Morsel
+from io import BytesIO
 import json
-import uuid
 import socket
+import uuid
+
+from hpack.struct import HeaderTuple
+from hyperframe.frame import HeadersFrame, DataFrame, ContinuationFrame
+from six import binary_type, text_type, integer_types, itervalues, PY3
+from six.moves.http_cookies import BaseCookie, Morsel
+
 from .constants import response_codes, h2_headers
 from .logger import get_logger
-from io import BytesIO
-
-from six import binary_type, text_type, itervalues
-from hyperframe.frame import HeadersFrame, DataFrame, ContinuationFrame
-from hpack.struct import HeaderTuple
+from .utils import isomorphic_decode, isomorphic_encode
 
 missing = object()
+
 
 class Response(object):
     """Object representing the response to a HTTP request
@@ -49,8 +52,9 @@ class Response(object):
 
     .. attribute:: status
 
-       Status tuple (code, message). Can be set to an integer, in which case the
-       message part is filled in automatically, or a tuple.
+       Status tuple (code, message). Can be set to an integer in which case the
+       message part is filled in automatically, or a tuple (code, message) in
+       which case code is an int and message is a text or binary string.
 
     .. attribute:: headers
 
@@ -79,7 +83,6 @@ class Response(object):
         self.headers = ResponseHeaders()
         self.content = []
 
-
     @property
     def status(self):
         return self._status
@@ -90,7 +93,13 @@ class Response(object):
             if len(value) != 2:
                 raise ValueError
             else:
-                self._status = (int(value[0]), str(value[1]))
+                code = int(value[0])
+                message = value[1]
+                # Only call str() if message is not a string type, so that we
+                # don't get `str(b"foo") == "b'foo'"` in Python 3.
+                if not isinstance(message, (binary_type, text_type)):
+                    message = str(message)
+                self._status = (code, message)
         else:
             self._status = (int(value), None)
 
@@ -99,8 +108,8 @@ class Response(object):
         """Set a cookie to be sent with a Set-Cookie header in the
         response
 
-        :param name: String name of the cookie
-        :param value: String value of the cookie
+        :param name: name of the cookie (a binary string)
+        :param value: value of the cookie (a binary string, or None)
         :param max_age: datetime.timedelta int representing the time (in seconds)
                         until the cookie expires
         :param path: String path to which the cookie applies
@@ -113,14 +122,20 @@ class Response(object):
                         time or interval from now when the cookie expires
 
         """
-        days = dict((i+1, name) for i, name in enumerate(["jan", "feb", "mar",
-                                                          "apr", "may", "jun",
-                                                          "jul", "aug", "sep",
-                                                          "oct", "nov", "dec"]))
+        # TODO(Python 3): Convert other parameters (e.g. path) to bytes, too.
         if value is None:
-            value = ''
+            value = b''
             max_age = 0
             expires = timedelta(days=-1)
+
+        if PY3:
+            name = isomorphic_decode(name)
+            value = isomorphic_decode(value)
+
+        days = {i+1: name for i, name in enumerate(["jan", "feb", "mar",
+                                                    "apr", "may", "jun",
+                                                    "jul", "aug", "sep",
+                                                    "oct", "nov", "dec"])}
 
         if isinstance(expires, timedelta):
             expires = datetime.utcnow() + expires
@@ -154,9 +169,14 @@ class Response(object):
 
     def unset_cookie(self, name):
         """Remove a cookie from those that are being sent with the response"""
+        if PY3:
+            name = isomorphic_decode(name)
         cookies = self.headers.get("Set-Cookie")
         parser = BaseCookie()
         for cookie in cookies:
+            if PY3:
+                # BaseCookie.load expects a text string.
+                cookie = isomorphic_decode(cookie)
             parser.load(cookie)
 
         if name in parser.keys():
@@ -177,11 +197,13 @@ class Response(object):
         If any part of the content is a function, this will be called
         and the resulting value (if any) returned.
 
-        :param read_file: - boolean controlling the behaviour when content
-        is a file handle. When set to False the handle will be returned directly
-        allowing the file to be passed to the output in small chunks. When set to
-        True, the entire content of the file will be returned as a string facilitating
-        non-streaming operations like template substitution.
+        :param read_file: boolean controlling the behaviour when content is a
+                          file handle. When set to False the handle will be
+                          returned directly allowing the file to be passed to
+                          the output in small chunks. When set to True, the
+                          entire content of the file will be returned as a
+                          string facilitating non-streaming operations like
+                          template substitution.
         """
         if isinstance(self.content, binary_type):
             yield self.content
@@ -219,9 +241,12 @@ class Response(object):
         self.write_status_headers()
         self.write_content()
 
-    def set_error(self, code, message=""):
-        """Set the response status headers and body to indicate an
-        error"""
+    def set_error(self, code, message=u""):
+        """Set the response status headers and return a JSON error object:
+
+        {"error": {"code": code, "message": message}}
+        code is an int (HTTP status code), and message is a text string.
+        """
         err = {"code": code,
                "message": message}
         data = json.dumps({"error": err})
@@ -237,18 +262,18 @@ class MultipartContent(object):
     def __init__(self, boundary=None, default_content_type=None):
         self.items = []
         if boundary is None:
-            boundary = str(uuid.uuid4())
+            boundary = text_type(uuid.uuid4())
         self.boundary = boundary
         self.default_content_type = default_content_type
 
     def __call__(self):
-        boundary = "--" + self.boundary
-        rv = ["", boundary]
+        boundary = b"--" + self.boundary.encode("ascii")
+        rv = [b"", boundary]
         for item in self.items:
-            rv.append(str(item))
+            rv.append(item.to_bytes())
             rv.append(boundary)
-        rv[-1] += "--"
-        return "\r\n".join(rv)
+        rv[-1] += b"--"
+        return b"\r\n".join(rv)
 
     def append_part(self, data, content_type=None, headers=None):
         if content_type is None:
@@ -265,6 +290,7 @@ class MultipartContent(object):
 
 class MultipartPart(object):
     def __init__(self, data, content_type=None, headers=None):
+        assert isinstance(data, binary_type), data
         self.headers = ResponseHeaders()
 
         if content_type is not None:
@@ -272,7 +298,7 @@ class MultipartPart(object):
 
         if headers is not None:
             for name, value in headers:
-                if name.lower() == "content-type":
+                if name.lower() == b"content-type":
                     func = self.headers.set
                 else:
                     func = self.headers.append
@@ -280,13 +306,22 @@ class MultipartPart(object):
 
         self.data = data
 
-    def __str__(self):
+    def to_bytes(self):
         rv = []
-        for item in self.headers:
-            rv.append("%s: %s" % item)
-        rv.append("")
+        for key, value in self.headers:
+            assert isinstance(key, binary_type)
+            assert isinstance(value, binary_type)
+            rv.append(b"%s: %s" % (key, value))
+        rv.append(b"")
         rv.append(self.data)
-        return "\r\n".join(rv)
+        return b"\r\n".join(rv)
+
+
+def _maybe_encode(s):
+    """Encode a string or an int into binary data using isomorphic_encode()."""
+    if isinstance(s, integer_types):
+        return b"%i" % (s,)
+    return isomorphic_encode(s)
 
 
 class ResponseHeaders(object):
@@ -301,6 +336,8 @@ class ResponseHeaders(object):
         :param key: Name of the header to set
         :param value: Value to set the header to
         """
+        key = _maybe_encode(key)
+        value = _maybe_encode(value)
         self.data[key.lower()] = (key, [value])
 
     def append(self, key, value):
@@ -310,6 +347,8 @@ class ResponseHeaders(object):
         :param key: Name of the header to add
         :param value: Value to set for the header
         """
+        key = _maybe_encode(key)
+        value = _maybe_encode(value)
         if key.lower() in self.data:
             self.data[key.lower()][1].append(value)
         else:
@@ -317,6 +356,7 @@ class ResponseHeaders(object):
 
     def get(self, key, default=missing):
         """Get the set values for a particular header."""
+        key = _maybe_encode(key)
         try:
             return self[key]
         except KeyError:
@@ -328,12 +368,15 @@ class ResponseHeaders(object):
         """Get a list of values for a particular header
 
         """
+        key = _maybe_encode(key)
         return self.data[key.lower()][1]
 
     def __delitem__(self, key):
+        key = _maybe_encode(key)
         del self.data[key.lower()]
 
     def __contains__(self, key):
+        key = _maybe_encode(key)
         return key.lower() in self.data
 
     def __setitem__(self, key, value):
@@ -623,6 +666,9 @@ class ResponseWriter(object):
         self.file_chunk_size = 32 * 1024
         self.default_status = 200
 
+    def _seen_header(self, name):
+        return self.encode(name.lower()) in self._headers_seen
+
     def write_status(self, code, message=None):
         """Write out the status line of a response.
 
@@ -634,8 +680,8 @@ class ResponseWriter(object):
                 message = response_codes[code][0]
             else:
                 message = ''
-        self.write("%s %d %s\r\n" %
-                   (self._response.request.protocol_version, code, message))
+        self.write(b"%s %d %s\r\n" %
+                   (isomorphic_encode(self._response.request.protocol_version), code, isomorphic_encode(message)))
         self._status_written = True
 
     def write_header(self, name, value):
@@ -648,19 +694,25 @@ class ResponseWriter(object):
         """
         if not self._status_written:
             self.write_status(self.default_status)
-        self._headers_seen.add(name.lower())
-        self.write("%s: %s\r\n" % (name, value))
+        self._headers_seen.add(self.encode(name.lower()))
+        self.write(name)
+        self.write(b": ")
+        if isinstance(value, int):
+            self.write(text_type(value))
+        else:
+            self.write(value)
+        self.write(b"\r\n")
         if not self._response.explicit_flush:
             self.flush()
 
     def write_default_headers(self):
         for name, f in [("Server", self._handler.version_string),
                         ("Date", self._handler.date_time_string)]:
-            if name.lower() not in self._headers_seen:
+            if not self._seen_header(name):
                 self.write_header(name, f())
 
         if (isinstance(self._response.content, (binary_type, text_type)) and
-            "content-length" not in self._headers_seen):
+            not self._seen_header("content-length")):
             #Would be nice to avoid double-encoding here
             self.write_header("Content-Length", len(self.encode(self._response.content)))
 
@@ -675,7 +727,7 @@ class ResponseWriter(object):
             self.write_default_headers()
 
         self.write("\r\n")
-        if "content-length" not in self._headers_seen:
+        if not self._seen_header("content-length"):
             self._response.close_connection = True
         if not self._response.explicit_flush:
             self.flush()
@@ -690,7 +742,7 @@ class ResponseWriter(object):
         if not self._headers_complete:
             self._response.content = data
             self.end_headers()
-        self.write_raw_content(data)
+        return self.write_raw_content(data)
 
     def write_raw_content(self, data):
         """Writes the data 'as is'"""
@@ -698,11 +750,9 @@ class ResponseWriter(object):
             raise ValueError('data cannot be None')
         if isinstance(data, (text_type, binary_type)):
             # Deliberately allows both text and binary types. See `self.encode`.
-            self.write(data)
+            return self.write(data)
         else:
-            self.write_content_file(data)
-        if not self._response.explicit_flush:
-            self.flush()
+            return self.write_content_file(data)
 
     def write(self, data):
         """Write directly to the response, converting unicode to bytes
@@ -710,23 +760,28 @@ class ResponseWriter(object):
         self.content_written = True
         try:
             self._wfile.write(self.encode(data))
+            return True
         except socket.error:
             # This can happen if the socket got closed by the remote end
-            pass
+            return False
 
     def write_content_file(self, data):
         """Write a file-like object directly to the response in chunks.
         Does not flush."""
         self.content_written = True
+        success = True
         while True:
             buf = data.read(self.file_chunk_size)
             if not buf:
+                success = False
                 break
             try:
                 self._wfile.write(buf)
             except socket.error:
+                success = False
                 break
         data.close()
+        return success
 
     def encode(self, data):
         """Convert unicode to bytes according to response.encoding."""
@@ -735,7 +790,7 @@ class ResponseWriter(object):
         elif isinstance(data, text_type):
             return data.encode(self._response.encoding)
         else:
-            raise ValueError
+            raise ValueError("data %r should be text or binary, but is %s" % (data, type(data)))
 
     def flush(self):
         """Flush the output. Returns False if the flush failed due to

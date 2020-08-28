@@ -9,12 +9,20 @@
 <script>
 'use strict';
 
+// All transition events should be received on the next animation frame. If
+// two animation frames pass before receiving the expected events then we
+// can immediately fail the current test.
+const transitionEventsTimeout = () => {
+  return waitForAnimationFrames(2);
+};
+
 const setupTransition = (t, transitionStyle) => {
   const div = addDiv(t, { style: 'transition: ' + transitionStyle });
   const watcher = new EventWatcher(t, div, [ 'transitionrun',
                                              'transitionstart',
                                              'transitionend',
-                                             'transitioncancel' ]);
+                                             'transitioncancel' ],
+                                   transitionEventsTimeout);
   getComputedStyle(div).marginLeft;
 
   div.style.marginLeft = '100px';
@@ -294,7 +302,7 @@ promise_test(async t => {
   // because mutating CSS transitions is not specced yet.
   transition.effect = new KeyframeEffect(
     div,
-    { marginleft: ['0px', '100px'] },
+    { marginLeft: ['0px', '100px'] },
     {
       duration: 100 * MS_PER_SEC,
       endDelay: -50 * MS_PER_SEC,
@@ -405,5 +413,23 @@ promise_test(async t => {
   // Then wait a couple of frames and check that no event was dispatched
   await waitForAnimationFrames(2);
 }, 'Cancel the transition after clearing the target effect');
+
+promise_test(async t => {
+  const { transition, watcher, div } = setupTransition(t, 'margin-left 100s');
+
+  // Seek to After phase.
+  transition.finish();
+  const events = await watcher.wait_for(
+    ['transitionrun', 'transitionstart', 'transitionend'],
+    {
+      record: 'all',
+    }
+  );
+
+  transition.cancel();
+
+  // Then wait a couple of frames and check that no event was dispatched
+  await waitForAnimationFrames(2);
+}, 'Cancel the transition after it finishes');
 
 </script>

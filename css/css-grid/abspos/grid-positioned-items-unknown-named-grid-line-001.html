@@ -3,8 +3,9 @@
 <title>CSS Grid Layout Test: Grid positioned items unknown named grid line</title>
 <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-grid-1/#abspos" title="9. Absolute Positioning">
-<meta name="assert" content="This test checks that grid placement properties of absolutely positioned items using unknown named grid lines are treated as 'auto'.">
-<link rel="stylesheet" href="support/grid.css">
+<meta name="assert" content="This test checks that grid placement properties of absolutely positioned items can reference implicit grid lines.">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<link rel="stylesheet" href="/css/support/grid.css">
 <style>
 
 .grid {
@@ -45,8 +46,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/check-layout-th.js"></script>
+<script type="text/javascript">
+  setup({ explicit_done: true });
+</script>
 
-<body onload="checkLayout('.grid')">
+<body onload="document.fonts.ready.then(() => { checkLayout('.grid'); })">
 
 <div id="log"></div>
 
@@ -58,7 +62,7 @@
     data-offset-x="15" data-offset-y="15" data-expected-width="515" data-expected-height="315">
   </div>
   <div class="absolute sizedToGridArea startUnknownLine"
-    data-offset-x="0" data-offset-y="0" data-expected-width="315" data-expected-height="215">
+    data-offset-x="315" data-offset-y="215" data-expected-width="215" data-expected-height="115">
   </div>
 </div>
 
@@ -70,7 +74,7 @@
     data-offset-x="0" data-offset-y="15" data-expected-width="515" data-expected-height="315">
   </div>
   <div class="absolute sizedToGridArea startUnknownLine"
-    data-offset-x="215" data-offset-y="0" data-expected-width="315" data-expected-height="215">
+    data-offset-x="0" data-offset-y="215" data-expected-width="215" data-expected-height="115">
   </div>
 </div>
 

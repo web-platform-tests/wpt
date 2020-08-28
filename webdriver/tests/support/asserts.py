@@ -2,6 +2,8 @@ import base64
 import imghdr
 import struct
 
+from six import ensure_binary, text_type, PY3
+
 from webdriver import Element, NoSuchAlertException, WebDriverException
 
 
@@ -50,15 +52,16 @@ def assert_error(response, error_code):
     assert response.status == errors[error_code]
     assert "value" in response.body
     assert response.body["value"]["error"] == error_code
-    assert isinstance(response.body["value"]["message"], basestring)
-    assert isinstance(response.body["value"]["stacktrace"], basestring)
+    assert isinstance(response.body["value"]["message"], text_type)
+    assert isinstance(response.body["value"]["stacktrace"], text_type)
+    assert_response_headers(response.headers)
 
 
 def assert_success(response, value=None):
     """
     Verify that the provided webdriver.Response instance described
-    a valid error response as defined by `dfn-send-an-error` and
-    the provided error code.
+    a valid success response as defined by `dfn-send-a-response` and
+    the provided response value.
 
     :param response: ``webdriver.Response`` instance.
     :param value: Expected value of the response body, if any.
@@ -67,7 +70,28 @@ def assert_success(response, value=None):
 
     if value is not None:
         assert response.body["value"] == value
+
+    assert_response_headers(response.headers)
     return response.body.get("value")
+
+
+def assert_response_headers(headers):
+    """
+    Method to assert response headers for WebDriver requests
+
+    :param headers: dict with header data
+    """
+    assert 'cache-control' in headers
+    assert 'no-cache' == headers['cache-control']
+    # In Python 2, HTTPResponse normalizes header keys to lowercase, whereas
+    # Python 3 preserves the case. See
+    # https://github.com/web-platform-tests/wpt/pull/22858#issuecomment-612656097
+    if PY3:
+        assert 'Content-Type' in headers
+        assert 'application/json; charset=utf-8' == headers['Content-Type']
+    else:
+        assert 'content-type' in headers
+        assert 'application/json; charset=utf-8' == headers['content-type']
 
 
 def assert_dialog_handled(session, expected_text, expected_retval):
@@ -197,6 +221,6 @@ def assert_move_to_coordinates(point, target, events):
 
 def assert_png(screenshot):
     """Test that screenshot is a Base64 encoded PNG file."""
-    image = base64.decodestring(screenshot)
+    image = base64.decodestring(ensure_binary(screenshot))
     mime_type = imghdr.what("", image)
     assert mime_type == "png", "Expected image to be PNG, but it was {}".format(mime_type)

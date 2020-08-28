@@ -8,7 +8,7 @@ typedef (Float32Array or Float64Array or DOMMatrix) RotationMatrixType;
 [SecureContext, Exposed=Window]
 interface OrientationSensor : Sensor {
   readonly attribute FrozenArray<double>? quaternion;
-  void populateMatrix(RotationMatrixType targetMatrix);
+  undefined populateMatrix(RotationMatrixType targetMatrix);
 };
 
 enum OrientationSensorLocalCoordinateSystem { "device", "screen" };
@@ -17,10 +17,19 @@ dictionary OrientationSensorOptions : SensorOptions {
   OrientationSensorLocalCoordinateSystem referenceFrame = "device";
 };
 
-[Constructor(optional OrientationSensorOptions sensorOptions), SecureContext, Exposed=Window]
+[SecureContext, Exposed=Window]
 interface AbsoluteOrientationSensor : OrientationSensor {
+  constructor(optional OrientationSensorOptions sensorOptions = {});
 };
 
-[Constructor(optional OrientationSensorOptions sensorOptions), SecureContext, Exposed=Window]
+[SecureContext, Exposed=Window]
 interface RelativeOrientationSensor : OrientationSensor {
+  constructor(optional OrientationSensorOptions sensorOptions = {});
+};
+
+dictionary AbsoluteOrientationReadingValues {
+  required FrozenArray<double>? quaternion;
+};
+
+dictionary RelativeOrientationReadingValues : AbsoluteOrientationReadingValues {
 };

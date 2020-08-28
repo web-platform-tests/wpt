@@ -3,9 +3,15 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Proximity Sensor (https://w3c.github.io/proximity/)
 
-[Constructor(optional SensorOptions sensorOptions), SecureContext, Exposed=Window]
+[Constructor(optional SensorOptions sensorOptions = {}), SecureContext, Exposed=Window]
 interface ProximitySensor : Sensor {
   readonly attribute double? distance;
   readonly attribute double? max;
   readonly attribute boolean? near;
+};
+
+dictionary ProximityReadingValues {
+  required double? distance;
+  required double? max;
+  required boolean? near;
 };

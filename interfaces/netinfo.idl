@@ -22,9 +22,8 @@ enum EffectiveConnectionType {
   "slow-2g"
 };
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
 interface mixin NavigatorNetworkInformation {
-  readonly attribute NetworkInformation connection;
+  [SameObject] readonly attribute NetworkInformation connection;
 };
 
 Navigator includes NavigatorNetworkInformation;
@@ -37,7 +36,6 @@ interface NetworkInformation : EventTarget {
   readonly attribute Megabit downlinkMax;
   readonly attribute Megabit downlink;
   readonly attribute Millisecond rtt;
-  readonly attribute boolean saveData;
   attribute EventHandler onchange;
 };
 

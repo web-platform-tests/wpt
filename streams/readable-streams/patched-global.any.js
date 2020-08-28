@@ -1,4 +1,4 @@
-// META: global=worker
+// META: global=window,worker,jsshell
 'use strict';
 
 // Tests which patch the global environment are kept separate to avoid
@@ -57,3 +57,86 @@ test(t => {
   assert_true(isReadableStream(branch1), 'branch1 should be a ReadableStream');
   assert_true(isReadableStream(branch2), 'branch2 should be a ReadableStream');
 }, 'ReadableStream tee() should not call the global ReadableStream');
+
+promise_test(async t => {
+  const rs = new ReadableStream({
+    start(c) {
+      c.enqueue(1);
+      c.enqueue(2);
+      c.enqueue(3);
+      c.close();
+    }
+  });
+
+  const oldReadableStreamGetReader = ReadableStream.prototype.getReader;
+
+  const ReadableStreamDefaultReader = (new ReadableStream()).getReader().constructor;
+  const oldDefaultReaderRead = ReadableStreamDefaultReader.prototype.read;
+  const oldDefaultReaderCancel = ReadableStreamDefaultReader.prototype.cancel;
+  const oldDefaultReaderReleaseLock = ReadableStreamDefaultReader.prototype.releaseLock;
+
+  self.ReadableStream.prototype.getReader = function() {
+    throw new Error('patched getReader() called');
+  };
+
+  ReadableStreamDefaultReader.prototype.read = function() {
+    throw new Error('patched read() called');
+  };
+  ReadableStreamDefaultReader.prototype.cancel = function() {
+    throw new Error('patched cancel() called');
+  };
+  ReadableStreamDefaultReader.prototype.releaseLock = function() {
+    throw new Error('patched releaseLock() called');
+  };
+
+  t.add_cleanup(() => {
+    self.ReadableStream.prototype.getReader = oldReadableStreamGetReader;
+
+    ReadableStreamDefaultReader.prototype.read = oldDefaultReaderRead;
+    ReadableStreamDefaultReader.prototype.cancel = oldDefaultReaderCancel;
+    ReadableStreamDefaultReader.prototype.releaseLock = oldDefaultReaderReleaseLock;
+  });
+
+  // read the first chunk, then cancel
+  for await (const chunk of rs) {
+    break;
+  }
+
+  // should be able to acquire a new reader
+  const reader = oldReadableStreamGetReader.call(rs);
+  // stream should be cancelled
+  await reader.closed;
+}, 'ReadableStream async iterator should use the original values of getReader() and ReadableStreamDefaultReader ' +
+   'methods');
+
+test(t => {
+  const oldPromiseThen = Promise.prototype.then;
+  Promise.prototype.then = () => {
+    throw new Error('patched then() called');
+  };
+  t.add_cleanup(() => {
+    Promise.prototype.then = oldPromiseThen;
+  });
+  const [branch1, branch2] = new ReadableStream().tee();
+  assert_true(isReadableStream(branch1), 'branch1 should be a ReadableStream');
+  assert_true(isReadableStream(branch2), 'branch2 should be a ReadableStream');
+}, 'tee() should not call Promise.prototype.then()');
+
+test(t => {
+  const oldPromiseThen = Promise.prototype.then;
+  Promise.prototype.then = () => {
+    throw new Error('patched then() called');
+  };
+  t.add_cleanup(() => {
+    Promise.prototype.then = oldPromiseThen;
+  });
+  let readableController;
+  const rs = new ReadableStream({
+    start(c) {
+      readableController = c;
+    }
+  });
+  const ws = new WritableStream();
+  rs.pipeTo(ws);
+  readableController.close();
+}, 'pipeTo() should not call Promise.prototype.then()');

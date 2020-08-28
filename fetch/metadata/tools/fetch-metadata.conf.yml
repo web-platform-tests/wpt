@@ -48,6 +48,8 @@ cases:
       # The `audioWorklet` interface is only available in secure contexts
       # https://webaudio.github.io/web-audio-api/#BaseAudioContext
       audioworklet.https.sub.html: []
+      # Service workers are only available in secure context
+      fetch-via-serviceworker.https.sub.html: []
       cors-preflight.sub.html: []
 
       css-images.sub.html:
@@ -142,6 +144,7 @@ cases:
       element-video.sub.html: [{}]
       element-video-poster.sub.html: [{}]
       fetch.sub.html: [{ init: { mode: no-cors } }]
+      fetch-via-serviceworker.https.sub.html: [{ init: { mode: no-cors } }]
       form-submission.sub.html:
         - method: GET
         - method: POST
@@ -179,6 +182,8 @@ cases:
       # preflight requests are only issued on the basis of the origin of the
       # initial request.
       cors-preflight.sub.html: []
+      # Service workers are only available in secure context
+      fetch-via-serviceworker.https.sub.html: []
       # Interstitial locations in an HTTP redirect chain are not added to the
       # session history, so these requests cannot be initiated using the
       # History API.
@@ -315,6 +320,7 @@ cases:
       element-video.sub.html: [{}]
       element-video-poster.sub.html: [{}]
       fetch.sub.html: [{ init: { mode: no-cors } }]
+      fetch-via-serviceworker.https.sub.html: [{ init: { mode: no-cors } }]
       form-submission.sub.html:
         - method: GET
         - method: POST
@@ -362,6 +368,7 @@ cases:
       element-picture.sub.html: []
       element-script.sub.html: []
       fetch.sub.html: []
+      fetch-via-serviceworker.https.sub.html: []
       header-link.sub.html: []
       script-module-import-static.sub.html: []
       script-module-import-dynamic.sub.html: []
@@ -529,6 +536,14 @@ cases:
           init: { mode: no-cors }
         - expected: same-origin
           init: { mode: same-origin }
+      fetch-via-serviceworker.https.sub.html:
+        - expected: cors
+        - expected: cors
+          init: { mode: cors }
+        - expected: no-cors
+          init: { mode: no-cors }
+        - expected: same-origin
+          init: { mode: same-origin }
       form-submission.sub.html:
         - method: GET
           expected: navigate
@@ -653,6 +668,8 @@ cases:
         - expected: image
       fetch.sub.html:
         - expected: empty
+      fetch-via-serviceworker.https.sub.html:
+        - expected: empty
       form-submission.sub.html:
         - method: GET
           expected: document
@@ -748,6 +765,8 @@ cases:
       element-video-poster.sub.html:
         - expected: NULL
       fetch.sub.html:
+        - expected: NULL
+      fetch-via-serviceworker.https.sub.html:
         - expected: NULL
       form-submission.sub.html:
         - method: GET

@@ -121,6 +121,13 @@ whereas:</p>
 </div>
 <p>Will cause example.html to be returned with both text/html and
 text/plain content-type headers.</p>
+<p>If the comma (<code class="docutils literal notranslate"><span class="pre">,</span></code>) or closing parenthesis (<code class="docutils literal notranslate"><span class="pre">)</span></code>) characters appear in the header
+value, those characters  must be escaped with a backslash (<code class="docutils literal notranslate"><span class="pre">\</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>example?pipe=header(Expires,Thu\,%2014%20Aug%201986%2018:00:00%20GMT)
+</pre></div>
+</div>
+<p>(Note that the programming environment from which the request is issued may
+require that the backslash character itself be escaped.)</p>
 </div>
 <div class="section" id="slice">
 <h3><code class="docutils literal notranslate"><span class="pre">slice</span></code><a class="headerlink" href="#slice" title="Permalink to this headline">¶</a></h3>

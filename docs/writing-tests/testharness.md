@@ -251,3 +251,15 @@ expression).
    ...
 </script>
 ```
+
+## Table of Contents
+
+```eval_rst
+.. toctree::
+   :maxdepth: 1
+
+   testharness-api
+   testdriver
+   testdriver-extension-tutorial
+   idlharness
+```

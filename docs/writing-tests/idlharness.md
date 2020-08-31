@@ -55,23 +55,6 @@ The `idl_test` function takes three arguments:
 documented in this section should be considered an implementation detail, and outside callers should
 not use it.
 
-### `add_idls(idl_string)`
-  Parses _idl_string_ (throwing on parse error) and adds the results to the
-  `IdlArray`.  All the definitions will be tested when you run `test()`.  If
-  some of the definitions refer to other definitions, those must be present
-  too.  For instance, if _idl_string_ says that `Document` inherits from `Node`,
-  the `Node` interface must also have been provided in some call to `add_idls()`
-  or `add_untested_idls()`.
-
-### `add_untested_idls(idl_string)`
-  Like `add_idls()`, but the definitions will not be tested.  If an untested
-  interface is added and then extended with a tested partial interface, the
-  members of the partial interface will still be tested.  Also, all the
-  members will still be tested for objects added with `add_objects()`, because
-  you probably want to test that (for instance) window.document has all the
-  properties from `Node`, not just `Document`, even if the `Node` interface itself
-  is tested in a different test suite.
-
 ### `add_objects(dict)`
   _dict_ should be an object whose keys are the names of interfaces or
   exceptions, and whose values are arrays of strings.  When an interface or
@@ -120,3 +103,19 @@ not use it.
   implements `HTMLHtmlElement`, `HTMLElement`, `Element`, and `Node`; but
   `document.head` would only be tested for `HTMLHeadElement`, and so on for
   further objects.
+
+### `add_idls(idl_string)`
+  Parses _idl_string_ (throwing on parse error) and adds the results to the `IdlArray`. If
+  some of the definitions refer to other definitions, those must be present
+  too.  For instance, if _idl_string_ says that `Document` inherits from `Node`,
+  the `Node` interface must also have been provided in some call to `add_idls()`
+  or `add_untested_idls()`.
+
+### `add_untested_idls(idl_string)`
+  Like `add_idls()`, but the definitions will not be tested.  If an untested
+  interface is added and then extended with a tested partial interface, the
+  members of the partial interface will still be tested.  Also, all the
+  members will still be tested for objects added with `add_objects()`, because
+  you probably want to test that (for instance) window.document has all the
+  properties from `Node`, not just `Document`, even if the `Node` interface itself
+  is tested in a different test suite.

@@ -13,7 +13,8 @@ A high-level overview is provided below and more information can be found here:
     a test — a good place to start for newcomers to the project.
 
   * [testdriver.js Automation](testdriver.md) — Automating end user actions, such as moving or
-    clicking a mouse.
+    clicking a mouse. See also the
+    [testdriver.js extension tutorial](testdriver-extension-tutorial.md) for adding new commands.
 
   * [idlharness.js Documentation](idlharness.md) — A library for testing
      IDL interfaces using `testharness.js`.
@@ -37,7 +38,7 @@ test(() => {
 }, "Ensure HTML boilerplate uses UTF-8"); // This is the title of the test
 ```
 
-If you only need to test a single thing, you could also use:
+If you only need to test a [single thing](testharness-api.md#single-page-tests), you could also use:
 ```js
 // META: title=Ensure HTML boilerplate uses UTF-8
 setup({ single_test: true });
@@ -208,10 +209,9 @@ for example:
 Test runners will execute the test for each variant specified, appending the corresponding content
 attribute value to the URL of the test as they do so.
 
-There are two utility scripts in that work well together with variants,
-`/common/subset-tests.js` and `/common/subset-tests-by-key.js`, where
-a test that would otherwise have too many tests to complete inside the timeout can be
-split up in ranges of subtests. For example:
+`/common/subset-tests.js` and `/common/subset-tests-by-key.js` are two utility scripts that work
+well together with variants, allowing a test to be split up into subtests in cases when there are
+otherwise too many tests to complete inside the timeout. For example:
 
 ```html
 <!doctype html>
@@ -234,7 +234,7 @@ split up in ranges of subtests. For example:
 ```
 
 With `subsetTestByKey`, the key is given as the first argument, and the
-query string can include or exclude a key (will be matched as a regular
+query string can include or exclude a key (which will be matched as a regular
 expression).
 
 ```html
@@ -250,16 +250,4 @@ expression).
    subsetTestByKey("Foo", async_test, () => { ... }, "Testing foo");
    ...
 </script>
-```
-
-## Table of Contents
-
-```eval_rst
-.. toctree::
-   :maxdepth: 1
-
-   testharness-api
-   testdriver
-   testdriver-extension-tutorial
-   idlharness
 ```

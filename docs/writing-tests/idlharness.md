@@ -2,9 +2,9 @@
 
 ## Introduction ##
 
-`idlharness.js` generates tests for Web IDL fragments, using the JavaScript Tests (`testharness.js`)
-infrastructure. You typically want to use `.any.js` or `.window.js` for this to avoid having to
-write unnessary boilerplate.
+`idlharness.js` generates tests for Web IDL fragments, using the
+[JavaScript Tests (`testharness.js`)](testharness.md) infrastructure. You typically want to use
+`.any.js` or `.window.js` for this to avoid having to write unnessary boilerplate.
 
 ## Adding IDL fragments
 
@@ -14,7 +14,8 @@ details.
 
 ## Testing IDL fragments
 
-The Fetch API's IDL is tested in [`/fetch/api/idlharness.any.js`](https://github.com/web-platform-tests/wpt/blob/master/fetch/api/idlharness.any.js):
+For example, the Fetch API's IDL is tested in
+[`/fetch/api/idlharness.any.js`](https://github.com/web-platform-tests/wpt/blob/master/fetch/api/idlharness.any.js):
 ```js
 // META: global=window,worker
 // META: script=/resources/WebIDLParser.js
@@ -38,9 +39,9 @@ idl_test(
   }
 );
 ```
-Note how it includes `/resources/WebIDLParser.js` and `/resources/idlharness.js` in addition to what
-is already included due to usage of `.any.js`. Those are needed to make the `idl_test` function
-work.
+Note how it includes `/resources/WebIDLParser.js` and `/resources/idlharness.js` in addition to
+`testharness.js` and `testharnessreport.js` (automatically included due to usage of `.any.js`).
+These are needed to make the `idl_test` function work.
 
 The `idl_test` function takes three arguments:
 
@@ -56,9 +57,9 @@ not use it.
 
 ### `add_idls(idl_string)`
   Parses _idl_string_ (throwing on parse error) and adds the results to the
-  `IdlArray`.  All the definitions will be tested when you run test().  If
+  `IdlArray`.  All the definitions will be tested when you run `test()`.  If
   some of the definitions refer to other definitions, those must be present
-  too.  For instance, if `idl_string` says that `Document` inherits from `Node`,
+  too.  For instance, if _idl_string_ says that `Document` inherits from `Node`,
   the `Node` interface must also have been provided in some call to `add_idls()`
   or `add_untested_idls()`.
 

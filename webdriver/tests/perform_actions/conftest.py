@@ -1,5 +1,24 @@
 import pytest
 
+from webdriver.error import NoSuchWindowException
+from webdriver.transport import HTTPWireProtocol
+
+
+@pytest.fixture
+def session_with_new_window(capabilities, session):
+    # Prevent unreleased dragged elements by running the test in a new window.
+    original_handle = session.window_handle
+    session.window_handle = session.new_window()
+
+    yield session
+
+    try:
+        session.window.close()
+    except NoSuchWindowException:
+        pass
+
+    session.window_handle = original_handle
+    # return new_session
 
 @pytest.fixture
 def key_chain(session):

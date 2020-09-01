@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>margin properties</title>
+<title>margin, inset, padding & border properties</title>
 <link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-stylepropertymap-get">
 <link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-stylepropertymap-set">
 <link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#property-stle-value-normalization">
@@ -13,9 +13,20 @@
 <script>
 'use strict';
 
+const logical = {
+  sides: [
+    'block-start', 'block-end', 
+    'inline-start', 'inline-end',
+  ],
+  shorthands: [
+    'block', 
+    'inline',
+  ],
+};
+
 for (const prefix of ['margin-', 'inset-', 'padding-']) {
-  for (const suffix of ['block-start', 'block-end', 'inline-start', 'inline-end']) {
-    runPropertyTests(prefix + suffix, [
+  for (const side of logical.sides) {
+    runPropertyTests(prefix + side, [
       // TODO: Test 'auto'
       { syntax: '<percentage>' },
       { syntax: '<length>' },
@@ -23,32 +34,38 @@ for (const prefix of ['margin-', 'inset-', 'padding-']) {
   }
 }
 
-// borders
-for (const prefix of ['width', 'style']) {
-  for (const suffix of ['block', 'block-start', 'block-end', 'inline', 'inline-start', 'inline-end']) {
-    runPropertyTests('border-' + suffix + '-' + prefix, [
-      // TODO: Test 'auto'
-      { syntax: '<percentage>' },
-      { syntax: '<length>' },
-    ]);
-  }
-}
+// BORDERS
+for (const side of [...logical.sides, ...logical.shorthands]) {
+  runPropertyTests('border-' + side, [
+    //{ syntax: 'thin solid green' },
+    //{ syntax: 'thin solid' },
+    //{ syntax: 'thick' },
+    { syntax: 'none' },
+  ]);
 
-for (const prefix of ['color']) {
-  for (const suffix of ['block', 'block-start', 'block-end', 'inline', 'inline-start', 'inline-end']) {
-    runPropertyTests('border-' + suffix + '-' + prefix, [
-      { syntax: 'currentcolor' },
-    ]);
-  }
+  runPropertyTests(`border-${side}-width`, [
+    { syntax: 'thin' },
+    { syntax: 'medium' },
+    { syntax: 'thick' },
+    { syntax: '<length>' },
+  ]);
+
+  runPropertyTests(`border-${side}-color`, [
+    { syntax: 'currentcolor' },
+    //{ syntax: '<color>' },
+  ]);
+
+  runPropertyTests(`border-${side}-style`, [
+    { syntax: 'none' },
+    { syntax: 'solid' },
+  ]);
 }
 
 // border radius
-for (const prop of ['start-start', 'start-end', 'end-start', 'end-end']) {
-  runPropertyTests(`border-${prop}-radius`, [
+for (const side of logical.sides) {
+  runPropertyTests(`border-${side}-radius`, [
     { syntax: '<percentage>' },
     { syntax: '<length>' },
   ]);
 }
-
-// TODO: test shorthands and other logical properties.
 </script>

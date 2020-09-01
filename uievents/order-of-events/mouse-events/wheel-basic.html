@@ -3,7 +3,7 @@
   <meta charset=utf-8>
   <title>WheelEvent - basic wheel event</title>
   <style>
-    .testarea{ margin: auto; width: 80%; height: 250px; border: 1px solid grey; position: relative; }
+    .testarea{ margin: auto; width: 800px; height: 250px; border: 1px solid grey; position: relative; }
 
     #wheelbox, #scrollbox { background-color: red; border: 1px solid black; margin: 0; padding: 0; }
     #wheelbox.green, #scrollbox.green { background-color: green; }
@@ -60,7 +60,10 @@
       e.stopPropagation();
       this.className = "green";
       endTest();
-      test_wheel.done();
+      // Make sure the test finishes after all the input actions are completed.
+      actions_promise.then( () => {
+        test_wheel.done();
+      });
     });
 
     function endTest() {
@@ -78,9 +81,10 @@
 
     EventRecorder.start();
 
-    // Inject pen inputs.
+    // Inject wheel inputs.
     actions_promise = new test_driver.Actions()
         .scroll(0, 0, 0, 10, {origin: wheelbox})
+        .scroll(160, 50, 0, 20, {origin: scrollbox})
         .send();
   </script>
 </body>

@@ -8,15 +8,6 @@ from tests.support.asserts import assert_move_to_coordinates
 
 def test_null_response_value(session, wheel_chain):
     value = wheel_chain.scroll(0, 0, 0, 10).perform()
-from tests.perform_actions.support.mouse import get_inview_center, get_viewport_rect
-from tests.perform_actions.support.refine import filter_dict, get_events
-from tests.support.asserts import assert_move_to_coordinates
-from tests.support.inline import inline
-from tests.support.sync import Poll
-
-
-def test_null_response_value(session, wheel_chain):
-    value = wheel_chain.scroll(0, 0, 0, 10).perform()
     assert value is None
 
 

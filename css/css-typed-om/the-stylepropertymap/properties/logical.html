@@ -23,5 +23,23 @@ for (const prefix of ['margin-', 'inset-', 'padding-']) {
   }
 }
 
+// borders
+for (const prefix of ['width', 'style']) {
+  for (const suffix of ['block', 'block-start', 'block-end', 'inline', 'inline-start', 'inline-end']) {
+    runPropertyTests('border-' + suffix + '-' + prefix, [
+      // TODO: Test 'auto'
+      { syntax: '<percentage>' },
+      { syntax: '<length>' },
+    ]);
+  }
+}
+
+for (const prefix of ['color']) {
+  for (const suffix of ['block', 'block-start', 'block-end', 'inline', 'inline-start', 'inline-end']) {
+    runPropertyTests('border-' + suffix + '-' + prefix, [
+      { syntax: 'currentcolor' },
+    ]);
+  }
+}
 // TODO: test shorthands and other logical properties.
 </script>

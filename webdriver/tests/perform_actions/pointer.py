@@ -144,7 +144,7 @@ def test_drag_and_drop(session,
 
 
 @pytest.mark.parametrize("drag_duration", [0, 300, 800])
-def test_drag_and_drop_with_draggable_element(session_with_new_window,
+def test_drag_and_drop_with_draggable_element(session_new_window,
                        test_actions_page,
                        mouse_chain,
                        drag_duration):

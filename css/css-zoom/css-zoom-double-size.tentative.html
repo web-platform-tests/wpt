@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Zoom Test: Double size Reference File</title>
+    <title>CSS Zoom Test: Double size</title>
     <link rel="author" title="Karl Dubost" href="mailto:kdubost@mozilla.com" />
-    <style type="text/css">
+    <link
+      rel="help"
+      href="https://developer.mozilla.org/en-US/docs/Web/CSS/zoom"
+    />
+    <link rel="match" href="css-zoom-double-size.tentative-ref.html" />
+    <meta
+      name="assert"
+      content="box width and height will be twice larger if transform zoom: 2 is applied"
+    />
+    <style>
       .wrapper {
         width: 100px;
         height: 100px;
@@ -11,16 +20,24 @@
         top: 100px;
         left: 100px;
       }
-
+      .red,
       .green {
         position: absolute;
         top: 0;
         left:0;
+      }
+      .green {
+        background-color: green;
+        width: 100px;
+        height: 100px;
+      }
+      .red {
+        background-color: red;
         width: 200px;
         height: 200px;
       }
       .green {
-        background-color: green;
+        zoom: 2;
       }
     </style>
   </head>

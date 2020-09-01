@@ -41,5 +41,14 @@ for (const prefix of ['color']) {
     ]);
   }
 }
+
+// border radius
+for (const prop of ['start-start', 'start-end', 'end-start', 'end-end']) {
+  runPropertyTests(`border-${prop}-radius`, [
+    { syntax: '<percentage>' },
+    { syntax: '<length>' },
+  ]);
+}
+
 // TODO: test shorthands and other logical properties.
 </script>

@@ -16,7 +16,7 @@ from tests.support.sync import Poll
 
 
 def test_null_response_value(session, wheel_chain):
-    value = wheel_chain.scroll().perform()
+    value = wheel_chain.scroll(0, 0, 0, 10).perform()
     assert value is None
 
 

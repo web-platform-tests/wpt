@@ -11,15 +11,11 @@
 </head>
 <body>
 <script>
-  // Listen for events from the iframe. Pass on the success or error message back to the opener,
-  // ignoring testharness.js internal messages.
+  // Listen for first message from the iframe, and pass it back to the opener.
   function message_listener(event) {
-    if (event.data.result === 'success' || event.data.result === 'error') {
-      window.opener.postMessage(event.data, '*');
-      window.removeEventListener('message', message_listener);
-    }
+    window.opener.postMessage(event.data, '*');
   }
-  window.addEventListener('message', message_listener);
+  window.addEventListener('message', message_listener, {once: 'true'});
 </script>
 <iframe src="SUBRESOURCE_PREFIX:&dispatch=fetch_file&path=fetch/connection-pool/resources/network-partition-checker.html"></iframe>
 </body>

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Connection partioning by site</title>
+  <title>Connection partitioning by site</title>
   <meta name="help" href="https://fetch.spec.whatwg.org/#network-partition-keys">
   <meta name="timeout" content="long">
   <script src="/resources/testharness.js"></script>
@@ -23,8 +23,8 @@ const POPUP_ORIGINS = [
   host.HTTP_NOTSAMESITE_ORIGIN
 ];
 
-// This origin should correspond to a different site from the two above, but the tests
-// will still pass if it matches the site of one of the other two origins.
+// This origin should ideally correspond to a different site from the two above, but the
+// tests will still pass if it matches the site of one of the other two origins.
 const OTHER_ORIGIN = host.REMOTE_ORIGIN;
 
 // Except for the csp_sandbox and about:blanks, each test opens up two windows, one at
@@ -40,7 +40,7 @@ const OTHER_ORIGIN = host.REMOTE_ORIGIN;
 //
 // include_credentials indicates whether the fetch requests use credentials or not,
 // which is interesting as uncredentialed sockets have separate connection pools.
-var tests = [
+const tests = [
   {
     name: 'With credentials',
     subresource_origin: POPUP_ORIGINS[0],
@@ -150,16 +150,15 @@ function run_test(test) {
       popup_windows.push(window.open(url));
       // Listen for the result
       function message_listener(event) {
-        if (event.data.result === "success") {
+        if (event.data.result === 'success') {
           resolve();
-        } else if (event.data.result === "error") {
+        } else if (event.data.result === 'error') {
           reject(event.data.details);
         } else {
-          return; // Ignore testharness.js internal messages
+          reject('Unexpected message.');
         }
-        window.removeEventListener("message", message_listener);
       }
-      window.addEventListener("message", message_listener);
+      window.addEventListener('message', message_listener, {once: 'true'});
     });
   }
 
@@ -169,16 +168,15 @@ function run_test(test) {
       iframe.src = url;
       // Listen for the result
       function message_listener(event) {
-        if (event.data.result === "success") {
+        if (event.data.result === 'success') {
           resolve();
-        } else if (event.data.result === "error") {
+        } else if (event.data.result === 'error') {
           reject(event.data.details);
         } else {
-          return; // Ignore testharness.js internal messages
+          reject('Unexpected message.');
         }
-        window.removeEventListener("message", message_listener);
       }
-      window.addEventListener("message", message_listener);
+      window.addEventListener('message', message_listener, {once: 'true'});
     });
   }
 

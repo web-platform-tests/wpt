@@ -15,11 +15,8 @@
     // OTHER_PREFIX mechanism in the Python code than to craft the URL in Javascript here.
     var worker = new Worker('OTHER_PREFIX:&dispatch=fetch_file&path=fetch/connection-pool/resources/network-partition-worker.js');
     function message_listener(event) {
-      // The first success or error message to the opener, ignoring testharness.js internal messages.
-      if (event.data.result === 'success' || event.data.result === 'error') {
-        window.opener.postMessage(event.data, '*');
-        worker.terminate();
-      }
+      window.opener.postMessage(event.data, '*');
+      worker.terminate();
     }
     worker.addEventListener('message', message_listener);
 </script>

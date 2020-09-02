@@ -138,12 +138,12 @@ promise_test(async (t) => {
 
   iframe.src = 'resources/reporting-empty-frame.html';
   const targetUrl = `/common/blank.html?${token()}`;
-  iframe.addEventListener('load', () => {
+  iframe.addEventListener('load', t.step_func(() => {
     const nested = iframe.contentDocument.createElement('iframe');
     nested.src = targetUrl;
     // |nested| doesn't have COEP whereas |iframe| has, so it is blocked.
     iframe.contentDocument.body.appendChild(nested);
-  }, {once: true});
+  }), {once: true});
 
   document.body.appendChild(iframe);
 

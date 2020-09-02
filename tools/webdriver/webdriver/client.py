@@ -227,7 +227,7 @@ class ActionSequence(object):
         if origin is not None:
             action["origin"] = origin
         self._actions.append(action)
-        return self    
+        return self
 
 
 class Actions(object):

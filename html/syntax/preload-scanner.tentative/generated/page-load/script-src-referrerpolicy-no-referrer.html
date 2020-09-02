@@ -16,6 +16,6 @@
   iframe.src = `resources/script-src-referrerpolicy-no-referrer-framed.sub.html?uuid=${uuid}`;
   document.body.appendChild(iframe);
   expect_fetched_onload(uuid, true)
-    .then(compare_with_nonspeculative(uuid, 'script-src-referrerpolicy-no-referrer'))
+    .then(compare_with_nonspeculative(uuid, 'script-src-referrerpolicy-no-referrer', true))
     .then(done);
 </script>

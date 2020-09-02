@@ -16,6 +16,6 @@
   iframe.src = `resources/script-src-type-application-ecmascript-framed.sub.html?uuid=${uuid}`;
   document.body.appendChild(iframe);
   expect_fetched_onload(uuid, true)
-    .then(compare_with_nonspeculative(uuid, 'script-src-type-application-ecmascript'))
+    .then(compare_with_nonspeculative(uuid, 'script-src-type-application-ecmascript', true))
     .then(done);
 </script>

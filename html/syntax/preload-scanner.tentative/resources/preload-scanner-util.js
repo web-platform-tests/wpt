@@ -12,12 +12,12 @@ function expect_fetched_onload(uuid, expectation, test_markup) {
   });
 }
 
-function compare_with_nonspeculative(uuid, title) {
+function compare_with_nonspeculative(uuid, title, test_nonspeculative) {
   return function(speculative_result) {
+    if (!test_nonspeculative) {
+      return new Promise(resolve => resolve());
+    }
     return new Promise(resolve => {
-      if (speculative_result === '') {
-        resolve(); // Nothing to compare
-      }
       const iframe = document.createElement('iframe');
       iframe.onload = resolve;
       iframe.src = `/html/syntax/preload-scanner.tentative/generated/resources/${title}-nonspeculative.sub.html?uuid=${uuid}`;

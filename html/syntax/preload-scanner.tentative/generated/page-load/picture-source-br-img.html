@@ -16,6 +16,6 @@
   iframe.src = `resources/picture-source-br-img-framed.sub.html?uuid=${uuid}`;
   document.body.appendChild(iframe);
   expect_fetched_onload(uuid, true)
-    .then(compare_with_nonspeculative(uuid, 'picture-source-br-img'))
+    .then(compare_with_nonspeculative(uuid, 'picture-source-br-img', true))
     .then(done);
 </script>

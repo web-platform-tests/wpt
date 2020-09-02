@@ -16,6 +16,6 @@
   iframe.src = `resources/script-src-unsupported-type-framed.sub.html?uuid=${uuid}`;
   document.body.appendChild(iframe);
   expect_fetched_onload(uuid, false)
-    .then(compare_with_nonspeculative(uuid, 'script-src-unsupported-type'))
+    .then(compare_with_nonspeculative(uuid, 'script-src-unsupported-type', true))
     .then(done);
 </script>

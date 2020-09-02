@@ -16,6 +16,6 @@
   iframe.src = `resources/script-src-nomodule-framed.sub.html?uuid=${uuid}`;
   document.body.appendChild(iframe);
   expect_fetched_onload(uuid, false)
-    .then(compare_with_nonspeculative(uuid, 'script-src-nomodule'))
+    .then(compare_with_nonspeculative(uuid, 'script-src-nomodule', true))
     .then(done);
 </script>

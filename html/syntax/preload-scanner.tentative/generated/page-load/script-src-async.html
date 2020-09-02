@@ -16,6 +16,6 @@
   iframe.src = `resources/script-src-async-framed.sub.html?uuid=${uuid}`;
   document.body.appendChild(iframe);
   expect_fetched_onload(uuid, true)
-    .then(compare_with_nonspeculative(uuid, 'script-src-async'))
+    .then(compare_with_nonspeculative(uuid, 'script-src-async', true))
     .then(done);
 </script>

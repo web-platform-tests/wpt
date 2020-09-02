@@ -12,7 +12,7 @@
   setup({single_test: true});
   const uuid = token();
   expect_fetched_onload(uuid, false)
-    .then(compare_with_nonspeculative(uuid, 'script-src-nomodule'))
+    .then(compare_with_nonspeculative(uuid, 'script-src-nomodule', true))
     .then(done);
   document.write(`
     <script src=/common/slow.py><\/script>

@@ -16,6 +16,6 @@
   iframe.src = `resources/script-src-crossorigin-framed.sub.html?uuid=${uuid}`;
   document.body.appendChild(iframe);
   expect_fetched_onload(uuid, true)
-    .then(compare_with_nonspeculative(uuid, 'script-src-crossorigin'))
+    .then(compare_with_nonspeculative(uuid, 'script-src-crossorigin', true))
     .then(done);
 </script>

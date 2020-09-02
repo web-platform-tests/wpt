@@ -47,7 +47,7 @@ The `idl_test` function takes three arguments:
 
 * _srcs_: a list of specifications whose IDL you want to test. The names here need to match the filenames (excluding the extension) in `/interfaces/`.
 * _deps_: a list of specifications the IDL listed in _srcs_ depends upon. Be careful to list them in the order that the dependencies are revealed.
-* _setup_func_: a function that takes care of creating the various objects that you want to test.
+* _setup_func_: a function or async function that takes care of creating the various objects that you want to test.
 
 ## Methods of `IdlArray` ##
 
@@ -56,33 +56,31 @@ documented in this section should be considered an implementation detail, and ou
 not use it.
 
 ### `add_objects(dict)`
-  _dict_ should be an object whose keys are the names of interfaces or
-  exceptions, and whose values are arrays of strings.  When an interface or
-  exception is tested, every string registered for it with `add_objects()`
-  will be evaluated, and tests will be run on the result to verify that it
-  correctly implements that interface or exception.  This is the only way to
-  test anything about `[NoInterfaceObject]` interfaces, and there are many
-  tests that can't be run on any interface without an object to fiddle with.
 
-  The interface has to be the *primary* interface of all the objects
-  provided.  For example, don't pass `{Node: ["document"]}`, but rather
-  `{Document: ["document"]}`.  Assuming the `Document` interface was declared to
-  inherit from `Node`, this will automatically test that document implements
-  the `Node` interface too.
+_dict_ should be an object whose keys are the names of interfaces or exceptions, and whose values
+are arrays of strings.  When an interface or exception is tested, every string registered for it
+with `add_objects()` will be evaluated, and tests will be run on the result to verify that it
+correctly implements that interface or exception.  This is the only way to test anything about
+`[NoInterfaceObject]` interfaces, and there are many tests that can't be run on any interface
+without an object to fiddle with.
 
-  Warning: methods will be called on any provided objects, in a manner that
-  WebIDL requires be safe.  For instance, if a method has mandatory
-  arguments, the test suite will try calling it with too few arguments to
-  see if it throws an exception.  If an implementation incorrectly runs the
-  function instead of throwing, this might have side effects, possibly even
-  preventing the test suite from running correctly.
+The interface has to be the *primary* interface of all the objects provided.  For example, don't
+pass `{Node: ["document"]}`, but rather `{Document: ["document"]}`.  Assuming the `Document`
+interface was declared to inherit from `Node`, this will automatically test that document implements
+the `Node` interface too.
+
+Warning: methods will be called on any provided objects, in a manner that WebIDL requires be safe.
+For instance, if a method has mandatory arguments, the test suite will try calling it with too few
+arguments to see if it throws an exception. If an implementation incorrectly runs the function
+instead of throwing, this might have side effects, possibly even preventing the test suite from
+running correctly.
 
 ### `prevent_multiple_testing(name)`
-  This is a niche method for use in case you're testing many objects that
-  implement the same interfaces, and don't want to retest the same
-  interfaces every single time.  For instance, HTML defines many interfaces
-  that all inherit from `HTMLElement`, so the HTML test suite has something
-  like
+
+This is a niche method for use in case you're testing many objects that implement the same
+interfaces, and don't want to retest the same interfaces every single time. For instance, HTML
+defines many interfaces that all inherit from `HTMLElement`, so the HTML test suite has something
+like
 
 ```js
 .add_objects({
@@ -93,29 +91,11 @@ not use it.
 })
 ```
 
-  and so on for dozens of element types.  This would mean that it would
-  retest that each and every one of those elements implements `HTMLElement`,
-  `Element`, and `Node`, which would be thousands of basically redundant tests.
-  The test suite therefore calls `prevent_multiple_testing("HTMLElement")`.
-  This means that once one object has been tested to implement `HTMLElement`
-  and its ancestors, no other object will be.  Thus in the example code
-  above, the harness would test that `document.documentElement` correctly
-  implements `HTMLHtmlElement`, `HTMLElement`, `Element`, and `Node`; but
-  `document.head` would only be tested for `HTMLHeadElement`, and so on for
-  further objects.
-
-### `add_idls(idl_string)`
-  Parses _idl_string_ (throwing on parse error) and adds the results to the `IdlArray`. If
-  some of the definitions refer to other definitions, those must be present
-  too.  For instance, if _idl_string_ says that `Document` inherits from `Node`,
-  the `Node` interface must also have been provided in some call to `add_idls()`
-  or `add_untested_idls()`.
-
-### `add_untested_idls(idl_string)`
-  Like `add_idls()`, but the definitions will not be tested.  If an untested
-  interface is added and then extended with a tested partial interface, the
-  members of the partial interface will still be tested.  Also, all the
-  members will still be tested for objects added with `add_objects()`, because
-  you probably want to test that (for instance) window.document has all the
-  properties from `Node`, not just `Document`, even if the `Node` interface itself
-  is tested in a different test suite.
+and so on for dozens of element types.  This would mean that it would retest that each and every one
+of those elements implements `HTMLElement`, `Element`, and `Node`, which would be thousands of
+basically redundant tests. The test suite therefore calls `prevent_multiple_testing("HTMLElement")`.
+This means that once one object has been tested to implement `HTMLElement` and its ancestors, no
+other object will be.  Thus in the example code above, the harness would test that
+`document.documentElement` correctly implements `HTMLHtmlElement`, `HTMLElement`, `Element`, and
+`Node`; but `document.head` would only be tested for `HTMLHeadElement`, and so on for further
+objects.

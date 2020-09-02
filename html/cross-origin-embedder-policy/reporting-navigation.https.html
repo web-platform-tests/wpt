@@ -140,8 +140,8 @@ for (const testcase of CASES) {
             }
           }
           t.done();
-        }));
-      }));
+        })).catch(t.step_func(e => { throw e; }));
+      })).catch(t.step_func(e => { throw e; }));
     }, `parent: ${desc(testcase.parent)}, target: ${desc(testcase.target)}, ` +
        `with empty frame: ${withEmptyFrame}`);
   }

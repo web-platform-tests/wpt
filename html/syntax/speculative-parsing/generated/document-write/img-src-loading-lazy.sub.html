@@ -15,11 +15,11 @@
     .then(compare_with_nonspeculative(uuid, 'img-src-loading-lazy', false))
     .then(done);
   document.write(`
-    <script src=/common/slow.py?delay=1500><\/script>
+    <script src="/common/slow.py?delay=1500"><\/script>
     <script>
      document.write('<plaintext>');
     <\/script>
     speculative case in document.write
-    <img src=/html/syntax/speculative-parsing/resources/stash.py?action=put&uuid=${uuid}&encodingcheck=&Gbreve; loading=lazy>
+    <img src="/html/syntax/speculative-parsing/resources/stash.py?action=put&amp;uuid=${uuid}&amp;encodingcheck=&Gbreve;" loading=lazy>
   `);
 </script>

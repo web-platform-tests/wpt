@@ -33,155 +33,208 @@ tests = [
     (
       u'script-src',
       u'utf-8',
-      u'<script src={}></script>',
+      u'<script src="{}"></script>',
       u'true',
       u'true'
     ),
     (
       u'meta-charset-script-src',
       None,
-      u'<meta charset=windows-1254><script src={}></script>',
+      u'<meta charset=windows-1254><script src="{}"></script>',
       u'true',
       u'true'
     ),
     (
       u'base-href-script-src',
       u'utf-8',
-      u'<base href=//{{{{domains[www1]}}}}:{{{{ports[http][0]}}}}><script src={}></script>',
+      u'<base href=//{{{{domains[www1]}}}}:{{{{ports[http][0]}}}}><script src="{}"></script>',
       u'true',
       u'true'
     ),
     (
       u'script-src-unsupported-type',
       u'utf-8',
-      u'<script src={} type=text/plain></script>',
+      u'<script src="{}" type=text/plain></script>',
       u'false',
       u'true'
     ),
     (
       u'script-src-type-application-ecmascript',
       u'utf-8',
-      u'<script src={} type=application/ecmascript></script>',
+      u'<script src="{}" type=application/ecmascript></script>',
       u'true',
       u'true'
     ),
     (
       u'script-src-nomodule',
       u'utf-8',
-      u'<script src={} nomodule></script>',
+      u'<script src="{}" nomodule></script>',
       u'false',
       u'true'
     ),
     (
       u'script-src-module',
       u'utf-8',
-      u'<script src={} type=module></script>',
+      u'<script src="{}" type=module></script>',
       u'true',
       u'true'
     ),
     (
       u'script-src-async',
       u'utf-8',
-      u'<script src={} async></script>',
+      u'<script src="{}" async></script>',
       u'true',
       u'true'
     ),
     (
       u'script-src-defer',
       u'utf-8',
-      u'<script src={} defer></script>',
+      u'<script src="{}" defer></script>',
       u'true',
       u'true'
     ),
     (
       u'script-src-crossorigin',
       u'utf-8',
-      u'<script src={} crossorigin></script>',
+      u'<script src="{}" crossorigin></script>',
       u'true',
       u'true'
     ),
     (
       u'script-src-integrity',
       u'utf-8',
-      u'<script src={} integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb"></script>',
+      u'<script src="{}" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb"></script>',
       u'true',
       u'true'
     ),
     (
       u'script-src-referrerpolicy-no-referrer',
       u'utf-8',
-      u'<script src={} referrerpolicy=no-referrer></script>',
+      u'<script src="{}" referrerpolicy=no-referrer></script>',
       u'true',
       u'true'
     ),
     (
       u'img-src',
       u'utf-8',
-      u'<img src={}>',
+      u'<img src="{}">',
       u'true',
       u'true'
     ),
     (
       u'img-data-src',
       u'utf-8',
-      u'<img data-src={}>',
+      u'<img data-src="{}">',
       u'false',
       u'true'
     ),
     (
       u'img-srcset',
       u'utf-8',
-      u'<img srcset={}>',
+      u'<img srcset="{}">',
       u'true',
       u'true'
     ),
     (
       u'img-src-crossorigin',
       u'utf-8',
-      u'<img src={} crossorigin>',
+      u'<img src="{}" crossorigin>',
       u'true',
       u'true'
     ),
     (
       u'img-src-referrerpolicy-no-referrer',
       u'utf-8',
-      u'<img src={} referrerpolicy=no-referrer>',
+      u'<img src="{}" referrerpolicy=no-referrer>',
       u'true',
       u'true'
     ),
     (
       u'img-src-loading-lazy',
       u'utf-8',
-      u'<img src={} loading=lazy>',
+      u'<img src="{}" loading=lazy>',
       u'false',
       u'false'
     ),
     (
       u'picture-source-unsupported-type',
       u'utf-8',
-      u'<picture><source srcset={} type=text/plain><img></picture>',
+      u'<picture><source srcset="{}" type=text/plain><img></picture>',
       u'false',
       u'true'
     ),
     (
       u'picture-source-nomatch-media',
       u'utf-8',
-      u'<picture><source srcset={} media="not all"><img></picture>',
+      u'<picture><source srcset="{}" media="not all"><img></picture>',
       u'false',
       u'true'
     ),
     (
       u'picture-source-no-img',
       u'utf-8',
-      u'<picture><source srcset={}></picture>',
+      u'<picture><source srcset="{}"></picture>',
       u'false',
       u'true'
     ),
     (
       u'picture-source-br-img',
       u'utf-8',
-      u'<picture><source srcset={}><br><img></picture>',
+      u'<picture><source srcset="{}"><br><img></picture>',
       u'true',
+      u'true'
+    ),
+    (
+      u'xmp-script-src',
+      u'utf-8',
+      u'<xmp><script src="{}"></script></xmp>',
+      u'false',
+      u'true'
+    ),
+    (
+      # MathML doesn't have script
+      u'math-script-src',
+      u'utf-8',
+      u'<math><script src="{}"></script></math>',
+      u'false',
+      u'true'
+    ),
+    (
+      u'math-font-script-src',
+      u'utf-8',
+      u'<math><font><script src="{}"></script></font></math>',
+      u'false',
+      u'true'
+    ),
+    (
+      # This breaks out of foreign content, so the script is an HTML script
+      # https://html.spec.whatwg.org/multipage/#parsing-main-inforeign
+      u'math-font-face-script-src',
+      u'utf-8',
+      u'<math><font face><script src="{}"></script></font></math>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'svg-script-href',
+      u'utf-8',
+      u'<svg><script href="{}"></script></svg>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'svg-script-xlinkhref',
+      u'utf-8',
+      u'<svg><script xlink:href="{}"></script></svg>',
+      u'true',
+      u'true'
+    ),
+    (
+      # SVG script element doesn't have a src attribute
+      u'svg-script-src',
+      u'utf-8',
+      u'<svg><script src="{}"></script></svg>',
+      u'false',
       u'true'
     ),
 ]
@@ -205,8 +258,8 @@ preamble = u"""<!DOCTYPE html>
 # - In utf-8, it's percent-encoded as utf-8: %C4%9E
 # - stash.py will store this value as "param-encodingcheck"
 
-url_wptserve_sub = u"/html/syntax/speculative-parsing/resources/stash.py?action=put&uuid={{GET[uuid]}}&encodingcheck=&Gbreve;"
-url_js_sub = u"/html/syntax/speculative-parsing/resources/stash.py?action=put&uuid=${uuid}&encodingcheck=&Gbreve;"
+url_wptserve_sub = u"/html/syntax/speculative-parsing/resources/stash.py?action=put&amp;uuid={{GET[uuid]}}&amp;encodingcheck=&Gbreve;"
+url_js_sub = u"/html/syntax/speculative-parsing/resources/stash.py?action=put&amp;uuid=${uuid}&amp;encodingcheck=&Gbreve;"
 
 
 # Nonspeculative (normal) case to compare results with
@@ -217,7 +270,7 @@ template_nonspeculative = u"""{preamble}
 non-speculative case
 {testcase_markup}
 <!-- block the load event for a bit: -->
-<script src=/common/slow.py?delay={delay}><\\/script>
+<script src="/common/slow.py?delay={delay}"></script>
 """
 
 # Scenario: page load
@@ -245,7 +298,7 @@ template_pageload_toplevel = u"""{preamble}
 template_pageload_framed = u"""{preamble}
 {encoding_decl}
 <title>Preload scanner, page load (helper file): {title}</title>
-<script src=/common/slow.py?delay={delay}></script>
+<script src="/common/slow.py?delay={delay}"></script>
 <script>
   document.write('<plaintext>');
 </script>
@@ -269,7 +322,7 @@ template_docwrite = u"""{preamble}
     .then(compare_with_nonspeculative(uuid, '{title}', {test_nonspeculative}))
     .then(done);
   document.write(`
-    <script src=/common/slow.py?delay={delay}><\\/script>
+    <script src="/common/slow.py?delay={delay}"><\\/script>
     <script>
      document.write('<plaintext>');
     <\\/script>

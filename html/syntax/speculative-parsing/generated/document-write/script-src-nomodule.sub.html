@@ -15,11 +15,11 @@
     .then(compare_with_nonspeculative(uuid, 'script-src-nomodule', true))
     .then(done);
   document.write(`
-    <script src=/common/slow.py?delay=1500><\/script>
+    <script src="/common/slow.py?delay=1500"><\/script>
     <script>
      document.write('<plaintext>');
     <\/script>
     speculative case in document.write
-    <script src=/html/syntax/speculative-parsing/resources/stash.py?action=put&uuid=${uuid}&encodingcheck=&Gbreve; nomodule><\/script>
+    <script src="/html/syntax/speculative-parsing/resources/stash.py?action=put&amp;uuid=${uuid}&amp;encodingcheck=&Gbreve;" nomodule><\/script>
   `);
 </script>

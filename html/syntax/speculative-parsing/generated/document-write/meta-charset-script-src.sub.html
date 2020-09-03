@@ -15,11 +15,11 @@
     .then(compare_with_nonspeculative(uuid, 'meta-charset-script-src', true))
     .then(done);
   document.write(`
-    <script src=/common/slow.py?delay=1500><\/script>
+    <script src="/common/slow.py?delay=1500"><\/script>
     <script>
      document.write('<plaintext>');
     <\/script>
     speculative case in document.write
-    <meta charset=windows-1254><script src=/html/syntax/speculative-parsing/resources/stash.py?action=put&uuid=${uuid}&encodingcheck=&Gbreve;><\/script>
+    <meta charset=windows-1254><script src="/html/syntax/speculative-parsing/resources/stash.py?action=put&amp;uuid=${uuid}&amp;encodingcheck=&Gbreve;"><\/script>
   `);
 </script>

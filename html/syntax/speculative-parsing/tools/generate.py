@@ -45,6 +45,13 @@ tests = [
       u'true'
     ),
     (
+      u'base-href-script-src',
+      u'utf-8',
+      u'<base href=//{{{{domains[www1]}}}}:{{{{ports[http][0]}}}}><script src={}></script>',
+      u'true',
+      u'true'
+    ),
+    (
       u'script-src-unsupported-type',
       u'utf-8',
       u'<script src={} type=text/plain></script>',
@@ -186,6 +193,18 @@ preamble = u"""<!DOCTYPE html>
      /html/syntax/speculative-parsing/tools/generate.py
 -->"""
 
+# Notes on `encodingcheck` in the URL below
+#
+# - &Gbreve; is the HTML character reference for U+011E LATIN CAPITAL LETTER G WITH BREVE
+# - In windows-1254, this character is encoded as 0xD0.
+#   When used in the query part of a URL, it gets percent-encoded as %D0.
+# - In windows-1252 (usually the fallback encoding), that character can't be encoded, so is instead
+#   represented as &#286; percent-encoded, so %26%23286%3B.
+#   https://url.spec.whatwg.org/#query-state
+#   https://url.spec.whatwg.org/#code-point-percent-encode-after-encoding
+# - In utf-8, it's percent-encoded as utf-8: %C4%9E
+# - stash.py will store this value as "param-encodingcheck"
+
 url_wptserve_sub = u"/html/syntax/speculative-parsing/resources/stash.py?action=put&uuid={{GET[uuid]}}&encodingcheck=&Gbreve;"
 url_js_sub = u"/html/syntax/speculative-parsing/resources/stash.py?action=put&uuid=${uuid}&encodingcheck=&Gbreve;"
 
@@ -293,7 +312,7 @@ for testcase in tests:
     if encoding is None:
         encoding_decl = u"<!-- no meta charset -->"
     else:
-        encoding_decl = u"<meta charset={}>".format(encoding)
+        encoding_decl = f"<meta charset={encoding}>"
 
     html_testcase_markup = template_testcase_markup.format(url_wptserve_sub)
     js_testcase_markup = template_testcase_markup.format(url_js_sub).replace(u"</script>", u"<\/script>")
@@ -308,4 +327,4 @@ for testcase in tests:
     write_file(f"page-load/resources/{title}-framed.sub.html", pageload_framed)
 
     docwrite = template_docwrite.format(preamble=preamble, encoding_decl=encoding_decl, title=title, expect_load=expect_load, testcase_markup=js_testcase_markup, test_nonspeculative=test_nonspeculative, delay=delay)
-    write_file(f"document-write/{title}.html", docwrite)
+    write_file(f"document-write/{title}.sub.html", docwrite)

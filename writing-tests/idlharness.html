@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>idlharness.js API &#8212; web-platform-tests  documentation</title>
+    <title>IDL Tests (idlharness.js) &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -16,8 +16,8 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="testharness.js API" href="testharness-api.html" />
-    <link rel="prev" title="JavaScript Tests (testharness.js)" href="testharness.html" />
+    <link rel="next" title="testharness.js tutorial" href="testharness-tutorial.html" />
+    <link rel="prev" title="Testdriver extension tutorial" href="testdriver-extension-tutorial.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -34,110 +34,85 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="idlharness-js-api">
-<h1>idlharness.js API<a class="headerlink" href="#idlharness-js-api" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="idl-tests-idlharness-js">
+<h1>IDL Tests (idlharness.js)<a class="headerlink" href="#idl-tests-idlharness-js" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">idlharness.js</span></code> automatically generates browser tests for WebIDL interfaces, using
-the testharness.js framework.  To use, first include the following:</p>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">/resources/testharness.js</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">/resources/testharnessreport.js</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">/resources/WebIDLParser.js</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">/resources/idlharness.js</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-</pre></div>
+<p><code class="docutils literal notranslate"><span class="pre">idlharness.js</span></code> generates tests for Web IDL fragments, using the
+<a class="reference internal" href="testharness.html"><span class="doc">JavaScript Tests (testharness.js)</span></a> infrastructure. You typically want to use
+<code class="docutils literal notranslate"><span class="pre">.any.js</span></code> or <code class="docutils literal notranslate"><span class="pre">.window.js</span></code> for this to avoid having to write unnessary boilerplate.</p>
 </div>
-<p>Then you’ll need some type of IDLs.  Here’s some script that can be run on a
-spec written in HTML, which will grab all the elements with <code class="docutils literal notranslate"><span class="pre">class=&quot;idl&quot;</span></code>,
-concatenate them, and replace the body so you can copy-paste:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
-<span class="p">[].</span><span class="nx">forEach</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="s2">&quot;idl&quot;</span><span class="p">),</span> <span class="kd">function</span><span class="p">(</span><span class="nx">idl</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">//https://www.w3.org/Bugs/Public/show_bug.cgi?id=14914</span>
-  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">idl</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="s2">&quot;extract&quot;</span><span class="p">))</span>
-  <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">s</span> <span class="o">!==</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="p">{</span>
-      <span class="nx">s</span> <span class="o">+=</span> <span class="s2">&quot;\n\n&quot;</span><span class="p">;</span>
+<div class="section" id="adding-idl-fragments">
+<h2>Adding IDL fragments<a class="headerlink" href="#adding-idl-fragments" title="Permalink to this headline">¶</a></h2>
+<p>Web IDL is automatically scraped from specifications and added to the <code class="docutils literal notranslate"><span class="pre">/interfaces/</span></code> directory. See
+the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/interfaces/README">README</a> there for
+details.</p>
+</div>
+<div class="section" id="testing-idl-fragments">
+<h2>Testing IDL fragments<a class="headerlink" href="#testing-idl-fragments" title="Permalink to this headline">¶</a></h2>
+<p>For example, the Fetch API’s IDL is tested in
+<a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/fetch/api/idlharness.any.js"><code class="docutils literal notranslate"><span class="pre">/fetch/api/idlharness.any.js</span></code></a>:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// META: global=window,worker</span>
+<span class="c1">// META: script=/resources/WebIDLParser.js</span>
+<span class="c1">// META: script=/resources/idlharness.js</span>
+<span class="c1">// META: timeout=long</span>
+
+<span class="nx">idl_test</span><span class="p">(</span>
+  <span class="p">[</span><span class="s1">&#39;fetch&#39;</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;referrer-policy&#39;</span><span class="p">,</span> <span class="s1">&#39;html&#39;</span><span class="p">,</span> <span class="s1">&#39;dom&#39;</span><span class="p">],</span>
+  <span class="nx">idl_array</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span>
+      <span class="nx">Headers</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;new Headers()&quot;</span><span class="p">],</span>
+      <span class="nx">Request</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;new Request(&#39;about:blank&#39;)&quot;</span><span class="p">],</span>
+      <span class="nx">Response</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;new Response()&quot;</span><span class="p">],</span>
+    <span class="p">});</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">GLOBAL</span><span class="p">.</span><span class="nx">isWindow</span><span class="p">())</span> <span class="p">{</span>
+      <span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span> <span class="nx">Window</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;window&#39;</span><span class="p">]</span> <span class="p">});</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">GLOBAL</span><span class="p">.</span><span class="nx">isWorker</span><span class="p">())</span> <span class="p">{</span>
+      <span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span> <span class="nx">WorkerGlobalScope</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;self&#39;</span><span class="p">]</span> <span class="p">});</span>
     <span class="p">}</span>
-    <span class="nx">s</span> <span class="o">+=</span> <span class="nx">idl</span><span class="p">.</span><span class="nx">textContent</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/ +$/mg</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
   <span class="p">}</span>
-<span class="p">});</span>
-<span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&lt;pre&gt;&lt;/pre&gt;&#39;</span><span class="p">;</span>
-<span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nx">s</span><span class="p">;</span>
+<span class="p">);</span>
 </pre></div>
 </div>
-<p>Once you have that, put it in your script somehow.  The easiest way is to
-embed it literally in an HTML file with <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">type=text/plain&gt;</span></code> or similar,
-so that you don’t have to do any escaping.  Another possibility is to put it
-in a separate .idl file that’s fetched via XHR or similar.  Sample usage:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">idl_array</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">IdlArray</span><span class="p">();</span>
-<span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_untested_idls</span><span class="p">(</span><span class="s2">&quot;interface Node { readonly attribute DOMString nodeName; };&quot;</span><span class="p">);</span>
-<span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_idls</span><span class="p">(</span><span class="s2">&quot;interface Document : Node { readonly attribute DOMString URL; };&quot;</span><span class="p">);</span>
-<span class="nx">idl_array</span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span><span class="nx">Document</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;document&quot;</span><span class="p">]});</span>
-<span class="nx">idl_array</span><span class="p">.</span><span class="nx">test</span><span class="p">();</span>
-</pre></div>
+<p>Note how it includes <code class="docutils literal notranslate"><span class="pre">/resources/WebIDLParser.js</span></code> and <code class="docutils literal notranslate"><span class="pre">/resources/idlharness.js</span></code> in addition to
+<code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> and <code class="docutils literal notranslate"><span class="pre">testharnessreport.js</span></code> (automatically included due to usage of <code class="docutils literal notranslate"><span class="pre">.any.js</span></code>).
+These are needed to make the <code class="docutils literal notranslate"><span class="pre">idl_test</span></code> function work.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">idl_test</span></code> function takes three arguments:</p>
+<ul class="simple">
+<li><em>srcs</em>: a list of specifications whose IDL you want to test. The names here need to match the filenames (excluding the extension) in <code class="docutils literal notranslate"><span class="pre">/interfaces/</span></code>.</li>
+<li><em>deps</em>: a list of specifications the IDL listed in <em>srcs</em> depends upon. Be careful to list them in the order that the dependencies are revealed.</li>
+<li><em>setup_func</em>: a function or async function that takes care of creating the various objects that you want to test.</li>
+</ul>
 </div>
-<p>This tests that <code class="docutils literal notranslate"><span class="pre">window.Document</span></code> exists and meets all the requirements of
-WebIDL.  It also tests that window.document (the result of evaluating the
-string “document”) has URL and nodeName properties that behave as they
-should, and otherwise meets WebIDL’s requirements for an object whose
-primary interface is Document.  It does not test that window.Node exists,
-which is what you want if the Node interface is already tested in some other
-specification’s suite and your specification only extends or refers to it.
-Of course, each IDL string can define many different things, and calls to
-add_objects() can register many different objects for different interfaces:
-this is a very simple example.</p>
-</div>
-<div class="section" id="public-methods-of-idlarray">
-<h2>Public methods of IdlArray<a class="headerlink" href="#public-methods-of-idlarray" title="Permalink to this headline">¶</a></h2>
-<p>IdlArray objects can be obtained with <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">IdlArray()</span></code>.  Anything not
-documented in this section should be considered an implementation detail,
-and outside callers should not use it.</p>
-<div class="section" id="add-idls-idl-string">
-<h3><code class="docutils literal notranslate"><span class="pre">add_idls(idl_string)</span></code><a class="headerlink" href="#add-idls-idl-string" title="Permalink to this headline">¶</a></h3>
-<p>Parses <code class="docutils literal notranslate"><span class="pre">idl_string</span></code> (throwing on parse error) and adds the results to the
-IdlArray.  All the definitions will be tested when you run test().  If
-some of the definitions refer to other definitions, those must be present
-too.  For instance, if <code class="docutils literal notranslate"><span class="pre">idl_string</span></code> says that <code class="docutils literal notranslate"><span class="pre">Document</span></code> inherits from <code class="docutils literal notranslate"><span class="pre">Node</span></code>,
-the <code class="docutils literal notranslate"><span class="pre">Node</span></code> interface must also have been provided in some call to <code class="docutils literal notranslate"><span class="pre">add_idls()</span></code>
-or <code class="docutils literal notranslate"><span class="pre">add_untested_idls()</span></code>.</p>
-</div>
-<div class="section" id="add-untested-idls-idl-string">
-<h3><code class="docutils literal notranslate"><span class="pre">add_untested_idls(idl_string)</span></code><a class="headerlink" href="#add-untested-idls-idl-string" title="Permalink to this headline">¶</a></h3>
-<p>Like <code class="docutils literal notranslate"><span class="pre">add_idls()</span></code>, but the definitions will not be tested.  If an untested
-interface is added and then extended with a tested partial interface, the
-members of the partial interface will still be tested.  Also, all the
-members will still be tested for objects added with <code class="docutils literal notranslate"><span class="pre">add_objects()</span></code>, because
-you probably want to test that (for instance) window.document has all the
-properties from <code class="docutils literal notranslate"><span class="pre">Node</span></code>, not just <code class="docutils literal notranslate"><span class="pre">Document</span></code>, even if the <code class="docutils literal notranslate"><span class="pre">Node</span></code> interface itself
-is tested in a different test suite.</p>
-</div>
+<div class="section" id="methods-of-idlarray">
+<h2>Methods of <code class="docutils literal notranslate"><span class="pre">IdlArray</span></code><a class="headerlink" href="#methods-of-idlarray" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">IdlArray</span></code> objects can be obtained through the <em>setup_func</em> argument of <code class="docutils literal notranslate"><span class="pre">idl_test</span></code>. Anything not
+documented in this section should be considered an implementation detail, and outside callers should
+not use it.</p>
 <div class="section" id="add-objects-dict">
 <h3><code class="docutils literal notranslate"><span class="pre">add_objects(dict)</span></code><a class="headerlink" href="#add-objects-dict" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">dict</span></code> should be an object whose keys are the names of interfaces or
-exceptions, and whose values are arrays of strings.  When an interface or
-exception is tested, every string registered for it with <code class="docutils literal notranslate"><span class="pre">add_objects()</span></code>
-will be evaluated, and tests will be run on the result to verify that it
-correctly implements that interface or exception.  This is the only way to
-test anything about <code class="docutils literal notranslate"><span class="pre">[NoInterfaceObject]</span></code> interfaces, and there are many
-tests that can’t be run on any interface without an object to fiddle with.</p>
-<p>The interface has to be the <em>primary</em> interface of all the objects
-provided.  For example, don’t pass <code class="docutils literal notranslate"><span class="pre">{Node:</span> <span class="pre">[&quot;document&quot;]}</span></code>, but rather
-<code class="docutils literal notranslate"><span class="pre">{Document:</span> <span class="pre">[&quot;document&quot;]}</span></code>.  Assuming the <code class="docutils literal notranslate"><span class="pre">Document</span></code> interface was declared to
-inherit from <code class="docutils literal notranslate"><span class="pre">Node</span></code>, this will automatically test that document implements
+<p><em>dict</em> should be an object whose keys are the names of interfaces or exceptions, and whose values
+are arrays of strings.  When an interface or exception is tested, every string registered for it
+with <code class="docutils literal notranslate"><span class="pre">add_objects()</span></code> will be evaluated, and tests will be run on the result to verify that it
+correctly implements that interface or exception.  This is the only way to test anything about
+<code class="docutils literal notranslate"><span class="pre">[NoInterfaceObject]</span></code> interfaces, and there are many tests that can’t be run on any interface
+without an object to fiddle with.</p>
+<p>The interface has to be the <em>primary</em> interface of all the objects provided.  For example, don’t
+pass <code class="docutils literal notranslate"><span class="pre">{Node:</span> <span class="pre">[&quot;document&quot;]}</span></code>, but rather <code class="docutils literal notranslate"><span class="pre">{Document:</span> <span class="pre">[&quot;document&quot;]}</span></code>.  Assuming the <code class="docutils literal notranslate"><span class="pre">Document</span></code>
+interface was declared to inherit from <code class="docutils literal notranslate"><span class="pre">Node</span></code>, this will automatically test that document implements
 the <code class="docutils literal notranslate"><span class="pre">Node</span></code> interface too.</p>
-<p>Warning: methods will be called on any provided objects, in a manner that
-WebIDL requires be safe.  For instance, if a method has mandatory
-arguments, the test suite will try calling it with too few arguments to
-see if it throws an exception.  If an implementation incorrectly runs the
-function instead of throwing, this might have side effects, possibly even
-preventing the test suite from running correctly.</p>
+<p>Warning: methods will be called on any provided objects, in a manner that WebIDL requires be safe.
+For instance, if a method has mandatory arguments, the test suite will try calling it with too few
+arguments to see if it throws an exception. If an implementation incorrectly runs the function
+instead of throwing, this might have side effects, possibly even preventing the test suite from
+running correctly.</p>
 </div>
 <div class="section" id="prevent-multiple-testing-name">
 <h3><code class="docutils literal notranslate"><span class="pre">prevent_multiple_testing(name)</span></code><a class="headerlink" href="#prevent-multiple-testing-name" title="Permalink to this headline">¶</a></h3>
-<p>This is a niche method for use in case you’re testing many objects that
-implement the same interfaces, and don’t want to retest the same
-interfaces every single time.  For instance, HTML defines many interfaces
-that all inherit from <code class="docutils literal notranslate"><span class="pre">HTMLElement</span></code>, so the HTML test suite has something
+<p>This is a niche method for use in case you’re testing many objects that implement the same
+interfaces, and don’t want to retest the same interfaces every single time. For instance, HTML
+defines many interfaces that all inherit from <code class="docutils literal notranslate"><span class="pre">HTMLElement</span></code>, so the HTML test suite has something
 like</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">.</span><span class="nx">add_objects</span><span class="p">({</span>
   <span class="nx">HTMLHtmlElement</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;document.documentElement&#39;</span><span class="p">],</span>
@@ -147,21 +122,14 @@ like</p>
 <span class="p">})</span>
 </pre></div>
 </div>
-<p>and so on for dozens of element types.  This would mean that it would
-retest that each and every one of those elements implements <code class="docutils literal notranslate"><span class="pre">HTMLElement</span></code>,
-<code class="docutils literal notranslate"><span class="pre">Element</span></code>, and <code class="docutils literal notranslate"><span class="pre">Node</span></code>, which would be thousands of basically redundant tests.
-The test suite therefore calls <code class="docutils literal notranslate"><span class="pre">prevent_multiple_testing(&quot;HTMLElement&quot;)</span></code>.
-This means that once one object has been tested to implement <code class="docutils literal notranslate"><span class="pre">HTMLElement</span></code>
-and its ancestors, no other object will be.  Thus in the example code
-above, the harness would test that <code class="docutils literal notranslate"><span class="pre">document.documentElement</span></code> correctly
-implements <code class="docutils literal notranslate"><span class="pre">HTMLHtmlElement</span></code>, <code class="docutils literal notranslate"><span class="pre">HTMLElement</span></code>, <code class="docutils literal notranslate"><span class="pre">Element</span></code>, and <code class="docutils literal notranslate"><span class="pre">Node</span></code>; but
-<code class="docutils literal notranslate"><span class="pre">document.head</span></code> would only be tested for <code class="docutils literal notranslate"><span class="pre">HTMLHeadElement</span></code>, and so on for
-further objects.</p>
-</div>
-<div class="section" id="test">
-<h3><code class="docutils literal notranslate"><span class="pre">test()</span></code><a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h3>
-<p>Run all tests.  This should be called after you’ve called all other
-methods to add IDLs and objects.</p>
+<p>and so on for dozens of element types.  This would mean that it would retest that each and every one
+of those elements implements <code class="docutils literal notranslate"><span class="pre">HTMLElement</span></code>, <code class="docutils literal notranslate"><span class="pre">Element</span></code>, and <code class="docutils literal notranslate"><span class="pre">Node</span></code>, which would be thousands of
+basically redundant tests. The test suite therefore calls <code class="docutils literal notranslate"><span class="pre">prevent_multiple_testing(&quot;HTMLElement&quot;)</span></code>.
+This means that once one object has been tested to implement <code class="docutils literal notranslate"><span class="pre">HTMLElement</span></code> and its ancestors, no
+other object will be.  Thus in the example code above, the harness would test that
+<code class="docutils literal notranslate"><span class="pre">document.documentElement</span></code> correctly implements <code class="docutils literal notranslate"><span class="pre">HTMLHtmlElement</span></code>, <code class="docutils literal notranslate"><span class="pre">HTMLElement</span></code>, <code class="docutils literal notranslate"><span class="pre">Element</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">Node</span></code>; but <code class="docutils literal notranslate"><span class="pre">document.head</span></code> would only be tested for <code class="docutils literal notranslate"><span class="pre">HTMLHeadElement</span></code>, and so on for further
+objects.</p>
 </div>
 </div>
 </div>
@@ -203,8 +171,8 @@ methods to add IDLs and objects.</p>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Writing Tests</a><ul>
   <li><a href="testharness.html">JavaScript Tests (testharness.js)</a><ul>
-      <li>Previous: <a href="testharness.html" title="previous chapter">JavaScript Tests (testharness.js)</a></li>
-      <li>Next: <a href="testharness-api.html" title="next chapter">testharness.js API</a></li>
+      <li>Previous: <a href="testdriver-extension-tutorial.html" title="previous chapter">Testdriver extension tutorial</a></li>
+      <li>Next: <a href="testharness-tutorial.html" title="next chapter">testharness.js tutorial</a></li>
   </ul></li>
   </ul></li>
   </ul></li>

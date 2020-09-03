@@ -16,7 +16,7 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="idlharness.js API" href="idlharness.html" />
+    <link rel="next" title="testharness.js API" href="testharness-api.html" />
     <link rel="prev" title="Making a Testing Plan" href="making-a-testing-plan.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -36,103 +36,85 @@
             
   <div class="section" id="javascript-tests-testharness-js">
 <h1>JavaScript Tests (testharness.js)<a class="headerlink" href="#javascript-tests-testharness-js" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="idlharness.html">idlharness.js API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="testharness-api.html">testharness.js API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="testdriver-extension-tutorial.html">Testdriver extension tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="testdriver.html">testdriver.js Automation</a></li>
-</ul>
-</div>
-<p>testharness.js tests are the correct type of test to write in any
+<p>JavaScript tests are the correct type of test to write in any
 situation where you are not specifically interested in the rendering
 of a page, and where human interaction isn’t required; these tests are
-written in JavaScript using a framework called <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code>. It is
-documented in two sections:</p>
+written in JavaScript using a framework called <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code>.</p>
+<p>A high-level overview is provided below and more information can be found here:</p>
 <ul class="simple">
 <li><a class="reference internal" href="testharness-api.html"><span class="doc">testharness.js Documentation</span></a> — An introduction
-to the library and a detailed API reference.</li>
+to the library and a detailed API reference. <a class="reference internal" href="testharness-tutorial.html"><span class="doc">The tutorial on writing a
+testharness.js test</span></a> provides a concise guide to writing
+a test — a good place to start for newcomers to the project.</li>
+<li><a class="reference internal" href="testdriver.html"><span class="doc">testdriver.js Automation</span></a> — Automating end user actions, such as moving or
+clicking a mouse. See also the
+<a class="reference internal" href="testdriver-extension-tutorial.html"><span class="doc">testdriver.js extension tutorial</span></a> for adding new commands.</li>
 <li><a class="reference internal" href="idlharness.html"><span class="doc">idlharness.js Documentation</span></a> — A library for testing
 IDL interfaces using <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code>.</li>
 </ul>
 <p>See <a class="reference internal" href="server-features.html"><span class="doc">server features</span></a> for advanced testing features that are commonly used
-with testharness.js. See also the <a class="reference internal" href="general-guidelines.html"><span class="doc">general guidelines</span></a> for all test types.</p>
-<p>This page describes testharness.js exhaustively; <a class="reference internal" href="testharness-tutorial.html"><span class="doc">the tutorial on writing a
-testharness.js test</span></a> provides a concise guide to writing
-a test–a good place to start for newcomers to the project.</p>
-<div class="section" id="variants">
-<h2>Variants<a class="headerlink" href="#variants" title="Permalink to this headline">¶</a></h2>
-<p>A test file can have multiple variants by including <code class="docutils literal notranslate"><span class="pre">meta</span></code> elements,
-for example:</p>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?wss&quot;</span><span class="p">&gt;</span>
+with JavaScript tests. See also the <a class="reference internal" href="general-guidelines.html"><span class="doc">general guidelines</span></a> for all test types.</p>
+<div class="section" id="window-tests">
+<h2>Window tests<a class="headerlink" href="#window-tests" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="without-html-boilerplate-window-js">
+<h3>Without HTML boilerplate (<code class="docutils literal notranslate"><span class="pre">.window.js</span></code>)<a class="headerlink" href="#without-html-boilerplate-window-js" title="Permalink to this headline">¶</a></h3>
+<p>Create a JavaScript file whose filename ends in <code class="docutils literal notranslate"><span class="pre">.window.js</span></code> to have the necessary HTML boilerplate
+generated for you at <code class="docutils literal notranslate"><span class="pre">.window.html</span></code>. I.e., for <code class="docutils literal notranslate"><span class="pre">test.window.js</span></code> the server will ensure
+<code class="docutils literal notranslate"><span class="pre">test.window.html</span></code> is available.</p>
+<p>In this JavaScript file you can place one or more tests, as follows:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// Place assertions and logic here</span>
+  <span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span>
+<span class="p">},</span> <span class="s2">&quot;Ensure HTML boilerplate uses UTF-8&quot;</span><span class="p">);</span> <span class="c1">// This is the title of the test</span>
 </pre></div>
 </div>
-<p>The test can then do different things based on the URL.</p>
-<p>There are two utility scripts in that work well together with variants,
-<code class="docutils literal notranslate"><span class="pre">/common/subset-tests.js</span></code> and <code class="docutils literal notranslate"><span class="pre">/common/subset-tests-by-key.js</span></code>, where
-a test that would otherwise have too many tests to be useful can be
-split up in ranges of subtests. For example:</p>
+<p>If you only need to test a <a class="reference external" href="testharness-api.md#single-page-tests">single thing</a>, you could also use:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// META: title=Ensure HTML boilerplate uses UTF-8</span>
+<span class="nx">setup</span><span class="p">({</span> <span class="nx">single_test</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
+<span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span>
+<span class="nx">done</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="testharness-api.md#asynchronous-tests">asynchronous (<code class="docutils literal notranslate"><span class="pre">async_test()</span></code>)</a> and
+<a class="reference external" href="testharness-api.md#promise-tests">promise tests (<code class="docutils literal notranslate"><span class="pre">promise_test()</span></code>)</a> for more involved setups.</p>
+</div>
+<div class="section" id="with-html-boilerplate">
+<h3>With HTML boilerplate<a class="headerlink" href="#with-html-boilerplate" title="Permalink to this headline">¶</a></h3>
+<p>You need to be a bit more explicit and include the <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> framework directly as well as an
+additional file used by implementations:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
-<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Testing variants<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?1-1000&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?1001-2000&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?2001-last&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;</span>
-<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;/resources/testharnessreport.js&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;/common/subset-tests.js&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
- <span class="kr">const</span> <span class="nx">tests</span> <span class="o">=</span> <span class="p">[</span>
-                 <span class="p">{</span> <span class="nx">fn</span><span class="o">:</span> <span class="nx">t</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;...&quot;</span> <span class="p">},</span>
-                 <span class="p">...</span> <span class="nx">lots</span> <span class="k">of</span> <span class="nx">tests</span> <span class="p">...</span>
-               <span class="p">];</span>
- <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">test</span> <span class="k">of</span> <span class="nx">tests</span><span class="p">)</span> <span class="p">{</span>
-   <span class="nx">subsetTest</span><span class="p">(</span><span class="nx">async_test</span><span class="p">,</span> <span class="nx">test</span><span class="p">.</span><span class="nx">fn</span><span class="p">,</span> <span class="nx">test</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
- <span class="p">}</span>
-<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">utf-8</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="nx">test</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+      <span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span>
+    <span class="p">},</span> <span class="s2">&quot;Ensure UTF-8 declaration is observed&quot;</span><span class="p">);</span>
+  <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-<p>With <code class="docutils literal notranslate"><span class="pre">subsetTestByKey</span></code>, the key is given as the first argument, and the
-query string can include or exclude a key (will be matched as a regular
-expression).</p>
+<p>Here too you could avoid the wrapper <code class="docutils literal notranslate"><span class="pre">test()</span></code> function:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
-<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Testing variants by key<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?include=Foo&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?include=Bar&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?exclude=(Foo|Bar)&quot;</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;</span>
-<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;/resources/testharnessreport.js&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;/common/subset-tests-by-key.js&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
-   <span class="nx">subsetTestByKey</span><span class="p">(</span><span class="s2">&quot;Foo&quot;</span><span class="p">,</span> <span class="nx">async_test</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span> <span class="s2">&quot;Testing foo&quot;</span><span class="p">);</span>
-   <span class="p">...</span>
-<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">utf-8</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Ensure UTF-8 declaration is observed<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="nx">setup</span><span class="p">({</span> <span class="nx">single_test</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
+    <span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">characterSet</span><span class="p">,</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">);</span>
+    <span class="nx">done</span><span class="p">();</span>
+  <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
+<p>In this case the test title is taken from the <code class="docutils literal notranslate"><span class="pre">title</span></code> element.</p>
 </div>
-<div class="section" id="auto-generated-test-boilerplate">
-<h2>Auto-generated test boilerplate<a class="headerlink" href="#auto-generated-test-boilerplate" title="Permalink to this headline">¶</a></h2>
-<p>While most JavaScript tests require a certain amount of HTML
-boilerplate to include the test library, etc., tests which are
-expressible purely in script (e.g. tests for workers) can have all the
-needed HTML and script boilerplate auto-generated.</p>
-<div class="section" id="standalone-window-tests">
-<h3>Standalone window tests<a class="headerlink" href="#standalone-window-tests" title="Permalink to this headline">¶</a></h3>
-<p>Tests that only require a script file running in window scope can use
-standalone window tests. In this case the test is a javascript file
-with the extension <code class="docutils literal notranslate"><span class="pre">.window.js</span></code>. This is sourced from a generated
-document which sources <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code>, <code class="docutils literal notranslate"><span class="pre">testharnessreport.js</span></code> and
-the test script. For a source script with the name
-<code class="docutils literal notranslate"><span class="pre">example.window.js</span></code>, the corresponding test resource will be
-<code class="docutils literal notranslate"><span class="pre">example.window.html</span></code>.</p>
 </div>
-<div class="section" id="standalone-workers-tests">
-<h3>Standalone workers tests<a class="headerlink" href="#standalone-workers-tests" title="Permalink to this headline">¶</a></h3>
-<p>Tests that only require assertions in a dedicated worker scope can use
-standalone workers tests. In this case, the test is a JavaScript file
-with extension <code class="docutils literal notranslate"><span class="pre">.worker.js</span></code> that imports <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code>. The test can
-then use all the usual APIs, and can be run from the path to the
-JavaScript file with the <code class="docutils literal notranslate"><span class="pre">.js</span></code> removed.</p>
+<div class="section" id="dedicated-worker-tests-worker-js">
+<h2>Dedicated worker tests (<code class="docutils literal notranslate"><span class="pre">.worker.js</span></code>)<a class="headerlink" href="#dedicated-worker-tests-worker-js" title="Permalink to this headline">¶</a></h2>
+<p>Create a JavaScript file that imports <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> and whose filename ends in <code class="docutils literal notranslate"><span class="pre">.worker.js</span></code> to
+have the necessary HTML boilerplate generated for you at <code class="docutils literal notranslate"><span class="pre">.worker.html</span></code>.</p>
 <p>For example, one could write a test for the <code class="docutils literal notranslate"><span class="pre">FileReaderSync</span></code> API by
 creating a <code class="docutils literal notranslate"><span class="pre">FileAPI/FileReaderSync.worker.js</span></code> as follows:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">importScripts</span><span class="p">(</span><span class="s2">&quot;/resources/testharness.js&quot;</span><span class="p">);</span>
@@ -145,9 +127,11 @@ creating a <code class="docutils literal notranslate"><span class="pre">FileAPI/
 </pre></div>
 </div>
 <p>This test could then be run from <code class="docutils literal notranslate"><span class="pre">FileAPI/FileReaderSync.worker.html</span></code>.</p>
+<p>(Removing the need for <code class="docutils literal notranslate"><span class="pre">importScripts()</span></code> and <code class="docutils literal notranslate"><span class="pre">done()</span></code> is tracked in
+<a class="reference external" href="https://github.com/web-platform-tests/wpt/issues/11529">issue #11529</a>.)</p>
 </div>
-<div class="section" id="multi-global-tests">
-<h3>Multi-global tests<a class="headerlink" href="#multi-global-tests" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="tests-for-other-or-multiple-globals-any-js">
+<h2>Tests for other or multiple globals (<code class="docutils literal notranslate"><span class="pre">.any.js</span></code>)<a class="headerlink" href="#tests-for-other-or-multiple-globals-any-js" title="Permalink to this headline">¶</a></h2>
 <p>Tests for features that exist in multiple global scopes can be written in a way
 that they are automatically run in several scopes. In this case, the test is a
 JavaScript file with extension <code class="docutils literal notranslate"><span class="pre">.any.js</span></code>, which can use all the usual APIs.</p>
@@ -192,17 +176,19 @@ be made available by the framework:</p>
 <span class="bp">self</span><span class="o">.</span><span class="n">GLOBAL</span><span class="o">.</span><span class="n">isWorker</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Although <a class="reference external" href="testharness-api.html#determining-when-all-tests-are-complete">the global <code class="docutils literal notranslate"><span class="pre">done</span></code> function must be explicitly invoked for most
+<p>Although <a class="reference external" href="testharness-api.html#determining-when-all-tests-are-complete">the global <code class="docutils literal notranslate"><span class="pre">done()</span></code> function must be explicitly invoked for most
 dedicated worker tests and shared worker
 tests</a>, it is
 automatically invoked for tests defined using the “multi-global” pattern.</p>
 </div>
-<div class="section" id="specifying-a-test-title-in-auto-generated-boilerplate-tests">
-<h3>Specifying a test title in auto-generated boilerplate tests<a class="headerlink" href="#specifying-a-test-title-in-auto-generated-boilerplate-tests" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="other-features-of-window-js-worker-js-and-any-js">
+<h2>Other features of <code class="docutils literal notranslate"><span class="pre">.window.js</span></code>, <code class="docutils literal notranslate"><span class="pre">.worker.js</span></code> and <code class="docutils literal notranslate"><span class="pre">.any.js</span></code><a class="headerlink" href="#other-features-of-window-js-worker-js-and-any-js" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="specifying-a-test-title">
+<h3>Specifying a test title<a class="headerlink" href="#specifying-a-test-title" title="Permalink to this headline">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">title=This</span> <span class="pre">is</span> <span class="pre">the</span> <span class="pre">title</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">test</span></code> at the beginning of the resource.</p>
 </div>
-<div class="section" id="including-other-javascript-resources-in-auto-generated-boilerplate-tests">
-<h3>Including other JavaScript resources in auto-generated boilerplate tests<a class="headerlink" href="#including-other-javascript-resources-in-auto-generated-boilerplate-tests" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="including-other-javascript-files">
+<h3>Including other JavaScript files<a class="headerlink" href="#including-other-javascript-files" title="Permalink to this headline">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">script=link/to/resource.js</span></code> at the beginning of the resource. For example,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">META</span><span class="p">:</span> <span class="n">script</span><span class="o">=/</span><span class="n">common</span><span class="o">/</span><span class="n">utils</span><span class="o">.</span><span class="n">js</span>
 <span class="o">//</span> <span class="n">META</span><span class="p">:</span> <span class="n">script</span><span class="o">=</span><span class="n">resources</span><span class="o">/</span><span class="n">utils</span><span class="o">.</span><span class="n">js</span>
@@ -210,17 +196,78 @@ automatically invoked for tests defined using the “multi-global” pattern.</p
 </div>
 <p>can be used to include both the global and a local <code class="docutils literal notranslate"><span class="pre">utils.js</span></code> in a test.</p>
 </div>
-<div class="section" id="specifying-a-timeout-of-long-in-auto-generated-boilerplate-tests">
-<h3>Specifying a timeout of long in auto-generated boilerplate tests<a class="headerlink" href="#specifying-a-timeout-of-long-in-auto-generated-boilerplate-tests" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="specifying-a-timeout-of-long">
+<h3>Specifying a timeout of long<a class="headerlink" href="#specifying-a-timeout-of-long" title="Permalink to this headline">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">timeout=long</span></code> at the beginning of the resource.</p>
 </div>
-<div class="section" id="specifying-test-variants-in-auto-generated-boilerplate-tests">
-<h3>Specifying test <a class="reference external" href="#variants">variants</a> in auto-generated boilerplate tests<a class="headerlink" href="#specifying-test-variants-in-auto-generated-boilerplate-tests" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="specifying-test-variants">
+<h3>Specifying test <a class="reference external" href="#variants">variants</a><a class="headerlink" href="#specifying-test-variants" title="Permalink to this headline">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">META:</span> <span class="pre">variant=url-suffix</span></code> at the beginning of the resource. For example,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// META: variant=
 // META: variant=?wss
 </pre></div>
 </div>
+</div>
+</div>
+<div class="section" id="variants">
+<h2>Variants<a class="headerlink" href="#variants" title="Permalink to this headline">¶</a></h2>
+<p>A test file can have multiple variants by including <code class="docutils literal notranslate"><span class="pre">meta</span></code> elements,
+for example:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?wss&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Test runners will execute the test for each variant specified, appending the corresponding content
+attribute value to the URL of the test as they do so.</p>
+<p><code class="docutils literal notranslate"><span class="pre">/common/subset-tests.js</span></code> and <code class="docutils literal notranslate"><span class="pre">/common/subset-tests-by-key.js</span></code> are two utility scripts that work
+well together with variants, allowing a test to be split up into subtests in cases when there are
+otherwise too many tests to complete inside the timeout. For example:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Testing variants<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?1-1000&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?1001-2000&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?2001-last&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/common/subset-tests.js&quot;</span><span class="p">&gt;</span>
+<span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+ <span class="kr">const</span> <span class="nx">tests</span> <span class="o">=</span> <span class="p">[</span>
+                 <span class="p">{</span> <span class="nx">fn</span><span class="o">:</span> <span class="nx">t</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;...&quot;</span> <span class="p">},</span>
+                 <span class="p">...</span> <span class="nx">lots</span> <span class="k">of</span> <span class="nx">tests</span> <span class="p">...</span>
+               <span class="p">];</span>
+ <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">test</span> <span class="k">of</span> <span class="nx">tests</span><span class="p">)</span> <span class="p">{</span>
+   <span class="nx">subsetTest</span><span class="p">(</span><span class="nx">async_test</span><span class="p">,</span> <span class="nx">test</span><span class="p">.</span><span class="nx">fn</span><span class="p">,</span> <span class="nx">test</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+ <span class="p">}</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>With <code class="docutils literal notranslate"><span class="pre">subsetTestByKey</span></code>, the key is given as the first argument, and the
+query string can include or exclude a key (which will be matched as a regular
+expression).</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Testing variants by key<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?include=Foo&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?include=Bar&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?exclude=(Foo|Bar)&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/common/subset-tests-by-key.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+   <span class="nx">subsetTestByKey</span><span class="p">(</span><span class="s2">&quot;Foo&quot;</span><span class="p">,</span> <span class="nx">async_test</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span> <span class="s2">&quot;Testing foo&quot;</span><span class="p">);</span>
+   <span class="p">...</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="table-of-contents">
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="testharness-api.html">testharness.js API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testdriver.html">testdriver.js Automation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testdriver-extension-tutorial.html">Testdriver extension tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="idlharness.html">IDL Tests (idlharness.js)</a></li>
+</ul>
 </div>
 </div>
 </div>
@@ -262,7 +309,7 @@ automatically invoked for tests defined using the “multi-global” pattern.</p
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Writing Tests</a><ul>
       <li>Previous: <a href="making-a-testing-plan.html" title="previous chapter">Making a Testing Plan</a></li>
-      <li>Next: <a href="idlharness.html" title="next chapter">idlharness.js API</a></li>
+      <li>Next: <a href="testharness-api.html" title="next chapter">testharness.js API</a></li>
   </ul></li>
   </ul></li>
 </ul>

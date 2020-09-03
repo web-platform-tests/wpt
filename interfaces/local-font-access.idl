@@ -1,0 +1,37 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Local Font Access API (https://wicg.github.io/local-font-access/)
+
+[SecureContext]
+interface mixin NavigatorFonts {
+  [SameObject] readonly attribute FontManager fonts;
+};
+Navigator includes NavigatorFonts;
+WorkerNavigator includes NavigatorFonts;
+
+[SecureContext,
+ Exposed=(Window,Worker)]
+interface FontManager {
+  FontIterator query();
+};
+
+[SecureContext,
+ Exposed=(Window,Worker)]
+interface FontIterator {
+  async iterable<FontMetadata>;
+};
+
+[Exposed=(Window,Worker)]
+interface FontMetadata {
+  Promise<FontTableMap> getTables(optional sequence<ByteString> tables);
+
+  readonly attribute USVString postscriptName;
+  readonly attribute USVString fullName;
+  readonly attribute USVString family;
+};
+
+[Exposed=(Window,Worker)]
+interface FontTableMap {
+  readonly maplike<ByteString, Blob>;
+};

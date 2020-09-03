@@ -1,0 +1,141 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Trusted Types (https://w3c.github.io/webappsec-trusted-types/dist/spec/)
+
+[Exposed=Window, SecureContext]
+interface TrustedHTML {
+  stringifier;
+};
+
+[Exposed=Window, SecureContext]
+interface TrustedScript {
+  stringifier;
+};
+
+[Exposed=Window, SecureContext]
+interface TrustedScriptURL {
+  stringifier;
+};
+
+[Exposed=Window, SecureContext] interface TrustedTypePolicyFactory {
+    TrustedTypePolicy createPolicy(
+        DOMString policyName, optional TrustedTypePolicyOptions policyOptions);
+    boolean isHTML(any value);
+    boolean isScript(any value);
+    boolean isScriptURL(any value);
+    readonly attribute TrustedHTML emptyHTML;
+    readonly attribute TrustedScript emptyScript;
+    DOMString? getAttributeType(
+        DOMString tagName,
+        DOMString attribute,
+        optional DOMString elementNs = "",
+        optional DOMString attrNs = "");
+    DOMString? getPropertyType(
+        DOMString tagName,
+        DOMString property,
+        optional DOMString elementNs = "");
+    readonly attribute TrustedTypePolicy? defaultPolicy;
+};
+
+[Exposed=Window, SecureContext]
+interface TrustedTypePolicy {
+  readonly attribute DOMString name;
+  TrustedHTML createHTML(DOMString input, any... arguments);
+  TrustedScript createScript(DOMString input, any... arguments);
+  TrustedScriptURL createScriptURL(DOMString input, any... arguments);
+};
+
+dictionary TrustedTypePolicyOptions {
+   CreateHTMLCallback? createHTML;
+   CreateScriptCallback? createScript;
+   CreateScriptURLCallback? createScriptURL;
+};
+callback CreateHTMLCallback = DOMString (DOMString input, any... arguments);
+callback CreateScriptCallback = DOMString (DOMString input, any... arguments);
+callback CreateScriptURLCallback = USVString (DOMString input, any... arguments);
+
+typedef [StringContext=TrustedHTML] DOMString HTMLString;
+typedef [StringContext=TrustedScript] DOMString ScriptString;
+typedef [StringContext=TrustedScriptURL] USVString ScriptURLString;
+typedef (TrustedHTML or TrustedScript or TrustedScriptURL) TrustedType;
+
+partial interface mixin Window {
+  [SecureContext] readonly attribute TrustedTypePolicyFactory trustedTypes;
+};
+
+partial interface mixin Document {
+  [CEReactions] void write(HTMLString... text);
+  [CEReactions] void writeln(HTMLString... text);
+};
+
+partial interface mixin HTMLScriptElement : HTMLElement {
+ [CEReactions] attribute [TreatNullAs=EmptyString] ScriptString innerText;
+ [CEReactions] attribute ScriptString? textContent;
+ [CEReactions] attribute ScriptURLString src;
+ [CEReactions] attribute ScriptString text;
+};
+
+partial interface mixin HTMLIFrameElement : HTMLElement {
+  [CEReactions] attribute HTMLString srcdoc;
+};
+
+partial interface HTMLEmbedElement : HTMLElement {
+  [CEReactions] attribute ScriptURLString src;
+};
+
+partial interface HTMLObjectElement : HTMLElement {
+  [CEReactions] attribute ScriptURLString data;
+  [CEReactions] attribute ScriptURLString codeBase; // obsolete
+};
+
+typedef (ScriptString or Function) TrustedTimerHandler;
+
+partial interface mixin WindowOrWorkerGlobalScope {
+  long setTimeout(TrustedTimerHandler handler, optional long timeout = 0, any... arguments);
+  long setInterval(TrustedTimerHandler handler, optional long timeout = 0, any... arguments);
+};
+
+[Exposed=(Window,Worker)]
+partial interface Worker : EventTarget {
+    constructor(ScriptURLString scriptURL, optional WorkerOptions options = {});
+};
+
+[Exposed=(Window,Worker)]
+partial interface SharedWorker : EventTarget {
+  constructor(ScriptURLString scriptURL, optional (DOMString or WorkerOptions) options = {});
+};
+
+[Exposed=Worker]
+partial interface WorkerGlobalScope : EventTarget {
+  void importScripts(ScriptURLString... urls);
+};
+
+[SecureContext, Exposed=(Window,Worker)]
+partial interface ServiceWorkerContainer : EventTarget {
+   [NewObject] Promise<ServiceWorkerRegistration> register(ScriptURLString scriptURL, optional RegistrationOptions options = {});
+};
+
+[Exposed=Window]
+partial interface mixin SVGAnimatedString {
+           attribute (DOMString or TrustedScriptURL) baseVal;
+};
+
+partial interface Element {
+  [CEReactions, TreatNullAs=EmptyString] attribute HTMLString outerHTML;
+  [CEReactions] void insertAdjacentHTML(DOMString position, HTMLString text);
+};
+
+partial interface mixin InnerHTML { // specified in a draft version at https://w3c.github.io/DOM-Parsing/#the-innerhtml-mixin
+  [CEReactions, TreatNullAs=EmptyString] attribute HTMLString innerHTML;
+};
+
+partial interface Range {
+  [CEReactions, NewObject] DocumentFragment createContextualFragment(HTMLString fragment);
+};
+
+[Exposed=Window]
+interface DOMParser {
+  constructor();
+  [NewObject] Document parseFromString(HTMLString str, SupportedType type);
+};

@@ -17,6 +17,7 @@ def test_no_browsing_context(session, closed_window, wheel_chain):
 
 
 def test_wheel_scroll(session, test_actions_page, wheel_chain):
+    session.execute_script("document.scrollingElement.scrollTop = 0")
     div_point = { "x": 82, "y": 187}
 
     wheel_chain \

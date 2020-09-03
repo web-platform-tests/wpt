@@ -1,0 +1,21 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Web Share Target API (https://w3c.github.io/web-share-target/)
+
+dictionary ShareTargetParams {
+  USVString title;
+  USVString text;
+  USVString url;
+};
+
+dictionary ShareTarget {
+  required USVString action;
+  DOMString method = "GET";
+  DOMString enctype = "application/x-www-form-urlencoded";
+  required ShareTargetParams params;
+};
+
+partial dictionary WebAppManifest {
+  ShareTarget share_target;
+};

@@ -820,3 +820,6 @@ SET TIMEOUT: mediacapture-insertable-streams/MediaStreamTrackProcessor-video.htt
 
 CSS-COLLIDING-REF-NAME: css/css-backgrounds/reference/background-image-001-ref.html
 CSS-COLLIDING-REF-NAME: css/css-break/background-image-001-ref.html
+
+# Python 3-only files are not parsable as Python 2
+PARSE-FAILED: html/syntax/speculative-parsing/tools/generate.py

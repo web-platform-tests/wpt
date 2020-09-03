@@ -23,27 +23,130 @@ target_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/gen
 # Test data
 
 tests = [
-    # title, template_testcase_markup, expect_load, test_nonspeculative
-    (u'script-src', u'<script src={}></script>', u'true', u'true'),
-    (u'script-src-unsupported-type', u'<script src={} type=text/plain></script>', u'false', u'true'),
-    (u'script-src-type-application-ecmascript', u'<script src={} type=application/ecmascript></script>', u'true', u'true'),
-    (u'script-src-nomodule', u'<script src={} nomodule></script>', u'false', u'true'),
-    (u'script-src-module', u'<script src={} type=module></script>', u'true', u'true'),
-    (u'script-src-async', u'<script src={} async></script>', u'true', u'true'),
-    (u'script-src-defer', u'<script src={} defer></script>', u'true', u'true'),
-    (u'script-src-crossorigin', u'<script src={} crossorigin></script>', u'true', u'true'),
-    (u'script-src-integrity', u'<script src={} integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb"></script>', u'true', u'true'),
-    (u'script-src-referrerpolicy-no-referrer', u'<script src={} referrerpolicy=no-referrer></script>', u'true', u'true'),
-    (u'img-src', u'<img src={}>', u'true', u'true'),
-    (u'img-data-src', u'<img data-src={}>', u'false', u'true'),
-    (u'img-srcset', u'<img srcset={}>', u'true', u'true'),
-    (u'img-src-crossorigin', u'<img src={} crossorigin>', u'true', u'true'),
-    (u'img-src-referrerpolicy-no-referrer', u'<img src={} referrerpolicy=no-referrer>', u'true', u'true'),
-    (u'img-src-loading-lazy', u'<img src={} loading=lazy>', u'false', u'false'),
-    (u'picture-source-unsupported-type', u'<picture><source srcset={} type=text/plain><img></picture>', u'false', u'true'),
-    (u'picture-source-nomatch-media', u'<picture><source srcset={} media="not all"><img></picture>', u'false', u'true'),
-    (u'picture-source-no-img', u'<picture><source srcset={}></picture>', u'false', u'true'),
-    (u'picture-source-br-img', u'<picture><source srcset={}><br><img></picture>', u'true', u'true'),
+    # title,
+    # template_testcase_markup,
+    # expect_load,
+    # test_nonspeculative
+    (
+      u'script-src',
+      u'<script src={}></script>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'script-src-unsupported-type',
+      u'<script src={} type=text/plain></script>',
+      u'false',
+      u'true'
+    ),
+    (
+      u'script-src-type-application-ecmascript',
+      u'<script src={} type=application/ecmascript></script>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'script-src-nomodule',
+      u'<script src={} nomodule></script>',
+      u'false',
+      u'true'
+    ),
+    (
+      u'script-src-module',
+      u'<script src={} type=module></script>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'script-src-async',
+      u'<script src={} async></script>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'script-src-defer',
+      u'<script src={} defer></script>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'script-src-crossorigin',
+      u'<script src={} crossorigin></script>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'script-src-integrity',
+      u'<script src={} integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb"></script>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'script-src-referrerpolicy-no-referrer',
+      u'<script src={} referrerpolicy=no-referrer></script>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'img-src',
+      u'<img src={}>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'img-data-src',
+      u'<img data-src={}>',
+      u'false',
+      u'true'
+    ),
+    (
+      u'img-srcset',
+      u'<img srcset={}>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'img-src-crossorigin',
+      u'<img src={} crossorigin>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'img-src-referrerpolicy-no-referrer',
+      u'<img src={} referrerpolicy=no-referrer>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'img-src-loading-lazy',
+      u'<img src={} loading=lazy>',
+      u'false',
+      u'false'
+    ),
+    (
+      u'picture-source-unsupported-type',
+      u'<picture><source srcset={} type=text/plain><img></picture>',
+      u'false',
+      u'true'
+    ),
+    (
+      u'picture-source-nomatch-media',
+      u'<picture><source srcset={} media="not all"><img></picture>',
+      u'false',
+      u'true'
+    ),
+    (
+      u'picture-source-no-img',
+      u'<picture><source srcset={}></picture>',
+      u'false',
+      u'true'
+    ),
+    (
+      u'picture-source-br-img',
+      u'<picture><source srcset={}><br><img></picture>',
+      u'true',
+      u'true'
+    ),
 ]
 
 preamble = u"""<!DOCTYPE html>

@@ -1,0 +1,26 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: IceTransport Extensions for WebRTC (https://w3c.github.io/webrtc-ice/)
+
+dictionary RTCIceParameters {
+             required DOMString usernameFragment;
+             required DOMString password;
+             boolean   iceLite;
+};
+
+dictionary RTCIceGatherOptions {
+             RTCIceTransportPolicy     gatherPolicy = "all";
+             sequence<RTCIceServer> iceServers;
+};
+
+[Exposed=Window]
+partial interface RTCIceTransport {
+    constructor();
+    void                      gather (optional RTCIceGatherOptions options = {});
+    void                      start (RTCIceParameters remoteParameters, optional RTCIceRole role = "controlled");
+    void                      stop ();
+    void                      addRemoteCandidate (RTCIceCandidateInit remoteCandidate);
+                    attribute EventHandler        onerror;
+                    attribute EventHandler        onicecandidate;
+};

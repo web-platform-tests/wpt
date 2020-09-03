@@ -7,7 +7,8 @@ The tests are designed to be run from your local computer.
 Running the tests requires `python`, `pip` and `virtualenv`, as well as updating
 the system `hosts` file.
 
-Note that Python 2.7 is required. Using Python 3 is not supported.
+Python 3 is supported and preferred, but for now it is still possible to use
+Python 2.7 if necessary.
 
 The required setup is different depending on your operating system.
 
@@ -21,6 +22,10 @@ On Debian or Ubuntu:
 ```bash
 sudo apt-get install python python-pip virtualenv
 ```
+
+It is important to have a package that provides a `python` binary. On Fedora,
+for example, that means installing the `python-unversioned-command` package. On
+Ubuntu Focal and later, the package is called `python-is-python3`.
 
 ### macOS Setup
 
@@ -39,9 +44,6 @@ wherever you currently set your PATH.
 See also [additional setup required to run Safari](safari.md).
 
 ### Windows Setup
-**Note:** In general, Windows Subsystem for Linux will provide the smoothest
-user experience for running web-platform-tests on Windows, where installation
-and usage are similar to Linux.
 
 Download and install [Python 2.7](https://www.python.org/downloads). The
 installer includes `pip` by default.
@@ -62,6 +64,15 @@ started using:
 ```bash
 python wpt serve
 ```
+
+#### Windows Subsystem for Linux
+
+Optionally on Windows you can use the [Windows Subsystem for
+Linux](https://docs.microsoft.com/en-us/windows/wsl/about) (WSL). If doing so,
+installation and usage are similar to the Linux instructions. Be aware that WSL
+may attempt to override `/etc/hosts` each time it is launched, which would then
+require you to re-run [`hosts` File Setup](#hosts-file-setup). This behavior
+[can be configured](https://docs.microsoft.com/en-us/windows/wsl/wsl-config#network).
 
 ### `hosts` File Setup
 

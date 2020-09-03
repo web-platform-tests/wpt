@@ -1,3 +1,5 @@
+'use strict';
+
 // These tests rely on the User Agent providing an implementation of the
 // WebXR Testing API (https://github.com/immersive-web/webxr-test-api).
 //
@@ -9,16 +11,28 @@
 
 // Debugging message helper, by default does nothing. Implementations can
 // override this.
-var xr_debug = function(name, msg) {}
-var isChromiumBased = 'MojoInterfaceInterceptor' in self;
-var isWebKitBased = 'internals' in self && 'xrTest' in internals;
+var xr_debug = function(name, msg) {};
 
 function xr_promise_test(name, func, properties) {
   promise_test(async (t) => {
     // Perform any required test setup:
     xr_debug(name, 'setup');
 
+    assert_implements(navigator.xr, 'missing navigator.xr');
+
+    // Only set up once.
     if (!navigator.xr.test) {
+      // Load test-only API helpers.
+      const script = document.createElement('script');
+      script.src = '/resources/test-only-api.js';
+      script.async = false;
+      const p = new Promise((resolve, reject) => {
+        script.onload = () => { resolve(); };
+        script.onerror = e => { reject(e); };
+      })
+      document.head.appendChild(script);
+      await p;
+
       if (isChromiumBased) {
         // Chrome setup
         await loadChromiumResources();
@@ -33,11 +47,7 @@ function xr_promise_test(name, func, properties) {
     // setup properly. Either way, the fact that xr_promise_test is being used
     // means that the tests expect navigator.xr.test to be set. By rejecting now
     // we can hopefully provide a clearer indication of what went wrong.
-    if (!navigator.xr.test) {
-      // We can't use assert_true here because it causes the wpt testharness
-      // to treat this as a test page and not as a test.
-      return Promise.reject("No navigator.xr.test object found, even after attempted load");
-    }
+    assert_implements(navigator.xr.test, 'missing navigator.xr.test, even after attempted load');
 
     // Ensure that any devices are disconnected when done. If this were done in
     // a .then() for the success case, a test that expected failure would
@@ -185,47 +195,46 @@ function forEachWebxrObject(callback) {
 }
 
 // Code for loading test API in Chromium.
-function loadChromiumResources() {
-  let chromiumResources = [
-    '/gen/layout_test_data/mojo/public/js/mojo_bindings.js',
+async function loadChromiumResources() {
+  const chromiumResources = [
     '/gen/mojo/public/mojom/base/time.mojom.js',
-    '/gen/gpu/ipc/common/mailbox_holder.mojom.js',
+    '/gen/mojo/public/mojom/base/shared_memory.mojom.js',
+    '/gen/mojo/public/mojom/base/unguessable_token.mojom.js',
     '/gen/gpu/ipc/common/sync_token.mojom.js',
-    '/gen/ui/display/mojom/display.mojom.js',
+    '/gen/gpu/ipc/common/mailbox.mojom.js',
+    '/gen/gpu/ipc/common/mailbox_holder.mojom.js',
     '/gen/ui/gfx/geometry/mojom/geometry.mojom.js',
+    '/gen/ui/gfx/mojom/native_handle_types.mojom.js',
+    '/gen/ui/gfx/mojom/buffer_types.mojom.js',
+    '/gen/ui/gfx/mojom/color_space.mojom.js',
+    '/gen/ui/gfx/mojom/display_color_spaces.mojom.js',
     '/gen/ui/gfx/mojom/gpu_fence_handle.mojom.js',
     '/gen/ui/gfx/mojom/transform.mojom.js',
+    '/gen/ui/display/mojom/display.mojom.js',
+    '/gen/device/gamepad/public/mojom/gamepad.mojom.js',
     '/gen/device/vr/public/mojom/vr_service.mojom.js',
+  ];
+
+  let extraResources = [
     '/resources/chromium/webxr-test-math-helper.js',
     '/resources/chromium/webxr-test.js',
     '/resources/testdriver.js',
     '/resources/testdriver-vendor.js',
   ];
-
   // This infrastructure is also used by Chromium-specific internal tests that
   // may need additional resources (e.g. internal API extensions), this allows
   // those tests to rely on this infrastructure while ensuring that no tests
   // make it into public WPTs that rely on APIs outside of the webxr test API.
   if (typeof(additionalChromiumResources) !== 'undefined') {
-    chromiumResources = chromiumResources.concat(additionalChromiumResources);
+    extraResources = extraResources.concat(additionalChromiumResources);
   }
 
-  let chain = Promise.resolve();
-    chromiumResources.forEach(path => {
-      let script = document.createElement('script');
-      script.src = path;
-      script.async = false;
-      chain = chain.then(() => new Promise(resolve => {
-                           script.onload = () => resolve();
-                         }));
-      document.head.appendChild(script);
-  });
+  await loadMojoResources(chromiumResources);
+  for (const path of extraResources) {
+    await loadScript(path);
+  }
 
-  chain = chain.then(() => {
-    xr_debug = navigator.xr.test.Debug;
-  });
-
-  return chain;
+  xr_debug = navigator.xr.test.Debug;
 }
 
 function setupWebKitWebXRTestAPI() {

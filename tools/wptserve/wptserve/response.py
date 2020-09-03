@@ -52,8 +52,9 @@ class Response(object):
 
     .. attribute:: status
 
-       Status tuple (code, message). Can be set to an integer, in which case the
-       message part is filled in automatically, or a tuple.
+       Status tuple (code, message). Can be set to an integer in which case the
+       message part is filled in automatically, or a tuple (code, message) in
+       which case code is an int and message is a text or binary string.
 
     .. attribute:: headers
 
@@ -92,7 +93,13 @@ class Response(object):
             if len(value) != 2:
                 raise ValueError
             else:
-                self._status = (int(value[0]), str(value[1]))
+                code = int(value[0])
+                message = value[1]
+                # Only call str() if message is not a string type, so that we
+                # don't get `str(b"foo") == "b'foo'"` in Python 3.
+                if not isinstance(message, (binary_type, text_type)):
+                    message = str(message)
+                self._status = (code, message)
         else:
             self._status = (int(value), None)
 
@@ -673,8 +680,8 @@ class ResponseWriter(object):
                 message = response_codes[code][0]
             else:
                 message = ''
-        self.write("%s %d %s\r\n" %
-                   (self._response.request.protocol_version, code, message))
+        self.write(b"%s %d %s\r\n" %
+                   (isomorphic_encode(self._response.request.protocol_version), code, isomorphic_encode(message)))
         self._status_written = True
 
     def write_header(self, name, value):
@@ -735,7 +742,7 @@ class ResponseWriter(object):
         if not self._headers_complete:
             self._response.content = data
             self.end_headers()
-        self.write_raw_content(data)
+        return self.write_raw_content(data)
 
     def write_raw_content(self, data):
         """Writes the data 'as is'"""
@@ -743,11 +750,9 @@ class ResponseWriter(object):
             raise ValueError('data cannot be None')
         if isinstance(data, (text_type, binary_type)):
             # Deliberately allows both text and binary types. See `self.encode`.
-            self.write(data)
+            return self.write(data)
         else:
-            self.write_content_file(data)
-        if not self._response.explicit_flush:
-            self.flush()
+            return self.write_content_file(data)
 
     def write(self, data):
         """Write directly to the response, converting unicode to bytes
@@ -755,23 +760,28 @@ class ResponseWriter(object):
         self.content_written = True
         try:
             self._wfile.write(self.encode(data))
+            return True
         except socket.error:
             # This can happen if the socket got closed by the remote end
-            pass
+            return False
 
     def write_content_file(self, data):
         """Write a file-like object directly to the response in chunks.
         Does not flush."""
         self.content_written = True
+        success = True
         while True:
             buf = data.read(self.file_chunk_size)
             if not buf:
+                success = False
                 break
             try:
                 self._wfile.write(buf)
             except socket.error:
+                success = False
                 break
         data.close()
+        return success
 
     def encode(self, data):
         """Convert unicode to bytes according to response.encoding."""

@@ -21,6 +21,7 @@ if MYPY:
     from typing import Hashable
     from .manifest import Manifest
     Fuzzy = Dict[Optional[Tuple[Text, Text, Text]], List[int]]
+    PageRanges = Dict[Text, List[int]]
 
 item_types = {}  # type: Dict[str, Type[ManifestItem]]
 
@@ -197,7 +198,7 @@ class TestharnessTest(URLManifestItem):
 
     @property
     def script_metadata(self):
-        # type: () -> Optional[Text]
+        # type: () -> Optional[List[Tuple[Text, Text]]]
         return self._extras.get("script_metadata")
 
     def to_json(self):
@@ -300,6 +301,23 @@ class RefTest(URLManifestItem):
                    url,
                    references,
                    **extras)
+
+
+class PrintRefTest(RefTest):
+    __slots__ = ("references",)
+
+    item_type = "print-reftest"
+
+    @property
+    def page_ranges(self):
+        # type: () -> PageRanges
+        return self._extras.get("page_ranges", {})
+
+    def to_json(self):  # type: ignore
+        rv = super(PrintRefTest, self).to_json()
+        if self.page_ranges:
+            rv[-1]["page_ranges"] = self.page_ranges
+        return rv
 
 
 class ManualTest(URLManifestItem):

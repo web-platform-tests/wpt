@@ -15,7 +15,7 @@
     .then(compare_with_nonspeculative(uuid, 'script-src-defer', true))
     .then(done);
   document.write(`
-    <script src=/common/slow.py?delay=1000><\/script>
+    <script src=/common/slow.py?delay=1500><\/script>
     <script>
      document.write('<plaintext>');
     <\/script>

@@ -25,18 +25,18 @@ function compare_with_nonspeculative(uuid, title, test_nonspeculative) {
     }).then(async () => {
       const result = await get_result(uuid);
       if (speculative_result === '') {
-        assert_equals(result, speculative_result, 'non-speculative case incorrectly fetched')
+        assert_equals(result, '', 'non-speculative case incorrectly fetched')
       } else {
         assert_not_equals(result, '', 'non-speculative case did not fetch');
-      }
-      const speculative_headers = speculative_result.trim().split("\n");
-      const nonspeculative_headers = result.trim().split("\n");
-      assert_equals(speculative_headers.length, nonspeculative_headers.length, 'expected the same number of headers between speculative and non-speculative')
-      for (let i = 0; i < speculative_headers.length; ++i) {
-        let [s_header, s_value] = split_header(speculative_headers[i]);
-        let [ns_header, ns_value] = split_header(nonspeculative_headers[i]);
-        assert_equals(s_header, ns_header, 'expected the order of headers to match between speculative and non-speculative');
-        assert_equals(s_value, ns_value, `expected \`${s_header}\` values to match between speculative and non-speculative`);
+        const speculative_headers = speculative_result.trim().split("\n");
+        const nonspeculative_headers = result.trim().split("\n");
+        assert_equals(speculative_headers.length, nonspeculative_headers.length, 'expected the same number of headers between speculative and non-speculative')
+        for (let i = 0; i < speculative_headers.length; ++i) {
+          let [s_header, s_value] = split_header(speculative_headers[i]);
+          let [ns_header, ns_value] = split_header(nonspeculative_headers[i]);
+          assert_equals(s_header, ns_header, 'expected the order of headers to match between speculative and non-speculative');
+          assert_equals(s_value, ns_value, `expected \`${s_header}\` values to match between speculative and non-speculative`);
+        }
       }
     });
   }

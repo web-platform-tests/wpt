@@ -20,7 +20,7 @@ import os, shutil
 
 target_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/generated"
 
-delay = u'1000'  # Lower value makes the test complete faster, but also higher risk of flaky results
+delay = u'1500'  # Lower value makes the test complete faster, but also higher risk of flaky results
 
 # Test data
 
@@ -43,7 +43,8 @@ tests = [
       u'<meta charset=windows-1254><script src={}></script>',
       u'true',
       u'true'
-    ),    (
+    ),
+    (
       u'script-src-unsupported-type',
       u'utf-8',
       u'<script src={} type=text/plain></script>',

@@ -2,8 +2,8 @@
 <!-- DO NOT EDIT. This file has been generated. Source:
      /html/syntax/speculative-parsing/tools/generate.py
 -->
-<meta charset=utf-8>
-<title>Preload scanner, page load: script-src-nomodule</title>
+<!-- no meta charset -->
+<title>Preload scanner, page load: meta-charset-script-src</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/common/utils.js></script>
@@ -13,9 +13,9 @@
   setup({single_test: true});
   const uuid = token();
   const iframe = document.createElement('iframe');
-  iframe.src = `resources/script-src-nomodule-framed.sub.html?uuid=${uuid}`;
+  iframe.src = `resources/meta-charset-script-src-framed.sub.html?uuid=${uuid}`;
   document.body.appendChild(iframe);
-  expect_fetched_onload(uuid, false)
-    .then(compare_with_nonspeculative(uuid, 'script-src-nomodule', true))
+  expect_fetched_onload(uuid, true)
+    .then(compare_with_nonspeculative(uuid, 'meta-charset-script-src', true))
     .then(done);
 </script>

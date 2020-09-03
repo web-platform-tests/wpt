@@ -1,0 +1,30 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: SVG Paths (https://svgwg.org/specs/paths/)
+
+[NoInterfaceObject]
+interface SVGPathSegment {
+  DOMString type;
+  sequence<float> values;
+};
+
+dictionary SVGPathDataSettings {
+   boolean normalize = false;
+}
+
+interface mixin SVGPathData {
+   sequence<SVGPathSegment> getPathData(optional SVGPathDataSettings settings);
+   void setPathData(sequence<SVGPathSegment> pathData);
+};
+
+interface SVGPathElement : SVGGeometryElement {
+
+  readonly attribute SVGAnimatedNumber pathLength;
+
+  float getTotalLength();
+  DOMPoint getPointAtLength(float distance);
+  SVGPathSegment? getPathSegmentAtLength(float distance);
+};
+
+SVGPathElement includes SVGPathData;

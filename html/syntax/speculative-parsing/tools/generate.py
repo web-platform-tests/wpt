@@ -185,6 +185,34 @@ tentative_tests = [
       u'true'
     ),
     (
+      u'link-rel-preload-as-style',
+      u'utf-8',
+      u'<link rel=preload as=style href="{}">',
+      u'true',
+      u'true'
+    ),
+    (
+      u'link-rel-preload-as-font-crossorigin',
+      u'utf-8',
+      u'<link rel=preload as=font href="{}" crossorigin>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'link-rel-preload-as-script',
+      u'utf-8',
+      u'<link rel=preload as=script href="{}">',
+      u'true',
+      u'true'
+    ),
+    (
+      u'link-rel-preload-as-image',
+      u'utf-8',
+      u'<link rel=preload as=image href="{}">',
+      u'true',
+      u'true'
+    ),
+    (
       u'img-src',
       u'utf-8',
       u'<img src="{}">',
@@ -196,6 +224,14 @@ tentative_tests = [
       u'utf-8',
       u'<img data-src="{}">',
       u'false',
+      u'true'
+    ),
+    (
+      # <image> is turned into <img> in the tree builder
+      u'image-src',
+      u'utf-8',
+      u'<image src="{}">',
+      u'true',
       u'true'
     ),
     (
@@ -255,6 +291,13 @@ tentative_tests = [
       u'true'
     ),
     (
+      u'video-poster',
+      u'utf-8',
+      u'<video poster="{}"></video>',
+      u'true',
+      u'true'
+    ),
+    (
       u'xmp-script-src',
       u'utf-8',
       u'<xmp><script src="{}"></script></xmp>',
@@ -304,6 +347,28 @@ tentative_tests = [
       u'svg-script-src',
       u'utf-8',
       u'<svg><script src="{}"></script></svg>',
+      u'false',
+      u'true'
+    ),
+    (
+      u'svg-image-href',
+      u'utf-8',
+      u'<svg><image href="{}"></image></svg>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'svg-image-xlinkhref',
+      u'utf-8',
+      u'<svg><image xlink:href="{}"></image></svg>',
+      u'true',
+      u'true'
+    ),
+    (
+      # SVG image element doesn't have a src attribute
+      u'svg-image-src',
+      u'utf-8',
+      u'<svg><image src="{}"></image></svg>',
       u'false',
       u'true'
     ),

@@ -24,7 +24,7 @@ delay = u'1500'  # Lower value makes the test complete faster, but also higher r
 
 # Test data
 
-tests = [
+tentative_tests = [
     # title,
     # encoding,
     # template_testcase_markup,
@@ -239,6 +239,14 @@ tests = [
     ),
 ]
 
+tests = [
+    # title,
+    # encoding,
+    # template_testcase_markup,
+    # expect_load,
+    # test_nonspeculative
+]
+
 # Templates
 
 preamble = u"""<!DOCTYPE html>
@@ -266,7 +274,7 @@ url_js_sub = u"/html/syntax/speculative-parsing/resources/stash.py?action=put&am
 
 template_nonspeculative = u"""{preamble}
 {encoding_decl}
-<title>Preload scanner, non-speculative (helper file): {title}</title>
+<title>Speculative parsing, non-speculative (helper file): {title}</title>
 non-speculative case
 {testcase_markup}
 <!-- block the load event for a bit: -->
@@ -277,11 +285,11 @@ non-speculative case
 
 template_pageload_toplevel = u"""{preamble}
 {encoding_decl}
-<title>Preload scanner, page load: {title}</title>
+<title>Speculative parsing, page load: {title}</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/common/utils.js></script>
-<script src=/html/syntax/speculative-parsing/resources/preload-scanner-util.js></script>
+<script src=/html/syntax/speculative-parsing/resources/speculative-parsing-util.js></script>
 <body>
 <script>
   setup({{single_test: true}});
@@ -297,7 +305,7 @@ template_pageload_toplevel = u"""{preamble}
 
 template_pageload_framed = u"""{preamble}
 {encoding_decl}
-<title>Preload scanner, page load (helper file): {title}</title>
+<title>Speculative parsing, page load (helper file): {title}</title>
 <script src="/common/slow.py?delay={delay}"></script>
 <script>
   document.write('<plaintext>');
@@ -310,11 +318,11 @@ speculative case
 
 template_docwrite = u"""{preamble}
 {encoding_decl}
-<title>Preload scanner, document.write(): {title}</title>
+<title>Speculative parsing, document.write(): {title}</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/common/utils.js></script>
-<script src=/html/syntax/speculative-parsing/resources/preload-scanner-util.js></script>
+<script src=/html/syntax/speculative-parsing/resources/speculative-parsing-util.js></script>
 <script>
   setup({{single_test: true}});
   const uuid = token();
@@ -336,13 +344,13 @@ template_docwrite = u"""{preamble}
 
 template_prerender_toplevel = u"""{preamble}
 {encoding_decl}
-<title>Preload scanner, prerender: {title}</title>
+<title>Speculative parsing, prerender: {title}</title>
 ...
 """
 
 template_prerender_linked = u"""{preamble}
 {encoding_decl}
-<title>Preload scanner, prerender (helper file): {title}</title>
+<title>Speculative parsing, prerender (helper file): {title}</title>
 ...
 """
 
@@ -359,8 +367,11 @@ def write_file(path, content):
     file.write(content)
     file.close()
 
-for testcase in tests:
+def generate_tests(testcase, tentative):
     title, encoding, template_testcase_markup, expect_load, test_nonspeculative = testcase
+    ext = u""
+    if tentative:
+        ext = u".tentative"
 
     if encoding is None:
         encoding_decl = u"<!-- no meta charset -->"
@@ -375,9 +386,15 @@ for testcase in tests:
         write_file(f"resources/{title}-nonspeculative.sub.html", nonspeculative)
 
     pageload_toplevel = template_pageload_toplevel.format(preamble=preamble, encoding_decl=encoding_decl, title=title, expect_load=expect_load, test_nonspeculative=test_nonspeculative)
-    write_file(f"page-load/{title}.html", pageload_toplevel)
+    write_file(f"page-load/{title}{ext}.html", pageload_toplevel)
     pageload_framed = template_pageload_framed.format(preamble=preamble, encoding_decl=encoding_decl, title=title, testcase_markup=html_testcase_markup, delay=delay)
     write_file(f"page-load/resources/{title}-framed.sub.html", pageload_framed)
 
     docwrite = template_docwrite.format(preamble=preamble, encoding_decl=encoding_decl, title=title, expect_load=expect_load, testcase_markup=js_testcase_markup, test_nonspeculative=test_nonspeculative, delay=delay)
-    write_file(f"document-write/{title}.sub.html", docwrite)
+    write_file(f"document-write/{title}{ext}.sub.html", docwrite)
+
+for testcase in tests:
+    generate_tests(testcase, False)
+
+for testcase in tentative_tests:
+    generate_tests(testcase, True)

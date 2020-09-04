@@ -115,6 +115,76 @@ tentative_tests = [
       u'true'
     ),
     (
+      u'link-no-rel',
+      u'utf-8',
+      u'<link href="{}">',
+      u'false',
+      u'true'
+    ),
+    (
+      u'link-rel-stylesheet',
+      u'utf-8',
+      u'<link rel=stylesheet href="{}">',
+      u'true',
+      u'true'
+    ),
+    (
+      u'link-rel-alternate-stylesheet',
+      u'utf-8',
+      u'<link rel="alternate stylesheet" href="{}">',
+      u'false',
+      u'true'
+    ),
+    (
+      u'link-rel-stylesheet-disabled',
+      u'utf-8',
+      u'<link rel="stylesheet" href="{}" disabled>',
+      u'false',
+      u'true'
+    ),
+    (
+      u'link-rel-stylesheet-nomatch-media',
+      u'utf-8',
+      u'<link rel=stylesheet href="{}" media="not all">',
+      u'false',
+      u'true'
+    ),
+    (
+      u'link-rel-stylesheet-unsupported-type',
+      u'utf-8',
+      u'<link rel=stylesheet href="{}" type=text/plain>',
+      u'false',
+      u'true'
+    ),
+    (
+      u'link-rel-stylesheet-type-text-css',
+      u'utf-8',
+      u'<link rel=stylesheet href="{}" type=text/css>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'link-rel-stylesheet-crossorigin',
+      u'utf-8',
+      u'<link rel=stylesheet href="{}" crossorigin>',
+      u'true',
+      u'true'
+    ),
+    (
+      u'link-rel-stylesheet-integrity',
+      u'utf-8',
+      u'<link rel=stylesheet href="{}" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb">',
+      u'true',
+      u'true'
+    ),
+    (
+      u'link-rel-stylesheet-referrerpolicy-no-referrer',
+      u'utf-8',
+      u'<link rel=stylesheet href="{}" referrerpolicy=no-referrer>',
+      u'true',
+      u'true'
+    ),
+    (
       u'img-src',
       u'utf-8',
       u'<img src="{}">',

@@ -400,7 +400,9 @@ jobs:
   # - template: tools/ci/azure/install_chrome.yml
   # - template: tools/ci/azure/install_firefox.yml
   - powershell: |
-      pushd $SYSTEMDRIVE
+      pushd $env:SYSTEMDRIVE\
+      cmd /c dir /s chrome.exe
+      pushd c:\
       cmd /c dir /s chrome.exe
     displayName: 'Find Chrome'
   - template: tools/ci/azure/update_hosts.yml

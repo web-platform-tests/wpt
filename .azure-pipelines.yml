@@ -385,8 +385,7 @@ jobs:
 
 - job: wpt_integration_win
   displayName: 'tools/wpt/ tests: Windows'
-  dependsOn: decision
-  condition: dependencies.decision.outputs['test_jobs.wpt_integration']
+  condition: eq(variables['Build.Reason'], 'PullRequest')
   pool:
     vmImage: 'windows-2019'
   variables:
@@ -400,6 +399,8 @@ jobs:
   # figuring out how to install Chrome Dev channel on Windows
   # - template: tools/ci/azure/install_chrome.yml
   # - template: tools/ci/azure/install_firefox.yml
+  - powershell: cmd /c dir /s $SYSTEMDRIVE*chrome.exe
+    displayName: 'Find Chrome'
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
   - template: tools/ci/azure/tox_pytest.yml

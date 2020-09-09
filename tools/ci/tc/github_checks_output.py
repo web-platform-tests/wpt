@@ -20,6 +20,9 @@ class GitHubChecksOutputter(object):
 
     def output(self, line):
         # type: (Any) -> None
+        # TODO(stephenmcgruer): Once mypy 0.790 is released, we can change this
+        # to AnyStr, as that release teaches mypy about the mode flags of open.
+        # See https://github.com/python/typeshed/pull/4146
         with open(self.path, 'a') as f:
             f.write(line)
             f.write('\n')

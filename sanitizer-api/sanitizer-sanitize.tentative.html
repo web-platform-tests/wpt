@@ -13,7 +13,7 @@
       d.appendChild(fragment);
       return d.innerHTML;
     }
-    const s = new Sanitizer();
+    const s = new Sanitizer({});
 
     testcases.forEach(c => test(t => {
         fragment = s.sanitize(c.value);

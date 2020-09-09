@@ -3,6 +3,8 @@
 [
   Exposed=Window
 ] interface Sanitizer {
-  [RaisesException] constructor();
+  [RaisesException] constructor(SanitizerConfig sanitizerConfig);
   DOMString sanitizeToString(DOMString input);
 };
+
+dictionary SanitizerConfig {};

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/testcases.sub.js"></script>
+</head>
+
+<body>
+<script>
+    test(t => {
+      assert_throws_js(TypeError, _ => {let s = new Sanitizer()});
+    }, "SanitizerAPI creator without config.");
+
+    test(t => {
+      let s = new Sanitizer({});
+      assert_true(s instanceof Sanitizer);
+    }, "SanitizerAPI creator with empty config.");
+
+    test(t => {
+      let s = new Sanitizer({testConfig: [1,2,3], attr: ["test", "i", "am"]});
+      assert_true(s instanceof Sanitizer);
+    }, "SanitizerAPI creator with config ignore unknown values.");
+
+    test(t => {
+      let s = new Sanitizer({allowElements: []});
+      assert_true(s instanceof Sanitizer);
+      assert_equals(s.sanitizeToString("<div>balabala<i>test</i></div>"), "<div>balabala<i>test</i></div>");
+    }, "SanitizerAPI creator with config {allowElements: []}.");
+
+    test(t => {
+      let s = new Sanitizer({allowElements: ["test", "i", "am"]});
+      assert_true(s instanceof Sanitizer);
+      assert_equals(s.sanitizeToString("<div>balabala<i>test</i></div>"), "<div>balabala</div>");
+    }, "SanitizerAPI creator with config {allowElements: [\"test\", \"i\", \"am\"]}.");
+
+    test(t => {
+      let s = new Sanitizer({allowElements: ["TEST", "I", "AM"]});
+      assert_true(s instanceof Sanitizer);
+      assert_equals(s.sanitizeToString("<div>balabala<i>test</i></div>"), "<div>balabala</div>");
+      }, "SanitizerAPI creator with config {allowElements: [\"TEST\", \"I\", \"AM\"]}.");
+
+    test(t => {
+      let s = new Sanitizer({allowElements: ["test", "i", "am"]});
+      assert_true(s instanceof Sanitizer);
+      assert_equals(s.sanitizeToString("<div>balabala<i>i</i><p>t</p><test>a</test></div>"), "<div>balabala<p>t</p></div>");
+    }, "SanitizerAPI creator with config {allowElements: [\"test\", \"i\", \"am\"]}.");
+
+    test(t => {
+      let s = new Sanitizer({testConfig: [1,2,3], allowElements: ["test", "i", "am"]});
+      assert_true(s instanceof Sanitizer);
+      assert_equals(s.sanitizeToString("<div>balabala<i>test</i></div>"), "<div>balabala</div>");
+    }, "SanitizerAPI creator with config {testConfig: [1,2,3], allowElements: [\"test\", \"i\", \"am\"]}.");
+</script>
+</body>
+</html>

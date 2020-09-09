@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>TestDriver actions: two touch points with one moving one pause</title>
+<title>TestDriver actions: wheel scroll</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -33,7 +33,7 @@ let event_id = [];
 async_test(t => {
   let container = document.getElementById("container");
   container.addEventListener("wheel",
-    e => {event_type.push(e.type); event_id.push(e.pointerId);});
+    e => {event_type.push(e.type);});
 
   let actions = new test_driver.Actions()
        .scroll(0, 0, 0, 10, {origin: container});

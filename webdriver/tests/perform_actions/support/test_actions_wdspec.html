@@ -12,6 +12,8 @@
       .box { display: flex;}
       #dragArea { position: relative; }
       #dragTarget { position: absolute; top:22px; left:47px;}
+      #scrollable { width: 200px; height: 200px; overflow: scroll; }
+      #content { width: 600px; height: 1000px; background-color: blue; }
     </style>
     <script>
         "use strict";
@@ -95,6 +97,7 @@
         }
 
         function recordWheelEvent(event) {
+          // console.log("recordWheelEvent " + event.target.id);
           allEvents.events.push({
             "type": event.type,
             "button": event.button,
@@ -206,6 +209,9 @@
 
           var droppable = document.getElementById("droppable");
           droppable.addEventListener("drop", recordPointerEvent);
+
+          var scrollable = document.getElementById("scrollable");
+          scrollable.addEventListener("wheel", recordWheelEvent);
         });
     </script>
 </head>
@@ -233,6 +239,12 @@
       <div id=droppable dropzone="true" class="area"></div>
     </div>
   </div>
+  <div>
+    <h2>scroll</h2>
+    <div id="scrollable">
+      <div id="scrollContent"></div>
+    </div>
+  </div>  
   <div id="resultContainer">
     <h2>Events</h2>
     <div id="events"></div>

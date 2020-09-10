@@ -99,51 +99,21 @@ Otherwise run with --ssl-type=none""")
 otherwise install OpenSSL and ensure that it's on your $PATH.""")
 
 
-def check_environ(product):
-    if product not in ("android_weblayer", "android_webview", "chrome", "chrome_android", "firefox", "firefox_android", "servo"):
+def check_environ(logger, product):
+    if product not in ("android_weblayer",
+                       "android_webview",
+                       "chrome",
+                       "chrome_android",
+                       "firefox",
+                       "firefox_android",
+                       "servo"):
         config_builder = serve.build_config(os.path.join(wpt_root, "config.json"))
         # Override the ports to avoid looking for free ports
         config_builder.ssl = {"type": "none"}
         config_builder.ports = {"http": [8000]}
 
-        is_windows = platform.uname()[0] == "Windows"
-
         with config_builder as config:
-            expected_hosts = set(config.domains_set)
-            if is_windows:
-                expected_hosts.update(config.not_domains_set)
-
-        missing_hosts = set(expected_hosts)
-        if is_windows:
-            hosts_path = r"%s\System32\drivers\etc\hosts" % os.environ.get("SystemRoot", r"C:\Windows")
-        else:
-            hosts_path = "/etc/hosts"
-
-        if os.path.abspath(os.curdir) == wpt_root:
-            wpt_path = "wpt"
-        else:
-            wpt_path = os.path.join(wpt_root, "wpt")
-
-        with open(hosts_path, "r") as f:
-            for line in f:
-                line = line.split("#", 1)[0].strip()
-                parts = line.split()
-                hosts = parts[1:]
-                for host in hosts:
-                    missing_hosts.discard(host)
-            if missing_hosts:
-                if is_windows:
-                    message = """Missing hosts file configuration. Run
-
-python %s make-hosts-file | Out-File %s -Encoding ascii -Append
-
-in PowerShell with Administrator privileges.""" % (wpt_path, hosts_path)
-                else:
-                    message = """Missing hosts file configuration. Run
-
-%s make-hosts-file | sudo tee -a %s""" % ("./wpt" if wpt_path == "wpt" else wpt_path,
-                                          hosts_path)
-                raise WptrunError(message)
+            serve.check_environ(logger, config)
 
 
 class BrowserSetup(object):
@@ -746,7 +716,7 @@ def setup_wptrunner(venv, **kwargs):
 
     kwargs["product"] = kwargs["product"].replace("-", "_")
 
-    check_environ(kwargs["product"])
+    check_environ(logger, kwargs["product"])
     args_general(kwargs)
 
     if kwargs["product"] not in product_setup:

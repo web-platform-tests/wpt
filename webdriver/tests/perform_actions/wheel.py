@@ -32,6 +32,7 @@ def test_wheel_scroll(session, test_actions_scroll_page, wheel_chain):
             assert e["deltaZ"] == 0
             assert e["target"] == "outer"
 
+
 def test_wheel_scroll_overflow(session, test_actions_scroll_page, wheel_chain):
     session.execute_script("document.scrollingElement.scrollTop = 0")
 
@@ -46,16 +47,14 @@ def test_wheel_scroll_overflow(session, test_actions_scroll_page, wheel_chain):
             assert e["deltaX"] >= 5
             assert e["deltaY"] >= 10
             assert e["deltaZ"] == 0
-            assert e["target"] == "scrollable"
+            assert e["target"] == "scrollContent"
+
 
 def test_wheel_scroll_iframe(session, test_actions_scroll_page, wheel_chain):
     session.execute_script("document.scrollingElement.scrollTop = 0")
 
-    div_point = { "x": 82, "y": 187}
-
-    wheel_chain \
-        .scroll(div_point["x"], div_point["y"], 5, 10, origin="viewport") \
-        .perform()
+    subframe = session.find.css("#subframe", all=False)
+    wheel_chain.scroll(0, 0, 5, 10, origin=subframe).perform()
     events = get_events(session)
     assert len(events) > 0
     event_types = [e["type"] for e in events]
@@ -65,3 +64,4 @@ def test_wheel_scroll_iframe(session, test_actions_scroll_page, wheel_chain):
             assert e["deltaX"] >= 5
             assert e["deltaY"] >= 10
             assert e["deltaZ"] == 0
+            assert e["target"] == "iframeContent"

@@ -9,6 +9,12 @@ import time
 
 # Test server that tracks the last partition_id was used with each connection for each uuid, and
 # lets consumers query if multiple different partition_ids have been been used for any socket.
+#
+# Server assumes that ports aren't reused, so a client address and a server port uniquely identify
+# a connection. If that constraint is ever violated, the test will be flaky. No sockets being
+# closed for the duration of the test is sufficient to ensure that, though even if sockets are
+# closed, the OS should generally prefer to use new ports for new connections, if any are
+# available.
 def main(request, response):
     response.headers.set(b"Cache-Control", b"no-store")
     dispatch = request.GET.first(b"dispatch", None)
@@ -21,10 +27,12 @@ def main(request, response):
     # Unless nocheck_partition is true, check partition_id against server_state, and update server_state.
     stash = request.server.stash
     test_failed = False
-    if (request.GET.first(b"nocheck_partition", None) != "True"):
+    if request.GET.first(b"nocheck_partition", None) != "True":
         # Need to grab the lock to access the Stash, since requests are made in parallel.
         with stash.lock:
-            address_key = str(request.client_address)
+            # Don't use server hostname here, since H2 allows multiple hosts to reuse a connection.
+            # Server IP is not currently available, unfortunately.
+            address_key = str(request.client_address) + "|" + str(request.url_parts.port)
             server_state = stash.take(uuid) or { "test_failed": False }
             if address_key in server_state and server_state[address_key] != partition_id:
                 server_state["test_failed"] = True

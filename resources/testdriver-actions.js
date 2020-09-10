@@ -165,7 +165,7 @@
     addWheel: function(name, set=true) {
       this.createSource("wheel", name);
       if (set) {
-        this.setWheel(name);
+        this.setPointer(name);
       }
       return this;
     },

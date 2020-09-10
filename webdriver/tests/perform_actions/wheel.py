@@ -6,16 +6,6 @@ from tests.perform_actions.support.refine import filter_dict, get_events
 from tests.support.asserts import assert_move_to_coordinates
 
 
-def test_null_response_value(session, wheel_chain):
-    value = wheel_chain.scroll(0, 0, 0, 10).perform()
-    assert value is None
-
-
-def test_no_browsing_context(session, closed_window, wheel_chain):
-    with pytest.raises(NoSuchWindowException):
-        wheel_chain.scroll(0, 0, 0, 10).perform()
-
-
 def test_wheel_scroll(session, test_actions_page, wheel_chain):
     session.execute_script("document.scrollingElement.scrollTop = 0")
 

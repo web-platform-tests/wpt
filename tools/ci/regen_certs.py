@@ -74,23 +74,12 @@ def regen_chrome_spki():
 
 def calculate_spki(cert_path):
     """Calculate the SPKI fingerprint for a given x509 certificate."""
-    x509_cmd = [
-        "openssl", "x509", "-noout", "-pubkey", "-in", cert_path,
-    ]
-    x509_ps = subprocess.Popen(x509_cmd, stdout=subprocess.PIPE)
-
-    pkey_cmd = [
-        "openssl", "pkey", "-pubin", "-outform", "der",
-    ]
-    pkey_ps = subprocess.Popen(pkey_cmd, stdout=subprocess.PIPE, stdin=x509_ps.stdout)
-
-    dgst_cmd = [
-        "openssl", "dgst", "-sha256", "-binary",
-    ]
-    dgst_output = subprocess.check_output(dgst_cmd, stdin=pkey_ps.stdout)
-
-    x509_ps.wait()
-    pkey_ps.wait()
+    # We use shell=True as we control the input |cert_path|, and piping
+    # correctly across processes is non-trivial in Python.
+    cmd = ("openssl x509 -noout -pubkey -in {cert_path} | ".format(cert_path=cert_path) +
+           "openssl pkey -pubin -outform der | " +
+           "openssl dgst -sha256 -binary")
+    dgst_output = subprocess.check_output(cmd, shell=True)
 
     return base64.b64encode(dgst_output).decode('utf-8')
 

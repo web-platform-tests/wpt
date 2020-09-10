@@ -3,7 +3,7 @@ on:
   schedule:
     # Our certificates are good for ~1 year, but we regenerate them every
     # month to be sure.
-    - cron: '0 0 1 * *'
+    - cron: '0 0 12 * *'
 jobs:
   update:
     runs-on: ubuntu-latest

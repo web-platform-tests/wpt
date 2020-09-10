@@ -4,8 +4,7 @@ import logging
 import subprocess
 
 
-logging.basicConfig()
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 # TODO(Issue #24180): Regenerate SXG fingerprint too.
@@ -14,7 +13,7 @@ CHROME_SPKI_CERTS_CONTENT = """\
 # DO NOT EDIT MANUALLY.
 
 # tools/certs/web-platform.test.pem
-WPT_FINGERPRINT = '{}'
+WPT_FINGERPRINT = '{wpt_fingerprint}'
 
 # signed-exchange/resources/127.0.0.1.sxg.pem
 SXG_WPT_FINGERPRINT = '0Rt4mT6SJXojEMHTnKnlJ/hBKMBcI4kteBlhR1eTTdk='
@@ -70,7 +69,7 @@ def regen_chrome_spki():
     """
     wpt_spki = calculate_spki("tools/certs/web-platform.test.pem")
     with open("tools/wptrunner/wptrunner/browsers/chrome_spki_certs.py", "w") as f:
-        f.write(CHROME_SPKI_CERTS_CONTENT.format(wpt_spki))
+        f.write(CHROME_SPKI_CERTS_CONTENT.format(wpt_fingerprint=wpt_spki))
 
 
 def calculate_spki(cert_path):
@@ -97,6 +96,8 @@ def calculate_spki(cert_path):
 
 
 def run(**kwargs):
+    logging.basicConfig()
+
     if kwargs["force"]:
         logger.info("Force regenerating WPT certificates")
     checkend_seconds = kwargs["checkend_seconds"]

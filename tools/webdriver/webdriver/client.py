@@ -72,12 +72,9 @@ class Timeouts(object):
 
 class ActionSequence(object):
     """API for creating and performing action sequences.
-
     Each action method adds one or more actions to a queue. When perform()
     is called, the queued actions fire in order.
-
     May be chained together as in::
-
          ActionSequence(session, "key", id) \
             .key_down("a") \
             .key_up("a") \
@@ -85,7 +82,6 @@ class ActionSequence(object):
     """
     def __init__(self, session, action_type, input_id, pointer_params=None):
         """Represents a sequence of actions of one type for one input source.
-
         :param session: WebDriver session.
         :param action_type: Action type; may be "none", "key", or "pointer".
         :param input_id: ID of input source.
@@ -125,7 +121,6 @@ class ActionSequence(object):
 
     def pointer_move(self, x, y, duration=None, origin=None):
         """Queue a pointerMove action.
-
         :param x: Destination x-axis coordinate of pointer in CSS pixels.
         :param y: Destination y-axis coordinate of pointer in CSS pixels.
         :param duration: Number of milliseconds over which to distribute the
@@ -147,7 +142,6 @@ class ActionSequence(object):
 
     def pointer_up(self, button=0):
         """Queue a pointerUp action for `button`.
-
         :param button: Pointer button to perform action with.
                        Default: 0, which represents main device button.
         """
@@ -156,7 +150,6 @@ class ActionSequence(object):
 
     def pointer_down(self, button=0):
         """Queue a pointerDown action for `button`.
-
         :param button: Pointer button to perform action with.
                        Default: 0, which represents main device button.
         """
@@ -165,10 +158,8 @@ class ActionSequence(object):
 
     def click(self, element=None, button=0):
         """Queue a click with the specified button.
-
         If an element is given, move the pointer to that element first,
         otherwise click current pointer coordinates.
-
         :param element: Optional element to click.
         :param button: Integer representing pointer button to perform action
                        with. Default: 0, which represents main device button.
@@ -179,7 +170,6 @@ class ActionSequence(object):
 
     def key_up(self, value):
         """Queue a keyUp action for `value`.
-
         :param value: Character to perform key action with.
         """
         self._key_action("keyUp", value)
@@ -187,7 +177,6 @@ class ActionSequence(object):
 
     def key_down(self, value):
         """Queue a keyDown action for `value`.
-
         :param value: Character to perform key action with.
         """
         self._key_action("keyDown", value)
@@ -195,7 +184,6 @@ class ActionSequence(object):
 
     def send_keys(self, keys):
         """Queue a keyDown and keyUp action for each character in `keys`.
-
         :param keys: String of keys to perform key actions with.
         """
         for c in keys:
@@ -226,7 +214,7 @@ class ActionSequence(object):
         if origin is not None:
             action["origin"] = origin
         self._actions.append(action)
-        return self    
+        return self
 
 
 class Actions(object):
@@ -236,7 +224,6 @@ class Actions(object):
     @command
     def perform(self, actions=None):
         """Performs actions by tick from each action sequence in `actions`.
-
         :param actions: List of input source action sequences. A single action
                         sequence may be created with the help of
                         ``ActionSequence.dict``.
@@ -255,7 +242,6 @@ class Actions(object):
 
     def sequence(self, *args, **kwargs):
         """Return an empty ActionSequence of the designated type.
-
         See ActionSequence for parameter list.
         """
         return ActionSequence(self.session, *args, **kwargs)
@@ -443,9 +429,7 @@ class Session(object):
 
     def start(self):
         """Start a new WebDriver session.
-
         :return: Dictionary with `capabilities` and `sessionId`.
-
         :raises error.WebDriverException: If the remote end returns
             an error.
         """
@@ -484,16 +468,13 @@ class Session(object):
     def send_command(self, method, url, body=None, timeout=None):
         """
         Send a command to the remote end and validate its success.
-
         :param method: HTTP method to use in request.
         :param uri: "Command part" of the HTTP request URL,
             e.g. `window/rect`.
         :param body: Optional body of the HTTP request.
-
         :return: `None` if the HTTP response body was empty, otherwise
             the `value` field returned after parsing the response
             body as JSON.
-
         :raises error.WebDriverException: If the remote end returns
             an error.
         :raises ValueError: If the response body does not contain a
@@ -534,16 +515,13 @@ class Session(object):
     def send_session_command(self, method, uri, body=None, timeout=None):
         """
         Send a command to an established session and validate its success.
-
         :param method: HTTP method to use in request.
         :param url: "Command part" of the HTTP request URL,
             e.g. `window/rect`.
         :param body: Optional body of the HTTP request.  Must be JSON
             serialisable.
-
         :return: `None` if the HTTP response body was empty, otherwise
             the result of parsing the body as JSON.
-
         :raises error.WebDriverException: If the remote end returns
             an error.
         """
@@ -692,7 +670,6 @@ class Session(object):
 class Element(object):
     """
     Representation of a web element.
-
     A web element is an abstraction used to identify an element when
     it is transported via the protocol, between remote- and local ends.
     """
@@ -701,7 +678,6 @@ class Element(object):
     def __init__(self, id, session):
         """
         Construct a new web element representation.
-
         :param id: Web element UUID which must be unique across
             all browsing contexts.
         :param session: Current ``webdriver.Session``.

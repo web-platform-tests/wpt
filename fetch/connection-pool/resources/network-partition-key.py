@@ -53,7 +53,7 @@ def main(request, response):
 
     if dispatch == u"check_partition":
         if test_failed:
-            return simple_response(request, response, 200, b"OK", b"Multiple partitions IDs used on a socket")
+            return simple_response(request, response, 200, b"OK", b"Multiple partition IDs used on a socket")
         return simple_response(request, response, 200, b"OK", b"ok")
 
     if dispatch == u"clean_up":

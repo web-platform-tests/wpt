@@ -39,7 +39,7 @@ def none_chain(session):
 def wheel_chain(session):
     return session.actions.sequence("wheel", "wheel_id")
 
-@pytest.fixture(autouse=False)
+@pytest.fixture(autouse=True)
 def release_actions(session, request):
     # release all actions after each test
     # equivalent to a teardown_function, but with access to session fixture

@@ -1,7 +1,7 @@
 name: Regenerate WPT certificates
 on:
   schedule:
-    # Our certificates are good for ~2 years, but we regenerate them every
+    # Our certificates are good for ~1 year, but we regenerate them every
     # month to be sure.
     - cron: '0 0 1 * *'
 jobs:

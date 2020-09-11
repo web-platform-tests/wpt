@@ -22,15 +22,9 @@ interface CookieStore : EventTarget {
   attribute EventHandler onchange;
 };
 
-enum CookieMatchType {
-  "equals",
-  "starts-with"
-};
-
 dictionary CookieStoreGetOptions {
   USVString name;
   USVString url;
-  CookieMatchType matchType = "equals";
 };
 
 enum CookieSameSite {
@@ -83,8 +77,8 @@ partial interface ServiceWorkerRegistration {
  SecureContext]
 interface CookieChangeEvent : Event {
   constructor(DOMString type, optional CookieChangeEventInit eventInitDict = {});
-  readonly attribute CookieList changed;
-  readonly attribute CookieList deleted;
+  [SameObject] readonly attribute FrozenArray<CookieListItem> changed;
+  [SameObject] readonly attribute FrozenArray<CookieListItem> deleted;
 };
 
 dictionary CookieChangeEventInit : EventInit {
@@ -95,8 +89,8 @@ dictionary CookieChangeEventInit : EventInit {
 [Exposed=ServiceWorker]
 interface ExtendableCookieChangeEvent : ExtendableEvent {
   constructor(DOMString type, optional ExtendableCookieChangeEventInit eventInitDict = {});
-  readonly attribute CookieList changed;
-  readonly attribute CookieList deleted;
+  [SameObject] readonly attribute FrozenArray<CookieListItem> changed;
+  [SameObject] readonly attribute FrozenArray<CookieListItem> deleted;
 };
 
 dictionary ExtendableCookieChangeEventInit : ExtendableEventInit {
@@ -106,11 +100,11 @@ dictionary ExtendableCookieChangeEventInit : ExtendableEventInit {
 
 [SecureContext]
 partial interface Window {
-  [Replaceable, SameObject] readonly attribute CookieStore cookieStore;
+  [SameObject] readonly attribute CookieStore cookieStore;
 };
 
 partial interface ServiceWorkerGlobalScope {
-  [Replaceable, SameObject] readonly attribute CookieStore cookieStore;
+  [SameObject] readonly attribute CookieStore cookieStore;
 
   attribute EventHandler oncookiechange;
 };

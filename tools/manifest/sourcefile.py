@@ -823,6 +823,17 @@ class SourceFile(object):
                     rv.add(flag)
         return rv
 
+    def css_flags_is_manual(self, flags):
+        # type: (Set[Text]) -> bool
+        # return True if the intersection between the two sets is non-empty
+        """returns true if the flags suggest the test is manual
+
+        note that paged is included here but strictly speaking it doesn't alone guarantee it is
+        manual (as legacy CSS WG print reftests will also have it)
+
+        """
+        return bool(flags & {"animated", "font", "history", "interact", "paged", "speech", "userstyle"})
+
     @cached_property
     def content_is_css_manual(self):
         # type: () -> Optional[bool]
@@ -830,8 +841,20 @@ class SourceFile(object):
         CSS WG-style manual test"""
         if self.root is None:
             return None
-        # return True if the intersection between the two sets is non-empty
-        return bool(self.css_flags & {"animated", "font", "history", "interact", "paged", "speech", "userstyle"})
+        return self.css_flags_is_manual(self.css_flags)
+
+    @cached_property
+    def content_is_css_paged_reftest(self):
+        # type: () -> Optional[bool]
+        """Boolean indicating whether the file content represents a
+        CSS WG-style paged media reftest"""
+        if self.root is None:
+            return None
+        if "paged" not in self.css_flags:
+            return False
+        if self.css_flags_is_manual(self.css_flags - {"paged"}):
+            return False
+        return bool(self.references)
 
     @cached_property
     def spec_link_nodes(self):
@@ -1013,6 +1036,24 @@ class SourceFile(object):
                 for variant in self.test_variants
             ]
             rv = TestharnessTest.item_type, tests
+
+        elif self.content_is_css_paged_reftest:
+            references = self.references
+            if not references:
+                raise ValueError("%s detected as print reftest but doesn't have any refs" %
+                                 self.path)
+            rv = PrintRefTest.item_type, [
+                PrintRefTest(
+                    self.tests_root,
+                    self.rel_path,
+                    self.url_base,
+                    self.rel_url,
+                    references=references,
+                    timeout=self.timeout,
+                    viewport_size=self.viewport_size,
+                    fuzzy=self.fuzzy,
+                    page_ranges=self.page_ranges,
+                )]
 
         elif self.content_is_css_manual and not self.name_is_reference:
             rv = ManualTest.item_type, [

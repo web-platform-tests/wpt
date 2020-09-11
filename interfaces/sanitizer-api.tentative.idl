@@ -1,8 +1,11 @@
 // https://wicg.github.io/sanitizer-api/
 
-[
-  Exposed=Window
-] interface Sanitizer {
+typedef (DOMString or DocumentFragment or Document) SanitizerInput;
+
+[Exposed=Window, SecureContext]
+ interface Sanitizer {
   [RaisesException] constructor();
-  DOMString sanitizeToString(DOMString input);
+  DOMString sanitize(SanitizerInput input);
+  DOMString sanitizeToString(SanitizerInput input);
+  
 };

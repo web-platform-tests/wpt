@@ -9,7 +9,7 @@ promise_test(async testCase => {
     await cookieStore.delete('cookie-name');
   });
 
-  await promise_rejects_js(testCase, TypeError, cookieStore.get());
+  return promise_rejects_js(testCase, TypeError, cookieStore.get());
 }, 'cookieStore.get with no arguments returns TypeError');
 
 promise_test(async testCase => {
@@ -18,7 +18,7 @@ promise_test(async testCase => {
     await cookieStore.delete('cookie-name');
   });
 
-  await promise_rejects_js(testCase, TypeError, cookieStore.get({}));
+  return promise_rejects_js(testCase, TypeError, cookieStore.get({}));
 },'cookieStore.get with empty options returns TypeError');
 
 promise_test(async testCase => {
@@ -87,16 +87,16 @@ promise_test(async testCase => {
   assert_equals(cookie.value, 'cookie-value');
 }, 'cookieStore.get with relative url in options');
 
-promise_test(async testCase => {
+promise_test(testCase => {
   const invalid_url =
       `${self.location.protocol}//${self.location.host}/different/path`;
-  await promise_rejects_js(testCase, TypeError, cookieStore.get(
+  return promise_rejects_js(testCase, TypeError, cookieStore.get(
       { url: invalid_url }));
 }, 'cookieStore.get with invalid url path in options');
 
-promise_test(async testCase => {
+promise_test(testCase => {
   const invalid_url =
       `${self.location.protocol}//www.example.com${self.location.pathname}`;
-  await promise_rejects_js(testCase, TypeError, cookieStore.get(
+  return promise_rejects_js(testCase, TypeError, cookieStore.get(
       { url: invalid_url }));
 }, 'cookieStore.get with invalid url host in options');

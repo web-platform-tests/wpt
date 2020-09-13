@@ -57,7 +57,7 @@ promise_test(async testCase => {
     });
   }
 
-  await promise_rejects_js(testCase, TypeError,
+  return promise_rejects_js(testCase, TypeError,
       registration.cookies.subscribe(
           { name: 'cookie-name', url: '/wrong/path' }));
 }, 'cookieStore.subscribe with invalid url path in option');

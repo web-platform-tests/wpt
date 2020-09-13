@@ -132,7 +132,7 @@ promise_test(async testCase => {
 
   const invalid_url =
       `${self.location.protocol}//${self.location.host}/different/path`;
-  await promise_rejects_js(testCase, TypeError, cookieStore.getAll(
+  return promise_rejects_js(testCase, TypeError, cookieStore.getAll(
       { url: invalid_url }));
 }, 'cookieStore.getAll with invalid url path in options');
 
@@ -144,6 +144,6 @@ promise_test(async testCase => {
 
   const invalid_url =
       `${self.location.protocol}//www.example.com${self.location.pathname}`;
-  await promise_rejects_js(testCase, TypeError, cookieStore.getAll(
+  return promise_rejects_js(testCase, TypeError, cookieStore.getAll(
       { url: invalid_url }));
 }, 'cookieStore.getAll with invalid url host in options');

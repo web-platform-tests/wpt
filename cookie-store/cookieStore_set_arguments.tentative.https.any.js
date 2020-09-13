@@ -28,8 +28,8 @@ promise_test(async testCase => {
   assert_equals(cookie.value, 'cookie-value');
 }, 'cookieStore.set with name and value in options');
 
-promise_test(async testCase => {
-  await promise_rejects_js(testCase, TypeError,
+promise_test(testCase => {
+  return promise_rejects_js(testCase, TypeError,
       cookieStore.set('', 'suspicious-value=resembles-name-and-value'));
 }, "cookieStore.set with empty name and an '=' in value");
 
@@ -106,18 +106,18 @@ promise_test(async testCase => {
   assert_equals(cookie, null);
 }, 'cookieStore.set with expires set to a past timestamp');
 
-promise_test(async testCase => {
+promise_test(testCase => {
   const currentUrl = new URL(self.location.href);
   const currentDomain = currentUrl.hostname;
 
-  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+  return promise_rejects_js(testCase, TypeError, cookieStore.set(
       { name: 'cookie-name',
         value: 'cookie-value',
         domain: `.${currentDomain}` }));
 }, 'cookieStore.set domain starts with "."');
 
-promise_test(async testCase => {
-  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+promise_test(testCase => {
+  return promise_rejects_js(testCase, TypeError, cookieStore.set(
       { name: 'cookie-name', value: 'cookie-value', domain: 'example.com' }));
 }, 'cookieStore.set with domain that is not equal current host');
 
@@ -258,14 +258,14 @@ promise_test(async testCase => {
   assert_equals(cookie.path, currentDirectory + '/');
 }, 'cookieStore.set adds / to path that does not end with /');
 
-promise_test(async testCase => {
+promise_test(testCase => {
   const currentUrl = new URL(self.location.href);
   const currentPath = currentUrl.pathname;
   const currentDirectory =
       currentPath.substr(0, currentPath.lastIndexOf('/') + 1);
   const invalidPath = currentDirectory.substr(1);
 
-  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+  return promise_rejects_js(testCase, TypeError, cookieStore.set(
       { name: 'cookie-name', value: 'cookie-value', path: invalidPath }));
 }, 'cookieStore.set with path that does not start with /');
 

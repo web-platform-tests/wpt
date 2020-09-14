@@ -5,7 +5,6 @@ typedef (DOMString or DocumentFragment or Document) SanitizerInput;
 [Exposed=Window, SecureContext]
  interface Sanitizer {
   [RaisesException] constructor();
-  DOMString sanitize(SanitizerInput input);
+  DocumentFragment sanitize(SanitizerInput input);
   DOMString sanitizeToString(SanitizerInput input);
-  
 };

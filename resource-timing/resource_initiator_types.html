@@ -135,6 +135,8 @@ function perform_test() {
     addEntryIfExists(entries, expected_entries, pathname + 'empty.py?favicon', 'link');
     addEntryIfExists(entries, expected_entries, pathname + 'eventsource.py?id=eventsource', 'other');
 
+    assert_greater_than(entries.length, 0, 'There should be resrouce entries.');
+
     test_resource_entries(entries, expected_entries);
     done();
 }

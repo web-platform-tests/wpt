@@ -6,11 +6,6 @@ from tests.perform_actions.support.refine import filter_dict, get_events
 from tests.support.asserts import assert_move_to_coordinates
 
 
-@pytest.fixture(autouse=True)
-def release_actions(session, request):
-    assert 1 == 1
-
-
 def test_null_response_value(session, wheel_chain):
     value = wheel_chain.scroll(0, 0, 0, 10).perform()
     assert value is None

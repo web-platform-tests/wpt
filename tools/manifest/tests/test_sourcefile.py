@@ -727,7 +727,7 @@ def test_reftest(ext):
 
 
 @pytest.mark.parametrize("ext", ["xht", "html", "xhtml", "htm", "xml", "svg"])
-def test_css_visual(ext):
+def test_former_css_visual(ext):
     content = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -749,9 +749,7 @@ def test_css_visual(ext):
     assert not s.content_is_testharness
     assert not s.content_is_ref_node
 
-    assert s.content_is_css_visual
-
-    assert items(s) == [("visual", "/" + filename)]
+    assert items(s) == []
 
 
 @pytest.mark.parametrize("ext", ["xht", "xhtml", "xml"])
@@ -783,7 +781,6 @@ def test_no_parse():
     assert not s.name_is_reference
     assert not s.content_is_testharness
     assert not s.content_is_ref_node
-    assert not s.content_is_css_visual
 
     assert items(s) == []
 

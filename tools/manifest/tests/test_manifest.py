@@ -169,7 +169,7 @@ def test_manifest_to_json_forwardslash():
         assert m.update(tree) is True
 
     assert m.to_json() == {
-        'version': 9,
+        'version': 10,
         'url_base': '/',
         'items': {
             'testharness': {'a': {'b': [
@@ -307,5 +307,5 @@ def test_update_from_json_modified():
             (None, {'timeout': 'long'})
         ]}},
         'url_base': '/',
-        'version': 9
+        'version': 10
     }

@@ -317,7 +317,7 @@
      * @param {Number} deltaX - scroll delta value along the x-axis in pixels
      * @param {Number} deltaY - scroll delta value along the y-axis in pixels
      * @param {String|Element} origin - Origin of the coordinate system.
-     *                                  Either "pointer", "viewport" or an Element
+     *                                  Either "viewport" or an Element
      * @param {Number?} duration - Time in ms for the move
      * @param {String?} sourceName - Named wheel source to use or null for the
      *                               default wheel source

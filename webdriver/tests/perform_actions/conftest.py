@@ -18,6 +18,7 @@ def session_new_window(capabilities, session):
 
     session.window_handle = original_handle
 
+
 @pytest.fixture
 def key_chain(session):
     return session.actions.sequence("key", "keyboard_id")
@@ -35,9 +36,11 @@ def mouse_chain(session):
 def none_chain(session):
     return session.actions.sequence("none", "none_id")
 
+
 @pytest.fixture
 def wheel_chain(session):
     return session.actions.sequence("wheel", "wheel_id")
+
 
 @pytest.fixture(autouse=True)
 def release_actions(session, request):

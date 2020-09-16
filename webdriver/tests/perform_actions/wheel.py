@@ -22,15 +22,12 @@ def test_wheel_scroll(session, test_actions_scroll_page, wheel_chain):
     outer = session.find.css("#outer", all=False)
     wheel_chain.scroll(0, 0, 5, 10, origin=outer).perform()
     events = get_events(session)
-    assert len(events) > 0
-    event_types = [e["type"] for e in events]
-    assert "wheel" in event_types
-    for e in events:
-        if e["type"] == "wheel":
-            assert e["deltaX"] >= 5
-            assert e["deltaY"] >= 10
-            assert e["deltaZ"] == 0
-            assert e["target"] == "outer"
+    assert len(events) == 1
+    assert events[0]["type"] == "wheel"
+    assert events[0]["deltaX"] >= 5
+    assert events[0]["deltaY"] >= 10
+    assert events[0]["deltaZ"] == 0
+    assert events[0]["target"] == "outer"
 
 
 def test_wheel_scroll_overflow(session, test_actions_scroll_page, wheel_chain):
@@ -39,15 +36,12 @@ def test_wheel_scroll_overflow(session, test_actions_scroll_page, wheel_chain):
     scrollable = session.find.css("#scrollable", all=False)
     wheel_chain.scroll(0, 0, 5, 10, origin=scrollable).perform()
     events = get_events(session)
-    assert len(events) > 0
-    event_types = [e["type"] for e in events]
-    assert "wheel" in event_types
-    for e in events:
-        if e["type"] == "wheel":
-            assert e["deltaX"] >= 5
-            assert e["deltaY"] >= 10
-            assert e["deltaZ"] == 0
-            assert e["target"] == "scrollContent"
+    assert len(events) == 1
+    assert events[0]["type"] == "wheel"
+    assert events[0]["deltaX"] >= 5
+    assert events[0]["deltaY"] >= 10
+    assert events[0]["deltaZ"] == 0
+    assert events[0]["target"] == "scrollContent"
 
 
 def test_wheel_scroll_iframe(session, test_actions_scroll_page, wheel_chain):
@@ -56,12 +50,9 @@ def test_wheel_scroll_iframe(session, test_actions_scroll_page, wheel_chain):
     subframe = session.find.css("#subframe", all=False)
     wheel_chain.scroll(0, 0, 5, 10, origin=subframe).perform()
     events = get_events(session)
-    assert len(events) > 0
-    event_types = [e["type"] for e in events]
-    assert "wheel" in event_types
-    for e in events:
-        if e["type"] == "wheel":
-            assert e["deltaX"] >= 5
-            assert e["deltaY"] >= 10
-            assert e["deltaZ"] == 0
-            assert e["target"] == "iframeContent"
+    assert len(events) == 1
+    assert events[0]["type"] == "wheel"
+    assert events[0]["deltaX"] >= 5
+    assert events[0]["deltaY"] >= 10
+    assert events[0]["deltaZ"] == 0
+    assert events[0]["target"] == "iframeContent"

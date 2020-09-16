@@ -212,8 +212,8 @@ class ActionSequence(object):
         :param delta_y: scroll delta on y-axis in CSS pixels.
         :param duration: Number of milliseconds over which to distribute the
                          move. If None, remote end defaults to 0.
-        :param origin: Origin of coordinates, either "viewport", "pointer" or
-                       an Element. If None, remote end defaults to "viewport".
+        :param origin: Origin of coordinates, either "viewport" or an Element.
+                       If None, remote end defaults to "viewport".
         """
         action = {
             "type": "scroll",

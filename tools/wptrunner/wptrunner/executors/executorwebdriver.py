@@ -409,8 +409,9 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
     def do_testharness(self, protocol, url, timeout):
         format_map = {"url": strip_server(url)}
 
-        # In theory the previous test should have closed any leftover windows,
-        # but to avoid relying on that we also attempt cleanup here.
+        # It is possible that the previous test did not close its old windows,
+        # either if something went wrong or if close_after_done was specified,
+        # so clean them up here.
         parent_window = protocol.testharness.close_old_windows()
 
         # Now start the test harness
@@ -450,9 +451,12 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             if done:
                 break
 
-        # Attempt to cleanup any leftover windows. This should create a clean
-        # state for future tests, and expose any unexpectedly-open prompts.
-        protocol.testharness.close_old_windows()
+        # Attempt to cleanup any leftover windows, if allowed. This is
+        # preferable as it will blame the correct test if something goes wrong
+        # closing windows, but we cannot always do so (e.g. if the user wants
+        # to pause after the test has run then we can't close the window yet.)
+        if self.close_after_done:
+            protocol.testharness.close_old_windows()
 
         return rv
 

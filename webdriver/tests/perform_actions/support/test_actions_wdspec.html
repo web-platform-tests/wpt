@@ -96,6 +96,31 @@
               "target id: " + event.target.id);
         }
 
+        function recordWheelEvent(event) {
+          // console.log("recordWheelEvent " + event.target.id);
+          allEvents.events.push({
+            "type": event.type,
+            "button": event.button,
+            "buttons": event.buttons,
+            "deltaX": event.deltaX,
+            "deltaY": event.deltaY,
+            "deltaZ": event.deltaZ,
+            "deltaMode": event.deltaMode,
+            "target": event.target.id
+          });
+          appendMessage(event.type + " " +
+              "button: " + event.button + ", " +
+              "pageX: " + event.pageX + ", " +
+              "pageY: " + event.pageY + ", " +
+              "button: " + event.button + ", " +
+              "buttons: " + event.buttons + ", " +
+              "deltaX: " + event.deltaX + ", " +
+              "deltaY: " + event.deltaY + ", " +
+              "deltaZ: " + event.deltaZ + ", " +
+              "deltaMode: " + event.deltaMode + ", " +
+              "target id: " + event.target.id);
+        }
+
         function recordFirstPointerMove(event) {
           recordPointerEvent(event);
           window.removeEventListener("mousemove", recordFirstPointerMove);
@@ -163,6 +188,7 @@
           outer.addEventListener("mousedown", recordPointerEvent);
           outer.addEventListener("mouseup", recordPointerEvent);
           outer.addEventListener("contextmenu", recordPointerEvent);
+          outer.addEventListener("wheel", recordWheelEvent);
 
           window.addEventListener("mousemove", recordFirstPointerMove);
           //visual cue for mousemove

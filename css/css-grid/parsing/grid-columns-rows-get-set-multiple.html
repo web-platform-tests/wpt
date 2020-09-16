@@ -301,7 +301,7 @@ function testInitial()
     element.style.gridTemplateRows = "initial";
     assert_equals(getComputedStyle(element).gridTemplateColumns, "none");
     assert_equals(getComputedStyle(element).gridTemplateRows, computedRowValue || rowValue);
-    
+
     document.body.removeChild(element);
 }
 console.log("");

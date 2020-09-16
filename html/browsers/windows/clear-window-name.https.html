@@ -43,35 +43,35 @@ function pollResultAndCheck(t, id, expected) {
   });
 }
 
-async_test(async t => {
+promise_test(async t => {
   const id = token();
 
   window.open(`resources/window-name.sub.html?report=${id}|close`, id);
   await pollResultAndCheck(t, id, id);;
 }, "Window.name is not reset when there is an opener around");
 
-async_test(async t => {
+promise_test(async t => {
   const id = token();
 
   window.open(`resources/window-name.sub.html?cross|same|report=${id}|close`, id);
   await pollResultAndCheck(t, id, id);
 }, "Window.name is not reset when there is an opener around (cross-origin)");
 
-async_test(async t => {
+promise_test(async t => {
   const id = token();
 
   window.open(`resources/window-name.sub.html?report=${id}|close`, id, "noopener");
   await pollResultAndCheck(t, id, id);
 }, "Window.name is not reset at the first navigation away from initial about:blank with noopener");
 
-async_test(async t => {
+promise_test(async t => {
   const id = token();
 
   window.open(`resources/window-name.sub.html?cross|same|report=${id}|close`, id, "noopener");
   await pollResultAndCheck(t, id, "");
 }, "Window.name is reset at the first cross-origin navigation with noopener");
 
-async_test(async t => {
+promise_test(async t => {
   const id = token();
 
   let win = window.open(`resources/window-name.sub.html?report=${id}|close`, id);
@@ -79,7 +79,7 @@ async_test(async t => {
   await pollResultAndCheck(t, id, id);
 }, "Window.name is not reset at the first navigation away from initial about:blank with window.opener set to null");
 
-async_test(async t => {
+promise_test(async t => {
   const id = token();
 
   let win = window.open(`resources/window-name.sub.html?same|report=${id}|close`, id);
@@ -87,7 +87,7 @@ async_test(async t => {
   await pollResultAndCheck(t, id, id);
 }, "Window.name is not reset at the same-origin navigation with window.opener set to null");
 
-async_test(async t => {
+promise_test(async t => {
   const id = token();
 
   let win = window.open(`resources/window-name.sub.html?cross|same|report=${id}|close`, id);
@@ -95,14 +95,14 @@ async_test(async t => {
   await pollResultAndCheck(t, id, "");
 }, "Window.name is reset at the first first cross-origin navigation with window.opener set to null");
 
-async_test(async t => {
+promise_test(async t => {
   const id = token();
 
   anchorClick(`resources/window-name.sub.html?set=${id}|report=${id}|close`);
   await pollResultAndCheck(t, id, id);
 }, "Window.name is set by the window");
 
-async_test(async t => {
+promise_test(async t => {
   const id = token();
 
   anchorClick(`resources/window-name.sub.html?set=${id}|cross|same|report=${id}|close`);

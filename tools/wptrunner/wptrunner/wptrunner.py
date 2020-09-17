@@ -285,10 +285,6 @@ def run_tests(config, test_paths, product, **kwargs):
                                                                   run_info,
                                                                   **kwargs)
 
-                    # TODO(before submitting): Find a better place to set this.
-                    if kwargs["pause_after_test"] or kwargs["pause_on_unexpected"]:
-                        executor_kwargs["may_pause_after_test"] = False
-
                     if executor_cls is None:
                         logger.error("Unsupported test type %s for product %s" %
                                      (test_type, product.name))

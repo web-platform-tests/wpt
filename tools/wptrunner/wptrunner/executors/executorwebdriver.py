@@ -369,7 +369,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, capabilities=None, debug_info=None,
-                 supports_eager_pageload=True, may_pause_after_test=False,
+                 supports_eager_pageload=True, cleanup_after_test=True,
                  **kwargs):
         """WebDriver-based executor for testharness.js tests"""
         TestharnessExecutor.__init__(self, logger, browser, server_config,
@@ -384,7 +384,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
         self.supports_eager_pageload = supports_eager_pageload
-        self.may_pause_after_test = may_pause_after_test
+        self.cleanup_after_test = cleanup_after_test
 
     def is_alive(self):
         return self.protocol.is_alive()
@@ -412,8 +412,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         format_map = {"url": strip_server(url)}
 
         # The previous test may not have closed its old windows (if something
-        # went wrong or if may_pause_after_test was specified), so clean them
-        # up here.
+        # went wrong or if cleanup_after_test was False), so clean up here.
         parent_window = protocol.testharness.close_old_windows()
 
         # Now start the test harness
@@ -457,7 +456,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         # preferable as it will blame the correct test if something goes wrong
         # closing windows, but if the user wants to see the test results we
         # have to leave the window(s) open.
-        if self.may_pause_after_test:
+        if self.cleanup_after_test:
             protocol.testharness.close_old_windows()
 
         return rv

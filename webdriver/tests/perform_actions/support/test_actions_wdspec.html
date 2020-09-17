@@ -12,8 +12,6 @@
       .box { display: flex;}
       #dragArea { position: relative; }
       #dragTarget { position: absolute; top:22px; left:47px;}
-      #scrollable { width: 200px; height: 200px; overflow: scroll; }
-      #content { width: 600px; height: 1000px; background-color: blue; }
     </style>
     <script>
         "use strict";
@@ -96,31 +94,6 @@
               "target id: " + event.target.id);
         }
 
-        function recordWheelEvent(event) {
-          // console.log("recordWheelEvent " + event.target.id);
-          allEvents.events.push({
-            "type": event.type,
-            "button": event.button,
-            "buttons": event.buttons,
-            "deltaX": event.deltaX,
-            "deltaY": event.deltaY,
-            "deltaZ": event.deltaZ,
-            "deltaMode": event.deltaMode,
-            "target": event.target.id
-          });
-          appendMessage(event.type + " " +
-              "button: " + event.button + ", " +
-              "pageX: " + event.pageX + ", " +
-              "pageY: " + event.pageY + ", " +
-              "button: " + event.button + ", " +
-              "buttons: " + event.buttons + ", " +
-              "deltaX: " + event.deltaX + ", " +
-              "deltaY: " + event.deltaY + ", " +
-              "deltaZ: " + event.deltaZ + ", " +
-              "deltaMode: " + event.deltaMode + ", " +
-              "target id: " + event.target.id);
-        }
-
         function recordFirstPointerMove(event) {
           recordPointerEvent(event);
           window.removeEventListener("mousemove", recordFirstPointerMove);
@@ -188,7 +161,6 @@
           outer.addEventListener("mousedown", recordPointerEvent);
           outer.addEventListener("mouseup", recordPointerEvent);
           outer.addEventListener("contextmenu", recordPointerEvent);
-          outer.addEventListener("wheel", recordWheelEvent);
 
           window.addEventListener("mousemove", recordFirstPointerMove);
           //visual cue for mousemove
@@ -209,9 +181,6 @@
 
           var droppable = document.getElementById("droppable");
           droppable.addEventListener("drop", recordPointerEvent);
-
-          var scrollable = document.getElementById("scrollable");
-          scrollable.addEventListener("wheel", recordWheelEvent);
         });
     </script>
 </head>
@@ -239,12 +208,6 @@
       <div id=droppable dropzone="true" class="area"></div>
     </div>
   </div>
-  <div>
-    <h2>scroll</h2>
-    <div id="scrollable">
-      <div id="scrollContent"></div>
-    </div>
-  </div>  
   <div id="resultContainer">
     <h2>Events</h2>
     <div id="events"></div>

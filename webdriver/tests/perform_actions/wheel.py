@@ -11,6 +11,11 @@ def test_null_response_value(session, wheel_chain):
     assert value is None
 
 
+def test_no_top_browsing_context(session, closed_window, wheel_chain):
+    with pytest.raises(NoSuchWindowException):
+        wheel_chain.scroll(0, 0, 0, 10).perform()
+
+
 def test_no_browsing_context(session, closed_window, wheel_chain):
     with pytest.raises(NoSuchWindowException):
         wheel_chain.scroll(0, 0, 0, 10).perform()

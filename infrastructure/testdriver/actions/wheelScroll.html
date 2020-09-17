@@ -36,7 +36,7 @@ async_test(t => {
     e => {event_type.push(e.type);});
 
   let actions = new test_driver.Actions()
-       .scroll(0, 0, 0, 10, {origin: container});
+       .scroll(0, 0, 0, 50, {origin: container});
 
   actions.send()
     .then(t.step_func_done(() => {assert_array_equals(event_type, ["wheel"]);}))

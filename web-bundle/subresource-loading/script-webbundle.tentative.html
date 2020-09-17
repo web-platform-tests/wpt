@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>A script element with type="webbundle"</title>
+<link
+  rel="help"
+  href="https://github.com/WICG/webpackage/blob/master/explainers/subresource-loading.md"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script type="webbundle">
+    {
+      "href": "../resources/wbn/subresource.wbn",
+      "resources": ["http://web-platform.test:8001/root.js", "http://web-platform.test:8001/submodule.js"]
+    }
+  </script>
+  <script>
+    promise_test(async () => {
+      const module = await import("http://web-platform.test:8001/root.js");
+      assert_equals(module.result, "OK");
+    }, "Subresource loading with <script type=webbundle>");
+  </script>
+</body>

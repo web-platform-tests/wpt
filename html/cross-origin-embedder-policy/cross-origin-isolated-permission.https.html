@@ -18,7 +18,7 @@ async function getCrossOriginIsolatedFor(t, origin, value) {
   t.add_cleanup(() => parentFrame.remove());
   let pipe = PIPE;
   if (value !== undefined) {
-    pipe += `|header(permissions-policy,cross-origin-isolated=${value})`
+    pipe += `|header(permissions-policy,cross-origin-isolated=${value})`;
   }
   parentFrame.src = `${PATH}${pipe}`;
   document.body.append(parentFrame);

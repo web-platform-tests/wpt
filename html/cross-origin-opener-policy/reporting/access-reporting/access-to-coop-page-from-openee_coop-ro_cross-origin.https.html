@@ -61,6 +61,9 @@ promise_test(async t => {
   assert_equals(report.body.effectivePolicy, "same-origin-plus-coep");
   assert_equals(report.body.property, "blur");
   assert_source_location_missing(report);
+  assert_equals(report.body.openerURL, undefined);
+  assert_equals(report.body.openeeURL, "");
+  assert_equals(report.body.otherDocumentURL, undefined);
   // TODO(arthursonzogni): Check the window-blocked-url.
 }, "Openee accesses opener (COOP-RO-COEP). Report to opener");
 

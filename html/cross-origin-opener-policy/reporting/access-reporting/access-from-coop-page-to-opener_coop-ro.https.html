@@ -20,6 +20,8 @@ promise_test(async t => {
   const report_token = token();
   const openee_token = token();
 
+  const opener_url = location.href;
+
   const reportTo = reportToHeaders(report_token);
   const openee_url = same_origin + executor_path +
     reportTo.header + reportTo.coopReportOnlySameOriginHeader + coep_header +
@@ -42,6 +44,9 @@ promise_test(async t => {
   assert_equals(report.body.effectivePolicy, "same-origin-plus-coep");
   assert_equals(report.body.property, "blur");
   assert_source_location_found(report);
+  assert_equals(report.body.openerURL, opener_url);
+  assert_equals(report.body.openeeURL, undefined);
+  assert_equals(report.body.otherDocumentURL, undefined);
 }, "Openee (COOP-RO+COEP) accesses opener. Report to openee");
 
 </script>

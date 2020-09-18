@@ -18,7 +18,7 @@ async_test(t => {
   iframe.src = "//{{domains[www1]}}:{{location[port]}}/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/resources/iframe-domain-failure.sub.html";
   let domain = null;
   window.onmessage = t.step_func((e) => {
-    if (e.data.name === 'domain') {
+    if (e.data.name === "domain") {
       domain = e.data.value;
       return;
     }

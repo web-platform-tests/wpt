@@ -1,0 +1,101 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: WebTransport (https://wicg.github.io/web-transport/)
+
+interface mixin UnidirectionalStreamsTransport {
+  Promise<SendStream> createSendStream(optional SendStreamParameters parameters = {});
+  ReadableStream receiveStreams();
+};
+
+dictionary SendStreamParameters {
+};
+
+interface mixin BidirectionalStreamsTransport {
+    Promise<BidirectionalStream> createBidirectionalStream();
+    ReadableStream receiveBidirectionalStreams();
+};
+
+interface mixin DatagramTransport {
+    readonly attribute unsigned short maxDatagramSize;
+    WritableStream sendDatagrams();
+    ReadableStream receiveDatagrams();
+};
+
+[Exposed=(Window,Worker)]
+interface WebTransport {
+  constructor(USVString url, optional WebTransportOptions options = {});
+
+  Promise<WebTransportStats> getStats();
+  readonly attribute WebTransportState state;
+  readonly attribute Promise<WebTransportCloseInfo> closed;
+  void close(optional WebTransportCloseInfo closeInfo = {});
+  attribute EventHandler onstatechange;
+};
+
+WebTransport includes UnidirectionalStreamsTransport;
+WebTransport includes BidirectionalStreamsTransport;
+WebTransport includes DatagramTransport;
+
+dictionary WebTransportOptions {
+  sequence<RTCDtlsFingerprint> serverCertificateFingerprints;
+};
+
+enum WebTransportState {
+  "connecting",
+  "connected",
+  "closed",
+  "failed"
+};
+
+dictionary WebTransportCloseInfo {
+  unsigned long long errorCode = 0;
+  DOMString reason = "";
+};
+
+dictionary WebTransportStats {
+  DOMHighResTimeStamp timestamp;
+  unsigned long long bytesSent;
+  unsigned long long packetsSent;
+  unsigned long numOutgoingStreamsCreated;
+  unsigned long numIncomingStreamsCreated;
+  unsigned long long bytesReceived;
+  unsigned long long packetsReceived;
+  DOMHighResTimeStamp minRtt;
+  unsigned long numReceivedDatagramsDropped;
+};
+
+[ Exposed=(Window,Worker) ]
+interface mixin OutgoingStream {
+  readonly attribute WritableStream writable;
+  readonly attribute Promise<StreamAbortInfo> writingAborted;
+  void abortWriting(optional StreamAbortInfo abortInfo = {});
+};
+
+dictionary StreamAbortInfo {
+  unsigned long long errorCode = 0;
+};
+
+[ Exposed=(Window,Worker) ]
+interface mixin IncomingStream {
+  readonly attribute ReadableStream readable;
+  readonly attribute Promise<StreamAbortInfo> readingAborted;
+  void abortReading(optional StreamAbortInfo abortInfo = {});
+  Promise<ArrayBuffer> arrayBuffer();
+};
+
+[ Exposed=(Window,Worker) ]
+interface BidirectionalStream {
+};
+BidirectionalStream includes OutgoingStream;
+BidirectionalStream includes IncomingStream;
+
+[ Exposed=(Window,Worker) ]
+interface SendStream {
+};
+SendStream includes OutgoingStream;
+
+[ Exposed=(Window,Worker) ]
+interface ReceiveStream {
+};
+ReceiveStream includes IncomingStream;

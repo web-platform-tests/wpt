@@ -54,7 +54,7 @@ promise_test(() => {
     );
 
     assert_implements(
-      typeof queueMicrotask === 'function'
+      typeof queueMicrotask === 'function',
       'queueMicrotask is not implemented.'
     );
 

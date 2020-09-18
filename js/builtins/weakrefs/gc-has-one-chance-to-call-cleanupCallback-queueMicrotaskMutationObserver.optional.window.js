@@ -60,7 +60,7 @@ promise_test(() => {
     );
 
     assert_implements(
-      typeof MutationObserver === 'function'
+      typeof MutationObserver === 'function',
       'MutationObserver is not implemented.'
     );
 

@@ -26,10 +26,10 @@
 
 <script>
 setup({explicit_timeout: true});
-function stopPropagation(e) {
+function stopPropagation(event) {
   if (event.type == "focusin" || event.type == "focusout")
     assert_true(event.bubbles);
-  e.stopPropagation();
+  event.stopPropagation();
 }
 var relevantEvents = [
   "focus",
@@ -50,14 +50,14 @@ window.onload = function () {
 
   EventRecorder.addEventListenersForNodes(relevantEvents, inputs, stopPropagation);
   var expected = [
-    {type: "focusin", target: "a"},
     {type: "focus", target: "a"},
-    {type: "focusout", target: "a"},
-    {type: "focusin", target: "b"},
+    {type: "focusin", target: "a"},
     {type: "blur", target: "a"},
+    {type: "focusout", target: "a"},
     {type: "focus", target: "b"},
-    {type: "focusout", target: "b"},
-    {type: "blur", target: "b"}
+    {type: "focusin", target: "b"},
+    {type: "blur", target: "b"},
+    {type: "focusout", target: "b"}
   ];
 
   async_test(function(t) {

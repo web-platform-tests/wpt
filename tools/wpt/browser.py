@@ -686,6 +686,11 @@ class Chrome(Browser):
                     "Found ChromeDriver %s; too old for Chrome/Chromium %s" %
                     (chromedriver_version, browser_version))
             return None
+        if (chromedriver_major > browser_major):
+            self.logger.warning(
+                    "Found ChromeDriver %s; too new for Chrome/Chromium %s" %
+                    (chromedriver_version, browser_version))
+            return None
 
         return chromedriver_binary
 

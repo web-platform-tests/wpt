@@ -506,11 +506,13 @@ class H2Headers(dict):
     def __init__(self, headers):
         self.raw_headers = OrderedDict()
         for key, val in headers:
+            key = key.decode('utf-8')
+            val = val.decode('utf-8')
             self.raw_headers[key] = val
             dict.__setitem__(self, self._convert_h2_header_to_h1(key), val)
 
     def _convert_h2_header_to_h1(self, header_key):
-        if header_key[1:] in h2_headers and header_key[0] == ':':
+        if header_key[1:] in h2_headers and header_key[:1] == ':':
             return header_key[1:]
         else:
             return header_key

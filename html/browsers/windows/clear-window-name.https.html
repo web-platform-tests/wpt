@@ -18,29 +18,20 @@ function anchorClick(n) {
   hyperlink.click();
 }
 
-function pollResultAndCheck(t, id, expected) {
-  return new Promise(resolve => {
-    const stashURL = new URL("resources/window-name-stash.py", location);
-    stashURL.searchParams.set('id', id);
+async function pollResultAndCheck(t, id, expected) {
+  const stashURL = new URL("resources/window-name-stash.py", location);
+  stashURL.searchParams.set('id', id);
 
-    let checkResult = t.step_func(async () => {
-      let response = await fetch(stashURL);
-      let res = await response.text();
+  let res = "NONE";
+  while (res == "NONE") {
+    await new Promise(resolve => { t.step_timeout(resolve, 100); });
 
-
-      if (res !== "NONE") {
-        if (res !== expected) {
-          t.step(() => assert_unreached('Stash result does not equal expected result.'));
-        }
-        t.done();
-        resolve();
-      } else {
-        t.step_timeout(checkResult, 100);
-      }
-    });
-
-    t.step_timeout(checkResult, 100);
-  });
+    const response = await fetch(stashURL);
+    res = await response.text();
+  }
+  if (res !== expected) {
+    assert_unreached('Stash result does not equal expected result.')
+  }
 }
 
 promise_test(async t => {

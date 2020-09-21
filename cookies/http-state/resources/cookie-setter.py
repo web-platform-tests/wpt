@@ -25,7 +25,7 @@ ALL_TESTS = u"all-tests.html.py-str"
 
 
 def dump_file(directory, filename):
-  """Reads a file into a string."""
+  """Reads a file into a byte string."""
   return open(path.join(directory, filename), "rb").read()
 
 
@@ -54,11 +54,11 @@ def find_all_test_files(root):
   """Retrieves all files from the test-files/ folder and returns them as
   string pair as used in the JavaScript object. Sorted by filename."""
   all_files = []
-  line_template = b'{{file: "{filename}", name: "{filename}"}},'
+  line_template = u'{{file: "{filename}", name: "{filename}"}},'
   for file in listdir(path.join(root, DEFAULT_RESOURCE_DIR, DEFAULT_TEST_DIR)):
     if file.endswith(u'-test'):
-      name = file.replace(u'-test', u'').encode()
-      all_files.append(line_template.replace(b"filename", name))
+      name = file.replace(u'-test', u'')
+      all_files.append(line_template.format(filename=name).encode())
   all_files.sort()
   return all_files
 

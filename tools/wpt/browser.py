@@ -656,8 +656,38 @@ class Chrome(Browser):
         self.logger.warning("Unable to find the browser binary.")
         return None
 
-    def find_webdriver(self, channel=None):
-        return find_executable("chromedriver")
+    def find_webdriver(self, channel=None, browser_binary=None):
+        chromedriver_binary = find_executable("chromedriver")
+        if not chromedriver_binary:
+            return chromedriver_binary
+
+        # Check that the chromedriver matches the installed Chrome. We accept
+        # up to one version behind, to allow for using a tip-of-tree Chromium
+        # build right after branch point.
+        chromedriver_version = self.webdriver_version(chromedriver_binary)
+        if not chromedriver_version:
+            self.logger.warning(
+                    "Unable to get version for ChromeDriver %s, rejecting it" %
+                    chromedriver_binary)
+            return None
+
+        if not browser_binary:
+            browser_binary = self.find_binary(channel)
+        browser_version = self.version(browser_binary)
+        if not browser_version:
+            # If we can't get the browser version, we just have to assume the
+            # ChromeDriver is good.
+            return chromedriver_binary
+
+        chromedriver_major = int(chromedriver_version.split('.')[0])
+        browser_major = int(browser_version.split('.')[0])
+        if (chromedriver_major + 1 < browser_major):
+            self.logger.warning(
+                    "Found ChromeDriver %s; too old for Chrome/Chromium %s" %
+                    (chromedriver_version, browser_version))
+            return None
+
+        return chromedriver_binary
 
     def _official_chromedriver_url(self, chrome_version):
         # http://chromedriver.chromium.org/downloads/version-selection
@@ -713,7 +743,7 @@ class Chrome(Browser):
             dest, 'chromedriver_%s' % self._chromedriver_platform_string())
         binary_path = find_executable("chromedriver", chromedriver_dir)
         if binary_path is not None:
-            shutil.move(binary_path, dest)
+            shutil.copy(binary_path, dest)
             rmtree(chromedriver_dir)
 
         binary_path = find_executable("chromedriver", dest)
@@ -744,6 +774,21 @@ class Chrome(Browser):
             self.logger.warning("Failed to call %s" % binary)
             return None
         m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string)
+        if not m:
+            self.logger.warning("Failed to extract version from: %s" % version_string)
+            return None
+        return m.group(1)
+
+    def webdriver_version(self, wedriver_binary):
+        if uname[0] == "Windows":
+            return _get_fileversion(webdriver_binary, self.logger)
+
+        try:
+            version_string = call(wedriver_binary, "--version").strip()
+        except subprocess.CalledProcessError:
+            self.logger.warning("Failed to call %s" % binary)
+            return None
+        m = re.match(r"ChromeDriver ([0-9.]*)", version_string)
         if not m:
             self.logger.warning("Failed to extract version from: %s" % version_string)
             return None

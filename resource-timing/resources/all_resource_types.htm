@@ -13,10 +13,7 @@
             function perf_observer(list, observer) {
                 const entries = list.getEntries();
                 const eventSourceCount = entries.filter(e => e.name.includes('eventsource')).length;
-
-                if(eventSourceCount > 0) {
-                    totalEventSourceCount += eventSourceCount;
-                } 
+                totalEventSourceCount += eventSourceCount;
                 
                 // exclude eventSource since it arrives repeatedly
                 count += entries.filter(e => !e.name.includes('eventsource')).length;

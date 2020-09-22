@@ -1,4 +1,7 @@
 let appendScript = (src, resolve) => {
+    // This PerformanceObserver ensures the Promise resolves once the script's
+    // entry was added to the observer, under the assumption that this implies
+    // it was also added to the PerformanceTimeline.
     const po = new PerformanceObserver((list, observer) =>  { 
       observer.disconnect();
       resolve();

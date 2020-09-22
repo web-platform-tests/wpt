@@ -7,6 +7,24 @@
     </head>
     <body background='blue.png?id=body'>
         <script>
+            let count = 0;
+            function perf_observer(list, observer) { 
+                count += list.getEntries().length;
+                console.log(`loaded: ${count}`);
+                
+                if(count === 34) {
+                    parent.on_all_resources_loaded();
+                }
+            } 
+        
+            const observer = new PerformanceObserver(perf_observer); 
+            observer.observe({entryTypes: ["resource"]});
+        
+            if (window.parent.hasOwnProperty('on_test_body_created')) {
+                window.parent.on_test_body_created();
+            }
+        </script>
+        <script>
             if (window.parent.hasOwnProperty('on_test_body_created'))
                 window.parent.on_test_body_created();
         </script>
@@ -38,9 +56,9 @@
                 fetch('empty.py?id=fetch');
             }
 
-            if (window.EventSource) {
-                var evtSource = new EventSource('eventsource.py?id=eventsource');
-            }
+            // if (window.EventSource) {
+            //     var evtSource = new EventSource('eventsource.py?id=eventsource');
+            // }
         </script>
         <style>
             @font-face {

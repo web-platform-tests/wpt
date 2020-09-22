@@ -1,13 +1,30 @@
 let appendScript = (src, resolve) => {
+    const po = new PerformanceObserver((list, observer) =>  { 
+      observer.disconnect();
+      resolve();
+    });
+    po.observe({entryTypes: ["resource"]});
     const script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = src;
-    script.onload = resolve;
     document.body.appendChild(script);
 }
 
-let xhrScript = src => {
-    var xhr = new XMLHttpRequest();
+const asyncXHR = src => {
+    return new Promise(resolve => {
+      const po = new PerformanceObserver((list, observer) =>  { 
+        observer.disconnect();
+        resolve();
+      });
+      po.observe({entryTypes: ["resource"]});
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", src);
+      xhr.send(null);
+    });
+}
+
+const syncXHR = src => {
+    const xhr = new XMLHttpRequest();
     xhr.open("GET", src, false);
     xhr.send(null);
 }

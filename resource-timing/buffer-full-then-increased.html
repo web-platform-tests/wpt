@@ -19,8 +19,8 @@ setup(() => {
 
 let overflowTheBuffer = () => {
     // These resources overflow the entry buffer, and go into the secondary buffer.
-    xhrScript('resources/empty.js?xhr2');
-    xhrScript('resources/empty.js?xhr3');
+    syncXHR('resources/empty.js?xhr2');
+    syncXHR('resources/empty.js?xhr3');
     performance.setResourceTimingBufferSize(3);
 };
 

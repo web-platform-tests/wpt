@@ -19,14 +19,14 @@ setup(() => {
 
 let overflowTheBufferAndWaitForEvent = () => {
     return new Promise(resolve => {
-        var add_entry = () => {
+        const add_entry = () => {
             performance.setResourceTimingBufferSize(resource_timing_buffer_size + 2);
-            xhrScript("resources/empty.js?xhr");
+            syncXHR("resources/empty.js?xhr");
             resolve();
         }
         performance.addEventListener('resourcetimingbufferfull', add_entry);
         // This resource overflows the entry buffer, and goes into the secondary buffer.
-        appendScript('resources/empty_script.js');
+        appendScript('resources/empty_script.js', resolve);
     });
 };
 

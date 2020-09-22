@@ -8,11 +8,22 @@
     <body background='blue.png?id=body'>
         <script>
             let count = 0;
-            function perf_observer(list, observer) { 
-                count += list.getEntries().length;
-                console.log(`loaded: ${count}`);
+            let totalEventSourceCount = 0;
+
+            function perf_observer(list, observer) {
+                const entries = list.getEntries();
+                const eventSourceCount = entries.filter(e => e.name.includes('eventsource')).length;
+
+                if(eventSource > 0) {
+                    totalEventSourceCount += eventSourceCount;
+                } 
                 
-                if(count === 34) {
+                // exclude eventSource since it arrives repeatedly
+                count += entries.filter(e => !e.name.includes('eventsource')).length;
+                
+                if(count === 34 && totalEventSourceCount > 0) {
+                    // we are done only if all static resources arrived and at least one event source
+                    observer.disconnect();
                     parent.on_all_resources_loaded();
                 }
             } 
@@ -56,9 +67,9 @@
                 fetch('empty.py?id=fetch');
             }
 
-            // if (window.EventSource) {
-            //     var evtSource = new EventSource('eventsource.py?id=eventsource');
-            // }
+            if (window.EventSource) {
+                var evtSource = new EventSource('eventsource.py?id=eventsource');
+            }
         </script>
         <style>
             @font-face {

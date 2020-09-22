@@ -4,11 +4,10 @@
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
         <title>All Resource Types Test Page</title>
         <link rel="shortcut icon" href="empty.py?favicon">
-        
         <script>
             let count = 0;
             let totalEventSourceCount = 0;
-            
+
             function perf_observer(list, observer) {
                 const entries = list.getEntries();
                 const eventSourceCount = entries.filter(e => e.name.includes('eventsource')).length;
@@ -23,11 +22,10 @@
                     parent.on_all_resources_loaded();
                 }
             }
-            
-            const observer = new PerformanceObserver(perf_observer); 
+
+            const observer = new PerformanceObserver(perf_observer);
             observer.observe({entryTypes: ["resource"]});
         </script>
-
     </head>
     <body background='blue.png?id=body'>
         <script>

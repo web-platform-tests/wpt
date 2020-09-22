@@ -661,9 +661,6 @@ class Chrome(Browser):
         if not chromedriver_binary:
             return chromedriver_binary
 
-        # Check that the chromedriver matches the installed Chrome. We accept
-        # up to one version behind, to allow for using a tip-of-tree Chromium
-        # build right after branch point.
         chromedriver_version = self.webdriver_version(chromedriver_binary)
         if not chromedriver_version:
             self.logger.warning(
@@ -679,16 +676,12 @@ class Chrome(Browser):
             # ChromeDriver is good.
             return chromedriver_binary
 
-        chromedriver_major = int(chromedriver_version.split('.')[0])
-        browser_major = int(browser_version.split('.')[0])
-        if (chromedriver_major + 1 < browser_major):
+        # Check that the ChromeDriver version matches the Chrome version.
+        chromedriver_major = chromedriver_version.split('.')[0]
+        browser_major = browser_version.split('.')[0]
+        if chromedriver_major != browser_major:
             self.logger.warning(
-                    "Found ChromeDriver %s; too old for Chrome/Chromium %s" %
-                    (chromedriver_version, browser_version))
-            return None
-        if (chromedriver_major > browser_major):
-            self.logger.warning(
-                    "Found ChromeDriver %s; too new for Chrome/Chromium %s" %
+                    "Found ChromeDriver %s; does not match Chrome/Chromium %s" %
                     (chromedriver_version, browser_version))
             return None
 

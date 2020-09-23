@@ -568,7 +568,21 @@ policies and contribution forms [3].
         var test_name = name ? name : test_environment.next_default_test_name();
         var test_obj = new Test(test_name, properties);
         if (func) {
-            test_obj.step(func, test_obj, test_obj);
+            let value = test_obj.step(func, test_obj, test_obj);
+            if (value !== undefined) {
+                var msg = "Test named \"" + test_name +
+                    "\" inappropriately returned a value";
+
+                try {
+                    if (value && typeof value.then === 'function') {
+                        msg += ", consider using `promise_test` instead";
+                    }
+                } catch (err) {}
+
+                tests.status.status = tests.status.ERROR;
+                tests.status.message = msg;
+                tests.complete();
+            }
         }
         return test_obj;
     }

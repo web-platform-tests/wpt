@@ -59,6 +59,30 @@ def test_chrome_find_webdriver(mocked_find_executable):
     assert chrome.find_webdriver(browser_binary='/usr/bin/chrome') is None
 
 
+@mock.patch('tools.wpt.browser.call')
+def test_chrome_webdriver_version(mocked_call):
+    chrome = browser.Chrome(logger)
+    webdriver_binary = '/usr/bin/chromedriver'
+
+    # Working cases.
+    mocked_call.return_value = 'ChromeDriver 84.0.4147.30'
+    assert chrome.webdriver_version(webdriver_binary) == '84.0.4147.30'
+    mocked_call.return_value = 'ChromeDriver 87.0.1 (abcd1234-refs/branch-heads/4147@{#310})'
+    assert chrome.webdriver_version(webdriver_binary) == '87.0.1'
+
+    # Various invalid version strings
+    mocked_call.return_value = 'Chrome 84.0.4147.30 (dev)'
+    assert chrome.webdriver_version(webdriver_binary) is None
+    mocked_call.return_value = 'ChromeDriver New 84.0.4147.30'
+    assert chrome.webdriver_version(webdriver_binary) is None
+    mocked_call.return_value = ''
+    assert chrome.webdriver_version(webdriver_binary) is None
+
+    # The underlying subprocess call throws.
+    mocked_call.side_effect = subprocess.CalledProcessError(5, 'cmd', output='Call failed')
+    assert chrome.webdriver_version(webdriver_binary) is None
+
+
 @mock.patch('subprocess.check_output')
 def test_safari_version(mocked_check_output):
     safari = browser.Safari(logger)

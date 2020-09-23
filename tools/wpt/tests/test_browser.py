@@ -59,6 +59,9 @@ def test_chrome_find_webdriver(mocked_find_executable):
     assert chrome.find_webdriver(browser_binary='/usr/bin/chrome') is None
 
 
+# On Windows, webdriver_version directly calls _get_fileversion, so there is no
+# logic to test there.
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='just uses _get_fileversion on Windows')
 @mock.patch('tools.wpt.browser.call')
 def test_chrome_webdriver_version(mocked_call):
     chrome = browser.Chrome(logger)

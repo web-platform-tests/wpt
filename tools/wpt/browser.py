@@ -664,8 +664,8 @@ class Chrome(Browser):
         chromedriver_version = self.webdriver_version(chromedriver_binary)
         if not chromedriver_version:
             self.logger.warning(
-                    "Unable to get version for ChromeDriver %s, rejecting it" %
-                    chromedriver_binary)
+                "Unable to get version for ChromeDriver %s, rejecting it" %
+                chromedriver_binary)
             return None
 
         if not browser_binary:
@@ -681,8 +681,8 @@ class Chrome(Browser):
         browser_major = browser_version.split('.')[0]
         if chromedriver_major != browser_major:
             self.logger.warning(
-                    "Found ChromeDriver %s; does not match Chrome/Chromium %s" %
-                    (chromedriver_version, browser_version))
+                "Found ChromeDriver %s; does not match Chrome/Chromium %s" %
+                (chromedriver_version, browser_version))
             return None
 
         return chromedriver_binary
@@ -777,14 +777,14 @@ class Chrome(Browser):
             return None
         return m.group(1)
 
-    def webdriver_version(self, wedriver_binary):
+    def webdriver_version(self, webdriver_binary):
         if uname[0] == "Windows":
             return _get_fileversion(webdriver_binary, self.logger)
 
         try:
-            version_string = call(wedriver_binary, "--version").strip()
+            version_string = call(webdriver_binary, "--version").strip()
         except subprocess.CalledProcessError:
-            self.logger.warning("Failed to call %s" % binary)
+            self.logger.warning("Failed to call %s" % webdriver_binary)
             return None
         m = re.match(r"ChromeDriver ([0-9.]*)", version_string)
         if not m:

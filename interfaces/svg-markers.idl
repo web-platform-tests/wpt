@@ -1,0 +1,54 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: SVG Markers (https://svgwg.org/specs/markers/)
+
+interface mixin SVGMarkableElement {
+  readonly attribute SVGMarkerList markers;
+
+  long getMarkerIndexFromPoint(DOMPoint point);
+};
+
+SVGLineElement includes SVGMarkableElement;
+SVGPathElement includes SVGMarkableElement;
+SVGPolygonElement includes SVGMarkableElement;
+SVGPolylineElement includes SVGMarkableElement;
+
+interface SVGMarkerElement : SVGElement {
+
+  // Marker Unit Types
+  const unsigned short SVG_MARKERUNITS_UNKNOWN = 0;
+  const unsigned short SVG_MARKERUNITS_USERSPACEONUSE = 1;
+  const unsigned short SVG_MARKERUNITS_STROKEWIDTH = 2;
+
+  // Marker Orientation Types
+  const unsigned short SVG_MARKER_ORIENT_UNKNOWN = 0;
+  const unsigned short SVG_MARKER_ORIENT_AUTO = 1;
+  const unsigned short SVG_MARKER_ORIENT_ANGLE = 2;
+
+  readonly attribute SVGAnimatedLength refX;
+  readonly attribute SVGAnimatedLength refY;
+  readonly attribute SVGAnimatedEnumeration markerUnits;
+  readonly attribute SVGAnimatedLength markerWidth;
+  readonly attribute SVGAnimatedLength markerHeight;
+  readonly attribute SVGAnimatedEnumeration orientType;
+  readonly attribute SVGAnimatedAngle orientAngle;
+           attribute DOMString orient;
+
+  void setOrientToAuto();
+  void setOrientToAngle(SVGAngle angle);
+};
+
+SVGMarkerElement includes SVGFitToViewBox;
+
+interface SVGMarkerInstance {
+  readonly attribute SVGMarkerElement element;
+  readonly attribute float position;
+  readonly attribute DOMPointReadOnly point;
+  readonly attribute float angle;
+};
+
+interface SVGMarkerList {
+  readonly attribute unsigned long length;
+  getter SVGMarkerInstance? item(unsigned long index);
+};

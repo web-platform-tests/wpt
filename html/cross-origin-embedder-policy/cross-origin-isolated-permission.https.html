@@ -23,7 +23,6 @@ async function getCrossOriginIsolatedFor(t, origin, value) {
   parentFrame.src = `${PATH}${pipe}`;
   document.body.append(parentFrame);
 
-  parentFrame.addEventListener('error', t.unreached_func('frame.error'));
   await new Promise((resolve) => {
     parentFrame.addEventListener('load', resolve);
   });

@@ -1033,15 +1033,16 @@ def lint(repo_root, paths, output_format, ignore_glob=None, github_checks_output
         return (errors[-1][0], path)
 
     to_check_content = []
+    skip = set()
 
-    for path in paths[:]:
+    for path in paths:
         abs_path = os.path.join(repo_root, path)
         if not os.path.exists(abs_path):
-            paths.remove(path)
+            skip.add(path)
             continue
 
         if any(fnmatch.fnmatch(path, file_match) for file_match in skipped_files):
-            paths.remove(path)
+            skip.add(path)
             continue
 
         errors = check_path(repo_root, path)

@@ -865,6 +865,10 @@ class SourceFile(object):
     @property
     def type(self):
         # type: () -> Text
+        possible_types = self.possible_types
+        if len(possible_types) == 1:
+            return possible_types.pop()
+
         rv, _ = self.manifest_items()
         return rv
 

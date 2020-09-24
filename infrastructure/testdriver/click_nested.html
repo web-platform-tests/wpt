@@ -23,7 +23,7 @@ addEventListener("load",() => {
             .click(button)
             .then(() => {
                 assert_equals(doc.getElementById("log").textContent, "PASS");
-                done()
+                done();
             })
             .catch(() => assert_unreached("click failed"));
     });

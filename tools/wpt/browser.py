@@ -728,6 +728,17 @@ class Chrome(Browser):
     def install_webdriver_by_version(self, version, dest=None):
         if dest is None:
             dest = os.pwd
+
+        # There may be an existing chromedriver binary from a previous install.
+        # To provide a clean install experience, remove the old binary - this
+        # avoids tricky issues like unzipping over a read-only file.
+        expected_binary_path = os.path.join(dest, 'chromedriver')
+        if os.path.isfile(expected_binary_path):
+            self.logger.info("Removing existing ChromeDriver binary: %s" %
+                expected_binary_path)
+            os.chmod(expected_binary_path, stat.S_IWUSR)
+            os.remove(expected_binary_path)
+
         url = self._latest_chromedriver_url(version) if version \
             else self._chromium_chromedriver_url(None)
         self.logger.info("Downloading ChromeDriver from %s" % url)
@@ -741,11 +752,11 @@ class Chrome(Browser):
             dest, 'chromedriver_%s' % self._chromedriver_platform_string())
         binary_path = find_executable("chromedriver", chromedriver_dir)
         if binary_path is not None:
-            shutil.copy(binary_path, dest)
+            shutil.move(binary_path, dest)
             rmtree(chromedriver_dir)
 
         binary_path = find_executable("chromedriver", dest)
-        assert binary_path is not None
+        assert binary_path == expected_binary_path
         return binary_path
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):

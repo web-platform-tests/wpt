@@ -347,7 +347,6 @@ class Chrome(BrowserSetup):
                 install = self.prompt_install("chromedriver")
 
                 if install:
-                    logger.info("Downloading ChromeDriver")
                     webdriver_binary = self.browser.install_webdriver(
                         dest=self.venv.bin_path,
                         channel=browser_channel,

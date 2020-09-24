@@ -1066,6 +1066,29 @@ class EdgeChromium(Browser):
     def find_webdriver(self, channel=None):
         return find_executable("msedgedriver")
 
+    def webdriver_supports_browser(self, webdriver_binary, browser_binary):
+        edgedriver_version = self.webdriver_version(webdriver_binary)
+        if not edgedriver_version:
+            self.logger.warning(
+                "Unable to get version for EdgeDriver %s, rejecting it" %
+                webdriver_binary)
+            return False
+
+        browser_version = self.version(browser_binary)
+        if not browser_version:
+            # If we can't get the browser version, we just have to assume the
+            # EdgeDriver is good.
+            return True
+
+        # Check that the EdgeDriver version matches the Edge version.
+        edgedriver_major = edgedriver_version.split('.')[0]
+        browser_major = browser_version.split('.')[0]
+        if edgedriver_major != browser_major:
+            self.logger.warning("EdgeDriver %s does not match Edge %s" %
+                                (edgedriver_version, browser_version))
+            return False
+        return True
+
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         if self.platform != "win" and self.platform != "macos":
             raise ValueError("Only Windows and Mac platforms are currently supported")
@@ -1123,6 +1146,21 @@ class EdgeChromium(Browser):
                 return _get_fileversion(binary, self.logger)
             self.logger.warning("Failed to find Edge binary.")
             return None
+
+    def webdriver_version(self, webdriver_binary):
+        if self.platform == "win":
+            return _get_fileversion(webdriver_binary, self.logger)
+
+        try:
+            version_string = call(webdriver_binary, "--version").strip()
+        except subprocess.CalledProcessError:
+            self.logger.warning("Failed to call %s" % webdriver_binary)
+            return None
+        m = re.match(r"EdgeDriver ([0-9][0-9.]*)", version_string)
+        if not m:
+            self.logger.warning("Failed to extract version from: %s" % version_string)
+            return None
+        return m.group(1)
 
 
 class Edge(Browser):

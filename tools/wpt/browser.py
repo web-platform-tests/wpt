@@ -657,35 +657,31 @@ class Chrome(Browser):
         return None
 
     def find_webdriver(self, channel=None, browser_binary=None):
-        chromedriver_binary = find_executable("chromedriver")
-        if not chromedriver_binary:
-            return chromedriver_binary
+        return find_executable("chromedriver")
 
-        chromedriver_version = self.webdriver_version(chromedriver_binary)
+    def webdriver_supports_browser(self, webdriver_binary, browser_binary):
+        chromedriver_version = self.webdriver_version(webdriver_binary)
         if not chromedriver_version:
             self.logger.warning(
                 "Unable to get version for ChromeDriver %s, rejecting it" %
-                chromedriver_binary)
-            return None
+                webdriver_binary)
+            return False
 
-        if not browser_binary:
-            browser_binary = self.find_binary(channel)
         browser_version = self.version(browser_binary)
         if not browser_version:
             # If we can't get the browser version, we just have to assume the
             # ChromeDriver is good.
-            return chromedriver_binary
+            return True
 
         # Check that the ChromeDriver version matches the Chrome version.
         chromedriver_major = chromedriver_version.split('.')[0]
         browser_major = browser_version.split('.')[0]
         if chromedriver_major != browser_major:
             self.logger.warning(
-                "Found ChromeDriver %s; does not match Chrome/Chromium %s" %
+                "ChromeDriver %s does not match Chrome/Chromium %s" %
                 (chromedriver_version, browser_version))
-            return None
-
-        return chromedriver_binary
+            return False
+        return True
 
     def _official_chromedriver_url(self, chrome_version):
         # http://chromedriver.chromium.org/downloads/version-selection

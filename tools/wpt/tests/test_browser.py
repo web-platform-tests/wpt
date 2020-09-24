@@ -24,39 +24,29 @@ def test_all_browser_abc():
             assert not inspect.isabstract(cls), "%s is abstract" % name
 
 
-@mock.patch('tools.wpt.browser.find_executable')
-def test_chrome_find_webdriver(mocked_find_executable):
-    # Cannot find ChromeDriver
-    chrome = browser.Chrome(logger)
-    mocked_find_executable.return_value = None
-    assert chrome.find_webdriver() is None
-
+def test_chrome_webdriver_supports_browser():
     # ChromeDriver binary cannot be called.
     chrome = browser.Chrome(logger)
-    mocked_find_executable.return_value = '/usr/bin/chromedriver'
     chrome.webdriver_version = mock.MagicMock(return_value=None)
-    assert chrome.find_webdriver() is None
+    assert not chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome')
 
     # Browser binary cannot be called.
     chrome = browser.Chrome(logger)
-    mocked_find_executable.return_value = '/usr/bin/chromedriver'
     chrome.webdriver_version = mock.MagicMock(return_value='70.0.1')
     chrome.version = mock.MagicMock(return_value=None)
-    assert chrome.find_webdriver(browser_binary='/usr/bin/chrome') == '/usr/bin/chromedriver'
+    assert chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome')
 
     # Browser version matches.
     chrome = browser.Chrome(logger)
-    mocked_find_executable.return_value = '/usr/bin/chromedriver'
     chrome.webdriver_version = mock.MagicMock(return_value='70.0.1')
     chrome.version = mock.MagicMock(return_value='70.1.5')
-    assert chrome.find_webdriver(browser_binary='/usr/bin/chrome') == '/usr/bin/chromedriver'
+    assert chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome')
 
     # Browser version doesn't match.
     chrome = browser.Chrome(logger)
-    mocked_find_executable.return_value = '/usr/bin/chromedriver'
     chrome.webdriver_version = mock.MagicMock(return_value='70.0.1')
     chrome.version = mock.MagicMock(return_value='69.0.1')
-    assert chrome.find_webdriver(browser_binary='/usr/bin/chrome') is None
+    assert not chrome.webdriver_supports_browser('/usr/bin/chromedriver', '/usr/bin/chrome')
 
 
 # On Windows, webdriver_version directly calls _get_fileversion, so there is no

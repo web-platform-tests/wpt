@@ -2,7 +2,6 @@ import os
 import unittest
 import time
 import json
-import sys
 
 from six.moves import urllib
 
@@ -39,6 +38,18 @@ class TestHeader(TestUsingServer):
         resp = self.request("/document.txt", query="pipe=header(X-Test,1)|header(X-Test,2,True)")
         self.assert_multiple_headers(resp, "X-Test", ["1", "2"])
 
+    def test_semicolon(self):
+        resp = self.request("/document.txt", query="pipe=header(Refresh,3;url=http://example.com)")
+        self.assertEqual(resp.info()["Refresh"], "3;url=http://example.com")
+
+    def test_escape_comma(self):
+        resp = self.request("/document.txt", query="pipe=header(Expires,Thu\,%2014%20Aug%201986%2018:00:00%20GMT)")
+        self.assertEqual(resp.info()["Expires"], "Thu, 14 Aug 1986 18:00:00 GMT")
+
+    def test_escape_parenthesis(self):
+        resp = self.request("/document.txt", query="pipe=header(User-Agent,Mozilla/5.0%20(X11;%20Linux%20x86_64;%20rv:12.0\)")
+        self.assertEqual(resp.info()["User-Agent"], "Mozilla/5.0 (X11; Linux x86_64; rv:12.0)")
+
 class TestSlice(TestUsingServer):
     def test_both_bounds(self):
         resp = self.request("/document.txt", query="pipe=slice(1,10)")
@@ -61,8 +72,6 @@ class TestSub(TestUsingServer):
         expected = b"localhost localhost %i" % self.server.port
         self.assertEqual(resp.read().rstrip(), expected)
 
-    @pytest.mark.xfail(sys.platform == "win32",
-                       reason="https://github.com/web-platform-tests/wpt/issues/12949")
     def test_sub_file_hash(self):
         resp = self.request("/sub_file_hash.sub.txt")
         expected = b"""
@@ -83,8 +92,6 @@ sha512: r8eLGRTc7ZznZkFjeVLyo6/FyQdra9qmlYCwKKxm3kfQAswRS9+3HsYk3thLUhcFmmWhK4dX
         expected = b"PASS"
         self.assertEqual(resp.read().rstrip(), expected)
 
-    @pytest.mark.xfail(sys.platform == "win32",
-                       reason="https://github.com/web-platform-tests/wpt/issues/12949")
     def test_sub_location(self):
         resp = self.request("/sub_location.sub.txt?query_string")
         expected = """
@@ -99,13 +106,17 @@ server: http://localhost:{0}""".format(self.server.port).encode("ascii")
         self.assertEqual(resp.read().rstrip(), expected.strip())
 
     def test_sub_params(self):
-        resp = self.request("/sub_params.txt", query="test=PASS&pipe=sub")
-        expected = b"PASS"
+        resp = self.request("/sub_params.txt", query="plus+pct-20%20pct-3D%3D=PLUS+PCT-20%20PCT-3D%3D&pipe=sub")
+        expected = b"PLUS PCT-20 PCT-3D="
         self.assertEqual(resp.read().rstrip(), expected)
 
     def test_sub_url_base(self):
         resp = self.request("/sub_url_base.sub.txt")
         self.assertEqual(resp.read().rstrip(), b"Before / After")
+
+    def test_sub_url_base_via_filename_with_query(self):
+        resp = self.request("/sub_url_base.sub.txt?pipe=slice(5,10)")
+        self.assertEqual(resp.read().rstrip(), b"e / A")
 
     def test_sub_uuid(self):
         resp = self.request("/sub_uuid.sub.txt")
@@ -125,6 +136,11 @@ server: http://localhost:{0}""".format(self.server.port).encode("ascii")
 %(root)s%(sep)ssub_path.sub.txt
 """ % {"root": root, "sep": os.path.sep}
         self.assertEqual(resp.read(), expected.encode("utf8"))
+
+    def test_sub_header_or_default(self):
+        resp = self.request("/sub_header_or_default.sub.txt", headers={"X-Present": "OK"})
+        expected = b"OK\nabsent-default"
+        self.assertEqual(resp.read().rstrip(), expected)
 
 class TestTrickle(TestUsingServer):
     def test_trickle(self):

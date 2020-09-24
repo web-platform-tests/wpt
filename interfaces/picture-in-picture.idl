@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
-// Source: Picture-in-Picture (https://wicg.github.io/picture-in-picture/)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Picture-in-Picture (https://w3c.github.io/picture-in-picture/)
 
 partial interface HTMLVideoElement {
   [NewObject] Promise<PictureInPictureWindow> requestPictureInPicture();
@@ -9,19 +9,21 @@ partial interface HTMLVideoElement {
   attribute EventHandler onenterpictureinpicture;
   attribute EventHandler onleavepictureinpicture;
 
+  [CEReactions] attribute boolean autoPictureInPicture;
   [CEReactions] attribute boolean disablePictureInPicture;
 };
 
 partial interface Document {
   readonly attribute boolean pictureInPictureEnabled;
 
-  [NewObject] Promise<void> exitPictureInPicture();
+  [NewObject] Promise<undefined> exitPictureInPicture();
 };
 
-partial interface DocumentOrShadowRoot {
+partial interface mixin DocumentOrShadowRoot {
   readonly attribute Element? pictureInPictureElement;
 };
 
+[Exposed=Window]
 interface PictureInPictureWindow : EventTarget {
   readonly attribute long width;
   readonly attribute long height;
@@ -29,14 +31,12 @@ interface PictureInPictureWindow : EventTarget {
   attribute EventHandler onresize;
 };
 
-[
-    Constructor(DOMString type, EnterPictureInPictureEventInit eventInitDict),
-    Exposed=Window
-]
-interface EnterPictureInPictureEvent : Event {
+[Exposed=Window]
+interface PictureInPictureEvent : Event {
+    constructor(DOMString type, PictureInPictureEventInit eventInitDict);
     [SameObject] readonly attribute PictureInPictureWindow pictureInPictureWindow;
 };
 
-dictionary EnterPictureInPictureEventInit : EventInit {
+dictionary PictureInPictureEventInit : EventInit {
     required PictureInPictureWindow pictureInPictureWindow;
 };

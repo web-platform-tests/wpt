@@ -3,8 +3,9 @@
 <meta charset="utf-8">
 <title>CSS Grid Layout Test: grid-template-rows fit-content() reference file</title>
 <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
-<link rel="stylesheet" href="support/grid.css">
+<link rel="stylesheet" href="/css/support/grid.css">
 <meta name="flags" content="ahem">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
 .grid {
   justify-content: start;
@@ -21,6 +22,7 @@
 .item {
   font: 10px/1 Ahem;
   background: cyan;
+  padding-left: 2px;
 }
 
 .spanningItem {
@@ -28,6 +30,7 @@
   grid-row: 1 / -1;
   grid-column: 2;
   background: salmon;
+  padding-left: 2px;
 }
 
 .test {

@@ -6,20 +6,6 @@
     "help": "List test jobs that should run for a set of commits",
     "virtualenv": false
   },
-  "check-stability": {
-    "path": "check_stability.py",
-    "script": "run",
-    "parser": "get_parser",
-    "parse_known": true,
-    "help": "Check test stability",
-    "virtualenv": true,
-    "install": [
-      "requests"
-    ],
-    "requirements": [
-      "../wptrunner/requirements.txt"
-    ]
-  },
   "make-hosts-file": {
     "path": "make_hosts_file.py",
     "script": "run",
@@ -27,8 +13,15 @@
     "help": "Output a hosts file to stdout",
     "virtualenv": false
   },
+  "regen-certs": {
+    "path": "regen_certs.py",
+    "script": "run",
+    "parser": "get_parser",
+    "help": "Regenerate the WPT certificates",
+    "virtualenv": false
+  },
   "tc-download": {
-    "path": "tcdownload.py",
+    "path": "tc/download.py",
     "script": "run",
     "parser": "get_parser",
     "parse_known": true,
@@ -37,6 +30,38 @@
     "install": [
       "requests",
       "pygithub"
+    ]
+  },
+  "tc-taskgraph": {
+    "path": "tc/taskgraph.py",
+    "script": "run",
+    "help": "Build the taskgraph",
+    "virtualenv": true,
+    "install": [
+      "requests",
+      "pyyaml"
+    ]
+  },
+  "tc-decision": {
+    "path": "tc/decision.py",
+    "parser": "get_parser",
+    "script": "run",
+    "help": "Run the decision task",
+    "virtualenv": true,
+    "install": [
+        "requests",
+        "pyyaml",
+        "taskcluster"
+    ]
+  },
+  "tc-sink-task": {
+    "path": "tc/sink_task.py",
+    "parser": "get_parser",
+    "script": "run",
+    "help": "Run the sink task",
+    "virtualenv": true,
+    "install": [
+        "taskcluster"
     ]
   }
 }

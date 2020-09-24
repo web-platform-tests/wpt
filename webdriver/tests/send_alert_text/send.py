@@ -1,9 +1,11 @@
 import pytest
 
+from webdriver.error import NoSuchAlertException
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_success
 from tests.support.inline import inline
+from tests.support.sync import Poll
 
 
 @pytest.fixture
@@ -37,9 +39,14 @@ def test_invalid_input(session, page, text):
     assert_error(response, "invalid argument")
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, closed_window):
     response = send_alert_text(session, "Federer")
     assert_error(response, "no such window")
+
+
+def test_no_browsing_context(session, closed_frame):
+    response = send_alert_text(session, "Federer")
+    assert_error(response, "no such alert")
 
 
 def test_no_user_prompt(session):
@@ -55,7 +62,7 @@ def test_alert_element_not_interactable(session, dialog_type):
     assert_error(response, "element not interactable")
 
 
-@pytest.mark.parametrize("text", ["", "Federer", " Fed erer "])
+@pytest.mark.parametrize("text", ["", "Federer", " Fed erer ", "Fed\terer"])
 def test_send_alert_text(session, page, text):
     send_response = send_alert_text(session, text)
     assert_success(send_response)
@@ -63,3 +70,16 @@ def test_send_alert_text(session, page, text):
     session.alert.accept()
 
     assert session.execute_script("return window.result") == text
+
+
+def test_unexpected_alert(session):
+    session.execute_script("setTimeout(function() { prompt('Hello'); }, 100);")
+    wait = Poll(
+        session,
+        timeout=5,
+        ignored_exceptions=NoSuchAlertException,
+        message="No user prompt with text 'Hello' detected")
+    wait.until(lambda s: s.alert.text == "Hello")
+
+    response = send_alert_text(session, "Federer")
+    assert_success(response)

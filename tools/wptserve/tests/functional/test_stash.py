@@ -1,3 +1,4 @@
+import sys
 import unittest
 import uuid
 
@@ -9,6 +10,8 @@ from wptserve.stash import StashServer
 from .base import TestUsingServer
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 8) and sys.platform == 'darwin',
+                    reason="multiprocessing test hangs in Python 3.8 on macOS (#24880)")
 class TestResponseSetCookie(TestUsingServer):
     def run(self, result=None):
         with StashServer(None, authkey=str(uuid.uuid4())):
@@ -18,10 +21,10 @@ class TestResponseSetCookie(TestUsingServer):
         @wptserve.handlers.handler
         def handler(request, response):
             if request.method == "POST":
-                request.server.stash.put(request.POST.first("id"), request.POST.first("data"))
+                request.server.stash.put(request.POST.first(b"id"), request.POST.first(b"data"))
                 data = "OK"
             elif request.method == "GET":
-                data = request.server.stash.take(request.GET.first("id"))
+                data = request.server.stash.take(request.GET.first(b"id"))
                 if data is None:
                     return "NOT FOUND"
             return data

@@ -6,16 +6,33 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 
-browser_specific_args = {
-    "firefox": ["--install-browser"]
-}
+
+def get_browser_args(product, channel):
+    if product == "firefox":
+        local_binary = os.path.expanduser(os.path.join("~", "build", "firefox", "firefox"))
+        if os.path.exists(local_binary):
+            return ["--binary=%s" % local_binary]
+        print("WARNING: Local firefox binary not found")
+        return ["--install-browser", "--install-webdriver"]
+    if product == "servo":
+        return ["--install-browser", "--processes=12"]
+    if product == "chrome" and channel == "nightly":
+        return ["--install-browser", "--install-webdriver"]
+    return []
 
 
 def find_wptreport(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('--log-wptreport', action='store')
     return parser.parse_known_args(args)[0].log_wptreport
+
+
+def find_wptscreenshot(args):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--log-wptscreenshot', action='store')
+    return parser.parse_known_args(args)[0].log_wptscreenshot
 
 
 def gzip_file(filename, delete_original=True):
@@ -26,8 +43,8 @@ def gzip_file(filename, delete_original=True):
         os.unlink(filename)
 
 
-def main(product, commit_range, wpt_args):
-    """Invoke the `wpt run` command according to the needs of the TaskCluster
+def main(product, channel, commit_range, wpt_args):
+    """Invoke the `wpt run` command according to the needs of the Taskcluster
     continuous integration service."""
 
     logger = logging.getLogger("tc-run")
@@ -38,8 +55,7 @@ def main(product, commit_range, wpt_args):
     )
     logger.addHandler(handler)
 
-    child = subprocess.Popen(['python', './wpt', 'manifest-download'])
-    child.wait()
+    subprocess.call(['python', './wpt', 'manifest-download'])
 
     if commit_range:
         logger.info(
@@ -50,25 +66,37 @@ def main(product, commit_range, wpt_args):
         logger.info("Running all tests")
 
     wpt_args += [
-        "--log-tbpl-level=info",
-        "--log-tbpl=-",
+        "--log-mach-level=info",
+        "--log-mach=-",
         "-y",
         "--no-pause",
         "--no-restart-on-unexpected",
         "--install-fonts",
-        "--no-headless"
+        "--no-headless",
+        "--verify-log-full"
     ]
-    wpt_args += browser_specific_args.get(product, [])
+    wpt_args += get_browser_args(product, channel)
+
+    # Hack to run servo with one process only for wdspec
+    if product == "servo" and "--test-type=wdspec" in wpt_args:
+        wpt_args = [item for item in wpt_args if not item.startswith("--processes")]
 
     command = ["python", "./wpt", "run"] + wpt_args + [product]
 
     logger.info("Executing command: %s" % " ".join(command))
+    with open("/home/test/artifacts/checkrun.md", "a") as f:
+        f.write("\n**WPT Command:** `%s`\n\n" % " ".join(command))
 
-    subprocess.check_call(command)
+    retcode = subprocess.call(command, env=dict(os.environ, TERM="dumb"))
+    if retcode != 0:
+        sys.exit(retcode)
 
     wptreport = find_wptreport(wpt_args)
     if wptreport:
         gzip_file(wptreport)
+    wptscreenshot = find_wptscreenshot(wpt_args)
+    if wptscreenshot:
+        gzip_file(wptscreenshot)
 
 
 if __name__ == "__main__":
@@ -79,6 +107,8 @@ if __name__ == "__main__":
                              determine the list of test to execute""")
     parser.add_argument("product", action="store",
                         help="Browser to run tests in")
+    parser.add_argument("channel", action="store",
+                        help="Channel of the browser")
     parser.add_argument("wpt_args", nargs="*",
                         help="Arguments to forward to `wpt run` command")
     main(**vars(parser.parse_args()))

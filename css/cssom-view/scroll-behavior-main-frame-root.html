@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <title>Testing scrollOptions' behavior for Element.scroll* and scroll-behavior on the root of the main frame</title>
 <meta name="timeout" content="long"/>
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <link rel="author" title="Frédéric Wang" href="mailto:fwang@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/cssom-view/#propdef-scroll-behavior">
 <link rel="help" href="https://drafts.csswg.org/cssom-view/#scrolling-box">
@@ -138,6 +139,32 @@
           assert_equals(scrollingElement.scrollTop, elementToRevealTop, "Final value of scrollTop");
         });
      }, `Main frame with smooth scroll-behavior ; ${scrollFunction}() with smooth behavior`);
+    });
+
+    [{scrollAttribute: "scrollLeft", scrollValue: elementToRevealLeft}, {scrollAttribute: "scrollTop", scrollValue: elementToRevealTop}].forEach((attributeTest) => {
+      promise_test(() => {
+        resetScroll(scrollingElement);
+        setScrollBehavior(styledElement, "autoBehavior");
+        assert_equals(scrollingElement.scrollLeft, 0);
+        assert_equals(scrollingElement.scrollTop, 0);
+        var expectedValue = Number(attributeTest.scrollValue);
+        scrollingElement[attributeTest.scrollAttribute] = expectedValue;
+        assert_equals( scrollingElement[attributeTest.scrollAttribute], expectedValue, "Should set scroll attribute immediately");
+        return new Promise((resolve) => { resolve(); });
+      }, `Set ${attributeTest.scrollAttribute} to frame with auto scroll-behavior`);
+
+      promise_test(() => {
+        resetScroll(scrollingElement);
+        setScrollBehavior(styledElement, "smoothBehavior");
+        assert_equals(scrollingElement.scrollLeft, 0);
+        assert_equals(scrollingElement.scrollTop, 0);
+        var expectedValue = Number(attributeTest.scrollValue);
+        scrollingElement[attributeTest.scrollAttribute] = expectedValue;
+        assert_less_than(scrollingElement[attributeTest.scrollAttribute], expectedValue, "Shouldn't set scroll attribute immediately");
+        return waitForScrollEnd(scrollingElement).then(() => {
+          assert_equals(scrollingElement[attributeTest.scrollAttribute], expectedValue, "Final value of scroll attribute");
+        });
+      }, `Set ${attributeTest.scrollAttribute} to frame with smooth scroll-behavior`);
     });
 
     promise_test(() => {

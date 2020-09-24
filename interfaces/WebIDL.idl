@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Web IDL (https://heycam.github.io/webidl/)
 
 typedef (Int8Array or Int16Array or Int32Array or
@@ -8,11 +8,10 @@ typedef (Int8Array or Int16Array or Int32Array or
          Float32Array or Float64Array or DataView) ArrayBufferView;
 
 typedef (ArrayBufferView or ArrayBuffer) BufferSource;
-[
- Exposed=(Window,Worker),
- Constructor(optional DOMString message = "", optional DOMString name = "Error")
-]
+[Exposed=(Window,Worker),
+ Serializable]
 interface DOMException { // but see below note about ECMAScript binding
+  constructor(optional DOMString message = "", optional DOMString name = "Error");
   readonly attribute DOMString name;
   readonly attribute DOMString message;
   readonly attribute unsigned short code;
@@ -46,4 +45,4 @@ interface DOMException { // but see below note about ECMAScript binding
 
 typedef unsigned long long DOMTimeStamp;
 callback Function = any (any... arguments);
-callback VoidFunction = void ();
+callback VoidFunction = undefined ();

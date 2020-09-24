@@ -1,9 +1,12 @@
 def main(request, response):
-    response.headers.set("Cache-Control", "no-store")
+    response.headers.set(b"Cache-Control", b"no-store")
 
     # Allow simple requests, but deny preflight
-    if request.method != "OPTIONS":
-        response.headers.set("Access-Control-Allow-Credentials", "true")
-        response.headers.set("Access-Control-Allow-Origin", request.headers.get("origin"))
+    if request.method != u"OPTIONS":
+        if b"origin" in request.headers:
+            response.headers.set(b"Access-Control-Allow-Credentials", b"true")
+            response.headers.set(b"Access-Control-Allow-Origin", request.headers[b"origin"])
+        else:
+            response.status = 500
     else:
         response.status = 400

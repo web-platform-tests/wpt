@@ -17,7 +17,7 @@ const IframeLoad = {
 
 function getOrigin() {
   var url = new URL("http://{{host}}:{{ports[http][0]}}/");
-  return url.toString();
+  return url.origin;
 }
 
 function getCrossOrigin() {
@@ -128,8 +128,8 @@ function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
       // Delay the check until after the postMessage has a chance to execute.
       setTimeout(t.step_func_done(function () {
         assert_equals(loaded[urlId], undefined);
-      }), 1);
-      assert_throws("SecurityError", () => {
+      }), 500);
+      assert_throws_dom("SecurityError", () => {
         var x = i.contentWindow.location.href;
       });
     });

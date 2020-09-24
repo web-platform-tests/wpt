@@ -1,12 +1,5 @@
 // META: script=support-promises.js
 
-/**
- * This file contains the webplatform tests for the explicit commit() method
- * of the IndexedDB transaction API.
- *
- * @author andreasbutler@google.com
- */
-
 promise_test(async testCase => {
   const db = await createDatabase(testCase, db => {
     createBooksStore(testCase, db);
@@ -61,7 +54,7 @@ promise_test(async testCase => {
   const txn = db.transaction(['books'], 'readwrite');
   const objectStore = txn.objectStore('books');
   txn.commit();
-  assert_throws('TransactionInactiveError',
+  assert_throws_dom('TransactionInactiveError',
       () => { objectStore.put({isbn: 'one', title: 'title1'}); },
       'After commit is called, the transaction should be inactive.');
   db.close();
@@ -76,7 +69,7 @@ promise_test(async testCase => {
   const objectStore = txn.objectStore('books');
   const putRequest = objectStore.put({isbn: 'one', title: 'title1'});
   putRequest.onsuccess = testCase.step_func(() => {
-    assert_throws('TransactionInactiveError',
+    assert_throws_dom('TransactionInactiveError',
       () => { objectStore.put({isbn:'two', title:'title2'}); },
       'The transaction should not be active in the callback of a request after '
       + 'commit() is called.');
@@ -95,7 +88,7 @@ promise_test(async testCase => {
   const objectStore = txn.objectStore('books');
   txn.commit();
 
-  assert_throws('TransactionInactiveError',
+  assert_throws_dom('TransactionInactiveError',
       () => { objectStore.put({isbn:'one', title:'title1'}); },
       'After commit is called, the transaction should be inactive.');
 
@@ -116,7 +109,7 @@ promise_test(async testCase => {
   const txn = db.transaction(['books'], 'readwrite');
   const objectStore = txn.objectStore('books');
   txn.abort();
-  assert_throws('InvalidStateError',
+  assert_throws_dom('InvalidStateError',
       () => { txn.commit(); },
       'The transaction should have been aborted.');
   db.close();
@@ -130,7 +123,7 @@ promise_test(async testCase => {
   const txn = db.transaction(['books'], 'readwrite');
   const objectStore = txn.objectStore('books');
   txn.commit();
-  assert_throws('InvalidStateError',
+  assert_throws_dom('InvalidStateError',
       () => { txn.commit(); },
       'The transaction should have already committed.');
   db.close();
@@ -145,7 +138,7 @@ promise_test(async testCase => {
   const objectStore = txn.objectStore('books');
   const putRequest = objectStore.put({isbn:'one', title:'title1'});
   txn.commit();
-  assert_throws('InvalidStateError',
+  assert_throws_dom('InvalidStateError',
       () => { txn.abort(); },
       'The transaction should already have committed.');
   const txn2 = db.transaction(['books'], 'readwrite');
@@ -173,7 +166,7 @@ promise_test(async testCase => {
   // state.
   await timeoutPromise(0);
 
-  assert_throws('InvalidStateError',
+  assert_throws_dom('InvalidStateError',
       () => { txn.commit(); },
       'The transaction should be inactive so calling commit should throw.');
   releaseTxnFunction();
@@ -188,20 +181,20 @@ promise_test(async testCase => {
   });
   // Txn1 should commit before txn2, even though txn2 uses commit().
   const txn1 = db.transaction(['books'], 'readwrite');
-  const objectStore1 = txn1.objectStore('books');
-  const putRequest1 = objectStore1.put({isbn:'one', title:'title1'});
+  txn1.objectStore('books').put({isbn: 'one', title: 'title1'});
   const releaseTxnFunction = keepAlive(testCase, txn1, 'books');
 
   const txn2 = db.transaction(['books'], 'readwrite');
-  const objectStore2 = txn2.objectStore('books');
-  const putRequest2 = objectStore2.put({isbn:'one', title:'title2'});
+  txn2.objectStore('books').put({isbn:'one', title:'title2'});
   txn2.commit();
 
   // Exercise the IndexedDB transaction ordering by executing one with a
-  // different scope.
-  const txn3 = db.transaction(['not_books'], 'readwrite');
-  const objectStore3 = txn3.objectStore('not_books');
-  objectStore3.put({'title': 'not_title'}, 'key');
+  // different scope. A readonly transaction is used here because
+  // implementations are not required to run non-overlapping readwrite
+  // transactions in parallel, and some implementations (ex: Firefox)
+  // will not.
+  const txn3 = db.transaction(['not_books'], 'readonly');
+  txn3.objectStore('not_books').getAllKeys();
   txn3.oncomplete = function() {
     releaseTxnFunction();
   }
@@ -210,8 +203,7 @@ promise_test(async testCase => {
 
   // Read the data back to verify that txn2 executed last.
   const txn4 = db.transaction(['books'], 'readonly');
-  const objectStore4 = txn4.objectStore('books');
-  const getRequest4 = objectStore4.get('one');
+  const getRequest4 = txn4.objectStore('books').get('one');
   await promiseForTransaction(testCase, txn4);
   assert_equals(getRequest4.result.title, 'title2');
   db.close();
@@ -225,8 +217,7 @@ promise_test(async testCase => {
   });
   // Txn1 creates the book 'one' so the 'add()' below fails.
   const txn1 = db.transaction(['books'], 'readwrite');
-  const objectStore1 = txn1.objectStore('books');
-  const putRequest1 = objectStore1.add({isbn:'one', title:'title1'});
+  txn1.objectStore('books').add({isbn:'one', title:'title1'});
   txn1.commit();
   await promiseForTransaction(testCase, txn1);
 
@@ -235,15 +226,17 @@ promise_test(async testCase => {
   const txn2 = db.transaction(['books'], 'readwrite');
   const objectStore2 = txn2.objectStore('books');
   objectStore2.put({isbn:'two', title:'title2'});
-  const addRequest2 = objectStore2.add({isbn:'one', title:'title2'});
+  const addRequest = objectStore2.add({isbn:'one', title:'title2'});
   txn2.commit();
-  txn2.oncomplete = assert_unreached(
-    'Transaction with invalid "add" call should not be completed.');
+  txn2.oncomplete = () => { assert_unreached(
+    'Transaction with invalid "add" call should not be completed.'); };
 
-  var addWatcher = requestWatcher(testCase, addRequest2);
-  var txnWatcher = transactionWatcher(testCase, txn2);
-  await Promise.all([addWatcher.wait_for('error'),
-                     txnWatcher.wait_for('error', 'abort')]);
+  // Wait for the transaction to complete. We have to explicitly wait for the
+  // error signal on the transaction because of the nature of the test tooling.
+  await Promise.all([
+      requestWatcher(testCase, addRequest).wait_for('error'),
+      transactionWatcher(testCase, txn2).wait_for(['error', 'abort'])
+  ]);
 
   // Read the data back to verify that txn2 was aborted.
   const txn3 = db.transaction(['books'], 'readonly');
@@ -255,3 +248,41 @@ promise_test(async testCase => {
   assert_equals(getRequest2.result, 0);
   db.close();
 }, 'Transactions that explicitly commit and have errors should abort.');
+
+
+promise_test(async testCase => {
+  const db = await createDatabase(testCase, db => {
+    createBooksStore(testCase, db);
+  });
+  const txn1 = db.transaction(['books'], 'readwrite');
+  txn1.objectStore('books').add({isbn: 'one', title: 'title1'});
+  txn1.commit();
+  await promiseForTransaction(testCase, txn1);
+
+  // The second add request will throw an error, but the onerror handler will
+  // appropriately catch the error allowing the valid put request on the
+  // transaction to commit.
+  const txn2 = db.transaction(['books'], 'readwrite');
+  const objectStore2 = txn2.objectStore('books');
+  objectStore2.put({isbn: 'two', title:'title2'});
+  const addRequest = objectStore2.add({isbn: 'one', title:'unreached_title'});
+  addRequest.onerror = (event) => {
+    event.preventDefault();
+    addRequest.transaction.commit();
+  };
+
+  // Wait for the transaction to complete. We have to explicitly wait for the
+  // error signal on the transaction because of the nature of the test tooling.
+  await transactionWatcher(testCase,txn2).wait_for(['error', 'complete'])
+
+  // Read the data back to verify that txn2 was committed.
+  const txn3 = db.transaction(['books'], 'readonly');
+  const objectStore3 = txn3.objectStore('books');
+  const getRequest1 = objectStore3.get('one');
+  const getRequest2 = objectStore3.get('two');
+  await promiseForTransaction(testCase, txn3);
+  assert_equals(getRequest1.result.title, 'title1');
+  assert_equals(getRequest2.result.title, 'title2');
+  db.close();
+}, 'Transactions that handle all errors properly should behave as ' +
+   'expected when an explicit commit is called in an onerror handler.');

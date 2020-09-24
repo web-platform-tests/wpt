@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 
-from tools import localpaths  # noqa: flake8
+from tools import localpaths  # noqa: F401
 
 from six import iteritems
 from . import virtualenv
@@ -31,19 +31,26 @@ def load_commands():
                     "script": props["script"],
                     "parser": props.get("parser"),
                     "parse_known": props.get("parse_known", False),
+                    "py3only": props.get("py3only", False),
                     "help": props.get("help"),
                     "virtualenv": props.get("virtualenv", True),
                     "install": props.get("install", []),
                     "requirements": [os.path.join(base_dir, item)
                                      for item in props.get("requirements", [])]
                 }
+                if rv[command]["install"] or rv[command]["requirements"]:
+                    assert rv[command]["virtualenv"]
     return rv
 
 
-def parse_args(argv, commands):
+def parse_args(argv, commands=load_commands()):
     parser = argparse.ArgumentParser()
     parser.add_argument("--venv", action="store", help="Path to an existing virtualenv to use")
+    parser.add_argument("--skip-venv-setup", action="store_true",
+                        dest="skip_venv_setup",
+                        help="Whether to use the virtualenv as-is. Must set --venv as well")
     parser.add_argument("--debug", action="store_true", help="Run the debugger in case of an exception")
+    parser.add_argument("--py3", action="store_true", help="Run with python3")
     subparsers = parser.add_subparsers(dest="command")
     for command, props in iteritems(commands):
         subparsers.add_parser(command, help=props["help"], add_help=False)
@@ -77,15 +84,52 @@ def import_command(prog, command, props):
     return script, parser
 
 
-def setup_virtualenv(path, props):
+def create_complete_parser():
+    """Eagerly load all subparsers. This involves more work than is required
+    for typical command-line usage. It is maintained for the purposes of
+    documentation generation as implemented in WPT's top-level `/docs`
+    directory."""
+
+    commands = load_commands()
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+
+    for command in commands:
+        props = commands[command]
+
+        if (props["virtualenv"] and
+            (not props["py3only"] or sys.version_info.major == 3)):
+            setup_virtualenv(None, False, props)
+
+        subparser = import_command('wpt', command, props)[1]
+        if not subparser:
+            continue
+
+        subparsers.add_parser(command,
+                              help=props["help"],
+                              add_help=False,
+                              parents=[subparser])
+
+    return parser
+
+
+def venv_dir():
+    return "_venv" + str(sys.version_info[0])
+
+
+def setup_virtualenv(path, skip_venv_setup, props):
+    if skip_venv_setup and path is None:
+        raise ValueError("Must set --venv when --skip-venv-setup is used")
+    should_skip_setup = path is not None and skip_venv_setup
     if path is None:
-        path = os.path.join(wpt_root, "_venv")
-    venv = virtualenv.Virtualenv(path)
-    venv.start()
-    for name in props["install"]:
-        venv.install(name)
-    for path in props["requirements"]:
-        venv.install_requirements(path)
+        path = os.path.join(wpt_root, venv_dir())
+    venv = virtualenv.Virtualenv(path, should_skip_setup)
+    if not should_skip_setup:
+        venv.start()
+        for name in props["install"]:
+            venv.install(name)
+        for path in props["requirements"]:
+            venv.install_requirements(path)
     return venv
 
 
@@ -105,7 +149,7 @@ def main(prog=None, argv=None):
     props = commands[command]
     venv = None
     if props["virtualenv"]:
-        venv = setup_virtualenv(main_args.venv, props)
+        venv = setup_virtualenv(main_args.venv, main_args.skip_venv_setup, props)
     script, parser = import_command(prog, command, props)
     if parser:
         if props["parse_known"]:

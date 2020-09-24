@@ -1,10 +1,13 @@
 import copy
 import json
 import os
-import urlparse
 
 import pytest
 import webdriver
+
+from six import string_types
+
+from six.moves.urllib.parse import urlunsplit
 
 from tests.support import defaults
 from tests.support.helpers import cleanup_session
@@ -85,18 +88,6 @@ def create_frame(session):
 
 
 @pytest.fixture
-def create_window(session):
-    """Open new window and return the window handle."""
-    def create_window():
-        windows_before = session.handles
-        name = session.execute_script("window.open()")
-        assert len(session.handles) == len(windows_before) + 1
-        new_windows = list(set(session.handles) - set(windows_before))
-        return new_windows.pop()
-    return create_window
-
-
-@pytest.fixture
 def http(configuration):
     return HTTPRequest(configuration["host"], configuration["port"])
 
@@ -152,8 +143,9 @@ def session(capabilities, configuration, request):
         if not _current_session.session_id:
             raise
 
-    # Enforce a fixed default window size
+    # Enforce a fixed default window size and position
     _current_session.window.size = defaults.WINDOW_SIZE
+    _current_session.window.position = defaults.WINDOW_POSITION
 
     yield _current_session
 
@@ -167,10 +159,11 @@ def current_session():
 
 @pytest.fixture
 def url(server_config):
-    def inner(path, protocol="http", query="", fragment=""):
+    def inner(path, protocol="http", domain="", subdomain="", query="", fragment=""):
+        domain = server_config["domains"][domain][subdomain]
         port = server_config["ports"][protocol][0]
-        host = "%s:%s" % (server_config["browser_host"], port)
-        return urlparse.urlunsplit((protocol, host, path, query, fragment))
+        host = "{0}:{1}".format(domain, port)
+        return urlunsplit((protocol, host, path, query, fragment))
 
     inner.__name__ = "url"
     return inner
@@ -189,7 +182,7 @@ def create_dialog(session):
         if text is None:
             text = ""
 
-        assert isinstance(text, basestring), "`text` parameter must be a string"
+        assert isinstance(text, string_types), "`text` parameter must be a string"
 
         # Script completes itself when the user prompt has been opened.
         # For prompt() dialogs, add a value for the 'default' argument,
@@ -219,13 +212,39 @@ def create_dialog(session):
 
 
 @pytest.fixture
-def closed_window(session, create_window):
+def closed_frame(session, url):
     original_handle = session.window_handle
+    new_handle = session.new_window()
 
-    new_handle = create_window()
     session.window_handle = new_handle
 
-    session.close()
+    session.url = url("/webdriver/tests/support/html/frames.html")
+
+    subframe = session.find.css("#sub-frame", all=False)
+    session.switch_frame(subframe)
+
+    deleteframe = session.find.css("#delete-frame", all=False)
+    session.switch_frame(deleteframe)
+
+    button = session.find.css("#remove-parent", all=False)
+    button.click()
+
+    yield
+
+    session.window.close()
+    assert new_handle not in session.handles, "Unable to close window {}".format(new_handle)
+
+    session.window_handle = original_handle
+
+
+@pytest.fixture
+def closed_window(session):
+    original_handle = session.window_handle
+    new_handle = session.new_window()
+
+    session.window_handle = new_handle
+
+    session.window.close()
     assert new_handle not in session.handles, "Unable to close window {}".format(new_handle)
 
     yield new_handle

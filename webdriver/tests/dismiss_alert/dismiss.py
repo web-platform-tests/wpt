@@ -1,5 +1,8 @@
+from webdriver.error import NoSuchAlertException
+
 from tests.support.asserts import assert_error, assert_success
 from tests.support.inline import inline
+from tests.support.sync import Poll
 
 
 def dismiss_alert(session):
@@ -15,9 +18,14 @@ def test_null_response_value(session, url):
     assert value is None
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, closed_window):
     response = dismiss_alert(session)
     assert_error(response, "no such window")
+
+
+def test_no_browsing_context(session, closed_frame):
+    response = dismiss_alert(session)
+    assert_error(response, "no such alert")
 
 
 def test_no_user_prompt(session):
@@ -43,3 +51,16 @@ def test_dismiss_prompt(session):
     response = dismiss_alert(session)
     assert_success(response)
     assert session.execute_script("return window.result") is None
+
+
+def test_unexpected_alert(session):
+    session.execute_script("setTimeout(function() { alert('Hello'); }, 100);")
+    wait = Poll(
+        session,
+        timeout=5,
+        ignored_exceptions=NoSuchAlertException,
+        message="No user prompt with text 'Hello' detected")
+    wait.until(lambda s: s.alert.text == "Hello")
+
+    response = dismiss_alert(session)
+    assert_success(response)

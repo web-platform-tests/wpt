@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Indexed Database API 3.0 (https://w3c.github.io/IndexedDB/)
 
 [Exposed=(Window,Worker)]
@@ -28,9 +28,9 @@ interface IDBOpenDBRequest : IDBRequest {
   attribute EventHandler onupgradeneeded;
 };
 
-[Exposed=(Window,Worker),
- Constructor(DOMString type, optional IDBVersionChangeEventInit eventInitDict)]
+[Exposed=(Window,Worker)]
 interface IDBVersionChangeEvent : Event {
+  constructor(DOMString type, optional IDBVersionChangeEventInit eventInitDict = {});
   readonly attribute unsigned long long oldVersion;
   readonly attribute unsigned long long? newVersion;
 };
@@ -67,18 +67,26 @@ interface IDBDatabase : EventTarget {
   readonly attribute DOMStringList objectStoreNames;
 
   [NewObject] IDBTransaction transaction((DOMString or sequence<DOMString>) storeNames,
-                                         optional IDBTransactionMode mode = "readonly");
-  void close();
+                                         optional IDBTransactionMode mode = "readonly",
+                                         optional IDBTransactionOptions options = {});
+  undefined close();
 
-  [NewObject] IDBObjectStore createObjectStore(DOMString name,
-                                               optional IDBObjectStoreParameters options);
-  void deleteObjectStore(DOMString name);
+  [NewObject] IDBObjectStore createObjectStore(
+    DOMString name,
+    optional IDBObjectStoreParameters options = {});
+  undefined deleteObjectStore(DOMString name);
 
   // Event handlers:
   attribute EventHandler onabort;
   attribute EventHandler onclose;
   attribute EventHandler onerror;
   attribute EventHandler onversionchange;
+};
+
+enum IDBTransactionDurability { "default", "strict", "relaxed" };
+
+dictionary IDBTransactionOptions {
+  IDBTransactionDurability durability = "default";
 };
 
 dictionary IDBObjectStoreParameters {
@@ -115,8 +123,8 @@ interface IDBObjectStore {
 
   [NewObject] IDBIndex createIndex(DOMString name,
                                    (DOMString or sequence<DOMString>) keyPath,
-                                   optional IDBIndexParameters options);
-  void deleteIndex(DOMString name);
+                                   optional IDBIndexParameters options = {});
+  undefined deleteIndex(DOMString name);
 };
 
 dictionary IDBIndexParameters {
@@ -162,7 +170,7 @@ interface IDBKeyRange {
                                        optional boolean lowerOpen = false,
                                        optional boolean upperOpen = false);
 
-  boolean _includes(any key);
+  boolean includes(any key);
 };
 
 [Exposed=(Window,Worker)]
@@ -171,10 +179,11 @@ interface IDBCursor {
   readonly attribute IDBCursorDirection direction;
   readonly attribute any key;
   readonly attribute any primaryKey;
+  [SameObject] readonly attribute IDBRequest request;
 
-  void advance([EnforceRange] unsigned long count);
-  void continue(optional any key);
-  void continuePrimaryKey(any key, any primaryKey);
+  undefined advance([EnforceRange] unsigned long count);
+  undefined continue(optional any key);
+  undefined continuePrimaryKey(any key, any primaryKey);
 
   [NewObject] IDBRequest update(any value);
   [NewObject] IDBRequest delete();
@@ -196,11 +205,13 @@ interface IDBCursorWithValue : IDBCursor {
 interface IDBTransaction : EventTarget {
   readonly attribute DOMStringList objectStoreNames;
   readonly attribute IDBTransactionMode mode;
+  readonly attribute IDBTransactionDurability durability;
   [SameObject] readonly attribute IDBDatabase db;
-  readonly attribute DOMException error;
+  readonly attribute DOMException? error;
 
   IDBObjectStore objectStore(DOMString name);
-  void abort();
+  undefined commit();
+  undefined abort();
 
   // Event handlers:
   attribute EventHandler onabort;

@@ -1,6 +1,7 @@
 // META: global=window,worker
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: timeout=long
 
 'use strict';
 
@@ -8,7 +9,7 @@
 
 idl_test(
   ['background-fetch'],
-  ['service-workers', 'dedicated-workers', 'dom'],
+  ['service-workers', 'html', 'dom'],
   idl_array => {
     const isServiceWorker = location.pathname.includes('.serviceworker.');
     if (isServiceWorker) {

@@ -3,7 +3,7 @@ author: W3C http://www.w3.org/
 help: http://www.w3.org/TR/navigation-timing/#sec-window.performance-attribute
 */
 //
-// Helper Functions for NavigationTiming W3C tests
+// Helper Functions for ResourceTiming W3C tests
 //
 
 var performanceNamespace = window.performance;
@@ -62,26 +62,26 @@ function test_namespace(child_name, skip_root)
     if (skip_root === undefined) {
         var msg = 'window.performance is defined';
         // The window.performance attribute provides a hosting area for performance related attributes.
-        wp_test(function () { assert_true(performanceNamespace !== undefined, msg); }, msg);
+        wp_test(function () { assert_not_equals(performanceNamespace, undefined, msg); }, msg);
     }
 
     if (child_name !== undefined) {
         var msg2 = 'window.performance.' + child_name + ' is defined';
         // The window.performance attribute provides a hosting area for performance related attributes.
-        wp_test(function() { assert_true(performanceNamespace[child_name] !== undefined, msg2); }, msg2);
+        wp_test(function() { assert_not_equals(performanceNamespace[child_name], undefined, msg2); }, msg2);
     }
 }
 
 function test_attribute_exists(parent_name, attribute_name, properties)
 {
     var msg = 'window.performance.' + parent_name + '.' + attribute_name + ' is defined.';
-    wp_test(function() { assert_true(performanceNamespace[parent_name][attribute_name] !== undefined, msg); }, msg, properties);
+    wp_test(function() { assert_not_equals(performanceNamespace[parent_name][attribute_name], undefined, msg); }, msg, properties);
 }
 
 function test_enum(parent_name, enum_name, value, properties)
 {
     var msg = 'window.performance.' + parent_name + '.' + enum_name + ' is defined.';
-    wp_test(function() { assert_true(performanceNamespace[parent_name][enum_name] !== undefined, msg); }, msg, properties);
+    wp_test(function() { assert_not_equals(performanceNamespace[parent_name][enum_name], undefined, msg); }, msg, properties);
 
     msg = 'window.performance.' + parent_name + '.' + enum_name + ' = ' + value;
     wp_test(function() { assert_equals(performanceNamespace[parent_name][enum_name], value, msg); }, msg, properties);
@@ -148,5 +148,19 @@ function test_greater_or_equals(value, greater_than, msg, properties)
 
 function test_not_equals(value, notequals, msg, properties)
 {
-    wp_test(function() { assert_true(value !== notequals, msg); }, msg, properties);
+    wp_test(function() { assert_not_equals(value, notequals, msg); }, msg, properties);
+}
+
+function test_tao_pass(entry) {
+    test_greater_than(entry.redirectStart, 0, 'redirectStart > 0 in cross-origin redirect with Timing-Allow-Origin.');
+    test_greater_than(entry.redirectEnd, 0, 'redirectEnd > 0 in cross-origin redirect with Timing-Allow-Origin.');
+    test_greater_than(entry.fetchStart, 0, 'fetchStart > 0 in cross-origin redirect with Timing-Allow-Origin.');
+    test_greater_than(entry.fetchStart, entry.startTime, 'startTime < fetchStart in cross-origin redirect with Timing-Allow-Origin.');
+}
+
+function test_tao_fail(entry) {
+    test_equals(entry.redirectStart, 0, 'redirectStart == 0 in cross-origin redirect with failing Timing-Allow-Origin.');
+    test_equals(entry.redirectEnd, 0, 'redirectEnd == 0 in cross-origin redirect with failing Timing-Allow-Origin.');
+    test_greater_than(entry.fetchStart, 0, 'fetchStart > 0 in cross-origin redirect with failing Timing-Allow-Origin.');
+    test_equals(entry.fetchStart, entry.startTime, 'startTime == fetchStart in cross-origin redirect with failing Timing-Allow-Origin.');
 }

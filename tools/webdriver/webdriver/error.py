@@ -1,6 +1,8 @@
 import collections
 import json
 
+from six import itervalues
+
 
 class WebDriverException(Exception):
     http_status = None
@@ -8,8 +10,11 @@ class WebDriverException(Exception):
 
     def __init__(self, http_status=None, status_code=None, message=None, stacktrace=None):
         super(WebDriverException, self)
-        self.http_status = http_status
-        self.status_code = status_code
+
+        if http_status is not None:
+            self.http_status = http_status
+        if status_code is not None:
+            self.status_code = status_code
         self.message = message
         self.stacktrace = stacktrace
 
@@ -205,6 +210,6 @@ def get(error_code):
 
 
 _errors = collections.defaultdict()
-for item in locals().values():
+for item in list(itervalues(locals())):
     if type(item) == type and issubclass(item, WebDriverException):
         _errors[item.status_code] = item

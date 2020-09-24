@@ -70,7 +70,7 @@ def cleanup_session(session):
         for window in _windows(session, exclude=[current_window]):
             session.window_handle = window
             if len(session.handles) > 1:
-                session.close()
+                session.window.close()
 
         session.window_handle = current_window
 
@@ -140,6 +140,15 @@ def document_hidden(session):
     def hidden(session):
         return session.execute_script("return document.hidden")
     return Poll(session, timeout=3, raises=None).until(hidden)
+
+
+def document_location(session):
+    """
+    Unlike ``webdriver.Session#url``, which always returns
+    the top-level browsing context's URL, this returns
+    the current browsing context's active document's URL.
+    """
+    return session.execute_script("return document.location.href")
 
 
 def element_rect(session, element):

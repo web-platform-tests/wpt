@@ -1,18 +1,38 @@
+import abc
 import json
 import os
-import platform
 import stat
-import subprocess
 from collections import deque
 
-from .sourcefile import SourceFile
+from six import with_metaclass, PY2
+from six.moves.collections_abc import MutableMapping
+
+from .utils import git
+
+try:
+    from ..gitignore import gitignore
+except ValueError:
+    # relative import beyond toplevel throws *ValueError*!
+    from gitignore import gitignore  # type: ignore
+
+
+MYPY = False
+if MYPY:
+    # MYPY is set to True when run under Mypy.
+    from typing import Dict, Optional, List, Set, Text, Iterable, Any, Tuple, Iterator
+    from .manifest import Manifest  # cyclic import under MYPY guard
+    if PY2:
+        stat_result = Any
+    else:
+        stat_result = os.stat_result
 
 
 def get_tree(tests_root, manifest, manifest_path, cache_root,
-             working_copy=False, rebuild=False):
+             working_copy=True, rebuild=False):
+    # type: (Text, Manifest, Optional[Text], Optional[Text], bool, bool) -> FileSystem
     tree = None
     if cache_root is None:
-        cache_root = os.path.join(tests_root, ".wptcache")
+        cache_root = os.path.join(tests_root, u".wptcache")
     if not os.path.exists(cache_root):
         try:
             os.makedirs(cache_root)
@@ -20,11 +40,8 @@ def get_tree(tests_root, manifest, manifest_path, cache_root,
             cache_root = None
 
     if not working_copy:
-        tree = Git.for_path(tests_root,
-                            manifest.url_base,
-                            manifest_path=manifest_path,
-                            cache_path=cache_root,
-                            rebuild=rebuild)
+        raise ValueError("working_copy=False unsupported")
+
     if tree is None:
         tree = FileSystem(tests_root,
                           manifest.url_base,
@@ -34,120 +51,88 @@ def get_tree(tests_root, manifest, manifest_path, cache_root,
     return tree
 
 
-class Git(object):
-    def __init__(self, repo_root, url_base, cache_path, manifest_path=None,
-                 rebuild=False):
-        self.root = repo_root
-        self.git = Git.get_func(repo_root)
-        self.url_base = url_base
-        # rebuild is a noop for now since we don't cache anything
-
-    @staticmethod
-    def get_func(repo_path):
-        def git(cmd, *args):
-            full_cmd = ["git", cmd] + list(args)
-            try:
-                return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT)
-            except Exception as e:
-                if platform.uname()[0] == "Windows" and isinstance(e, WindowsError):
-                        full_cmd[0] = "git.bat"
-                        return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT)
-                else:
-                    raise
-        return git
-
-    @classmethod
-    def for_path(cls, path, url_base, cache_path, manifest_path=None, rebuild=False):
-        git = Git.get_func(path)
-        try:
-            return cls(git("rev-parse", "--show-toplevel").rstrip(), url_base, cache_path,
-                       manifest_path=manifest_path, rebuild=rebuild)
-        except (subprocess.CalledProcessError, OSError):
-            return None
+class GitHasher(object):
+    def __init__(self, path):
+        # type: (Text) -> None
+        self.git = git(path)
 
     def _local_changes(self):
-        changes = {}
-        cmd = ["status", "-z", "--ignore-submodules=all"]
+        # type: () -> Set[Text]
+        """get a set of files which have changed between HEAD and working copy"""
+        assert self.git is not None
+        # note that git runs the command with tests_root as the cwd, which may
+        # not be the root of the git repo (e.g., within a browser repo)
+        cmd = ["diff-index", "--relative", "--no-renames", "--name-only", "-z", "HEAD"]
         data = self.git(*cmd)
+        return set(data.split("\0"))
 
-        if data == "":
-            return changes
+    def hash_cache(self):
+        # type: () -> Dict[Text, Optional[Text]]
+        """
+        A dict of rel_path -> current git object id if the working tree matches HEAD else None
+        """
+        hash_cache = {}  # type: Dict[Text, Optional[Text]]
 
-        rename_data = None
-        for entry in data.split("\0")[:-1]:
-            if rename_data is not None:
-                status, rel_path = entry.split(" ")
-                if status[0] == "R":
-                    rename_data = (rel_path, status)
-                else:
-                    changes[rel_path] = (status, None)
-            else:
-                rel_path = entry
-                changes[rel_path] = rename_data
-                rename_data = None
-        return changes
+        if self.git is None:
+            return hash_cache
 
-    def _show_file(self, path):
-        path = os.path.relpath(os.path.abspath(path), self.root)
-        return self.git("show", "HEAD:%s" % path)
-
-    def __iter__(self):
+        # note that git runs the command with tests_root as the cwd, which may
+        # not be the root of the git repo (e.g., within a browser repo)
         cmd = ["ls-tree", "-r", "-z", "HEAD"]
         local_changes = self._local_changes()
-        for result in self.git(*cmd).split("\0")[:-1]:
-            rel_path = result.split("\t")[-1]
-            hash = result.split()[2]
-            if not os.path.isdir(os.path.join(self.root, rel_path)):
-                if rel_path in local_changes:
-                    contents = self._show_file(rel_path)
-                else:
-                    contents = None
-                yield SourceFile(self.root,
-                                 rel_path,
-                                 self.url_base,
-                                 hash,
-                                 contents=contents), True
+        for result in self.git(*cmd).split("\0")[:-1]:  # type: Text
+            data, rel_path = result.rsplit("\t", 1)
+            hash_cache[rel_path] = None if rel_path in local_changes else data.split(" ", 3)[2]
 
-    def dump_caches(self):
-        pass
+        return hash_cache
+
 
 
 class FileSystem(object):
-    def __init__(self, root, url_base, cache_path, manifest_path=None, rebuild=False):
-        from gitignore import gitignore
-        self.root = os.path.abspath(root)
+    def __init__(self, tests_root, url_base, cache_path, manifest_path=None, rebuild=False):
+        # type: (Text, Text, Optional[Text], Optional[Text], bool) -> None
+        self.tests_root = tests_root
         self.url_base = url_base
         self.ignore_cache = None
         self.mtime_cache = None
+        tests_root_bytes = tests_root.encode("utf8")
         if cache_path is not None:
             if manifest_path is not None:
-                self.mtime_cache = MtimeCache(cache_path, root, manifest_path, rebuild)
-            if gitignore.has_ignore(root):
-                self.ignore_cache = GitIgnoreCache(cache_path, root, rebuild)
-        self.path_filter = gitignore.PathFilter(self.root,
-                                                extras=[".git/"],
+                self.mtime_cache = MtimeCache(cache_path, tests_root, manifest_path, rebuild)
+            if gitignore.has_ignore(tests_root_bytes):
+                self.ignore_cache = GitIgnoreCache(cache_path, tests_root, rebuild)
+        self.path_filter = gitignore.PathFilter(tests_root_bytes,
+                                                extras=[b".git/"],
                                                 cache=self.ignore_cache)
+        git = GitHasher(tests_root)
+        if git is not None:
+            self.hash_cache = git.hash_cache()
+        else:
+            self.hash_cache = {}
 
     def __iter__(self):
+        # type: () -> Iterator[Tuple[Text, Optional[Text], bool]]
         mtime_cache = self.mtime_cache
-        for dirpath, dirnames, filenames in self.path_filter(walk(self.root)):
+        for dirpath, dirnames, filenames in self.path_filter(
+                walk(self.tests_root.encode("utf8"))):
             for filename, path_stat in filenames:
-                path = os.path.join(dirpath, filename)
+                path = os.path.join(dirpath, filename).decode("utf8")
                 if mtime_cache is None or mtime_cache.updated(path, path_stat):
-                    yield SourceFile(self.root, path, self.url_base), True
+                    file_hash = self.hash_cache.get(path, None)
+                    yield path, file_hash, True
                 else:
-                    yield path, False
+                    yield path, None, False
 
     def dump_caches(self):
+        # type: () -> None
         for cache in [self.mtime_cache, self.ignore_cache]:
             if cache is not None:
                 cache.dump()
 
 
-class CacheFile(object):
-    file_name = None
-
+class CacheFile(with_metaclass(abc.ABCMeta)):
     def __init__(self, cache_root, tests_root, rebuild=False):
+        # type: (Text, Text, bool) -> None
         self.tests_root = tests_root
         if not os.path.exists(cache_root):
             os.makedirs(cache_root)
@@ -155,37 +140,50 @@ class CacheFile(object):
         self.modified = False
         self.data = self.load(rebuild)
 
+    @abc.abstractproperty
+    def file_name(self):
+        # type: () -> Text
+        pass
+
     def dump(self):
+        # type: () -> None
         if not self.modified:
             return
         with open(self.path, 'w') as f:
             json.dump(self.data, f, indent=1)
 
     def load(self, rebuild=False):
-        data = {}
+        # type: (bool) -> Dict[Text, Any]
+        data = {}  # type: Dict[Text, Any]
         try:
             if not rebuild:
                 with open(self.path, 'r') as f:
-                    data = json.load(f)
+                    try:
+                        data = json.load(f)
+                    except ValueError:
+                        pass
                 data = self.check_valid(data)
         except IOError:
             pass
         return data
 
     def check_valid(self, data):
+        # type: (Dict[Text, Any]) -> Dict[Text, Any]
         """Check if the cached data is valid and return an updated copy of the
         cache containing only data that can be used."""
         return data
 
 
 class MtimeCache(CacheFile):
-    file_name = "mtime.json"
+    file_name = u"mtime.json"
 
     def __init__(self, cache_root, tests_root, manifest_path, rebuild=False):
+        # type: (Text, Text, Text, bool) -> None
         self.manifest_path = manifest_path
-        super(MtimeCache, self).__init__(cache_root, tests_root, rebuild=False)
+        super(MtimeCache, self).__init__(cache_root, tests_root, rebuild)
 
     def updated(self, rel_path, stat):
+        # type: (Text, stat_result) -> bool
         """Return a boolean indicating whether the file changed since the cache was last updated.
 
         This implicitly updates the cache with the new mtime data."""
@@ -197,12 +195,13 @@ class MtimeCache(CacheFile):
         return False
 
     def check_valid(self, data):
-        if data.get("/tests_root") != self.tests_root:
+        # type: (Dict[Any, Any]) -> Dict[Any, Any]
+        if data.get(u"/tests_root") != self.tests_root:
             self.modified = True
         else:
             if self.manifest_path is not None and os.path.exists(self.manifest_path):
                 mtime = os.path.getmtime(self.manifest_path)
-                if data.get("/manifest_path") != [self.manifest_path, mtime]:
+                if data.get(u"/manifest_path") != [self.manifest_path, mtime]:
                     self.modified = True
             else:
                 self.modified = True
@@ -212,6 +211,7 @@ class MtimeCache(CacheFile):
         return data
 
     def dump(self):
+        # type: () -> None
         if self.manifest_path is None:
             raise ValueError
         if not os.path.exists(self.manifest_path):
@@ -222,31 +222,50 @@ class MtimeCache(CacheFile):
         super(MtimeCache, self).dump()
 
 
-class GitIgnoreCache(CacheFile):
+class GitIgnoreCache(CacheFile, MutableMapping):  # type: ignore
     file_name = "gitignore.json"
 
     def check_valid(self, data):
+        # type: (Dict[Any, Any]) -> Dict[Any, Any]
         ignore_path = os.path.join(self.tests_root, ".gitignore")
         mtime = os.path.getmtime(ignore_path)
-        if data.get("/gitignore_file") != [ignore_path, mtime]:
+        if data.get(u"/gitignore_file") != [ignore_path, mtime]:
             self.modified = True
             data = {}
-            data["/gitignore_file"] = [ignore_path, mtime]
+            data[u"/gitignore_file"] = [ignore_path, mtime]
         return data
 
     def __contains__(self, key):
+        # type: (Any) -> bool
         return key in self.data
 
     def __getitem__(self, key):
-        return self.data[key]
+        # type: (Text) -> bool
+        v = self.data[key]
+        assert isinstance(v, bool)
+        return v
 
     def __setitem__(self, key, value):
+        # type: (Text, bool) -> None
         if self.data.get(key) != value:
             self.modified = True
             self.data[key] = value
 
+    def __delitem__(self, key):
+        # type: (Text) -> None
+        del self.data[key]
+
+    def __iter__(self):
+        # type: () -> Iterator[Text]
+        return iter(self.data)
+
+    def __len__(self):
+        # type: () -> int
+        return len(self.data)
+
 
 def walk(root):
+    # type: (bytes) -> Iterable[Tuple[bytes, List[Tuple[bytes, stat_result]], List[Tuple[bytes, stat_result]]]]
     """Re-implementation of os.walk. Returns an iterator over
     (dirpath, dirnames, filenames), with some semantic differences
     to os.walk.
@@ -260,16 +279,15 @@ def walk(root):
 
     Unlike os.walk the implementation is not recursive."""
 
-    listdir = os.listdir
     get_stat = os.stat
-    listdir = os.listdir
-    join = os.path.join
     is_dir = stat.S_ISDIR
     is_link = stat.S_ISLNK
+    join = os.path.join
+    listdir = os.listdir
     relpath = os.path.relpath
 
     root = os.path.abspath(root)
-    stack = deque([(root, "")])
+    stack = deque([(root, b"")])
 
     while stack:
         dir_path, rel_path = stack.popleft()

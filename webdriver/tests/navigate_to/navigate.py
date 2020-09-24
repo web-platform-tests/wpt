@@ -1,3 +1,4 @@
+from tests.support import platform_name
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_success
@@ -22,6 +23,32 @@ def test_null_response_value(session):
     assert value is None
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, closed_window):
     response = navigate_to(session, "foo")
     assert_error(response, "no such window")
+
+
+def test_no_browsing_context(session, closed_frame):
+    doc = inline("<p>foo")
+
+    response = navigate_to(session, doc)
+    assert_success(response)
+
+    assert session.url == doc
+
+
+def test_file_protocol(session, server_config):
+    # tests that the browsing context remains the same
+    # when navigated privileged documents
+    path = server_config["doc_root"]
+    if platform_name == "windows":
+        # Convert the path into the format eg. /c:/foo/bar
+        path = "/{}".format(path.replace("\\", "/"))
+    url = u"file://{}".format(path)
+
+    response = navigate_to(session, url)
+    assert_success(response)
+
+    if session.url.endswith('/'):
+        url += '/'
+    assert session.url == url

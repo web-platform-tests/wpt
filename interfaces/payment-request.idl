@@ -1,24 +1,29 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Payment Request API (https://w3c.github.io/payment-request/)
 
-[Constructor(sequence<PaymentMethodData> methodData, PaymentDetailsInit details, optional PaymentOptions options),
-SecureContext, Exposed=Window]
+[SecureContext, Exposed=Window]
 interface PaymentRequest : EventTarget {
+  constructor(
+    sequence<PaymentMethodData> methodData,
+    PaymentDetailsInit details,
+    optional PaymentOptions options = {}
+  );
   [NewObject]
   Promise<PaymentResponse> show(optional Promise<PaymentDetailsUpdate> detailsPromise);
   [NewObject]
-  Promise<void> abort();
+  Promise<undefined> abort();
   [NewObject]
   Promise<boolean> canMakePayment();
+  [NewObject]
+  Promise<boolean> hasEnrolledInstrument();
 
   readonly attribute DOMString id;
   readonly attribute PaymentAddress? shippingAddress;
   readonly attribute DOMString? shippingOption;
   readonly attribute PaymentShippingType? shippingType;
 
-  attribute EventHandler onmerchantvalidation;
   attribute EventHandler onshippingaddresschange;
   attribute EventHandler onshippingoptionchange;
   attribute EventHandler onpaymentmethodchange;
@@ -92,23 +97,21 @@ interface PaymentAddress {
   readonly attribute DOMString postalCode;
   readonly attribute DOMString recipient;
   readonly attribute DOMString region;
-  readonly attribute DOMString regionCode;
   readonly attribute DOMString sortingCode;
   readonly attribute FrozenArray<DOMString> addressLine;
 };
 
 dictionary AddressInit {
-  DOMString country;
-  sequence<DOMString> addressLine;
-  DOMString region;
-  DOMString regionCode;
-  DOMString city;
-  DOMString dependentLocality;
-  DOMString postalCode;
-  DOMString sortingCode;
-  DOMString organization;
-  DOMString recipient;
-  DOMString phone;
+  DOMString country = "";
+  sequence<DOMString> addressLine = [];
+  DOMString region = "";
+  DOMString city = "";
+  DOMString dependentLocality = "";
+  DOMString postalCode = "";
+  DOMString sortingCode = "";
+  DOMString organization = "";
+  DOMString recipient = "";
+  DOMString phone = "";
 };
 
 dictionary AddressErrors {
@@ -121,7 +124,6 @@ dictionary AddressErrors {
   DOMString postalCode;
   DOMString recipient;
   DOMString region;
-  DOMString regionCode;
   DOMString sortingCode;
 };
 
@@ -139,7 +141,7 @@ enum PaymentComplete {
 };
 
 [SecureContext, Exposed=Window]
-interface PaymentResponse : EventTarget {
+interface PaymentResponse : EventTarget  {
   [Default] object toJSON();
 
   readonly attribute DOMString requestId;
@@ -152,9 +154,9 @@ interface PaymentResponse : EventTarget {
   readonly attribute DOMString? payerPhone;
 
   [NewObject]
-  Promise<void> complete(optional PaymentComplete result = "unknown");
+  Promise<undefined> complete(optional PaymentComplete result = "unknown");
   [NewObject]
-  Promise<void> retry(optional PaymentValidationErrors errorFields);
+  Promise<undefined> retry(optional PaymentValidationErrors errorFields = {});
 
   attribute EventHandler onpayerdetailchange;
 };
@@ -172,21 +174,9 @@ dictionary PayerErrors {
   DOMString phone;
 };
 
-[Constructor(DOMString type, optional MerchantValidationEventInit eventInitDict),
-SecureContext, Exposed=Window]
-interface MerchantValidationEvent : Event {
-  readonly attribute DOMString methodName;
-  readonly attribute USVString validationURL;
-  void complete(Promise<any> merchantSessionPromise);
-};
-
-dictionary MerchantValidationEventInit : EventInit {
-  DOMString methodName = "";
-  USVString validationURL = "";
-};
-
-[Constructor(DOMString type, optional PaymentMethodChangeEventInit eventInitDict), SecureContext, Exposed=Window]
+[SecureContext, Exposed=Window]
 interface PaymentMethodChangeEvent : PaymentRequestUpdateEvent {
+  constructor(DOMString type, optional PaymentMethodChangeEventInit eventInitDict = {});
   readonly attribute DOMString methodName;
   readonly attribute object? methodDetails;
 };
@@ -196,9 +186,10 @@ dictionary PaymentMethodChangeEventInit : PaymentRequestUpdateEventInit {
   object? methodDetails = null;
 };
 
-[Constructor(DOMString type, optional PaymentRequestUpdateEventInit eventInitDict), SecureContext, Exposed=Window]
+[SecureContext, Exposed=Window]
 interface PaymentRequestUpdateEvent : Event {
-  void updateWith(Promise<PaymentDetailsUpdate> detailsPromise);
+  constructor(DOMString type, optional PaymentRequestUpdateEventInit eventInitDict = {});
+  undefined updateWith(Promise<PaymentDetailsUpdate> detailsPromise);
 };
 
 dictionary PaymentRequestUpdateEventInit : EventInit {};

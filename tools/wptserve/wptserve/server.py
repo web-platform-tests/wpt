@@ -29,7 +29,18 @@ from .router import Router
 from .utils import HTTPException
 from .constants import h2_headers
 
-"""HTTP server designed for testing purposes.
+# We need to stress test that browsers can send/receive many headers (there is
+# no specified limit), but the Python stdlib has an arbitrary limit of 100
+# headers. Hitting the limit would produce an exception that is silently caught
+# in Python 2 but leads to HTTP 431 in Python 3, so we monkey patch it higher.
+# https://bugs.python.org/issue26586
+# https://github.com/web-platform-tests/wpt/pull/24451
+from six.moves import http_client
+assert isinstance(getattr(http_client, '_MAXHEADERS'), int)
+setattr(http_client, '_MAXHEADERS', 512)
+
+"""
+HTTP server designed for testing purposes.
 
 The server is designed to provide flexibility in the way that
 requests are handled, and to provide control both of exactly
@@ -517,6 +528,7 @@ class H2HandlerCopy(object):
         self.h2_stream_id = req_frame.stream_id
         self.server = handler.server
         self.protocol_version = handler.protocol_version
+        self.client_address = handler.client_address
         self.raw_requestline = ''
         self.rfile = rfile
         self.request = handler.request
@@ -669,8 +681,8 @@ class WebTestHttpd(object):
 
             _host, self.port = self.httpd.socket.getsockname()
         except Exception:
-            self.logger.error("Failed to start HTTP server. "
-                              "You may need to edit /etc/hosts or similar, see README.md.")
+            self.logger.critical("Failed to start HTTP server on port %s; "
+                                 "is something already using that port?" % port)
             raise
 
     def start(self, block=False):

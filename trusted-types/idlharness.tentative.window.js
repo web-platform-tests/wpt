@@ -2,7 +2,7 @@
 // META: script=/resources/idlharness.js
 
 idl_test(
-    ['trusted-types.tentative'],
+    ['trusted-types'],
     ['dom', 'html'],
     idl_array => {
       idl_array.add_objects({

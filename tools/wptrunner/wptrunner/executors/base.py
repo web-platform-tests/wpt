@@ -774,7 +774,7 @@ class CallbackHandler(object):
 
     def __call__(self, result):
         url, command, payload = result
-        self.logger.debug("Got async callback: %s" % result[1])
+        self.logger.info("Got async callback: %s" % result[1])
         try:
             callback = self.callbacks[command]
         except KeyError:

@@ -568,7 +568,7 @@ policies and contribution forms [3].
         var test_name = name ? name : test_environment.next_default_test_name();
         var test_obj = new Test(test_name, properties);
         if (func) {
-            let value = test_obj.step(func, test_obj, test_obj);
+            var value = test_obj.step(func, test_obj, test_obj);
             if (value !== undefined) {
                 var msg = "Test named \"" + test_name +
                     "\" inappropriately returned a value";

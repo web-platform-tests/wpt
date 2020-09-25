@@ -90,6 +90,9 @@ resolves after the actions have been sent, or rejects if an error was thrown.</p
 <span class="n">addKeyboard</span><span class="p">:</span> <span class="n">Add</span> <span class="n">a</span> <span class="n">new</span> <span class="n">key</span> <span class="nb">input</span> <span class="n">source</span> <span class="k">with</span> <span class="n">the</span> <span class="n">given</span> <span class="n">name</span>
 </pre></div>
 </div>
+<p>This works with elements in other frames/windows as long as they are
+same-origin with the test, and the test does not depend on the
+window.name property remaining unset on the target window.</p>
 </div>
 <div class="section" id="bless">
 <h3>bless<a class="headerlink" href="#bless" title="Permalink to this headline">¶</a></h3>
@@ -128,6 +131,9 @@ promise is resolved with the value <code class="docutils literal notranslate"><s
 possible to click it. It returns a promise that resolves after the
 click has occurred or rejects if the element cannot be clicked (for
 example, it is obscured by an element on top of it).</p>
+<p>This works with elements in other frames/windows as long as they are
+same-origin with the test, and the test does not depend on the
+window.name property remaining unset on the target window.</p>
 <p>Note that if the element to be clicked does not have a unique ID, the
 document must not have any DOM mutations made between the function
 being called and the promise settling.</p>
@@ -144,6 +150,9 @@ element (an <code class="docutils literal notranslate"><span class="pre">Element
 make it possible to send keys. It returns a promise that resolves
 after the keys have been sent, or rejects if the keys cannot be sent
 to the element.</p>
+<p>This works with elements in other frames/windows as long as they are
+same-origin with the test, and the test does not depend on the
+window.name property remaining unset on the target window.</p>
 <p>Note that if the element that the keys need to be sent to does not have
 a unique ID, the document must not have any DOM mutations made
 between the function being called and the promise settling.</p>

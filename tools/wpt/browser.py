@@ -1156,7 +1156,7 @@ class EdgeChromium(Browser):
         except subprocess.CalledProcessError:
             self.logger.warning("Failed to call %s" % webdriver_binary)
             return None
-        m = re.match(r"EdgeDriver ([0-9][0-9.]*)", version_string)
+        m = re.match(r"MSEdgeDriver ([0-9][0-9.]*)", version_string)
         if not m:
             self.logger.warning("Failed to extract version from: %s" % version_string)
             return None

@@ -24,6 +24,7 @@ const mandatory = {
     "packetsLost",
     "jitter",
     "packetsDiscarded",
+    "framesDropped"
   ],
   RTCInboundRtpStreamStats: [
     "receiverId",
@@ -31,14 +32,12 @@ const mandatory = {
     "framesDecoded",
     "nackCount",
     "framesReceived",
-    "framesDropped",
-    "partialFramesLost",
+    "bytesReceived",
     "totalAudioEnergy",
     "totalSamplesDuration"
   ],
   RTCRemoteInboundRtpStreamStats: [
     "localId",
-    "bytesReceived",
     "roundTripTime",
   ],
   RTCSentRtpStreamStats: [
@@ -61,6 +60,7 @@ const mandatory = {
     "dataChannelsClosed",
   ],
   RTCDataChannelStats: [
+    "label",
     "protocol",
     "dataChannelIdentifier",
     "state",
@@ -113,7 +113,6 @@ const mandatory = {
     "localCandidateId",
     "remoteCandidateId",
     "state",
-    "priority",
     "nominated",
     "bytesSent",
     "bytesReceived",

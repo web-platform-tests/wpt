@@ -419,9 +419,9 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">stylo</span><span class="o">-</span><span class="n">threads</span> <span class="n">STYLO_THREADS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reftest</span><span class="o">-</span><span class="n">internal</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">reftest</span><span class="o">-</span><span class="n">external</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reftest</span><span class="o">-</span><span class="n">screenshot</span> <span class="p">{</span><span class="n">always</span><span class="p">,</span><span class="n">fail</span><span class="p">,</span><span class="n">unexpected</span><span class="p">}]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">chaos</span> <span class="p">[</span><span class="n">CHAOS_MODE_FLAGS</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">user</span><span class="o">-</span><span class="n">stylesheet</span> <span class="n">USER_STYLESHEETS</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">mojojs</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">browser</span> <span class="n">SAUCE_BROWSER</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">platform</span> <span class="n">SAUCE_PLATFORM</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">version</span> <span class="n">SAUCE_VERSION</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">build</span> <span class="n">SAUCE_BUILD</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">mojojs</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mojojs</span><span class="o">-</span><span class="n">path</span> <span class="n">MOJOJS_PATH</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">browser</span> <span class="n">SAUCE_BROWSER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">platform</span> <span class="n">SAUCE_PLATFORM</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">version</span> <span class="n">SAUCE_VERSION</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">build</span> <span class="n">SAUCE_BUILD</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">tags</span> <span class="p">[</span><span class="n">SAUCE_TAGS</span> <span class="p">[</span><span class="n">SAUCE_TAGS</span> <span class="o">...</span><span class="p">]]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">tunnel</span><span class="o">-</span><span class="nb">id</span> <span class="n">SAUCE_TUNNEL_ID</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">user</span> <span class="n">SAUCE_USER</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">key</span> <span class="n">SAUCE_KEY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sauce</span><span class="o">-</span><span class="n">connect</span><span class="o">-</span><span class="n">binary</span> <span class="n">SAUCE_CONNECT_BINARY</span><span class="p">]</span>
@@ -998,9 +998,12 @@ channel.) This flag overrides –browser-channel.</p>
 <tr><td class="option-group" colspan="2">
 <kbd>--enable-mojojs</kbd></td>
 </tr>
-<tr><td>&#160;</td><td><p class="first">Enable MojoJS for testing. Mojo bindings need to be available in _venv2/mojojs.</p>
+<tr><td>&#160;</td><td><p class="first">Enable MojoJS for testing. Note that this flag is usally enabled automatically by <cite>wpt run</cite>, if it succeeds in downloading the right version of mojojs.zip or if –mojojs-path is specified.</p>
 <p class="last">Default: False</p>
 </td></tr>
+<tr><td class="option-group">
+<kbd>--mojojs-path</kbd></td>
+<td>Path to mojojs gen/ directory. If it is not specified, <cite>wpt run</cite> will download and extract mojojs.zip into _venv2/mojojs/gen.</td></tr>
 </tbody>
 </table>
 </div>

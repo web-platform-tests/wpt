@@ -32,7 +32,9 @@ class Virtualenv(object):
 
     @property
     def exists(self):
-        return os.path.isdir(self.path)
+        # We need to check also for lib_path because different python versions
+        # create different library paths.
+        return os.path.isdir(self.path) and os.path.isdir(self.lib_path)
 
     @property
     def broken_link(self):
@@ -53,9 +55,13 @@ class Virtualenv(object):
 
     @property
     def pip_path(self):
-        path = find_executable("pip", self.bin_path)
+        if sys.version_info.major >= 3:
+            pip_executable = "pip3"
+        else:
+            pip_executable = "pip2"
+        path = find_executable(pip_executable, self.bin_path)
         if path is None:
-            raise ValueError("pip not found")
+            raise ValueError("%s not found" % pip_executable)
         return path
 
     @property

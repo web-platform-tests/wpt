@@ -33,19 +33,22 @@ def parse_epoch(string):
 
 
 def get_tagged_revisions(pattern):
-    # type: (bytes) -> List[..., Dict]
+    # type: (Text) -> List[..., Dict]
     '''
     Returns the tagged revisions indexed by the committer date.
     '''
     git = get_git_cmd(wpt_root)
     args = [
         pattern,
-        '--sort=-committerdate',
-        '--format=%(refname:lstrip=2) %(objectname) %(committerdate:raw)',
-        '--count=100000'
+        u'--sort=-committerdate',
+        u'--format=%(refname:lstrip=2) %(objectname) %(committerdate:raw)',
+        u'--count=100000'
     ]
-    for line in git("for-each-ref", *args).splitlines():
-        tag, commit, date, _ = line.split(" ")
+    ref_list = git(u"for-each-ref", *args)
+    for line in ref_list.splitlines():
+        if not line:
+            continue
+        tag, commit, date, _ = line.split(u" ")
         date = int(date)
         yield tag, commit, date
 
@@ -81,7 +84,7 @@ def get_epoch_revisions(epoch, until, max_count):
     # Expected result: N,M,K,J,H,G,F,C,A
 
     cutoff_date = calculate_cutoff_date(until, epoch, epoch_offset)
-    for _, commit, date in get_tagged_revisions("refs/tags/merge_pr_*"):
+    for _, commit, date in get_tagged_revisions(u"refs/tags/merge_pr_*"):
         if count >= max_count:
             return
         if date < cutoff_date:
@@ -106,11 +109,14 @@ def get_parser():
                         type=int,
                         help="maximum number of revisions to be returned by "
                              "the command")
+    parser.add_argument("--verbose", action="store_true", help="debug logging")
     return parser
 
 
 def run_rev_list(**kwargs):
     # type: (**Any) -> None
+    if kwargs.get('verbose'):
+        logger.setLevel(logging.DEBUG)
     # "epoch_threshold" is a safety margin. After this time it is fine to
     # assume that any tags are created and pushed.
     epoch_threshold = 600

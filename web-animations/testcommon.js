@@ -26,6 +26,15 @@ if (!window.assert_times_equal) {
 }
 
 // Allow implementations to substitute an alternative method for comparing
+// times based on their precision requirements.
+if (!window.assert_time_greater_than_equal) {
+ window.assert_time_greater_than_equal = (actual, expected, description) => {
+    assert_greater_than_equal(actual, expected - 2 * TIME_PRECISION,
+                              description);
+  };
+}
+
+// Allow implementations to substitute an alternative method for comparing
 // a time value based on its precision requirements with a fixed value.
 if (!window.assert_time_equals_literal) {
   window.assert_time_equals_literal = (actual, expected, description) => {
@@ -180,6 +189,16 @@ function waitForNextFrame() {
   });
 }
 
+async function insertFrameAndAwaitLoad(test, iframe, doc) {
+  const eventWatcher = new EventWatcher(test, iframe, ['load']);
+  const event_promise = eventWatcher.wait_for('load');
+
+  doc.body.appendChild(iframe);
+  test.add_cleanup(() => { doc.body.removeChild(iframe); });
+
+  await event_promise;
+}
+
 // Returns 'matrix()' or 'matrix3d()' function string generated from an array.
 function createMatrixFromArray(array) {
   return (array.length == 16 ? 'matrix3d' : 'matrix') + `(${array.join()})`;
@@ -263,5 +282,36 @@ function assert_rotate3d_equals(actual, expected, description) {
   for (let i = 0; i < actualRotationVector.length; i++) {
     assert_approx_equals(actualRotationVector[i], expectedRotationVector[i], 0.0001,
       `expected ${expected} but got ${actual}: ${description}`);
+  }
+}
+
+function assert_phase_at_time(animation, phase, currentTime) {
+  animation.currentTime = currentTime;
+
+  if (phase === 'active') {
+    // If the fill mode is 'none', then progress will only be non-null if we
+    // are in the active phase.
+    animation.effect.updateTiming({ fill: 'none' });
+    assert_not_equals(animation.effect.getComputedTiming().progress, null,
+                      'Animation effect is in active phase when current time'
+                      + ` is ${currentTime}ms`);
+  } else {
+    // The easiest way to distinguish between the 'before' phase and the 'after'
+    // phase is to toggle the fill mode. For example, if the progress is null
+    // will the fill node is 'none' but non-null when the fill mode is
+    // 'backwards' then we are in the before phase.
+    animation.effect.updateTiming({ fill: 'none' });
+    assert_equals(animation.effect.getComputedTiming().progress, null,
+                  `Animation effect is in ${phase} phase when current time`
+                  + ` is ${currentTime}ms`
+                  + ' (progress is null with \'none\' fill mode)');
+
+    animation.effect.updateTiming({
+      fill: phase === 'before' ? 'backwards' : 'forwards',
+    });
+    assert_not_equals(animation.effect.getComputedTiming().progress, null,
+                      `Animation effect is in ${phase} phase when current time`
+                      + ` is ${currentTime}ms`
+                      + ' (progress is non-null with appropriate fill mode)');
   }
 }

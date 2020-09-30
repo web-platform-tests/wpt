@@ -1,11 +1,14 @@
-// META: global=window,dedicatedworker,sharedworker,serviceworker
+// META: global=window
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 'use strict';
 
-promise_test(async testCase => {
+promise_test(async t => {
   assert_equals(typeof self.getScreens, 'function');
-}, 'self.getScreens is present');
+}, 'getScreens() is present');
 
-promise_test(async testCase => {
+promise_test(async t => {
+  await test_driver.set_permission({name: 'window-placement'}, 'granted');
   const screens = await self.getScreens();
   assert_greater_than(screens.length, 0);
 
@@ -25,5 +28,37 @@ promise_test(async testCase => {
   assert_equals(typeof screens[0].primary, 'boolean');
   assert_equals(typeof screens[0].internal, 'boolean');
   assert_equals(typeof screens[0].scaleFactor, 'number');
-  assert_equals(typeof screens[0].name, 'string');
-}, 'self.getScreens returns at least 1 Screen');
+  assert_equals(typeof screens[0].id, 'string');
+  assert_equals(typeof screens[0].touchSupport, 'boolean');
+}, 'getScreens() returns at least 1 Screen with permission granted');
+
+promise_test(async t => {
+  await test_driver.set_permission({name: 'window-placement'}, 'granted');
+  assert_greater_than((await self.getScreens()).length, 0);
+  await test_driver.set_permission({name: 'window-placement'}, 'denied');
+  await promise_rejects_dom(t, 'NotAllowedError', self.getScreens());
+}, 'getScreens() rejects the promise with permission denied');
+
+promise_test(async t => {
+  await test_driver.set_permission({name: 'window-placement'}, 'granted');
+  let iframe = document.body.appendChild(document.createElement('iframe'));
+  assert_greater_than((await iframe.contentWindow.getScreens()).length, 0);
+
+  let iframeGetScreens;
+  let constructor;
+  await new Promise(resolve => {
+    iframe.contentWindow.onunload = () => {
+      // Grab these before the contentWindow is removed.
+      iframeGetScreens = iframe.contentWindow.getScreens;
+      constructor = iframe.contentWindow.DOMException;
+      resolve();
+    };
+    document.body.removeChild(iframe);
+  });
+  assert_not_equals(iframeGetScreens, undefined);
+  assert_not_equals(constructor, undefined);
+
+  await t.step_wait(() => !iframe.contentWindow, "execution context invalid");
+  assert_equals(iframe.contentWindow, null);
+  await promise_rejects_dom(t, 'InvalidStateError', constructor, iframeGetScreens());
+}, "getScreens() resolves for attached iframe; rejects for detached iframe");

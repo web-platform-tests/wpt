@@ -7,10 +7,9 @@
 // where that version uses the native file system instead.
 
 async function cleanupSandboxedFileSystem() {
-  const dir =
-      await FileSystemDirectoryHandle.getSystemDirectory({type: 'sandbox'});
-  for await (let entry of dir.getEntries())
-    await dir.removeEntry(entry.name, {recursive: entry.isDirectory});
+  const dir = await navigator.storage.getDirectory();
+  for await (let entry of dir.values())
+    await dir.removeEntry(entry.name, {recursive: entry.kind === 'directory'});
 }
 
 function directory_test(func, description) {
@@ -18,8 +17,7 @@ function directory_test(func, description) {
     // To be extra resilient against bad tests, cleanup before every test.
     await cleanupSandboxedFileSystem();
 
-    const dir =
-        await FileSystemDirectoryHandle.getSystemDirectory({type: 'sandbox'});
+    const dir = await navigator.storage.getDirectory();
     await func(t, dir);
   }, description);
 }

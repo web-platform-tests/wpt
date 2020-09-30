@@ -1,27 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Web App Manifest (https://w3c.github.io/manifest/)
-
-[Exposed=Window]
-interface BeforeInstallPromptEvent : Event {
-  constructor(DOMString type, optional EventInit eventInitDict = {});
-  Promise<PromptResponseObject> prompt();
-};
-
-dictionary PromptResponseObject {
-  AppBannerPromptOutcome userChoice;
-};
-
-enum AppBannerPromptOutcome {
-  "accepted",
-  "dismissed"
-};
-
-partial interface Window {
-  attribute EventHandler onappinstalled;
-  attribute EventHandler onbeforeinstallprompt;
-};
 
 dictionary WebAppManifest {
    TextDirectionType dir = "auto";
@@ -29,8 +9,8 @@ dictionary WebAppManifest {
    USVString name;
    USVString short_name;
    USVString description;
-   sequence<ImageResource> icons;
-   sequence<ImageResource> screenshots;
+   sequence<ManifestImageResource> icons;
+   sequence<ManifestImageResource> screenshots;
    sequence<USVString> categories;
    DOMString iarc_rating_id;
    USVString start_url;
@@ -53,12 +33,8 @@ enum DisplayModeType {
   "browser"
 };
 
-dictionary ImageResource {
-  required USVString src;
-  DOMString sizes;
-  USVString type;
+dictionary ManifestImageResource : ImageResource {
   USVString purpose;
-  USVString platform;
 };
 
 dictionary ShortcutItem {
@@ -66,7 +42,7 @@ dictionary ShortcutItem {
   USVString short_name;
   USVString description;
   required USVString url;
-  sequence<ImageResource> icons;
+  sequence<ManifestImageResource> icons;
 };
 
 dictionary ExternalApplicationResource {

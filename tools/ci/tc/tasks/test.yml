@@ -4,12 +4,16 @@ components:
     workerType: ci
     schedulerId: taskcluster-github
     deadline: "24 hours"
-    image: harjgam/web-platform-tests:0.34
+    image: webplatformtests/wpt:0.46
     maxRunTime: 7200
     artifacts:
       public/results:
         path: /home/test/artifacts
         type: directory
+    extra:
+      github:
+        customCheckRun:
+          textArtifactName: public/results/checkrun.md
 
   wpt-testharness:
     chunks: 16
@@ -21,8 +25,13 @@ components:
     vars:
       test-type: reftest
 
-  wpt-wdspec:
+  wpt-print-reftest:
     chunks: 1
+    vars:
+      test-type: print-reftest
+
+  wpt-wdspec:
+    chunks: 2
     vars:
       test-type: wdspec
 
@@ -47,6 +56,7 @@ components:
     command: >-
       ./tools/ci/taskcluster-run.py
       ${vars.browser}
+      ${vars.channel}
       --
       --channel=${vars.channel}
       --log-wptreport=../artifacts/wpt_report.json
@@ -55,6 +65,7 @@ components:
       --this-chunk=${chunks.id}
       --total-chunks=${chunks.total}
       --test-type=${vars.suite}
+
   trigger-master:
     trigger:
       branch:
@@ -82,6 +93,11 @@ components:
   browser-firefox:
     depends-on:
       - download-firefox-${vars.channel}
+    download-artifacts:
+      - task: download-firefox-${vars.channel}
+        glob: public/results/firefox-${vars.channel}.*
+        dest: build/
+        extract: true
 
   browser-webkitgtk_minibrowser: {}
 
@@ -98,8 +114,15 @@ components:
     env:
       TOXENV: py36
       PY_COLORS: 0
+
+  tox-python38:
+    env:
+      TOXENV: py38
+      PY_COLORS: 0
     install:
-      - python3-pip
+      - python3.8
+      - python3.8-distutils
+      - python3.8-dev
 
   tests-affected:
     options:
@@ -111,6 +134,9 @@ components:
         - affected_tests
 
 tasks:
+  # The scheduling order of tasks is NOT determined by the order in which they
+  # are defined, but by their dependencies (depends-on).
+
   # Run full suites on push
   - $map:
       for:
@@ -140,6 +166,13 @@ tasks:
             - vars:
                 browser: firefox
                 channel: stable
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                # Chromium ToT
+                browser: chrome
+                channel: nightly
               use:
                 - trigger-daily
                 - trigger-push
@@ -192,6 +225,70 @@ tasks:
                   of ${chunks.total}), run in the ${vars.channel} release of
                   ${vars.browser}.
 
+  # print-reftest are currently only supported by Chrome and Firefox.
+  - $map:
+      for:
+        - vars:
+            suite: print-reftest
+      do:
+        $map:
+          for:
+            - vars:
+                browser: firefox
+                channel: nightly
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: firefox
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: firefox
+                channel: stable
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                # Chromium ToT
+                browser: chrome
+                channel: nightly
+              use:
+                - trigger-daily
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: dev
+              use:
+                - trigger-master
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
+                browser: chrome
+                channel: stable
+              use:
+                - trigger-daily
+                - trigger-push
+          do:
+            - ${vars.browser}-${vars.channel}-${vars.suite}:
+                use:
+                  - wpt-base
+                  - run-options
+                  - wpt-run
+                  - browser-${vars.browser}
+                  - wpt-${vars.suite}
+                description: >-
+                  A subset of WPT's "${vars.suite}" tests (chunk number ${chunks.id}
+                  of ${chunks.total}), run in the ${vars.channel} release of
+                  ${vars.browser}.
+
   - $map:
       for:
         - vars:
@@ -215,9 +312,14 @@ tasks:
               ./tools/ci/taskcluster-run.py
               --commit-range base_head
               ${vars.browser}
+              ${vars.channel}
               --
               --channel=${vars.channel}
               --verify
+              --verify-no-chaos-mode
+              --verify-repeat-loop=0
+              --verify-repeat-restart=10
+              --github-checks-text-file="/home/test/artifacts/checkrun.md"
 
         - wpt-${vars.browser}-${vars.channel}-results:
             use:
@@ -233,6 +335,7 @@ tasks:
               ./tools/ci/taskcluster-run.py
               --commit-range base_head
               ${vars.browser}
+              ${vars.channel}
               --
               --channel=${vars.channel}
               --no-fail-on-unexpected
@@ -255,6 +358,7 @@ tasks:
               ./tools/ci/taskcluster-run.py
               --commit-range task_head
               ${vars.browser}
+              ${vars.channel}
               --
               --channel=${vars.channel}
               --no-fail-on-unexpected
@@ -272,7 +376,7 @@ tasks:
         download-firefox-${vars.channel}:
           use:
             - wpt-base
-          command: "./wpt install --download-only --destination /home/test/artifacts/ --channel=${vars.channel} firefox browser"
+          command: "./wpt install --download-only --destination /home/test/artifacts/ --channel=${vars.channel}  --rename=firefox-${vars.channel} firefox browser"
 
   - lint:
       use:
@@ -281,7 +385,7 @@ tasks:
         - trigger-pr
       description: >-
         Lint for wpt-specific requirements
-      command: "./wpt lint --all"
+      command: "./wpt lint --all --github-checks-text-file=/home/test/artifacts/checkrun.md"
 
   - update-built:
       use:
@@ -306,13 +410,30 @@ tasks:
         run-job:
           - tools_unittest
 
-  - tools/ unittests (Python 3):
+  - tools/ unittests (Python 3.6):
       description: >-
-        Unit tests for tools running under Python 3, excluding wptrunner
+        Unit tests for tools running under Python 3.6, excluding wptrunner
       use:
         - wpt-base
         - trigger-pr
         - tox-python3
+      command: ./tools/ci/ci_tools_unittest.sh
+      install:
+        - python3.6
+        - python3.6-dev
+      env:
+        HYPOTHESIS_PROFILE: ci
+      schedule-if:
+        run-job:
+          - tools_unittest
+
+  - tools/ unittests (Python 3.8):
+      description: >-
+        Unit tests for tools running under Python 3.8, excluding wptrunner
+      use:
+        - wpt-base
+        - trigger-pr
+        - tox-python38
       command: ./tools/ci/ci_tools_unittest.sh
       env:
         HYPOTHESIS_PROFILE: ci
@@ -320,14 +441,60 @@ tasks:
         run-job:
           - tools_unittest
 
-  - tools/wpt/ tests:
+  - tools/ integration tests (Python 2):
       description: >-
-        Integration tests for wpt commands
+        Integration tests for tools running under Python 2.7
       use:
         - wpt-base
         - trigger-pr
         - tox-python2
-      command: ./tools/ci/ci_wpt.sh
+      command: ./tools/ci/ci_tools_integration_test.sh
+      install:
+        - libnss3-tools
+      options:
+        oom-killer: true
+        browser:
+          - firefox
+          - chrome
+        channel: experimental
+        xvfb: true
+        hosts: true
+      schedule-if:
+        run-job:
+          - wpt_integration
+
+  - tools/ integration tests (Python 3.6):
+      description: >-
+        Integration tests for tools running under Python 3.6
+      use:
+        - wpt-base
+        - trigger-pr
+        - tox-python3
+      command: ./tools/ci/ci_tools_integration_test.sh
+      install:
+        - libnss3-tools
+        - python3.6
+        - python3.6-dev
+      options:
+        oom-killer: true
+        browser:
+          - firefox
+          - chrome
+        channel: experimental
+        xvfb: true
+        hosts: true
+      schedule-if:
+        run-job:
+          - wpt_integration
+
+  - tools/ integration tests (Python 3.8):
+      description: >-
+        Integration tests for tools running under Python 3.8
+      use:
+        - wpt-base
+        - trigger-pr
+        - tox-python38
+      command: ./tools/ci/ci_tools_integration_test.sh
       install:
         - libnss3-tools
       options:
@@ -362,10 +529,12 @@ tasks:
   - infrastructure/ tests:
       description: >-
         Smoketests for wptrunner
+      vars:
+        channel: nightly
       use:
         - wpt-base
         - trigger-pr
-        - tox-python2
+        - browser-firefox
       command: ./tools/ci/ci_wptrunner_infrastructure.sh
       install:
         - libnss3-tools
@@ -382,3 +551,39 @@ tasks:
       schedule-if:
         run-job:
           - wptrunner_infrastructure
+
+  - infrastructure/ tests (Python 3):
+      description: >-
+        Smoketests for wptrunner
+      vars:
+        channel: nightly
+      use:
+        - wpt-base
+        - trigger-pr
+      command: ./tools/ci/ci_wptrunner_infrastructure.sh --py3
+      install:
+        - python3-pip
+        - libnss3-tools
+        - libappindicator1
+        - fonts-liberation
+      options:
+        oom-killer: true
+        browser:
+          - chrome
+        channel: experimental
+        xvfb: true
+        hosts: false
+      schedule-if:
+        run-job:
+          - wptrunner_infrastructure
+
+  # Note: even though sink-task does not have `depends-on`, it depends on all
+  # other tasks (dynamically added by tools/ci/tc/decision.py).
+  - sink-task:
+      description: >-
+        Sink task for all other tasks; indicates success
+      use:
+        - wpt-base
+        - trigger-pr
+      command: "./wpt tc-sink-task"
+      requires: all-resolved

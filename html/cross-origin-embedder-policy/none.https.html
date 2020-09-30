@@ -4,9 +4,14 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/common/utils.js></script> <!-- Use token() to allow running tests in parallel -->
+<script src="/common/get-host-info.sub.js"></script>
 <div id=log></div>
 <script>
+const HOST = get_host_info();
+const BASE = new URL("resources", location).pathname;
+
 async_test(t => {
+  t.step_timeout(t.unreached_func('timeout'), 10 * 1000);
   const frame = document.createElement("iframe");
   t.add_cleanup(() => frame.remove());
   frame.onload = t.step_func_done(() => {
@@ -18,6 +23,7 @@ async_test(t => {
 }, `"none" top-level: navigating a frame to "none" should succeed`);
 
 async_test(t => {
+  t.step_timeout(t.unreached_func('timeout'), 10 * 1000);
   const frame = document.createElement("iframe");
   t.add_cleanup(() => frame.remove());
   const blank = "/common/blank.html";
@@ -38,26 +44,33 @@ async_test(t => {
 }, `"none" top-level: navigating a frame from "require-corp" to "none" should succeed`);
 
 async_test(t => {
+  t.step_timeout(t.unreached_func('timeout'), 10 * 1000);
   const w = window.open(`resources/navigate-none.sub.html?to=navigate-require-corp.sub.html`, "window_name");
   t.add_cleanup(() => w.close());
 
-  t.step_timeout(() => {
+  w.onload = t.step_func(() => {
+    assert_true(w.location.href.endsWith("?to=navigate-require-corp.sub.html"));
     w.history.back();
-    t.step_timeout(() => {
-      assert_not_equals(w.document, null);
-      t.done();
-    }, 500);
-  }, 500);
+    t.step_wait_func_done(() => w.location.href.endsWith("/navigate-require-corp.sub.html"));
+  });
 }, `"none" top-level: navigating a frame back from "require-corp" should succeed`);
 
 async_test(t => {
+  t.step_timeout(t.unreached_func('timeout'), 10 * 1000);
   let pageLoaded = false;
   const bc = new BroadcastChannel(token());
   let finished = false;
+  let doneCheck = _ => {
+    if (finished && pageLoaded) {
+      t.done();
+    }
+  }
   bc.onmessage = t.step_func((event) => {
     pageLoaded = true;
     let payload = event.data;
     assert_equals(payload, "loaded");
+
+    doneCheck();
   });
 
   const bc2 = new BroadcastChannel(token());
@@ -65,15 +78,27 @@ async_test(t => {
     finished = true;
     let payload = event.data;
     assert_equals(payload, "loaded");
+
+    doneCheck();
   });
 
   const win = window.open(`resources/navigate-require-corp.sub.html?channelName=${bc.name}&to=navigate-none.sub.html?channelName=${bc2.name}`, "_blank", "noopener");
   assert_equals(win, null);
-
-  t.step_timeout(() => {
-    assert_true(pageLoaded);
-    assert_true(finished);
-    t.done();
-  }, 500);
 }, `"require-corp" top-level noopener popup: navigating to "none" should succeed`);
+
+async_test(t => {
+  t.step_timeout(t.unreached_func('timeout'), 10 * 1000);
+  const frame = document.createElement("iframe");
+  const id = token();
+  t.add_cleanup(() => frame.remove());
+  window.addEventListener('message', t.step_func((e) => {
+    if (e.data === id) {
+      // Loaded!
+      t.done();
+    }
+  }));
+  frame.src = `${HOST.HTTPS_NOTSAMESITE_ORIGIN}${BASE}/navigate-require-corp-same-site.sub.html?token=${id}`;
+  document.body.append(frame);
+}, 'CORP: same-site is not checked.');
+
 </script>

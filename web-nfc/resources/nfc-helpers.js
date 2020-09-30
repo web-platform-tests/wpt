@@ -7,38 +7,35 @@
 // these tests the browser must be run with these options:
 //
 //   --enable-blink-features=MojoJS,MojoJSTest
-let loadChromiumResources = Promise.resolve().then(() => {
-  if (!window.MojoInterfaceInterceptor) {
-    // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
-    // not present in the global namespace.
-    return;
-  }
 
-  let chain = Promise.resolve();
-  [
-    '/gen/layout_test_data/mojo/public/js/mojo_bindings.js',
-    '/gen/services/device/public/mojom/nfc.mojom.js',
-    '/resources/chromium/nfc-mock.js',
-  ].forEach(path => {
-    let script = document.createElement('script');
-    script.src = path;
-    script.async = false;
-    chain = chain.then(() => new Promise(resolve => {
-      script.onload = resolve;
-    }));
-    document.head.appendChild(script);
-  });
+async function loadChromiumResources() {
+  const chromiumResources = [
+  '/gen/services/device/public/mojom/nfc.mojom.js',
+  ];
 
-  return chain;
-});
+  await loadMojoResources(chromiumResources);
+  await loadScript('/resources/testdriver.js');
+  await loadScript('/resources/testdriver-vendor.js');
+  await loadScript('/resources/chromium/nfc-mock.js');
+}
 
 async function initialize_nfc_tests() {
   if (typeof WebNFCTest === 'undefined') {
-    await loadChromiumResources;
+    const script = document.createElement('script');
+    script.src = '/resources/test-only-api.js';
+    script.async = false;
+    const p = new Promise((resolve, reject) => {
+      script.onload = () => { resolve(); };
+      script.onerror = e => { reject(e); };
+    })
+    document.head.appendChild(script);
+    await p;
+
+    if (isChromiumBased) {
+      await loadChromiumResources();
+    }
   }
-  assert_true(
-      typeof WebNFCTest !== 'undefined',
-      'WebNFC testing interface is not available.');
+  assert_implements( WebNFCTest, 'WebNFC testing interface is unavailable.');
   let NFCTest = new WebNFCTest();
   await NFCTest.initialize();
   return NFCTest;
@@ -73,6 +70,33 @@ NFCHWStatus.ENABLED = 1;
 NFCHWStatus.NOT_SUPPORTED = NFCHWStatus.ENABLED + 1;
 // OS-level NFC setting OFF
 NFCHWStatus.DISABLED = NFCHWStatus.NOT_SUPPORTED + 1;
+
+function encodeTextToArrayBuffer(string, encoding) {
+  // Only support 'utf-8', 'utf-16', 'utf-16be', and 'utf-16le'.
+  assert_true(
+      encoding === 'utf-8' || encoding === 'utf-16' ||
+      encoding === 'utf-16be' || encoding === 'utf-16le');
+
+  if (encoding === 'utf-8') {
+    return new TextEncoder().encode(string).buffer;
+  }
+
+  if (encoding === 'utf-16') {
+    let uint16array = new Uint16Array(string.length);
+    for (let i = 0; i < string.length; i++) {
+      uint16array[i] = string.codePointAt(i);
+    }
+    return uint16array.buffer;
+  }
+
+  const littleEndian = encoding === 'utf-16le';
+  const buffer = new ArrayBuffer(string.length * 2);
+  const view = new DataView(buffer);
+  for (let i = 0; i < string.length; i++) {
+    view.setUint16(i * 2, string.codePointAt(i), littleEndian);
+  }
+  return buffer;
+}
 
 function createMessage(records) {
   if (records !== undefined) {
@@ -125,12 +149,8 @@ function createUrlRecord(url, isAbsUrl) {
   return createRecord('url', url, test_record_id);
 }
 
-function createNDEFPushOptions(target, ignoreRead) {
-  return {target, ignoreRead};
-}
-
 // Compares NDEFMessageSource that was provided to the API
-// (e.g. NDEFWriter.push), and NDEFMessage that was received by the
+// (e.g. NDEFWriter.write), and NDEFMessage that was received by the
 // mock NFC service.
 function assertNDEFMessagesEqual(providedMessage, receivedMessage) {
   // If simple data type is passed, e.g. String or ArrayBuffer or
@@ -165,7 +185,8 @@ function assertWebNDEFMessagesEqual(message, expectedMessage) {
     assert_equals(record.recordType, expectedRecord.recordType);
     assert_equals(record.mediaType, expectedRecord.mediaType);
     assert_equals(record.id, expectedRecord.id);
-
+    assert_equals(record.encoding, expectedRecord.encoding);
+    assert_equals(record.lang, expectedRecord.lang);
     // Compares record data
     assert_array_equals(new Uint8Array(record.data),
           new Uint8Array(expectedRecord.data));

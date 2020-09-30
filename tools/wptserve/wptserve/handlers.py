@@ -1,10 +1,10 @@
-import cgi
 import json
 import os
 import sys
 import traceback
+from collections import defaultdict
 
-from six.moves.urllib.parse import parse_qs, quote, unquote, urljoin
+from six.moves.urllib.parse import quote, unquote, urljoin
 from six import iteritems
 
 from .constants import content_types
@@ -13,6 +13,11 @@ from .ranges import RangeParser
 from .request import Authentication
 from .response import MultipartContent
 from .utils import HTTPException
+
+try:
+    from html import escape
+except ImportError:
+    from cgi import escape
 
 __all__ = ["file_handler", "python_script_handler",
            "FunctionHandler", "handler", "json_handler",
@@ -76,7 +81,7 @@ class DirectoryHandler(object):
 <ul>
 %(items)s
 </ul>
-""" % {"path": cgi.escape(url_path),
+""" % {"path": escape(url_path),
        "items": "\n".join(self.list_items(url_path, path))}  # noqa: E122
 
     def list_items(self, base_path, path):
@@ -92,16 +97,48 @@ class DirectoryHandler(object):
             link = urljoin(base_path, "..")
             yield ("""<li class="dir"><a href="%(link)s">%(name)s</a></li>""" %
                    {"link": link, "name": ".."})
+        items = []
+        prev_item = None
         for item in sorted(os.listdir(path)):
-            link = cgi.escape(quote(item))
+            if prev_item and prev_item + ".headers" == item:
+                items[-1][1] = item
+                prev_item = None
+                continue
+            items.append([item, None])
+            prev_item = item
+        for item, dot_headers in items:
+            link = escape(quote(item))
+            dot_headers_markup = ""
+            if dot_headers is not None:
+                dot_headers_markup = (""" (<a href="%(link)s">.headers</a>)""" %
+                                      {"link": escape(quote(dot_headers))})
             if os.path.isdir(os.path.join(path, item)):
                 link += "/"
                 class_ = "dir"
             else:
                 class_ = "file"
-            yield ("""<li class="%(class)s"><a href="%(link)s">%(name)s</a></li>""" %
-                   {"link": link, "name": cgi.escape(item), "class": class_})
+            yield ("""<li class="%(class)s"><a href="%(link)s">%(name)s</a>%(headers)s</li>""" %
+                   {"link": link, "name": escape(item), "class": class_,
+                    "headers": dot_headers_markup})
 
+def parse_qs(qs):
+    """Parse a query string given as a string argument (data of type
+    application/x-www-form-urlencoded). Data are returned as a dictionary. The
+    dictionary keys are the unique query variable names and the values are
+    lists of values for each name.
+
+    This implementation is used instead of Python's built-in `parse_qs` method
+    in order to support the semicolon character (which the built-in method
+    interprets as a parameter delimiter)."""
+    pairs = [item.split("=", 1) for item in qs.split('&') if item]
+    rv = defaultdict(list)
+    for pair in pairs:
+        if len(pair) == 1 or len(pair[1]) == 0:
+            continue
+        name = unquote(pair[0].replace('+', ' '))
+        value = unquote(pair[1].replace('+', ' '))
+        rv[name].append(value)
+    return dict(rv)
 
 def wrap_pipeline(path, request, response):
     query = parse_qs(request.url_parts.query)
@@ -160,7 +197,7 @@ class FileHandler(object):
             raise HTTPException(404)
 
     def get_headers(self, request, path):
-        rv = (self.load_headers(request, os.path.join(os.path.split(path)[0], "__dir__")) +
+        rv = (self.load_headers(request, os.path.join(os.path.dirname(path), "__dir__")) +
               self.load_headers(request, path))
 
         if not any(key.lower() == b"content-type" for (key, _) in rv):
@@ -370,7 +407,7 @@ class AsIsHandler(object):
         path = filesystem_path(self.base_path, request, self.url_base)
 
         try:
-            with open(path) as f:
+            with open(path, 'rb') as f:
                 response.writer.write_raw_content(f.read())
             wrap_pipeline(path, request, response)
             response.close_connection = True
@@ -449,6 +486,8 @@ class StaticHandler(StringHandler):
         :param headers: List of headers to send with responses"""
 
         with open(path) as f:
-            data = f.read() % format_args
+            data = f.read()
+            if format_args:
+                data = data % format_args
 
         return super(StaticHandler, self).__init__(data, content_type, **headers)

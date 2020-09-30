@@ -53,7 +53,7 @@ self.onmessage = function(e) {
     promise_test(function(t) {
       this.add_cleanup(function() { port.postMessage(pass(test, "")); });
       return self.clients.get(clientId)
-                 .then(client => promise_rejects(t, new TypeError(), client.navigate("about:blank")))
+                 .then(client => promise_rejects_js(t, TypeError, client.navigate("about:blank")))
                  .catch(unreached_rejection(t));
     }, "Navigating to about:blank should reject with TypeError");
   } else if (test === "test_client_navigate_mixed_content") {
@@ -64,7 +64,7 @@ self.onmessage = function(e) {
       // and navigating to http:// would create a mixed-content violation.
       var url = get_host_info()['HTTP_REMOTE_ORIGIN'] + path;
       return self.clients.get(clientId)
-                 .then(client => promise_rejects(t, new TypeError(), client.navigate(url)))
+                 .then(client => promise_rejects_js(t, TypeError, client.navigate(url)))
                  .catch(unreached_rejection(t));
     }, "Navigating to mixed-content iframe should reject with TypeError");
   } else if (test === "test_client_navigate_redirect") {
@@ -77,7 +77,7 @@ self.onmessage = function(e) {
                  .then(client => client.navigate("redirect.py?Redirect=" + url))
                  .then(client => {
                    clientUrl = (client && client.url) || ""
-                   assert_true(client === null);
+                   assert_equals(client, null);
                  })
                  .catch(unreached_rejection(t));
     }, "Redirecting to another origin should resolve with null");

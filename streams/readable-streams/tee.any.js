@@ -1,4 +1,4 @@
-// META: global=worker,jsshell
+// META: global=window,worker,jsshell
 // META: script=../resources/rs-utils.js
 // META: script=../resources/test-utils.js
 // META: script=../resources/recording-streams.js
@@ -94,17 +94,17 @@ promise_test(t => {
   reader2.label = 'reader2';
 
   return Promise.all([
-    promise_rejects(t, theError, reader1.closed),
-    promise_rejects(t, theError, reader2.closed),
+    promise_rejects_exactly(t, theError, reader1.closed),
+    promise_rejects_exactly(t, theError, reader2.closed),
     reader1.read().then(r => {
       assert_object_equals(r, { value: 'a', done: false }, 'should be able to read the first chunk in branch1');
     }),
     reader1.read().then(r => {
       assert_object_equals(r, { value: 'b', done: false }, 'should be able to read the second chunk in branch1');
 
-      return promise_rejects(t, theError, reader2.read());
+      return promise_rejects_exactly(t, theError, reader2.read());
     })
-    .then(() => promise_rejects(t, theError, reader1.read()))
+    .then(() => promise_rejects_exactly(t, theError, reader1.read()))
   ]);
 
 }, 'ReadableStream teeing: errors in the source should propagate to both branches');
@@ -226,8 +226,8 @@ promise_test(t => {
   const branch2 = branch[1];
 
   return Promise.all([
-    promise_rejects(t, theError, branch1.cancel()),
-    promise_rejects(t, theError, branch2.cancel())
+    promise_rejects_exactly(t, theError, branch1.cancel()),
+    promise_rejects_exactly(t, theError, branch2.cancel())
   ]);
 
 }, 'ReadableStream teeing: failing to cancel the original stream should cause cancel() to reject on branches');
@@ -266,8 +266,8 @@ promise_test(t => {
     const reader2 = branch2.getReader();
 
     return Promise.all([
-      promise_rejects(t, error, reader1.closed, 'reader1.closed should reject'),
-      promise_rejects(t, error, reader2.closed, 'reader2.closed should reject')
+      promise_rejects_exactly(t, error, reader1.closed, 'reader1.closed should reject'),
+      promise_rejects_exactly(t, error, reader2.closed, 'reader2.closed should reject')
     ]);
   });
 
@@ -308,14 +308,65 @@ promise_test(t => {
 
   const theError = { name: 'boo!' };
   const promise = Promise.all([
-    promise_rejects(t, theError, reader1.closed),
-    promise_rejects(t, theError, reader2.closed)
+    promise_rejects_exactly(t, theError, reader1.closed),
+    promise_rejects_exactly(t, theError, reader2.closed)
   ]);
 
   controller.error(theError);
   return promise;
 
 }, 'ReadableStream teeing: erroring the original should immediately error the branches');
+
+promise_test(async t => {
+
+  let controller;
+  const rs = new ReadableStream({
+    start(c) {
+      controller = c;
+    }
+  });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader());
+  const cancelPromise = reader2.cancel();
+
+  controller.enqueue('a');
+
+  const read1 = await reader1.read();
+  assert_object_equals(read1, { value: 'a', done: false }, 'first read() from branch1 should fulfill with the chunk');
+
+  controller.close();
+
+  const read2 = await reader1.read();
+  assert_object_equals(read2, { value: undefined, done: true }, 'second read() from branch1 should be done');
+
+  await Promise.all([
+    reader1.closed,
+    cancelPromise
+  ]);
+
+}, 'ReadableStream teeing: canceling branch1 should finish when branch2 reads until end of stream');
+
+promise_test(async t => {
+
+  let controller;
+  const theError = { name: 'boo!' };
+  const rs = new ReadableStream({
+    start(c) {
+      controller = c;
+    }
+  });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader());
+  const cancelPromise = reader2.cancel();
+
+  controller.error(theError);
+
+  await Promise.all([
+    promise_rejects_exactly(t, theError, reader1.read()),
+    cancelPromise
+  ]);
+
+}, 'ReadableStream teeing: canceling branch1 should finish when original stream errors');
 
 test(t => {
 
@@ -384,8 +435,8 @@ promise_test(t => {
     assert_array_equals(rs.events, [], 'pull should not be called');
 
     return Promise.all([
-      promise_rejects(t, theError, reader1.closed),
-      promise_rejects(t, theError, reader2.closed)
+      promise_rejects_exactly(t, theError, reader1.closed),
+      promise_rejects_exactly(t, theError, reader2.closed)
     ]);
   });
 
@@ -412,8 +463,8 @@ for (const branch of [1, 2]) {
       rs.controller.error(theError);
 
       return Promise.all([
-        promise_rejects(t, theError, reader1.closed),
-        promise_rejects(t, theError, reader2.closed)
+        promise_rejects_exactly(t, theError, reader1.closed),
+        promise_rejects_exactly(t, theError, reader2.closed)
       ]);
     }).then(() => flushAsyncEvents()).then(() => {
       assert_array_equals(rs.events, ['pull', 'pull'], 'pull should be called twice');
@@ -441,8 +492,8 @@ promise_test(t => {
     rs.controller.error(theError);
 
     return Promise.all([
-      promise_rejects(t, theError, reader1.closed),
-      promise_rejects(t, theError, reader2.closed)
+      promise_rejects_exactly(t, theError, reader1.closed),
+      promise_rejects_exactly(t, theError, reader2.closed)
     ]);
   }).then(() => flushAsyncEvents()).then(() => {
     assert_array_equals(rs.events, ['pull', 'pull'], 'pull should be called twice');

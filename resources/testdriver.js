@@ -15,7 +15,8 @@
     }
 
     function getPointerInteractablePaintTree(element) {
-        if (!window.document.contains(element)) {
+        let elementDocument = element.ownerDocument;
+        if (!elementDocument.contains(element)) {
             return [];
         }
 
@@ -27,10 +28,10 @@
 
         var centerPoint = getInViewCenterPoint(rectangles[0]);
 
-        if ("elementsFromPoint" in document) {
-            return document.elementsFromPoint(centerPoint[0], centerPoint[1]);
-        } else if ("msElementsFromPoint" in document) {
-            var rv = document.msElementsFromPoint(centerPoint[0], centerPoint[1]);
+        if ("elementsFromPoint" in elementDocument) {
+            return elementDocument.elementsFromPoint(centerPoint[0], centerPoint[1]);
+        } else if ("msElementsFromPoint" in elementDocument) {
+            var rv = elementDocument.msElementsFromPoint(centerPoint[0], centerPoint[1]);
             return Array.prototype.slice.call(rv ? rv : []);
         } else {
             throw new Error("document.elementsFromPoint unsupported");
@@ -87,7 +88,7 @@
          * Triggers a user-initiated click
          *
          * This matches the behaviour of the {@link
-         * https://w3c.github.io/webdriver/webdriver-spec.html#element-click|WebDriver
+         * https://w3c.github.io/webdriver/#element-click|WebDriver
          * Element Click command}.
          *
          * @param {Element} element - element to be clicked
@@ -95,14 +96,6 @@
          *                    the cases the WebDriver command errors
          */
         click: function(element) {
-            if (window.top !== window) {
-                return Promise.reject(new Error("can only click in top-level window"));
-            }
-
-            if (!window.document.contains(element)) {
-                return Promise.reject(new Error("element in different document or shadow tree"));
-            }
-
             if (!inView(element)) {
                 element.scrollIntoView({behavior: "instant",
                                         block: "end",
@@ -126,7 +119,7 @@
          * Send keys to an element
          *
          * This matches the behaviour of the {@link
-         * https://w3c.github.io/webdriver/webdriver-spec.html#element-send-keys|WebDriver
+         * https://w3c.github.io/webdriver/#element-send-keys|WebDriver
          * Send Keys command}.
          *
          * @param {Element} element - element to send keys to
@@ -135,14 +128,6 @@
          *                    the cases the WebDriver command errors
          */
         send_keys: function(element, keys) {
-            if (window.top !== window) {
-                return Promise.reject(new Error("can only send keys in top-level window"));
-            }
-
-            if (!window.document.contains(element)) {
-                return Promise.reject(new Error("element in different document or shadow tree"));
-            }
-
             if (!inView(element)) {
                 element.scrollIntoView({behavior: "instant",
                                         block: "end",
@@ -176,7 +161,7 @@
         /**
          * Send a sequence of actions
          *
-         * This function sends a sequence of actions to the top level window
+         * This function sends a sequence of actions
          * to perform. It is modeled after the behaviour of {@link
          * https://w3c.github.io/webdriver/#actions|WebDriver Actions Command}
          *
@@ -354,6 +339,32 @@
          */
         set_user_verified: function(authenticator_id, uv) {
             return window.test_driver_internal.set_user_verified(authenticator_id, uv);
+        },
+
+        /**
+         * Sets the storage access rule for an origin when embedded
+         * in a third-party context.
+         *
+         * {@link https://privacycg.github.io/storage-access/#set-storage-access-command}
+         *
+         * @param {String} origin - A third-party origin to block or allow.
+         *                          May be "*" to indicate all origins.
+         * @param {String} embedding_origin - an embedding (first-party) origin
+         *                                    on which {origin}'s access should
+         *                                    be blocked or allowed.
+         *                                    May be "*" to indicate all origins.
+         * @param {String} state - The storage access setting.
+         *                         Must be either "allowed" or "blocked".
+         *
+         * @returns {Promise} Fulfilled after the storage access rule has been
+         *                    set, or rejected if setting the rule fails.
+         */
+        set_storage_access: function(origin, embedding_origin, state) {
+            if (state !== "allowed" && state !== "blocked") {
+                throw new Error("storage access status must be 'allowed' or 'blocked'");
+            }
+            const blocked = state === "blocked";
+            return window.test_driver_internal.set_storage_access(origin, embedding_origin, blocked);
         },
     };
 
@@ -567,6 +578,14 @@
          *
          */
         set_user_verified: function(authenticator_id, uv) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        /**
+         * Sets the storage access policy for a third-party origin when loaded
+         * in the current first party context
+         */
+        set_storage_access: function(origin, embedding_origin, blocked) {
             return Promise.reject(new Error("unimplemented"));
         },
     };

@@ -1,33 +1,33 @@
-cask 'safari-technology-preview' do
-  if MacOS.version <= :mojave
-    version '96,061-44056-20191120-ac7bb196-2724-4840-bce9-6c83ecdbfb2c'
-    sha256 'e80ceacdff7e75218365993e5af1c81c9bcc4785291ae00abba3d14ac5614317'
+cask "safari-technology-preview" do
+  if MacOS.version <= :catalina
+    version "113,001-46217-20200908-26bf578a-dcb0-4f70-b930-d9131bbf5d8a"
+    sha256 "09f86d0808e067a46584e9394767040012d7bbae453bb9842cabbf593d9185d9"
   else
-    version '96,061-47718-20191120-02bc7569-ee6b-4c28-9ec4-0ceeda3c3c3a'
-    sha256 'bbfcdc36bf9b55aec5838d66e34c41dd3f6a64091406bc38f45c888360f191fe'
+    version "113,001-43557-20200908-b620aaf9-e006-4855-8bdf-e7e76b5950bc"
+    sha256 "3dcf197b8c2c181861d0c3f3d00fbb65940d1c1aaf11511c76c94fb153d0a7f0"
   end
 
   url "https://secure-appldnld.apple.com/STP/#{version.after_comma}/SafariTechnologyPreview.dmg"
-  appcast 'https://developer.apple.com/safari/download/'
-  name 'Safari Technology Preview'
-  homepage 'https://developer.apple.com/safari/download/'
+  appcast "https://developer.apple.com/safari/download/"
+  name "Safari Technology Preview"
+  homepage "https://developer.apple.com/safari/download/"
 
   auto_updates true
-  depends_on macos: '>= :mojave'
+  depends_on macos: ">= :catalina"
 
-  pkg 'Safari Technology Preview.pkg'
+  pkg "Safari Technology Preview.pkg"
 
-  uninstall delete: '/Applications/Safari Technology Preview.app'
+  uninstall delete: "/Applications/Safari Technology Preview.app"
 
   zap trash: [
-               '~/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.apple.safaritechnologypreview.sfl*',
-               '~/Library/Caches/com.apple.SafariTechnologyPreview',
-               '~/Library/Preferences/com.apple.SafariTechnologyPreview.plist',
-               '~/Library/SafariTechnologyPreview',
-               '~/Library/Saved Application State/com.apple.SafariTechnologyPreview.savedState',
-               '~/Library/SyncedPreferences/com.apple.SafariTechnologyPreview-com.apple.Safari.UserRequests.plist',
-               '~/Library/SyncedPreferences/com.apple.SafariTechnologyPreview-com.apple.Safari.WebFeedSubscriptions.plist',
-               '~/Library/SyncedPreferences/com.apple.SafariTechnologyPreview.plist',
-               '~/Library/WebKit/com.apple.SafariTechnologyPreview',
-             ]
+    "~/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.apple.safaritechnologypreview.sfl*",
+    "~/Library/Caches/com.apple.SafariTechnologyPreview",
+    "~/Library/Preferences/com.apple.SafariTechnologyPreview.plist",
+    "~/Library/SafariTechnologyPreview",
+    "~/Library/Saved Application State/com.apple.SafariTechnologyPreview.savedState",
+    "~/Library/SyncedPreferences/com.apple.SafariTechnologyPreview-com.apple.Safari.UserRequests.plist",
+    "~/Library/SyncedPreferences/com.apple.SafariTechnologyPreview-com.apple.Safari.WebFeedSubscriptions.plist",
+    "~/Library/SyncedPreferences/com.apple.SafariTechnologyPreview.plist",
+    "~/Library/WebKit/com.apple.SafariTechnologyPreview",
+  ]
 end

@@ -103,6 +103,15 @@ class Project(object):
         self._host = host
         self._github_project = github_project
 
+    @guard('core')
+    def get_pull_request(self, number):
+        url = '{}/repos/{}/pulls/{}'.format(
+            self._host, self._github_project, number
+        )
+
+        logger.info('Fetching Pull Request %s', number)
+        return gh_request('GET', url)
+
     @guard('search')
     def get_pull_requests(self, updated_since):
         window_start = time.strftime('%Y-%m-%dT%H:%M:%SZ', updated_since)
@@ -121,7 +130,26 @@ class Project(object):
         if data['incomplete_results']:
             raise Exception('Incomplete results')
 
-        return data['items']
+        return {pr['number']: pr for pr in data['items']}
+
+    def pull_request_is_from_fork(self, pull_request):
+        pr_number = pull_request['number']
+        logger.info('Checking if pull request %s is from a fork', pr_number)
+
+        # We may already have this information; if so no need to make another
+        # API call.
+        if 'head' not in pull_request:
+            pull_request = self.get_pull_request(pr_number)
+
+        repo_name = pull_request['head']['repo']['full_name']
+        is_fork = repo_name != self._github_project
+
+        logger.info(
+            'Pull request %s is from \'%s\'. Is a fork: %s',
+            pr_number, repo_name, is_fork
+        )
+
+        return is_fork
 
     @guard('core')
     def create_ref(self, refspec, revision):
@@ -180,9 +208,8 @@ class Project(object):
     @guard('core')
     def update_deployment(self, target, deployment, state, description=''):
         if state in ('pending', 'success'):
-            environment_url = '{}/submissions/{}'.format(
-                target, deployment['environment']
-            )
+            pr_number = deployment['environment'][len(DEPLOYMENT_PREFIX):]
+            environment_url = '{}/{}'.format(target, pr_number)
         else:
             environment_url = None
         url = '{}/repos/{}/deployments/{}/statuses'.format(
@@ -202,13 +229,17 @@ class Remote(object):
         # for pushing changes.
         self._token = os.environ['DEPLOY_TOKEN']
 
-    def get_revision(self, refspec):
-        output = subprocess.check_output([
+    def _git(self, command):
+        return subprocess.check_output([
             'git',
             '-c',
             'credential.username={}'.format(self._token),
             '-c',
             'core.askPass=true',
+        ] + command)
+
+    def get_revision(self, refspec):
+        output = self._git([
             'ls-remote',
             'origin',
             'refs/{}'.format(refspec)
@@ -224,17 +255,39 @@ class Remote(object):
 
         logger.info('Deleting ref "%s"', refspec)
 
-        subprocess.check_call([
-            'git',
-            '-c',
-            'credential.username={}'.format(self._token),
-            '-c',
-            'core.askPass=true',
+        self._git([
             'push',
             'origin',
             '--delete',
             full_ref
         ])
+
+    def get_pull_requests_with_open_ref(self):
+        '''Returns pull requests that have an open ref.
+
+        This checks for all refs that match the pattern 'refs/prs-open/{pr}',
+        and then returns them as a list of pull request numbers. Note that this
+        method does not query github; this is only the open pull requests as
+        far as WPT knows.
+        '''
+
+        refspec = 'refs/prs-open/*'
+
+        logger.info('Fetching all ref names matching "%s"', refspec)
+
+        output = self._git([
+            'ls-remote',
+            'origin',
+            refspec,
+        ])
+
+        if not output:
+            return []
+
+        ref_names = [line.split()[1] for line in output.decode('utf-8').splitlines()]
+        logger.info('%s ref names found', len(ref_names))
+        return [int(ref_name.split('/')[2]) for ref_name in ref_names]
+
 
 def is_open(pull_request):
     return not pull_request['closed_at']
@@ -246,13 +299,16 @@ def has_mirroring_label(pull_request):
 
     return False
 
-def should_be_mirrored(pull_request):
+def should_be_mirrored(project, pull_request):
     return (
-        is_open(pull_request) and
-        pull_request['user']['login'] not in AUTOMATION_GITHUB_USERS and (
-            pull_request['author_association'] in TRUSTED_AUTHOR_ASSOCIATIONS or
-            has_mirroring_label(pull_request)
-        )
+        is_open(pull_request) and (
+            has_mirroring_label(pull_request) or (
+                pull_request['user']['login'] not in AUTOMATION_GITHUB_USERS and
+                pull_request['author_association'] in TRUSTED_AUTHOR_ASSOCIATIONS
+            )
+        ) and
+        # Query this last as it requires another API call to verify
+        not project.pull_request_is_from_fork(pull_request)
     )
 
 def is_deployed(host, deployment):
@@ -278,7 +334,19 @@ def synchronize(host, github_project, window):
         time.gmtime(time.time() - window)
     )
 
-    for pull_request in pull_requests:
+    # It is possible we may miss some pull requests if this script breaks or is
+    # not run for a while and the PR falls outside the checked window. To
+    # ensure that closed pull requests are deleted, extend the list of pull
+    # requests to look at with any that have an existing refs/prs-open/{pr} ref
+    # in the repo.
+    existing_pr_numbers = remote.get_pull_requests_with_open_ref()
+    for pr_number in existing_pr_numbers:
+        if pr_number in pull_requests:
+            continue
+        pull_request = project.get_pull_request(pr_number)
+        pull_requests[pull_request['number']] = pull_request
+
+    for pull_request in pull_requests.values():
         logger.info('Processing Pull Request #%(number)d', pull_request)
 
         refspec_trusted = 'prs-trusted-for-preview/{number}'.format(
@@ -291,7 +359,7 @@ def synchronize(host, github_project, window):
         revision_trusted = remote.get_revision(refspec_trusted)
         revision_open = remote.get_revision(refspec_open)
 
-        if should_be_mirrored(pull_request):
+        if should_be_mirrored(project, pull_request):
             logger.info('Pull Request should be mirrored')
 
             if revision_trusted is None:

@@ -5,8 +5,7 @@ function setBase(base) {
 }
 
 function bURL(url, base) {
-  base = base || "about:blank"
-  setBase(base)
+  if (base) setBase(base)
   var a = document.createElement("a")
   a.setAttribute("href", url)
   return a

@@ -40,7 +40,7 @@ def test_loader_h2_tests():
             }
         },
         "url_base": "/",
-        "version": 8,
+        "version": 10,
     }
     manifest = WPTManifest.from_json("/", manifest_json)
 

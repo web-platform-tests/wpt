@@ -51,7 +51,7 @@ try:
 except ImportError:
     fast_json = json  # type: ignore
 
-CURRENT_VERSION = 8  # type: int
+CURRENT_VERSION = 10  # type: int
 
 
 class ManifestError(Exception):

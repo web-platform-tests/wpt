@@ -804,36 +804,6 @@ class SourceFile(object):
         return bool(self.references)
 
     @cached_property
-    def css_flag_nodes(self):
-        # type: () -> List[ElementTree.Element]
-        """List of ElementTree Elements corresponding to nodes representing a
-        flag <meta>"""
-        if self.root is None:
-            return []
-        return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='flags']")
-
-    @cached_property
-    def css_flags(self):
-        # type: () -> Set[Text]
-        """Set of flags specified in the file"""
-        rv = set()  # type: Set[Text]
-        for item in self.css_flag_nodes:
-            if "content" in item.attrib:
-                for flag in item.attrib["content"].split():
-                    rv.add(flag)
-        return rv
-
-    @cached_property
-    def content_is_css_manual(self):
-        # type: () -> Optional[bool]
-        """Boolean indicating whether the file content represents a
-        CSS WG-style manual test"""
-        if self.root is None:
-            return None
-        # return True if the intersection between the two sets is non-empty
-        return bool(self.css_flags & {"animated", "font", "history", "interact", "paged", "speech", "userstyle"})
-
-    @cached_property
     def spec_link_nodes(self):
         # type: () -> List[ElementTree.Element]
         """List of ElementTree Elements corresponding to nodes representing a
@@ -851,16 +821,6 @@ class SourceFile(object):
             if "href" in item.attrib:
                 rv.add(item.attrib["href"].strip(space_chars))
         return rv
-
-    @cached_property
-    def content_is_css_visual(self):
-        # type: () -> Optional[bool]
-        """Boolean indicating whether the file content represents a
-        CSS WG-style visual test"""
-        if self.root is None:
-            return None
-        return bool(self.ext in {'.xht', '.html', '.xhtml', '.htm', '.xml', '.svg'} and
-                    self.spec_links)
 
     @property
     def type(self):
@@ -1073,15 +1033,6 @@ class SourceFile(object):
             ]
             rv = TestharnessTest.item_type, tests
 
-        elif self.content_is_css_manual and not self.name_is_reference:
-            rv = ManualTest.item_type, [
-                ManualTest(
-                    self.tests_root,
-                    self.rel_path,
-                    self.url_base,
-                    self.rel_url
-                )]
-
         elif self.content_is_testharness:
             rv = TestharnessTest.item_type, []
             testdriver = self.has_testdriver
@@ -1111,15 +1062,6 @@ class SourceFile(object):
                     viewport_size=self.viewport_size,
                     dpi=self.dpi,
                     fuzzy=self.fuzzy
-                )]
-
-        elif self.content_is_css_visual and not self.name_is_reference:
-            rv = VisualTest.item_type, [
-                VisualTest(
-                    self.tests_root,
-                    self.rel_path,
-                    self.url_base,
-                    self.rel_url
                 )]
 
         else:

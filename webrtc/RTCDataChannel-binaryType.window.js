@@ -9,7 +9,6 @@ for (const binaryType of validBinaryTypes) {
     t.add_cleanup(() => pc.close());
     const dc = pc.createDataChannel('test-binary-type');
 
-    assert_equals(dc.binaryType, "blob");
     dc.binaryType = binaryType;
     assert_equals(dc.binaryType, binaryType, `dc.binaryType should be '${binaryType}'`);
   }, `Setting binaryType to '${binaryType}' should succeed`);
@@ -24,6 +23,5 @@ for (const binaryType of invalidBinaryTypes) {
     assert_throws('SyntaxError', () => {
       dc.binaryType = binaryType;
     });
-    assert_equals(dc.binaryType, 'blob');
   }, `Setting invalid binaryType '${binaryType}' should throw SyntaxError`);
 }

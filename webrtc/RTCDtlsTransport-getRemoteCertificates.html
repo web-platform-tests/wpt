@@ -48,7 +48,7 @@
     exchangeOfferAnswer(pc1, pc2)
     .then(t.step_func(() => {
       const dtlsTransport1 = pc1.getSenders()[0].transport;
-      const dtlsTransport2 = pc1.getReceivers()[0].transport;
+      const dtlsTransport2 = pc2.getReceivers()[0].transport;
 
       const testedTransports = new Set();
 

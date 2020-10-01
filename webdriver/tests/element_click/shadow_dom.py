@@ -14,10 +14,10 @@ def get_element_attribute(session, element, attr):
             element_id=element.id,
             attr=attr))
 
-def get_button_dom():
-    return inline(""" <custom-button-element></custom-button-element></div>
+def get_checkbox_dom():
+    return inline("""<custom-checkbox-element></custom-checkbox-element></div>
         <script>
-            customElements.define('custom-button-element',
+            customElements.define('custom-checkbox-element',
                 class extends HTMLElement {
                     constructor() {
                             super();
@@ -29,14 +29,14 @@ def get_button_dom():
         </script>""")
 
 def test_shadow_element_click(session):
-    session.url = get_button_dom()
-    element = session.find.css("custom-button-element", all=False)
+    session.url = get_checkbox_dom()
+    element = session.find.css("custom-checkbox-element", all=False)
     response = element_click(session, element)
     assert_success(response)
 
 def test_inside_element_click(session):
-    session.url = get_button_dom()
-    shadow_root = session.find.css("custom-button-element", all=False)
+    session.url = get_checkbox_dom()
+    shadow_root = session.find.css("custom-checkbox-element", all=False)
     element = session.execute_script("return arguments[0].shadowRoot.querySelector('input')", args=(shadow_root,))
     pre_checked = get_element_attribute(session, element, 'checked')
     assert_success(pre_checked, None)
@@ -45,31 +45,43 @@ def test_inside_element_click(session):
     post_checked = get_element_attribute(session, element, 'checked')
     assert_success(post_checked, 'true')
 
-def get_custom_select_dom():
-    return inline(""" <custom-select-element></custom-select-element> <div id="clicked">false</div>
+def get_nested_shadow_checkbox_dom():
+    return inline("""<custom-nested-checkbox-element></custom-nested-checkbox-element></div>
         <script>
-            customElements.define('custom-select-element',
+         customElements.define('custom-nested-checkbox-element',
                 class extends HTMLElement {
                     constructor() {
                             super();
                             this.attachShadow({mode: 'open'}).innerHTML = `
-                                <select>
-                                    <option>first</option>
-                                    <option>second</option>
-                                </select>
-                            `;                          
+                                <div><custom-checkbox-element></custom-checkbox-element></div>
+                            `;
+                        }
+                });
+            customElements.define('custom-checkbox-element',
+                class extends HTMLElement {
+                    constructor() {
+                            super();
+                            this.attachShadow({mode: 'open'}).innerHTML = `
+                                <div><input type="checkbox"/></div>
+                            `;
                         }
                 });
         </script>""")
 
-def test_shadow_option_element_click_inside(session):
-    session.url = get_custom_select_dom()
-    shadow_root = session.find.css("custom-select-element", all=False)
-    options = session.execute_script("return arguments[0].shadowRoot.querySelectorAll('option');", args=(shadow_root,))
+def test_nested_shadow_element_click(session):
+    session.url = get_nested_shadow_checkbox_dom()
+    element = session.find.css("custom-nested-checkbox-element", all=False)
+    response = element_click(session, element)
+    assert_success(response)
 
-    assert options[0].selected
-    assert not options[1].selected
-
-    options[1].click()
-    assert not options[0].selected
-    assert options[1].selected
+def test_inside_element_click(session):
+    session.url = get_nested_shadow_checkbox_dom()
+    shadow_root = session.find.css("custom-nested-checkbox-element", all=False)
+    inner_shadow_root = session.execute_script("return arguments[0].shadowRoot.querySelector('custom-checkbox-element')", args=(shadow_root,))
+    element = session.execute_script("return arguments[0].shadowRoot.querySelector('input')", args=(inner_shadow_root,))
+    pre_checked = get_element_attribute(session, element, 'checked')
+    assert_success(pre_checked, None)
+    click_response = element_click(session, element)
+    assert_success(click_response)
+    post_checked = get_element_attribute(session, element, 'checked')
+    assert_success(post_checked, 'true')

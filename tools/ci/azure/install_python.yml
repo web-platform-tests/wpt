@@ -1,15 +1,15 @@
 steps:
 - powershell: |
-    Start-BitsTransfer -Source https://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi -Destination python.msi
-    $hash = (Get-FileHash python.msi).Hash.ToLower()
-    $expectedHash = "5e85f3c4c209de98480acbf2ba2e71a907fd5567a838ad4b6748c76deb286ad7"
+    Start-BitsTransfer -Source https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe  -Destination python_installer.exe
+    $hash = (Get-FileHash python_installer.exe).Hash.ToLower()
+    $expectedHash = "96088a58b7c43bc83b84e6b67f15e8706c614023dd64f9a5a14e81ff824adadc"
     if ($hash.Equals($expectedHash)) {
-      Write-Host "python.msi hash verified"
+      Write-Host "python_installer.exe hash verified"
     } else {
-      Throw "python.msi hash mismatch, got $hash, expected $expectedHash"
+      Throw "python_installer.exe hash mismatch, got $hash, expected $expectedHash"
     }
-    msiexec /i python.msi TARGETDIR=C:\Python27 /q
-    Write-Host "##vso[task.prependpath]C:\Python27"
-    Write-Host "##vso[task.prependpath]C:\Python27\Scripts"
+    & .\python_installer.exe /passive TargetDir=C:\Python36
+    Write-Host "##vso[task.prependpath]C:\Python36"
+    Write-Host "##vso[task.prependpath]C:\Python36\Scripts"
   displayName: 'Install Python (Windows)'
   condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))

@@ -2,13 +2,14 @@
 // META: script=/resources/idlharness.js
 // META: script=/resources/testdriver.js
 // META: script=/resources/testdriver-vendor.js
+// META: timeout=long
 
 // https://w3c.github.io/screen-wake-lock/
 
 'use strict';
 
 idl_test(
-  ['screen-wake-lock'],
+  ['wake-lock'],
   ['dom', 'html'],
   async idl_array => {
     idl_array.add_objects({ Navigator: ['navigator'] });

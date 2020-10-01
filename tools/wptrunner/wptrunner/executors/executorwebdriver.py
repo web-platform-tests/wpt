@@ -29,8 +29,9 @@ from .protocol import (BaseProtocolPart,
 from ..testrunner import Stop
 
 import webdriver as client
+from webdriver import error
 
-here = os.path.join(os.path.split(__file__)[0])
+here = os.path.dirname(__file__)
 
 
 class WebDriverCallbackHandler(CallbackHandler):
@@ -90,6 +91,8 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         self.runner_handle = None
         with open(os.path.join(here, "runner.js")) as f:
             self.runner_script = f.read()
+        with open(os.path.join(here, "window-loaded.js")) as f:
+            self.window_loaded_script = f.read()
 
     def load_runner(self, url_protocol):
         if self.runner_handle:
@@ -109,7 +112,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         for handle in handles:
             try:
                 self.webdriver.window_handle = handle
-                self.webdriver.close()
+                self.webdriver.window.close()
             except client.NoSuchWindowException:
                 pass
         self.webdriver.window_handle = self.runner_handle
@@ -153,6 +156,19 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
 
         raise Exception("unable to find test window")
 
+    def test_window_loaded(self):
+        """Wait until the page in the new window has been loaded.
+
+        Hereby ignore Javascript execptions that are thrown when
+        the document has been unloaded due to a process change.
+        """
+        while True:
+            try:
+                self.webdriver.execute_script(self.window_loaded_script, asynchronous=True)
+                break
+            except error.JavascriptErrorException:
+                pass
+
 
 class WebDriverSelectorProtocolPart(SelectorProtocolPart):
     def setup(self):
@@ -160,9 +176,6 @@ class WebDriverSelectorProtocolPart(SelectorProtocolPart):
 
     def elements_by_selector(self, selector):
         return self.webdriver.find.css(selector)
-
-    def elements_by_selector_and_frame(self, element_selector, frame):
-        return self.webdriver.find.css(element_selector, frame=frame)
 
 
 class WebDriverClickProtocolPart(ClickProtocolPart):
@@ -209,6 +222,24 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
         if message:
             obj["message"] = str(message)
         self.webdriver.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
+
+    def switch_to_window(self, window_id):
+        if window_id is None:
+            return
+
+        for window_handle in self.webdriver.handles:
+            self.webdriver.window_handle = window_handle
+            try:
+                handle_window_id = self.webdriver.execute_script("return window.name")
+            except client.JavascriptErrorException:
+                continue
+            if str(handle_window_id) == window_id:
+                return
+
+        raise Exception("Window with id %s not found" % window_id)
+
+    def switch_to_frame(self, frame_number):
+        self.webdriver.switch_frame(frame_number)
 
 
 class WebDriverGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):
@@ -349,20 +380,26 @@ class WebDriverRun(TimedRunner):
 
 class WebDriverTestharnessExecutor(TestharnessExecutor):
     supports_testdriver = True
+    protocol_cls = WebDriverProtocol
 
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, capabilities=None, debug_info=None,
-                 supports_eager_pageload=True, **kwargs):
+                 supports_eager_pageload=True, cleanup_after_test=True,
+                 **kwargs):
         """WebDriver-based executor for testharness.js tests"""
-        TestharnessExecutor.__init__(self, browser, server_config,
+        TestharnessExecutor.__init__(self, logger, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
-        self.protocol = WebDriverProtocol(self, browser, capabilities)
+        self.protocol = self.protocol_cls(self, browser, capabilities)
         with open(os.path.join(here, "testharness_webdriver_resume.js")) as f:
             self.script_resume = f.read()
+        with open(os.path.join(here, "window-loaded.js")) as f:
+            self.window_loaded_script = f.read()
+
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
         self.supports_eager_pageload = supports_eager_pageload
+        self.cleanup_after_test = cleanup_after_test
 
     def is_alive(self):
         return self.protocol.is_alive()
@@ -389,13 +426,20 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
     def do_testharness(self, protocol, url, timeout):
         format_map = {"url": strip_server(url)}
 
+        # The previous test may not have closed its old windows (if something
+        # went wrong or if cleanup_after_test was False), so clean up here.
         parent_window = protocol.testharness.close_old_windows()
+
         # Now start the test harness
         protocol.base.execute_script("window.open('about:blank', '%s', 'noopener')" % self.window_id)
         test_window = protocol.testharness.get_test_window(self.window_id,
                                                            parent_window,
                                                            timeout=5*self.timeout_multiplier)
         self.protocol.base.set_window(test_window)
+
+        # Wait until about:blank has been loaded
+        protocol.base.execute_script(self.window_loaded_script, asynchronous=True)
+
         handler = WebDriverCallbackHandler(self.logger, protocol, test_window)
         protocol.webdriver.url = url
 
@@ -422,6 +466,14 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             done, rv = handler(result)
             if done:
                 break
+
+        # Attempt to cleanup any leftover windows, if allowed. This is
+        # preferable as it will blame the correct test if something goes wrong
+        # closing windows, but if the user wants to see the test results we
+        # have to leave the window(s) open.
+        if self.cleanup_after_test:
+            protocol.testharness.close_old_windows()
+
         return rv
 
     def wait_for_load(self, protocol):
@@ -449,17 +501,21 @@ if (location.href === "about:blank") {
 
 
 class WebDriverRefTestExecutor(RefTestExecutor):
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    protocol_cls = WebDriverProtocol
+
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
                  debug_info=None, capabilities=None, **kwargs):
         """WebDriver-based executor for reftests"""
         RefTestExecutor.__init__(self,
+                                 logger,
                                  browser,
                                  server_config,
                                  screenshot_cache=screenshot_cache,
                                  timeout_multiplier=timeout_multiplier,
                                  debug_info=debug_info)
-        self.protocol = WebDriverProtocol(self, browser,
+        self.protocol = self.protocol_cls(self,
+                                          browser,
                                           capabilities=capabilities)
         self.implementation = RefTestImplementation(self)
         self.close_after_done = close_after_done
@@ -490,7 +546,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
 
         return self.convert_result(test, result)
 
-    def screenshot(self, test, viewport_size, dpi):
+    def screenshot(self, test, viewport_size, dpi, page_ranges):
         # https://github.com/web-platform-tests/wpt/issues/7135
         assert viewport_size is None
         assert dpi is None
@@ -517,17 +573,21 @@ class WebDriverRefTestExecutor(RefTestExecutor):
 
 
 class WebDriverCrashtestExecutor(CrashtestExecutor):
-    def __init__(self, browser, server_config, timeout_multiplier=1,
+    protocol_cls = WebDriverProtocol
+
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  screenshot_cache=None, close_after_done=True,
                  debug_info=None, capabilities=None, **kwargs):
         """WebDriver-based executor for reftests"""
         CrashtestExecutor.__init__(self,
+                                   logger,
                                    browser,
                                    server_config,
                                    screenshot_cache=screenshot_cache,
                                    timeout_multiplier=timeout_multiplier,
                                    debug_info=debug_info)
-        self.protocol = WebDriverProtocol(self, browser,
+        self.protocol = self.protocol_cls(self,
+                                          browser,
                                           capabilities=capabilities)
 
         with open(os.path.join(here, "test-wait.js")) as f:

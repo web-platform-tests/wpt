@@ -398,6 +398,65 @@ def test_check_css_globally_unique_ignored_dir(caplog):
     assert caplog.text == ""
 
 
+def test_check_unique_testharness_basename_same_basename(caplog):
+    # Precondition: There are testharness files with conflicting basename paths.
+    assert os.path.exists(os.path.join(_dummy_repo, 'tests', 'dir1', 'a.html'))
+    assert os.path.exists(os.path.join(_dummy_repo, 'tests', 'dir1', 'a.xhtml'))
+
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["tests/dir1/a.html", "tests/dir1/a.xhtml"], "normal")
+            # There will be one failure for each file.
+            assert rv == 2
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    assert "DUPLICATE-BASENAME-PATH" in caplog.text
+
+
+def test_check_unique_testharness_basename_different_name(caplog):
+    # Precondition: There are two testharness files in the same directory with
+    # different names.
+    assert os.path.exists(os.path.join(_dummy_repo, 'tests', 'dir1', 'a.html'))
+    assert os.path.exists(os.path.join(_dummy_repo, 'tests', 'dir1', 'b.html'))
+
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["tests/dir1/a.html", "tests/dir1/b.html"], "normal")
+            assert rv == 0
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    assert caplog.text == ""
+
+
+def test_check_unique_testharness_basename_different_dir(caplog):
+    # Precondition: There are two testharness files in different directories
+    # with the same basename.
+    assert os.path.exists(os.path.join(_dummy_repo, 'tests', 'dir1', 'a.html'))
+    assert os.path.exists(os.path.join(_dummy_repo, 'tests', 'dir2', 'a.xhtml'))
+
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["tests/dir1/a.html", "tests/dir2/a.xhtml"], "normal")
+            assert rv == 0
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    assert caplog.text == ""
+
+
+def test_check_unique_testharness_basename_not_testharness(caplog):
+    # Precondition: There are non-testharness files with conflicting basename paths.
+    assert os.path.exists(os.path.join(_dummy_repo, 'tests', 'dir1', 'a.html'))
+    assert os.path.exists(os.path.join(_dummy_repo, 'tests', 'dir1', 'a.js'))
+
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["tests/dir1/a.html", "tests/dir1/a.js"], "normal")
+            assert rv == 0
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    assert caplog.text == ""
+
+
 def test_ignore_glob(caplog):
     # Lint two files in the ref/ directory, and pass in ignore_glob to omit one
     # of them.
@@ -405,7 +464,10 @@ def test_ignore_glob(caplog):
     # clean.
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["ref/absolute.html", "ref/existent_relative.html"], "normal", "*solu*")
+            rv = lint(_dummy_repo,
+                      ["broken.html", "ref/absolute.html", "ref/existent_relative.html"],
+                      "normal",
+                      ["broken*", "*solu*"])
             assert rv == 0
             # Also confirm that only one file is checked
             assert mocked_check_path.call_count == 1
@@ -414,22 +476,23 @@ def test_ignore_glob(caplog):
     # However, linting the same two files without ignore_glob yields lint errors.
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
-            rv = lint(_dummy_repo, ["ref/absolute.html", "ref/existent_relative.html"], "normal")
-            assert rv == 1
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
+            rv = lint(_dummy_repo, ["broken.html", "ref/absolute.html", "ref/existent_relative.html"], "normal")
+            assert rv == 2
+            assert mocked_check_path.call_count == 3
+            assert mocked_check_file_contents.call_count == 3
+            assert "TRAILING WHITESPACE" in caplog.text
             assert "ABSOLUTE-URL-REF" in caplog.text
 
 
 def test_all_filesystem_paths():
     with mock.patch(
             'tools.lint.lint.walk',
-            return_value=[('',
-                           [('dir_a', None), ('dir_b', None)],
-                           [('file_a', None), ('file_b', None)]),
-                          ('dir_a',
+            return_value=[(b'',
+                           [(b'dir_a', None), (b'dir_b', None)],
+                           [(b'file_a', None), (b'file_b', None)]),
+                          (b'dir_a',
                            [],
-                           [('file_c', None), ('file_d', None)])]
+                           [(b'file_c', None), (b'file_d', None)])]
     ):
         got = list(lint_mod.all_filesystem_paths('.'))
         assert got == ['file_a',
@@ -441,12 +504,12 @@ def test_all_filesystem_paths():
 def test_filesystem_paths_subdir():
     with mock.patch(
             'tools.lint.lint.walk',
-            return_value=[('',
-                           [('dir_a', None), ('dir_b', None)],
-                           [('file_a', None), ('file_b', None)]),
-                          ('dir_a',
+            return_value=[(b'',
+                           [(b'dir_a', None), (b'dir_b', None)],
+                           [(b'file_a', None), (b'file_b', None)]),
+                          (b'dir_a',
                            [],
-                           [('file_c', None), ('file_d', None)])]
+                           [(b'file_c', None), (b'file_d', None)])]
     ):
         got = list(lint_mod.all_filesystem_paths('.', 'dir'))
         assert got == [os.path.join('dir', 'file_a'),
@@ -467,7 +530,8 @@ def test_main_with_args():
                                           [os.path.relpath(os.path.join(os.getcwd(), x), repo_root)
                                            for x in ['a', 'b', 'c']],
                                           "normal",
-                                          str())
+                                          None,
+                                          None)
     finally:
         sys.argv = orig_argv
 
@@ -479,7 +543,7 @@ def test_main_no_args():
         with _mock_lint('lint', return_value=True) as m:
             with _mock_lint('changed_files', return_value=['foo', 'bar']):
                 lint_mod.main(**vars(create_parser().parse_args()))
-                m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal", str())
+                m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal", None, None)
     finally:
         sys.argv = orig_argv
 
@@ -491,6 +555,6 @@ def test_main_all():
         with _mock_lint('lint', return_value=True) as m:
             with _mock_lint('all_filesystem_paths', return_value=['foo', 'bar']):
                 lint_mod.main(**vars(create_parser().parse_args()))
-                m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal", str())
+                m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal", None, None)
     finally:
         sys.argv = orig_argv

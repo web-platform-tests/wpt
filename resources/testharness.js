@@ -535,12 +535,13 @@ policies and contribution forms [3].
         var value = test_obj.step(func, test_obj, test_obj);
 
         if (value !== undefined) {
-            var msg = "Test named \"" + test_name +
-                "\" inappropriately returned a value";
+            var msg = 'Test named "' + test_name +
+                '" passed a function to `test` that returned a value.';
 
             try {
-                if (value && value.hasOwnProperty("then")) {
-                    msg += ", consider using `promise_test` instead";
+                if (value && typeof value.then === 'function') {
+                    msg += ' Consider using `promise_test` instead when ' +
+                        'using Promises or async/await.';
                 }
             } catch (err) {}
 
@@ -568,7 +569,30 @@ policies and contribution forms [3].
         var test_name = name ? name : test_environment.next_default_test_name();
         var test_obj = new Test(test_name, properties);
         if (func) {
-            test_obj.step(func, test_obj, test_obj);
+            var value = test_obj.step(func, test_obj, test_obj);
+
+            // Test authors sometimes return values to async_test, expecting us
+            // to handle the value somehow. Make doing so a harness error to be
+            // clear this is invalid, and point authors to promise_test if it
+            // may be appropriate.
+            //
+            // Note that we only perform this check on the initial function
+            // passed to async_test, not on any later steps - we haven't seen a
+            // consistent problem with those (and it's harder to check).
+            if (value !== undefined) {
+                var msg = 'Test named "' + test_name +
+                    '" passed a function to `async_test` that returned a value.';
+
+                try {
+                    if (value && typeof value.then === 'function') {
+                        msg += ' Consider using `promise_test` instead when ' +
+                            'using Promises or async/await.';
+                    }
+                } catch (err) {}
+
+                tests.set_status(tests.status.ERROR, msg);
+                tests.complete();
+            }
         }
         return test_obj;
     }
@@ -1190,6 +1214,8 @@ policies and contribution forms [3].
     }
     expose(assert_in_array, "assert_in_array");
 
+    // This function was deprecated in July of 2015.
+    // See https://github.com/web-platform-tests/wpt/issues/2033
     function assert_object_equals(actual, expected, description)
     {
          assert(typeof actual === "object" && actual !== null, "assert_object_equals", description,
@@ -2033,6 +2059,105 @@ policies and contribution forms [3].
         return setTimeout(this.step_func(function() {
             return f.apply(test_this, args);
         }), timeout * tests.timeout_multiplier);
+    };
+
+    Test.prototype.step_wait_func = function(cond, func, description,
+                                             timeout=3000, interval=100) {
+        /**
+         * Poll for a function to return true, and call a callback
+         * function once it does, or assert if a timeout is
+         * reached. This is preferred over a simple step_timeout
+         * whenever possible since it allows the timeout to be longer
+         * to reduce intermittents without compromising test execution
+         * speed when the condition is quickly met.
+         *
+         * @param {Function} cond A function taking no arguments and
+         *                        returning a boolean. The callback is called
+         *                        when this function returns true.
+         * @param {Function} func A function taking no arguments to call once
+         *                        the condition is met.
+         * @param {string} description Error message to add to assert in case of
+         *                             failure.
+         * @param {number} timeout Timeout in ms. This is multiplied by the global
+         *                         timeout_multiplier
+         * @param {number} interval Polling interval in ms
+         *
+         **/
+
+        var timeout_full = timeout * tests.timeout_multiplier;
+        var remaining = Math.ceil(timeout_full / interval);
+        var test_this = this;
+
+        var wait_for_inner = test_this.step_func(() => {
+            if (cond()) {
+                func();
+            } else {
+                if(remaining === 0) {
+                    assert(false, "step_wait_func", description,
+                           "Timed out waiting on condition");
+                }
+                remaining--;
+                setTimeout(wait_for_inner, interval);
+            }
+        });
+
+        wait_for_inner();
+    };
+
+    Test.prototype.step_wait_func_done = function(cond, func, description,
+                                                  timeout=3000, interval=100) {
+        /**
+         * Poll for a function to return true, and invoke a callback
+         * followed by this.done() once it does, or assert if a timeout
+         * is reached. This is preferred over a simple step_timeout
+         * whenever possible since it allows the timeout to be longer
+         * to reduce intermittents without compromising test execution speed
+         * when the condition is quickly met.
+         *
+         * @param {Function} cond A function taking no arguments and
+         *                        returning a boolean. The callback is called
+         *                        when this function returns true.
+         * @param {Function} func A function taking no arguments to call once
+         *                        the condition is met.
+         * @param {string} description Error message to add to assert in case of
+         *                             failure.
+         * @param {number} timeout Timeout in ms. This is multiplied by the global
+         *                         timeout_multiplier
+         * @param {number} interval Polling interval in ms
+         *
+         **/
+
+         this.step_wait_func(cond, () => {
+            if (func) {
+                func();
+            }
+            this.done();
+         }, description, timeout, interval);
+    }
+
+    Test.prototype.step_wait = function(cond, description, timeout=3000, interval=100) {
+        /**
+         * Poll for a function to return true, and resolve a promise
+         * once it does, or assert if a timeout is reached. This is
+         * preferred over a simple step_timeout whenever possible
+         * since it allows the timeout to be longer to reduce
+         * intermittents without compromising test execution speed
+         * when the condition is quickly met.
+         *
+         * @param {Function} cond A function taking no arguments and
+         *                        returning a boolean.
+         * @param {string} description Error message to add to assert in case of
+         *                             failure.
+         * @param {number} timeout Timeout in ms. This is multiplied by the global
+         *                         timeout_multiplier
+         * @param {number} interval Polling interval in ms
+         * @returns {Promise} Promise resolved once cond is met.
+         *
+         **/
+
+        return new Promise(resolve => {
+            this.step_wait_func(cond, resolve, description, timeout, interval);
+        });
     }
 
     /*
@@ -2508,6 +2633,7 @@ policies and contribution forms [3].
         this.test_done_callbacks = [];
         this.all_done_callbacks = [];
 
+        this.hide_test_state = false;
         this.pending_remotes = [];
 
         this.status = new TestsStatus();
@@ -2555,6 +2681,8 @@ policies and contribution forms [3].
                     if (this.timeout_length) {
                          this.timeout_length *= this.timeout_multiplier;
                     }
+                } else if (p == "hide_test_state") {
+                    this.hide_test_state = value;
                 }
             }
         }
@@ -3061,7 +3189,7 @@ policies and contribution forms [3].
             this.phase = this.HAVE_RESULTS;
         }
         var done_count = tests.tests.length - tests.num_pending;
-        if (this.output_node) {
+        if (this.output_node && !tests.hide_test_state) {
             if (done_count < 100 ||
                 (done_count < 1000 && done_count % 100 === 0) ||
                 done_count % 1000 === 0) {
@@ -3894,5 +4022,5 @@ span.ok, span.timeout, span.error {\
 }\
 ";
 
-})(this);
+})(self);
 // vim: set expandtab shiftwidth=4 tabstop=4:

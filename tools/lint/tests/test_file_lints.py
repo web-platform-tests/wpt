@@ -337,6 +337,33 @@ def test_multiple_testharnessreport():
             ]
 
 
+def test_early_testdriver_vendor():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("EARLY-TESTDRIVER-VENDOR",
+                    "Test file has an instance of "
+                    "`<script src='/resources/testdriver-vendor.js'>` "
+                    "prior to `<script src='/resources/testdriver.js'>`",
+                    filename,
+                    None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
 def test_multiple_testdriver():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -794,6 +821,20 @@ def test_css_missing_file_manual():
          "css/foo/bar-manual.html",
          None),
     ]
+
+
+def test_css_missing_file_tentative():
+    code = b"""\
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</html>
+"""
+
+    # The tentative flag covers tests that make assertions 'not yet required by
+    # any specification', so they need not have a specification link.
+    errors = check_file_contents("", "css/foo/bar.tentative.html", six.BytesIO(code))
+    assert not errors
 
 
 @pytest.mark.parametrize("filename", [

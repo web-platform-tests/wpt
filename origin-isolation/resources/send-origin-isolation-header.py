@@ -1,54 +1,43 @@
 def main(request, response):
     """Send a response with the Origin-Isolation header given in the "header"
-    query parameter, or no header if that is not provided. In either case, the
-    response will listen for message and messageerror events and echo them back
-    to the parent. See ./helpers.mjs for how these handlers are used.
+    query parameter, or no header if that is not provided. Other query
+    parameters (only their presence/absence matters) are "send-loaded-message"
+    and "redirect-first", which modify the behavior a bit.
+
+    In either case, the response will listen for various messages posted and
+    coordinate with the sender. See ./helpers.mjs for how these handlers are
+    used.
     """
 
-    if "header" in request.GET:
-      header = request.GET.first("header")
-      response.headers.set("Origin-Isolation", header)
+    if b"redirect-first" in request.GET:
+      # Create a new query string, which is the same as the one we're given but
+      # with the redirect-first component stripped out. This allows tests to use
+      # any value (or no value) for the other query params, in combination with
+      # redirect-first.
+      query_string_pieces = []
+      if b"header" in request.GET:
+        query_string_pieces.append(b"header=" + request.GET.first(b"header"))
+      if b"send-loaded-message" in request.GET:
+        query_string_pieces.append(b"send-loaded-message")
+      query_string = "?" + "&".join(query_string_pieces)
 
-    response.headers.set("Content-Type", "text/html")
+      return (
+        302,
+        [(b"Location", b"/origin-isolation/resources/send-origin-isolation-header.py" + query_string)],
+        u""
+      )
 
-    return """
+    if b"header" in request.GET:
+      header = request.GET.first(b"header")
+      response.headers.set(b"Origin-Isolation", header)
+
+    response.headers.set(b"Content-Type", b"text/html")
+
+    return u"""
     <!DOCTYPE html>
     <meta charset="utf-8">
     <title>Helper page for origin isolation tests</title>
 
-    <script type="module">
-    import { sendWasmModule } from "./helpers.mjs";
-
-    window.onmessage = async (e) => {
-      // These could come from the parent or siblings.
-      if (e.data.constructor === WebAssembly.Module) {
-        e.source.postMessage("WebAssembly.Module message received", "*");
-      }
-
-      // These only come from the parent.
-      if (e.data.command === "set document.domain") {
-        document.domain = e.data.newDocumentDomain;
-        parent.postMessage("document.domain is set", "*");
-      } else if (e.data.command === "send WASM module") {
-        const destinationFrameWindow = parent.frames[e.data.indexIntoParentFrameOfDestination];
-        const whatHappened = await sendWasmModule(destinationFrameWindow);
-        parent.postMessage(whatHappened, "*");
-      } else if (e.data.command === "access document") {
-        const destinationFrameWindow = parent.frames[e.data.indexIntoParentFrameOfDestination];
-        try {
-          destinationFrameWindow.document;
-          parent.postMessage("accessed document successfully", "*");
-        } catch (e) {
-          parent.postMessage(e.name, "*");
-        }
-      }
-
-      // We could also receive e.data === "WebAssembly.Module message received",
-      // but that's handled by await sendWasmModule() above.
-    };
-
-    window.onmessageerror = e => {
-      e.source.postMessage("messageerror", "*");
-    };
-    </script>
+    <body>
+    <script type="module" src="send-header-page-script.mjs"></script>
     """

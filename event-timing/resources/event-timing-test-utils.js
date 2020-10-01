@@ -22,14 +22,14 @@ function mainThreadBusy(duration) {
 // to check that the event also happens to correspond to the first event. In this case, the
 // timings of the 'first-input' entry should be equal to those of this entry. |minDuration|
 // is used to compared against entry.duration.
-function verifyEvent(entry, eventType, targetId, isFirst=false, minDuration=104) {
-  assert_true(entry.cancelable);
+function verifyEvent(entry, eventType, targetId, isFirst=false, minDuration=104, notCancelable=false) {
+  assert_equals(entry.cancelable, !notCancelable, 'cancelable property');
   assert_equals(entry.name, eventType);
   assert_equals(entry.entryType, 'event');
   assert_greater_than_equal(entry.duration, minDuration,
       "The entry's duration should be greater than or equal to " + minDuration + " ms.");
-  assert_greater_than(entry.processingStart, entry.startTime,
-      "The entry's processingStart should be greater than startTime.");
+  assert_greater_than_equal(entry.processingStart, entry.startTime,
+      "The entry's processingStart should be greater than or equal to startTime.");
   assert_greater_than_equal(entry.processingEnd, entry.processingStart,
       "The entry's processingEnd must be at least as large as processingStart.");
   // |duration| is a number rounded to the nearest 8 ms, so add 4 to get a lower bound
@@ -122,51 +122,144 @@ async function testDuration(t, id, numEntries, dur, fastDur, slowDur) {
   return Promise.all([observerPromise, clicksPromise]);
 }
 
-function applyAction(actions, eventType, target) {
+// Apply events that trigger an event of the given |eventType| to be dispatched to the
+// |target|. Some of these assume that the target is not on the top left corner of the
+// screen, which means that (0, 0) of the viewport is outside of the |target|.
+function applyAction(eventType, target) {
+  const actions = new test_driver.Actions();
   if (eventType === 'auxclick') {
     actions.pointerMove(0, 0, {origin: target})
     .pointerDown({button: actions.ButtonType.MIDDLE})
     .pointerUp({button: actions.ButtonType.MIDDLE});
+  } else if (eventType === 'click' || eventType === 'mousedown' || eventType === 'mouseup'
+      || eventType === 'pointerdown' || eventType === 'pointerup'
+      || eventType === 'touchstart' || eventType === 'touchend') {
+    actions.pointerMove(0, 0, {origin: target})
+    .pointerDown()
+    .pointerUp();
+  } else if (eventType === 'contextmenu') {
+    actions.pointerMove(0, 0, {origin: target})
+    .pointerDown({button: actions.ButtonType.RIGHT})
+    .pointerUp({button: actions.ButtonType.RIGHT});
+  } else if (eventType === 'dblclick') {
+    actions.pointerMove(0, 0, {origin: target})
+    .pointerDown()
+    .pointerUp()
+    .pointerDown()
+    .pointerUp()
+    // Reset by clicking outside of the target.
+    .pointerMove(0, 0)
+    .pointerDown()
+    .pointerUp();
+  } else if (eventType === 'mouseenter' || eventType === 'mouseover'
+      || eventType === 'pointerenter' || eventType === 'pointerover') {
+    // Move outside of the target and then back inside.
+    actions.pointerMove(0, 0)
+    .pointerMove(0, 0, {origin: target});
+  } else if (eventType === 'mouseleave' || eventType === 'mouseout'
+      || eventType === 'pointerleave' || eventType === 'pointerout') {
+    actions.pointerMove(0, 0, {origin: target})
+    .pointerMove(0, 0);
   } else {
     assert_unreached('The event type ' + eventType + ' is not supported.');
   }
+  return actions.send();
 }
 
-// Tests the given |eventType| by creating events whose target are the element with id 'target'.
-// The test assumes that such element already exists.
-async function testEventType(t, eventType) {
+function requiresListener(eventType) {
+  return ['mouseenter',
+          'mouseleave',
+          'pointerdown',
+          'pointerenter',
+          'pointerleave',
+          'pointerout',
+          'pointerover',
+          'pointerup'
+        ].includes(eventType);
+}
+
+function notCancelable(eventType) {
+  return ['mouseenter', 'mouseleave', 'pointerenter', 'pointerleave'].includes(eventType);
+}
+
+// Tests the given |eventType|'s performance.eventCounts value. Since this is populated only when
+// the event is processed, we check every 10 ms until we've found the |expectedCount|.
+function testCounts(t, resolve, looseCount, eventType, expectedCount) {
+  const counts = performance.eventCounts.get(eventType);
+  if (counts < expectedCount) {
+    t.step_timeout(() => {
+      testCounts(t, resolve, looseCount, eventType, expectedCount);
+    }, 10);
+    return;
+  }
+  if (looseCount) {
+    assert_greater_than_equal(performance.eventCounts.get(eventType), expectedCount,
+        `Should have at least ${expectedCount} ${eventType} events`)
+  } else {
+    assert_equals(performance.eventCounts.get(eventType), expectedCount,
+        `Should have ${expectedCount} ${eventType} events`);
+  }
+  resolve();
+}
+
+// Tests the given |eventType| by creating events whose target are the element with id
+// 'target'. The test assumes that such element already exists. |looseCount| is set for
+// eventTypes for which events would occur for other interactions other than the ones being
+// specified for the target, so the counts could be larger.
+async function testEventType(t, eventType, looseCount=false) {
   assert_implements(window.EventCounts, "Event Counts isn't supported");
-  assert_equals(performance.eventCounts.get(eventType), 0);
   const target = document.getElementById('target');
-  const actions = new test_driver.Actions();
+  if (requiresListener(eventType)) {
+    target.addEventListener(eventType, () =>{});
+  }
+  const initialCount = performance.eventCounts.get(eventType);
+  if (!looseCount) {
+    assert_equals(initialCount, 0, 'No events yet.');
+  }
   // Trigger two 'fast' events of the type.
-  applyAction(actions, eventType, target);
-  applyAction(actions, eventType, target);
-  await actions.send();
-  assert_equals(performance.eventCounts.get('auxclick'), 2);
+  await applyAction(eventType, target);
+  await applyAction(eventType, target);
+  await new Promise(t.step_func(resolve => {
+    testCounts(t, resolve, looseCount, eventType, initialCount + 2);
+  }));
   // The durationThreshold used by the observer. A slow events needs to be slower than that.
   const durationThreshold = 16;
   // Now add an event handler to cause a slow event.
   target.addEventListener(eventType, () => {
     mainThreadBusy(durationThreshold + 4);
   });
-  return new Promise(async resolve => {
+  const observerPromise = new Promise(async resolve => {
     new PerformanceObserver(t.step_func(entryList => {
       let eventTypeEntries = entryList.getEntriesByName(eventType);
       if (eventTypeEntries.length === 0)
         return;
 
-      assert_equals(eventTypeEntries.length, 1);
-      verifyEvent(eventTypeEntries[0],
+      let entry = null;
+      if (!looseCount) {
+        entry = eventTypeEntries[0];
+        assert_equals(eventTypeEntries.length, 1);
+      } else {
+        // The other events could also be considered slow. Find the one with the correct
+        // target.
+        eventTypeEntries.forEach(e => {
+          if (e.target === document.getElementById('target'))
+            entry = e;
+        });
+        if (!entry)
+          return;
+      }
+      verifyEvent(entry,
                   eventType,
                   'target',
                   false /* isFirst */,
-                  durationThreshold);
-      assert_equals(performance.eventCounts.get(eventType), 3);
-      resolve();
+                  durationThreshold,
+                  notCancelable(eventType));
+      // Shouldn't need async testing here since we already got the observer entry, but might as
+      // well reuse the method.
+      testCounts(t, resolve, looseCount, eventType, initialCount + 3);
     })).observe({type: 'event', durationThreshold: durationThreshold});
-    // Cause a slow event.
-    applyAction(actions, eventType, target);
-    actions.send();
   });
+  // Cause a slow event.
+  let actionPromise = applyAction(eventType, target);
+  return Promise.all([actionPromise, observerPromise]);
 }

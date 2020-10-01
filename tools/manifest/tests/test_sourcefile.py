@@ -6,6 +6,7 @@ from six import BytesIO
 from ...lint.lint import check_global_metadata
 from ..sourcefile import SourceFile, read_script_metadata, js_meta_re, python_meta_re
 
+
 def create(filename, contents=b""):
     assert isinstance(contents, bytes)
     return SourceFile("/", filename, "/", contents=contents)
@@ -121,6 +122,31 @@ def test_name_is_reference(rel_path):
     assert items(s) == []
 
 
+def test_name_is_tentative():
+    s = create("css/css-ui/appearance-revert-001.tentative.html")
+    assert s.name_is_tentative
+
+    s = create("css/css-ui/tentative/appearance-revert-001.html")
+    assert s.name_is_tentative
+
+    s = create("css/css-ui/appearance-revert-001.html")
+    assert not s.name_is_tentative
+
+
+@pytest.mark.parametrize("rel_path", [
+    "webdriver/tests/foo.py",
+    "webdriver/tests/print/foo.py",
+    "webdriver/tests/foo-crash.py",
+    "webdriver/tests/foo-visual.py",
+])
+def test_name_is_webdriver(rel_path):
+    s = create(rel_path)
+    assert s.name_is_webdriver
+
+    item_type, items = s.manifest_items()
+    assert item_type == "wdspec"
+
+
 def test_worker():
     s = create("html/test.worker.js")
     assert not s.name_is_non_test
@@ -144,6 +170,8 @@ def test_worker():
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
+        assert item.quic is None
+
 
 def test_window():
     s = create("html/test.window.js")
@@ -168,6 +196,7 @@ def test_window():
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
+        assert item.quic is None
 
 
 def test_worker_long_timeout():
@@ -176,7 +205,7 @@ importScripts('/resources/testharness.js')
 test()"""
 
     metadata = list(read_script_metadata(BytesIO(contents), js_meta_re))
-    assert metadata == [(b"timeout", b"long")]
+    assert metadata == [("timeout", "long")]
 
     s = create("html/test.worker.js", contents=contents)
     assert s.name_is_worker
@@ -193,7 +222,7 @@ def test_window_long_timeout():
 test()"""
 
     metadata = list(read_script_metadata(BytesIO(contents), js_meta_re))
-    assert metadata == [(b"timeout", b"long")]
+    assert metadata == [("timeout", "long")]
 
     s = create("html/test.window.js", contents=contents)
     assert s.name_is_window
@@ -233,6 +262,7 @@ test()"""
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
+        assert item.quic is None
 
 
 def test_window_with_variants():
@@ -263,6 +293,7 @@ test()"""
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
+        assert item.quic is None
 
 
 def test_python_long_timeout():
@@ -272,7 +303,7 @@ def test_python_long_timeout():
 
     metadata = list(read_script_metadata(BytesIO(contents),
                                          python_meta_re))
-    assert metadata == [(b"timeout", b"long")]
+    assert metadata == [("timeout", "long")]
 
     s = create("webdriver/test.py", contents=contents)
     assert s.name_is_webdriver
@@ -307,6 +338,7 @@ def test_multi_global():
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
+        assert item.quic is None
 
 
 def test_multi_global_long_timeout():
@@ -315,7 +347,7 @@ importScripts('/resources/testharness.js')
 test()"""
 
     metadata = list(read_script_metadata(BytesIO(contents), js_meta_re))
-    assert metadata == [(b"timeout", b"long")]
+    assert metadata == [("timeout", "long")]
 
     s = create("html/test.any.js", contents=contents)
     assert s.name_is_multi_global
@@ -366,6 +398,7 @@ test()""" % input
         assert item.url == url
         assert item.jsshell is False
         assert item.timeout is None
+        assert item.quic is None
 
 
 def test_multi_global_with_jsshell_globals():
@@ -396,6 +429,7 @@ test()"""
         assert item.url == url
         assert item.jsshell == jsshell
         assert item.timeout is None
+        assert item.quic is None
 
 
 def test_multi_global_with_variants():
@@ -434,17 +468,18 @@ test()"""
     for item, url in zip(items, expected_urls):
         assert item.url == url
         assert item.timeout is None
+        assert item.quic is None
 
 
 @pytest.mark.parametrize("input,expected", [
-    (b"""//META: foo=bar\n""", [(b"foo", b"bar")]),
-    (b"""// META: foo=bar\n""", [(b"foo", b"bar")]),
-    (b"""//  META: foo=bar\n""", [(b"foo", b"bar")]),
+    (b"""//META: foo=bar\n""", [("foo", "bar")]),
+    (b"""// META: foo=bar\n""", [("foo", "bar")]),
+    (b"""//  META: foo=bar\n""", [("foo", "bar")]),
     (b"""\n// META: foo=bar\n""", []),
     (b""" // META: foo=bar\n""", []),
-    (b"""// META: foo=bar\n// META: baz=quux\n""", [(b"foo", b"bar"), (b"baz", b"quux")]),
-    (b"""// META: foo=bar\n\n// META: baz=quux\n""", [(b"foo", b"bar")]),
-    (b"""// META: foo=bar\n// Start of the test\n// META: baz=quux\n""", [(b"foo", b"bar")]),
+    (b"""// META: foo=bar\n// META: baz=quux\n""", [("foo", "bar"), ("baz", "quux")]),
+    (b"""// META: foo=bar\n\n// META: baz=quux\n""", [("foo", "bar")]),
+    (b"""// META: foo=bar\n// Start of the test\n// META: baz=quux\n""", [("foo", "bar")]),
     (b"""// META:\n""", []),
     (b"""// META: foobar\n""", []),
 ])
@@ -643,6 +678,35 @@ def test_relative_testdriver(ext):
 
 
 @pytest.mark.parametrize("ext", ["htm", "html"])
+def test_quic_html(ext):
+    filename = "html/test." + ext
+
+    content = b'<meta name="quic" content="true">'
+    s = create(filename, content)
+    assert s.quic
+
+    content = b'<meta name="quic" content="false">'
+    s = create(filename, content)
+    assert s.quic is None
+
+
+def test_quic_js():
+    filename = "html/test.any.js"
+
+    content = b"// META: quic=true"
+    s = create(filename, content)
+    _, items = s.manifest_items()
+    for item in items:
+        assert item.quic
+
+    content = b"// META: quic=false"
+    s = create(filename, content)
+    _, items = s.manifest_items()
+    for item in items:
+        assert item.quic is None
+
+
+@pytest.mark.parametrize("ext", ["htm", "html"])
 def test_reftest(ext):
     content = b"<link rel=match href=ref.html>"
 
@@ -813,6 +877,35 @@ def test_reftest_fuzzy_multi(fuzzy, expected):
 
     assert s.content_is_ref_node
     assert s.fuzzy == expected
+
+
+@pytest.mark.parametrize("page_ranges, expected", [
+    (b"1-2", [[1, 2]]),
+    (b"1-1,3-4", [[1, 1], [3, 4]]),
+    (b"1,3", [[1], [3]]),
+    (b"2-", [[2, None]]),
+    (b"-2", [[None, 2]]),
+    (b"-2,2-", [[None, 2], [2, None]]),
+    (b"1,6-7,8", [[1], [6, 7], [8]])])
+def test_page_ranges(page_ranges, expected):
+    content = b"""<link rel=match href=ref.html>
+<meta name=reftest-pages content="%s">
+""" % page_ranges
+
+    s = create("foo/test-print.html", content)
+
+    assert s.page_ranges == {"/foo/test-print.html": expected}
+
+
+@pytest.mark.parametrize("page_ranges", [b"a", b"1-a", b"1=2", b"1-2:2-3"])
+def test_page_ranges_invalid(page_ranges):
+    content = b"""<link rel=match href=ref.html>
+<meta name=reftest-pages content="%s">
+""" % page_ranges
+
+    s = create("foo/test-print.html", content)
+    with pytest.raises(ValueError):
+        s.page_ranges
 
 
 def test_hash():

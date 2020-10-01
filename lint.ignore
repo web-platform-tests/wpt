@@ -45,6 +45,8 @@ TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.ico
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.wasm
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.bmp
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.sxg
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.wbn
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.avif
 
 ## .gitignore
 W3C-TEST.ORG: .gitignore
@@ -83,6 +85,7 @@ CR AT EOL: html/semantics/forms/the-textarea-element/multiline-placeholder-crlf.
 CR AT EOL: html/semantics/forms/the-input-element/multiline-placeholder-cr.html
 CR AT EOL: html/semantics/forms/the-input-element/multiline-placeholder-crlf.html
 CR AT EOL: webvtt/parsing/file-parsing/tests/support/newlines.vtt
+CR AT EOL: css/css-text/ellisize-rtl-text-crash.html
 
 # Intentional use of tabs
 INDENT TABS: html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html
@@ -104,6 +107,7 @@ PRINT STATEMENT: webdriver/tests/support/helpers.py
 
 # semi-legitimate use of console.*
 CONSOLE: console/*
+CONSOLE: js/builtins/weakrefs/resources/maybe-garbage-collect.js
 CONSOLE: resources/check-layout-th.js
 CONSOLE: resources/chromium/*
 CONSOLE: streams/resources/test-utils.js
@@ -172,14 +176,14 @@ SET TIMEOUT: IndexedDB/*
 SET TIMEOUT: infrastructure/*
 SET TIMEOUT: intersection-observer/resources/*
 SET TIMEOUT: intersection-observer/target-in-different-window.html
+SET TIMEOUT: measure-memory/*
 SET TIMEOUT: media-source/mediasource-util.js
 SET TIMEOUT: media-source/URL-createObjectURL-revoke.html
 SET TIMEOUT: mixed-content/generic/sanity-checker.js
 SET TIMEOUT: navigation-timing/*
-SET TIMEOUT: html/canvas/offscreen/the-offscreen-canvas/*
 SET TIMEOUT: old-tests/submission/Microsoft/history/history_000.htm
 SET TIMEOUT: paint-timing/resources/subframe-painting.html
-SET TIMEOUT: payment-request/allowpaymentrequest/setting-allowpaymentrequest-timing.https.sub.html
+SET TIMEOUT: payment-request/allowpayment/setting-allowpaymentrequest-timing.https.sub.html
 SET TIMEOUT: portals/resources/portals-adopt-predecessor-portal.html
 SET TIMEOUT: preload/single-download-preload.html
 SET TIMEOUT: resize-observer/resources/iframe.html
@@ -201,8 +205,8 @@ SET TIMEOUT: service-workers/service-worker/resources/resource-timing-worker.js
 SET TIMEOUT: shadow-dom/Document-prototype-currentScript.html
 SET TIMEOUT: shadow-dom/scroll-to-the-fragment-in-shadow-tree.html
 SET TIMEOUT: shadow-dom/slotchange-event.html
-SET TIMEOUT: trusted-types/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.tentative.https.html
-SET TIMEOUT: trusted-types/DOMWindowTimers-setTimeout-setInterval.tentative.https.html
+SET TIMEOUT: trusted-types/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.tentative.html
+SET TIMEOUT: trusted-types/DOMWindowTimers-setTimeout-setInterval.tentative.html
 SET TIMEOUT: user-timing/*
 SET TIMEOUT: web-animations/timing-model/animations/*
 SET TIMEOUT: webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/mediaElementAudioSourceToScriptProcessorTest.html
@@ -221,6 +225,7 @@ GENERATE_TESTS: resources/testharness.js
 
 # generate_tests usage (should be got rid of)
 GENERATE_TESTS: html/canvas/element/drawing-images-to-the-canvas/*
+GENERATE_TESTS: html/canvas/element/manual/drawing-images-to-the-canvas/*
 GENERATE_TESTS: css/css-shapes/shape-outside/values/*
 GENERATE_TESTS: css/css-tables/bounding-box-computation-1.html
 GENERATE_TESTS: css/css-tables/bounding-box-computation-2.html
@@ -262,7 +267,9 @@ GENERATE_TESTS: domparsing/createContextualFragment.html
 GENERATE_TESTS: domxpath/001.html
 GENERATE_TESTS: domxpath/002.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-applyConstraints-reject.html
+GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getCapabilities.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getConstraints-fast.html
+GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getSettings.html
 GENERATE_TESTS: mediacapture-image/setOptions-reject.html
 GENERATE_TESTS: html/semantics/scripting-1/the-template-element/template-element/template-as-a-descendant.html
 GENERATE_TESTS: html/syntax/parsing/Document.getElementsByTagName-foreign-01.html
@@ -275,7 +282,7 @@ GENERATE_TESTS: html/webappapis/atob/base64.html
 GENERATE_TESTS: mediacapture-fromelement/capture.html
 GENERATE_TESTS: mediacapture-fromelement/creation.html
 GENERATE_TESTS: mediacapture-fromelement/ended.html
-GENERATE_TESTS: html/canvas/offscreen/filter/offscreencanvas.filter.html
+GENERATE_TESTS: html/canvas/offscreen/manual/filter/offscreencanvas.filter.html
 GENERATE_TESTS: pointerevents/pointerevent_constructor.html
 GENERATE_TESTS: pointerevents/extension/pointerevent_constructor.html
 GENERATE_TESTS: selection/collapse.js
@@ -293,11 +300,13 @@ SET TIMEOUT: css/css-fonts/font-display/font-display-change-ref.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-feature-policy-01.tentative.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-feature-policy-02.tentative.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-preload.html
-SET TIMEOUT: document-policy/font-display/font-display-document-policy-01.tentative.html
+SET TIMEOUT: document-policy/font-display/override-to-optional.tentative.html
+SET TIMEOUT: feature-policy/experimental-features/resources/focus-without-user-activation-iframe-tentative.html
 SET TIMEOUT: html/browsers/windows/auxiliary-browsing-contexts/resources/close-opener.html
 SET TIMEOUT: html/cross-origin-embedder-policy/resources/navigate-none.sub.html
 SET TIMEOUT: html/cross-origin-embedder-policy/resources/navigate-require-corp.sub.html
 SET TIMEOUT: html/cross-origin-embedder-policy/resources/navigate-require-corp-same-site.sub.html
+SET TIMEOUT: html/cross-origin-embedder-policy/resources/reporting-worker.js
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/timers/*
 SET TIMEOUT: orientation-event/resources/orientation-event-helpers.js
@@ -308,6 +317,8 @@ SET TIMEOUT: resources/test/tests/functional/add_cleanup_async.html
 SET TIMEOUT: resources/test/tests/functional/add_cleanup_async_rejection.html
 SET TIMEOUT: resources/test/tests/functional/add_cleanup_async_rejection_after_load.html
 SET TIMEOUT: resources/test/tests/functional/api-tests-1.html
+SET TIMEOUT: resources/test/tests/functional/step_wait.html
+SET TIMEOUT: resources/test/tests/functional/step_wait_func.html
 SET TIMEOUT: resources/test/tests/functional/worker.js
 SET TIMEOUT: resources/test/tests/functional/worker-uncaught-allow.js
 SET TIMEOUT: resources/test/tests/unit/exceptional-cases.html
@@ -606,7 +617,11 @@ CSS-COLLIDING-SUPPORT-NAME: css/css-shapes/shape-outside/shape-image/support/ani
 CSS-COLLIDING-SUPPORT-NAME: css/css-display/support/util.js
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/normal-flow/support/replaced-min-max-1.png
 CSS-COLLIDING-SUPPORT-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/ui3/support/replaced-min-max-1.png
+CSS-COLLIDING-REF-NAME: css/css-multicol/baseline-001-ref.html
+CSS-COLLIDING-REF-NAME: css/css-grid/subgrid/baseline-001-ref.html
 
+CSS-COLLIDING-TEST-NAME: css/css-contain/inheritance.html
+CSS-COLLIDING-TEST-NAME: css/css-contain/content-visibility/inheritance.html
 CSS-COLLIDING-TEST-NAME: css/css-sizing/contain-intrinsic-size/parsing/contain-intrinsic-size-invalid.html
 CSS-COLLIDING-TEST-NAME: css/css-sizing/aspect-ratio/parsing/contain-intrinsic-size-invalid.html
 CSS-COLLIDING-TEST-NAME: css/css-sizing/contain-intrinsic-size/parsing/contain-intrinsic-size-computed.html
@@ -679,11 +694,7 @@ MISSING-LINK: css/filter-effects/*.any.js
 LAYOUTTESTS APIS: import-maps/common/resources/common-test-helper.js
 LAYOUTTESTS APIS: resources/chromium/enable-hyperlink-auditing.js
 LAYOUTTESTS APIS: resources/chromium/generic_sensor_mocks.js
-LAYOUTTESTS APIS: resources/chromium/nfc-mock.js
 LAYOUTTESTS APIS: resources/chromium/webxr-test.js
-LAYOUTTESTS APIS: web-nfc/NDEFReader-document-hidden-manual.https.html
-LAYOUTTESTS APIS: web-nfc/NDEFReader_scan.https.html
-LAYOUTTESTS APIS: web-nfc/NDEFWriter_write.https.html
 LAYOUTTESTS APIS: webxr/resources/webxr_util.js
 
 # Signed Exchange files have hard-coded URLs in the certUrl field
@@ -694,23 +705,31 @@ WEB-PLATFORM.TEST:signed-exchange/resources/generate-test-sxgs.sh
 # Web Bundle files have hard-coded URLs
 WEB-PLATFORM.TEST:web-bundle/resources/generate-test-wbns.sh
 WEB-PLATFORM.TEST:web-bundle/resources/wbn/*.wbn
+WEB-PLATFORM.TEST:web-bundle/subresource-loading/subresource-loading-from-web-bundle.tentative.html
 
 # Tests that depend on resources in /gen/ in Chromium:
 # https://github.com/web-platform-tests/wpt/issues/16455
 # Please consult with ecosystem-infra@chromium.org before adding more.
-MISSING DEPENDENCY: idle-detection/interceptor.https.html
-MISSING DEPENDENCY: credential-management/support/otpcredential-helper.js
-MISSING DEPENDENCY: web-nfc/resources/nfc-helpers.js
-MISSING DEPENDENCY: shape-detection/resources/shapedetection-helpers.js
-MISSING DEPENDENCY: webxr/resources/webxr_util.js
+MISSING DEPENDENCY: bluetooth/resources/bluetooth-test.js
 MISSING DEPENDENCY: contacts/resources/helpers.js
+MISSING DEPENDENCY: credential-management/support/otpcredential-helper.js
 MISSING DEPENDENCY: generic-sensor/resources/generic-sensor-helpers.js
+MISSING DEPENDENCY: idle-detection/resources/idle-detection-helper.js
+MISSING DEPENDENCY: mediacapture-image/resources/imagecapture-helpers.js
 MISSING DEPENDENCY: orientation-event/resources/orientation-event-helpers.js
+MISSING DEPENDENCY: resources/test-only-api.js
+MISSING DEPENDENCY: screen_enumeration/resources/screenenumeration-helpers.js
+MISSING DEPENDENCY: shape-detection/resources/shapedetection-helpers.js
+MISSING DEPENDENCY: web-nfc/resources/nfc-helpers.js
+MISSING DEPENDENCY: webusb/resources/usb-helpers.js
+MISSING DEPENDENCY: webxr/resources/webxr_util.js
 
 # Tests that are false positives for using Ahem as a system font
 AHEM SYSTEM FONT: acid/acid3/test.html
 AHEM SYSTEM FONT: resource-timing/resources/all_resource_types.htm
 AHEM SYSTEM FONT: resource-timing/resources/iframe-reload-TAO.sub.html
+AHEM SYSTEM FONT: html/canvas/element/drawing-text-to-the-canvas/2d.text.measure.fontBoundingBox.ahem.html
+AHEM SYSTEM FONT: css/css-font-loading/fontface-override-descriptors.html
 
 # TODO: The following should be deleted along with the Ahem web font cleanup
 # PR (https://github.com/web-platform-tests/wpt/pull/18702)
@@ -718,11 +737,10 @@ AHEM SYSTEM FONT: infrastructure/assumptions/ahem-ref.html
 AHEM SYSTEM FONT: infrastructure/assumptions/ahem.html
 
 # Existing crashtests using testharness
-TESTHARNESS-IN-OTHER-TYPE: html/canvas/element/wide-gamut-canvas/imagedata-no-color-settings-crash.html
+TESTHARNESS-IN-OTHER-TYPE: html/canvas/element/manual/wide-gamut-canvas/imagedata-no-color-settings-crash.html
 TESTHARNESS-IN-OTHER-TYPE: css/CSS2/floats-clear/adjoining-float-new-fc-crash.html
 TESTHARNESS-IN-OTHER-TYPE: css/CSS2/floats/floats-saturated-position-crash.html
 TESTHARNESS-IN-OTHER-TYPE: css/CSS2/linebox/video-needs-layout-crash.html
-TESTHARNESS-IN-OTHER-TYPE: css/css-animations/keyframes-remove-documentElement-crash.html
 TESTHARNESS-IN-OTHER-TYPE: css/css-break/break-before-with-no-fragmentation-crash.html
 TESTHARNESS-IN-OTHER-TYPE: css/css-multicol/abspos-in-multicol-with-spanner-crash.html
 TESTHARNESS-IN-OTHER-TYPE: css/css-multicol/extremely-tall-multicol-with-extremely-tall-child-crash.html
@@ -752,7 +770,19 @@ TESTHARNESS-IN-OTHER-TYPE: html/semantics/interactive-elements/the-summary-eleme
 TESTHARNESS-IN-OTHER-TYPE: html/semantics/text-level-semantics/the-ruby-element/rt-without-ruby-crash.html
 TESTHARNESS-IN-OTHER-TYPE: portals/portals-no-frame-crash.html
 TESTHARNESS-IN-OTHER-TYPE: quirks/table-replaced-descendant-percentage-height-crash.html
+TESTHARNESS-IN-OTHER-TYPE: scroll-animations/null-scroll-source-crash.html
 TESTHARNESS-IN-OTHER-TYPE: svg/extensibility/foreignObject/foreign-object-circular-filter-reference-crash.html
 TESTHARNESS-IN-OTHER-TYPE: svg/extensibility/foreignObject/foreign-object-under-clip-path-crash.html
 TESTHARNESS-IN-OTHER-TYPE: svg/extensibility/foreignObject/foreign-object-under-defs-crash.html
 TESTHARNESS-IN-OTHER-TYPE: svg/svg-in-svg/svg-in-svg-circular-filter-reference-crash.html
+
+PRINT STATEMENT: webdriver/tests/print/printcmd.py
+PRINT STATEMENT: webdriver/tests/print/user_prompts.py
+
+DUPLICATE-BASENAME-PATH: acid/acid3/empty.html
+DUPLICATE-BASENAME-PATH: acid/acid3/empty.xml
+DUPLICATE-BASENAME-PATH: dom/nodes/Document-createElement-namespace-tests/*
+DUPLICATE-BASENAME-PATH: dom/nodes/ParentNode-querySelector-All-content.html
+DUPLICATE-BASENAME-PATH: dom/nodes/ParentNode-querySelector-All-content.xht
+DUPLICATE-BASENAME-PATH: svg/struct/reftests/reference/green-100x100.html
+DUPLICATE-BASENAME-PATH: svg/struct/reftests/reference/green-100x100.svg

@@ -102,7 +102,7 @@ var measurement_interval = {
 };
 
 /**
- * An advertisement packet object that simulates a device.
+ * An advertisement packet object that simulates a Health Thermometer device.
  * @type {ScanResult}
  */
 const health_thermometer_ad_packet = {
@@ -112,6 +112,47 @@ const health_thermometer_ad_packet = {
     name: 'Health Thermometer',
     uuids: [health_thermometer.uuid],
   },
+};
+
+/**
+ * An advertisement packet object that simulates a Heart Rate device.
+ * @type {ScanResult}
+ */
+const heart_rate_ad_packet = {
+  deviceAddress: '08:08:08:08:08:08',
+  rssi: -10,
+  scanRecord: {
+    name: 'Heart Rate',
+    uuids: [heart_rate.uuid],
+  },
+};
+
+const uuid1234 = BluetoothUUID.getService(0x1234);
+const uuid5678 = BluetoothUUID.getService(0x5678);
+const uuidABCD = BluetoothUUID.getService(0xABCD);
+const manufacturer1Data = new Uint8Array([1, 2]);
+const manufacturer2Data = new Uint8Array([3, 4]);
+const uuid1234Data = new Uint8Array([5, 6]);
+const uuid5678Data = new Uint8Array([7, 8]);
+const uuidABCDData = new Uint8Array([9, 10]);
+/**
+ * An advertisement packet object that simulates a device that advertises
+ * service and manufacturer data.
+ * @type {ScanResult}
+ */
+const service_and_manufacturer_data_ad_packet = {
+  deviceAddress: '07:07:07:07:07:07',
+  rssi: -10,
+  scanRecord: {
+    name: 'LE Device',
+    uuids: [uuid1234],
+    manufacturerData: {0x0001: manufacturer1Data, 0x0002: manufacturer2Data},
+    serviceData: {
+      [uuid1234]: uuid1234Data,
+      [uuid5678]: uuid5678Data,
+      [uuidABCD]: uuidABCDData
+    }
+  }
 };
 
 /** Bluetooth Helpers */
@@ -439,7 +480,7 @@ async function getBlocklistDevice(setupOptionsOverride = {}) {
 }
 
 /**
- * Returns an object containing a Blocklist Test BluetoothRemoveGattService and
+ * Returns an object containing a Blocklist Test BluetoothRemoteGattService and
  * its corresponding FakeRemoteGATTService.
  * @returns {Promise<{device: BluetoothDevice, fake_peripheral: FakePeripheral,
  *     fake_blocklist_test_service: FakeRemoteGATTService,
@@ -1044,6 +1085,29 @@ async function getUserDescriptionDescriptor() {
     descriptor,
     fake_descriptor: result.fake_user_description,
   });
+}
+
+/** Heart Rate Bluetooth Device Helper Methods */
+
+/** @type {FakeDeviceOptions} */
+const heartRateFakeDeviceOptionsDefault = {
+  address: '08:08:08:08:08:08',
+  name: 'Heart Rate',
+  knownServiceUUIDs: ['generic_access', 'heart_rate'],
+  connectable: false,
+  serviceDiscoveryComplete: false,
+};
+
+/** @type {RequestDeviceOptions} */
+const heartRateRequestDeviceOptionsDefault = {
+  filters: [{services: ['heart_rate']}]
+};
+
+async function getHeartRateDevice(setupOptionsOverride) {
+  let setupOptions = createSetupOptions(
+      {fakeDeviceOptions: heartRateFakeDeviceOptionsDefault},
+      setupOptionsOverride);
+  return await setUpPreconnectedFakeDevice(setupOptions);
 }
 
 /**

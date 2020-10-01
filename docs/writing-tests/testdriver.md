@@ -65,6 +65,10 @@ setKeyboard: Set the current default key source
 addKeyboard: Add a new key input source with the given name
 ```
 
+This works with elements in other frames/windows as long as they are
+same-origin with the test, and the test does not depend on the
+window.name property remaining unset on the target window.
+
 ### bless
 
 Usage: `test_driver.bless(intent, action)`
@@ -104,6 +108,10 @@ possible to click it. It returns a promise that resolves after the
 click has occurred or rejects if the element cannot be clicked (for
 example, it is obscured by an element on top of it).
 
+This works with elements in other frames/windows as long as they are
+same-origin with the test, and the test does not depend on the
+window.name property remaining unset on the target window.
+
 Note that if the element to be clicked does not have a unique ID, the
 document must not have any DOM mutations made between the function
 being called and the promise settling.
@@ -120,11 +128,15 @@ make it possible to send keys. It returns a promise that resolves
 after the keys have been sent, or rejects if the keys cannot be sent
 to the element.
 
+This works with elements in other frames/windows as long as they are
+same-origin with the test, and the test does not depend on the
+window.name property remaining unset on the target window.
+
 Note that if the element that the keys need to be sent to does not have
 a unique ID, the document must not have any DOM mutations made
 between the function being called and the promise settling.
 
-To send special keys, one must send the respective key's codepoint. Since this uses the WebDriver protocol, you can find a [list for code points to special keys in the spec](https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions).
+To send special keys, one must send the respective key's codepoint. Since this uses the WebDriver protocol, you can find a [list for code points to special keys in the spec](https://w3c.github.io/webdriver/#keyboard-actions).
 For example, to send the tab key you would send "\uE004".
 
 [activation]: https://html.spec.whatwg.org/multipage/interaction.html#activation

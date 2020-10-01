@@ -29,9 +29,10 @@ self.postMessage({ origin: self.origin, view });
 \`], { type: "text/javascript" })));
 
   return new Promise((resolve, reject) => {
-    // Initially the sub-worker gives us an object containing an origin and a view on a shared
+    /* Initially the sub-worker gives us an object containing an origin and a view on a shared
     // buffer. We then modify the shared buffer through the buffer and tell the sub-worker to
     // "continue". The sub-worker verifies the modification and relays whether it succeeded.
+    */
     worker.onmessage = t.step_func(({ data }) => {
       if ("succeeded" in data) {
         assert_true(data.succeeded);
@@ -49,14 +50,14 @@ self.postMessage({ origin: self.origin, view });
 `;
 }
 
-function propertyTests(name) {
+function propertyTests(name, crossOriginIsolated) {
   return `
 test(() => {
   assert_equals(self.origin, self.location.origin);
 }, "${name}: self.origin");
 
 test(() => {
-  assert_true(self.crossOriginIsolated);
+  assert_equals(self.crossOriginIsolated, ${crossOriginIsolated});
 }, "${name}: self.crossOriginIsolated");
 
 test(() => {
@@ -73,7 +74,7 @@ ${httpWorkerIncrementerTest("blob worker")}
 
 ${blobWorkerIncrementerTest("blob worker", self.location.origin)}
 
-${propertyTests("blob worker")}
+${propertyTests("blob worker", true)}
 
 done();
 `;
@@ -89,7 +90,7 @@ ${httpWorkerIncrementerTest("blob frame")}
 
 ${blobWorkerIncrementerTest("blob frame", self.location.origin)}
 
-${propertyTests("blob frame")}
+${propertyTests("blob frame", true)}
 <\/script>
 `;
 
@@ -101,11 +102,11 @@ fetch_tests_from_window(frame.contentWindow);
 const dataWorkerScript = `
 importScripts("${url.origin}/resources/testharness.js?pipe=header(Cross-Origin-Resource-Policy,cross-origin)");
 
-// Cannot use httpWorkerIncrementerTest() here as the HTTP URL is not same origin.
+/* Cannot use httpWorkerIncrementerTest() here as the HTTP URL is not same origin. */
 
 ${blobWorkerIncrementerTest("data worker")}
 
-${propertyTests("data worker")}
+${propertyTests("data worker", false)}
 
 done();
 `;
@@ -116,11 +117,11 @@ const dataFrameScript = `
 <!doctype html>
 <script src=${url.origin}/resources/testharness.js?pipe=header(Cross-Origin-Resource-Policy,cross-origin)><\/script>
 <script>
-// Cannot use httpWorkerIncrementerTest() here as the HTTP URL is not same origin.
+/* Cannot use httpWorkerIncrementerTest() here as the HTTP URL is not same origin. */
 
 ${blobWorkerIncrementerTest("data frame")}
 
-${propertyTests("data frame")}
+${propertyTests("data frame", true)}
 <\/script>
 `;
 

@@ -91,7 +91,7 @@ def test_nested_shadow_element_click(session):
     response = element_click(session, element)
     assert_success(response)
 
-def test_inside_element_click(session):
+def test_inside_nested_element_click(session):
     session.url = get_nested_shadow_checkbox_dom()
     shadow_root = session.find.css("custom-nested-checkbox-element", all=False)
     inner_shadow_root = session.execute_script("return arguments[0].shadowRoot.querySelector('custom-checkbox-element')", args=(shadow_root,))

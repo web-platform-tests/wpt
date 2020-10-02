@@ -285,7 +285,7 @@
   },
   {
     "input": "x/x;\n\r\t x=x\n\r\t ;x=y",
-    "output": "x/x;x=x"
+    "output": "x/x;x=y"
   },
   "Latin1",
   {

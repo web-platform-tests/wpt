@@ -15,7 +15,7 @@ def get_element_attribute(session, element, attr):
             attr=attr))
 
 def get_checkbox_dom():
-    return inline("""<custom-checkbox-element></custom-checkbox-element></div>
+    return inline("""<custom-checkbox-element></custom-checkbox-element>
         <script>
             customElements.define('custom-checkbox-element',
                 class extends HTMLElement {
@@ -46,7 +46,7 @@ def test_inside_element_click(session):
     assert post_checked.body["value"] == 'true'
 
 def get_nested_shadow_checkbox_dom():
-    return inline("""<custom-nested-checkbox-element></custom-nested-checkbox-element></div>
+    return inline("""<custom-nested-checkbox-element></custom-nested-checkbox-element>
         <script>
          customElements.define('custom-nested-checkbox-element',
                 class extends HTMLElement {

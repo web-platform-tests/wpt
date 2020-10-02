@@ -18,7 +18,7 @@ def get_checkbox_dom():
     return inline("""
         <style>
             custom-checkbox-element {
-                display:block; width:20px; height:20px
+                display:block; width:20px; height:20px;
             }
         </style>
         <custom-checkbox-element></custom-checkbox-element>
@@ -55,7 +55,7 @@ def get_nested_shadow_checkbox_dom():
     return inline("""
         <style>
             custom-nested-checkbox-element {
-                display:block; width:20px; height:20px
+                display:block; width:20px; height:20px;
             }
         </style>
         <custom-nested-checkbox-element></custom-nested-checkbox-element>
@@ -67,7 +67,7 @@ def get_nested_shadow_checkbox_dom():
                             this.attachShadow({mode: 'open'}).innerHTML = `
                                 <style>
                                     custom-checkbox-element {
-                                        display:block; width:20px; height:20px
+                                        display:block; width:20px; height:20px;
                                     }
                                 </style>
                                 <div><custom-checkbox-element></custom-checkbox-element></div>

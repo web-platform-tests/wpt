@@ -30,12 +30,12 @@ def get_checkbox_dom():
 def test_shadow_element_click(session):
     session.url = get_checkbox_dom()
     custom_element = session.find.css("custom-checkbox-element", all=False)
-    is_pre_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(custom_element,))    
+    is_pre_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(custom_element,))
     assert is_pre_checked == False
     response = element_click(session, custom_element)
     assert_success(response)
-    is_post_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(custom_element,))    
-    assert is_post_checked == True 
+    is_post_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(custom_element,))
+    assert is_post_checked == True
 
 
 def test_inside_element_click(session):
@@ -87,22 +87,22 @@ def test_nested_shadow_element_click(session):
     session.url = get_nested_shadow_checkbox_dom()
     outer_custom_element = session.find.css("custom-nested-checkbox-element", all=False)
     inner_custom_element = session.execute_script("return arguments[0].shadowRoot.querySelector('custom-checkbox-element')", args=(outer_custom_element,))
-    is_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(inner_custom_element,))    
+    is_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(inner_custom_element,))
     assert is_checked == False
     response = element_click(session, outer_custom_element)
     assert_success(response)
-    is_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(inner_custom_element,))    
+    is_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(inner_custom_element,))
     assert is_checked == True
 
 def test_nested_shadow_element_click_inner(session):
     session.url = get_nested_shadow_checkbox_dom()
     outer_custom_element = session.find.css("custom-nested-checkbox-element", all=False)
     inner_custom_element = session.execute_script("return arguments[0].shadowRoot.querySelector('custom-checkbox-element')", args=(outer_custom_element,))
-    is_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(inner_custom_element,))    
+    is_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(inner_custom_element,))
     assert is_checked == False
     response = element_click(session, inner_custom_element)
     assert_success(response)
-    is_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(inner_custom_element,))    
+    is_checked = session.execute_script("return arguments[0].shadowRoot.querySelector('input').checked", args=(inner_custom_element,))
     assert is_checked == True
 
 def test_inside_nested_element_click_checkbox(session):

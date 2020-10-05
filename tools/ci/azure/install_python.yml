@@ -1,10 +1,14 @@
 steps:
 - powershell: |
-    Write-Host "logging pwd"
-    Get-Location
-    Write-Host "Dump path BEFORE install"
-    Get-ChildItem Env:Path
-    Write-Host "downloading python installer exe"
+    if (Test-Path -LiteralPath "C:\Python27") {
+      Write-Host "Deleting C:\Python27"
+      Remove-Item -Force -Recurse "C:\Python27"
+    }
+    if (Test-Path -LiteralPath "C:\Python38") {
+      Write-Host "Deleting C:\Python38"
+      Remove-Item -Force -Recurse "C:\Python38"
+    }
+    Write-Host "Downloading python installer exe"
     Start-BitsTransfer -Source https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe  -Destination python_installer.exe
     $hash = (Get-FileHash python_installer.exe).Hash.ToLower()
     $expectedHash = "cd427c7b17337d7c13761ca20877d2d8be661bd30415ddc17072a31a65a91b64"
@@ -13,18 +17,40 @@ steps:
     } else {
       Throw "python_installer.exe hash mismatch, got $hash, expected $expectedHash"
     }
+    Write-Host "Before install, looking at disk space"
+    Get-WmiObject -Class Win32_logicaldisk
+    Write-Host "Before install, listing directories in C:\"
+    Get-ChildItem -Directory "C:\"
+    Write-Host "Before install, listing current dir"
+    Get-ChildItem -File "."
+    Write-Host "Logging cwd:"
+    Get-Location
     Write-Host "Running python_installer.exe"
-    & .\python_installer.exe /passive TargetDir=C:\Python38
+    Start-Process -FilePath "python_installer.exe" -Verb RunAs -ArgumentList "/passive /log `"log.txt`" InstallAllUsers=1 TargetDir=`"C:\Python38`""
+    Write-Host "python_installer.exe finished. Exit code was: $LastExitCode"
+    Write-Host "After install, listing current dir"
+    Get-ChildItem -File "."
+  displayName: 'Install Python (Windows)'
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
+- task: CopyFiles@2
+  inputs:
+    contents: 'log*'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: PythonInstallLogs
+- powershell: |
+    Write-Host "Dumping log file"
+    Get-Content -Path "log.txt"
     Write-Host "Dumping C: dir"
-    Get-ChildItem "C:\"
+    Get-ChildItem -Directory "C:\"
     Write-Host "Dumping C:\Python38 dir"
     Get-ChildItem "C:\Python38"
     Write-Host "Dumping C:\Python38\Scripts dir"
     Get-ChildItem "C:\Python38\Scripts"
-    Write-Host "Adding to path"
+    Write-Host "Adding Python dirs to path"
     Write-Host "##vso[task.prependpath]C:\Python38"
     Write-Host "##vso[task.prependpath]C:\Python38\Scripts"
-    Write-Host "Dump path AFTER install"
-    Get-ChildItem Env:Path
-  displayName: 'Install Python (Windows)'
+  displayName: 'Post-Install Python (Windows)'
   condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))

@@ -246,7 +246,7 @@ class PathFilter(object):
                         if not self.cache[path]:
                             target.append(item)
                         continue
-                    for rule_dir in [None, dirpath]:
+                    for rule_dir in [None, dirpath if dirpath != b"." else b""]:
                         if name in literals.get(rule_dir, empty):
                             exclude = literals[rule_dir][name]
                             if not any(rule.match(name if name_only else path)

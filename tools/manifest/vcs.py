@@ -26,6 +26,10 @@ if MYPY:
     else:
         stat_result = os.stat_result
 
+    GitIgnoreCacheType = MutableMapping[bytes, bool]
+else:
+    GitIgnoreCacheType = MutableMapping
+
 
 def get_tree(tests_root, manifest, manifest_path, cache_root,
              working_copy=True, rebuild=False):
@@ -222,7 +226,7 @@ class MtimeCache(CacheFile):
         super(MtimeCache, self).dump()
 
 
-class GitIgnoreCache(CacheFile, MutableMapping):  # type: ignore
+class GitIgnoreCache(CacheFile, GitIgnoreCacheType):
     file_name = "gitignore.json"
 
     def check_valid(self, data):
@@ -237,27 +241,35 @@ class GitIgnoreCache(CacheFile, MutableMapping):  # type: ignore
 
     def __contains__(self, key):
         # type: (Any) -> bool
+        try:
+            key = key.decode("utf-8")
+        except Exception:
+            return False
+
         return key in self.data
 
     def __getitem__(self, key):
-        # type: (Text) -> bool
-        v = self.data[key]
+        # type: (bytes) -> bool
+        real_key = key.decode("utf-8")
+        v = self.data[real_key]
         assert isinstance(v, bool)
         return v
 
     def __setitem__(self, key, value):
-        # type: (Text, bool) -> None
-        if self.data.get(key) != value:
+        # type: (bytes, bool) -> None
+        real_key = key.decode("utf-8")
+        if self.data.get(real_key) != value:
             self.modified = True
-            self.data[key] = value
+            self.data[real_key] = value
 
     def __delitem__(self, key):
-        # type: (Text) -> None
-        del self.data[key]
+        # type: (bytes) -> None
+        real_key = key.decode("utf-8")
+        del self.data[real_key]
 
     def __iter__(self):
-        # type: () -> Iterator[Text]
-        return iter(self.data)
+        # type: () -> Iterator[bytes]
+        return (key.encode("utf-8") for key in self.data)
 
     def __len__(self):
         # type: () -> int

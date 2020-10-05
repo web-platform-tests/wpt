@@ -1,5 +1,4 @@
 import abc
-import json
 import os
 import stat
 from collections import deque
@@ -7,6 +6,7 @@ from collections import deque
 from six import with_metaclass, PY2
 from six.moves.collections_abc import MutableMapping
 
+from . import fastjson
 from .utils import git
 
 try:
@@ -154,7 +154,7 @@ class CacheFile(with_metaclass(abc.ABCMeta)):
         if not self.modified:
             return
         with open(self.path, 'w') as f:
-            json.dump(self.data, f, indent=1)
+            fastjson.dump_local(self.data, f)
 
     def load(self, rebuild=False):
         # type: (bool) -> Dict[Text, Any]
@@ -163,7 +163,7 @@ class CacheFile(with_metaclass(abc.ABCMeta)):
             if not rebuild:
                 with open(self.path, 'r') as f:
                     try:
-                        data = json.load(f)
+                        data = fastjson.load(f)
                     except ValueError:
                         pass
                 data = self.check_valid(data)

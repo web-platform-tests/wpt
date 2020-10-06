@@ -1,0 +1,33 @@
+<!doctype html>
+<title>width/height creates 'aspect-ratio' preshint</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<link rel="author" title="Tab Atkins-Bittner" href="https://xanthir.com/contact/">
+<meta name="assert" content="The combo of width/height on an image provides a presentational hint for 'aspect-ratio'.">
+
+<div id=control></div>
+<img>
+
+<script>
+function testAr(w, h) {
+    test(()=>{
+        const img = document.querySelector("img");
+        img.width = w;
+        img.height = h;
+        const control = document.querySelector("#control");
+        control.removeAttribute("style");
+        control.style.aspectRatio = `auto ${w} / ${h}`;
+        const arImg = getComputedStyle(img).aspectRatio;
+        const arControl = getComputedStyle(control).aspectRatio;
+        assert_not_equals(arControl, "auto");
+        assert_equals(arImg, arControl);
+    }, "width/height attrs on <img> should form a presentational hint for 'aspect-ratio'");
+}
+
+testAr(10, 20);
+testAr(0, 1);
+testAr(1, 0);
+testAr(0, 0);
+testAr(.5, 1.5);
+</script>

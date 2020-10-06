@@ -512,7 +512,7 @@ class H2Headers(dict):
             dict.__setitem__(self, self._convert_h2_header_to_h1(key), val)
 
     def _convert_h2_header_to_h1(self, header_key):
-        if header_key[1:] in h2_headers and header_key[:1] == ':':
+        if header_key[1:] in h2_headers and header_key[0] == ':':
             return header_key[1:]
         else:
             return header_key

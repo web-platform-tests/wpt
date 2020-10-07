@@ -451,8 +451,8 @@ class H2ResponseWriter(object):
         secondary_headers = []  # Non ':' prefixed headers are to be added afterwards
 
         for header, value in headers:
-            # h2_header by default is unicode in PY3
-            # header key on the other hand is bytes
+            # h2_headers are native strings.
+            # header key on the other hand is bytes.
             header = self.decode(header)
             if isinstance(value, binary_type):
                 value = self.decode(value)

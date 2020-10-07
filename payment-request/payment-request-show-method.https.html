@@ -46,18 +46,14 @@ promise_test(async t => {
     request.abort();
   }, 2000);
 
-  await promise_rejects_dom(t, "SecurityError", acceptPromise);
+  await promise_rejects_dom(t, "NotAllowedError", acceptPromise);
 }, `Calling show() without being triggered by user interaction throws`);
 
 promise_test(async t => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
-  const [acceptPromise] = await test_driver.bless(
-    "test: throws if the promise [[state]] is not 'created'",
-    () => {
-      const acceptPromise = request.show(); // Sets state to "interactive"
-      return [acceptPromise];
-    });
-  await promise_rejects_dom(t, "InvalidStateError", request.show());
+  await test_driver.bless("test: throws if the promise [[state]] is not 'created'");
+  const acceptPromise = request.show(); // Sets state to "interactive"
+  await promise_rejects_dom(t, "NotAllowedError", request.show());
   await request.abort();
   await promise_rejects_dom(t, "AbortError", acceptPromise);
 }, "Throws if the promise [[state]] is not 'created'.");
@@ -65,15 +61,10 @@ promise_test(async t => {
 promise_test(async t => {
   const request1 = new PaymentRequest(defaultMethods, defaultDetails);
   const request2 = new PaymentRequest(defaultMethods, defaultDetails);
-  const [acceptPromise1] = await test_driver.bless(
-    `test: reject promise with "AbortedError" if payment request is already showing`,
-    async () => {
-      const acceptPromise1 = request1.show();
-      const acceptPromise2 = request2.show();
-      await promise_rejects_dom(t, "AbortError", acceptPromise2);
-      return [acceptPromise1];
-    });
-
+  await test_driver.bless(`test: reject promise with "AbortedError" if payment request is already showing`);
+  const acceptPromise1 = request1.show();
+  const acceptPromise2 = request2.show();
+  await promise_rejects_dom(t, "NotAllowedError", acceptPromise2);
   await request1.abort();
   await promise_rejects_dom(t, "AbortError", acceptPromise1);
 }, `If the user agent's "payment request is showing" boolean is true, then return a promise rejected with an "AbortError" DOMException.`);
@@ -83,25 +74,19 @@ promise_test(async t => {
     [{ supportedMethods: "this-is-not-supported" }],
     defaultDetails
   );
-  const [acceptPromise] = await test_driver.bless(
-    `test: reject promise with "NotSupportedError"`,
-    () => {
-      const acceptPromise = request.show();
-      return [acceptPromise];
-    });
+  await test_driver.bless(`test: reject promise with "NotSupportedError"`)
+  const acceptPromise = request.show();
   await promise_rejects_dom(t, "NotSupportedError", acceptPromise);
 }, `If payment method consultation produces no supported method of payment, then return a promise rejected with a "NotSupportedError" DOMException.`);
 
 promise_test(async t => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
-  const [p1, p2, p3] = await test_driver.bless(
-    `test: calling show() multiple times always returns a new promise`,
-    () => {
-      const p1 = request.show();
-      const p2 = request.show();
-      const p3 = request.show();
-      return [p1, p2, p3];
-    });
+  await test_driver.bless("call show()");
+  const p1 = request.show();
+  await test_driver.bless("call show()");
+  const p2 = request.show();
+  await test_driver.bless("call show()");
+  const p3 = request.show();
   const promises = new Set([p1, p2, p3]);
   assert_equals(promises.size, 3, "Must have three unique objects");
 

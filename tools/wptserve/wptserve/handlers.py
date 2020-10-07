@@ -170,9 +170,9 @@ def wrap_pipeline(path, request, response):
 def load_headers(request, path):
     """Loads headers from files for a given path.
 
-    Attempt to load both the neighbouring __dir__{.sub}.headers and
-    PATH{.sub}.headers (apply template substituition if needed); results are
-    concatenated in this order.
+    Attempts to load both the neighbouring __dir__{.sub}.headers and
+    PATH{.sub}.headers (applying template substitution if needed); results are
+    concatenated in that order.
     """
     def _load(request, path):
         headers_path = path + ".sub.headers"

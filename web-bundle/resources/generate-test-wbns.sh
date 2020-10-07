@@ -47,3 +47,9 @@ gen-bundle \
   -primaryURL $wpt_test_https_origin/web-bundle/resources/dynamic/resource1.js \
   -dir dynamic1/ \
   -o wbn/dynamic1-crossorigin.wbn
+
+gen-bundle \
+  -version b1 \
+  -har subresource-loading.har \
+  -primaryURL urn:uuid:9f117f29-fb82-4b0e-9e69-cbf39cea3244 \
+  -o wbn/subframe-loading.wbn

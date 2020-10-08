@@ -74,7 +74,6 @@
      * Set the context for the actions
      *
      * @param {WindowProxy} context - Context in which to run the action sequence
-     *
      */
     setContext: function(context) {
       this.context = context;

@@ -451,9 +451,11 @@ class H2ResponseWriter(object):
         secondary_headers = []  # Non ':' prefixed headers are to be added afterwards
 
         for header, value in headers:
-            # h2_headers are native strings.
-            # header key on the other hand is bytes.
-            header = self.decode(header)
+            # h2_headers are native strings
+            # header field names are strings of ASCII
+            if isinstance(header, binary_type):
+                header = header.decode('ascii')
+            # value in headers can be either string or integer
             if isinstance(value, binary_type):
                 value = self.decode(value)
             if header in h2_headers:

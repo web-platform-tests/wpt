@@ -6,7 +6,7 @@ on:
     - cron: '0 0 12 * *'
 jobs:
   update:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-lates
     steps:
     - name: Checkout
       uses: actions/checkout@v2

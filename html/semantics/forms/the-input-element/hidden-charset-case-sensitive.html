@@ -19,9 +19,9 @@ async_test(function() {
   addEventListener("message", this.step_func_done(event => {
     const params = new URL(event.data).searchParams;
 
-    assert_not_equals(params.get("_charset_"), "", "lowercase valid");
-    assert_not_equals(params.get("_CHARSET_"), "", "uppercase valid");
-    assert_not_equals(params.get("_ChArSeT_"), "", "mixed case invalid");
+    assert_equals(params.get("_charset_"), "UTF-8", "lowercase valid");
+    assert_equals(params.get("_CHARSET_"), "UTF-8", "uppercase valid");
+    assert_equals(params.get("_ChArSeT_"), "UTF-8", "mixed case invalid");
     assert_equals(params.get("_charſet_"), "", "non-ASCII invalid");
   }));
 

@@ -46,6 +46,10 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
         method = self.webdriver.execute_async_script if asynchronous else self.webdriver.execute_script
         return method(script)
 
+    def delete_all_cookies(self):
+        # If the 'name' parameter is not passed, this method deletes all cookies.
+        self.webdriver.delete_cookie()
+
     def set_timeout(self, timeout):
         try:
             self.webdriver.timeouts.script = timeout
@@ -425,6 +429,9 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
     def do_testharness(self, protocol, url, timeout):
         format_map = {"url": strip_server(url)}
+
+        # Clean up cookies?
+        protocol.base.delete_all_cookies()
 
         # The previous test may not have closed its old windows (if something
         # went wrong or if cleanup_after_test was False), so clean up here.

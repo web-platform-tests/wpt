@@ -355,7 +355,8 @@ a different set of command-line arguments.</p>
 </div>
 <div class="section" id="tc-sink-task">
 <h3>tc-sink-task<a class="headerlink" href="#tc-sink-task" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tc</span><span class="o">-</span><span class="n">sink</span><span class="o">-</span><span class="n">task</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">tasks</span> <span class="p">[</span><span class="n">tasks</span> <span class="o">...</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">tc</span><span class="o">-</span><span class="n">sink</span><span class="o">-</span><span class="n">task</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">github</span><span class="o">-</span><span class="n">checks</span><span class="o">-</span><span class="n">text</span><span class="o">-</span><span class="n">file</span> <span class="n">GITHUB_CHECKS_TEXT_FILE</span><span class="p">]</span>
+                 <span class="n">tasks</span> <span class="p">[</span><span class="n">tasks</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="Positional Arguments_repeat3">
@@ -367,6 +368,19 @@ a different set of command-line arguments.</p>
 <tr><td class="option-group">
 <kbd>tasks</kbd></td>
 <td>A set of Taskcluster task ids to verify the state of.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments_repeat7">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd>--github-checks-text-file</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to GitHub checks output file for Taskcluster runs</td></tr>
 </tbody>
 </table>
 </div>
@@ -457,8 +471,8 @@ a different set of command-line arguments.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat7">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat8">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1197,8 +1211,8 @@ channel.) This flag overrides –browser-channel.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat8">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat9">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1251,8 +1265,8 @@ channel.) This flag overrides –browser-channel.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat9">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat10">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1309,8 +1323,8 @@ channel.) This flag overrides –browser-channel.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat10">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat11">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1349,8 +1363,8 @@ channel.) This flag overrides –browser-channel.</p>
           <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat11">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat12">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1433,8 +1447,8 @@ channel.) This flag overrides –browser-channel.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat12">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat13">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1627,8 +1641,8 @@ channel.) This flag overrides –browser-channel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat13">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat14">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1662,8 +1676,8 @@ channel.) This flag overrides –browser-channel.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat14">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat15">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1714,8 +1728,8 @@ channel.) This flag overrides –browser-channel.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">tasks</span><span class="o">-</span><span class="n">path</span> <span class="n">TASKS_PATH</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat15">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat16">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1740,8 +1754,8 @@ channel.) This flag overrides –browser-channel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">docker</span><span class="o">-</span><span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tag</span> <span class="n">TAG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat16">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat17">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat17" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1777,8 +1791,8 @@ channel.) This flag overrides –browser-channel.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="Named Arguments_repeat17">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat17" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat18">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat18" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1817,8 +1831,8 @@ channel.) This flag overrides –browser-channel.</p>
              <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">parallel</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat18">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat18" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat19">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat19" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1865,8 +1879,8 @@ channel.) This flag overrides –browser-channel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">regen</span><span class="o">-</span><span class="n">certs</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">checkend</span><span class="o">-</span><span class="n">seconds</span> <span class="n">CHECKEND_SECONDS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat19">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat19" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat20">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat20" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1891,8 +1905,8 @@ channel.) This flag overrides –browser-channel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat20">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat20" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat21">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat21" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -1912,8 +1926,8 @@ channel.) This flag overrides –browser-channel.</p>
                          <span class="p">[</span><span class="o">-</span><span class="n">k</span> <span class="n">PRIVATE_KEY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">handlers</span><span class="o">-</span><span class="n">path</span> <span class="n">HANDLERS_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat21">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat21" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat22">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat22" title="Permalink to this headline">¶</a></h4>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />

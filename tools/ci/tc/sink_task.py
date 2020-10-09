@@ -29,7 +29,7 @@ def check_task_statuses(task_ids, github_checks_outputter):
             logger.error('Task {0} had unexpected state "{1}"'.format(task, state))
             failed_tasks.append(status)
 
-    if failed_tasks:
+    if failed_tasks and github_checks_outputter:
         github_checks_outputter.output('Failed tasks:')
         for task in failed_tasks:
             # We need to make an additional call to get the task name.
@@ -38,7 +38,8 @@ def check_task_statuses(task_ids, github_checks_outputter):
             github_checks_outputter.output('* `{}` failed with status `{}`'.format(task_name, task['status']['state']))
     else:
         logger.info('All tasks completed successfully')
-        github_checks_outputter.output('All tasks completed successfully')
+        if github_checks_outputter:
+            github_checks_outputter.output('All tasks completed successfully')
     return 1 if failed_tasks else 0
 
 

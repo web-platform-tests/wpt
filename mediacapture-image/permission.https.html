@@ -8,7 +8,7 @@
 promise_test(async t => {
   const permissionDescriptor = { name: 'camera', panTiltZoom: true };
   await test_driver.set_permission(permissionDescriptor, 'granted', false);
- 
+
   const permissionStatus = await navigator.permissions.query(permissionDescriptor);
   assert_equals(permissionStatus.state, 'granted');
 }, 'test that we can set Camera PTZ permission in web platform test');

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Recursive IFrame Fullscreen API success reporter</title>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <body>
 <script>
 let child_frame = null;
@@ -40,6 +42,8 @@ function trusted_click(callback, container)
         container.removeChild(button);
     };
     container.insertBefore(button, container.firstChild);
+    test_driver.set_test_context(window.top);
+    test_driver.click(button);
 }
 
 function go_fullscreen() {

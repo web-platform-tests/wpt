@@ -80,7 +80,7 @@ promise_test(async function(t)
     {"action": "requestFullscreen", "fullscreen": {"name": iframe_to_fullscreen}}, "*");
   await ready();
 
-  function test_report(report) {
+  let test_report = t.step_func(function (report) {
     let expected = expected_events[report.frame];
 
     assert_equals(report.events.length, expected.length, "Number of events");
@@ -93,7 +93,7 @@ promise_test(async function(t)
     } else {
       assert_true(report.fullscreenElementIsNull, "No event fired, fullscreenElement is null");
     }
-  }
+  })
 
   let reports = new Promise(resolve => {
     let report_count = 0;

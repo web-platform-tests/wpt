@@ -46,8 +46,6 @@ tests.</p>
 <h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 <p>testdriver.js exposes its API through the <code class="docutils literal notranslate"><span class="pre">test_driver</span></code> variable in
 the global scope.</p>
-<p>NB: presently, testdriver.js only works in the top-level test browsing
-context (and not therefore in any frame or window opened from it).</p>
 <div class="section" id="actions">
 <h3>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h3>
 <p>Usage:</p>
@@ -57,11 +55,15 @@ context (and not therefore in any frame or window opened from it).</p>
 <span class="n">actions</span><span class="o">.</span><span class="n">send</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Test authors are encouraged to use the builder API to generate the sequence of actions. The builder
-API can be accessed via the <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">test_driver.Actions()</span></code> object, and actions are defined in <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver-actions.js">testdriver-actions.js</a></p>
-<p>The <code class="docutils literal notranslate"><span class="pre">actions.send()</span></code> function causes the sequence of actions to be sent to the browser. It is based on the <a class="reference external" href="https://w3c.github.io/webdriver/#actions">WebDriver API</a>.
-The action can be a keyboard action, a pointer action or a pause. It returns a promise that
-resolves after the actions have been sent, or rejects if an error was thrown.</p>
+<p>Test authors are encouraged to use the builder API to generate the
+sequence of actions. The builder API can be accessed via the <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">test_driver.Actions()</span></code> object, and actions are defined in
+<a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver-actions.js">testdriver-actions.js</a></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">actions.send()</span></code> function causes the sequence of actions to be
+sent to the browser. It is based on the <a class="reference external" href="https://w3c.github.io/webdriver/#actions">WebDriver
+API</a>.  The action can be a
+keyboard action, a pointer action or a pause. It returns a promise
+that resolves after the actions have been sent, or rejects if an error
+was thrown.</p>
 <p>Example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">text_box</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">);</span>
 
@@ -76,7 +78,13 @@ resolves after the actions have been sent, or rejects if an error was thrown.</p
 <span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>Calling into <code class="docutils literal notranslate"><span class="pre">send()</span></code> is going to dispatch the action sequence (via <code class="docutils literal notranslate"><span class="pre">test_driver.action_sequence</span></code>) and also returns a promise which should be handled however is appropriate in the test. The other functions in the <code class="docutils literal notranslate"><span class="pre">Actions()</span></code> object are going to modify the state of the object by adding a new action in the sequence and returning the same object. So the functions can be easily chained, as shown in the example above. Here is a list of helper functions in the <code class="docutils literal notranslate"><span class="pre">Actions</span></code> class:</p>
+<p>Calling into <code class="docutils literal notranslate"><span class="pre">send()</span></code> is going to dispatch the action sequence (via
+<code class="docutils literal notranslate"><span class="pre">test_driver.action_sequence</span></code>) and also returns a promise which should
+be handled however is appropriate in the test. The other functions in
+the <code class="docutils literal notranslate"><span class="pre">Actions()</span></code> object are going to modify the state of the object by
+adding a new action in the sequence and returning the same object. So
+the functions can be easily chained, as shown in the example
+above. Here is a list of helper functions in the <code class="docutils literal notranslate"><span class="pre">Actions</span></code> class:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pointerDown</span><span class="p">:</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">pointerDown</span> <span class="n">event</span> <span class="k">for</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">pointer</span> <span class="n">source</span>
 <span class="n">pointerUp</span><span class="p">:</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">pointerUp</span> <span class="n">event</span> <span class="k">for</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">pointer</span> <span class="n">source</span>
 <span class="n">pointerMove</span><span class="p">:</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">move</span> <span class="n">event</span> <span class="k">for</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">pointer</span> <span class="n">source</span>
@@ -161,7 +169,7 @@ For example, to send the tab key you would send “\uE004”.</p>
 </div>
 <div class="section" id="set-permission">
 <h3>set_permission<a class="headerlink" href="#set-permission" title="Permalink to this headline">¶</a></h3>
-<p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.set_permission(descriptor,</span> <span class="pre">state,</span> <span class="pre">one_realm)</span></code></p>
+<p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.set_permission(descriptor,</span> <span class="pre">state,</span> <span class="pre">one_realm,</span> <span class="pre">context=null)</span></code></p>
 <ul class="simple">
 <li><em>descriptor</em>: a
 <a class="reference external" href="https://w3c.github.io/permissions/#dictdef-permissiondescriptor">PermissionDescriptor</a>
@@ -171,6 +179,7 @@ or derived object</li>
 value</li>
 <li><em>one_realm</em>: a boolean that indicates whether the permission settings
 apply to only one realm</li>
+<li>context: a WindowProxy for the browsing context in which to perform the call</li>
 </ul>
 <p>This function causes permission requests and queries for the status of a
 certain permission type (e.g. “push”, or “background-fetch”) to always
@@ -182,6 +191,56 @@ been set to be overridden with <em>state</em>.</p>
 </pre></div>
 </div>
 </div>
+</div>
+<div class="section" id="using-testdriver-in-other-browsing-contexts">
+<h2>Using testdriver in Other Browsing Contexts<a class="headerlink" href="#using-testdriver-in-other-browsing-contexts" title="Permalink to this headline">¶</a></h2>
+<p>Testdriver can be used in browsing contexts (i.e. windows or frames)
+from which it’s possible to get a reference to the top-level test
+context. There are two basic approaches depending on whether the
+context in which testdriver is used is same-origin with the test
+context, or different origin.</p>
+<p>For same-origin contexts, the context can be passed directly into the
+testdriver API calls. For functions that take an element argument this
+is done implicitly using the owner document of the element. For
+functions that don’t take an element, this is done via an explicit
+context argument, which takes a WindowProxy object.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">win</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;example.html&quot;</span><span class="p">)</span>
+<span class="n">win</span><span class="o">.</span><span class="n">onload</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="n">test_driver</span><span class="o">.</span><span class="n">set_permission</span><span class="p">({</span> <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;background-fetch&quot;</span> <span class="p">},</span> <span class="s2">&quot;denied&quot;</span><span class="p">,</span> <span class="n">win</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For the actions API, the context can be set using the <code class="docutils literal notranslate"><span class="pre">setContext</span></code>
+method on the builder:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">actions</span> <span class="o">=</span> <span class="n">new</span> <span class="n">test_driver</span><span class="o">.</span><span class="n">Actions</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">setContext</span><span class="p">(</span><span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
+<span class="n">actions</span><span class="o">.</span><span class="n">send</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Note that if an action uses an element reference, the context will be
+derived from that element, and must match any explictly set
+context. Using elements in multiple contexts in a single action chain
+is not supported.</p>
+<p>For cross-origin cases, passing in the context id doesn’t work because
+of limitations in the WebDriver protocol used to implement testdriver
+in a cross-browser fashion. Instead one may include the testdriver
+scripts directly in the relevant document, and use the
+<code class="docutils literal notranslate"><span class="pre">set_test_context</span></code> API to specify the browsing context containing
+testharness.js. Commands are then sent via postMessage to the test
+context. For convenience there is also a <code class="docutils literal notranslate"><span class="pre">message_test</span></code> function that
+can be used to send arbitary messages to the test window. For example,
+in an auxillary browsing context:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">testdriver</span><span class="o">.</span><span class="n">set_test_context</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">opener</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">testdriver</span><span class="o">.</span><span class="n">click</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">testdriver</span><span class="o">.</span><span class="n">message_test</span><span class="p">(</span><span class="s2">&quot;click complete&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The requirement to have a handle to the test window does mean it’s
+currently not possible to write tests where such handles can’t be
+obtained e.g. in the case of <code class="docutils literal notranslate"><span class="pre">rel=noopener</span></code>.</p>
 </div>
 </div>
 

@@ -13,6 +13,7 @@
     canvas {
         width: 100px;
         height: 100px;
+        margin: 10px;
     }
 </style>
 <script>
@@ -21,46 +22,40 @@
     function toCors(src) {
         return src.replace(new URL(src).origin, get_host_info().HTTP_REMOTE_ORIGIN)
     }
-    function createImage({cors, src, orientation}) {
+    function createImage({cors, src, orientation, shouldBeRotated}) {
         const img = document.createElement('img');
         img.src = src
         if (cors)
             img.src = toCors(img.src)
         img.style.imageOrientation = orientation
         img.style.display = 'none'
+        img.dataset.shouldBeRotated = shouldBeRotated
         document.body.appendChild(img)
         return img
     }
 
     window.onload = () => {
-        const images = {
-            red: [
-                createImage({cors: true, src: src2, orientation: 'from-image', shouldBeRotated: true}),
-                createImage({cors: true, src: src2, orientation: 'none', shouldBeRotated: true}),
-                createImage({cors: false, src: src2, orientation: 'from-image', shouldBeRotated: true}),
-            ],
-            green: [
-                createImage({cors: true, src: src1, orientation: 'from-image', shouldBeRotated: false}),
-                createImage({cors: true, src: src1, orientation: 'none', shouldBeRotated: false}),
-                createImage({cors: false, src: src1, orientation: 'from-image', shouldBeRotated: false}),
-                createImage({cors: false, src: src1, orientation: 'none', shouldBeRotated: false}),
-                createImage({cors: false, src: src2, orientation: 'none', shouldBeRotated: false}),
-            ]
-        }
+        const images = [
+            createImage({cors: true, src: src2, orientation: 'from-image', shouldBeRotated: true}),
+            createImage({cors: true, src: src2, orientation: 'none', shouldBeRotated: true}),
+            createImage({cors: false, src: src2, orientation: 'from-image', shouldBeRotated: true}),
+            createImage({cors: true, src: src1, orientation: 'from-image', shouldBeRotated: false}),
+            createImage({cors: true, src: src1, orientation: 'none', shouldBeRotated: false}),
+            createImage({cors: false, src: src1, orientation: 'from-image', shouldBeRotated: false}),
+            createImage({cors: false, src: src1, orientation: 'none', shouldBeRotated: false}),
+            createImage({cors: false, src: src2, orientation: 'none', shouldBeRotated: false}),
+        ]
 
-        const dimension = 5
+        const dimension = 1
 
-        Object.keys(images).forEach(key => {
-            const p = document.createElement('p')
-            p.innerText = `The following canvases should be ${key}`
-            document.body.appendChild(p)
-            images[key].forEach(image => {
-                const canvas = document.createElement('canvas')
-                canvas.width = canvas.height = dimension
-                const ctx = canvas.getContext('2d')
-                ctx.drawImage(image, 0, 0)
-                document.body.appendChild(canvas)
-            })
+        images.forEach(image => {
+            const canvas = document.createElement('canvas')
+            canvas.width = canvas.height = dimension
+            const ctx = canvas.getContext('2d')
+            const sx = image.dataset.shouldBeRotated === 'true' ? image.width * .8 : 0
+            const sy = image.dataset.shouldBeRotated === 'true' ? image.height * .8 : 0
+            ctx.drawImage(image, sx, sy, 1, 1, 0, 0, dimension, dimension)
+            document.body.appendChild(canvas)
         })
 
     }
@@ -68,6 +63,7 @@
 </script>
 </head>
 <body>
+    <p>You should see 8 green rectangles, no red.</p>
 </body>
 <script>
     [src1, src2].forEach(src => {

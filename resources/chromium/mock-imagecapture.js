@@ -234,13 +234,12 @@ var ImageCaptureTest = (() => {
     }
 
     async isPanTiltZoomPermissionGranted() {
-      if (this.panTiltZoomPermissionStatus_) {
-        return (this.panTiltZoomPermissionStatus_.state == "granted");
+      if (!this.panTiltZoomPermissionStatus_) {
+        this.panTiltZoomPermissionStatus_ = await navigator.permissions.query({
+          name: "camera",
+          panTiltZoom: true
+        });
       }
-      this.panTiltZoomPermissionStatus_ = await navigator.permissions.query({
-        name: "camera",
-        panTiltZoom: true
-      });
       return (this.panTiltZoomPermissionStatus_.state == "granted");
     }
 

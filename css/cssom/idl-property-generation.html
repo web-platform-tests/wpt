@@ -156,7 +156,7 @@ Use a non-empty style attribute to get a non-empty CSSStyleDeclaration.
 
   let idl = ["partial interface CSSStyleDeclaration {"] /* } */;
   let attr = "[CEReactions] attribute [LegacyNullToEmptyString] CSSOMString";
-  
+
   for (let prop of properties) {
       if (prop === "float") continue;
       let camelCaseAttribute = CSSPropertyToIDLAttribute(prop);

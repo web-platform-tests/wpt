@@ -1,0 +1,195 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>CSSOM generated property IDL tests</title>
+<link rel="help" href="https://drafts.csswg.org/cssom/#the-cssstyledeclaration-interface">
+<meta name="timeout" content="long">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/WebIDLParser.js></script>
+<script src=/resources/idlharness.js></script>
+<!--
+Provide some objects to test.
+Use a non-empty style attribute to get a non-empty CSSStyleDeclaration.
+-->
+<style id="styleElement" style="z-index: 0;">
+@import url("data:text/css,");
+@namespace x "y";
+@page { @top-left {} }
+@media all {}
+#test { color: green; }
+</style>
+
+<svg id="svgElement" style="height: 0;"></svg>
+
+<iframe id="xmlssPiIframe" src="support/xmlss-pi.xhtml" style="display: none;"></iframe>
+
+<h1>CSSOM generated property IDL tests</h1>
+<div id=log></div>
+
+<script>
+  'use strict'
+
+  let properties = [
+      // CSS2.1 properties
+      "background",
+      "background-attachment",
+      "background-color",
+      "background-image",
+      "background-position",
+      "background-repeat",
+      "border",
+      "border-bottom",
+      "border-bottom-color",
+      "border-bottom-style",
+      "border-bottom-width",
+      "border-collapse",
+      "border-color",
+      "border-left",
+      "border-left-color",
+      "border-left-style",
+      "border-left-width",
+      "border-right",
+      "border-right-color",
+      "border-right-style",
+      "border-right-width",
+      "border-spacing",
+      "border-style",
+      "border-top",
+      "border-top-color",
+      "border-top-style",
+      "border-top-width",
+      "border-width",
+      "bottom",
+      "caption-side",
+      "clear",
+      "clip",
+      "color",
+      "content",
+      "counter-increment",
+      "counter-reset",
+      "cursor",
+      "direction",
+      "display",
+      "empty-cells",
+      "float",
+      "font",
+      "font-family",
+      "font-size",
+      "font-style",
+      "font-variant",
+      "font-weight",
+      "height",
+      "left",
+      "letter-spacing",
+      "line-height",
+      "list-style",
+      "list-style-image",
+      "list-style-position",
+      "list-style-type",
+      "margin",
+      "margin-bottom",
+      "margin-left",
+      "margin-right",
+      "margin-top",
+      "max-height",
+      "max-width",
+      "min-height",
+      "min-width",
+      "orphans",
+      "outline",
+      "outline-color",
+      "outline-style",
+      "outline-width",
+      "overflow",
+      "padding",
+      "padding-bottom",
+      "padding-left",
+      "padding-right",
+      "padding-top",
+      "page-break-after",
+      "page-break-before",
+      "page-break-inside",
+      "position",
+      "quotes",
+      "right",
+      "table-layout",
+      "text-align",
+      "text-decoration",
+      "text-indent",
+      "text-transform",
+      "top",
+      "unicode-bidi",
+      "vertical-align",
+      "visibility",
+      "white-space",
+      "widows",
+      "width",
+      "word-spacing",
+      "z-index",
+
+      // Compat (to test -webkit- attributes)
+      "-webkit-transform",
+  ];
+
+  function CSSPropertyToIDLAttribute(property, lowercaseFirstFlag=false) {
+      let output =""
+      let uppercaseNext = false;
+      if (lowercaseFirstFlag) {
+          property = property.substring(1);
+      }
+      for (let c of property) {
+          if (c === "-") {
+              uppercaseNext = true;
+          } else if (uppercaseNext) {
+              uppercaseNext = false;
+              if (c >= "a" && c <= "z") {
+                  output += c.toUpperCase();
+              } else {
+                  output += c;
+              }
+          } else {
+              output += c;
+          }
+      }
+      return output;
+  }
+
+  let idl = ["partial interface CSSStyleDeclaration {"] /* } */;
+  let attr = "[CEReactions] attribute [LegacyNullToEmptyString] CSSOMString";
+  
+  for (let prop of properties) {
+      if (prop === "float") continue;
+      let camelCaseAttribute = CSSPropertyToIDLAttribute(prop);
+      idl.push(`${attr} ${camelCaseAttribute};`);
+      if (prop.startsWith("-webkit-")) {
+          let webkitCased = CSSPropertyToIDLAttribute(prop, true);
+          idl.push(`${attr} ${webkitCased};`);
+      }
+      if (prop.indexOf("-") >= 0) {
+          idl.push(`${attr} ${prop};`);
+      }
+  }
+
+  idl.push("};");
+
+  self.style_element = document.getElementById('styleElement');
+  self.sheet = style_element.sheet;
+  self.svg_element = document.getElementById('svgElement');
+  self.xmlss_pi = document.getElementById('xmlssPiIframe').contentDocument.firstChild;
+
+
+  let idlHarness = new IdlArray();
+  idlHarness.add_untested_idls("[Exposed=Window] interface CSSStyleDeclaration {}; typedef DOMString CSSOMString;");
+  idlHarness.add_idls(idl.join("\n"));
+  idlHarness.add_objects({
+      CSSStyleDeclaration: [
+          'sheet.cssRules[4].style', // CSSStyleRule
+          'sheet.cssRules[2].style', // CSSPageRule
+          'sheet.cssRules[2].cssRules[0].style', // CSSMarginRule
+          'style_element.style', // ElementCSSInlineStyle for HTMLElement
+          'svg_element.style', // ElementCSSInlineStyle for SVGElement
+          'getComputedStyle(svg_element)'
+      ],
+  });
+  idlHarness.test();
+</script>

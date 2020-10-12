@@ -240,7 +240,7 @@ var ImageCaptureTest = (() => {
           panTiltZoom: true
         });
       }
-      return (this.panTiltZoomPermissionStatus_.state == "granted");
+      return this.panTiltZoomPermissionStatus_.state == "granted";
     }
 
     state() {

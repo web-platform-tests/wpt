@@ -530,7 +530,7 @@ policies and contribution forms [3].
             var func_code = func.toString();
 
             // Try and match with brackets, but fallback to matching without
-            var arrow = func_code.match(/^\(\)\s*=>\s*(?:{(.*)}\s*|(.*))$/);
+            var arrow = func_code.match(/^\(\)\s*=>\s*(?:{(.+)}\s*|(.*))$/);
 
             // Check for JS line separators
             if (arrow !== null && !/[\u000A\u000D\u2028\u2029]/.test(func_code)) {

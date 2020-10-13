@@ -53,6 +53,20 @@ tentative_tests = [
       u'true'
     ),
     (
+      u'meta-csp-img-src-none',
+      u'utf-8',
+      u'<meta http-equiv="Content-Security-Policy" content="script-src \'self\' \'unsafe-inline\'; img-src \'none\'"><img src="{}">',
+      u'false',
+      u'true'
+    ),
+    (
+      u'meta-csp-img-src-asterisk',
+      u'utf-8',
+      u'<meta http-equiv="Content-Security-Policy" content="script-src \'self\' \'unsafe-inline\'; img-src *"><img src="{}">',
+      u'true',
+      u'true'
+    ),
+    (
       u'base-href-script-src',
       u'utf-8',
       u'<base href=//{{{{domains[www1]}}}}:{{{{ports[http][0]}}}}><script src="{}"></script>',
@@ -425,7 +439,7 @@ url_js_sub = u"/html/syntax/speculative-parsing/resources/stash.py?action=put&am
 template_nonspeculative = u"""{preamble}
 {encoding_decl}
 <title>Speculative parsing, non-speculative (helper file): {title}</title>
-non-speculative case
+<!-- non-speculative case -->
 {testcase_markup}
 <!-- block the load event for a bit: -->
 <script src="/common/slow.py?delay={delay}"></script>
@@ -460,7 +474,7 @@ template_pageload_framed = u"""{preamble}
 <script>
   document.write('<plaintext>');
 </script>
-speculative case
+<!-- speculative case -->
 {testcase_markup}
 """
 
@@ -484,7 +498,7 @@ template_docwrite = u"""{preamble}
     <script>
      document.write('<plaintext>');
     <\\/script>
-    speculative case in document.write
+    <\\!-- speculative case in document.write -->
     {testcase_markup}
   `);
 </script>

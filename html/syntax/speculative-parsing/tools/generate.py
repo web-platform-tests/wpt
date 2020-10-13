@@ -115,6 +115,13 @@ tentative_tests = [
       u'true'
     ),
     (
+      u'template-script-src',
+      u'utf-8',
+      u'<template><script src="{}"></script></template>',
+      u'false',
+      u'true'
+    ),
+    (
       u'link-no-rel',
       u'utf-8',
       u'<link href="{}">',

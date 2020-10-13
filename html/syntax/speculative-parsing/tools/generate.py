@@ -45,6 +45,14 @@ tentative_tests = [
       u'true'
     ),
     (
+      # This test is only valid on "mobile" where meta viewport has an effect
+      u'meta-viewport-link-stylesheet-media',
+      u'utf-8',
+      u'<meta name=viewport content="width=400, initial-scale=1"><link rel=stylesheet href="{}" media="(min-width: 401px)">',
+      u'false',
+      u'true'
+    ),
+    (
       u'base-href-script-src',
       u'utf-8',
       u'<base href=//{{{{domains[www1]}}}}:{{{{ports[http][0]}}}}><script src="{}"></script>',

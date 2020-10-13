@@ -67,6 +67,13 @@ tentative_tests = [
       u'true'
     ),
     (
+      u'meta-referrer-no-referrer-img-src',
+      u'utf-8',
+      u'<meta name=referrer content=no-referrer><img src="{}">',
+      u'true',
+      u'true'
+    ),
+    (
       u'base-href-script-src',
       u'utf-8',
       u'<base href=//{{{{domains[www1]}}}}:{{{{ports[http][0]}}}}><script src="{}"></script>',

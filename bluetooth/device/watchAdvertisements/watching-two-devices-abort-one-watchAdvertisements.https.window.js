@@ -11,11 +11,13 @@ bluetooth_test(async (t) => {
   let heart_rate_device;
   {
     let {device} = await getDiscoveredHealthThermometerDevice();
+    test_driver.set_permission({ name: "bluetooth", deviceId: device.id }, "granted");
     health_thermometer_device = device;
   }
   {
     let {device} = await getHeartRateDevice(
         {requestDeviceOptions: heartRateRequestDeviceOptionsDefault});
+    test_driver.set_permission({ name: "bluetooth", deviceId: device.id }, "granted");
     heart_rate_device = device;
   }
   const healthThermometerWatcher =

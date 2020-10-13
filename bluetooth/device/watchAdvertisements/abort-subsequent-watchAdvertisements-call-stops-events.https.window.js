@@ -8,6 +8,7 @@ const test_desc = 'AbortController on subsequent watchAdvertisements() call ' +
 
 bluetooth_test(async (t) => {
   let {device} = await getDiscoveredHealthThermometerDevice();
+  test_driver.set_permission({ name: "bluetooth", deviceId: device.id }, "granted");
   const watcher = new EventWatcher(t, device, ['advertisementreceived']);
 
   // Start a watchAdvertisements() operation.

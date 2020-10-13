@@ -8,6 +8,7 @@ const test_desc = `watchAdvertisements() enables 'advertisementreceived' ` +
 
 bluetooth_test(async (t) => {
   let {device} = await getDiscoveredHealthThermometerDevice();
+  test_driver.set_permission({ name: "bluetooth", deviceId: device.id }, "granted");
   const watcher = new EventWatcher(t, device, ['advertisementreceived']);
 
   await device.watchAdvertisements();

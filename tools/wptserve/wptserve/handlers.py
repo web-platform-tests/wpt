@@ -301,7 +301,7 @@ class PythonScriptHandler(object):
         path = filesystem_path(self.base_path, request, self.url_base)
 
         sys_path = sys.path[:]
-        sys_modules = sys.modules.copy()
+        known_modules = set(sys.modules.keys())
         try:
             environ = {"__file__": path}
             sys.path.insert(0, os.path.dirname(path))
@@ -315,7 +315,9 @@ class PythonScriptHandler(object):
             raise HTTPException(404)
         finally:
             sys.path = sys_path
-            sys.modules = sys_modules
+            for mod_name in list(sys.modules.keys()):
+                if mod_name not in known_modules:
+                    sys.modules.pop(mod_name)
 
     def __call__(self, request, response):
         def func(request, response, environ, path):

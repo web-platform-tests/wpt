@@ -45,6 +45,7 @@ window.addEventListener("load", pageLoaded.step_func_done(function () {
         assert_equals(scrollingElement.scrollTop, 0);
 
         scrollNode(scrollingElement, "scroll", "smooth", 0, elementToRevealTop);
+        assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "Smooth scroll shouldn't reach the destination immediately.");
         // Send RIGHT key to scrollingElement. It should stop the smooth scrolling and trigger another scrolling.
         window.test_driver.send_keys(scrollingElement, '\ue014');
 
@@ -52,7 +53,7 @@ window.addEventListener("load", pageLoaded.step_func_done(function () {
             assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "The vertical smooth scroll should be interrupted.");
             assert_greater_than(scrollingElement.scrollLeft, 0, "RIGHT key should trigger a horizontal scroll.");
         });
-    }, "RIGHT key event aborts an ongoing vertical smooth scrolling and triggers a horizontal scrolling");
+    }, "Aborting a smooth scroll with a keyboard event that causes another scroll");
 
     promise_test(() => {
         resetScroll(scrollingElement);
@@ -61,13 +62,14 @@ window.addEventListener("load", pageLoaded.step_func_done(function () {
         assert_equals(scrollingElement.scrollTop, 0);
 
         scrollNode(scrollingElement, "scroll", "smooth", 0, elementToRevealTop);
+        assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "Smooth scroll shouldn't reach the destination immediately.");
         // Send LEFT key to scrollingElement. It should stop the smooth scrolling and not trigger other scrolling.
         window.test_driver.send_keys(scrollingElement, '\ue012');
 
         return waitForScrollEnd(scrollingElement).then(() => {
             assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "The vertical smooth scroll should be interrupted.");
-            assert_equals(scrollingElement.scrollLeft, 0, "LEFT key doesn't trigger a horizontal scroll.");
+            assert_equals(scrollingElement.scrollLeft, 0, "LEFT key doesn't trigger horizontal scroll because the scroll position is already at the scroll limit.");
         });
-    }, "LEFT key event aborts an ongoing vertical smooth scrolling but does not trigger other scrolling");
+    }, "Aborting a smooth scroll with a keyboard event that does not causes another scroll");
 }));
 </script>

@@ -33,6 +33,14 @@ def mouse_chain(session):
 
 
 @pytest.fixture
+def pen_chain(session):
+    return session.actions.sequence(
+        "pointer",
+        "pointer_id",
+        {"pointerType": "pen"})
+
+
+@pytest.fixture
 def none_chain(session):
     return session.actions.sequence("none", "none_id")
 

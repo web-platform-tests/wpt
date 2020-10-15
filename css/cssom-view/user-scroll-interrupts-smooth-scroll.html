@@ -1,13 +1,13 @@
-<!DOCTYPE html><!-- webkit-test-runner [ experimental:CSSOMViewSmoothScrollingEnabled=true ] -->
+<!DOCTYPE html>
 <title>Testing scroll-behavior: smooth and user scrolls on the root of the main frame</title>
 <meta name="timeout" content="long" />
 <link rel="help" href="https://drafts.csswg.org/cssom-view/#concept-smooth-scroll">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support/scroll-behavior.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="support/scroll-behavior.js"></script>
 <style>
     body {
         margin: 0;
@@ -49,10 +49,10 @@ window.addEventListener("load", pageLoaded.step_func_done(function () {
         window.test_driver.send_keys(scrollingElement, '\ue014');
 
         return waitForScrollEnd(scrollingElement).then(() => {
-            assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "Final value of scrollTop");
-            assert_greater_than(scrollingElement.scrollLeft, 0, "Final value of scrollLeft");
+            assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "The vertical smooth scroll should be interrupted.");
+            assert_greater_than(scrollingElement.scrollLeft, 0, "RIGHT key should trigger a horizontal scroll.");
         });
-    }, "RIGHT Keyboard event aborts an ongoing vertical smooth scrolling and triggers a horizontal scrolling");
+    }, "RIGHT key event aborts an ongoing vertical smooth scrolling and triggers a horizontal scrolling");
 
     promise_test(() => {
         resetScroll(scrollingElement);
@@ -65,9 +65,9 @@ window.addEventListener("load", pageLoaded.step_func_done(function () {
         window.test_driver.send_keys(scrollingElement, '\ue012');
 
         return waitForScrollEnd(scrollingElement).then(() => {
-            assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "Final value of scrollTop");
-            assert_equals(scrollingElement.scrollLeft, 0, "Final value of scrollLeft");
+            assert_less_than(scrollingElement.scrollTop, elementToRevealTop, "The vertical smooth scroll should be interrupted.");
+            assert_equals(scrollingElement.scrollLeft, 0, "LEFT key doesn't trigger a horizontal scroll.");
         });
-    }, "LEFT Keyboard event aborts an ongoing vertical smooth scrolling but does not trigger other scrolling");
+    }, "LEFT key event aborts an ongoing vertical smooth scrolling but does not trigger other scrolling");
 }));
 </script>

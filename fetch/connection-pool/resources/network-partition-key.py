@@ -30,12 +30,12 @@ def main(request, response):
         with stash.lock:
             # Don't use server hostname here, since H2 allows multiple hosts to reuse a connection.
             # Server IP is not currently available, unfortunately.
-            address_key = str(request.client_address) + u"|" + str(request.url_parts.port)
-            server_state = stash.take(uuid) or {u"test_failed": False}
-            if address_key in server_state and server_state[address_key] != isomorphic_decode(partition_id):
-                server_state[u"test_failed"] = True
-            server_state[address_key] = isomorphic_decode(partition_id)
-            test_failed = server_state[u"test_failed"]
+            address_key = isomorphic_encode(str(request.client_address) + u"|" + str(request.url_parts.port))
+            server_state = stash.take(uuid) or {b"test_failed": False}
+            if address_key in server_state and server_state[address_key] != partition_id:
+                server_state[b"test_failed"] = True
+            server_state[address_key] = partition_id
+            test_failed = server_state[b"test_failed"]
             stash.put(uuid, server_state)
 
     origin = request.headers.get(b"Origin")
@@ -57,7 +57,7 @@ def main(request, response):
     if dispatch == b"clean_up":
         stash.take(uuid)
         if test_failed:
-          return simple_response(request, response, 200, b"OK", b"Test failed, but cleanup completed.")
+            return simple_response(request, response, 200, b"OK", b"Test failed, but cleanup completed.")
         return simple_response(request, response, 200, b"OK", b"cleanup complete")
 
     return simple_response(request, response, 404, b"Not Found", b"Unrecognized dispatch parameter: " + dispatch)
@@ -99,13 +99,13 @@ def handle_fetch_file(request, response, partition_id, uuid):
     body = file.read()
     file.close()
 
-    subresource_path = u"/" + os.path.relpath(isomorphic_decode(__file__), base_path).replace(u'\\', u'/')
+    subresource_path = b"/" + isomorphic_encode(os.path.relpath(isomorphic_decode(__file__), base_path)).replace(b'\\', b'/')
     subresource_params = b"?partition_id=" + partition_id + b"&uuid=" + uuid + b"&subresource_origin=" + subresource_origin + b"&include_credentials=" + include_credentials
-    body = body.replace(b"SUBRESOURCE_PREFIX:", subresource_origin + isomorphic_encode(subresource_path) + subresource_params)
+    body = body.replace(b"SUBRESOURCE_PREFIX:", subresource_origin + subresource_path + subresource_params)
 
     other_origin = request.GET.first(b"other_origin", None)
     if other_origin:
-        body = body.replace(b"OTHER_PREFIX:", other_origin + isomorphic_encode(subresource_path) + subresource_params)
+        body = body.replace(b"OTHER_PREFIX:", other_origin + subresource_path + subresource_params)
 
     mimetypes.init()
     mimetype_pair = mimetypes.guess_type(path)

@@ -543,8 +543,8 @@ policies and contribution forms [3].
                 if (trimmed) {
                     // add a suffix if we already have this string
                     if (seen_func_name[trimmed]) {
-                        seen_func_name[trimmed]++;
-                        trimmed = trimmed + " " + seen_func_name[trimmed];
+                        let current_count = seen_func_name[trimmed]++;
+                        trimmed = trimmed + " " + current_count;
                     } else {
                         seen_func_name[trimmed] = 1;
                     }

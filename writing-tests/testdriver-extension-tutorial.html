@@ -85,20 +85,6 @@
 
     <span class="c1">// other commands...</span>
 
-    <span class="cm">/**</span>
-<span class="cm">     * Triggers browser window to be resized and relocated</span>
-<span class="cm">     *</span>
-<span class="cm">     * This matches the behaviour of the {@link</span>
-<span class="cm">     * https://w3c.github.io/webdriver/#set-window-rect|WebDriver</span>
-<span class="cm">     * Set Window Rect command}.</span>
-<span class="cm">     *</span>
-<span class="cm">     * @param {Integer} x - The x coordinate of the top left of the window</span>
-<span class="cm">     * @param {Integer} y - The x coordinate of the top left of the window</span>
-<span class="cm">     * @param {Integer} width - The width of the window</span>
-<span class="cm">     * @param {Integer} height - The height of the window</span>
-<span class="cm">     * @returns {Promise} fulfilled after window rect is set occurs, or rejected in</span>
-<span class="cm">     *                    the cases the WebDriver command errors</span>
-<span class="cm">     */</span>
     <span class="nx">set_window_rect</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;unimplemented&quot;</span><span class="p">))</span>
     <span class="p">}</span>
@@ -106,54 +92,19 @@
 </div>
 <p>We will leave this unimplemented and override it in another file. Lets do that now!</p>
 </div>
-<div class="section" id="wptrunner-wptrunner-testdriver-extra-js">
-<h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js">wptrunner/wptrunner/testdriver-extra.js</a><a class="headerlink" href="#wptrunner-wptrunner-testdriver-extra-js" title="Permalink to this headline">¶</a></h3>
-<p>This will be the default function called when invoking the test driver commands (sometimes it is overridden by testdriver-vendor.js, but this is outside the scope of this writeup).</p>
+<div class="section" id="tools-wptrunner-wptrunner-testdriver-extra-js">
+<h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js">tools/wptrunner/wptrunner/testdriver-extra.js</a><a class="headerlink" href="#tools-wptrunner-wptrunner-testdriver-extra-js" title="Permalink to this headline">¶</a></h3>
+<p>This will be the default function called when invoking the test driver commands (sometimes it is overridden by testdriver-vendor.js, but that is outside the scope of this tutorial). In most cases this is just boilerplate:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver_internal</span><span class="p">.</span><span class="nx">set_element_rect</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kr">const</span> <span class="nx">pending_promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">pending_resolve</span> <span class="o">=</span> <span class="nx">resolve</span><span class="p">;</span>
-        <span class="nx">pending_reject</span> <span class="o">=</span> <span class="nx">reject</span><span class="p">;</span>
-    <span class="p">});</span>
-    <span class="nb">window</span><span class="p">.</span><span class="nx">opener</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;action&quot;</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="o">:</span> <span class="s2">&quot;set_window_rect&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="nx">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="nx">y</span><span class="p">,</span> <span class="s2">&quot;width&quot;</span><span class="o">:</span> <span class="nx">width</span><span class="p">,</span> <span class="s2">&quot;height&quot;</span><span class="o">:</span> <span class="nx">height</span><span class="p">},</span> <span class="s2">&quot;*&quot;</span><span class="p">);</span>
-    <span class="k">return</span> <span class="nx">pending_promise</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">create_action</span><span class="p">(</span><span class="s2">&quot;set_element_rect&quot;</span><span class="p">,</span> <span class="p">{</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">});</span>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>The main thing here is the <code class="docutils literal notranslate"><span class="pre">postMessage</span></code> argument. The first argument is an object with properties</p>
-<ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">type</span></code>: this always has to be the string <code class="docutils literal notranslate"><span class="pre">&quot;action&quot;</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">action</span></code>: the name of the testdriver command this defines (in this case, <code class="docutils literal notranslate"><span class="pre">set_window_rect</span></code>)</li>
-<li>any other things you want to pass to the next point of execution (in this case, the x, y coordinates and the width and height)</li>
-</ul>
-<!-- The pending promise needs to be there as it is resolved when the window receives a completion message from the executor. --><p>The pending promise is out of scope of this function and is resolved when the window receives a completion message from the executor.
-This happens here in the same file:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span>    <span class="kd">let</span> <span class="nx">pending_resolve</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-    <span class="kd">let</span> <span class="nx">pending_reject</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-    <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-    <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">data</span> <span class="o">!==</span> <span class="s2">&quot;object&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">data</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">return</span><span class="p">;</span>
-        <span class="p">}</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">type</span> <span class="o">!==</span> <span class="s2">&quot;testdriver-complete&quot;</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">return</span><span class="p">;</span>
-        <span class="p">}</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="s2">&quot;success&quot;</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">result</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">message</span><span class="p">).</span><span class="nx">result</span>
-            <span class="nx">pending_resolve</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">pending_reject</span><span class="p">();</span>
-        <span class="p">}</span>
-    <span class="p">});</span>
-</pre></div>
-</div>
-<p>One limitation this introduces is that only one testdriver call can be made at one time since the <code class="docutils literal notranslate"><span class="pre">pending_resolve</span></code> and <code class="docutils literal notranslate"><span class="pre">pending_reject</span></code> variables are in an outer scope.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">create_action</span></code> helper function does the heavy lifting of setting up a postMessage to the wptrunner internals as well as returning a promise that will resolve once the call is complete.</p>
 <p>Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!</p>
-<p><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py">tools/wptrunner/wptrunner/executors/protocol.py</a></p>
+</div>
+<div class="section" id="tools-wptrunner-wptrunner-executors-protocol-py">
+<h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py">tools/wptrunner/wptrunner/executors/protocol.py</a><a class="headerlink" href="#tools-wptrunner-wptrunner-executors-protocol-py" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SetWindowRectProtocolPart</span><span class="p">(</span><span class="n">ProtocolPart</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Protocol part for resizing and changing location of window&quot;&quot;&quot;</span>
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
@@ -171,32 +122,10 @@ This happens here in the same file:</p>
         <span class="k">pass</span>
 </pre></div>
 </div>
-<p>Next we change the base executor.</p>
-<p><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/base.py">tools/wptrunner/wptrunner/executors/base.py</a></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CallbackHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Handle callbacks from testdriver-using tests.</span>
-
-<span class="sd">    The default implementation here makes sense for things that are roughly like</span>
-<span class="sd">    WebDriver. Things that are more different to WebDriver may need to create a</span>
-<span class="sd">    fully custom implementation.&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">test_window</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">test_window</span> <span class="o">=</span> <span class="n">test_window</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_action</span><span class="p">,</span>
-            <span class="s2">&quot;complete&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_complete</span>
-        <span class="p">}</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;click&quot;</span><span class="p">:</span> <span class="n">ClickAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">),</span>
-            <span class="s2">&quot;send_keys&quot;</span><span class="p">:</span> <span class="n">SendKeysAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">),</span>
-            <span class="p">{</span><span class="n">other</span> <span class="n">actions</span><span class="p">},</span>
-            <span class="s2">&quot;set_window_rect&quot;</span><span class="p">:</span> <span class="n">SetWindowRectAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span> <span class="c1"># add this!</span>
-        <span class="p">}</span>
-</pre></div>
+<p>Next we create a representation of our new action.</p>
 </div>
+<div class="section" id="tools-wptrunner-wptrunner-executors-actions-py">
+<h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/actions.py">tools/wptrunner/wptrunner/executors/actions.py</a><a class="headerlink" href="#tools-wptrunner-wptrunner-executors-actions-py" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SetWindowRectAction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
@@ -209,12 +138,13 @@ This happens here in the same file:</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">set_window_rect</span><span class="o">.</span><span class="n">set_window_rect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Then add your new class to the <code class="docutils literal notranslate"><span class="pre">actions</span> <span class="pre">=</span> <span class="pre">[...]</span></code> list at the end of the file.</p>
 <p>Don’t forget to write docs in <code class="docutils literal notranslate"><span class="pre">testdriver.md</span></code>.
 Now we write the browser specific implementations.</p>
 </div>
 <div class="section" id="chrome">
 <h3>Chrome<a class="headerlink" href="#chrome" title="Permalink to this headline">¶</a></h3>
-<p>We will use <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executorwebdriver.py">executorwebdriver</a> and use the WebDriver API.</p>
+<p>We will modify <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executorwebdriver.py">executorwebdriver.py</a> and use the WebDriver API.</p>
 <p>There isn’t too much work to do here, we just need to define a subclass of the protocol part we defined earlier.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WebDriverSetWindowRectProtocolPart</span><span class="p">(</span><span class="n">SetWindowRectProtocolPart</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -253,7 +183,7 @@ Now we write the browser specific implementations.</p>
 <div class="section" id="firefox">
 <h3>Firefox<a class="headerlink" href="#firefox" title="Permalink to this headline">¶</a></h3>
 <p>We use the <a class="reference external" href="https://firefox-source-docs.mozilla.org/python/marionette_driver.html#marionette_driver.marionette.Marionette.set_window_rect">set window rect</a> Marionette command.</p>
-<p>We will use <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executormarionette.py">executormarionette</a> and use the Marionette Python API.</p>
+<p>We will modify <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executormarionette.py">executormarionette.py</a> and use the Marionette Python API.</p>
 <p>We have little actual work to do here! We just need to define a subclass of the protocol part we defined earlier.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MarionetteSetWindowRectProtocolPart</span><span class="p">(</span><span class="n">SetWindowRectProtocolPart</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

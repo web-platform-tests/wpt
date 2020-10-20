@@ -75,6 +75,9 @@ and <code class="docutils literal notranslate"><span class="pre">}}</span></code
 <li><code class="docutils literal notranslate"><span class="pre">{{host}}</span></code> - The host name of the server excluding any subdomain part.</li>
 <li><code class="docutils literal notranslate"><span class="pre">{{domains[]}}</span></code> - The domain name of a particular subdomain e.g.
 <code class="docutils literal notranslate"><span class="pre">{{domains[www]}}</span></code> for the <code class="docutils literal notranslate"><span class="pre">www</span></code> subdomain.</li>
+<li><code class="docutils literal notranslate"><span class="pre">{{hosts[][]}}</span></code> - The domain name of a particular subdomain for a particular
+host. The first key may be empty (designating the “default” host) or the
+value <code class="docutils literal notranslate"><span class="pre">alt</span></code>; i.e., <code class="docutils literal notranslate"><span class="pre">{{hosts[alt][]}}</span></code> (designating the alternate host).</li>
 <li><code class="docutils literal notranslate"><span class="pre">{{ports[][]}}</span></code> - The port number of servers, by protocol e.g.
 <code class="docutils literal notranslate"><span class="pre">{{ports[http][0]}}</span></code> for the first (and, depending on setup, possibly only)
 http server</li>

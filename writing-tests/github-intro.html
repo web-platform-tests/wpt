@@ -111,6 +111,9 @@ contributions there.</p>
 which is commonly referred to as the “upstream” repository. Synchronizing your
 forked repository with the upstream repository will keep your forked local copy
 up-to-date with the latest commits.</p>
+<p>In the vast majority of cases, the <strong>only</strong> upstream branch that you should
+need to care about is <code class="docutils literal notranslate"><span class="pre">master</span></code>. If you see other branches in the repository,
+you can generally safely ignore them.</p>
 <ol>
 <li><p class="first">On the command line, navigate to to the directory where your forked copy of
 the repository is located.</p>
@@ -129,16 +132,18 @@ original repository to a remote called “upstream”:</p>
 </li>
 <li><p class="first">To pull in changes in the original repository that are not present in your
 local repository first fetch them:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git fetch upstream
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git fetch -p upstream
 </pre></div>
 </div>
 <p>Then merge them into your local repository:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git merge upstream/master
 </pre></div>
 </div>
-<p>For additional information, please see the <a class="reference external" href="https://help.github.com/articles/fork-a-repo">GitHub docs</a>.</p>
+<p>We recommend using <code class="docutils literal notranslate"><span class="pre">-p</span></code> to “prune” the outdated branches that would
+otherwise accumulate in your local repository.</p>
 </li>
 </ol>
+<p>For additional information, please see the <a class="reference external" href="https://help.github.com/articles/fork-a-repo">GitHub docs</a>.</p>
 </div>
 <div class="section" id="configure-your-environment">
 <h2>Configure your environment<a class="headerlink" href="#configure-your-environment" title="Permalink to this headline">¶</a></h2>

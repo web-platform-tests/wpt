@@ -195,7 +195,7 @@ class TestFunctionHandler(TestUsingServer):
         assert resp.read() == b""
 
 
-@pytest.mark.xfail((3,) <= sys.version_info < (3, 6), reason="wptserve only works on Py2")
+@pytest.mark.xfail((3,) <= sys.version_info < (3, 6), reason="wptserve only works on Py2 and Py3.6+")
 class TestJSONHandler(TestUsingServer):
     def test_json_0(self):
         @wptserve.handlers.json_handler

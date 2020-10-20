@@ -175,7 +175,7 @@
         },
 
         /**
-         * Freeze the current page
+         * Freeze a page
          *
          * The freeze function transitions the page from the HIDDEN state to
          * the FROZEN state as described in {@link

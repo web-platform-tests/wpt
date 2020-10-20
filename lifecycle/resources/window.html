@@ -1,8 +1,6 @@
 <!doctype html>
 <html>
 <head><title>Frozen Window</title></head>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/utils.js"></script>
 <body>
 <h1>This window will be frozen</h1>
@@ -76,7 +74,7 @@ window.document.addEventListener("freeze", () => {
 
 onload = function() {
   window.opener.add_step(freezingStepName);
-  test_driver.freeze();
+  window.opener.freeze_child(window);
 };
 
 </script>

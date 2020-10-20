@@ -3,6 +3,8 @@
 <title>TestDriver freeze method</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 
 <script>
 var test = async_test('Test freeze callback.');
@@ -63,6 +65,10 @@ function step_fail(name) {
   test.step(() => assert_unreached('During onfreeze: ' + name + ' failed to behave as expected.'));
   if (total_steps == 0)
     test.done();
+}
+
+function freeze_child(child_window) {
+  test_driver.freeze(child_window);
 }
 
 test.step_timeout(() => {

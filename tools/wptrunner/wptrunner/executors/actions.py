@@ -62,6 +62,18 @@ class GenerateTestReportAction(object):
         self.logger.debug("Generating test report: %s" % message)
         self.protocol.generate_test_report.generate_test_report(message)
 
+
+class FreezeAction(object):
+    name = "freeze"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.protocol.freeze.freeze()
+
+
 class SetPermissionAction(object):
     name = "set_permission"
 
@@ -174,6 +186,7 @@ actions = [ClickAction,
            SendKeysAction,
            ActionSequenceAction,
            GenerateTestReportAction,
+           FreezeAction,
            SetPermissionAction,
            AddVirtualAuthenticatorAction,
            RemoveVirtualAuthenticatorAction,

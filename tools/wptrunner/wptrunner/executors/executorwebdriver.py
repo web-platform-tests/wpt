@@ -24,6 +24,7 @@ from .protocol import (BaseProtocolPart,
                        ActionSequenceProtocolPart,
                        TestDriverProtocolPart,
                        GenerateTestReportProtocolPart,
+                       FreezeProtocolPart,
                        SetPermissionProtocolPart,
                        VirtualAuthenticatorProtocolPart)
 from ..testrunner import Stop
@@ -243,6 +244,14 @@ class WebDriverGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):
         self.webdriver.send_session_command("POST", "reporting/generate_test_report", json_message)
 
 
+class WebDriverFreezeProtocolPart(FreezeProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def freeze(self):
+        return self.webdriver.send_session_command("POST", "goog/page/freeze")
+
+
 class WebDriverSetPermissionProtocolPart(SetPermissionProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
@@ -292,6 +301,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverActionSequenceProtocolPart,
                   WebDriverTestDriverProtocolPart,
                   WebDriverGenerateTestReportProtocolPart,
+                  WebDriverFreezeProtocolPart,
                   WebDriverSetPermissionProtocolPart,
                   WebDriverVirtualAuthenticatorProtocolPart]
 

@@ -190,7 +190,7 @@
          *                    in case the WebDriver command errors
          */
         freeze: function(context=null) {
-            return window.test_driver_internal.freeze();
+            return window.test_driver_internal.freeze(context);
         },
 
         /**

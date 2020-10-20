@@ -310,6 +310,18 @@ class GenerateTestReportProtocolPart(ProtocolPart):
         pass
 
 
+class FreezeProtocolPart(ProtocolPart):
+    """Protocol part for performing a trusted freeze of a page"""
+    __metaclass__ = ABCMeta
+
+    name = "freeze"
+
+    @abstractmethod
+    def freeze(self):
+        """Freeze the page."""
+        pass
+
+
 class SetPermissionProtocolPart(ProtocolPart):
     """Protocol part for setting permissions"""
     __metaclass__ = ABCMeta

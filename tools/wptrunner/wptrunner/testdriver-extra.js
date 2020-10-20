@@ -198,6 +198,10 @@
         return create_action("generate_test_report", {message, context});
     };
 
+    window.test_driver_internal.freeze = function(context=null) {
+        return create_action("freeze", {context});
+    };
+
     window.test_driver_internal.set_permission = function(permission_params, context=null) {
         return create_action("set_permission", {permission_params, context});
     };

@@ -92,12 +92,13 @@ class Router(object):
     :param routes: Initial routes to add; a list of three item tuples
                    (method, path_pattern, handler_function), defined
                    as for register()
+    :param logger: An instance of the standard library logging API
     """
 
-    def __init__(self, doc_root, routes):
+    def __init__(self, doc_root, routes, logger=None):
         self.doc_root = doc_root
         self.routes = []
-        self.logger = get_logger()
+        self.logger = logger or get_logger()
         for route in reversed(routes):
             self.register(*route)
 

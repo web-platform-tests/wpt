@@ -121,10 +121,9 @@ Tests should pass when the feature under test exposes the expected behavior,
 and they should fail when the feature under test is not implemented or is
 implemented incorrectly. Tests should not rely on unrelated features if doing
 so causes failures in the latest stable release of [Apple
-Safari][apple-safari], [Google Chrome][google-chrome], [Microsoft
-Edge][micosoft-edge], or [Mozilla Firefox][mozilla-firefox]. They should,
-therefore, not rely on any features aside from the one under test unless they
-are supported in all four browsers.
+Safari][apple-safari], [Google Chrome][google-chrome], or [Mozilla
+Firefox][mozilla-firefox]. They should, therefore, not rely on any features
+aside from the one under test unless they are supported in all four browsers.
 
 Existing tests can be used as a guide to identify acceptable features. For
 language features that are not used in existing tests, community-maintained
@@ -225,7 +224,6 @@ for CSS have some additional requirements for:
 [mozilla-firefox]: https://mozilla.org/firefox
 [google-chrome]: https://google.com/chrome/browser/desktop/
 [apple-safari]: https://apple.com/safari
-[microsoft-edge]: http://microsoftedge.com/
 [es2017]: https://www.ecma-international.org/ecma-262/8.0/index.html
 [es-compat]: https://kangax.github.io/compat-table/
 [caniuse]: https://caniuse.com/

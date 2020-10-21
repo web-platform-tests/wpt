@@ -1,6 +1,5 @@
 import errno
 import os
-import platform
 import shutil
 import socket
 import subprocess

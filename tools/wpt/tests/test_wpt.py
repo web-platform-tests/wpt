@@ -44,9 +44,6 @@ def get_persistent_manifest_path():
 
 @pytest.fixture(scope="module", autouse=True)
 def init_manifest():
-    # See https://github.com/pypa/virtualenv/issues/1710
-    if sys.version_info[0] >= 3 and platform.system() == "Windows":
-        pytest.xfail(reason="virtualenv activation fails in Windows for python3")
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["manifest", "--no-download",
                        "--path", get_persistent_manifest_path()])

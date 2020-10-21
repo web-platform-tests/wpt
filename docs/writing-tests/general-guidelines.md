@@ -224,6 +224,5 @@ for CSS have some additional requirements for:
 [mozilla-firefox]: https://mozilla.org/firefox
 [google-chrome]: https://google.com/chrome/browser/desktop/
 [apple-safari]: https://apple.com/safari
-[es2017]: https://www.ecma-international.org/ecma-262/8.0/index.html
 [es-compat]: https://kangax.github.io/compat-table/
 [caniuse]: https://caniuse.com/

@@ -129,8 +129,8 @@ elements on the page should be avoided so it is clear what is part of
 the test (for a typical testharness test, the only content on the page
 will be rendered by the harness itself).</p>
 </div>
-<div class="section" id="be-minimal">
-<h2>Be Minimal<a class="headerlink" href="#be-minimal" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="be-conservative">
+<h2>Be Conservative<a class="headerlink" href="#be-conservative" title="Permalink to this headline">¶</a></h2>
 <p>Tests should generally avoid depending on edge case behavior of
 features that they don’t explicitly intend on testing. For example,
 except where testing parsing, tests should contain
@@ -138,6 +138,26 @@ no <a class="reference external" href="https://validator.nu">parse errors</a>.</
 <p>This is not, however, to discourage testing of edge cases or
 interactions between multiple features; such tests are an essential
 part of ensuring interoperability of the web platform.</p>
+<p>Tests should pass when the feature under test exposes the expected behavior,
+and they should fail when the feature under test is not implemented or is
+implemented incorrectly. Tests should not rely on unrelated features if doing
+so causes failures in the latest stable release of <a class="reference external" href="https://apple.com/safari">Apple
+Safari</a>, <a class="reference external" href="https://google.com/chrome/browser/desktop/">Google Chrome</a>, or <a class="reference external" href="https://mozilla.org/firefox">Mozilla
+Firefox</a>. They should, therefore, not rely on any features
+aside from the one under test unless they are supported in all three browsers.</p>
+<p>Existing tests can be used as a guide to identify acceptable features. For
+language features that are not used in existing tests, community-maintained
+projects such as <a class="reference external" href="https://kangax.github.io/compat-table/">the ECMAScript compatibility tables</a> and
+<a class="reference external" href="https://caniuse.com/">caniuse.com</a> provide an overview of basic feature support across the
+browsers listed above.</p>
+<p>For JavaScript code that is re-used across many tests (e.g. <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code>
+and the files located in the directory named <code class="docutils literal notranslate"><span class="pre">common</span></code>), only use language
+features that have been supported by each of the major browser engines above
+for over a year. This practice avoids introducing test failures for consumers
+maintaining older JavaScript runtimes.</p>
+<p>Patches to make tests run on older versions or other browsers will be accepted
+provided they are relatively simple and do not add undue complexity to the
+test.</p>
 </div>
 <div class="section" id="be-cross-platform">
 <h2>Be Cross-Platform<a class="headerlink" href="#be-cross-platform" title="Permalink to this headline">¶</a></h2>

@@ -18,7 +18,7 @@ function matrix3D(dict) {
                   m41: 0, m42: 0, m43: 0, m44: 1}
   matrix.is2D = false;
   for (let member in dict) {
-    matrix[member] = dict[member];
+    matrix[member] = parseFloat(dict[member]);
   }
   matrix.a = matrix.m11;
   matrix.b = matrix.m12;

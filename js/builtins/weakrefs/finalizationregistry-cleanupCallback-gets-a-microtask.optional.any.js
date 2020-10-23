@@ -40,11 +40,11 @@ for (let i = 0; i < count; i++) {
 setup({ allow_uncaught_exception: true });
 
 promise_test((test) => {
+  assert_implements(
+    typeof FinalizationRegistry.prototype.register === 'function',
+    'FinalizationRegistry.prototype.register is not implemented.'
+  );
   return (async () => {
-    assert_implements(
-      typeof FinalizationRegistry.prototype.register === 'function',
-      'FinalizationRegistry.prototype.register is not implemented.'
-    );
 
     {
       let target = {};

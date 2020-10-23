@@ -10,6 +10,7 @@ import os
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 import threading
 
@@ -220,7 +221,7 @@ def synchronize(expected_traffic, refs={}):
 
         child = subprocess.Popen(
             [
-                'python',
+                sys.executable,
                 subject,
                 '--host',
                 'http://{}:{}'.format(test_host, test_port),
@@ -267,7 +268,7 @@ def detect(event, expected_github_traffic, expected_preview_traffic):
 
         child = subprocess.Popen(
             [
-                'python',
+                sys.executable,
                 subject,
                 '--host',
                 'http://{}:{}'.format(test_host, github_port),

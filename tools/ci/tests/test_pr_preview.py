@@ -172,6 +172,11 @@ def temp_repo():
 
     try:
         subprocess.check_call(['git', 'init'], cwd=directory)
+        # Explicitly create the default branch.
+        subprocess.check_call(
+            ['git', 'checkout', '-b', 'master'],
+            cwd=directory
+        )
         subprocess.check_call(
             ['git', 'config', 'user.name', 'example'],
             cwd=directory

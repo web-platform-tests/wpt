@@ -550,7 +550,7 @@ def generate_tests(testcase, tentative):
         encoding_decl = f"<meta charset={encoding}>"
 
     html_testcase_markup = template_testcase_markup.format(url_wptserve_sub)
-    js_testcase_markup = template_testcase_markup.format(url_js_sub).replace(u"</script>", u"<\/script>")
+    js_testcase_markup = template_testcase_markup.format(url_js_sub).replace(u"</script>", u"<\/script>").replace(u"<meta charset", u"<meta\ charset")
 
     if test_nonspeculative is u'true':
         nonspeculative = template_nonspeculative.format(preamble=preamble, encoding_decl=encoding_decl, title=title, testcase_markup=html_testcase_markup, delay=delay)

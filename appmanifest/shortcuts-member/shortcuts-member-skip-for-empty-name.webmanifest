@@ -5,13 +5,13 @@
         "name": "",
         "short_name": "",
         "description": "",
-        "url": "",
+        "url": "shortcut_fail.html",
         "icons": []
     }, {
         "name": "pass",
         "short_name": "",
         "description": "",
-        "url": "",
+        "url": "shortcut_pass.html",
         "icons": [{
             "src": "pass.png"
         }]

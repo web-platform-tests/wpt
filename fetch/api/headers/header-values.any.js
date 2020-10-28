@@ -1,19 +1,19 @@
-<!doctype html>
-<meta charset=utf8>
-<meta name=timeout content=long>
-<title>Header value test</title>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<div id=log></div>
-<script>
+// META: title=Header value test
+// META: global=window,worker
+// META: timeout=long
+
 // Invalid values
 [0, 0x0A, 0x0D].forEach(val => {
   val = "x" + String.fromCharCode(val) + "x"
-  test(() => {
-    let xhr = new XMLHttpRequest()
-    xhr.open("POST", "/")
-    assert_throws_dom("SyntaxError", () => xhr.setRequestHeader("value-test", val))
-  }, "XMLHttpRequest with value " + encodeURI(val) + " needs to throw")
+
+  // XMLHttpRequest is not available in service workers
+  if (!self.GLOBAL.isWorker()) {
+    test(() => {
+      let xhr = new XMLHttpRequest()
+      xhr.open("POST", "/")
+      assert_throws_dom("SyntaxError", () => xhr.setRequestHeader("value-test", val))
+    }, "XMLHttpRequest with value " + encodeURI(val) + " needs to throw")
+  }
 
   promise_test(t => promise_rejects_js(t, TypeError, fetch("/", { headers: {"value-test": val} })), "fetch() with value " + encodeURI(val) + " needs to throw")
 })
@@ -31,19 +31,22 @@ headerValues.forEach((_, i) => {
   url += "val" + i + "|"
 })
 
-async_test((t) => {
-  let xhr = new XMLHttpRequest()
-  xhr.open("POST", url)
-  headerValues.forEach((val, i) => {
-    xhr.setRequestHeader("val" + i, val)
-  })
-  xhr.onload = t.step_func_done(() => {
+// XMLHttpRequest is not available in service workers
+if (!self.GLOBAL.isWorker()) {
+  async_test((t) => {
+    let xhr = new XMLHttpRequest()
+    xhr.open("POST", url)
     headerValues.forEach((val, i) => {
-      assert_equals(xhr.getResponseHeader("x-request-val" + i), val)
+      xhr.setRequestHeader("val" + i, val)
     })
-  })
-  xhr.send()
-}, "XMLHttpRequest with all valid values")
+    xhr.onload = t.step_func_done(() => {
+      headerValues.forEach((val, i) => {
+        assert_equals(xhr.getResponseHeader("x-request-val" + i), val)
+      })
+    })
+    xhr.send()
+  }, "XMLHttpRequest with all valid values")
+}
 
 promise_test((t) => {
   const headers = new Headers
@@ -56,4 +59,3 @@ promise_test((t) => {
     })
   })
 }, "fetch() with all valid values")
-</script>

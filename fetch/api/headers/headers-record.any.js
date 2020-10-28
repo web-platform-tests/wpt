@@ -1,9 +1,5 @@
-<!doctype html>
-<meta charset=utf-8>
-<title></title>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script>
+// META: global=window,worker
+
 var log = [];
 function clearLog() {
   log = [];
@@ -357,4 +353,3 @@ test(function() {
   assert_true(h.has("c"));
   assert_equals(h.get("c"), "d");
 }, "Operation with non-enumerable Symbol keys");
-</script>

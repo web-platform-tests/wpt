@@ -1,17 +1,6 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Response consume</title>
-    <meta name="help" href="https://fetch.spec.whatwg.org/#response">
-    <meta name="help" href="https://fetch.spec.whatwg.org/#body-mixin">
-    <meta name="author" title="Canon Research France" href="https://www.crf.canon.fr">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <script src="../resources/utils.js"></script>
-  </head>
-  <body>
-    <script>
+// META: global=window,worker
+// META: title=Response consume
+// META: script=../resources/utils.js
 
 promise_test(function(test) {
     var body = "";
@@ -68,7 +57,3 @@ test(function() {
 test(function() {
     assert_equals(Response.redirect("/").body, null);
 }, "Getting a redirect Response stream");
-
-    </script>
-  </body>
-</html>

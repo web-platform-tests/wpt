@@ -1,17 +1,7 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Response consume blob and http bodies</title>
-    <meta name="help" href="https://fetch.spec.whatwg.org/#response">
-    <meta name="help" href="https://fetch.spec.whatwg.org/#body-mixin">
-    <meta name="author" title="Canon Research France" href="https://www.crf.canon.fr">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <script src="../resources/utils.js"></script>
-    <script>
+// META: global=window,worker
+// META: title=Response consume blob and http bodies
+// META: script=../resources/utils.js
+
 promise_test(function(test) {
     return new Response(new Blob([], { "type" : "text/plain" })).body.cancel();
 }, "Cancelling a starting blob Response stream");
@@ -65,6 +55,3 @@ promise_test(function() {
         return readAll(reader).then(() => reader.cancel());
     });
 }, "Cancelling a closed Response stream");
-    </script>
-  </body>
-</html>

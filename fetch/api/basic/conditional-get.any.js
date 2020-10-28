@@ -1,51 +1,38 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Request ETag</title>
-    <meta name="help" href="https://fetch.spec.whatwg.org/#request">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <script src="/common/utils.js"></script>
-  </head>
-  <body>
-    <script>
-    promise_test(function() {
-      var cacheBuster = token(); // ensures first request is uncached
-      var url = "../resources/cache.py?v=" + cacheBuster;
-      var etag;
+// META: title=Request ETag
+// META: global=window,worker
+// META: script=/common/utils.js
 
-      // make the first request
-      return fetch(url).then(function(response) {
-        // ensure we're getting the regular, uncached response
-        assert_equals(response.status, 200);
-        assert_equals(response.headers.get("X-HTTP-STATUS"), null)
+promise_test(function() {
+  var cacheBuster = token(); // ensures first request is uncached
+  var url = "../resources/cache.py?v=" + cacheBuster;
+  var etag;
 
-        return response.text(); // consuming the body, just to be safe
-      }).then(function(body) {
-        // make a second request
-        return fetch(url);
-      }).then(function(response) {
-        // while the server responds with 304 if our browser sent the correct
-        // If-None-Match request header, at the JavaScript level this surfaces
-        // as 200
-        assert_equals(response.status, 200);
-        assert_equals(response.headers.get("X-HTTP-STATUS"), "304")
+  // make the first request
+  return fetch(url).then(function(response) {
+    // ensure we're getting the regular, uncached response
+    assert_equals(response.status, 200);
+    assert_equals(response.headers.get("X-HTTP-STATUS"), null)
 
-        etag = response.headers.get("ETag")
+    return response.text(); // consuming the body, just to be safe
+  }).then(function(body) {
+    // make a second request
+    return fetch(url);
+  }).then(function(response) {
+    // while the server responds with 304 if our browser sent the correct
+    // If-None-Match request header, at the JavaScript level this surfaces
+    // as 200
+    assert_equals(response.status, 200);
+    assert_equals(response.headers.get("X-HTTP-STATUS"), "304")
 
-        return response.text(); // consuming the body, just to be safe
-      }).then(function(body) {
-        // make a third request, explicitly setting If-None-Match request header
-        var headers = { "If-None-Match": etag }
-        return fetch(url, { headers: headers })
-      }).then(function(response) {
-        // 304 now surfaces thanks to the explicit If-None-Match request header
-        assert_equals(response.status, 304);
-      });
-    }, "Testing conditional GET with ETags");
+    etag = response.headers.get("ETag")
 
-    done();
-    </script>
-  </body>
-</html>
+    return response.text(); // consuming the body, just to be safe
+  }).then(function(body) {
+    // make a third request, explicitly setting If-None-Match request header
+    var headers = { "If-None-Match": etag }
+    return fetch(url, { headers: headers })
+  }).then(function(response) {
+    // 304 now surfaces thanks to the explicit If-None-Match request header
+    assert_equals(response.status, 304);
+  });
+}, "Testing conditional GET with ETags");

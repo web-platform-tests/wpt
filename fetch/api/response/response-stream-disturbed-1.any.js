@@ -1,16 +1,5 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Consuming Response body after getting a ReadableStream</title>
-    <meta name="help" href="https://fetch.spec.whatwg.org/#response">
-    <meta name="help" href="https://fetch.spec.whatwg.org/#body-mixin">
-    <meta name="author" title="Canon Research France" href="https://www.crf.canon.fr">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <script>
+// META: global=window,worker
+// META: title=Consuming Response body after getting a ReadableStream
 
 function createResponseWithReadableStream(callback) {
     return fetch("../resources/data.json").then(function(response) {
@@ -51,7 +40,3 @@ promise_test(function() {
         });
     });
 }, "Getting arrayBuffer after getting the Response body - not disturbed, not locked");
-
-    </script>
-  </body>
-</html>

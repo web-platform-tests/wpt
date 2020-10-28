@@ -1,15 +1,8 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Fetch: network timeout after receiving the HTTP response headers</title>
-    <meta name="timeout" content="long">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <script src="../resources/utils.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=Fetch: network timeout after receiving the HTTP response headers
+// META: global=window,worker
+// META: timeout=long
+// META: script=../resources/utils.js
+
 function checkReader(test, reader, promiseToTest)
 {
     return reader.read().then((value) => {
@@ -29,7 +22,3 @@ promise_test((test) => {
         return checkReader(test, response.body.getReader(), reader => reader.closed);
     });
 }, "Response reader closed promise should reject after a network error happening after resolving fetch promise");
-    </script>
-  </body>
-</html>
-

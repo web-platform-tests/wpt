@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>Tests Stale While Revalidate is executed for fetch API</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/utils.js"></script>
-<script>
+// META: global=window,worker
+// META: title=Tests Stale While Revalidate is executed for fetch API
+// META: script=/common/utils.js
+
 function wait25ms(test) {
   return new Promise(resolve => {
     test.step_timeout(() => {
@@ -33,4 +30,3 @@ promise_test(async (test) => {
     await wait25ms(test);
   }
 }, 'Second fetch returns same response');
-</script>

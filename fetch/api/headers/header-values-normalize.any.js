@@ -1,11 +1,7 @@
-<!doctype html>
-<meta charset=utf8>
-<meta name=timeout content=long>
-<title>Header value normalizing test</title>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<div id=log></div>
-<script>
+// META: title=Header value normalizing test
+// META: global=window,worker
+// META: timeout=long
+
 for(let i = 0; i < 0x21; i++) {
   let fail = false,
       strip = false
@@ -32,26 +28,29 @@ for(let i = 0; i < 0x21; i++) {
       val3 = val + "x",
       expectedVal3 = expectedVal + "x"
 
-  async_test((t) => {
-    let xhr = new XMLHttpRequest()
-    xhr.open("POST", url)
-    if(fail) {
-        assert_throws_dom("SyntaxError", () => xhr.setRequestHeader("val1", val1))
-        assert_throws_dom("SyntaxError", () => xhr.setRequestHeader("val2", val2))
-        assert_throws_dom("SyntaxError", () => xhr.setRequestHeader("val3", val3))
-        t.done()
-    } else {
-      xhr.setRequestHeader("val1", val1)
-      xhr.setRequestHeader("val2", val2)
-      xhr.setRequestHeader("val3", val3)
-      xhr.onload = t.step_func_done(() => {
-        assert_equals(xhr.getResponseHeader("x-request-val1"), expectedVal1)
-        assert_equals(xhr.getResponseHeader("x-request-val2"), expectedVal2)
-        assert_equals(xhr.getResponseHeader("x-request-val3"), expectedVal3)
-      })
-      xhr.send()
-    }
-  }, "XMLHttpRequest with value " + encodeURI(val))
+  // XMLHttpRequest is not available in service workers
+  if (!self.GLOBAL.isWorker()) {
+    async_test((t) => {
+      let xhr = new XMLHttpRequest()
+      xhr.open("POST", url)
+      if(fail) {
+          assert_throws_dom("SyntaxError", () => xhr.setRequestHeader("val1", val1))
+          assert_throws_dom("SyntaxError", () => xhr.setRequestHeader("val2", val2))
+          assert_throws_dom("SyntaxError", () => xhr.setRequestHeader("val3", val3))
+          t.done()
+      } else {
+        xhr.setRequestHeader("val1", val1)
+        xhr.setRequestHeader("val2", val2)
+        xhr.setRequestHeader("val3", val3)
+        xhr.onload = t.step_func_done(() => {
+          assert_equals(xhr.getResponseHeader("x-request-val1"), expectedVal1)
+          assert_equals(xhr.getResponseHeader("x-request-val2"), expectedVal2)
+          assert_equals(xhr.getResponseHeader("x-request-val3"), expectedVal3)
+        })
+        xhr.send()
+      }
+    }, "XMLHttpRequest with value " + encodeURI(val))
+  }
 
   promise_test((t) => {
     if(fail) {
@@ -69,4 +68,3 @@ for(let i = 0; i < 0x21; i++) {
     }
   }, "fetch() with value " + encodeURI(val))
 }
-</script>

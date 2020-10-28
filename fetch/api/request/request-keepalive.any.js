@@ -1,16 +1,8 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Request keepalive</title>
-<meta name="help" href="https://fetch.spec.whatwg.org/#request">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-</head>
-<body>
-<script>
+// META: global=window,worker
+// META: title=Request keepalive
+// META: script=/common/utils.js
+// META: script=/common/get-host-info.sub.js
+
 test(() => {
   assert_false(new Request('/').keepalive, 'default');
   assert_true(new Request('/', {keepalive: true}).keepalive, 'true');
@@ -23,6 +15,3 @@ test(() => {
   const init = {method: 'POST', keepalive: true, body: new ReadableStream()};
   assert_throws_js(TypeError, () => {new Request('/', init)});
 }, 'keepalive flag with stream body');
-</script>
-</body>
-</html>

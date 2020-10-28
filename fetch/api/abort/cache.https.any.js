@@ -1,57 +1,47 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Request signals &amp; the cache API</title>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
-</head>
-<body>
-<script>
-  promise_test(async () => {
-    await caches.delete('test');
-    const controller = new AbortController();
-    const signal = controller.signal;
-    const request = new Request('../resources/data.json', { signal });
+// META: title=Request signals &amp; the cache API
+// META: global=window,worker
 
-    const cache = await caches.open('test');
-    await cache.put(request, new Response(''));
+promise_test(async () => {
+  await caches.delete('test');
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const request = new Request('../resources/data.json', { signal });
 
-    const requests = await cache.keys();
+  const cache = await caches.open('test');
+  await cache.put(request, new Response(''));
 
-    assert_equals(requests.length, 1, 'Ensuring cleanup worked');
+  const requests = await cache.keys();
 
-    const [cachedRequest] = requests;
+  assert_equals(requests.length, 1, 'Ensuring cleanup worked');
 
-    controller.abort();
+  const [cachedRequest] = requests;
 
-    assert_false(cachedRequest.signal.aborted, "Request from cache shouldn't be aborted");
+  controller.abort();
 
-    const data = await fetch(cachedRequest).then(r => r.json());
-    assert_equals(data.key, 'value', 'Fetch fully completes');
-  }, "Signals are not stored in the cache API");
+  assert_false(cachedRequest.signal.aborted, "Request from cache shouldn't be aborted");
 
-  promise_test(async () => {
-    await caches.delete('test');
-    const controller = new AbortController();
-    const signal = controller.signal;
-    const request = new Request('../resources/data.json', { signal });
-    controller.abort();
+  const data = await fetch(cachedRequest).then(r => r.json());
+  assert_equals(data.key, 'value', 'Fetch fully completes');
+}, "Signals are not stored in the cache API");
 
-    const cache = await caches.open('test');
-    await cache.put(request, new Response(''));
+promise_test(async () => {
+  await caches.delete('test');
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const request = new Request('../resources/data.json', { signal });
+  controller.abort();
 
-    const requests = await cache.keys();
+  const cache = await caches.open('test');
+  await cache.put(request, new Response(''));
 
-    assert_equals(requests.length, 1, 'Ensuring cleanup worked');
+  const requests = await cache.keys();
 
-    const [cachedRequest] = requests;
+  assert_equals(requests.length, 1, 'Ensuring cleanup worked');
 
-    assert_false(cachedRequest.signal.aborted, "Request from cache shouldn't be aborted");
+  const [cachedRequest] = requests;
 
-    const data = await fetch(cachedRequest).then(r => r.json());
-    assert_equals(data.key, 'value', 'Fetch fully completes');
-  }, "Signals are not stored in the cache API, even if they're already aborted");
-</script>
-</body>
-</html>
+  assert_false(cachedRequest.signal.aborted, "Request from cache shouldn't be aborted");
+
+  const data = await fetch(cachedRequest).then(r => r.json());
+  assert_equals(data.key, 'value', 'Fetch fully completes');
+}, "Signals are not stored in the cache API, even if they're already aborted");

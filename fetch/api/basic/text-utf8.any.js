@@ -1,12 +1,6 @@
-<!doctype html>
-<meta charset=utf-8>
-<title>Fetch: Request and Response text() should decode as UTF-8</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<link rel="help" href="https://fetch.spec.whatwg.org/#body-mixin" />
-
-<script src="../resources/utils.js"></script>
-<script>
+// META: title=Fetch: Request and Response text() should decode as UTF-8
+// META: global=window,worker
+// META: script=../resources/utils.js
 
 function testTextDecoding(body, expectedText, urlParameter, title)
 {
@@ -78,5 +72,3 @@ var utf16WithoutBOM = "\xe6\x00\xf8\x00\xe5\x00\x0a\x00\xc6\x30\xb9\x30\xc8\x30\
 var utf16WithoutBOMAsURLParameter = "%E6%00%F8%00%E5%00%0A%00%C6%30%B9%30%C8%30%0A%00";
 var utf16WithoutBOMDecoded = "\ufffd\u0000\ufffd\u0000\ufffd\u0000\u000a\u0000\ufffd\u0030\ufffd\u0030\ufffd\u0030\u000a\u0000";
 testTextDecoding(utf16WithoutBOM, utf16WithoutBOMDecoded, utf16WithoutBOMAsURLParameter, "UTF-16 without BOM decoded as UTF-8");
-
-</script>

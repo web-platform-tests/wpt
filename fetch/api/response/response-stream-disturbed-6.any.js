@@ -1,16 +1,6 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>ReadableStream disturbed tests, via Response's bodyUsed property</title>
-<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
-<link rel="author" title="Takeshi Yoshino" href="mailto:tyoshino@chromium.org">
+// META: global=window,worker
+// META: title=ReadableStream disturbed tests, via Response's bodyUsed property
 
-<link rel="help" href="https://streams.spec.whatwg.org/#is-readable-stream-disturbed">
-<link rel="help" href="https://fetch.spec.whatwg.org/#dom-body-bodyused">
-
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
 "use strict";
 
 test(() => {
@@ -84,5 +74,3 @@ test(() => {
   reader.cancel().then(() => { }, () => { });
   assert_true(response.bodyUsed, "After calling stream.cancel()");
 }, "An errored stream on which cancel() has been called");
-
-</script>

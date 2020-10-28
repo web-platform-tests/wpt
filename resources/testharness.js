@@ -541,14 +541,15 @@ policies and contribution forms [3].
                 trimmed = trimmed.replace(/^([^;]*)(;\s*)+$/, "$1");
 
                 if (trimmed) {
-                    // add a suffix if we already have this string
+                    let name = trimmed;
                     if (seen_func_name[trimmed]) {
-                        trimmed = trimmed + " " + seen_func_name[trimmed];
-                        seen_func_name[trimmed]++;
+                        // This subtest name already exists, so add a suffix.
+                        name += " " + seen_func_name[trimmed];
                     } else {
-                        seen_func_name[trimmed] = 1;
+                        seen_func_name[trimmed] = 0;
                     }
-                    return trimmed;
+                    seen_func_name[trimmed] += 1;
+                    return name;
                 }
             }
         }
@@ -1383,10 +1384,16 @@ policies and contribution forms [3].
                "expected a number but got a ${type_actual}",
                {type_actual:typeof actual});
 
-        assert(Math.abs(actual - expected) <= epsilon,
-               "assert_approx_equals", description,
-               "expected ${expected} +/- ${epsilon} but got ${actual}",
-               {expected:expected, actual:actual, epsilon:epsilon});
+        // The epsilon math below does not place nice with NaN and Infinity
+        // But in this case Infinity = Infinity and NaN = NaN
+        if (isFinite(actual) || isFinite(expected)) {
+            assert(Math.abs(actual - expected) <= epsilon,
+                   "assert_approx_equals", description,
+                   "expected ${expected} +/- ${epsilon} but got ${actual}",
+                   {expected:expected, actual:actual, epsilon:epsilon});
+        } else {
+            assert_equals(actual, expected);
+        }
     }
     expose(assert_approx_equals, "assert_approx_equals");
 

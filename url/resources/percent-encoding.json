@@ -1,0 +1,18 @@
+[
+  "Tests for percent-encoding.",
+  {
+    "input": "\u2020",
+    "output": {
+      "utf-8": "%E2%80%A0",
+      "windows-1252": "%86"
+    }
+  },
+  "This uses a trailing A to prevent the URL parser from trimming the C0 control."
+  {
+    "input": "\u000EA",
+    "output": {
+      "utf-8": "%0EA",
+      "iso-2022-jp": "%26%2365533%3BA"
+    }
+  }
+]

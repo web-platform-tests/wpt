@@ -433,7 +433,6 @@
 
   function checkPointerProperties(action, width, height, pressure, tangentialPressure,
                                   tiltX, tiltY, twist, altitudeAngle, azimuthAngle) {
-    console.log("checkPointerProperties action "+JSON.stringify(action));
     if (width) {
       action.width = width;
     }
@@ -487,7 +486,6 @@
         tick = actions.addTick().tickIdx;
       }
       this.actions.set(tick, {type: "pointerDown", button});
-      console.log("pointerDown tick "+tick);
       checkPointerProperties(this.actions.get(tick), width, height, pressure, tangentialPressure,
                              tiltX, tiltY, twist, altitudeAngle, azimuthAngle);
     },
@@ -510,7 +508,6 @@
       if (duration) {
         this.actions.get(tick).duration = duration;
       }
-      console.log("pointerMove tick "+tick);
       checkPointerProperties(this.actions.get(tick), width, height, pressure, tangentialPressure,
                              tiltX, tiltY, twist, altitudeAngle, azimuthAngle);
     },

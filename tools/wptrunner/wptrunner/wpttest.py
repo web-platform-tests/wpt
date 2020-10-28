@@ -623,10 +623,10 @@ class PrintReftestTest(ReftestTest):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
                  timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
-                 page_ranges=None, protocol="http", quic=False):
+                 page_ranges=None, protocol="http", subdomain=False, quic=False):
         super(PrintReftestTest, self).__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
                                                references, timeout, path, viewport_size, dpi,
-                                               fuzzy, protocol, quic=quic)
+                                               fuzzy, protocol, subdomain=subdomain, quic=quic)
         self._page_ranges = page_ranges
 
     @classmethod

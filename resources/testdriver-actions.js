@@ -431,6 +431,38 @@
     this.actions = new Map();
   }
 
+  function checkPointerProperties(action, width, height, pressure, tangentialPressure,
+                                  tiltX, tiltY, twist, altitudeAngle, azimuthAngle) {
+    console.log("checkPointerProperties action "+JSON.stringify(action));
+    if (width) {
+      action.width = width;
+    }
+    if (height) {
+      action.height = height;
+    }
+    if (pressure) {
+      action.pressure = pressure;
+    }
+    if (tangentialPressure) {
+      action.tangentialPressure = tangentialPressure;
+    }
+    if (tiltX) {
+      action.tiltX = tiltX;
+    }
+    if (tiltY) {
+      action.tiltY = tiltY;
+    }
+    if (twist) {
+      action.twist = twist;
+    }
+    if (altitudeAngle) {
+      action.altitudeAngle = altitudeAngle;
+    }
+    if (azimuthAngle) {
+      action.azimuthAngle = azimuthAngle;
+    }
+  }
+
   PointerSource.prototype = {
     serialize: function(tickCount) {
       if (!this.actions.size) {
@@ -455,33 +487,9 @@
         tick = actions.addTick().tickIdx;
       }
       this.actions.set(tick, {type: "pointerDown", button});
-      if (width) {
-        this.actions.get(tick).width = width;
-      }
-      if (height) {
-        this.actions.get(tick).height = height;
-      }
-      if (pressure) {
-        this.actions.get(tick).pressure = pressure;
-      }
-      if (tangentialPressure) {
-        this.actions.get(tick).tangentialPressure = tangentialPressure;
-      }
-      if (tiltX) {
-        this.actions.get(tick).tiltX = tiltX;
-      }
-      if (tiltY) {
-        this.actions.get(tick).tiltY = tiltY;
-      }
-      if (twist) {
-        this.actions.get(tick).twist = twist;
-      }
-      if (altitudeAngle) {
-        this.actions.get(tick).altitudeAngle = altitudeAngle;
-      }
-      if (azimuthAngle) {
-        this.actions.get(tick).azimuthAngle = azimuthAngle;
-      }
+      console.log("pointerDown tick "+tick);
+      checkPointerProperties(this.actions.get(tick), width, height, pressure, tangentialPressure,
+                             tiltX, tiltY, twist, altitudeAngle, azimuthAngle);
     },
 
     pointerUp: function(actions, button) {
@@ -502,33 +510,9 @@
       if (duration) {
         this.actions.get(tick).duration = duration;
       }
-      if (width) {
-        this.actions.get(tick).width = width;
-      }
-      if (height) {
-        this.actions.get(tick).height = height;
-      }
-      if (pressure) {
-        this.actions.get(tick).pressure = pressure;
-      }
-      if (tangentialPressure) {
-        this.actions.get(tick).tangentialPressure = tangentialPressure;
-      }
-      if (tiltX) {
-        this.actions.get(tick).tiltX = tiltX;
-      }
-      if (tiltY) {
-        this.actions.get(tick).tiltY = tiltY;
-      }
-      if (twist) {
-        this.actions.get(tick).twist = twist;
-      }
-      if (altitudeAngle) {
-        this.actions.get(tick).altitudeAngle = altitudeAngle;
-      }
-      if (azimuthAngle) {
-        this.actions.get(tick).azimuthAngle = azimuthAngle;
-      }
+      console.log("pointerMove tick "+tick);
+      checkPointerProperties(this.actions.get(tick), width, height, pressure, tangentialPressure,
+                             tiltX, tiltY, twist, altitudeAngle, azimuthAngle);
     },
 
     addPause: function(actions, duration) {

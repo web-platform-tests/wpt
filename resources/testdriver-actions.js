@@ -281,9 +281,12 @@
      *                               pointer source
      * @returns {Actions}
      */
-    pointerDown: function({button=this.ButtonType.LEFT, sourceName=null}={}) {
+    pointerDown: function({button=this.ButtonType.LEFT, sourceName=null,
+                           width, height, pressure, tangentialPressure,
+                           tiltX, tiltY, twist, altitudeAngle, azimuthAngle}={}) {
       let source = this.getSource("pointer", sourceName);
-      source.pointerDown(this, button);
+      source.pointerDown(this, button, width, height, pressure, tangentialPressure,
+                         tiltX, tiltY, twist, altitudeAngle, azimuthAngle);
       return this;
     },
 
@@ -314,9 +317,13 @@
      * @returns {Actions}
      */
     pointerMove: function(x, y,
-                          {origin="viewport", duration, sourceName=null}={}) {
+                          {origin="viewport", duration, sourceName=null,
+                           width, height, pressure, tangentialPressure,
+                           tiltX, tiltY, twist, altitudeAngle, azimuthAngle}={}) {
       let source = this.getSource("pointer", sourceName);
-      source.pointerMove(this, x, y, duration, origin);
+      source.pointerMove(this, x, y, duration, origin, width, height, pressure,
+                         tangentialPressure, tiltX, tiltY, twist, altitudeAngle,
+                         azimuthAngle);
       return this;
     },
 
@@ -441,12 +448,40 @@
       return data;
     },
 
-    pointerDown: function(actions, button) {
+    pointerDown: function(actions, button, width, height, pressure, tangentialPressure,
+                          tiltX, tiltY, twist, altitudeAngle, azimuthAngle) {
       let tick = actions.tickIdx;
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
       }
       this.actions.set(tick, {type: "pointerDown", button});
+      if (width) {
+        this.actions.get(tick).width = width;
+      }
+      if (height) {
+        this.actions.get(tick).height = height;
+      }
+      if (pressure) {
+        this.actions.get(tick).pressure = pressure;
+      }
+      if (tangentialPressure) {
+        this.actions.get(tick).tangentialPressure = tangentialPressure;
+      }
+      if (tiltX) {
+        this.actions.get(tick).tiltX = tiltX;
+      }
+      if (tiltY) {
+        this.actions.get(tick).tiltY = tiltY;
+      }
+      if (twist) {
+        this.actions.get(tick).twist = twist;
+      }
+      if (altitudeAngle) {
+        this.actions.get(tick).altitudeAngle = altitudeAngle;
+      }
+      if (azimuthAngle) {
+        this.actions.get(tick).azimuthAngle = azimuthAngle;
+      }
     },
 
     pointerUp: function(actions, button) {
@@ -457,7 +492,8 @@
       this.actions.set(tick, {type: "pointerUp", button});
     },
 
-    pointerMove: function(actions, x, y, duration, origin) {
+    pointerMove: function(actions, x, y, duration, origin, width, height, pressure,
+                          tangentialPressure, tiltX, tiltY, twist, altitudeAngle, azimuthAngle) {
       let tick = actions.tickIdx;
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
@@ -465,6 +501,33 @@
       this.actions.set(tick, {type: "pointerMove", x, y, origin});
       if (duration) {
         this.actions.get(tick).duration = duration;
+      }
+      if (width) {
+        this.actions.get(tick).width = width;
+      }
+      if (height) {
+        this.actions.get(tick).height = height;
+      }
+      if (pressure) {
+        this.actions.get(tick).pressure = pressure;
+      }
+      if (tangentialPressure) {
+        this.actions.get(tick).tangentialPressure = tangentialPressure;
+      }
+      if (tiltX) {
+        this.actions.get(tick).tiltX = tiltX;
+      }
+      if (tiltY) {
+        this.actions.get(tick).tiltY = tiltY;
+      }
+      if (twist) {
+        this.actions.get(tick).twist = twist;
+      }
+      if (altitudeAngle) {
+        this.actions.get(tick).altitudeAngle = altitudeAngle;
+      }
+      if (azimuthAngle) {
+        this.actions.get(tick).azimuthAngle = azimuthAngle;
       }
     },
 

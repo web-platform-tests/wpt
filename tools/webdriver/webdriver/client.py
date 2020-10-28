@@ -116,14 +116,49 @@ class ActionSequence(object):
     def _key_action(self, subtype, value):
         self._actions.append({"type": subtype, "value": value})
 
-    def _pointer_action(self, subtype, button):
-        self._actions.append({"type": subtype, "button": button})
+    def _pointer_action(self, subtype, button=None, x=None, y=None, duration=None, origin=None, width=None,
+                        height=None, pressure=None, tangentialPressure=None, tiltX=None,
+                        tiltY=None, twist=None, altitudeAngle=None, azimuthAngle=None):
+        action = {
+            "type": subtype
+        }
+        if button is not None:
+            action["button"] = button
+        if x is not None:
+            action["x"] = x
+        if y is not None:
+            action["y"] = y
+        if duration is not None:
+            action["duration"] = duration
+        if origin is not None:
+            action["origin"] = origin    
+        if width is not None:
+            action["width"] = width
+        if height is not None:
+            action["height"] = height
+        if pressure is not None:
+            action["pressure"] = pressure
+        if tangentialPressure is not None:
+            action["tangentialPressure"] = tangentialPressure
+        if tiltX is not None:
+            action["tiltX"] = tiltX
+        if tiltY is not None:
+            action["tiltY"] = tiltY
+        if twist is not None:
+            action["twist"] = twist
+        if altitudeAngle is not None:
+            action["altitudeAngle"] = altitudeAngle
+        if azimuthAngle is not None:
+            action["azimuthAngle"] = azimuthAngle
+        self._actions.append(action)
 
     def pause(self, duration):
         self._actions.append({"type": "pause", "duration": duration})
         return self
 
-    def pointer_move(self, x, y, duration=None, origin=None):
+    def pointer_move(self, x, y, duration=None, origin=None, width=None, height=None,
+                     pressure=None, tangentialPressure=None, tiltX=None, tiltY=None,
+                     twist=None, altitudeAngle=None, azimuthAngle=None):
         """Queue a pointerMove action.
 
         :param x: Destination x-axis coordinate of pointer in CSS pixels.
@@ -133,16 +168,10 @@ class ActionSequence(object):
         :param origin: Origin of coordinates, either "viewport", "pointer" or
                        an Element. If None, remote end defaults to "viewport".
         """
-        action = {
-            "type": "pointerMove",
-            "x": x,
-            "y": y
-        }
-        if duration is not None:
-            action["duration"] = duration
-        if origin is not None:
-            action["origin"] = origin
-        self._actions.append(action)
+        self._pointer_action("pointerMove", x=x, y=y, duration=duration, origin=origin,
+                             width=width, height=height, pressure=pressure,
+                             tangentialPressure=tangentialPressure, tiltX=tiltX, tiltY=tiltY,
+                             twist=twist, altitudeAngle=altitudeAngle, azimuthAngle=azimuthAngle)
         return self
 
     def pointer_up(self, button=0):
@@ -151,16 +180,21 @@ class ActionSequence(object):
         :param button: Pointer button to perform action with.
                        Default: 0, which represents main device button.
         """
-        self._pointer_action("pointerUp", button)
+        self._pointer_action("pointerUp", button=button)
         return self
 
-    def pointer_down(self, button=0):
+    def pointer_down(self, button=0, width=None, height=None, pressure=None,
+                     tangentialPressure=None, tiltX=None, tiltY=None,
+                     twist=None, altitudeAngle=None, azimuthAngle=None):
         """Queue a pointerDown action for `button`.
 
         :param button: Pointer button to perform action with.
                        Default: 0, which represents main device button.
         """
-        self._pointer_action("pointerDown", button)
+        self._pointer_action("pointerDown", button=button, width=width, height=height,
+                             pressure=pressure, tangentialPressure=tangentialPressure,
+                             tiltX=tiltX, tiltY=tiltY, twist=twist, altitudeAngle=altitudeAngle,
+                             azimuthAngle=azimuthAngle)
         return self
 
     def click(self, element=None, button=0):

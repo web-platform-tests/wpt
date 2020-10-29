@@ -85,6 +85,15 @@ with which it should be instantiated</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="wptrunner.browsers.base.Browser.settings">
+<code class="descname">settings</code><span class="sig-paren">(</span><em>test</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser.settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of metadata that is constant for a specific launch of a browser.</p>
+<p>This is used to determine when the browser instance configuration changes, requiring
+a relaunch of the browser. The test runner calls this method for each test, and if the
+returned value differs from that for the previous test, the browser is relaunched.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="wptrunner.browsers.base.Browser.setup">
 <code class="descname">setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.Browser.setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used for browser-specific setup that happens at the start of a test run</p>

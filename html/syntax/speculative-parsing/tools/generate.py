@@ -425,6 +425,18 @@ preamble = u"""<!DOCTYPE html>
      /html/syntax/speculative-parsing/tools/generate.py
 -->"""
 
+no_meta_charset = u"""<!-- no meta charset -->
+<!-- (padding to exceed 1024 bytes processed by the character encoding scanner)                  -->
+<!--                                                                                             -->
+<!--                                                                                             -->
+<!--                                                                                             -->
+<!--                                                                                             -->
+<!--                                                                                             -->
+<!--                                                                                             -->
+<!--                                                                                             -->
+<!--                                                                                             -->
+<!--                                                                                             -->"""
+
 # Notes on `encodingcheck` in the URL below
 #
 # - &Gbreve; is the HTML character reference for U+011E LATIN CAPITAL LETTER G WITH BREVE
@@ -545,12 +557,12 @@ def generate_tests(testcase, tentative):
         ext = u".tentative"
 
     if encoding is None:
-        encoding_decl = u"<!-- no meta charset -->"
+        encoding_decl = no_meta_charset
     else:
         encoding_decl = f"<meta charset={encoding}>"
 
     html_testcase_markup = template_testcase_markup.format(url_wptserve_sub)
-    js_testcase_markup = template_testcase_markup.format(url_js_sub).replace(u"</script>", u"<\/script>").replace(u"<meta charset", u"<meta\ charset")
+    js_testcase_markup = template_testcase_markup.format(url_js_sub).replace(u"</script>", u"<\/script>")
 
     if test_nonspeculative is u'true':
         nonspeculative = template_nonspeculative.format(preamble=preamble, encoding_decl=encoding_decl, title=title, testcase_markup=html_testcase_markup, delay=delay)

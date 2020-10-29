@@ -155,7 +155,7 @@ def test_pen_pointer_attributes(session, test_actions_pointer_page, pen_chain):
     assert events[6]["tiltY"] == 0
     assert events[6]["twist"] == 0
 
-            
+
 def test_touch_pointer_attributes(session, test_actions_pointer_page, touch_chain):
     pointerArea = session.find.css("#pointerArea", all=False)
     center = get_inview_center(pointerArea.rect, get_viewport_rect(session))

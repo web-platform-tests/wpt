@@ -28,12 +28,14 @@ tentative_tests = [
     # title,
     # encoding,
     # template_testcase_markup,
+    # template_nonspeculative_testcase_markup (if different from template_testcase_markup),
     # expect_load,
     # test_nonspeculative
     (
       u'script-src',
       u'utf-8',
       u'<script src="{}"></script>',
+      None,
       u'true',
       u'true'
     ),
@@ -41,6 +43,7 @@ tentative_tests = [
       u'meta-charset-script-src',
       None,
       u'<meta charset=windows-1254><script src="{}"></script>',
+      u'<!-- no meta charset --><script src="{}"></script>',
       u'true',
       u'true'
     ),
@@ -49,6 +52,7 @@ tentative_tests = [
       u'meta-viewport-link-stylesheet-media',
       u'utf-8',
       u'<meta name=viewport content="width=400, initial-scale=1"><link rel=stylesheet href="{}" media="(min-width: 401px)">',
+      None,
       u'false',
       u'true'
     ),
@@ -56,6 +60,7 @@ tentative_tests = [
       u'meta-csp-img-src-none',
       u'utf-8',
       u'<meta http-equiv="Content-Security-Policy" content="script-src \'self\' \'unsafe-inline\'; img-src \'none\'"><img src="{}">',
+      None,
       u'false',
       u'true'
     ),
@@ -63,6 +68,7 @@ tentative_tests = [
       u'meta-csp-img-src-asterisk',
       u'utf-8',
       u'<meta http-equiv="Content-Security-Policy" content="script-src \'self\' \'unsafe-inline\'; img-src *"><img src="{}">',
+      None,
       u'true',
       u'true'
     ),
@@ -70,6 +76,7 @@ tentative_tests = [
       u'meta-referrer-no-referrer-img-src',
       u'utf-8',
       u'<meta name=referrer content=no-referrer><img src="{}">',
+      None,
       u'true',
       u'true'
     ),
@@ -77,6 +84,7 @@ tentative_tests = [
       u'base-href-script-src',
       u'utf-8',
       u'<base href=//{{{{domains[www1]}}}}:{{{{ports[http][0]}}}}><script src="{}"></script>',
+      None,
       u'true',
       u'true'
     ),
@@ -84,6 +92,7 @@ tentative_tests = [
       u'script-src-unsupported-type',
       u'utf-8',
       u'<script src="{}" type=text/plain></script>',
+      None,
       u'false',
       u'true'
     ),
@@ -91,6 +100,7 @@ tentative_tests = [
       u'script-src-type-application-ecmascript',
       u'utf-8',
       u'<script src="{}" type=application/ecmascript></script>',
+      None,
       u'true',
       u'true'
     ),
@@ -98,6 +108,7 @@ tentative_tests = [
       u'script-src-nomodule',
       u'utf-8',
       u'<script src="{}" nomodule></script>',
+      None,
       u'false',
       u'true'
     ),
@@ -105,6 +116,7 @@ tentative_tests = [
       u'script-src-module',
       u'utf-8',
       u'<script src="{}" type=module></script>',
+      None,
       u'true',
       u'true'
     ),
@@ -112,6 +124,7 @@ tentative_tests = [
       u'script-src-async',
       u'utf-8',
       u'<script src="{}" async></script>',
+      None,
       u'true',
       u'true'
     ),
@@ -119,6 +132,7 @@ tentative_tests = [
       u'script-src-defer',
       u'utf-8',
       u'<script src="{}" defer></script>',
+      None,
       u'true',
       u'true'
     ),
@@ -126,6 +140,7 @@ tentative_tests = [
       u'script-src-crossorigin',
       u'utf-8',
       u'<script src="{}" crossorigin></script>',
+      None,
       u'true',
       u'true'
     ),
@@ -133,6 +148,7 @@ tentative_tests = [
       u'script-src-integrity',
       u'utf-8',
       u'<script src="{}" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb"></script>',
+      None,
       u'true',
       u'true'
     ),
@@ -140,6 +156,7 @@ tentative_tests = [
       u'script-src-referrerpolicy-no-referrer',
       u'utf-8',
       u'<script src="{}" referrerpolicy=no-referrer></script>',
+      None,
       u'true',
       u'true'
     ),
@@ -147,6 +164,7 @@ tentative_tests = [
       u'template-script-src',
       u'utf-8',
       u'<template><script src="{}"></script></template>',
+      None,
       u'false',
       u'true'
     ),
@@ -154,6 +172,7 @@ tentative_tests = [
       u'link-no-rel',
       u'utf-8',
       u'<link href="{}">',
+      None,
       u'false',
       u'true'
     ),
@@ -161,6 +180,7 @@ tentative_tests = [
       u'link-rel-stylesheet',
       u'utf-8',
       u'<link rel=stylesheet href="{}">',
+      None,
       u'true',
       u'true'
     ),
@@ -168,6 +188,7 @@ tentative_tests = [
       u'link-rel-alternate-stylesheet',
       u'utf-8',
       u'<link rel="alternate stylesheet" href="{}">',
+      None,
       u'false',
       u'true'
     ),
@@ -175,6 +196,7 @@ tentative_tests = [
       u'link-rel-stylesheet-disabled',
       u'utf-8',
       u'<link rel="stylesheet" href="{}" disabled>',
+      None,
       u'false',
       u'true'
     ),
@@ -182,6 +204,7 @@ tentative_tests = [
       u'link-rel-stylesheet-nomatch-media',
       u'utf-8',
       u'<link rel=stylesheet href="{}" media="not all">',
+      None,
       u'false',
       u'true'
     ),
@@ -189,6 +212,7 @@ tentative_tests = [
       u'link-rel-stylesheet-unsupported-type',
       u'utf-8',
       u'<link rel=stylesheet href="{}" type=text/plain>',
+      None,
       u'false',
       u'true'
     ),
@@ -196,6 +220,7 @@ tentative_tests = [
       u'link-rel-stylesheet-type-text-css',
       u'utf-8',
       u'<link rel=stylesheet href="{}" type=text/css>',
+      None,
       u'true',
       u'true'
     ),
@@ -203,6 +228,7 @@ tentative_tests = [
       u'link-rel-stylesheet-crossorigin',
       u'utf-8',
       u'<link rel=stylesheet href="{}" crossorigin>',
+      None,
       u'true',
       u'true'
     ),
@@ -210,6 +236,7 @@ tentative_tests = [
       u'link-rel-stylesheet-integrity',
       u'utf-8',
       u'<link rel=stylesheet href="{}" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb">',
+      None,
       u'true',
       u'true'
     ),
@@ -217,6 +244,7 @@ tentative_tests = [
       u'link-rel-stylesheet-referrerpolicy-no-referrer',
       u'utf-8',
       u'<link rel=stylesheet href="{}" referrerpolicy=no-referrer>',
+      None,
       u'true',
       u'true'
     ),
@@ -224,6 +252,7 @@ tentative_tests = [
       u'link-rel-preload-as-style',
       u'utf-8',
       u'<link rel=preload as=style href="{}">',
+      None,
       u'true',
       u'true'
     ),
@@ -231,6 +260,7 @@ tentative_tests = [
       u'link-rel-preload-as-font-crossorigin',
       u'utf-8',
       u'<link rel=preload as=font href="{}" crossorigin>',
+      None,
       u'true',
       u'true'
     ),
@@ -238,6 +268,7 @@ tentative_tests = [
       u'link-rel-preload-as-script',
       u'utf-8',
       u'<link rel=preload as=script href="{}">',
+      None,
       u'true',
       u'true'
     ),
@@ -245,6 +276,7 @@ tentative_tests = [
       u'link-rel-preload-as-image',
       u'utf-8',
       u'<link rel=preload as=image href="{}">',
+      None,
       u'true',
       u'true'
     ),
@@ -252,6 +284,7 @@ tentative_tests = [
       u'img-src',
       u'utf-8',
       u'<img src="{}">',
+      None,
       u'true',
       u'true'
     ),
@@ -259,6 +292,7 @@ tentative_tests = [
       u'img-data-src',
       u'utf-8',
       u'<img data-src="{}">',
+      None,
       u'false',
       u'true'
     ),
@@ -267,6 +301,7 @@ tentative_tests = [
       u'image-src',
       u'utf-8',
       u'<image src="{}">',
+      None,
       u'true',
       u'true'
     ),
@@ -274,6 +309,7 @@ tentative_tests = [
       u'img-srcset',
       u'utf-8',
       u'<img srcset="{}">',
+      None,
       u'true',
       u'true'
     ),
@@ -281,6 +317,7 @@ tentative_tests = [
       u'img-src-crossorigin',
       u'utf-8',
       u'<img src="{}" crossorigin>',
+      None,
       u'true',
       u'true'
     ),
@@ -288,6 +325,7 @@ tentative_tests = [
       u'img-src-referrerpolicy-no-referrer',
       u'utf-8',
       u'<img src="{}" referrerpolicy=no-referrer>',
+      None,
       u'true',
       u'true'
     ),
@@ -295,6 +333,7 @@ tentative_tests = [
       u'img-src-loading-lazy',
       u'utf-8',
       u'<img src="{}" loading=lazy>',
+      None,
       u'false',
       u'false'
     ),
@@ -302,6 +341,7 @@ tentative_tests = [
       u'picture-source-unsupported-type',
       u'utf-8',
       u'<picture><source srcset="{}" type=text/plain><img></picture>',
+      None,
       u'false',
       u'true'
     ),
@@ -309,6 +349,7 @@ tentative_tests = [
       u'picture-source-nomatch-media',
       u'utf-8',
       u'<picture><source srcset="{}" media="not all"><img></picture>',
+      None,
       u'false',
       u'true'
     ),
@@ -316,6 +357,7 @@ tentative_tests = [
       u'picture-source-no-img',
       u'utf-8',
       u'<picture><source srcset="{}"></picture>',
+      None,
       u'false',
       u'true'
     ),
@@ -323,6 +365,7 @@ tentative_tests = [
       u'picture-source-br-img',
       u'utf-8',
       u'<picture><source srcset="{}"><br><img></picture>',
+      None,
       u'true',
       u'true'
     ),
@@ -330,6 +373,7 @@ tentative_tests = [
       u'video-poster',
       u'utf-8',
       u'<video poster="{}"></video>',
+      None,
       u'true',
       u'true'
     ),
@@ -337,6 +381,7 @@ tentative_tests = [
       u'xmp-script-src',
       u'utf-8',
       u'<xmp><script src="{}"></script></xmp>',
+      None,
       u'false',
       u'true'
     ),
@@ -345,6 +390,7 @@ tentative_tests = [
       u'math-script-src',
       u'utf-8',
       u'<math><script src="{}"></script></math>',
+      None,
       u'false',
       u'true'
     ),
@@ -352,6 +398,7 @@ tentative_tests = [
       u'math-font-script-src',
       u'utf-8',
       u'<math><font><script src="{}"></script></font></math>',
+      None,
       u'false',
       u'true'
     ),
@@ -361,6 +408,7 @@ tentative_tests = [
       u'math-font-face-script-src',
       u'utf-8',
       u'<math><font face><script src="{}"></script></font></math>',
+      None,
       u'true',
       u'true'
     ),
@@ -368,6 +416,7 @@ tentative_tests = [
       u'svg-script-href',
       u'utf-8',
       u'<svg><script href="{}"></script></svg>',
+      None,
       u'true',
       u'true'
     ),
@@ -375,6 +424,7 @@ tentative_tests = [
       u'svg-script-xlinkhref',
       u'utf-8',
       u'<svg><script xlink:href="{}"></script></svg>',
+      None,
       u'true',
       u'true'
     ),
@@ -383,6 +433,7 @@ tentative_tests = [
       u'svg-script-src',
       u'utf-8',
       u'<svg><script src="{}"></script></svg>',
+      None,
       u'false',
       u'true'
     ),
@@ -390,6 +441,7 @@ tentative_tests = [
       u'svg-image-href',
       u'utf-8',
       u'<svg><image href="{}"></image></svg>',
+      None,
       u'true',
       u'true'
     ),
@@ -397,6 +449,7 @@ tentative_tests = [
       u'svg-image-xlinkhref',
       u'utf-8',
       u'<svg><image xlink:href="{}"></image></svg>',
+      None,
       u'true',
       u'true'
     ),
@@ -405,6 +458,7 @@ tentative_tests = [
       u'svg-image-src',
       u'utf-8',
       u'<svg><image src="{}"></image></svg>',
+      None,
       u'false',
       u'true'
     ),
@@ -453,13 +507,13 @@ url_wptserve_sub = u"/html/syntax/speculative-parsing/resources/stash.py?action=
 url_js_sub = u"/html/syntax/speculative-parsing/resources/stash.py?action=put&amp;uuid=${uuid}&amp;encodingcheck=&Gbreve;"
 
 
-# Nonspeculative (normal) case to compare results with
+# Non-speculative (normal) case to compare results with
 
 template_nonspeculative = u"""{preamble}
 {encoding_decl}
 <title>Speculative parsing, non-speculative (helper file): {title}</title>
 <!-- non-speculative case -->
-{testcase_markup}
+{nonspeculative_testcase_markup}
 <!-- block the load event for a bit: -->
 <script src="/common/slow.py?delay={delay}"></script>
 """
@@ -551,7 +605,9 @@ def write_file(path, content):
     file.close()
 
 def generate_tests(testcase, tentative):
-    title, encoding, template_testcase_markup, expect_load, test_nonspeculative = testcase
+    title, encoding, template_testcase_markup, template_nonspeculative_testcase_markup, expect_load, test_nonspeculative = testcase
+    if template_nonspeculative_testcase_markup is None:
+        template_nonspeculative_testcase_markup = template_testcase_markup
     ext = u""
     if tentative:
         ext = u".tentative"
@@ -562,10 +618,11 @@ def generate_tests(testcase, tentative):
         encoding_decl = f"<meta charset={encoding}>"
 
     html_testcase_markup = template_testcase_markup.format(url_wptserve_sub)
+    html_nonspeculative_testcase_markup = template_nonspeculative_testcase_markup.format(url_wptserve_sub)
     js_testcase_markup = template_testcase_markup.format(url_js_sub).replace(u"</script>", u"<\/script>")
 
     if test_nonspeculative is u'true':
-        nonspeculative = template_nonspeculative.format(preamble=preamble, encoding_decl=encoding_decl, title=title, testcase_markup=html_testcase_markup, delay=delay)
+        nonspeculative = template_nonspeculative.format(preamble=preamble, encoding_decl=encoding_decl, title=title, nonspeculative_testcase_markup=html_nonspeculative_testcase_markup, delay=delay)
         write_file(f"resources/{title}-nonspeculative.sub.html", nonspeculative)
 
     pageload_toplevel = template_pageload_toplevel.format(preamble=preamble, encoding_decl=encoding_decl, title=title, expect_load=expect_load, test_nonspeculative=test_nonspeculative)

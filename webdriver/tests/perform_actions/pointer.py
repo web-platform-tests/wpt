@@ -115,7 +115,7 @@ def test_click_navigation(session, url):
     Poll(session, message=error_message).until(lambda s: s.url == destination)
 
 
-def test_pen_pointer_attributes(session, test_actions_pointer_page, pen_chain):
+def test_pen_pointer_properties(session, test_actions_pointer_page, pen_chain):
     pointerArea = session.find.css("#pointerArea", all=False)
     center = get_inview_center(pointerArea.rect, get_viewport_rect(session))
     pen_chain.pointer_move(0, 0, origin=pointerArea) \
@@ -156,7 +156,7 @@ def test_pen_pointer_attributes(session, test_actions_pointer_page, pen_chain):
     assert events[6]["twist"] == 0
 
 
-def test_touch_pointer_attributes(session, test_actions_pointer_page, touch_chain):
+def test_touch_pointer_properties(session, test_actions_pointer_page, touch_chain):
     pointerArea = session.find.css("#pointerArea", all=False)
     center = get_inview_center(pointerArea.rect, get_viewport_rect(session))
     touch_chain.pointer_move(0, 0, origin=pointerArea) \

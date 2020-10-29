@@ -119,7 +119,7 @@ def test_pen_pointer_attributes(session, test_actions_pointer_page, pen_chain):
     pointerArea = session.find.css("#pointerArea", all=False)
     center = get_inview_center(pointerArea.rect, get_viewport_rect(session))
     pen_chain.pointer_move(0, 0, origin=pointerArea) \
-        .pointer_down(pressure=0.36, tiltX=-72, tiltY=9, twist=86) \
+        .pointer_down(pressure=0.36, tilt_x=-72, tilt_y=9, twist=86) \
         .pointer_move(10, 10, origin=pointerArea) \
         .pointer_up() \
         .pointer_move(80, 50, origin=pointerArea) \
@@ -160,8 +160,8 @@ def test_touch_pointer_attributes(session, test_actions_pointer_page, touch_chai
     pointerArea = session.find.css("#pointerArea", all=False)
     center = get_inview_center(pointerArea.rect, get_viewport_rect(session))
     touch_chain.pointer_move(0, 0, origin=pointerArea) \
-        .pointer_down(width=23, height=31, pressure=0.78, tiltX=21, tiltY=-8, twist=355) \
-        .pointer_move(10, 10, origin=pointerArea, width=39, height=35, pressure=0.91, tiltX=-19, tiltY=62, twist=345) \
+        .pointer_down(width=23, height=31, pressure=0.78, tilt_x=21, tilt_y=-8, twist=355) \
+        .pointer_move(10, 10, origin=pointerArea, width=39, height=35, pressure=0.91, tilt_x=-19, tilt_y=62, twist=345) \
         .pointer_up() \
         .pointer_move(80, 50, origin=pointerArea) \
         .perform()

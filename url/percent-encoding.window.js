@@ -7,7 +7,8 @@ function runTests(testUnits) {
       continue;
     }
     for (const encoding of Object.keys(testUnit.output)) {
-      // Test UTF-8 in a special way
+      // Exclude UTF-8 as we want to test for each encoding that components that are always UTF-8
+      // encoded, remain UTF-8 encoded.
       if (encoding === "utf-8") {
         continue;
       }

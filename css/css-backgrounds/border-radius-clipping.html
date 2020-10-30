@@ -2,36 +2,72 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Backgrounds and Borders Test: 'border-radius' and corner-clipping of content elements</title>
+  <title>CSS Backgrounds and Borders Test: 'border-radius' and corner-clipping of content</title>
 
   <link rel="author" title="zhouli" href="mailto:liz@oupeng.com">
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
-  <link rel="help" href="http://www.w3.org/TR/css3-background/#corner-clipping">
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact">
+  <link rel="help" href="http://www.w3.org/TR/css-background-3/#corner-clipping">
   <link rel="match" href="reference/border-radius-clipping-ref.html">
 
-  <meta content="" name="flag">
-  <meta name="assert" content="When set with 'overflow: hidden', an outer container must clip background area of its child element at its corners. In this test, the outer container has a 'border-radius' declaration which implies that the clipping must occur at its curves.">
+  <meta name="assert" content="Test passes if a box with border-radius that clips its content to a box edge clips to the border-radius curve in the corners.">
 
+  <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
   <style>
-  div#parent
+  body > div { float: left; }
+  .round
     {
-      border: transparent solid 20px;
+      border: transparent double 20px;
       border-radius: 50%;
-      overflow: hidden;
-      width: 100px;
+      padding: 10px;
     }
-
-  div#son
+  #bg, #txt, #img-contain
     {
-      background-color: red;
+      overflow: hidden;
+      width: 80px;
+    }
+  #bg > div
+    {
+      margin: -10px;
       background-image: url("support/100x100-green-with-red-corners.png");
       height: 100px;
       width: 100px;
     }
+  #txt > div
+    {
+      margin: -10px;
+      color: green;
+      font: 50px/1 Ahem;
+    }
+
+  img
+    {
+      display: block;
+    }
+  #img-contain > img
+    {
+      margin: -10px;
+    }
+  #img-self
+    {
+      margin: -10px;
+    }
   </style>
 
-  <p>Test passes if there is a filled green circle and <strong>no red</strong>.
+  <p>Test passes if there are four filled green circles and <strong>no red</strong>.
 
-  <div id="parent">
-    <div id="son"></div>
+  <div id="bg" class="round">
+    <div></div>
+  </div>
+
+  <div id="txt" class="round">
+    <div>XX<br>XX</div>
+  </div>
+
+  <div id="img-contain" class="round">
+    <img src="support/swatch-green.png" width=100 height=100>
+  </div>
+
+  <div>
+    <img id="img-self" class="round" src="support/swatch-green.png" width=100>
   </div>

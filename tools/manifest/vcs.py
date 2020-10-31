@@ -227,7 +227,7 @@ class MtimeCache(CacheFile):
 
 
 class GitIgnoreCache(CacheFile, GitIgnoreCacheType):
-    file_name = "gitignore.json"
+    file_name = "gitignore2.json"
 
     def check_valid(self, data):
         # type: (Dict[Any, Any]) -> Dict[Any, Any]

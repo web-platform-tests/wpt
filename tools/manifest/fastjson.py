@@ -10,6 +10,9 @@ if MYPY:
     from typing import Any, AnyStr, Callable, Dict, IO, Text
 
 
+__all__ = ["load", "dump_local", "dump_local", "dump_dist", "dumps_dist"]
+
+
 try:
     import ujson
 except ImportError:
@@ -42,17 +45,17 @@ else:
 #
 # dump/dumps_local options for some libraries
 #
-__ujson_dump_local_kwargs = {
+_ujson_dump_local_kwargs = {
     'ensure_ascii': False,
     'escape_forward_slashes': False,
     'indent': 1,
 }  # type: Dict[str, Any]
 
 if PY3:
-    __ujson_dump_local_kwargs['reject_bytes'] = True
+    _ujson_dump_local_kwargs['reject_bytes'] = True
 
 
-__json_dump_local_kwargs = {
+_json_dump_local_kwargs = {
     'ensure_ascii': False,
     'indent': 1,
     'separators': (',', ': '),
@@ -66,12 +69,12 @@ __json_dump_local_kwargs = {
 if has_ujson:
     def dump_local(obj, fp):
         # type: (Any, IO[str]) -> None
-        return ujson.dump(obj, fp, **__ujson_dump_local_kwargs)
+        return ujson.dump(obj, fp, **_ujson_dump_local_kwargs)
 
 else:
     def dump_local(obj, fp):
         # type: (Any, IO[str]) -> None
-        return json.dump(obj, fp, **__json_dump_local_kwargs)
+        return json.dump(obj, fp, **_json_dump_local_kwargs)
 
 
 #
@@ -81,27 +84,27 @@ else:
 if has_ujson:
     def dumps_local(obj):
         # type: (Any) -> Text
-        return ujson.dumps(obj, **__ujson_dump_local_kwargs)
+        return ujson.dumps(obj, **_ujson_dump_local_kwargs)
 
 else:
     def dumps_local(obj):
         # type: (Any) -> Text
-        return json.dumps(obj, **__json_dump_local_kwargs)
+        return json.dumps(obj, **_json_dump_local_kwargs)
 
 
 #
 # dump/dumps_dist (for distributed usage of JSON where files should safely roundtrip)
 #
 
-__ujson_dump_dist_kwargs = {
+_ujson_dump_dist_kwargs = {
     'sort_keys': True,
     'indent': 1,
 }  # type: Dict[str, Any]
 
 if PY3:
-    __ujson_dump_dist_kwargs['reject_bytes'] = True
+    _ujson_dump_dist_kwargs['reject_bytes'] = True
 
-__json_dump_dist_kwargs = {
+_json_dump_dist_kwargs = {
     'sort_keys': True,
     'indent': 1,
     'separators': (',', ': '),
@@ -111,31 +114,31 @@ __json_dump_dist_kwargs = {
 if has_ujson:
     if ujson.dumps([], indent=1) == "[]":
         # optimistically see if https://github.com/ultrajson/ultrajson/issues/429 is fixed
-        def __ujson_fixup(s):
+        def _ujson_fixup(s):
             # type: (str) -> str
             return s
     else:
-        __ujson_fixup_re = re.compile(r"([\[{])[\n\x20]+([}\]])")
+        _ujson_fixup_re = re.compile(r"([\[{])[\n\x20]+([}\]])")
 
-        def __ujson_fixup(s):
+        def _ujson_fixup(s):
             # type: (str) -> str
-            return __ujson_fixup_re.sub(
+            return _ujson_fixup_re.sub(
                 lambda m: m.group(1) + m.group(2),
                 s
             )
 
     def dump_dist(obj, fp):
         # type: (Any, IO[str]) -> None
-        fp.write(__ujson_fixup(ujson.dumps(obj, **__ujson_dump_dist_kwargs)))
+        fp.write(_ujson_fixup(ujson.dumps(obj, **_ujson_dump_dist_kwargs)))
 
     def dumps_dist(obj):
         # type: (Any) -> Text
-        return __ujson_fixup(ujson.dumps(obj, **__ujson_dump_dist_kwargs))
+        return _ujson_fixup(ujson.dumps(obj, **_ujson_dump_dist_kwargs))
 else:
     def dump_dist(obj, fp):
         # type: (Any, IO[str]) -> None
-        json.dump(obj, fp, **__json_dump_dist_kwargs)
+        json.dump(obj, fp, **_json_dump_dist_kwargs)
 
     def dumps_dist(obj):
         # type: (Any) -> Text
-        return json.dumps(obj, **__json_dump_dist_kwargs)
+        return json.dumps(obj, **_json_dump_dist_kwargs)

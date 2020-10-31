@@ -12,7 +12,7 @@ from six import (
     string_types,
 )
 
-from . import fastjson
+from . import jsonlib
 from . import vcs
 from .item import (ConformanceCheckerTest,
                    CrashTest,
@@ -349,7 +349,7 @@ def _load(logger,  # type: Logger
         try:
             with io.open(manifest, "r", encoding="utf-8") as f:
                 rv = Manifest.from_json(tests_root,
-                                        fastjson.load(f),
+                                        jsonlib.load(f),
                                         types=types,
                                         callee_owns_obj=True)
         except IOError:
@@ -359,7 +359,7 @@ def _load(logger,  # type: Logger
             return None
     else:
         rv = Manifest.from_json(tests_root,
-                                fastjson.load(manifest),
+                                jsonlib.load(manifest),
                                 types=types,
                                 callee_owns_obj=True)
 
@@ -471,5 +471,5 @@ def write(manifest, manifest_path):
     with atomic_write(manifest_path, overwrite=True) as f:
         # Use ',' instead of the default ', ' separator to prevent trailing
         # spaces: https://docs.python.org/2/library/json.html#json.dump
-        fastjson.dump_dist(manifest.to_json(caller_owns_obj=True), f)
+        jsonlib.dump_dist(manifest.to_json(caller_owns_obj=True), f)
         f.write("\n")

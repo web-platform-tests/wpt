@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Tyler Wilcock" href="mailto:twilco.o@protonmail.com">
+<link rel="help" href="https://www.w3.org/TR/2017/CR-css-backgrounds-3-20171017/#border-images">
+<!-- Editorial of the spec regarding the interaction of `border-image`, border-width`, and `border-style`: -->
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/655#issuecomment-331059128">
+<link rel="match" href="border-image-with-non-visible-border-styles-ref.html">
+<title>
+  `border-image` shouldn't be rendered when the used-value of `border-width` is zero
+  due to a `none` or `hidden` `border-style`.
+</title>
+<style>
+    div {
+        width: 200px;
+        height: 200px;
+        margin: 20px;
+        background-color: green;
+        border-image-source: linear-gradient(darkred, crimson);
+        border-image-slice: 48;
+        border-image-repeat: repeat;
+        border-style: solid;
+        border-width: 48px;
+    }
+</style>
+
+<p>
+  Test passes if no red border-image is visible on any of the below boxes.
+</p>
+
+<div style="border-style: none;"></div>
+<div style="border-style: hidden;"></div>

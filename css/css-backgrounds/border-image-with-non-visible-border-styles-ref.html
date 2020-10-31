@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  `border-image` shouldn't be rendered when the used-value of `border-width` is zero
+  due to a `none` or `hidden` `border-style`.
+</title>
+<style>
+    div {
+        width: 200px;
+        height: 200px;
+        margin: 20px;
+        background-color: green;
+    }
+</style>
+
+<p>
+  Test passes if no red border-image is visible on any of the below boxes.
+</p>
+
+<div></div>
+<div></div>

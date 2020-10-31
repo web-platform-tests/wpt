@@ -22,7 +22,7 @@ else:
 #
 
 if has_ujson:
-    load = ujson.load
+    load = ujson.load  # type: Callable[[IO[AnyStr]], Any]
 
 else:
     load = json.load
@@ -33,7 +33,7 @@ else:
 #
 
 if has_ujson:
-    loads = ujson.loads
+    loads = ujson.loads  # type: Callable[[AnyStr], Any]
 
 else:
     loads = json.loads

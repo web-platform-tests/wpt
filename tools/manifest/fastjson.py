@@ -17,23 +17,11 @@ except ImportError:
 else:
     has_ujson = True
 
-try:
-    import orjson
-except ImportError:
-    has_orjson = False
-else:
-    has_orjson = True
-
 #
 # load
 #
 
-if has_orjson:
-    def load(fp):
-        # type: (IO[AnyStr]) -> Any
-        return orjson.loads(fp.read())
-
-elif has_ujson:
+if has_ujson:
     load = ujson.load
 
 else:
@@ -44,10 +32,7 @@ else:
 # loads
 #
 
-if has_orjson:
-    loads = orjson.loads  # type: Callable[[AnyStr], Any]
-
-elif has_ujson:
+if has_ujson:
     loads = ujson.loads
 
 else:
@@ -78,8 +63,6 @@ __json_dump_local_kwargs = {
 # dump_local (for local, non-distributed usage of JSON)
 #
 
-# orjson is disqualified here because orjson.dumps returns bytes
-
 if has_ujson:
     def dump_local(obj, fp):
         # type: (Any, IO[str]) -> None
@@ -94,8 +77,6 @@ else:
 #
 # dumps_local (for local, non-distributed usage of JSON)
 #
-
-# orjson is disqualified here because orjson.dumps returns bytes
 
 if has_ujson:
     def dumps_local(obj):
@@ -126,8 +107,6 @@ __json_dump_dist_kwargs = {
     'separators': (',', ': '),
 }  # type: Dict[str, Any]
 
-
-# orjson doesn't give us indent=1 and we're fussy here,
 
 if has_ujson:
     if ujson.dumps([], indent=1) == "[]":

@@ -6,6 +6,7 @@ from .client import (
     Find,
     Frame,
     Session,
+    BidiSession,
     Timeouts,
     Window)
 from .error import (

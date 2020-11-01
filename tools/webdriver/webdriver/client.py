@@ -1,3 +1,7 @@
+import copy
+import websockets
+import asyncio
+
 from . import error
 from . import protocol
 from . import transport
@@ -436,6 +440,9 @@ class Session(object):
     def __del__(self):
         self.end()
 
+    def match(self, capabilities):
+        return self.requested_capabilities == capabilities
+
     def start(self):
         """Start a new WebDriver session.
 
@@ -683,6 +690,60 @@ class Session(object):
     def screenshot(self):
         return self.send_session_command("GET", "screenshot")
 
+class BidiSession(Session):
+    def __init__(self,
+                 host,
+                 port,
+                 url_prefix="/",
+                 capabilities=None,
+                 extension=None):
+        """
+        Add a capability of "webSocketUrl": True to enable
+        Bidirectional connection in session creation.
+        """
+        self.websocket_transport = None
+        capabilities = self.__enable_websocket(capabilities)
+        super().__init__(host, port, url_prefix, capabilities, extension)
+
+    def __enable_websocket(self, caps):
+        if caps:
+            caps.setdefault("alwaysMatch", {}).update({"webSocketUrl": True})
+        else:
+            caps = {"alwaysMatch": {"webSocketUrl": True} }
+        return caps
+
+    def match(self, capabilities):
+        """Expensive match to see if capabilities is the same as previously
+        requested capabilities if websocket would be enabled.
+
+        :return Boolean.
+        """
+        caps = copy.deepcopy(capabilities)
+        caps = self.__enable_websocket(caps)
+        return super().match(caps)
+
+    async def start(self):
+        """Start a new WebDriver Bidirectional session
+        with websocket connected.
+
+        :return: Dictionary with `capabilities` and `sessionId`.
+        """
+        value = super().start()
+        # Refresh websocket connection for every test to have a clean
+        # state. Though it's unclear if server side would treat it as a clean
+        # connection yet. Maybe should send some kind of unsubscribe all cmd.
+        if self.websocket_transport:
+            await self.websocket_transport.close()
+        self.websocket_transport = await websockets.connect(self.capabilities["webSocketUrl"])
+        return value
+
+    async def end(self):
+        """Close websocket connection first before closing session.
+        """
+        if self.websocket_transport:
+            await self.websocket_transport.close()
+            self.websocket_transport = None
+        super().end()
 
 class Element(object):
     """

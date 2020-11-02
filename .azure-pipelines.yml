@@ -36,7 +36,6 @@ jobs:
 # more affected tests: https://github.com/web-platform-tests/wpt/issues/13936.
 - job: affected_safari_preview
   displayName: 'affected tests: Safari Technology Preview'
-  condition: eq(variables['Build.Reason'], 'PullRequest')
   pool:
     vmImage: 'macOS-10.15'
   steps:

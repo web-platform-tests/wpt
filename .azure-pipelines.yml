@@ -29,6 +29,7 @@ trigger:
 # logs won't appear in `./wpt run` output but will be uploaded as an artifact.
 variables:
   safaridriver_diagnose: false
+  system.debug: true
 
 jobs:
 # The affected tests jobs are unconditional for speed, as most PRs have one or

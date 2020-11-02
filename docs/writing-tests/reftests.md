@@ -105,7 +105,7 @@ these small differences, we allow tests to specify a fuzziness
 characterised by two parameters, both of which must be specified:
 
  * A maximum difference in the per-channel color value for any pixel.
- * A number of total pixels that may be different.
+ * A number of pixels that are different.
 
 The maximum difference in the per pixel color value is formally
 defined as follows: let <code>T<sub>x,y,c</sub></code> be the value of
@@ -116,39 +116,40 @@ the dimensions of the image in pixels. Then <code>maxDifference =
 max<sub>x=[0,width) y=[0,height), c={r,g,b}</sub>(|T<sub>x,y,c</sub> -
 R<sub>x,y,c</sub>|)</code>.
 
-To specify the fuzziness in the test file one may add a `<meta
-name=fuzzy>` element (or, in the case of more complex tests, to any
-page containing the `<link rel=[mis]match>` elements). In the simplest
-case this has a `content` attribute containing the parameters above,
-separated by a colon e.g.
+Both parameters are defined as ranges, allowing a test to account for
+differences between browser engines or due to non-determinisism in e.g.
+anti-aliasing.
+
+To specify the fuzziness for a given test one may add a `<meta name=fuzzy>`
+element to the test file (or, in the case of more complex tests that e.g. have
+subframes, to any page containing the `<link rel=[mis]match>` elements). The
+meta element should have a `content` attribute containing the parameters above,
+separated by a semi-colon:
 
 ```
-<meta name=fuzzy content="maxDifference=15;totalPixels=300">
+<meta name=fuzzy content="maxDifference=0-15;totalPixels=0-300">
 ```
 
-would allow for a  difference of exactly 15 / 255 on any color channel
-and 300 exactly pixels total difference. The argument names are optional
-and may be elided; the above is the same as:
+would allow for a difference of up to 15 / 255 on any color channel and up to
+300 pixels that have a difference. The argument names are optional and may be
+elided; the above is the same as:
+
+```
+<meta name=fuzzy content="0-15;0-300">
+```
+
+The values may also be given as single numbers, in which case they are
+interpreted as exact ranges. I.e.,
 
 ```
 <meta name=fuzzy content="15;300">
 ```
 
-The values may also be given as ranges e.g.
+is equivalent to
 
 ```
-<meta name=fuzzy content="maxDifference=10-15;totalPixels=200-300">
+<meta name=fuzzy content="15-15;300-300">
 ```
-
-or
-
-```
-<meta name=fuzzy content="10-15;200-300">
-```
-
-In this case the maximum pixel difference must be in the range
-`10-15` and the total number of different pixels must be in the range
-`200-300`.
 
 In cases where a single test has multiple possible refs and the
 fuzziness is not the same for all refs, a ref may be specified by

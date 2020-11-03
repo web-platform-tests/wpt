@@ -7,16 +7,12 @@ function runTests(testUnits) {
       continue;
     }
     for (const encoding of Object.keys(testUnit.output)) {
-      // Exclude UTF-8 as we want to test for each encoding that components that are always UTF-8
-      // encoded, remain UTF-8 encoded.
-      if (encoding === "utf-8") {
-        continue;
-      }
       async_test(t => {
         const frame = document.body.appendChild(document.createElement("iframe"));
         t.add_cleanup(() => frame.remove());
         frame.onload = t.step_func_done(() => {
           const output = frame.contentDocument.querySelector("a");
+          // Test that the fragment is always UTF-8 encoded
           assert_equals(output.hash, `#${testUnit.output["utf-8"]}`, "fragment");
           assert_equals(output.search, `?${testUnit.output[encoding]}`, "query");
         });

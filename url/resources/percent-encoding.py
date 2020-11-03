@@ -15,7 +15,6 @@ def main(request, response):
     # Undo the "magic" space with + replacement as otherwise base64 decoding will fail.
     value = request.GET.first(b"value").replace(" ", "+")
     encoding = request.GET.first(b"encoding")
-    print encoding, value
 
     output_value = numeric_references(base64.b64decode(value).decode(b"utf-8"))
     return (

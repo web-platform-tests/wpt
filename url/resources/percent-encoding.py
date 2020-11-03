@@ -7,7 +7,6 @@ from wptserve.utils import isomorphic_decode
 def numeric_references(input):
     output = b""
     for cp in input:
-        print cp
         output += b"&#x" + format(ord(cp), b"X") + b";"
     return output
 

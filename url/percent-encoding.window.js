@@ -20,8 +20,18 @@ function runTests(testUnits) {
           assert_equals(output.hash, `#${testUnit.output["utf-8"]}`, "fragment");
           assert_equals(output.search, `?${testUnit.output[encoding]}`, "query");
         });
-        frame.src = `resources/percent-encoding.py?encoding=${encoding}&value=${testUnit.input}`;
+        frame.src = `resources/percent-encoding.py?encoding=${encoding}&value=${toBase64(testUnit.input)}`;
       }, `Input ${testUnit.input} with encoding ${encoding}`);
     }
   }
+}
+
+// Use base64 to avoid relying on the URL parser to get UTF-8 percent-encoding correctly. This does
+// not use btoa directly as that only works with code points in the range U+0000 to U+00FF,
+// inclusive.
+function toBase64(input) {
+  const bytes = new TextEncoder().encode(input);
+  const byteString = Array.from(bytes, byte => String.fromCharCode(byte)).join("");
+  const encoded = self.btoa(byteString);
+  return encoded;
 }

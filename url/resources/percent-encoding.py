@@ -1,4 +1,4 @@
-from six.moves.urllib.parse import unquote
+import base64
 from wptserve.utils import isomorphic_decode
 
 # Use numeric references to let the HTML parser take care of inserting the correct code points
@@ -12,10 +12,12 @@ def numeric_references(input):
     return output
 
 def main(request, response):
-    value = request.GET.first(b"value")
+    # Undo the "magic" space with + replacement as otherwise base64 decoding will fail.
+    value = request.GET.first(b"value").replace(" ", "+")
     encoding = request.GET.first(b"encoding")
+    print encoding, value
 
-    output_value = numeric_references(unquote(value).decode(b"utf-8"))
+    output_value = numeric_references(base64.b64decode(value).decode(b"utf-8"))
     return (
         [(b"Content-Type", b"text/html;charset=" + encoding)],
         b"""<!doctype html>

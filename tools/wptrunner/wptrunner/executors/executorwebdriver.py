@@ -441,7 +441,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         while True:
             result = protocol.base.execute_script(
                 self.script_resume % format_map, asynchronous=True)
-            logger.info('Result: %s' % str(result))
+            self.logger.info('Result: %s' % str(result))
 
             # As of 2019-03-29, WebDriver does not define expected behavior for
             # cases where the browser crashes during script execution:

@@ -33,7 +33,7 @@ steps:
     Get-ChildItem -File "."
     Write-Host "Logging cwd:"
     Get-Location
-    Write-Host "Running $downloadPath"
+    Write-Host "Running $downloadPath with args $installArgs"
     $p = Start-Process -FilePath $downloadPath -Verb RunAs -ArgumentList $installArgs -PassThru -Wait
     Write-Host "$downloadPath finished. Exit code was: $($p.ExitCode)"
     Write-Host "After install, listing current dir"

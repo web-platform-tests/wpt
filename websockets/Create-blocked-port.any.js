@@ -76,9 +76,7 @@ async_test(t => {
   6669, // irc (alternate)
   6697, // irc+tls
 ].forEach(blockedPort => {
-  async_test(t => {
-    const ws = CreateWebSocketWithBlockedPort(blockedPort)
-    ws.onerror = t.step_func_done()
-    ws.onopen = t.unreached_func()
+  test(() => {
+    assert_throws_dom("SecurityError", () => CreateWebSocketWithBlockedPort(blockedPort));
   }, "WebSocket blocked port test " + blockedPort)
 })

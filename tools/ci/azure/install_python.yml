@@ -42,7 +42,7 @@ steps:
   condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
 - task: CopyFiles@2
   inputs:
-    contents: 'log*'
+    contents: 'python_installer.log'
     targetFolder: $(Build.ArtifactStagingDirectory)
 - task: PublishBuildArtifacts@1
   inputs:
@@ -50,7 +50,7 @@ steps:
     artifactName: PythonInstallLogs
 - powershell: |
     Write-Host "Dumping log file"
-    Get-Content -Path "log.txt"
+    Get-Content -Path "python_installer.log"
     Write-Host "Dumping C: dir"
     Get-ChildItem -Directory "C:\"
     Write-Host "Dumping C:\Python38 dir"

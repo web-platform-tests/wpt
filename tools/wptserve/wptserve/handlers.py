@@ -24,6 +24,12 @@ __all__ = ["file_handler", "python_script_handler",
            "as_is_handler", "ErrorHandler", "BasicAuthHandler"]
 
 
+def is_irrelevant_path(path):
+    irrelevant_path_substrings = [u".git", u".mailmap", u".yml", u".md",
+                                  u"CODEOWNERS"]
+    return any(substring in path for substring in irrelevant_path_substrings)
+
+
 def guess_content_type(path):
     ext = os.path.splitext(path)[1].lstrip(".")
     if ext in content_types:
@@ -100,6 +106,8 @@ class DirectoryHandler(object):
         items = []
         prev_item = None
         for item in sorted(os.listdir(path)):
+            if is_irrelevant_path(item):
+                continue
             if prev_item and prev_item + ".headers" == item:
                 items[-1][1] = item
                 prev_item = None
@@ -208,6 +216,9 @@ class FileHandler(object):
 
     def __call__(self, request, response):
         path = filesystem_path(self.base_path, request, self.url_base)
+
+        if (is_irrelevant_path(path)):
+            raise HTTPException(404)
 
         if os.path.isdir(path):
             return self.directory_handler(request, response)

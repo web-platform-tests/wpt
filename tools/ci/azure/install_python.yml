@@ -1,33 +1,41 @@
 steps:
 - powershell: |
-    if (Test-Path -LiteralPath "C:\Python27") {
-      Write-Host "Deleting C:\Python27"
-      Remove-Item -Force -Recurse "C:\Python27"
+    $pythonPath = 'C:\Python27'
+    if (Test-Path -LiteralPath $pythonPath) {
+        Write-Host "Deleting $pythonPath"
+        Remove-Item -Force -Recurse $pythonPath
     }
-    if (Test-Path -LiteralPath "C:\Python38") {
-      Write-Host "Deleting C:\Python38"
-      Remove-Item -Force -Recurse "C:\Python38"
+    $pythonPath = 'C:\Python38'
+    $pythonInstallerLogPath = 'python_installer.log'
+    $installArgs = "/passive /log $pythonInstallerLogPath TargetDir=$pythonPath"
+    if (Test-Path -LiteralPath $pythonPath) {
+        Write-Host "Deleting $pythonPath"
+        Remove-Item -Force -Recurse $pythonPath
+        Write-Host "$pythonPath already exists, repair it"
+        $installArgs = $installArgs + " /repair"
     }
     Write-Host "Downloading python installer exe"
-    Start-BitsTransfer -Source https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe  -Destination python_installer.exe
-    $hash = (Get-FileHash python_installer.exe).Hash.ToLower()
+    $downloadPath = 'python_installer.exe'
+    Start-BitsTransfer -Source https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe  -Destination $downloadPath
+    $hash = (Get-FileHash $downloadPath).Hash.ToLower()
     $expectedHash = "cd427c7b17337d7c13761ca20877d2d8be661bd30415ddc17072a31a65a91b64"
     if ($hash.Equals($expectedHash)) {
-      Write-Host "python_installer.exe hash verified"
+      Write-Host "$downloadPath hash verified"
     } else {
-      Throw "python_installer.exe hash mismatch, got $hash, expected $expectedHash"
+      Throw "$downloadPath hash mismatch, got $hash, expected $expectedHash"
     }
     Write-Host "Before install, looking at disk space"
-    Get-WmiObject -Class Win32_logicaldisk
+    $driveData = Get-WmiObject -Class win32_LogicalDisk -Filter "DeviceID = '$env:SystemDrive'"
+    Write-Host "Disk space on $env:SystemDrive: ($($driveData.FreeSpace / 1GB) GB)"
     Write-Host "Before install, listing directories in C:\"
     Get-ChildItem -Directory "C:\"
     Write-Host "Before install, listing current dir"
     Get-ChildItem -File "."
     Write-Host "Logging cwd:"
     Get-Location
-    Write-Host "Running python_installer.exe"
-    Start-Process -FilePath "python_installer.exe" -Verb RunAs -ArgumentList "/passive /log `"log.txt`" InstallAllUsers=1 TargetDir=`"C:\Python38`""
-    Write-Host "python_installer.exe finished. Exit code was: $LastExitCode"
+    Write-Host "Running $downloadPath"
+    $p = Start-Process -FilePath $downloadPath -Verb RunAs -ArgumentList -PassThru -Wait
+    Write-Host "$downloadPath finished. Exit code was: $($p.ExitCode)"
     Write-Host "After install, listing current dir"
     Get-ChildItem -File "."
   displayName: 'Install Python (Windows)'

@@ -34,7 +34,7 @@ steps:
     Write-Host "Logging cwd:"
     Get-Location
     Write-Host "Running $downloadPath"
-    $p = Start-Process -FilePath $downloadPath -Verb RunAs -ArgumentList -PassThru -Wait
+    $p = Start-Process -FilePath $downloadPath -Verb RunAs -ArgumentList $installArgs -PassThru -Wait
     Write-Host "$downloadPath finished. Exit code was: $($p.ExitCode)"
     Write-Host "After install, listing current dir"
     Get-ChildItem -File "."

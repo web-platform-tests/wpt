@@ -1,0 +1,20 @@
+<!doctype html>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+gbkPointers = [
+    23834, 23835, 23836, 23837, 23838, 23840, 23841, 23842, 23843, 23844
+];
+codePoints = [
+    0x2e84, 0x3473, 0x3447, 0x2e88, 0x2e8b, 0x359e, 0x361a, 0x360e, 0x2e8c, 0x2e97
+];
+for (i = 0; i < gbkPointers.length; i++) {
+    pointer = gbkPointers[i];
+    test(function() {
+        encoded = [pointer / 190 + 0x81, pointer % 190];
+        decoded = new TextDecoder("GBK").decode(new Uint8Array(encoded)).charCodeAt(0);
+        codePoint = codePoints[i];
+        assert_equals(decoded, codePoint);
+    }, "gbk pointer: " + pointer)
+}
+</script>

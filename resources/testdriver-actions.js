@@ -431,9 +431,8 @@
     this.actions = new Map();
   }
 
-  function setPointerProperties(actionData, width, height, pressure, tangentialPressure,
+  function setPointerProperties(action, width, height, pressure, tangentialPressure,
                                 tiltX, tiltY, twist, altitudeAngle, azimuthAngle) {
-    let action = actionData;
     if (width) {
       action.width = width;
     }

@@ -8,13 +8,13 @@ def get_response(raw_headers, filter_value, filter_name):
     # Python 3. <http.client.HTTPMessage> doesn't have 'headers" attribute or equivalent
     # [https://bugs.python.org/issue4773].
     # In Python 2, variable raw_headers.headers returns a completely uninterpreted list of lines
-    # contained in the header. In Python 3, raw_headers.items() returns a list of 2-tuples
-    # containing all the message’s field headers and values. Here is to construct an equivalent
-    # "headers" variable to support tests in Python 3.
+    # contained in the header. In Python 3, raw_headers.raw_items() returns the (name, value)
+    # header pairs without modification. Here is to construct an equivalent "headers" variable to
+    # support tests in Python 3.
     if PY3:
         header_list = []
-        for field in raw_headers.items():
-            header = isomorphic_encode(field[0]) + b": " + isomorphic_encode(field[1]) + b"\r\n"
+        for field in raw_headers.raw_items():
+            header = b"%s: %s\r\n" % (isomorphic_encode(field[0]), isomorphic_encode(field[1]))
             header_list.append(header)
     else:
         header_list = raw_headers.headers

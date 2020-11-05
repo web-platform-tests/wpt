@@ -3606,13 +3606,13 @@ policies and contribution forms [3].
         if (expected_true !== true) {
             var msg = make_message(function_name, description,
                                    error, substitutions);
-            throw new AssertionError(msg);
+            throw new AssertionError(msg)
         }
     }
 
     function AssertionError(message)
     {
-        this.message = message;
+        this.message = sanitize_unpaired_surrogates(message);
         this.stack = this.get_stack();
     }
     expose(AssertionError, "AssertionError");

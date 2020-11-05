@@ -8,12 +8,7 @@ steps:
     $pythonPath = 'C:\Python38'
     $pythonInstallerLogPath = 'python_installer.log'
     $installArgs = "/passive /log $pythonInstallerLogPath TargetDir=$pythonPath"
-    if (Test-Path -LiteralPath $pythonPath) {
-        Write-Host "Deleting $pythonPath"
-        Remove-Item -Force -Recurse $pythonPath
-        Write-Host "$pythonPath already exists, repair it"
-        $installArgs = $installArgs + " /repair"
-    }
+
     Write-Host "Downloading python installer exe"
     $downloadPath = 'python_installer.exe'
     Start-BitsTransfer -Source https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe  -Destination $downloadPath
@@ -24,6 +19,14 @@ steps:
     } else {
       Throw "$downloadPath hash mismatch, got $hash, expected $expectedHash"
     }
+
+    if (Test-Path -LiteralPath $pythonPath) {
+        Write-Host "$pythonPath already exists, uninstall it"
+        $uninstallArgs = $installArgs + " /uninstall /quiet"
+        $p = Start-Process -FilePath $downloadPath -Verb RunAs -ArgumentList $uninstallArgs -PassThru -Wait
+        Write-Host "Uninstall finished. Exit code was: $($p.ExitCode)"
+    }
+
     Write-Host "Before install, looking at disk space"
     $driveData = Get-WmiObject -Class win32_LogicalDisk -Filter "DeviceID = '$env:SystemDrive'"
     Write-Host "Disk space on $env:SystemDrive: ($($driveData.FreeSpace / 1GB) GB)"

@@ -24,10 +24,13 @@ __all__ = ["file_handler", "python_script_handler",
            "as_is_handler", "ErrorHandler", "BasicAuthHandler"]
 
 
-def is_irrelevant_path(path):
-    irrelevant_path_substrings = [u".git", u".mailmap", u".yml", u".md",
-                                  u"CODEOWNERS"]
-    return any(substring in path for substring in irrelevant_path_substrings)
+def is_irrelevant_path(base, path, in_directory_view):
+    irrelevant_substrings = [u".yml", u".md", u"CODEOWNERS"]
+    return ((".well-known" not in path and
+             ((base.startswith("/.") or
+               (in_directory_view and path.startswith("."))))) or
+            (base == "/" and (path.startswith(".") or
+                              any(s in path for s in irrelevant_substrings))))
 
 
 def guess_content_type(path):
@@ -43,6 +46,9 @@ def filesystem_path(base_path, request, url_base="/"):
         base_path = request.doc_root
 
     path = unquote(request.url_parts.path)
+
+    if is_irrelevant_path(os.path.dirname(path), os.path.basename(path), False):
+        raise HTTPException(404)
 
     if path.startswith(url_base):
         path = path[len(url_base):]
@@ -106,7 +112,7 @@ class DirectoryHandler(object):
         items = []
         prev_item = None
         for item in sorted(os.listdir(path)):
-            if is_irrelevant_path(item):
+            if is_irrelevant_path(base_path, item, True):
                 continue
             if prev_item and prev_item + ".headers" == item:
                 items[-1][1] = item
@@ -216,9 +222,6 @@ class FileHandler(object):
 
     def __call__(self, request, response):
         path = filesystem_path(self.base_path, request, self.url_base)
-
-        if (is_irrelevant_path(path)):
-            raise HTTPException(404)
 
         if os.path.isdir(path):
             return self.directory_handler(request, response)

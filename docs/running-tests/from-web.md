@@ -5,7 +5,7 @@ Tests that have been merged on GitHub are mirrored at [http://w3c-test.org/][w3c
 served from the URL [http://web-platform.test](http://web-platform.test).
 
 Not all tests can be executed in-browser, as some tests rely on automation
-(e.g. via [testdriver.js](writing-tests/testdriver)) that is not available when
+(e.g. via [testdriver.js](/writing-tests/testdriver)) that is not available when
 running a browser in a normal user session.
 
 ## Web test runner

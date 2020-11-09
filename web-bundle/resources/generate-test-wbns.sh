@@ -22,21 +22,35 @@ gen-bundle \
 
 gen-bundle \
   -version b1 \
-  -baseURL https://subresource-wbn.example/ \
-  -primaryURL https://subresource-wbn.example/root.js \
+  -baseURL $wpt_test_http_origin/web-bundle/resources/wbn/ \
+  -primaryURL $wpt_test_http_origin/web-bundle/resources/wbn/root.js \
   -dir subresource/ \
   -o wbn/subresource.wbn
 
 gen-bundle \
   -version b1 \
-  -baseURL $wpt_test_http_origin/web-bundle/resources/dynamic/ \
-  -primaryURL $wpt_test_http_origin/web-bundle/resources/dynamic/resource1.js \
+  -baseURL $wpt_test_http_origin/web-bundle/resources/wbn/dynamic/ \
+  -primaryURL $wpt_test_http_origin/web-bundle/resources/wbn/dynamic/resource1.js \
   -dir dynamic1/ \
   -o wbn/dynamic1.wbn
 
 gen-bundle \
   -version b1 \
-  -baseURL $wpt_test_http_origin/web-bundle/resources/dynamic/ \
-  -primaryURL $wpt_test_http_origin/web-bundle/resources/dynamic/resource1.js \
+  -baseURL $wpt_test_http_origin/web-bundle/resources/wbn/dynamic/ \
+  -primaryURL $wpt_test_http_origin/web-bundle/resources/wbn/dynamic/resource1.js \
   -dir dynamic2/ \
   -o wbn/dynamic2.wbn
+
+gen-bundle \
+  -version b1 \
+  -baseURL $wpt_test_https_origin/web-bundle/resources/wbn/dynamic/ \
+  -primaryURL $wpt_test_https_origin/web-bundle/resources/wbn/dynamic/resource1.js \
+  -dir dynamic1/ \
+  -o wbn/dynamic1-crossorigin.wbn
+
+gen-bundle \
+  -version b1 \
+  -baseURL $wpt_test_http_origin/web-bundle/resources/ \
+  -primaryURL $wpt_test_http_origin/web-bundle/resources/wbn/resource.js \
+  -dir path-restriction/ \
+  -o wbn/path-restriction.wbn

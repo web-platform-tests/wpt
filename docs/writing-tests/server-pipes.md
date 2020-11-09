@@ -44,6 +44,9 @@ and `}}`. Inside the block the following variables are available:
 - `{{host}}` - The host name of the server excluding any subdomain part.
 - `{{domains[]}}` - The domain name of a particular subdomain e.g.
   `{{domains[www]}}` for the `www` subdomain.
+- `{{hosts[][]}}` - The domain name of a particular subdomain for a particular
+  host. The first key may be empty (designating the "default" host) or the
+  value `alt`; i.e., `{{hosts[alt][]}}` (designating the alternate host).
 - `{{ports[][]}}` - The port number of servers, by protocol e.g.
   `{{ports[http][0]}}` for the first (and, depending on setup, possibly only)
   http server
@@ -90,6 +93,14 @@ whereas:
 
 Will cause example.html to be returned with both text/html and
 text/plain content-type headers.
+
+If the comma (`,`) or closing parenthesis (`)`) characters appear in the header
+value, those characters  must be escaped with a backslash (`\`):
+
+    example?pipe=header(Expires,Thu\,%2014%20Aug%201986%2018:00:00%20GMT)
+
+(Note that the programming environment from which the request is issued may
+require that the backslash character itself be escaped.)
 
 ### `slice`
 

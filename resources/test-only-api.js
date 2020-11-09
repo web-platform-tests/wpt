@@ -47,12 +47,14 @@ function loadScript(path) {
  * Only call this function if isChromiumBased === true.
  *
  * @param {Array.<string>} resources - A list of scripts to load: Mojo JS
- *   bindings should be of the form '/gen/../*.mojom.js', the ordering of which
- *   does not matter. Do not include mojo_bindings.js in this list. You may
- *   include other non-mojom.js scripts for convenience.
+ *   bindings should be of the form '/gen/../*.mojom.js' or
+ *   '/gen/../*.mojom-lite.js' (requires `lite` to be true); the order does not
+ *   matter. Do not include 'mojo_bindings.js' or 'mojo_bindings_lite.js'.
+ * @param {boolean=} lite - Whether the lite bindings (*.mojom-lite.js) are used
+ *   (default is false).
  * @returns {Promise}
  */
-async function loadMojoResources(resources) {
+async function loadMojoResources(resources, lite = false) {
   if (!isChromiumBased) {
     throw new Error('MojoJS not enabled; start Chrome with --enable-blink-features=MojoJS,MojoJSTest');
   }
@@ -66,18 +68,33 @@ async function loadMojoResources(resources) {
     genPrefix = 'file://';
   }
 
-  // We want to load mojo_bindings.js separately to set mojo.config.
-  if (resources.some(p => p.endsWith('/mojo_bindings.js'))) {
-    throw new Error('Do not load mojo_bindings.js explicitly.');
+  for (const path of resources) {
+    // We want to load mojo_bindings.js separately to set mojo.config.
+    if (path.endsWith('/mojo_bindings.js')) {
+      throw new Error('Do not load mojo_bindings.js explicitly.');
+    }
+    if (path.endsWith('/mojo_bindings_lite.js')) {
+      throw new Error('Do not load mojo_bindings_lite.js explicitly.');
+    }
+    if (lite) {
+      if (! /^\/gen\/.*\.mojom-lite\.js$/.test(path)) {
+        throw new Error(`Unrecognized resource path: ${path}`);
+      }
+    } else {
+      if (! /^\/gen\/.*\.mojom\.js$/.test(path)) {
+        throw new Error(`Unrecognized resource path: ${path}`);
+      }
+    }
   }
-  await loadScript(genPrefix + '/gen/layout_test_data/mojo/public/js/mojo_bindings.js');
-  mojo.config.autoLoadMojomDeps = false;
+
+  if (lite) {
+    await loadScript(genPrefix + '/gen/layout_test_data/mojo/public/js/mojo_bindings_lite.js');
+  } else {
+    await loadScript(genPrefix + '/gen/layout_test_data/mojo/public/js/mojo_bindings.js');
+    mojo.config.autoLoadMojomDeps = false;
+  }
 
   for (const path of resources) {
-    if (path.startsWith('/gen/')) {
-      await loadScript(genPrefix + path);
-    } else {
-      await loadScript(path);
-    }
+    await loadScript(genPrefix + path);
   }
 }

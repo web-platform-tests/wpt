@@ -5,6 +5,7 @@ import os
 import sys
 from six import iteritems, itervalues
 
+import wptserve
 from wptserve import sslutils
 
 from . import environment as env
@@ -75,6 +76,7 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
                                                       explicit=kwargs["default_exclude"]))
 
     ssl_enabled = sslutils.get_cls(kwargs["ssl_type"]).ssl_enabled
+    h2_enabled = wptserve.utils.http2_compatible()
     test_loader = testloader.TestLoader(test_manifests,
                                         kwargs["test_types"],
                                         run_info,
@@ -83,6 +85,7 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
                                         total_chunks=kwargs["total_chunks"],
                                         chunk_number=kwargs["this_chunk"],
                                         include_https=ssl_enabled,
+                                        include_h2=h2_enabled,
                                         include_quic=kwargs["enable_quic"],
                                         skip_timeout=kwargs["skip_timeout"],
                                         skip_implementation_status=kwargs["skip_implementation_status"],
@@ -210,6 +213,8 @@ def run_tests(config, test_paths, product, **kwargs):
                                                                        run_info,
                                                                        **kwargs)
 
+        mojojs_path = kwargs["mojojs_path"] if kwargs["enable_mojojs"] else None
+
         recording.set(["startup", "start_environment"])
         with env.TestEnvironment(test_paths,
                                  testharness_timeout_multipler,
@@ -219,7 +224,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                  ssl_config,
                                  env_extras,
                                  kwargs["enable_quic"],
-                                 kwargs["enable_mojojs"]) as test_environment:
+                                 mojojs_path) as test_environment:
             recording.set(["startup", "ensure_environment"])
             try:
                 test_environment.ensure_started()

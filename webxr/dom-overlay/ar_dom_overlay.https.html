@@ -39,6 +39,8 @@ const fakeDeviceInitParams = {
   views: VALID_VIEWS,
   viewerOrigin: IDENTITY_TRANSFORM,
   supportedFeatures: ALL_FEATURES,
+  environmentBlendMode: "alpha-blend",
+  interactionMode: "screen-space"
 };
 
 let testBasicProperties = function(overlayElement, session, fakeDeviceController, t) {
@@ -53,7 +55,7 @@ let testBasicProperties = function(overlayElement, session, fakeDeviceController
                   ["screen", "floating", "head-locked"]);
 
   // Verify SameObject property for domOverlayState
-  assert_true(session.domOverlayState === session.domOverlayState);
+  assert_equals(session.domOverlayState, session.domOverlayState);
 
   // The overlay element should have a transparent background.
   assert_equals(window.getComputedStyle(overlayElement).backgroundColor,

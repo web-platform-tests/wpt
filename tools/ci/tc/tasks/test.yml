@@ -13,10 +13,7 @@ components:
     extra:
       github:
         customCheckRun:
-          # We set both textArtifactName and annotationsArtifactName due
-          # to https://github.com/taskcluster/taskcluster/issues/3191
           textArtifactName: public/results/checkrun.md
-          annotationsArtifactName: public/results/checkrun.md
 
   wpt-testharness:
     chunks: 16
@@ -210,6 +207,12 @@ tasks:
                 - trigger-weekly
                 - trigger-push
             - vars:
+                browser: webkitgtk_minibrowser
+                channel: beta
+              use:
+                - trigger-weekly
+                - trigger-push
+            - vars:
                 browser: servo
                 channel: nightly
               use:
@@ -320,6 +323,8 @@ tasks:
               --channel=${vars.channel}
               --verify
               --verify-no-chaos-mode
+              --verify-repeat-loop=0
+              --verify-repeat-restart=10
               --github-checks-text-file="/home/test/artifacts/checkrun.md"
 
         - wpt-${vars.browser}-${vars.channel}-results:
@@ -386,7 +391,7 @@ tasks:
         - trigger-pr
       description: >-
         Lint for wpt-specific requirements
-      command: "./wpt lint --all"
+      command: "./wpt lint --all --github-checks-text-file=/home/test/artifacts/checkrun.md"
 
   - update-built:
       use:
@@ -510,14 +515,54 @@ tasks:
         run-job:
           - wpt_integration
 
-  - resources/ tests:
+  - resources/ tests (Python 2):
       description: >-
-        Tests for testharness.js and other files in resources/
+        Tests for testharness.js and other files in resources/ under Python 2.7
       use:
         - wpt-base
         - trigger-pr
         - tox-python2
       command: ./tools/ci/ci_resources_unittest.sh
+      options:
+        browser:
+          - firefox
+        xvfb: true
+        hosts: true
+      schedule-if:
+        run-job:
+          - resources_unittest
+  
+  - resources/ tests (Python 3.6):
+      description: >-
+        Tests for testharness.js and other files in resources/ under Python 3.6
+      use:
+        - wpt-base
+        - trigger-pr
+        - tox-python3
+      command: ./tools/ci/ci_resources_unittest.sh
+      install:
+        - libnss3-tools
+        - python3.6
+        - python3.6-dev
+      options:
+        browser:
+          - firefox
+        xvfb: true
+        hosts: true
+      schedule-if:
+        run-job:
+          - resources_unittest
+
+  - resources/ tests (Python 3.8):
+      description: >-
+        Tests for testharness.js and other files in resources/ under Python 3.8
+      use:
+        - wpt-base
+        - trigger-pr
+        - tox-python38
+      command: ./tools/ci/ci_resources_unittest.sh
+      install:
+        - libnss3-tools
       options:
         browser:
           - firefox
@@ -586,5 +631,5 @@ tasks:
       use:
         - wpt-base
         - trigger-pr
-      command: "./wpt tc-sink-task"
+      command: "./wpt tc-sink-task --github-checks-text-file=/home/test/artifacts/checkrun.md"
       requires: all-resolved

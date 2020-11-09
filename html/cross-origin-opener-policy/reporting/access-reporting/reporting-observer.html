@@ -63,6 +63,11 @@ promise_test(async t => {
   assert_equals(report_access_from[0].type, "coop-access-violation");
   assert_equals(report_access_from[0].url, opener_url.replace(/"/g, '%22'));
   assert_source_location_found(report_access_from[0])
+  assert_equals(report_access_from[0].body.type,
+                "access-from-coop-page-to-openee");
+  assert_equals(report_access_from[0].body.openeeURL, openee_url);
+  assert_equals(report_access_from[0].body.openerURL, undefined);
+  assert_equals(report_access_from[0].body.otherDocumentURL, undefined);
 
   // 5. The openee tries to access its opener. No reports for blocked access
   //    to the COOP page should be dispatched.
@@ -118,6 +123,11 @@ promise_test(async t => {
   assert_equals(report_access_from[0].url, openee_url.replace(/"/g, '%22'));
   assert_true(report_access_from[0].body.sourceFile.includes("try-access.js"));
   assert_source_location_found(report_access_from[0])
+  assert_equals(report_access_from[0].body.type,
+                "access-from-coop-page-to-opener");
+  assert_equals(report_access_from[0].body.openeeURL, undefined);
+  assert_equals(report_access_from[0].body.openerURL, opener_url);
+  assert_equals(report_access_from[0].body.otherDocumentURL, undefined);
 
   // 4. The opener tries to access its openee. No reports for blocked access
   //    to the COOP page should be dispatched.
@@ -186,13 +196,17 @@ promise_test(async t => {
   send(opener_iframe_token, `tryAccess(openee);`);
 
   let reports = await receive(this_window_token);
-  assert_not_equals(reports, "timeout", "No report received.");
   reports = JSON.parse(reports);
   assert_equals(reports.length, 1, "No report received.");
   assert_equals(reports[0].type, "coop-access-violation");
   assert_equals(reports[0].url, opener_url.replace(/"/g, '%22'));
   assert_true(reports[0].body.sourceFile.includes("try-access.js"));
   assert_source_location_found(reports[0]);
+  assert_equals(reports[0].body.type,
+                "access-from-coop-page-to-openee");
+  assert_equals(reports[0].body.openeeURL, openee_url);
+  assert_equals(reports[0].body.openerURL, undefined);
+  assert_equals(reports[0].body.otherDocumentURL, undefined);
 }, "Access from same-origin iframe")
 
 promise_test(async t => {
@@ -248,7 +262,7 @@ promise_test(async t => {
   //    from the main document aren't notified.
   send(opener_iframe_token, `tryAccess(openee);`);
 
-  let reports = await receive(this_window_token);
+  let reports = await receive(this_window_token, 2000);
   assert_equals(reports, "timeout", "Unexpected report received.");
 }, "Access from cross-site iframe")
 

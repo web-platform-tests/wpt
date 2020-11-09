@@ -61,6 +61,9 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
     def set_window(self, handle):
         self.webdriver.window_handle = handle
 
+    def window_handles(self):
+        return self.webdriver.handles
+
     def load(self, url):
         self.webdriver.url = url
 
@@ -177,9 +180,6 @@ class WebDriverSelectorProtocolPart(SelectorProtocolPart):
     def elements_by_selector(self, selector):
         return self.webdriver.find.css(selector)
 
-    def elements_by_selector_and_frame(self, element_selector, frame):
-        return self.webdriver.find.css(element_selector, frame=frame)
-
 
 class WebDriverClickProtocolPart(ClickProtocolPart):
     def setup(self):
@@ -217,14 +217,21 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    def send_message(self, message_type, status, message=None):
+    def send_message(self, cmd_id, message_type, status, message=None):
         obj = {
+            "cmd_id": cmd_id,
             "type": "testdriver-%s" % str(message_type),
             "status": str(status)
         }
         if message:
             obj["message"] = str(message)
         self.webdriver.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
+
+    def _switch_to_frame(self, frame_number):
+        self.webdriver.switch_frame(frame_number)
+
+    def _switch_to_parent_frame(self):
+        self.webdriver.switch_frame("parent")
 
 
 class WebDriverGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):
@@ -369,7 +376,8 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, capabilities=None, debug_info=None,
-                 supports_eager_pageload=True, **kwargs):
+                 supports_eager_pageload=True, cleanup_after_test=True,
+                 **kwargs):
         """WebDriver-based executor for testharness.js tests"""
         TestharnessExecutor.__init__(self, logger, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
@@ -383,6 +391,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
         self.supports_eager_pageload = supports_eager_pageload
+        self.cleanup_after_test = cleanup_after_test
 
     def is_alive(self):
         return self.protocol.is_alive()
@@ -409,7 +418,10 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
     def do_testharness(self, protocol, url, timeout):
         format_map = {"url": strip_server(url)}
 
+        # The previous test may not have closed its old windows (if something
+        # went wrong or if cleanup_after_test was False), so clean up here.
         parent_window = protocol.testharness.close_old_windows()
+
         # Now start the test harness
         protocol.base.execute_script("window.open('about:blank', '%s', 'noopener')" % self.window_id)
         test_window = protocol.testharness.get_test_window(self.window_id,
@@ -446,6 +458,14 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             done, rv = handler(result)
             if done:
                 break
+
+        # Attempt to cleanup any leftover windows, if allowed. This is
+        # preferable as it will blame the correct test if something goes wrong
+        # closing windows, but if the user wants to see the test results we
+        # have to leave the window(s) open.
+        if self.cleanup_after_test:
+            protocol.testharness.close_old_windows()
+
         return rv
 
     def wait_for_load(self, protocol):

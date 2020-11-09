@@ -13,6 +13,8 @@ const default_stage_parameters = {
   bounds: null
 };
 
+const default_framebuffer_scale = 0.7;
+
 function getMatrixFromTransform(transform) {
   const x = transform.orientation[0];
   const y = transform.orientation[1];
@@ -217,8 +219,13 @@ class MockVRService {
   // Only handles asynchronous calls to makeXrCompatible. Synchronous calls are
   // not supported in Javascript.
   makeXrCompatible() {
+    if (this.runtimes_.length == 0) {
+      return Promise.resolve({
+        xrCompatibleResult: device.mojom.XrCompatibleResult.kNoDeviceAvailable
+      });
+    }
     return Promise.resolve({
-      xr_compatible_result: device.mojom.XrCompatibleResult.kAlreadyCompatible
+      xrCompatibleResult: device.mojom.XrCompatibleResult.kAlreadyCompatible
     });
   }
 }
@@ -334,6 +341,17 @@ class MockRuntime {
     "immersive-ar": device.mojom.XRSessionMode.kImmersiveAr,
   };
 
+  static environmentBlendModeToMojoMap = {
+    "opaque": device.mojom.XREnvironmentBlendMode.kOpaque,
+    "alpha-blend": device.mojom.XREnvironmentBlendMode.kAlphaBlend,
+    "additive": device.mojom.XREnvironmentBlendMode.kAdditive,
+  };
+
+  static interactionModeToMojoMap = {
+    "screen-space": device.mojom.XRInteractionMode.kScreenSpace,
+    "world-space": device.mojom.XRInteractionMode.kWorldSpace,
+  };
+
   constructor(fakeDeviceInit, service) {
     this.sessionClient_ = new device.mojom.XRSessionClientPtr();
     this.presentation_provider_ = new MockXRPresentationProvider();
@@ -343,7 +361,7 @@ class MockRuntime {
     this.bounds_ = null;
     this.send_mojo_space_reset_ = false;
     this.stageParameters_ = null;
-    this.stageParametersUpdated_ = false;
+    this.stageParametersId_ = 1;
 
     this.service_ = service;
 
@@ -411,6 +429,10 @@ class MockRuntime {
       this.world_ = fakeDeviceInit.world;
     }
 
+    this.defaultFramebufferScale_ = default_framebuffer_scale;
+    this.enviromentBlendMode_ = this._convertBlendModeToEnum(fakeDeviceInit.environmentBlendMode);
+    this.interactionMode_ = this._convertInteractionModeToEnum(fakeDeviceInit.interactionMode);
+
     // This appropriately handles if the coordinates are null
     this.setBoundsGeometry(fakeDeviceInit.boundsCoordinates);
 
@@ -430,6 +452,26 @@ class MockRuntime {
 
   _convertModesToEnum(sessionModes) {
     return sessionModes.map(mode => this._convertModeToEnum(mode));
+  }
+
+  _convertBlendModeToEnum(blendMode) {
+    if (blendMode in MockRuntime.environmentBlendModeToMojoMap) {
+      return MockRuntime.environmentBlendModeToMojoMap[blendMode];
+    } else {
+      if (this.supportedModes_.includes(device.mojom.XRSessionMode.kImmersiveAr)) {
+        return device.mojom.XREnvironmentBlendMode.kAdditive;
+      } else if (this.supportedModes_.includes(device.mojom.XRSessionMode.kImmersiveVr)) {
+        return device.mojom.XREnvironmentBlendMode.kOpaque;
+      }
+    }
+  }
+
+  _convertInteractionModeToEnum(interactionMode) {
+    if (interactionMode in MockRuntime.interactionModeToMojoMap) {
+      return MockRuntime.interactionModeToMojoMap[interactionMode];
+    } else {
+      return device.mojom.XRInteractionMode.kWorldSpace;
+    }
   }
 
   // Test API methods.
@@ -543,11 +585,7 @@ class MockRuntime {
 
   onStageParametersUpdated() {
     // Indicate for the frame loop that the stage parameters have been updated.
-    this.stageParametersUpdated_ = true;
-    this.displayInfo_.stageParameters = this.stageParameters_;
-    if (this.sessionClient_.ptr.isBound()) {
-      this.sessionClient_.onChanged(this.displayInfo_);
-    }
+    this.stageParametersId_++;
   }
 
   simulateResetPose() {
@@ -620,8 +658,7 @@ class MockRuntime {
         }),
         renderWidth: 20,
         renderHeight: 20
-      },
-      webxrDefaultFramebufferScale: 0.7,
+      }
     };
   }
 
@@ -715,8 +752,6 @@ class MockRuntime {
         const mojo_space_reset = this.send_mojo_space_reset_;
         this.send_mojo_space_reset_ = false;
 
-        const stage_parameters_updated = this.stageParametersUpdated_;
-        this.stageParametersUpdated_ = false;
         if (this.pose_) {
           this.pose_.poseIndex++;
         }
@@ -745,7 +780,7 @@ class MockRuntime {
           bufferHolder: null,
           bufferSize: {},
           stageParameters: this.stageParameters_,
-          stageParametersUpdated: stage_parameters_updated,
+          stageParametersId: this.stageParametersId_,
         };
 
         this.next_frame_id_++;
@@ -1008,6 +1043,12 @@ class MockRuntime {
             clientReceiver: clientReceiver,
             displayInfo: this.displayInfo_,
             enabledFeatures: enabled_features,
+            deviceConfig: {
+              defaultFramebufferScale: this.defaultFramebufferScale_,
+              supportsViewportScaling: true
+            },
+            enviromentBlendMode: this.enviromentBlendMode_,
+            interactionMode: this.interactionMode_
           }
         });
       } else {

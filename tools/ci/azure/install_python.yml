@@ -22,41 +22,15 @@ steps:
         Write-Host "Uninstall finished. Exit code was: $($p.ExitCode)"
     }
 
-    Write-Host "Before install, looking at disk space"
-    $driveData = Get-WmiObject -Class win32_LogicalDisk -Filter "DeviceID = '$env:SystemDrive'"
-    Write-Host "Disk space on $env:SystemDrive: ($($driveData.FreeSpace / 1GB) GB)"
-    Write-Host "Before install, listing directories in C:\"
-    Get-ChildItem -Directory "C:\"
-    Write-Host "Before install, listing current dir"
-    Get-ChildItem -File "."
-    Write-Host "Logging cwd:"
-    Get-Location
     Write-Host "Running $downloadPath with args $installArgs"
     $p = Start-Process -FilePath $downloadPath -Verb RunAs -ArgumentList $installArgs -PassThru -Wait
     Write-Host "$downloadPath finished. Exit code was: $($p.ExitCode)"
-    Write-Host "After install, listing current dir"
-    Get-ChildItem -File "."
-  displayName: 'Install Python (Windows)'
-  condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
-- task: CopyFiles@2
-  inputs:
-    contents: 'python_installer.log'
-    targetFolder: $(Build.ArtifactStagingDirectory)
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: $(Build.ArtifactStagingDirectory)
-    artifactName: PythonInstallLogs
-- powershell: |
-    Write-Host "Dumping log file"
-    Get-Content -Path "python_installer.log"
-    Write-Host "Dumping C: dir"
-    Get-ChildItem -Directory "C:\"
-    Write-Host "Dumping C:\Python38 dir"
-    Get-ChildItem "C:\Python38"
-    Write-Host "Dumping C:\Python38\Scripts dir"
-    Get-ChildItem "C:\Python38\Scripts"
+
     Write-Host "Adding Python dirs to path"
     Write-Host "##vso[task.prependpath]C:\Python38"
     Write-Host "##vso[task.prependpath]C:\Python38\Scripts"
-  displayName: 'Post-Install Python (Windows)'
+
+    Write-Host "Dumping install log file:"
+    Get-Content -Path "python_installer.log"
+  displayName: 'Install Python (Windows)'
   condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))

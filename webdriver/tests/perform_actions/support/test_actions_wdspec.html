@@ -162,6 +162,15 @@
           outer.addEventListener("mouseup", recordPointerEvent);
           outer.addEventListener("contextmenu", recordPointerEvent);
 
+          var pointerArea = document.getElementById("pointerArea");
+          pointerArea.addEventListener("pointerdown", recordPointerEvent);
+          pointerArea.addEventListener("pointermove", recordPointerEvent);
+          pointerArea.addEventListener("pointerup", recordPointerEvent);
+          pointerArea.addEventListener("pointerover", recordPointerEvent);
+          pointerArea.addEventListener("pointerenter", recordPointerEvent);
+          pointerArea.addEventListener("pointerout", recordPointerEvent);
+          pointerArea.addEventListener("pointerleave", recordPointerEvent);
+
           window.addEventListener("mousemove", recordFirstPointerMove);
           //visual cue for mousemove
           var pointer = document.getElementById("trackPointer");
@@ -193,6 +202,11 @@
   <div>
     <h2>ClickReporter</h2>
     <div id="outer" class="area">
+    </div>
+  </div>
+  <div>
+    <h2>PointerReporter</h2>
+    <div id="pointerArea" class="area">
     </div>
   </div>
   <div>

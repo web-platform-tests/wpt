@@ -115,6 +115,31 @@ def test_click_navigation(session, url):
     Poll(session, message=error_message).until(lambda s: s.url == destination)
 
 
+def test_pointer_attributes(session, test_actions_page, pen_chain):
+    pointerArea = session.find.css("#pointerArea", all=False)
+    center = get_inview_center(pointerArea.rect, get_viewport_rect(session))
+    pen_chain.pointer_move(0, 0, origin=pointerArea) \
+        .pointer_down(pressure=0.3, twist=80) \
+        .pointer_move(10, 10, origin=pointerArea, pressure=0.6, twist=50) \
+        .pointer_up() \
+        .pointer_move(80, 50, origin=pointerArea) \
+        .perform()
+    events = get_events(session)
+    assert len(events) == 13
+    event_types = [e["type"] for e in events]
+    assert ["pointerover", "pointerenter", "pointermove", "mousemove",
+            "pointerdown", "pointerover", "pointerenter", "pointermove",
+            "pointerup", "pointerout", "pointerleave", "pointerout",
+            "pointerleave"] == event_types
+    for e in events:
+        if e["type"] == "pointerdown":
+            assert e["pageX"] == pytest.approx(center["x"], abs=1.0)
+            assert e["pageY"] == pytest.approx(center["y"], abs=1.0)
+            assert e["target"] == "pointerArea"
+            assert e["pressure"] == 0.3
+            assert e["twist"] == 80
+
+
 @pytest.mark.parametrize("drag_duration", [0, 300, 800])
 @pytest.mark.parametrize("dx, dy", [
     (20, 0), (0, 15), (10, 15), (-20, 0), (10, -15), (-10, -15)

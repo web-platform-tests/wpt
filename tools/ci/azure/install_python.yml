@@ -1,10 +1,5 @@
 steps:
 - powershell: |
-    $pythonPath = 'C:\Python27'
-    if (Test-Path -LiteralPath $pythonPath) {
-        Write-Host "Deleting $pythonPath"
-        Remove-Item -Force -Recurse $pythonPath
-    }
     $pythonPath = 'C:\Python38'
     $pythonInstallerLogPath = 'python_installer.log'
     $installArgs = "/passive /log $pythonInstallerLogPath TargetDir=$pythonPath"

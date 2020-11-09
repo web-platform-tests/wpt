@@ -107,7 +107,12 @@ def branch_point():
         #   branch point and the merge base)
         #
         # In either case, fall back to using the merge base as the branch point.
-        merge_base = git("merge-base", "HEAD", "origin/master")
+        import subprocess
+        try:
+            merge_base = git("merge-base", "HEAD", "origin/master")
+        except subprocess.CalledProcessError as e:
+            print(e.output)
+            raise e
         if (branch_point is None or
             (branch_point != merge_base and
              not git("log", "--oneline", "%s..%s" % (merge_base, branch_point)).strip())):

@@ -39,6 +39,11 @@
 <p>Tests that have been merged on GitHub are mirrored at <a class="reference external" href="http://w3c-test.org">http://w3c-test.org/</a>.
 <a class="reference internal" href="from-local-system.html"><span class="doc">On properly-configured systems</span></a>, local files may also be
 served from the URL <a class="reference external" href="http://web-platform.test">http://web-platform.test</a>.</p>
+<p>Not all tests can be executed in-browser, as some tests rely on automation
+(e.g. via <a class="reference internal" href="../writing-tests/testdriver.html"><span class="doc">testdriver.js</span></a>) that is not available
+when running a browser in a normal user session.</p>
+<div class="section" id="web-test-runner">
+<h2>Web test runner<a class="headerlink" href="#web-test-runner" title="Permalink to this headline">¶</a></h2>
 <p>For running multiple tests inside a browser, there is a test runner
 located at <code class="docutils literal notranslate"><span class="pre">/tools/runner/index.html</span></code>.</p>
 <p>This allows all the tests, or those matching a specific prefix
@@ -50,6 +55,7 @@ running manual tests.</p>
 more than one reference involved.</p>
 <p>Because it runs entirely in-browser, this runner cannot deal with
 edge-cases like tests that cause the browser to crash or hang.</p>
+</div>
 </div>
 
 

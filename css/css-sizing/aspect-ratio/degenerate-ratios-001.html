@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>CSS aspect-ratio: degenerate ratios</title>
+<link rel=author title="Tab Atkins-Bittner" href="https://www.xanthir.com/contact/">
+<link rel="help" href="https://drafts.csswg.org/css-sizing-4/#aspect-ratio">
+<!-- A "degenerate" ratio is one whether either number is 0 or infinity.
+	Degenerate ratios are basically ignored -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/ar.js"></script>
+
+<div style="width:100px;">
+    <div class="test"></div>
+</div>
+
+<script>
+/* Degenerate ratios are treated as 'auto',
+   which falls back to "no aspect-ratio" for divs */
+testAR({w:100, ar:"0/1", eh:0});
+testAR({w:100, ar:"1/0", eh:0});
+testAR({w:100, ar:"0/0", eh:0});
+testAR({h:23,  ar:"0/1", ew:100});
+testAR({h:23,  ar:"1/0", ew:100});
+testAR({h:23,  ar:"0/0", ew:100});
+</script>

@@ -84,7 +84,7 @@ function compareBuffers(got, expected) {
 }
 
 /**
- * This function assumes that the test is a "single page test" [0], and defines a
+ * This function assumes that the test is a "single-test page" [0], and defines a
  * single gTest variable with the following properties and methods:
  *
  * + numberOfChannels: optional property which specifies the number of channels

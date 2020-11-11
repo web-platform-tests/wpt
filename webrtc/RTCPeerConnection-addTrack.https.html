@@ -286,5 +286,53 @@
       5.1. addTrack
         10. Update the negotiation-needed flag for connection.
 
-   */
+  */
+
+  // This test ensures that adding tracks one at a time completes in reasonable time.
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({audio: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    const trackCount = 10;
+    for (let count = 1; count <= trackCount; count++) {
+      const transceiver = caller.addTrack(track.clone());
+      const offer = await caller.createOffer();
+      await caller.setLocalDescription(offer);
+      await callee.setRemoteDescription(offer);
+      const answer = await callee.createAnswer();
+      await callee.setLocalDescription(answer);
+      await caller.setRemoteDescription(answer);
+      assert_equals(callee.getReceivers().length, count);
+    }
+  }, 'Adding multiple tracks with AddTrack(), one at a time');
+
+  // This test ensures that adding tracks all at once completes in reasonable time.
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({audio: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    const trackCount = 50;
+    for (let count = 1; count <= trackCount; count++) {
+      const transceiver = caller.addTrack(track.clone());
+    }
+    const offer = await caller.createOffer();
+    await caller.setLocalDescription(offer);
+    await callee.setRemoteDescription(offer);
+    const answer = await callee.createAnswer();
+    await callee.setLocalDescription(answer);
+    await caller.setRemoteDescription(answer);
+    assert_equals(caller.getSenders().length, trackCount);
+    assert_equals(callee.getReceivers().length, trackCount);
+  }, 'Adding multiple tracks with AddTrack(), all at once');
+
 </script>

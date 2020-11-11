@@ -3600,7 +3600,7 @@ policies and contribution forms [3].
         if (expected_true !== true) {
             var msg = make_message(function_name, description,
                                    error, substitutions);
-            throw new AssertionError(msg)
+            throw new AssertionError(msg);
         }
     }
 

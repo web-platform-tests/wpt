@@ -3606,7 +3606,10 @@ policies and contribution forms [3].
 
     function AssertionError(message)
     {
-        this.message = sanitize_unpaired_surrogates(message);
+        if (typeof message == "string") {
+            message = sanitize_unpaired_surrogates(message);
+        }
+        this.message = message;
         this.stack = this.get_stack();
     }
     expose(AssertionError, "AssertionError");

@@ -132,7 +132,7 @@ promise_test(() => {
         'PASS'
       );
       assert_equals(
-        tests['U+dbffU+dfffU+dfff must be sanitized: U+dbffU+dfffU+dfff'],
+        tests['U+dbffU+dfffU+dfff must be sanitized: \udbff\udfffU+dfff'],
         'PASS'
       );
       assert_equals(tests.after, 'PASS');

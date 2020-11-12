@@ -718,7 +718,7 @@ class ResponseWriter(object):
         for name, f in [("Server", self._handler.version_string),
                         ("Date", self._handler.date_time_string)]:
             if not self._seen_header(name):
-                sucess = self.write_header(name, f())
+                success = self.write_header(name, f())
 
         if (isinstance(self._response.content, (binary_type, text_type)) and
             not self._seen_header("content-length")):

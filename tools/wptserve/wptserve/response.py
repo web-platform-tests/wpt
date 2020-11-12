@@ -41,11 +41,6 @@ class Response(object):
        Boolean, default False, indicating whether the body content should be
        sent when the request method is HEAD.
 
-    .. attribute:: explicit_flush
-
-       Boolean indicating whether output should be flushed automatically or only
-       when requested.
-
     .. attribute:: writer
 
        The ResponseWriter for this response
@@ -73,7 +68,6 @@ class Response(object):
 
         self.add_required_headers = True
         self.send_body_for_head_request = False
-        self.explicit_flush = False
         self.close_connection = False
 
         self.logger = get_logger()
@@ -665,11 +659,7 @@ class ResponseWriter(object):
     """Object providing an API to write out a HTTP response.
 
     :param handler: The RequestHandler being used.
-    :param response: The Response associated with this writer.
-
-    After each part of the response is written, the output is
-    flushed unless response.explicit_flush is False, in which case
-    the user must call .flush() explicitly."""
+    :param response: The Response associated with this writer."""
     def __init__(self, handler, response):
         self._wfile = handler.wfile
         self._response = response
@@ -718,8 +708,6 @@ class ResponseWriter(object):
         else:
             self.write(value)
         self.write(b"\r\n")
-        if not self._response.explicit_flush:
-            self.flush()
 
     def write_default_headers(self):
         for name, f in [("Server", self._handler.version_string),
@@ -745,8 +733,6 @@ class ResponseWriter(object):
         self.write("\r\n")
         if not self._seen_header("content-length"):
             self._response.close_connection = True
-        if not self._response.explicit_flush:
-            self.flush()
         self._headers_complete = True
 
     def write_content(self, data):
@@ -772,7 +758,7 @@ class ResponseWriter(object):
 
     def write(self, data):
         """Write directly to the response, converting unicode to bytes
-        according to response.encoding. Does not flush."""
+        according to response.encoding."""
         self.content_written = True
         try:
             self._wfile.write(self.encode(data))
@@ -782,8 +768,7 @@ class ResponseWriter(object):
             return False
 
     def write_content_file(self, data):
-        """Write a file-like object directly to the response in chunks.
-        Does not flush."""
+        """Write a file-like object directly to the response in chunks."""
         self.content_written = True
         success = True
         while True:
@@ -807,13 +792,3 @@ class ResponseWriter(object):
             return data.encode(self._response.encoding)
         else:
             raise ValueError("data %r should be text or binary, but is %s" % (data, type(data)))
-
-    def flush(self):
-        """Flush the output. Returns False if the flush failed due to
-        the socket being closed by the remote end."""
-        try:
-            self._wfile.flush()
-            return True
-        except socket.error:
-            # This can happen if the socket got closed by the remote end
-            return False

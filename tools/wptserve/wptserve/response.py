@@ -701,24 +701,31 @@ class ResponseWriter(object):
         if not self._status_written:
             self.write_status(self.default_status)
         self._headers_seen.add(self.encode(name.lower()))
-        self.write(name)
-        self.write(b": ")
+        if not self.write(name):
+            return False
+        if not self.write(b": "):
+            return False
         if isinstance(value, int):
-            self.write(text_type(value))
+            if not self.write(text_type(value)):
+                return False
         else:
-            self.write(value)
-        self.write(b"\r\n")
+            if not self.write(value):
+                return False
+        return self.write(b"\r\n")
 
     def write_default_headers(self):
+        success = True
         for name, f in [("Server", self._handler.version_string),
                         ("Date", self._handler.date_time_string)]:
             if not self._seen_header(name):
-                self.write_header(name, f())
+                sucess = self.write_header(name, f())
 
         if (isinstance(self._response.content, (binary_type, text_type)) and
             not self._seen_header("content-length")):
             #Would be nice to avoid double-encoding here
-            self.write_header("Content-Length", len(self.encode(self._response.content)))
+            success = self.write_header("Content-Length", len(self.encode(self._response.content)))
+
+        return success
 
     def end_headers(self):
         """Finish writing headers and write the separator.
@@ -727,13 +734,16 @@ class ResponseWriter(object):
         this will also add HTTP-mandated headers that have not yet been supplied
         to the response headers"""
 
+        success = True
         if self._response.add_required_headers:
-            self.write_default_headers()
+            success = self.write_default_headers()
 
-        self.write("\r\n")
+        success = self.write("\r\n")
         if not self._seen_header("content-length"):
             self._response.close_connection = True
         self._headers_complete = True
+
+        return success
 
     def write_content(self, data):
         """Write the body of the response.

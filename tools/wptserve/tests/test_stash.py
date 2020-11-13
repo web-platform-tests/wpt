@@ -2,6 +2,7 @@ import multiprocessing
 import sys
 import threading
 from multiprocessing.managers import BaseManager
+import logging
 
 import pytest
 from six import PY3
@@ -24,7 +25,7 @@ def run(process_queue, request_lock, response_lock):
     """Create two Stash instances in parallel threads. Use the provided locks
     to ensure the first thread is actively establishing an interprocess
     communication channel at the moment the second thread executes."""
-
+    
     def target(thread_queue):
         stash = Stash("/", ("localhost", 4543), b"some key")
 
@@ -57,50 +58,58 @@ def run(process_queue, request_lock, response_lock):
     process_queue.put(thread_queue.get())
     process_queue.put(thread_queue.get())
 
+class SlowLock(BaseManager):
+    pass
 
-@pytest.mark.xfail(sys.platform == "win32" or
-                   PY3 and multiprocessing.get_start_method() == "spawn",
-                   reason="https://github.com/web-platform-tests/wpt/issues/16938")
+def fun1():
+    return {}
+
+request_lock = multiprocessing.Lock()
+response_lock = multiprocessing.Lock()
+
+def mutex_lock_request():
+    """This request handler allows the caller to delay execution of a
+    thread which has requested a proxied representation of the `lock`
+    property, simulating a "slow" interprocess communication channel."""
+
+    request_lock.release()
+    response_lock.acquire()
+    return threading.Lock()
+
+#@pytest.mark.xfail(sys.platform == "win32" or
+#                   PY3 and multiprocessing.get_start_method() == "spawn",
+#                   reason="https://github.com/web-platform-tests/wpt/issues/16938")
 def test_delayed_lock(add_cleanup):
     """Ensure that delays in proxied Lock retrieval do not interfere with
     initialization in parallel threads."""
 
-    class SlowLock(BaseManager):
-        pass
+    #class SlowLock(BaseManager):
+    #    pass
 
-    request_lock = multiprocessing.Lock()
-    response_lock = multiprocessing.Lock()
-
+   
     queue = multiprocessing.Queue()
 
-    def mutex_lock_request():
-        """This request handler allows the caller to delay execution of a
-        thread which has requested a proxied representation of the `lock`
-        property, simulating a "slow" interprocess communication channel."""
-
-        request_lock.release()
-        response_lock.acquire()
-        return threading.Lock()
-
-    SlowLock.register("get_dict", callable=lambda: {})
+  
+    #SlowLock.register("get_dict", callable=lambda: {})
+    SlowLock.register("get_dict", callable=fun1)
     SlowLock.register("Lock", callable=mutex_lock_request)
-
+    
     slowlock = SlowLock(("localhost", 4543), b"some key")
     slowlock.start()
-    add_cleanup(lambda: slowlock.shutdown())
+    add_cleanup(slowlock.shutdown)
 
     parallel = multiprocessing.Process(target=run,
                                        args=(queue, request_lock, response_lock))
     parallel.start()
-    add_cleanup(lambda: parallel.terminate())
+    add_cleanup(parallel.terminate)
 
     assert [queue.get(), queue.get()] == [False, False], (
         "both instances had valid locks")
 
 
-@pytest.mark.xfail(sys.platform == "win32" or
-                   PY3 and multiprocessing.get_start_method() == "spawn",
-                   reason="https://github.com/web-platform-tests/wpt/issues/16938")
+#@pytest.mark.xfail(sys.platform == "win32" or
+#                   PY3 and multiprocessing.get_start_method() == "spawn",
+#                   reason="https://github.com/web-platform-tests/wpt/issues/16938")
 def test_delayed_dict(add_cleanup):
     """Ensure that delays in proxied `dict` retrieval do not interfere with
     initialization in parallel threads."""
@@ -137,3 +146,7 @@ def test_delayed_dict(add_cleanup):
 
     assert [queue.get(), queue.get()] == [False, False], (
         "both instances had valid locks")
+
+if __name__ == '__console_main__':
+    test_delayed_lock(add_cleanup)
+

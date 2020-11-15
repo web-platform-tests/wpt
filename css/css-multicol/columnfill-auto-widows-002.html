@@ -11,7 +11,7 @@
 
   <!--
   Date created: November 7th 2020
-  Last modified: November 8th 2020
+  Last modified: November 15th 2020
   -->
 
   <!--
@@ -81,7 +81,10 @@
       column-gap: 1em; /* computes to 20px */
 
       column-rule: blue solid 4px;
+    }
 
+  div#test
+    {
       widows: 2; /* widows' initial value is 2 */
 
       /*
@@ -94,6 +97,11 @@
       https://www.w3.org/TR/css-break-3/#widows-orphans
       */
     }
+
+  div#reference
+    {
+      widows: 1;
+    }
   </style>
 
   <p>Test passes if the digits inside both orange-bordered rectangles are <strong>distributed identically</strong>.
@@ -102,4 +110,4 @@
 
   <div id="reference">1<br>2<br>3<br>4<br>5<br>6<br>7<br><br>8<br>9</div>
 
-  <!--                                   1 extra br here   ^    -->
+  <!--           Same as div#test except 1 extra br here   ^      -->

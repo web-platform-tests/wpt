@@ -2,16 +2,15 @@
 
   <meta charset="UTF-8">
 
-    <title>CSS Multi-column Test: 'column-fill: auto', 'widows' and content distribution in columns</title>
+  <title>CSS Fragmentation level 3 Test: 'widows' and content distribution in columns</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
-  <link rel="help" href="https://www.w3.org/TR/css-multicol-1/#filling-columns">
   <link rel="help" href="https://www.w3.org/TR/css-break-3/#widows-orphans">
-  <link rel="match" href="reference/columnfill-auto-widows-002-ref.html">
+  <link rel="match" href="reference/widows-008-ref.html">
 
   <!--
   Date created: November 7th 2020
-  Last modified: November 15th 2020
+  Last modified: November 16th 2020
   -->
 
   <!--
@@ -25,7 +24,7 @@
   -->
 
   <meta name="flags" content="">
-  <meta name="assert" content="When column boxes are filled sequentially, their content should be adjusted and fragmented in accordance with the 'widows' declaration. This test checks exactly that. In the test, since the 3rd column box was going to get only 1 line box, then a class B break point is allowed and should occur before the last line box of the 2nd column box and after the next-to-last line box of the 2nd column box so that there is a minimum of 2 line boxes at the top of the 3rd column box.">
+  <meta name="assert" content="When column boxes are filled sequentially, their content should be adjusted and fragmented in accordance with the 'widows' declaration. In the test, since the 3rd column box was going to get only 1 line box, then a class B break point is allowed and should occur before the last line box of the 2nd column box and after the next-to-last line box of the 2nd column box so that there is a minimum of 2 line boxes at the top of the 3rd column box.">
 
   <!--
 

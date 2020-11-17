@@ -8,7 +8,7 @@
     const link = document.createElement("link");
     link.rel = "icon";
     link.href =
-      "http://not.web-platform.test:8000/images/wpt-logo/wpt-logo-darkblue-bg.svg";
+      "http://not.{{domains[]}}:{{ports[http][0]}}/images/wpt-logo/wpt-logo-darkblue-bg.svg";
 
     link.addEventListener("error", t.unreached_func());
     document.head.append(link);

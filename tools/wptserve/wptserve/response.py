@@ -697,6 +697,7 @@ class ResponseWriter(object):
 
         :param name: Name of the header field
         :param value: Value of the header field
+        :return: A boolean indicating whether the write succeeds
         """
         if not self._status_written:
             self.write_status(self.default_status)
@@ -708,47 +709,53 @@ class ResponseWriter(object):
         if isinstance(value, int):
             if not self.write(text_type(value)):
                 return False
-        else:
-            if not self.write(value):
-                return False
+        elif not self.write(value):
+            return False
         return self.write(b"\r\n")
 
     def write_default_headers(self):
-        success = True
         for name, f in [("Server", self._handler.version_string),
                         ("Date", self._handler.date_time_string)]:
             if not self._seen_header(name):
-                success = self.write_header(name, f())
+                if not self.write_header(name, f()):
+                    return False
 
         if (isinstance(self._response.content, (binary_type, text_type)) and
             not self._seen_header("content-length")):
             #Would be nice to avoid double-encoding here
-            success = self.write_header("Content-Length", len(self.encode(self._response.content)))
+            if not self.write_header("Content-Length", len(self.encode(self._response.content))):
+                return False
 
-        return success
+        return True
 
     def end_headers(self):
         """Finish writing headers and write the separator.
 
         Unless add_required_headers on the response is False,
         this will also add HTTP-mandated headers that have not yet been supplied
-        to the response headers"""
+        to the response headers.
+        :return: A boolean indicating whether the write succeeds
+        """
 
-        success = True
         if self._response.add_required_headers:
-            success = self.write_default_headers()
+            if not self.write_default_headers():
+                return False
 
-        success = self.write("\r\n")
+        if not self.write("\r\n"):
+            return False
         if not self._seen_header("content-length"):
             self._response.close_connection = True
         self._headers_complete = True
 
-        return success
+        return True
 
     def write_content(self, data):
         """Write the body of the response.
 
-        HTTP-mandated headers will be automatically added with status default to 200 if they have not been explicitly set."""
+        HTTP-mandated headers will be automatically added with status default to 200 if they have
+        not been explicitly set.
+        :return: A boolean indicating whether the write succeeds
+        """
         if not self._status_written:
             self.write_status(self.default_status)
         if not self._headers_complete:
@@ -768,7 +775,9 @@ class ResponseWriter(object):
 
     def write(self, data):
         """Write directly to the response, converting unicode to bytes
-        according to response.encoding."""
+        according to response.encoding.
+        :return: A boolean indicating whether the write succeeds
+        """
         self.content_written = True
         try:
             self._wfile.write(self.encode(data))

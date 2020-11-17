@@ -229,8 +229,8 @@ class FileHandler(object):
             response = wrap_pipeline(path, request, response)
             return response
 
-        except (OSError, IOError):
-            raise HTTPException(404)
+        except (IOError, OSError) as e:
+            raise HTTPException(404, e.strerror)
 
     def get_headers(self, request, path):
         rv = load_headers(request, path)
@@ -311,8 +311,8 @@ class PythonScriptHandler(object):
             if func is not None:
                 return func(request, response, environ, path)
 
-        except IOError:
-            raise HTTPException(404)
+        except (IOError, OSError) as e:
+            raise HTTPException(404, e.strerror)
         finally:
             sys.path = sys_path
             sys.modules = sys_modules
@@ -431,8 +431,8 @@ class AsIsHandler(object):
                 response.writer.write_raw_content(f.read())
             wrap_pipeline(path, request, response)
             response.close_connection = True
-        except IOError:
-            raise HTTPException(404)
+        except (IOError, OSError) as e:
+            raise HTTPException(404, e.strerror)
 
 
 as_is_handler = AsIsHandler()

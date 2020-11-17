@@ -72,6 +72,38 @@ direct access to the underlying socket. If used, the return value of the
 <li class="toctree-l1"><a class="reference internal" href="../../tools/wptserve/docs/stash.html">Stash</a></li>
 </ul>
 </div>
+<div class="section" id="importing-local-helper-scripts">
+<h2>Importing local helper scripts<a class="headerlink" href="#importing-local-helper-scripts" title="Permalink to this headline">¶</a></h2>
+<p>Python file handlers may import local helper scripts, e.g. to share logic
+across multiple handlers. To avoid module name collision, however, imports must
+be relative to the root of WPT. For example, in an imaginary
+<code class="docutils literal notranslate"><span class="pre">cookies/resources/myhandler.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># DON&#39;T DO THIS</span>
+<span class="kn">import</span> <span class="nn">myhelper</span>
+
+<span class="c1"># DO THIS</span>
+<span class="kn">from</span> <span class="nn">cookies.resources</span> <span class="kn">import</span> <span class="n">myhelper</span>
+</pre></div>
+</div>
+<p>Only absolute imports are allowed; do not use relative imports. If the path to
+your helper script includes a hyphen (<code class="docutils literal notranslate"><span class="pre">-</span></code>), you can use <code class="docutils literal notranslate"><span class="pre">import_module</span></code> from
+<code class="docutils literal notranslate"><span class="pre">importlib</span></code> to import it. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">importlib</span>
+<span class="n">myhelper</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;common.security-features.myhelper&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Note on <strong>init</strong> files</strong>: Until WPT moves to Python 3 only (~Q1 2021),
+importing helper scripts like this requires a ‘path’ of empty <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>
+files in every directory down to the helper. For example, if your helper is
+<code class="docutils literal notranslate"><span class="pre">css/css-align/resources/myhelper.py</span></code>, you need to have:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">css</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+<span class="n">css</span><span class="o">/</span><span class="n">css</span><span class="o">-</span><span class="n">align</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+<span class="n">css</span><span class="o">/</span><span class="n">css</span><span class="o">-</span><span class="n">align</span><span class="o">/</span><span class="n">resources</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>This requirement will be removed once we move to Python 3, due to
+<a class="reference external" href="https://www.python.org/dev/peps/pep-0420/">PEP 420</a>.</p>
+</div>
 <div class="section" id="python3-compatibility">
 <h2>Python3 compatibility<a class="headerlink" href="#python3-compatibility" title="Permalink to this headline">¶</a></h2>
 <p>Even though Python3 is not fully supported at this point, some work is being

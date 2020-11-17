@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<title>window.open(): entry ok, incumbent navigated, current ok, and relevant ok</title>
+<div id=log></div>
+<script>
+  var t = async_test(document.title)
+  onload = function() {
+    var incumbent = self[0],
+        current = self[1],
+        relevant = self[2],
+        target = self[3],
+        toDo = incumbent.helper
+    incumbent.frameElement.onload = t.step_func(function() { toDo(current.open.bind(relevant)) })
+    incumbent.location = "about:blank"
+    target.frameElement.onload = t.step_func(function() {
+      assert_equals(self[3].document.referrer, document.URL)
+      t.done()
+    })
+  }
+</script>
+<iframe src="support/incumbent.html"></iframe>
+<iframe src="support/current.html"></iframe>
+<iframe src="support/relevant.html"></iframe>
+<iframe name=uniqueish-target></iframe>

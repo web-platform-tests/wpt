@@ -1,0 +1,30 @@
+<!doctype html>
+<title>Navigate using location from a document that is no longer active</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+async_test(t => {
+  let navigations = 0;
+  let fRef;
+  const fr = document.createElement("iframe");
+  const initialTarget = "resources/window-location.html";
+  fr.src = initialTarget;
+  t.add_cleanup(() => fr.remove());
+  fr.onload = t.step_func(() => {
+    if (navigations === 0) {
+      fRef = fr.contentWindow.f;
+      navigations++;
+      fr.contentWindow.location = "about:blank";
+    } else if (navigations === 1) {
+      navigations++;
+      fRef();
+    } else {
+      assert_true(fr.contentDocument.referrer.endsWith(initialTarget));
+      assert_true(fr.contentWindow.location.href.endsWith("resources/dummy.html"));
+      t.done();
+    }
+  });
+  document.body.append(fr);
+});
+</script>

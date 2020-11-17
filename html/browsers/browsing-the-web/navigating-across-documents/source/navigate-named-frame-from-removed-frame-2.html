@@ -1,0 +1,26 @@
+<!doctype html>
+<title>Navigate using window.open from a removed frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+async_test(t => {
+  const fr1 = document.createElement("iframe");
+  const fr2 = document.createElement("iframe");
+  fr1.src = "resources/window-open-uniqueish.html";
+  fr2.name = "uniqueish";
+  fr1.onload = t.step_func(() => {
+    const nav = fr1.contentWindow.f;
+    fr1.remove();
+    nav();
+    t.step_timeout(() => {
+      assert_equals(fr2.contentWindow.location.href, "about:blank");
+      t.done();
+    }, 500);
+  });
+  fr2.onload = t.step_func(() => {
+    assert_equals(fr2.contentWindow.location.href, "about:blank");
+  });
+  document.body.append(fr1, fr2);
+});
+</script>

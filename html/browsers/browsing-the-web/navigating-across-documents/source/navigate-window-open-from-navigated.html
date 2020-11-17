@@ -1,0 +1,27 @@
+<!doctype html>
+<title>Navigate using window.open() from a document that is no longer active</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+async_test(t => {
+  let navigations = 0;
+  let fRef;
+  const fr = document.createElement("iframe");
+  fr.src = "resources/window-open-itself.html";
+  fr.onload = t.step_func(() => {
+    if (navigations === 0) {
+      fRef = fr.contentWindow.f;
+      navigations++;
+      fr.contentWindow.location = "about:blank";
+    } else if (navigations === 1) {
+      navigations++;
+      fRef();
+    } else {
+      assert_equals(frames[0].document.body.textContent, "Hello.\n", "Navigation needs to happen")
+      t.done();
+    }
+  });
+  document.body.append(fr);
+});
+</script>

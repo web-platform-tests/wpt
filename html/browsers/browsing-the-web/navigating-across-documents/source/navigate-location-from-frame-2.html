@@ -1,0 +1,23 @@
+<!doctype html>
+<title>Navigate using location from a document in a frame, part 2</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+async_test(t => {
+  let navigations = 0;
+  fr = document.createElement("iframe");
+  t.add_cleanup(() => fr.remove());
+  fr.src = "resources/dummy.html";
+  fr.onload = t.step_func(() => {
+    if (navigations === 0) {
+      navigations++;
+      fr.contentWindow.location = "resources/dummy.html" // a variant of this test with about:blank here "fails" in Firefox
+    } else {
+      assert_equals(fr.contentDocument.referrer, document.URL);
+      t.done();
+    }
+  });
+  document.body.append(fr);
+});
+</script>

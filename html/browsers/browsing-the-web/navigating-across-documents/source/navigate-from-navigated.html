@@ -1,0 +1,35 @@
+<!doctype html>
+<title>Navigate from a document that is no longer active</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+async_test(t => {
+  let navigations = 0;
+  let link;
+  let eventDispatched = false;
+  const target = "resources/dummy.html";
+  const fr = document.createElement("iframe");
+  //t.add_cleanup(() => fr.remove());
+  fr.onload = t.step_func(() => {
+    if (navigations === 0) {
+      link = fr.contentDocument.createElement("a");
+      link.href = "about:blank";
+      link.onclick = t.step_func(() => eventDispatched = true);
+      navigations++;
+      fr.contentWindow.location = target;
+    } else if(navigations === 1) {
+      navigations++;
+      link.click();
+      assert_true(eventDispatched, "Expected synchronous click event");
+      t.step_timeout(() => {
+        assert_true(fr.contentWindow.location.href.endsWith(target), "Expected no navigation");
+        t.done();
+      }, 500) // Navigation to about:blank is assumed to take less than 500ms
+    } else {
+      assert_unreached();
+    };
+  });
+  document.body.append(fr);
+});
+</script>

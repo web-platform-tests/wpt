@@ -231,7 +231,7 @@ const formPostFileUploadTest = ({
         `${fileBaseName}: multipart form data must end with ${boundary}--: ${
              JSON.stringify(formDataText)
            }`);
-    
+
     const asValue = expectedEncodedBaseName.replace(/\r\n?|\n/g, "\r\n");
     const asName = asValue.replace(/[\r\n"]/g, encodeURIComponent);
     const asFilename = expectedEncodedBaseName.replace(/[\r\n"]/g, encodeURIComponent);
@@ -258,7 +258,7 @@ const formPostFileUploadTest = ({
       escapeString(kTestFallbackUtf8),
       boundary + '--',
     ].join('\n');
-    
+
     assert_true(
         formDataText.startsWith(expectedText),
         `Unexpected multipart-shaped form data received:\n${

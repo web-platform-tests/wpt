@@ -5,7 +5,7 @@ import traceback
 from collections import defaultdict
 
 from six.moves.urllib.parse import quote, unquote, urljoin
-from six import iteritems
+from six import iteritems, PY3
 
 from .constants import content_types
 from .pipes import Pipeline, template
@@ -22,6 +22,18 @@ except ImportError:
 __all__ = ["file_handler", "python_script_handler",
            "FunctionHandler", "handler", "json_handler",
            "as_is_handler", "ErrorHandler", "BasicAuthHandler"]
+
+if PY3:
+    import importlib
+else:
+    import imp
+
+    class _ImportLockContext(object):
+        def __enter__(self):
+            imp.acquire_lock()
+
+        def __exit__(self, exc_type, exc_value, exc_traceback):
+            imp.release_lock()
 
 
 def guess_content_type(path):
@@ -301,7 +313,7 @@ class PythonScriptHandler(object):
         path = filesystem_path(self.base_path, request, self.url_base)
 
         sys_path = sys.path[:]
-        sys_modules = sys.modules.copy()
+        known_modules = set(sys.modules.keys())
         try:
             environ = {"__file__": path}
             sys.path.insert(0, os.path.dirname(path))
@@ -315,7 +327,25 @@ class PythonScriptHandler(object):
             raise HTTPException(404)
         finally:
             sys.path = sys_path
-            sys.modules = sys_modules
+            # We need to acquire the import lock(s) before modifying
+            # (restoring) sys.modules. In Python 2, there is only a global
+            # import lock with a public API. Python 3.3+ mostly uses per-module
+            # locks; unfortunately, the module locks are internal to CPython.
+            # https://docs.python.org/3.3/whatsnew/3.3.html#a-finer-grained-import-lock
+            if PY3:
+                for mod_name in list(sys.modules.keys()):
+                    with importlib._bootstrap._ModuleLockManager(mod_name):
+                        if mod_name not in known_modules:
+                            try:
+                                sys.modules.pop(mod_name)
+                            except KeyError:
+                                # The module has been popped by another thread.
+                                pass
+            else:
+                with _ImportLockContext():
+                    for mod_name in list(sys.modules.keys()):
+                        if mod_name not in known_modules:
+                            sys.modules.pop(mod_name)
 
     def __call__(self, request, response):
         def func(request, response, environ, path):

@@ -1,0 +1,17 @@
+<!doctype html>
+<title>Test imports from handlers</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+setup({single_test: true});
+
+async function run_test() {
+    let initial_text = await(await fetch("initial/handler.py")).text();
+    let second_text = await(await fetch("second/handler.py")).text();
+    assert_equals(initial_text, "Hello!\n");
+    assert_equals(second_text, "Goodbye!\n");
+    done()
+}
+
+run_test()
+</script>

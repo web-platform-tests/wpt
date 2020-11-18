@@ -1,10 +1,10 @@
 from wptserve.utils import isomorphic_encode
 
 def escape_byte(byte):
-    if "\0" <= byte <= "\x1F" or byte >= "\x7F":
-        return "\\x%02x" % ord(byte)
-    if byte == "\\":
-        return "\\\\"
+    if b"\0" <= byte <= b"\x1F" or byte >= b"\x7F":
+        return b"\\x%02x" % ord(byte)
+    if byte == b"\\":
+        return b"\\\\"
     return byte
 
 def main(request, response):
@@ -15,6 +15,6 @@ def main(request, response):
                # Avoid any kind of content sniffing on the response.
                (b"Content-Type", b"text/plain; charset=UTF-8")]
 
-    content = "".join(map(escape_byte, request.body)).replace("\\x0d\\x0a", "\r\n")
+    content = "".join(map(escape_byte, request.body)).replace(b"\\x0d\\x0a", b"\r\n")
 
     return headers, content

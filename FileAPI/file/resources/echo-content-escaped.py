@@ -15,6 +15,6 @@ def main(request, response):
                # Avoid any kind of content sniffing on the response.
                (b"Content-Type", b"text/plain; charset=UTF-8")]
 
-    content = "".join(map(escape_byte, request.body)).replace(b"\\x0d\\x0a", b"\r\n")
+    content = b"".join(map(escape_byte, request.body)).replace(b"\\x0d\\x0a", b"\r\n")
 
     return headers, content

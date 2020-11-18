@@ -1,5 +1,9 @@
 from wptserve.utils import isomorphic_encode
 
+# Outputs the request body, with controls and non-ASCII bytes escaped
+# (b"\n" becomes b"\\x0a"), and with backslashes doubled.
+# As a convenience, CRLF newlines are left as is.
+
 def escape_byte(byte):
     if b"\0" <= byte <= b"\x1F" or byte >= b"\x7F":
         return b"\\x%02x" % ord(byte)

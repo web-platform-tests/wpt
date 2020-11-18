@@ -1,5 +1,6 @@
 'use strict';
 
+// See /FileAPI/file/resources/echo-content-escaped.py
 function escapeString(string) {
   return string.replace(/\\/g, "\\\\").replace(
     /[^\x20-\x7E]/g,
@@ -83,6 +84,11 @@ function escapeString(string) {
 // are also allowed in Windows Unicode filenames.
 const kTestChars = 'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ';
 
+// The kTestFallback* strings represent the expected byte sequence from
+// encoding kTestChars with the given encoding with "html" replacement
+// mode, isomorphic-decoded. That means, characters that can't be
+// encoded in that encoding get HTML-escaped, but no further
+// `escapeString`-like escapes are needed.
 const kTestFallbackUtf8 = (
   "ABC~\xE2\x80\xBE\xC2\xA5\xE2\x89\x88\xC2\xA4\xEF\xBD\xA5\xE3\x83\xBB\xE2" +
     "\x80\xA2\xE2\x88\x99\xC2\xB7\xE2\x98\xBC\xE2\x98\x85\xE6\x98\x9F\xF0\x9F" +
@@ -113,9 +119,11 @@ const kTestFallbackXUserDefined = kTestChars.replace(
 // and field values using form submission.
 //
 // Uses /FileAPI/file/resources/echo-content-escaped.py to echo the
-// upload POST with controls and non-ASCII bytes escaped. Use the
-// escapeString function to replicate that kind of escape (note that it
-// takes an isomorphic decoded string, not a byte sequence).
+// upload POST with controls and non-ASCII bytes escaped. This is done
+// because navigations whose response body contains [\0\b\v] may get
+// treated as a download, which is not what we want. Use the
+// `escapeString` function to replicate that kind of escape (note that
+// it takes an isomorphic-decoded string, not a byte sequence).
 //
 // Fields in the parameter object:
 //
@@ -128,8 +136,9 @@ const kTestFallbackXUserDefined = kTestChars.replace(
 // - formEncoding: the acceptCharset of the form used to submit the
 //   test file. Used in the test name.
 // - expectedEncodedBaseName: the expected formEncoding-encoded
-//   version of fileBaseName with controls and non-ASCII bytes escaped.
-//   Use the escapeString function to replicate that kind of escape.
+//   version of fileBaseName, isomorphic-decoded. That means, characters
+//   that can't be encoded in that encoding get HTML-escaped, but no
+//   further `escapeString`-like escapes are needed.
 const formPostFileUploadTest = ({
   fileNameSource,
   fileBaseName,
@@ -235,6 +244,11 @@ const formPostFileUploadTest = ({
     const asValue = expectedEncodedBaseName.replace(/\r\n?|\n/g, "\r\n");
     const asName = asValue.replace(/[\r\n"]/g, encodeURIComponent);
     const asFilename = expectedEncodedBaseName.replace(/[\r\n"]/g, encodeURIComponent);
+
+    // The response body from echo-content-escaped.py has controls and non-ASCII
+    // bytes escaped, so any caller-provided field that might contain such bytes
+    // must be passed to `escapeString`, after any other expected
+    // transformations.
     const expectedText = [
       boundary,
       'Content-Disposition: form-data; name="_charset_"',

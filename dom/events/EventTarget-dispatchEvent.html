@@ -18,7 +18,7 @@ test(function() {
 }, "Calling dispatchEvent(null).")
 
 for (var alias in aliases) {
-  var  constructorName = aliases[alias];
+  var constructorName = aliases[alias];
   if (!window[alias]) {
     // The event isn't exposed, and this would trigger a "NotSupportedError" DOMException.
     continue;

@@ -55,7 +55,6 @@ assertions:
   - id: toDataURL.lowercase
     text: "User agents *must* convert the provided type to ASCII lowercase before establishing if they support that type<^>."
   - id: toDataURL.jpeg
-    previously: [ 0, "image/png", false ]
     text: "image/jpeg<^>"
   - id: toDataURL.jpeg.quality
     text: "The second argument, if it is a number in the range 0.0 to 1.0 inclusive, *must* be treated as the desired quality level<^>."
@@ -284,10 +283,8 @@ assertions:
   - id: 2d.pattern.incomplete.image
     text: "If the image argument is an HTMLImageElement object that is not fully decodable<^><...> then the implementation *must* return null."
   - id: 2d.pattern.incomplete.video
-    previously: [ 6, "createPattern" ]
     text: "If the image argument is <...> an HTMLVideoElement object whose readyState attribute is either HAVE_NOTHING or HAVE_METADATA<^>, then the implementation *must* return null."
   - id: 2d.pattern.zerocanvas
-    previously: [ 10, "createPattern" ]
     text: "If the image argument is an HTMLCanvasElement object with either a horizontal dimension or a vertical dimension equal to zero, then the implementation *must* raise an INVALID_STATE_ERR exception<^>."
   - id: 2d.pattern.painting
     text: "Patterns *must* be painted so that the top left of the first image is anchored at the origin of the coordinate space, and images are then repeated horizontally to the left and right (if the repeat-x string was specified) or vertically up and down (if the repeat-y string was specified) or in all four directions all over the canvas (if the repeat string was specified)<^>."
@@ -298,10 +295,8 @@ assertions:
   - id: 2d.pattern.animated.image
     text: "When the createPattern() method is passed an animated image as its image argument, the user agent must use the poster frame of the animation, or, if there is no poster frame, the first frame of the animation<^>."
   - id: 2d.pattern.animated.video
-    previously: [ 4, "createPattern" ]
     text: "When the image argument is an HTMLVideoElement, then the frame at the current playback position *must* be used as the source image<^>,"
   - id: 2d.pattern.video.size
-    previously: [ 4, "createPattern" ]
     text: "When the image argument is an HTMLVideoElement, <...> the source image's dimensions *must* be the intrinsic width and intrinsic height of the media resource (i.e. after any aspect-ratio correction has been applied)<^>."
 
 
@@ -324,7 +319,6 @@ assertions:
   - id: 2d.lineCap.square
     text: "The square value means that a rectangle with the length of the line width and the width of half the line width, placed flat against the edge perpendicular to the direction of the line, *must* be added at the end of each line<^>."
   - id: 2d.lineCap.get
-    previously: [ 2, "The lineCap attribute" ]
     text: "On getting, it *must* return the current value<^>."
   - id: 2d.lineCap.set
     text: "On setting, if the new value is one of the literal strings butt, round, and square, then the current value *must* be changed to the new value<^>;"
@@ -333,7 +327,6 @@ assertions:
   - id: 2d.lineCap.default
     text: "When the context is created, the lineCap attribute *must* initially have the value butt<^>."
   - id: 2d.lineJoin.get
-    previously: [ 2, "lineJoin" ]
     text: "On getting, it *must* return the current value<^>."
   - id: 2d.lineJoin.set
     text: "On setting, if the new value is one of the literal strings bevel, round, and miter, then the current value *must* be changed to the new value<^>;"
@@ -435,7 +428,6 @@ assertions:
   - id: 2d.path.arcTo.empty
     text: "The arcTo(x1, y1, x2, y2, radius) method *must* first ensure there is a subpath for (x1, y1)<^>."
   - id: 2d.path.arcTo.negative
-    previously: [ 2, "arcTo(" ]
     text: "Negative values for radius *must* cause the implementation to raise an INDEX_SIZE_ERR exception<^>."
   - id: 2d.path.arcTo.coincide.01
     text: "If the point (x0, y0) is equal to the point (x1, y1)<^>, or if the point (x1, y1) is equal to the point (x2, y2), or if the radius radius is zero, then the method *must* add the point (x1, y1) to the subpath, and connect that point to the previous point (x0, y0) by a straight line."
@@ -455,7 +447,6 @@ assertions:
   - id: 2d.path.arc.zero
     text: "If the two points are the same, or if the radius is zero<^>, then the arc is defined as being of zero length in both directions."
   - id: 2d.path.arc.negative
-    previously: [ 2, "anticlockwise" ]
     text: "Negative values for radius *must* cause the implementation to raise an INDEX_SIZE_ERR exception<^>."
 
   - id: 2d.path.rect.subpath
@@ -584,10 +575,8 @@ assertions:
   - id: 2d.drawImage.incomplete.image
     text: "If the image argument is an HTMLImageElement object that is not fully decodable<^><...> then the implementation *must* return without drawing anything."
   - id: 2d.drawImage.incomplete.video
-    previously: [ 6, "dw and dh" ]
     text: "If the image argument is <...> an HTMLVideoElement object whose readyState attribute is either HAVE_NOTHING or HAVE_METADATA<^>, then the implementation *must* return without drawing anything."
   - id: 2d.drawImage.zerocanvas
-    previously: [ 10, "dw and dh" ]
     text: "If the image argument is an HTMLCanvasElement or an OffscreenCanvas object with either a horizontal dimension or a vertical dimension equal to zero, then the implementation *must* throw an INVALID_STATE_ERR exception<^>."
   - id: 2d.drawImage.zerosource
     text: "If one of the sw or sh arguments is zero<^>, the implementation *must* return without drawing anything."
@@ -602,10 +591,8 @@ assertions:
   - id: 2d.drawImage.animated.image
     text: "When the drawImage() method is passed an animated image as its image argument, the user agent *must* use the poster frame of the animation, or, if there is no poster frame, the first frame of the animation<^>."
   - id: 2d.drawImage.animated.video
-    previously: [ 4, "drawImage" ]
     text: "When the image argument is an HTMLVideoElement, then the frame at the current playback position *must* be used as the source image<^>,"
   - id: 2d.drawImage.video.size
-    previously: [ 4, "drawImage" ]
     text: "When the image argument is an HTMLVideoElement, <...> the source image's dimensions *must* be the intrinsic width and intrinsic height of the media resource (i.e. after any aspect-ratio correction has been applied)<^>."
   - id: 2d.drawImage.unaffect
     text: "Images are painted without affecting the current path<^>"

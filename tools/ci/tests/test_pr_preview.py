@@ -170,8 +170,12 @@ class Responses(object):
 
 
 @contextlib.contextmanager
-def temp_repo():
+def temp_repo(change_dir=False):
+    original_dir = os.getcwd()
     directory = tempfile.mkdtemp()
+
+    if change_dir:
+        os.chdir(directory)
 
     try:
         subprocess.check_call(['git', 'init'], cwd=directory)
@@ -195,6 +199,9 @@ def temp_repo():
 
         yield directory
     finally:
+        if change_dir:
+            os.chdir(original_dir)
+
         shutil.rmtree(
             directory, ignore_errors=False, onerror=handle_remove_readonly
         )
@@ -207,9 +214,7 @@ def update_mirror_refs(pull_request, expected_traffic, refs={}):
     remote_refs = {}
 
     method_threw = False
-    with temp_repo() as local_repo, temp_repo() as remote_repo, github_server:
-        os.chdir(local_repo)
-
+    with temp_repo(change_dir=True), temp_repo() as remote_repo, github_server:
         subprocess.check_call(
             ['git', 'commit', '--allow-empty', '-m', 'first'],
             cwd=remote_repo
@@ -218,9 +223,7 @@ def update_mirror_refs(pull_request, expected_traffic, refs={}):
             ['git', 'commit', '--allow-empty', '-m', 'second'],
             cwd=remote_repo
         )
-        subprocess.check_call(
-            ['git', 'remote', 'add', 'origin', remote_repo], cwd=local_repo
-        )
+        subprocess.check_call(['git', 'remote', 'add', 'origin', remote_repo])
 
         for name, value in refs.items():
             subprocess.check_call(
@@ -228,9 +231,7 @@ def update_mirror_refs(pull_request, expected_traffic, refs={}):
                 cwd=remote_repo
             )
 
-        subprocess.check_call(
-            ['git', 'remote', '-v'], cwd=local_repo
-        )
+        subprocess.check_call(['git', 'remote', '-v'])
         project = pr_preview.Project(
             'http://{}:{}'.format(TEST_HOST, github_port),
             'test-org/test-repo',
@@ -241,9 +242,7 @@ def update_mirror_refs(pull_request, expected_traffic, refs={}):
         except pr_preview.GitHubRateLimitException:
             method_threw = True
 
-        lines = subprocess.check_output(
-            ['git', 'ls-remote', 'origin'], cwd=local_repo
-        )
+        lines = subprocess.check_output(['git', 'ls-remote', 'origin'])
         for line in lines.decode('utf-8').strip().split('\n'):
             revision, ref = line.split()
 

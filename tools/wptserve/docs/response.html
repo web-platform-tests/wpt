@@ -128,13 +128,6 @@ sent when the request method is HEAD.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="wptserve.response.Response.explicit_flush">
-<code class="descname">explicit_flush</code><a class="headerlink" href="#wptserve.response.Response.explicit_flush" title="Permalink to this definition">¶</a></dt>
-<dd><p>Boolean indicating whether output should be flushed automatically or only
-when requested.</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="wptserve.response.Response.writer">
 <code class="descname">writer</code><a class="headerlink" href="#wptserve.response.Response.writer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ResponseWriter for this response</p>
@@ -321,9 +314,6 @@ with the same name</p>
 </tr>
 </tbody>
 </table>
-<p>After each part of the response is written, the output is
-flushed unless response.explicit_flush is False, in which case
-the user must call .flush() explicitly.</p>
 <dl class="method">
 <dt id="wptserve.response.ResponseWriter.encode">
 <code class="descname">encode</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.encode" title="Permalink to this definition">¶</a></dt>
@@ -336,35 +326,31 @@ the user must call .flush() explicitly.</p>
 <dd><p>Finish writing headers and write the separator.</p>
 <p>Unless add_required_headers on the response is False,
 this will also add HTTP-mandated headers that have not yet been supplied
-to the response headers</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wptserve.response.ResponseWriter.flush">
-<code class="descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.flush" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flush the output. Returns False if the flush failed due to
-the socket being closed by the remote end.</p>
+to the response headers.
+:return: A boolean indicating whether the write succeeds</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.response.ResponseWriter.write">
 <code class="descname">write</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write directly to the response, converting unicode to bytes
-according to response.encoding. Does not flush.</p>
+according to response.encoding.
+:return: A boolean indicating whether the write succeeds</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.response.ResponseWriter.write_content">
 <code class="descname">write_content</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the body of the response.</p>
-<p>HTTP-mandated headers will be automatically added with status default to 200 if they have not been explicitly set.</p>
+<p>HTTP-mandated headers will be automatically added with status default to 200 if they have
+not been explicitly set.
+:return: A boolean indicating whether the write succeeds</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.response.ResponseWriter.write_content_file">
 <code class="descname">write_content_file</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_content_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write a file-like object directly to the response in chunks.
-Does not flush.</p>
+<dd><p>Write a file-like object directly to the response in chunks.</p>
 </dd></dl>
 
 <dl class="method">
@@ -376,10 +362,13 @@ Does not flush.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>name</strong> – Name of the header field</li>
 <li><strong>value</strong> – Value of the header field</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A boolean indicating whether the write succeeds</p>
 </td>
 </tr>
 </tbody>

@@ -5,9 +5,10 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
 
   <style>
-  div#black-border
+  div#black-walls
     {
-      border: black solid 40px;
+      border: solid 40px;
+      border-color: transparent black;
       height: 400px;
       width: 400px;
     }
@@ -15,35 +16,11 @@
   div#gradient
     {
       background-image: linear-gradient(orange, blue);
-      height: 120%; /* computes to 480px */
-      margin: -40px auto 0px;
-      /* the gradient block is horizontally centered inside div#black-border */
+      height: 100%; /* computes to 400px */
+      margin: 0px auto;
+      /* the gradient block is horizontally centered inside div#black-walls */
       width: 200px;
     }
-
-  div#mask1 , div#mask2
-    {
-      background-color: black;
-      height: 40px;
-      left: 8px;
-      position: absolute;
-      width: 480px;
-    }
-
-  div#mask1
-    {
-      top: 8px;
-    }
-
-  div#mask2
-    {
-      top: 448px; /* 8px + 40px + 400px */
-    }
-
   </style>
 
-  <div id="black-border"><div id="gradient"></div></div>
-
-  <div id="mask1"></div>
-
-  <div id="mask2"></div>
+  <div id="black-walls"><div id="gradient"></div></div>

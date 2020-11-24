@@ -33,13 +33,14 @@
   <style>
   div
     {
-      background-clip: content-box; /* border-box is the initial background-clip value */
+      background-clip: border-box;
       background-image: linear-gradient(orange, blue);
-      background-origin: border-box; /* padding-box is the initial background-origin value */
+      background-origin: content-box;
       background-position: center;
       background-repeat: no-repeat;
       background-size: 200px auto;
-      border: black solid 40px;
+      border: solid 40px;
+      border-color: transparent black;
       height: 400px;
       width: 400px;
     }

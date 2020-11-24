@@ -207,7 +207,7 @@ var WebNFCTest = (() => {
         // Triggers onWatch if the new watcher matches existing messages.
         for (let message of this.reading_messages_) {
           this.client_.onWatch(
-              [id], fake_tag_serial_number, toMojoNDEFMessage(message));
+              fake_tag_serial_number, toMojoNDEFMessage(message));
         }
       }
 
@@ -297,8 +297,7 @@ var WebNFCTest = (() => {
       // Triggers onWatch if the new message matches existing watchers.
       for (let watcher of this.watchers_) {
         this.client_.onWatch(
-            [watcher.id], fake_tag_serial_number,
-            toMojoNDEFMessage(message));
+            fake_tag_serial_number, toMojoNDEFMessage(message));
       }
     }
 
@@ -315,8 +314,7 @@ var WebNFCTest = (() => {
       for (let watcher of this.watchers_) {
         for (let message of this.reading_messages_) {
           this.client_.onWatch(
-              [watcher.id], fake_tag_serial_number,
-              toMojoNDEFMessage(message));
+              fake_tag_serial_number, toMojoNDEFMessage(message));
         }
       }
       // Resumes pending push operation.

@@ -11,9 +11,9 @@ def escape_byte(byte):
     if type(byte) is not int:
         byte = ord(byte)
     if 0 <= byte <= 0x1F or byte >= 0x7F:
-        return rb"\x%02x" % byte
-    if byte == ord(rb"\"):
-        return rb"\\"
+        return b"\\x%02x" % byte
+    if byte == ord(b"\\"):
+        return b"\\\\"
     return byte
 
 def main(request, response):

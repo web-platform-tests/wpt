@@ -8,11 +8,10 @@ def escape_byte(byte):
     # Iterating over a binary string gives different types in Py2 & Py3.
     # Py3: bytes -> int
     # Py2: str -> str (of length 1), so we convert it to int
-    if type(byte) is not int:
-        byte = ord(byte)
-    if 0 <= byte <= 0x1F or byte >= 0x7F:
-        return b"\\x%02x" % byte
-    if byte == ord(b"\\"):
+    code = byte if type(byte) is int else ord(byte)
+    if 0 <= code <= 0x1F or code >= 0x7F:
+        return b"\\x%02x" % code
+    if code == ord(b"\\"):
         return b"\\\\"
     return byte
 

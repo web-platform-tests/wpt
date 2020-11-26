@@ -1,3 +1,3 @@
-FROM python:3.6-stretch
+FROM python:3.8-buster
 
 RUN apt-get update && apt-get install --yes git

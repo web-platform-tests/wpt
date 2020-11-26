@@ -9,7 +9,7 @@ def escape_byte(byte):
     # We want a single-char binary string, but in Python 3 we may get an int
     # from iterating over bytes.
     if PY3:
-        byte = bytes([byte])	
+        byte = bytes([byte])
     if b"\0" <= byte <= b"\x1F" or byte >= b"\x7F":
         return b"\\x%02x" % ord(byte)
     if byte == b"\\":

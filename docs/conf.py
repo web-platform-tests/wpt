@@ -78,8 +78,6 @@ nitpick_ignore = [
     ('py:exc', 'BadOperationException'),
     ('py:exc', 'Exception'),
     ('py:exc', 'ValueError'),
-    ('py:class', 'integer -- return number of occurrences of value'),
-    ('py:class', 'integer -- return first index of value.'),
     ('py:class', 'http.client.HTTPMessage')
 ]
 

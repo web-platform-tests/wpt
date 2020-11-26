@@ -1,3 +1,4 @@
+
 from tests.support.asserts import assert_error, assert_png, assert_success
 from tests.support.image import png_dimensions
 from tests.support.inline import inline
@@ -23,6 +24,16 @@ def test_no_browsing_context(session, closed_frame):
 def test_format_and_dimensions(session):
     session.url = inline("<input>")
 
+    response = take_full_page_screenshot(session)
+    value = assert_success(response)
+
+    assert_png(value)
+    assert png_dimensions(value) == full_page_dimensions(session)
+
+def test_large_page(session):
+    large_div = "<div id='content' style='height:5000px; width:5000px; background:green'>Lorem ipsum dolor sit amet.</div>"
+
+    session.url = inline(large_div)
     response = take_full_page_screenshot(session)
     value = assert_success(response)
 

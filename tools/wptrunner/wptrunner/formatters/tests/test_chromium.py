@@ -537,18 +537,20 @@ def test_known_intermittent_empty(capfd):
 
 
 def test_known_intermittent_duplicate(capfd):
-    # If the known_intermittent list already contains the expected status,
-    # we don't want to have duplicate statuses in the end.
+    # We don't want to have duplicate statuses in the final "expected" field.
 
     # Set up the handler.
     output = StringIO()
     logger = structuredlog.StructuredLogger("test_a")
     logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
 
-    # Note the known_intermittent list already contains the expected status.
+    # There are two duplications in this input:
+    # 1. known_intermittent already contains expected;
+    # 2. both statuses in known_intermittent map to FAIL in Chromium.
+    # In the end, we should only get one FAIL in Chromium "expected".
     logger.suite_start(["t1"], run_info={}, time=123)
     logger.test_start("t1")
-    logger.test_end("t1", status="OK", expected="OK", known_intermittent=["OK", "ERROR"])
+    logger.test_end("t1", status="ERROR", expected="ERROR", known_intermittent=["FAIL", "ERROR"])
     logger.suite_end()
 
     # Check nothing got output to stdout/stderr.
@@ -562,9 +564,9 @@ def test_known_intermittent_duplicate(capfd):
     output_json = json.load(output)
 
     test_obj = output_json["tests"]["t1"]
-    assert test_obj["actual"] == "PASS"
-    # No duplicate "PASS" in "expected".
-    assert test_obj["expected"] == "FAIL PASS"
+    assert test_obj["actual"] == "FAIL"
+    # No duplicate "FAIL" in "expected".
+    assert test_obj["expected"] == "FAIL"
 
 
 def test_reftest_screenshots(capfd):

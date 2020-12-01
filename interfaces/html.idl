@@ -1800,10 +1800,6 @@ interface BeforeUnloadEvent : Event {
   attribute DOMString returnValue;
 };
 
-interface mixin NavigatorOnLine {
-  readonly attribute boolean onLine;
-};
-
 [Exposed=(Window,Worker)]
 interface ErrorEvent : Event {
   constructor(DOMString type, optional ErrorEventInit eventInitDict = {});

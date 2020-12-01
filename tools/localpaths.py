@@ -23,6 +23,8 @@ sys.path.insert(0, os.path.join(here, "third_party", "hpack"))
 sys.path.insert(0, os.path.join(here, "third_party", "hyperframe"))
 sys.path.insert(0, os.path.join(here, "third_party", "certifi"))
 sys.path.insert(0, os.path.join(here, "third_party", "hyper"))
+if sys.version_info < (3, 8):
+    sys.path.insert(0, os.path.join(here, "third_party", "importlib_metadata"))
 sys.path.insert(0, os.path.join(here, "webdriver"))
 sys.path.insert(0, os.path.join(here, "wptrunner"))
 

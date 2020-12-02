@@ -1,5 +1,4 @@
 from tests.support.asserts import assert_error, assert_success
-from tests.support.inline import inline
 import pytest
 
 
@@ -10,7 +9,7 @@ def element_click(session, element):
             element_id=element.id))
 
 
-def get_checkbox_dom():
+def get_checkbox_dom(inline):
     return inline("""
         <style>
             custom-checkbox-element {
@@ -47,7 +46,7 @@ def test_shadow_element_click(session, click_on):
     assert is_post_checked == True
 
 
-def get_nested_shadow_checkbox_dom():
+def get_nested_shadow_checkbox_dom(inline):
     return inline("""
         <style>
             custom-nesting-element {

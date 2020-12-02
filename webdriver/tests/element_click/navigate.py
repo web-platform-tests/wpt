@@ -1,5 +1,4 @@
 from tests.support.asserts import assert_success
-from tests.support.inline import inline
 from tests.support.sync import Poll
 
 
@@ -10,7 +9,7 @@ def element_click(session, element):
             element_id=element.id))
 
 
-def test_numbers_link(session, server_config):
+def test_numbers_link(session, server_config, inline):
     link = "/webdriver/tests/element_click/support/input.html"
     session.url = inline("<a href={url}>123456</a>".format(url=link))
     element = session.find.css("a", all=False)
@@ -22,7 +21,7 @@ def test_numbers_link(session, server_config):
     assert session.url == "http://{host}:{port}{url}".format(host=host, port=port, url=link)
 
 
-def test_multi_line_link(session, server_config):
+def test_multi_line_link(session, server_config, inline):
     link = "/webdriver/tests/element_click/support/input.html"
     session.url = inline("""
         <p style="background-color: yellow; width: 50px;">
@@ -37,7 +36,7 @@ def test_multi_line_link(session, server_config):
     assert session.url == "http://{host}:{port}{url}".format(host=host, port=port, url=link)
 
 
-def test_link_unload_event(session, server_config):
+def test_link_unload_event(session, server_config, inline):
     link = "/webdriver/tests/element_click/support/input.html"
     session.url = inline("""
         <body onunload="checkUnload()">
@@ -68,7 +67,7 @@ def test_link_unload_event(session, server_config):
     assert response is True
 
 
-def test_link_hash(session):
+def test_link_hash(session, inline):
     id = "anchor"
     session.url = inline("""
         <a href="#{url}">aaaa</a>
@@ -93,7 +92,7 @@ def test_link_hash(session):
             """, args=(element,)) is True
 
 
-def test_link_open_target_in_new_window(session, url):
+def test_link_open_target_in_new_window(session, url, inline):
     orig_handles = session.handles
 
     session.url = inline("""
@@ -120,7 +119,7 @@ def test_link_open_target_in_new_window(session, url):
     session.find.css("#foo")
 
 
-def test_link_closes_window(session):
+def test_link_closes_window(session, inline):
     new_handle = session.new_window()
     session.window_handle = new_handle
 

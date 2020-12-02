@@ -87,7 +87,7 @@ def test_fragments(session, url):
     assert session.url == test_pages[0]
 
 
-def test_history_pushstate(session, url, inline):
+def test_history_pushstate(session, inline):
     pushstate_page = inline("""
       <script>
         function pushState() {

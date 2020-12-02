@@ -92,7 +92,7 @@ def test_link_hash(session, inline):
             """, args=(element,)) is True
 
 
-def test_link_open_target_in_new_window(session, url, inline):
+def test_link_open_target_in_new_window(session, inline):
     orig_handles = session.handles
 
     session.url = inline("""

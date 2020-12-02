@@ -63,7 +63,7 @@ def test_nested_iframe(session, nested_frames_doc):
 
 
 @pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
-def test_origin(session, inline, iframe, domain, url):
+def test_origin(session, inline, iframe, domain):
     top_level_doc = inline(iframe("<p>frame", domain=domain))
 
     session.url = top_level_doc

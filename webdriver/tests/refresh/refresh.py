@@ -78,7 +78,7 @@ def test_dismissed_beforeunload(session, inline):
     session.find.css("input", all=False)
 
 
-def test_history_pushstate(session, url, inline):
+def test_history_pushstate(session, inline):
     pushstate_page = inline("""
       <script>
         function pushState() {

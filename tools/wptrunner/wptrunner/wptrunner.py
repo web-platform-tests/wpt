@@ -1,8 +1,11 @@
 from __future__ import print_function, unicode_literals
 
 import json
+import multiprocessing
 import os
 import sys
+
+import six
 from six import iteritems, itervalues
 
 import wptserve
@@ -384,6 +387,9 @@ def check_stability(**kwargs):
 def start(**kwargs):
     assert logger is not None
 
+    if six.PY3:
+        if multiprocessing.get_start_method(True) is None:
+            multiprocessing.set_start_method('spawn')
     logged_critical = wptlogging.LoggedAboveLevelHandler("CRITICAL")
     handler = handlers.LogLevelFilter(logged_critical, "CRITICAL")
     logger.add_handler(handler)

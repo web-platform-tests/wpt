@@ -120,7 +120,7 @@ def test_keyboard_interactable(session, inline):
                           ("time", "19:48", ""),
                           ("month", "2017-11", ""),
                           ("week", "2017-W52", "")])
-def test_input(session, add_event_listeners, tracked_events, inline, type, value, default):
+def test_input(session, inline, add_event_listeners, tracked_events, type, value, default):
     session.url = inline("<input type=%s value='%s'>" % (type, value))
     element = session.find.css("input", all=False)
     add_event_listeners(element, tracked_events)
@@ -183,7 +183,7 @@ def test_input_readonly(session, inline, type):
     assert_error(response, "invalid element state")
 
 
-def test_textarea(session, add_event_listeners, tracked_events, inline):
+def test_textarea(session, inline, add_event_listeners, tracked_events):
     session.url = inline("<textarea>foobar</textarea>")
     element = session.find.css("textarea", all=False)
     add_event_listeners(element, tracked_events)
@@ -270,7 +270,7 @@ def test_button_with_subtree(session, inline):
     assert_success(response)
 
 
-def test_contenteditable(session, add_event_listeners, tracked_events, inline):
+def test_contenteditable(session, inline, add_event_listeners, tracked_events):
     session.url = inline("<p contenteditable>foobar</p>")
     element = session.find.css("p", all=False)
     add_event_listeners(element, tracked_events)
@@ -295,7 +295,7 @@ def test_designmode(session, inline):
     assert_element_has_focus(session.execute_script("return document.body"))
 
 
-def test_resettable_element_focus_when_empty(session, add_event_listeners, tracked_events, inline):
+def test_resettable_element_focus_when_empty(session, inline, add_event_listeners, tracked_events):
     session.url = inline("<input>")
     element = session.find.css("input", all=False)
     add_event_listeners(element, tracked_events)

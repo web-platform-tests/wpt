@@ -1,5 +1,5 @@
-from tests.support.asserts import assert_error, assert_success
 import pytest
+from tests.support.asserts import assert_error, assert_success
 
 
 def element_click(session, element):
@@ -9,6 +9,7 @@ def element_click(session, element):
             element_id=element.id))
 
 
+@pytest.fixture
 def get_checkbox_dom(inline):
     return inline("""
         <style>
@@ -31,8 +32,8 @@ def get_checkbox_dom(inline):
 
 
 @pytest.mark.parametrize("click_on", ["custom_element", "checkbox_element"])
-def test_shadow_element_click(session, click_on):
-    session.url = get_checkbox_dom()
+def test_shadow_element_click(session, get_checkbox_dom, click_on):
+    session.url = get_checkbox_dom
     custom_element = session.find.css("custom-checkbox-element", all=False)
     checkbox_element = session.execute_script("return arguments[0].shadowRoot.querySelector('input')",
                                               args=(custom_element,))
@@ -46,6 +47,7 @@ def test_shadow_element_click(session, click_on):
     assert is_post_checked == True
 
 
+@pytest.fixture
 def get_nested_shadow_checkbox_dom(inline):
     return inline("""
         <style>
@@ -82,8 +84,8 @@ def get_nested_shadow_checkbox_dom(inline):
 
 
 @pytest.mark.parametrize("click_on", ["outer_element", "inner_element", "checkbox_element"])
-def test_nested_shadow_element_click(session, click_on):
-    session.url = get_nested_shadow_checkbox_dom()
+def test_nested_shadow_element_click(session, get_nested_shadow_checkbox_dom, click_on):
+    session.url = get_nested_shadow_checkbox_dom
     outer_element = session.find.css("custom-nesting-element", all=False)
     inner_element = session.execute_script("return arguments[0].shadowRoot.querySelector('custom-checkbox-element')",
                                            args=(outer_element,))

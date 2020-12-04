@@ -12,26 +12,26 @@ form({
 
 form({
   filename: "a\nb",
-  expectedFilename: "a%0Ab",
-  description: "Newlines: \\n",
+  expectedFilename: "a%0D%0Ab",
+  description: "Newlines: \\n becomes \\r\\n",
 });
 
 form({
   filename: "a\rb",
-  expectedFilename: "a%0Db",
-  description: "Newlines: \\r",
+  expectedFilename: "a%0D%0Ab",
+  description: "Newlines: \\r becomes \\r\\n",
 });
 
 form({
   filename: "a\n\rb",
-  expectedFilename: "a%0A%0Db",
-  description: "Newlines: \\n\\r",
+  expectedFilename: "a%0D%0A%0D%0Ab",
+  description: "Newlines: \\n\\r becomes \\r\\n\\r\\n",
 });
 
 form({
   filename: "a\r\nb",
   expectedFilename: "a%0D%0Ab",
-  description: "Newlines: \\r\\n",
+  description: "Newlines: \\r\\n stays unchanged",
 });
 
 form({

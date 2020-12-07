@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: focus - the sequential focus navigation order after remove element</title>
+<meta name="timeout" content="long">
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#sequential-focus-navigation">
+<meta assert="flag" content="interact">
+<meta assert="assert" content="Check the sequential focus navigation order after remove element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<div id="log"></div>
+<form id="fm">
+  <button id="btn1" tabindex="3">tabindex(3)</button>
+  <button id="btn2" tabindex="1">tabindex(1)</button>
+  <button id="btn3" tabindex="1">tabindex(1)</button>
+  <button id="btn4" tabindex="2">tabindex(2)</button>
+  <button id="btn5" tabindex="4">tabindex(4)</button>
+</form>
+<script>
+
+var i = 0,
+    expectation = ["btn2", "btn3", "btn4", "btn1", "btn5"],
+    results = [],
+    t = async_test("Elements must be focused sequentially after remove focused element");
+
+setup(function () {
+  document.body.focus();
+});
+
+document.forms.fm.addEventListener("focus", function (evt) {
+  results.push(evt.target.id);
+  if (evt.target.id == "btn2") {
+    evt.target.remove();
+  }
+  if (i >= 4) {
+    t.step(function () {
+      assert_array_equals(results, expectation);
+    });
+    t.done();
+  } else {
+    t.step(function () {
+      // TAB = '\ue004'
+      test_driver.send_keys(document.body, "\ue004");
+    });
+  }
+  i++;
+}, true);
+
+document.addEventListener("keydown", function (evt) {
+  t.step(function () {
+    assert_equals(evt.keyCode, 9, "Please press 'Tab' key.");
+  });
+}, true);
+
+t.step(function () {
+  // TAB = '\ue004'
+  test_driver.send_keys(document.body, "\ue004");
+});
+</script>

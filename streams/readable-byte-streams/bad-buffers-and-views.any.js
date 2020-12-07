@@ -212,7 +212,8 @@ async_test(t => {
 
       c.close();
 
-      assert_throws_js(TypeError, () => c.byobRequest.respondWithNewView(view));
+      const zeroLengthView = new Uint8Array(view.buffer, 0, 0);
+      assert_throws_js(TypeError, () => c.byobRequest.respondWithNewView(zeroLengthView));
     }),
     type: 'bytes'
   });

@@ -9,12 +9,8 @@
 <body></body>
 <script>
 promise_test(async t => {
-  const video = await loadVideo();
-  await video.play();
-  assert_false(video.paused);
-  await requestPictureInPictureWithTrustedClick(video);
-  await document.exitPictureInPicture();
-  assert_true(video.paused);
+  return requestPictureInPictureWithTrustedClick(video)
+  .then(() => document.exitPictureInPicture());
 }, 'Exit Picture-in-Picture resolves when there is a Picture-in-Picture video');
 
 promise_test(t => {

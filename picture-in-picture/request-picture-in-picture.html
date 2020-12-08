@@ -34,4 +34,13 @@ promise_test(async t => {
   const video = await loadVideo();
   return requestPictureInPictureWithTrustedClick(video);
 }, 'request Picture-in-Picture resolves on user click');
+
+promise_test(async t => {
+  const video = await loadVideo();
+  await video.play();
+  assert_false(video.paused);
+  await requestPictureInPictureWithTrustedClick(video);
+  video.remove();
+  assert_true(video.paused);
+}, 'Picture-in-Picture video pauses when removed from the DOM');
 </script>

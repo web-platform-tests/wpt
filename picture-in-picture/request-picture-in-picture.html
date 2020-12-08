@@ -39,6 +39,7 @@ promise_test(async t => {
   const video = await loadVideo();
   await video.play();
   assert_false(video.paused);
+  document.body.appendChild(video);
   await requestPictureInPictureWithTrustedClick(video);
   video.remove();
   assert_true(video.paused);

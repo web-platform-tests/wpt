@@ -122,4 +122,296 @@ promise_test(t => {
     assert_equals(query, '?name-pd1=value-pd1');
   });
 }, 'setFormValue with an empty FormData should submit nothing');
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setAttribute("name", "a\nb");
+  $("my-control").value = "c";
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a%0D%0Ab=c");
+  });
+}, "Newline normalization - \\n in name");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setAttribute("name", "a\rb");
+  $("my-control").value = "c";
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a%0D%0Ab=c");
+  });
+}, "Newline normalization - \\r in name");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setAttribute("name", "a\r\nb");
+  $("my-control").value = "c";
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a%0D%0Ab=c");
+  });
+}, "Newline normalization - \\r\\n in name");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setAttribute("name", "a\n\rb");
+  $("my-control").value = "c";
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a%0D%0A%0D%0Ab=c");
+  });
+}, "Newline normalization - \\n\\r in name");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control name=a></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").value = "b\nc";
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0D%0Ac");
+  });
+}, "Newline normalization - \\n in value");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control name=a></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").value = "b\rc";
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0D%0Ac");
+  });
+}, "Newline normalization - \\r in value");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control name=a></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").value = "b\r\nc";
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0D%0Ac");
+  });
+}, "Newline normalization - \\r\\n in value");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control name=a></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").value = "b\n\rc";
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0D%0A%0D%0Ac");
+  });
+}, "Newline normalization - \\n\\r in value");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control name=a></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").value = new File([], "b\nc");
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0D%0Ac");
+  });
+}, "Newline normalization - \\n in filename");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control name=a></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").value = new File([], "b\rc");
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0D%0Ac");
+  });
+}, "Newline normalization - \\r in filename");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control name=a></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").value = new File([], "b\r\nc");
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0D%0Ac");
+  });
+}, "Newline normalization - \\r\\n in filename");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control name=a></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").value = new File([], "b\n\rc");
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0D%0A%0D%0Ac");
+  });
+}, "Newline normalization - \\n\\r in filename");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a\nb", "c"]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a%0Ab=c");
+  });
+}, "Newline normalization - \\n in FormData name");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a\rb", "c"]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a%0Db=c");
+  });
+}, "Newline normalization - \\r in FormData name");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a\r\nb", "c"]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a%0D%0Ab=c");
+  });
+}, "Newline normalization - \\r\\n in FormData name");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a\n\rb", "c"]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a%0A%0Db=c");
+  });
+}, "Newline normalization - \\n\\r in FormData name");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a", "b\nc"]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0Ac");
+  });
+}, "Newline normalization - \\n in FormData value");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a", "b\rc"]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0Dc");
+  });
+}, "Newline normalization - \\r in FormData value");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a", "b\r\nc"]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0D%0Ac");
+  });
+}, "Newline normalization - \\r\\n in FormData value");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a", "b\n\rc"]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0A%0Dc");
+  });
+}, "Newline normalization - \\n\\r in FormData value");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a", new File([], "b\nc")]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0Ac");
+  });
+}, "Newline normalization - \\n in FormData filename");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a", new File([], "b\rc")]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0Dc");
+  });
+}, "Newline normalization - \\r in FormData filename");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a", new File([], "b\r\nc")]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0D%0Ac");
+  });
+}, "Newline normalization - \\r\\n in FormData filename");
+
+promise_test((t) => {
+  $("#container").innerHTML = '<form action="/common/blank.html" target="if1">' +
+      '<input name=name-pd1 value="value-pd1">' +
+      "<my-control></my-control>" +
+      "</form>" +
+      '<iframe name="if1"></iframe>';
+  $("my-control").setValues([["a", new File([], "b\n\rc")]]);
+  return submitPromise(t).then((query) => {
+    assert_equals(query, "?name-pd1=value-pd1&a=b%0A%0Dc");
+  });
+}, "Newline normalization - \\n\\r in FormData filename");
 </script>

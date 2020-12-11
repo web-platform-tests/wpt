@@ -20,7 +20,7 @@ function cors(desc, scheme, subdomain, port) {
         base = `${scheme}://${subdomain}${location.hostname}:${port}${dirname(location.pathname)}`;
     }
     async_test((t) => {
-        var client = new XMLHttpRequest();
+        const client = new XMLHttpRequest();
         const url = `${base}resources/cors-makeheader.py?get_value=hest_er_best`
         client.open("GET",`${base}resources/cors-makeheader.py?get_value=hest_er_best&origin=none&${token()}`);
 
@@ -34,7 +34,7 @@ function cors(desc, scheme, subdomain, port) {
     }, `${desc}: origin: none`);
 
     async_test((t) => {
-        var client = new XMLHttpRequest();
+        const client = new XMLHttpRequest();
         const url = `${base}resources/cors-makeheader.py?get_value=hest_er_best`
         client.open("GET",`${base}resources/cors-makeheader.py?get_value=hest_er_best&origin=echo&${token()}`);
 

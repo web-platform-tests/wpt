@@ -293,32 +293,4 @@ testSerializedEntry({
   expectedValue: 'b%0A%0Dc',
   description: 'Newline normalization - \\n\\r in FormData value'
 });
-
-testSerializedEntry({
-  value: [['a', new File([], 'b\nc')]],
-  expectedName: 'a',
-  expectedValue: 'b%0Ac',
-  description: 'Newline normalization - \\n in FormData filename'
-});
-
-testSerializedEntry({
-  value: [['a', new File([], 'b\rc')]],
-  expectedName: 'a',
-  expectedValue: 'b%0Dc',
-  description: 'Newline normalization - \\r in FormData filename'
-});
-
-testSerializedEntry({
-  value: [['a', new File([], 'b\r\nc')]],
-  expectedName: 'a',
-  expectedValue: 'b%0D%0Ac',
-  description: 'Newline normalization - \\r\\n in FormData filename'
-});
-
-testSerializedEntry({
-  value: [['a', new File([], 'b\n\rc')]],
-  expectedName: 'a',
-  expectedValue: 'b%0A%0Dc',
-  description: 'Newline normalization - \\n\\r in FormData filename'
-});
 </script>

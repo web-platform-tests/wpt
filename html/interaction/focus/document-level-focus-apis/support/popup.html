@@ -1,7 +1,18 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-Popup
+Popup <input id="input">
 <script>
-window.onload = () => opener.postMessage(document.visibilityState, "*");
+window.onload = async () => {
+  try {
+    if (!document.hasFocus()) {
+      const input = document.getElementById("input");
+      input.focus();
+      await new Promise(r => input.onfocus = r);
+    }
+    opener.postMessage(`focus = ${document.hasFocus()}`, "*");
+  } catch(e) {
+    opener.postMessage(`${e.name}: $(e.message)`, "*");
+  }
+};
 </script>
 </html>

@@ -22,19 +22,20 @@ promise_test(async t => {
   }
   assert_true(document.hasFocus(), "Document has focus as starting condition.");
 
+  let gotBlur = false;
+  window.onblur = () => gotBlur = true;
   const popup = window.open("support/popup.html", "otherwindow", "resizable");
   assert_not_equals(popup, null, "Test requires popup be opened");
   t.add_cleanup(() => popup.close());
-  let gotBlur = false;
-  window.onblur = () => gotBlur = true;
   const msg = await new Promise(r => window.onmessage = ({data}) => r(data));
   assert_equals(msg, "focus = true",
                 "Test requires popups be focused (may require harness flags)");
   assert_true(gotBlur, "Document received blur event when popup opened");
   assert_false(document.hasFocus(), "Document lost focus when popup opened");
 
+  const p = new Promise(r => window.onfocus = r);
   popup.close();
-  await new Promise(r => window.onfocus = r);
+  await p;
   assert_true(true, "Document received focus event when popup closed");
   assert_true(document.hasFocus(), "Document regained focus when popup closed");
 }, "Top-level document receives blur/focus events and loses system focus " +

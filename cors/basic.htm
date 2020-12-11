@@ -16,7 +16,7 @@ function cors(desc, scheme, subdomain, port) {
     subdomain = subdomain || "";
     const sameorigin = !scheme;
     let base = "";
-    if (sameorigin) {
+    if (!sameorigin) {
         base = `${scheme}://${subdomain}${location.hostname}:${port}${dirname(location.pathname)}`;
     }
     async_test((t) => {

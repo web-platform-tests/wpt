@@ -11,21 +11,35 @@
 promise_test(async () => {
   await waitForLoad(window);
   await waitUntilStableAutofocusState();
-  assert_equals(document.activeElement, document.body,
-      'Autofocus elements in iframes should not be focused.');
+  // If 'scroll to the fragment' happened before 'flush autofocus candidates':
+  //   - The iframe document has :target.
+  //   - 'autofocus processed flag' is false.
+  // If 'scroll to the fragment' happened after 'flush autofocus candidates':
+  //   - The iframe document has :target.
+  //   - <input> has focus in the iframe document.
+  //   - 'autofocus processed flag' is true.
+  // If 'flush autofocus candidates' happened, and 'scroll to the fragment'
+  // doesn't happen yet:
+  //   - The iframe document has no :target.
+  //   - <input> has focus in the iframe document.
+  //   - 'autofocus processed flag' is true.
+  const hasTarget = !!document.querySelector('iframe').contentDocument.querySelector(':target');
 
   let input = document.createElement('input');
   input.autofocus = true;
   document.body.appendChild(input);
   await waitUntilStableAutofocusState();
-  assert_equals(document.activeElement, input);
+  const autofocusProcessedFlagWasTrue = document.activeElement != input;
+  assert_true(hasTarget || autofocusProcessedFlagWasTrue);
 }, 'Autofocus elements in iframed documents with URL fragments should be skipped.');
 
 promise_test(async () => {
   let w = window.open('resources/frame-with-autofocus-element.html#anchor1');
   await waitForLoad(w);
   await waitUntilStableAutofocusState(w);
-  assert_equals(w.document.activeElement, w.document.body);
+  const hasTarget = !!w.document.querySelector(':target');
+  const autofocusWorked = w.document.activeElement != w.document.body;
+  assert_true(hasTarget || aotofocusWorked);
   w.close();
 }, 'Autofocus elements in top-level browsing context\'s documents with URI fragments should be skipped.');
 </script>

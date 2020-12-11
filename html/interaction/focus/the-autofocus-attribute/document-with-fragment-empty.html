@@ -25,7 +25,7 @@ promise_test(async () => {
   let w = window.open('resources/frame-with-autofocus-element.html#');
   await waitForLoad(w);
   await waitUntilStableAutofocusState(w);
-  assert_equals(w.document.activeElement, w.document.body);
+  assert_not_equals(w.document.activeElement, w.document.body);
   w.close();
 }, 'Autofocus elements in top-level browsing context\'s documents with empty fragments should work.');
 </script>

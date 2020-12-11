@@ -4,17 +4,28 @@
 <link rel="help" href="https://html.spec.whatwg.org/#has-focus-steps">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<input id="test">
+<input id="input">
 <script>
 
 promise_test(async t => {
   await new Promise(r => window.onload = r);
-  assert_true(document.hasFocus(), "Document has focus on load.");
+  // This test requires the document to have focus as a starting condition.
+  // Whether a newly loaded page receives focus or not, seems to be somewhat
+  // browser-dependent and situation-dependent. For instance, Firefox appears to
+  // focus the page immediately if the page was loaded with the refresh button,
+  // but not if it was loaded from pressing ENTER in the URL bar. To ensure a
+  // reliable starting condition for this test, we give an extra push for focus.
+  if (!document.hasFocus()) {
+    const input = document.getElementById("input");
+    input.focus();
+    await new Promise(r => input.onfocus = r);
+  }
+  assert_true(document.hasFocus(), "Document has focus as starting condition.");
 
   const popup = window.open("support/popup.html", "otherwindow", "resizable");
   let gotBlur = false;
   window.onblur = () => gotBlur = true;
+  t.add_cleanup(() => popup.close());
   const msg = await new Promise(r => window.onmessage = ({data}) => r(data));
   assert_equals(msg, "visible",
                 "Test requires popups be opened (may require harness flags)");

@@ -31,18 +31,18 @@ function cors(desc, scheme, subdomain, port) {
         client.onerror = t.step_func_done(() => {
             assert_false(sameorigin, "Same origin request must be accepted.");
         });
-    }, `${desc}: origin: none`);
+    }, `${desc}, origin: none`);
 
     async_test((t) => {
         const client = new XMLHttpRequest();
         const url = `${base}resources/cors-makeheader.py?get_value=hest_er_best`
-        client.open("GET",`${base}resources/cors-makeheader.py?get_value=hest_er_best&origin=echo&${token()}`);
+        client.open("GET",`${base}resources/cors-makeheader.py?get_value=hest_er_best&${token()}`);
 
         client.onload = t.step_func_done(() => {
             assert_true(client.response.includes("hest_er_best"), "Got response");
         });
         client.onerror = t.unreached_func("Should be accepted");
-    }, `${desc}: origin: echo`);
+    }, `${desc}, origin: echo`);
 }
 
 cors("Same domain basic usage");

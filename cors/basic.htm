@@ -21,8 +21,8 @@ function cors(desc, scheme, subdomain, port) {
     }
     async_test((t) => {
         const client = new XMLHttpRequest();
-        const url = `${base}resources/cors-makeheader.py?get_value=hest_er_best`
         client.open("GET",`${base}resources/cors-makeheader.py?get_value=hest_er_best&origin=none&${token()}`);
+        client.send();
 
         client.onload = t.step_func_done(() => {
             assert_true(sameorigin, "Cross origin request must be rejected.");
@@ -35,8 +35,8 @@ function cors(desc, scheme, subdomain, port) {
 
     async_test((t) => {
         const client = new XMLHttpRequest();
-        const url = `${base}resources/cors-makeheader.py?get_value=hest_er_best`
         client.open("GET",`${base}resources/cors-makeheader.py?get_value=hest_er_best&${token()}`);
+        client.send();
 
         client.onload = t.step_func_done(() => {
             assert_true(client.response.includes("hest_er_best"), "Got response");

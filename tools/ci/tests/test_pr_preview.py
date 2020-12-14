@@ -268,7 +268,7 @@ def deploy(pr_num, revision, expected_github_traffic, expected_preview_traffic):
 def test_update_mirror_refs_fail_rate_limited():
     pull_request = {
         'number': 45,
-        'head': { 'sha': 'abc123' },
+        'head': {'sha': 'abc123'},
         'labels': [],
         'user': {'login': 'stephenmcgruer'},
         'author_association': 'COLLABORATOR',
@@ -299,7 +299,7 @@ def test_synchronize_ignore_closed():
     # No existing refs, but a closed PR event comes in. Nothing should happen.
     pull_request = {
         'number': 45,
-        'head': { 'sha': 'abc123' },
+        'head': {'sha': 'abc123'},
         'labels': [],
         'user': {'login': 'stephenmcgruer'},
         'author_association': 'COLLABORATOR',
@@ -322,7 +322,7 @@ def test_synchronize_ignore_closed():
 def test_update_mirror_refs_collaborator():
     pull_request = {
         'number': 45,
-        'head': { 'sha': 'abc123' },
+        'head': {'sha': 'abc123'},
         'labels': [],
         'user': {'login': 'stephenmcgruer'},
         'author_association': 'COLLABORATOR',
@@ -349,7 +349,7 @@ def test_update_mirror_refs_collaborator():
 def test_update_mirror_refs_ignore_collaborator_bot():
     pull_request = {
         'number': 45,
-        'head': { 'sha': 'abc123' },
+        'head': {'sha': 'abc123'},
         'labels': [],
         'user': {'login': 'chromium-wpt-export-bot'},
         'author_association': 'COLLABORATOR',
@@ -372,7 +372,7 @@ def test_update_mirror_refs_ignore_collaborator_bot():
 def test_update_mirror_refs_ignore_untrusted_contributor():
     pull_request = {
         'number': 45,
-        'head': { 'sha': 'abc123' },
+        'head': {'sha': 'abc123'},
         'labels': [],
         'user': {'login': 'stephenmcgruer'},
         'author_association': 'CONTRIBUTOR',
@@ -395,7 +395,7 @@ def test_update_mirror_refs_ignore_untrusted_contributor():
 def test_update_mirror_refs_trusted_contributor():
     pull_request = {
         'number': 45,
-        'head': { 'sha': 'abc123' },
+        'head': {'sha': 'abc123'},
         # user here is a contributor (untrusted), but the issue
         # has been labelled as safe.
         'labels': [{'name': 'safe for preview'}],
@@ -424,7 +424,7 @@ def test_update_mirror_refs_trusted_contributor():
 def test_synchronize_sync_bot_with_label():
     pull_request = {
         'number': 45,
-        'head': { 'sha': 'abc123' },
+        'head': {'sha': 'abc123'},
         # user here is a bot which is normally not mirrored,
         # but the issue has been labelled as safe.
         'labels': [{'name': 'safe for preview'}],
@@ -453,7 +453,7 @@ def test_synchronize_sync_bot_with_label():
 def test_update_mirror_refs_update_collaborator():
     pull_request = {
         'number': 45,
-        'head': { 'sha': 'abc123' },
+        'head': {'sha': 'abc123'},
         'labels': [],
         'user': {'login': 'stephenmcgruer'},
         'author_association': 'COLLABORATOR',
@@ -464,14 +464,14 @@ def test_update_mirror_refs_update_collaborator():
         (Requests.ref_get_trusted, (
             200,
             {
-                'object': { 'sha': 'def234' },
+                'object': {'sha': 'def234' },
             }
         )),
         (Requests.get_rate, Responses.no_limit),
         (Requests.ref_get_open, (
             200,
             {
-                'object': { 'sha': 'def234' },
+                'object': {'sha': 'def234' },
             }
         )),
         (Requests.get_rate, Responses.no_limit),
@@ -490,7 +490,7 @@ def test_update_mirror_refs_update_collaborator():
 def test_synchronize_update_member():
     pull_request = {
         'number': 45,
-        'head': { 'sha': 'abc123' },
+        'head': {'sha': 'abc123'},
         'labels': [],
         'user': {'login': 'jgraham'},
         'author_association': 'MEMBER',
@@ -501,14 +501,14 @@ def test_synchronize_update_member():
         (Requests.ref_get_trusted, (
             200,
             {
-                'object': { 'sha': 'def234' },
+                'object': {'sha': 'def234' },
             }
         )),
         (Requests.get_rate, Responses.no_limit),
         (Requests.ref_get_open, (
             200,
             {
-                'object': { 'sha': 'def234' },
+                'object': {'sha': 'def234' },
             }
         )),
         (Requests.get_rate, Responses.no_limit),
@@ -527,7 +527,7 @@ def test_synchronize_update_member():
 def test_update_mirror_refs_delete_collaborator():
     pull_request = {
         'number': 45,
-        'head': { 'sha': 'abc123' },
+        'head': {'sha': 'abc123'},
         'labels': [],
         'user': {'login': 'stephenmcgruer'},
         'author_association': 'COLLABORATOR',
@@ -538,14 +538,14 @@ def test_update_mirror_refs_delete_collaborator():
         (Requests.ref_get_trusted, (
             200,
             {
-                'object': { 'sha': 'def234' },
+                'object': {'sha': 'def234' },
             }
         )),
         (Requests.get_rate, Responses.no_limit),
         (Requests.ref_get_open, (
             200,
             {
-                'object': { 'sha': 'def234' },
+                'object': {'sha': 'def234' },
             }
         )),
         (Requests.get_rate, Responses.no_limit),

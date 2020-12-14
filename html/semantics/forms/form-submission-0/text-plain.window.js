@@ -126,5 +126,5 @@ function form({
 
     const expected = `file=${expectedFilename}\r\n`;
     assert_equals(textPlain, expected);
-  }, `Test urlencoding of filenames: ${description}`);
+  }, `Test the encoding of filenames in text/plain forms: ${description}`);
 }

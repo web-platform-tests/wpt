@@ -7,6 +7,8 @@
 # of the base repository and thus doesn't run code from the pull request. Any
 # code run in this workflow should NOT checkout or trust code from the pull
 # request.
+#
+# Note that in pull_request_target the GITHUB token is read/write.
 name: create-pr-preview
 on:
   pull_request_target:
@@ -30,4 +32,4 @@ jobs:
           --target https://wptpr.live
           --timeout 600
       env:
-        DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

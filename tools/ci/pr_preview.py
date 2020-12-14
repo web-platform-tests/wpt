@@ -44,11 +44,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def gh_request(method_name, url, body=None, media_type=None):
-    deploy_token = os.environ['DEPLOY_TOKEN']
+    github_token = os.environ['GITHUB_TOKEN']
 
     kwargs = {
         'headers': {
-            'Authorization': 'token {}'.format(deploy_token),
+            'Authorization': 'token {}'.format(github_token),
             'Accept': media_type or 'application/vnd.github.v3+json'
         }
     }
@@ -211,7 +211,7 @@ class Remote(object):
         # The repository in the GitHub Actions environment is configured with
         # a remote whose URL uses unauthenticated HTTPS, making it unsuitable
         # for pushing changes.
-        self._token = os.environ['DEPLOY_TOKEN']
+        self._token = os.environ['GITHUB_TOKEN']
 
     def _git(self, command):
         return subprocess.check_output([

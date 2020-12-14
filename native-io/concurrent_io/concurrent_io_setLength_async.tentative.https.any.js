@@ -2,6 +2,7 @@
 // META: global=window,worker
 // META: script=operation_helpers.js
 // META: script=../resources/support.js
+// META: timeout=long
 
 'use strict';
 
@@ -14,7 +15,7 @@ for (let op of kOperations) {
     const res = op.prepare();
 
     const setLengthPromise = file.setLength(5);
-    op.assertRejection(testCase, file, res);
+    await op.assertRejection(testCase, file, res);
 
     await setLengthPromise;
 

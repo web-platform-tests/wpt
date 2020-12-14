@@ -207,7 +207,7 @@ def temp_repo(change_dir=False):
         )
 
 def update_mirror_refs(pull_request, expected_traffic, refs={}):
-    os.environ['DEPLOY_TOKEN'] = 'c0ffee'
+    os.environ['GITHUB_TOKEN'] = 'c0ffee'
 
     github_server = MockServer((TEST_HOST, 0), expected_traffic)
     github_port = github_server.server_address[1]
@@ -259,7 +259,7 @@ def update_mirror_refs(pull_request, expected_traffic, refs={}):
 
 
 def deploy(pr_num, revision, expected_github_traffic, expected_preview_traffic):
-    os.environ['DEPLOY_TOKEN'] = 'c0ffee'
+    os.environ['GITHUB_TOKEN'] = 'c0ffee'
 
     github_server = MockServer((TEST_HOST, 0), expected_github_traffic)
     github_port = github_server.server_address[1]

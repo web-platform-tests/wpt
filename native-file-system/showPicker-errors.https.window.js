@@ -82,7 +82,43 @@ function define_file_picker_error_tests(showPickerMethod) {
 
   promise_test(async t => {
     await promise_rejects_js(t, TypeError, self[showPickerMethod]({
-                               types: [{accept: {'text/plain': ['.txt', 'txt']}}]
-                             }));
-  }, showPickerMethod + ': extension has to start with ".".');
+      startIn: 'secrets',
+    }));
+  }, showPickerMethod + ': unknown common starting directory.');
+
+  const invalid_extensions = {
+    '.extensiontoolong': 'extension length more than 16.',
+    '.txt.': 'extenstion ends with "."',
+    'txt': 'extenstion does not start with "."',
+    '.$txt' : 'illegal character "$"',
+    '.t<xt': 'illegal character "<"',
+    '.t/xt': 'illegal character "\"',
+    '.\txt': 'illegal character "/"',
+    '.txt\\': 'illegal characters "\\"',
+    '.txt?': 'illegal character "?"',
+    '.txt*': 'illegal character "*"',
+    '.{txt': 'illegal character "{"',
+    '.}txt': 'illegal character "}"',
+    ' .txt': 'illegal whitespace at front of extension',
+    '. txt': 'illegal whitespace in extension',
+    '.txt ': 'illegal whitespace at end of extension',
+    '.\u202etxt\u202e' : 'illegal RTL character',
+    '.t\u00E6xt': 'non-ASCII character "æ"',
+    '.קום': 'non-ASCII character "קום"',
+    '.txt🙂': 'non-ASCII character "🙂"',
+    '.{txt}': 'illegal characters "{" and "}"',
+  }
+
+  for (const [extension, description] of Object.entries(invalid_extensions)) {
+    define_file_picker_extension_error_test(showPickerMethod, extension, description)
+  }
+}
+
+function define_file_picker_extension_error_test(showPickerMethod, extension, description) {
+  promise_test(async t => {
+    await promise_rejects_js(
+      t, TypeError,
+      self[showPickerMethod](
+        { types: [{ accept: { 'text/plain': ['.txt', extension] } }] }));
+  }, showPickerMethod + ': invalid extension "' + extension + '". ' + description + ".");
 }

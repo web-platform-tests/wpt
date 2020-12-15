@@ -66,7 +66,7 @@ def gh_request(method_name, url, body=None, media_type=None):
     # include debugging information in the body. See
     # https://developer.github.com/v3/#client-errors
     if resp.status_code == 422:
-        logger.info(resp.json())
+        logger.error(resp.json())
 
     resp.raise_for_status()
 

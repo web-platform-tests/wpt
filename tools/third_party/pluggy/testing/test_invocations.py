@@ -6,31 +6,6 @@ hookspec = HookspecMarker("example")
 hookimpl = HookimplMarker("example")
 
 
-def test_happypath(pm):
-    class Api(object):
-        @hookspec
-        def hello(self, arg):
-            "api hook 1"
-
-    pm.add_hookspecs(Api)
-    hook = pm.hook
-    assert hasattr(hook, 'hello')
-    assert repr(hook.hello).find("hello") != -1
-
-    class Plugin(object):
-        @hookimpl
-        def hello(self, arg):
-            return arg + 1
-
-    plugin = Plugin()
-    pm.register(plugin)
-    out = hook.hello(arg=3)
-    assert out == [4]
-    assert not hasattr(hook, 'world')
-    pm.unregister(plugin)
-    assert hook.hello(arg=3) == []
-
-
 def test_argmismatch(pm):
     class Api(object):
         @hookspec
@@ -62,6 +37,34 @@ def test_only_kwargs(pm):
 
     comprehensible = "hook calling supports only keyword arguments"
     assert comprehensible in str(exc.value)
+
+
+def test_opt_in_args(pm):
+    """Verfiy that two hookimpls with mutex args can serve
+    under the same spec.
+    """
+
+    class Api(object):
+        @hookspec
+        def hello(self, arg1, arg2, common_arg):
+            "api hook 1"
+
+    class Plugin1(object):
+        @hookimpl
+        def hello(self, arg1, common_arg):
+            return arg1 + common_arg
+
+    class Plugin2(object):
+        @hookimpl
+        def hello(self, arg2, common_arg):
+            return arg2 + common_arg
+
+    pm.add_hookspecs(Api)
+    pm.register(Plugin1())
+    pm.register(Plugin2())
+
+    results = pm.hook.hello(arg1=1, arg2=2, common_arg=0)
+    assert results == [2, 1]
 
 
 def test_call_order(pm):
@@ -143,6 +146,7 @@ def test_firstresult_definition(pm):
 def test_firstresult_force_result(pm):
     """Verify forcing a result in a wrapper.
     """
+
     class Api(object):
         @hookspec(firstresult=True)
         def hello(self, arg):
@@ -179,6 +183,7 @@ def test_firstresult_returns_none(pm):
     """If None results are returned by underlying implementations ensure
     the multi-call loop returns a None value.
     """
+
     class Api(object):
         @hookspec(firstresult=True)
         def hello(self, arg):
@@ -200,6 +205,7 @@ def test_firstresult_no_plugin(pm):
     """If no implementations/plugins have been registered for a firstresult
     hook the multi-call loop should return a None value.
     """
+
     class Api(object):
         @hookspec(firstresult=True)
         def hello(self, arg):

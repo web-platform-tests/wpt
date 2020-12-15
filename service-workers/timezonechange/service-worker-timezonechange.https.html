@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>Service Worker: timezonechange event</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="../service-worker/resources/test-helpers.sub.js"></script>
+<script>
+
+function defaultTimeZone() {
+  return (new Intl.DateTimeFormat()).resolvedOptions().timeZone;
+}
+
+promise_test(async t => {
+  const oldTimeZone = "Pacific/Fakaofo";
+  const newTimeZone = "Asia/Taipei";
+  // First, we set to a fixed time zone.
+  await window.test_driver.set_time_zone(oldTimeZone);
+  assert_equals(defaultTimeZone(), oldTimeZone);
+
+  const script = 'resources/service-worker-timezonechange.js';
+  const scope = 'resources/blank.html';
+  let worker;
+  let port;
+
+  return service_worker_unregister_and_register(t, script, scope)
+    .then(registration => {
+        t.add_cleanup(() => registration.unregister());
+        worker = registration.installing;
+
+        const messageChannel = new MessageChannel();
+        port = messageChannel.port1;
+        return new Promise(resolve => {
+            port.onmessage = resolve;
+            worker.postMessage({port: messageChannel.port2},
+                               [messageChannel.port2]);
+          });
+      })
+    .then(e => {
+        assert_equals(e.data, 'READY:' + oldTimeZone);
+        return new Promise(async resolve => {
+          port.onmessage = resolve;
+          // Change the time zone once the service worker is ready.
+          await window.test_driver.set_time_zone(newTimeZone);
+        });
+      })
+    .then(e => {
+        assert_equals(e.data, 'SUCCESS:' + newTimeZone);
+      });
+}, 'timezonechange event work in ServiceWorker');
+</script>

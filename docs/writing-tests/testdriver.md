@@ -182,6 +182,23 @@ await test_driver.set_permission({ name: "background-fetch" }, "denied");
 await test_driver.set_permission({ name: "push", userVisibleOnly: true }, "granted", true);
 ```
 
+### set_time_zone
+
+Usage: `test_driver.set_time_zone(time_zone)`
+ * _timezone_: a string matching one of the
+   [Zone or Link names of the IANA Time Zone Database](https://www.iana.org/time-zones)
+
+This function set the host default time zone to the given time zone ID.
+It returns a promise that resolves after the time zone has
+been set to be overridden with _time_zone_.
+
+Example:
+
+``` js
+await test_driver.set_time_zone("Asia/Taipei");
+await test_driver.set_time_zone("Asia/Hong_Kong");
+```
+
 ## Using testdriver in Other Browsing Contexts
 
 Testdriver can be used in browsing contexts (i.e. windows or frames)

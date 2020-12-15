@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+
+test(function() {
+  assert_true('ontimezonechange' in window);
+}, "Test that timezonechange event handler API is present in window");
+
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+function defaultTimeZone() {
+  return (new Intl.DateTimeFormat()).resolvedOptions().timeZone;
+}
+promise_test(async t => {
+  const oldTimeZone = "Pacific/Fakaofo";
+  const newTimeZone = "Asia/Taipei";
+  // First, setup the time zone in a fixed place.
+  await window.test_driver.set_time_zone(oldTimeZone);
+  assert_equals(defaultTimeZone(), oldTimeZone);
+  return new Promise(async r => {
+    window.ontimezonechange = r;
+    await window.test_driver.set_time_zone(newTimeZone);
+  }).then(e => {
+    assert_equals(defaultTimeZone(), newTimeZone);
+  });
+}, "Test that the timezonechange event fires on window.ontimezonechange");
+
+</script>
+</body>
+</html>

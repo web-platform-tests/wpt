@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+function defaultTimeZone() {
+  return (new Intl.DateTimeFormat()).resolvedOptions().timeZone;
+}
+promise_test(async t => {
+  const oldTimeZone = "Pacific/Fakaofo";
+  const newTimeZone = "Asia/Taipei";
+  // First, setup the time_zone in a fixed place.
+  await window.test_driver.set_time_zone(oldTimeZone);
+  assert_equals(defaultTimeZone(), oldTimeZone);
+  window.received = 0; // We need a global variable here.
+  var fromWindowHandler = false;
+  document.body.setAttribute('ontimezonechange', 'window.received++;');
+
+  return new Promise(async r => {
+    window.ontimezonechange = r;
+    await window.test_driver.set_time_zone(newTimeZone);
+  }).then(evt => {
+    received++;
+    assert_equals(window.received, 1);
+    assert_equals(defaultTimeZone(), newTimeZone);
+  });
+}, "Test that the timezonechange event fires on window.ontimezonechange but not body ontimezonechange attribute");
+</script>
+</body>
+</html>

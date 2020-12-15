@@ -3,43 +3,37 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
 
-<iframe src="resources/frame-with-autofocus-element.html#anchor1"></iframe>
+<iframe src="resources/frame-with-anchor.html"></iframe>
 
 <script>
 'use strict';
 
 promise_test(async () => {
   await waitForLoad(window);
-  await waitUntilStableAutofocusState();
-  // If 'scroll to the fragment' happened before 'flush autofocus candidates':
-  //   - The iframe document has :target.
-  //   - 'autofocus processed flag' is false.
-  // If 'scroll to the fragment' happened after 'flush autofocus candidates':
-  //   - The iframe document has :target.
-  //   - <input> has focus in the iframe document.
-  //   - 'autofocus processed flag' is true.
-  // If 'flush autofocus candidates' happened, and 'scroll to the fragment'
-  // doesn't happen yet:
-  //   - The iframe document has no :target.
-  //   - <input> has focus in the iframe document.
-  //   - 'autofocus processed flag' is true.
-  const hasTarget = !!document.querySelector('iframe').contentDocument.querySelector(':target');
+  const iframe = document.querySelector('iframe');
+  iframe.contentWindow.location.hash = 'anchor1';
+  const doc = iframe.contentDocument;
+  assert_true(!!doc.querySelector(':target'));
 
-  let input = document.createElement('input');
+  let input = doc.createElement('input');
   input.autofocus = true;
-  document.body.appendChild(input);
+  doc.body.appendChild(input);
   await waitUntilStableAutofocusState();
-  const autofocusProcessedFlagWasTrue = document.activeElement != input;
-  assert_true(hasTarget || autofocusProcessedFlagWasTrue);
+  assert_not_equals(doc.activeElement, input);
 }, 'Autofocus elements in iframed documents with URL fragments should be skipped.');
 
 promise_test(async () => {
-  let w = window.open('resources/frame-with-autofocus-element.html#anchor1');
+  let w = window.open('resources/frame-with-anchor.html');
   await waitForLoad(w);
-  await waitUntilStableAutofocusState(w);
-  const hasTarget = !!w.document.querySelector(':target');
-  const autofocusWorked = w.document.activeElement != w.document.body;
-  assert_true(hasTarget || aotofocusWorked);
+  w.location.hash = 'anchor1';
+  const doc = w.document;
+  assert_true(!!doc.querySelector(':target'));
+
+  let input = doc.createElement('input');
+  input.autofocus = true;
+  doc.body.appendChild(input);
+  await waitUntilStableAutofocusState();
+  assert_not_equals(doc.activeElement, input);
   w.close();
-}, 'Autofocus elements in top-level browsing context\'s documents with URI fragments should be skipped.');
+}, 'Autofocus elements in top-level browsing context\'s documents with URL fragments should be skipped.');
 </script>

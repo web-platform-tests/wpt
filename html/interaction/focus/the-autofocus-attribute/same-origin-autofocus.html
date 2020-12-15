@@ -9,6 +9,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
+<script src="resources/utils.js"></script>
 </head>
 <body>
   <iframe id="child" width="200" height="100"></iframe>
@@ -17,9 +18,11 @@
     let grand_child_loaded = false;
 
     async_test(function(t) {
-      function pingChildIfBothFramesLoaded() {
-        if (parent_loaded && grand_child_loaded)
+      async function pingChildIfBothFramesLoaded() {
+        if (parent_loaded && grand_child_loaded) {
+          await waitUntilStableAutofocusState();
           frames[0].postMessage("report_focus_state", "*");
+        }
       }
 
       window.addEventListener("load", t.step_func(event => {

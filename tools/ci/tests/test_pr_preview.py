@@ -464,14 +464,14 @@ def test_update_mirror_refs_update_collaborator():
         (Requests.ref_get_trusted, (
             200,
             {
-                'object': {'sha': 'def234' },
+                'object': {'sha': 'def234'},
             }
         )),
         (Requests.get_rate, Responses.no_limit),
         (Requests.ref_get_open, (
             200,
             {
-                'object': {'sha': 'def234' },
+                'object': {'sha': 'def234'},
             }
         )),
         (Requests.get_rate, Responses.no_limit),
@@ -481,7 +481,7 @@ def test_update_mirror_refs_update_collaborator():
     ]
 
     method_threw, actual_traffic = update_mirror_refs(
-        pull_request, expected_traffic 
+        pull_request, expected_traffic
     )
 
     assert not method_threw
@@ -501,14 +501,14 @@ def test_synchronize_update_member():
         (Requests.ref_get_trusted, (
             200,
             {
-                'object': {'sha': 'def234' },
+                'object': {'sha': 'def234'},
             }
         )),
         (Requests.get_rate, Responses.no_limit),
         (Requests.ref_get_open, (
             200,
             {
-                'object': {'sha': 'def234' },
+                'object': {'sha': 'def234'},
             }
         )),
         (Requests.get_rate, Responses.no_limit),
@@ -538,14 +538,14 @@ def test_update_mirror_refs_delete_collaborator():
         (Requests.ref_get_trusted, (
             200,
             {
-                'object': {'sha': 'def234' },
+                'object': {'sha': 'def234'},
             }
         )),
         (Requests.get_rate, Responses.no_limit),
         (Requests.ref_get_open, (
             200,
             {
-                'object': {'sha': 'def234' },
+                'object': {'sha': 'def234'},
             }
         )),
         (Requests.get_rate, Responses.no_limit),

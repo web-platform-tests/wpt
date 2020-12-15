@@ -1,6 +1,6 @@
-'''
+"""
 Call loop machinery
-'''
+"""
 import sys
 import warnings
 
@@ -8,16 +8,20 @@ _py3 = sys.version_info > (3, 0)
 
 
 if not _py3:
-    exec("""
+    exec(
+        """
 def _reraise(cls, val, tb):
     raise cls, val, tb
-""")
+"""
+    )
 
 
 def _raise_wrapfail(wrap_controller, msg):
     co = wrap_controller.gi_code
-    raise RuntimeError("wrap_controller at %r %s:%d %s" %
-                       (co.co_name, co.co_filename, co.co_firstlineno, msg))
+    raise RuntimeError(
+        "wrap_controller at %r %s:%d %s"
+        % (co.co_name, co.co_filename, co.co_firstlineno, msg)
+    )
 
 
 class HookCallError(Exception):
@@ -36,7 +40,7 @@ class _Result(object):
     @property
     def result(self):
         """Get the result(s) for this hook call (DEPRECATED in favor of ``get_result()``)."""
-        msg = 'Use get_result() which forces correct exception handling'
+        msg = "Use get_result() which forces correct exception handling"
         warnings.warn(DeprecationWarning(msg), stacklevel=2)
         return self._result
 
@@ -84,7 +88,7 @@ def _wrapped_call(wrap_controller, func):
     to finish (raise StopIteration) in order for the wrapped call to complete.
     """
     try:
-        next(wrap_controller)   # first yield
+        next(wrap_controller)  # first yield
     except StopIteration:
         _raise_wrapfail(wrap_controller, "did not yield")
     call_outcome = _Result.from_call(func)
@@ -124,7 +128,8 @@ class _LegacyMultiCall(object):
                 for argname in hook_impl.argnames:
                     if argname not in caller_kwargs:
                         raise HookCallError(
-                            "hook call must provide argument %r" % (argname,))
+                            "hook call must provide argument %r" % (argname,)
+                        )
             if hook_impl.hookwrapper:
                 return _wrapped_call(hook_impl.function(*args), self.execute)
             res = hook_impl.function(*args)
@@ -145,7 +150,8 @@ class _LegacyMultiCall(object):
 
 def _legacymulticall(hook_impls, caller_kwargs, firstresult=False):
     return _LegacyMultiCall(
-        hook_impls, caller_kwargs, firstresult=firstresult).execute()
+        hook_impls, caller_kwargs, firstresult=firstresult
+    ).execute()
 
 
 def _multicall(hook_impls, caller_kwargs, firstresult=False):
@@ -167,12 +173,13 @@ def _multicall(hook_impls, caller_kwargs, firstresult=False):
                     for argname in hook_impl.argnames:
                         if argname not in caller_kwargs:
                             raise HookCallError(
-                                "hook call must provide argument %r" % (argname,))
+                                "hook call must provide argument %r" % (argname,)
+                            )
 
                 if hook_impl.hookwrapper:
                     try:
                         gen = hook_impl.function(*args)
-                        next(gen)   # first yield
+                        next(gen)  # first yield
                         teardowns.append(gen)
                     except StopIteration:
                         _raise_wrapfail(gen, "did not yield")

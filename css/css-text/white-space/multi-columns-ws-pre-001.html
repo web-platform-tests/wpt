@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Text Test: 'white-space: pre', atomic inlines and multi-column layout</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-text-3/#white-space-processing">
+  <link rel="match" href="reference/multi-columns-ws-pre-001-ref.html">
+
+  <!--
+  Date created: December 14th 2020
+  Last modified: December 16th 2020
+  -->
+
+  <meta content="" name="flags">
+
+  <style>
+  div
+    {
+      border: orange solid 4px;
+      column-gap: 0em;
+      column-width: 50px;
+      font-size: 32px;
+      margin-bottom: 8px;
+      orphans: 1;
+      widows: 1;
+      width: 500px; /* 500px is an entirely arbitrary number */
+    }
+
+  span
+    {
+      display: inline-block;
+      width: 50px;
+    }
+
+  div.test
+    {
+      white-space: pre;
+    }
+
+  div#i-table > span
+    {
+      display: inline-table
+    }
+
+  div#reference
+    {
+      white-space: normal;
+    }
+  </style>
+
+  <p>Test passes if the digits inside the 3 orange-bordered rectangles are <strong>distributed identically</strong>.
+
+  <div class="test" id="i-block"><span>1</span><span>2</span><span>3</span><span>4</span></div>
+
+  <div class="test" id="i-table"><span>1</span><span>2</span><span>3</span><span>4</span></div>
+
+  <div id="reference"><span>1</span><span>2</span><span>3</span><span>4</span></div>

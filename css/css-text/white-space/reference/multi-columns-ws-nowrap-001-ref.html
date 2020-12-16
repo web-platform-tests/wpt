@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Reference Test</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+
+  <style>
+  div
+    {
+      border: orange solid 4px;
+      column-gap: 2em;
+      column-width: 50px;
+      font-size: 32px;
+      margin-bottom: 8px;
+      orphans: 1;
+      widows: 1;
+      width: 500px; /* 500px is an entirely arbitrary number */
+    }
+
+  span
+    {
+      display: inline-block;
+      width: 50px;
+    }
+  </style>
+
+  <p>Test passes if the digits inside the 3 orange-bordered rectangles are <strong>distributed identically</strong>.
+
+  <div><span>1</span><span>2</span><span>3</span><span>4</span></div>
+
+  <div><span>1</span><span>2</span><span>3</span><span>4</span></div>
+
+  <div><span>1</span><span>2</span><span>3</span><span>4</span></div>

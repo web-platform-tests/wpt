@@ -12,21 +12,21 @@
     window.timeoutTest = t;
     let policy = createScript_policy(window, 'timeout');
     let script = policy.createScript("window.timeoutTest.done();");
-    setTimeout(script);
+    setTimeout(script, 1);
   }, "window.setTimeout assigned via policy (successful Script transformation).");
 
   // String assignments throw.
   test(t => {
     window.timeoutTestString = t.unreached_func();
     assert_throws_js(TypeError, _ => {
-      setTimeout("window.timeoutTestString();");
+      setTimeout("window.timeoutTestString();", 1);
     });
   }, "`window.setTimeout(string)` throws.");
 
   // Null assignment throws.
   test(t => {
     assert_throws_js(TypeError, _ => {
-      setTimeout(null);
+      setTimeout(null, 1);
     });
   }, "`window.setTimeout(null)` throws.");
 
@@ -57,12 +57,12 @@
   let policy = window.trustedTypes.createPolicy("default", { createScript: x => "0" });
   // After default policy creation string assignment implicitly calls createScript.
   test(t => {
-    setTimeout(INPUTS.SCRIPT);
+    setTimeout(INPUTS.SCRIPT, 1);
     setInterval(INPUTS.SCRIPT);
   }, "`setTimeout(string)`, `setInterval(string)` via default policy (successful Script transformation).");
   // After default policy creation null assignment implicitly calls createScript.
   test(t => {
-    setTimeout(null);
+    setTimeout(null, 1);
     setInterval(null);
   }, "`setTimeout(null)`, `setInterval(null)` via default policy (successful Script transformation).");
 </script>

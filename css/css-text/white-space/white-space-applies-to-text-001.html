@@ -2,48 +2,97 @@
 
   <meta charset="UTF-8">
 
-  <title>CSS Text Test: 'white-space: normal' applies to text</title>
+  <title>CSS Text Test: 'white-space: normal', 'white-space: nowrap' and 'white-space: pre' apply to text</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-text-3/#white-space-processing">
   <link rel="match" href="reference/white-space-applies-to-text-001-ref.html">
 
   <meta content="" name="flags">
-  <meta content="This test checks that 'white-space', which applies to inlines, also applies to text. In this test, we verify that 'white-space: normal' applies to text." name="assert">
+  <meta content="This test checks that 'white-space', which applies to inlines, also applies to text. In this test, we verify that 'white-space: normal', 'white-space: nowrap' and 'white-space: pre' apply to text." name="assert">
 
   <style>
   section
     {
       border: black solid 2px;
+      float: left;
       font-family: monospace;
-      font-size: 32px;
-      line-height: 1.25; /* computes to 40px */
+      font-size: 20px;
+      line-height: 1.2; /* computes to 24px */
       margin-bottom: 0.25em;
       width: 16ch;
+    }
+
+  section.applies-to-text
+    {
+      clear: both;
+    }
+
+  section.applies-to-inline
+    {
+      margin-left: 5em;
     }
 
   div
     {
       display: contents;
+    }
 
+  div.first-subtest
+    {
       white-space: normal;
+    }
+
+  div.second-subtest
+    {
+      white-space: nowrap;
+    }
+
+  div.third-subtest
+    {
+      white-space: pre;
+    }
+
+  hr
+    {
+      clear: both;
+      margin: 6em auto 2em 0em;
+      width: 570px;
     }
   </style>
 
-  <p>Test passes if the characters inside of each black-bordered rectangles are laid out identically.
+  <p>Test passes if the characters inside of each black-bordered rectangles on the lefthand-side are laid out identically to their counterparts on the righthand-side.
 
-  <section id="applies-to-text">
-    <div>Lorem ipsum.        Dolor&NewLine;
-   sit amet. <br>consectetur</div>
+  <section class="applies-to-text">
+    <div class="first-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
   </section>
 
-  <section id="applies-to-inline">
-    <div><span>Lorem ipsum.        Dolor&NewLine;
-   sit amet. <br>consectetur</span></div>
+  <section class="applies-to-inline">
+    <div class="first-subtest"><span>Lorem ipsum.      Dolor&NewLine;
+   sit.</span></div>
   </section>
 
-  <!--
+  <hr>
 
-  U+000A: new line; &NewLine; &#x000A; &#10;
+  <section class="applies-to-text">
+    <div class="second-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
 
-  -->
+  <section class="applies-to-inline">
+    <div class="second-subtest"><span>Lorem ipsum.      Dolor&NewLine;
+   sit.</span></div>
+  </section>
+
+  <hr>
+
+  <section class="applies-to-text">
+    <div class="third-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
+
+  <section class="applies-to-inline">
+    <div class="third-subtest"><span>Lorem ipsum.      Dolor&NewLine;
+   sit.</span></div>
+  </section>

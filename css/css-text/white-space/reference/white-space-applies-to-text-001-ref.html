@@ -7,23 +7,82 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
 
   <style>
-  div
+  section
     {
       border: black solid 2px;
+      float: left;
       font-family: monospace;
-      font-size: 32px;
-      line-height: 1.25; /* computes to 40px */
+      font-size: 20px;
+      line-height: 1.2; /* computes to 24px */
       margin-bottom: 0.25em;
       width: 16ch;
+    }
 
+  section.odds
+    {
+      clear: both;
+    }
+
+  section.even
+    {
+      margin-left: 5em;
+    }
+
+  div.first-subtest
+    {
       white-space: normal;
+    }
+
+  div.second-subtest
+    {
+      white-space: nowrap;
+    }
+
+  div.third-subtest
+    {
+      white-space: pre;
+    }
+
+  hr
+    {
+      clear: both;
+      margin: 6em auto 2em 0em;
+      width: 570px;
     }
   </style>
 
-  <p>Test passes if the characters inside of each black-bordered rectangles are laid out identically.
+  <p>Test passes if the characters inside of each black-bordered rectangles on the lefthand-side are laid out identically to their counterparts on the righthand-side.
 
-  <div>Lorem ipsum.        Dolor&NewLine;
-   sit amet. <br>consectetur</div>
+  <section class="odds">
+    <div class="first-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
 
-  <div>Lorem ipsum.        Dolor&NewLine;
-   sit amet. <br>consectetur</div>
+  <section class="even">
+    <div class="first-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
+
+  <hr>
+
+  <section class="odds">
+    <div class="second-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
+
+  <section class="even">
+    <div class="second-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
+
+  <hr>
+
+  <section class="odds">
+    <div class="third-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
+
+  <section class="even">
+    <div class="third-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>

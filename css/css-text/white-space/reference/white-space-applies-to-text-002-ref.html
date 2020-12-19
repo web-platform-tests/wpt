@@ -7,23 +7,82 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
 
   <style>
-  div
+  section
     {
       border: black solid 2px;
+      float: left;
       font-family: monospace;
-      font-size: 32px;
-      line-height: 1.25; /* computes to 40px */
+      font-size: 20px;
+      line-height: 1.2; /* computes to 24px */
       margin-bottom: 0.25em;
       width: 16ch;
+    }
 
-      white-space: nowrap;
+  section.odds
+    {
+      clear: both;
+    }
+
+  section.even
+    {
+      margin-left: 5em;
+    }
+
+  div.fourth-subtest
+    {
+      white-space: pre-wrap;
+    }
+
+  div.fifth-subtest
+    {
+      white-space: break-spaces;
+    }
+
+  div.sixth-subtest
+    {
+      white-space: pre-line;
+    }
+
+  hr
+    {
+      clear: both;
+      margin: 8em auto 2em 0em;
+      width: 570px;
     }
   </style>
 
-  <p>Test passes if the characters inside of each black-bordered rectangles are laid out identically. Only "or sit amet." should be outside of black-bordered rectangles.
+  <p>Test passes if the characters inside of each black-bordered rectangles on the lefthand-side are laid out identically to their counterparts on the righthand-side.
 
-  <div>Lorem ipsum.        Dolor&NewLine;
-   sit amet. <br>consectetur</div>
+  <section class="odds">
+    <div class="fourth-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
 
-  <div>Lorem ipsum.        Dolor&NewLine;
-   sit amet. <br>consectetur</div>
+  <section class="even">
+    <div class="fourth-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
+
+  <hr>
+
+  <section class="odds">
+    <div class="fifth-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
+
+  <section class="even">
+    <div class="fifth-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
+
+  <hr>
+
+  <section class="odds">
+    <div class="sixth-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>
+
+  <section class="even">
+    <div class="sixth-subtest">Lorem ipsum.      Dolor&NewLine;
+   sit.</div>
+  </section>

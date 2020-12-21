@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>wptserve Pipes &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Submitting Tests" href="submission-process.html" />
@@ -72,21 +70,21 @@ generally unknown.</p>
 <p>Substitutions are marked in a file using a block delimited by <code class="docutils literal notranslate"><span class="pre">{{</span></code>
 and <code class="docutils literal notranslate"><span class="pre">}}</span></code>. Inside the block the following variables are available:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">{{host}}</span></code> - The host name of the server excluding any subdomain part.</li>
-<li><code class="docutils literal notranslate"><span class="pre">{{domains[]}}</span></code> - The domain name of a particular subdomain e.g.
-<code class="docutils literal notranslate"><span class="pre">{{domains[www]}}</span></code> for the <code class="docutils literal notranslate"><span class="pre">www</span></code> subdomain.</li>
-<li><code class="docutils literal notranslate"><span class="pre">{{hosts[][]}}</span></code> - The domain name of a particular subdomain for a particular
+<li><p><code class="docutils literal notranslate"><span class="pre">{{host}}</span></code> - The host name of the server excluding any subdomain part.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{{domains[]}}</span></code> - The domain name of a particular subdomain e.g.
+<code class="docutils literal notranslate"><span class="pre">{{domains[www]}}</span></code> for the <code class="docutils literal notranslate"><span class="pre">www</span></code> subdomain.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{{hosts[][]}}</span></code> - The domain name of a particular subdomain for a particular
 host. The first key may be empty (designating the “default” host) or the
-value <code class="docutils literal notranslate"><span class="pre">alt</span></code>; i.e., <code class="docutils literal notranslate"><span class="pre">{{hosts[alt][]}}</span></code> (designating the alternate host).</li>
-<li><code class="docutils literal notranslate"><span class="pre">{{ports[][]}}</span></code> - The port number of servers, by protocol e.g.
+value <code class="docutils literal notranslate"><span class="pre">alt</span></code>; i.e., <code class="docutils literal notranslate"><span class="pre">{{hosts[alt][]}}</span></code> (designating the alternate host).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{{ports[][]}}</span></code> - The port number of servers, by protocol e.g.
 <code class="docutils literal notranslate"><span class="pre">{{ports[http][0]}}</span></code> for the first (and, depending on setup, possibly only)
-http server</li>
-<li><code class="docutils literal notranslate"><span class="pre">{{headers[]}}</span></code> The HTTP headers in the request e.g. <code class="docutils literal notranslate"><span class="pre">{{headers[X-Test]}}</span></code>
-for a hypothetical <code class="docutils literal notranslate"><span class="pre">X-Test</span></code> header.</li>
-<li><code class="docutils literal notranslate"><span class="pre">{{header_or_default(header,</span> <span class="pre">default)}}</span></code> The value of an HTTP header, or a
-default value if it is absent. e.g. <code class="docutils literal notranslate"><span class="pre">{{header_or_default(X-Test,</span> <span class="pre">test-header-absent)}}</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">{{GET[]}}</span></code> The query parameters for the request e.g. <code class="docutils literal notranslate"><span class="pre">{{GET[id]}}</span></code> for an id
-parameter sent with the request.</li>
+http server</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{{headers[]}}</span></code> The HTTP headers in the request e.g. <code class="docutils literal notranslate"><span class="pre">{{headers[X-Test]}}</span></code>
+for a hypothetical <code class="docutils literal notranslate"><span class="pre">X-Test</span></code> header.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{{header_or_default(header,</span> <span class="pre">default)}}</span></code> The value of an HTTP header, or a
+default value if it is absent. e.g. <code class="docutils literal notranslate"><span class="pre">{{header_or_default(X-Test,</span> <span class="pre">test-header-absent)}}</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{{GET[]}}</span></code> The query parameters for the request e.g. <code class="docutils literal notranslate"><span class="pre">{{GET[id]}}</span></code> for an id
+parameter sent with the request.</p></li>
 </ul>
 <p>So, for example, to write a JavaScript file called <code class="docutils literal notranslate"><span class="pre">xhr.js</span></code> that
 depends on the host name of the server, without hardcoding, one might
@@ -158,11 +156,11 @@ example.txt including byte 10 but excluding byte 20.</p>
 single argument that is a microsyntax consisting of colon-separated
 commands. There are three types of commands:</p>
 <ul class="simple">
-<li>Bare numbers represent a number of bytes to send</li>
-<li>Numbers prefixed <code class="docutils literal notranslate"><span class="pre">d</span></code> indicate a delay in seconds</li>
-<li>Numbers prefixed <code class="docutils literal notranslate"><span class="pre">r</span></code> must only appear at the end of the command, and
+<li><p>Bare numbers represent a number of bytes to send</p></li>
+<li><p>Numbers prefixed <code class="docutils literal notranslate"><span class="pre">d</span></code> indicate a delay in seconds</p></li>
+<li><p>Numbers prefixed <code class="docutils literal notranslate"><span class="pre">r</span></code> must only appear at the end of the command, and
 indicate that the preceding N items must be repeated until there is
-no more content to send. The number of items to repeat must be even.</li>
+no more content to send. The number of items to repeat must be even.</p></li>
 </ul>
 <p>In the absence of a repetition command, the entire remainder of the content is
 sent at once when the command list is exhausted. So for example:</p>
@@ -229,17 +227,15 @@ delay until the whole content has been sent.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -256,7 +252,7 @@ delay until the whole content has been sent.</p>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

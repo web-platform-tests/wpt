@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Server Features &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Python Handlers" href="python-handlers/index.html" />
@@ -40,19 +38,19 @@
 sufficient. However there are a large class of tests for which this
 approach is insufficient, including:</p>
 <ul class="simple">
-<li>Tests that require cross-domain access</li>
-<li>Tests that depend on setting specific headers or status codes</li>
-<li>Tests that need to inspect the browser-sent request</li>
-<li>Tests that require state to be stored on the server</li>
-<li>Tests that require precise timing of the response.</li>
+<li><p>Tests that require cross-domain access</p></li>
+<li><p>Tests that depend on setting specific headers or status codes</p></li>
+<li><p>Tests that need to inspect the browser-sent request</p></li>
+<li><p>Tests that require state to be stored on the server</p></li>
+<li><p>Tests that require precise timing of the response.</p></li>
 </ul>
 <p>To make writing such tests possible, we are using a number of
 server-side components designed to make it easy to manipulate the
 precise details of the response:</p>
 <ul class="simple">
-<li><em>wptserve</em>, a custom Python HTTP server</li>
-<li><em>pywebsocket</em>, an existing websockets server</li>
-<li><em>tools/quic</em>, a custom Python 3 QUIC server using <code class="docutils literal notranslate"><span class="pre">aioquic</span></code></li>
+<li><p><em>wptserve</em>, a custom Python HTTP server</p></li>
+<li><p><em>pywebsocket</em>, an existing websockets server</p></li>
+<li><p><em>tools/quic</em>, a custom Python 3 QUIC server using <code class="docutils literal notranslate"><span class="pre">aioquic</span></code></p></li>
 </ul>
 <p>wptserve is a Python-based web server. By default it serves static
 files in the test suite. For more sophisticated requirements, several
@@ -72,8 +70,8 @@ be running on or the port numbers, as these are not guaranteed by the
 test environment. Instead they can get this information in one of two
 ways:</p>
 <ul class="simple">
-<li>From script, using the <code class="docutils literal notranslate"><span class="pre">location</span></code> API.</li>
-<li>By using a textual substitution feature of the server.</li>
+<li><p>From script, using the <code class="docutils literal notranslate"><span class="pre">location</span></code> API.</p></li>
+<li><p>By using a textual substitution feature of the server.</p></li>
 </ul>
 <p>In order for the latter to work, a file must either have a name of the form
 <code class="docutils literal notranslate"><span class="pre">{name}.sub.{ext}</span></code> e.g. <code class="docutils literal notranslate"><span class="pre">example-test.sub.html</span></code> or be referenced through a URL
@@ -143,11 +141,12 @@ by default and needs to be run using <code class="docutils literal notranslate">
 The HTTP/2.0 server supports handlers that work per-frame; these, along with the
 API are documented in <a class="reference internal" href="h2tests.html"><span class="doc">Writing H2 Tests</span></a>.</p>
 <blockquote>
-<div><b>Important:</b> The HTTP/2.0 server requires you to have Python 2.7.10+
+<div><p><b>Important:</b> The HTTP/2.0 server requires you to have Python 2.7.10+
 and OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
 <a class="reference external" href="https://tools.ietf.org/html/rfc7301">TLS ALPN</a> extension, which is only
 supported in
-<a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</div></blockquote>
+<a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</p>
+</div></blockquote>
 </div>
 <div class="section" id="tests-requiring-quic">
 <h2>Tests Requiring QUIC<a class="headerlink" href="#tests-requiring-quic" title="Permalink to this headline">¶</a></h2>
@@ -156,20 +155,31 @@ connection to the test server (e.g. for WebTransport, similar to WebSocket).
 Since the QUIC server is not yet enabled by default, tests must explicitly
 declare that they need access to the QUIC server:</p>
 <ul class="simple">
-<li>For HTML tests (including testharness.js and reference tests), add the
-following element:</li>
+<li><p>For HTML tests (including testharness.js and reference tests), add the
+following element:</p></li>
 </ul>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;quic&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;true&quot;</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li>For JavaScript tests (auto-generated tests), add the following comment:</li>
+<li><p>For JavaScript tests (auto-generated tests), add the following comment:</p></li>
 </ul>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// META: quic=true</span>
 </pre></div>
 </div>
 <p>The QUIC server is not yet enabled by default, so QUIC tests will be skipped
 unless <code class="docutils literal notranslate"><span class="pre">--enable-quic</span></code> is specified to <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code>.</p>
+</div>
+<div class="section" id="test-features-specified-as-query-params">
+<h2>Test Features specified as query params<a class="headerlink" href="#test-features-specified-as-query-params" title="Permalink to this headline">¶</a></h2>
+<p>Alternatively to specifying <a class="reference external" href="file-names.md#test-features">Test Features</a> in
+the test filename, they can be specified by setting the <code class="docutils literal notranslate"><span class="pre">wpt_flags</span></code> in the
+<a class="reference external" href="testharness.html#variants">test variant</a>. For example, the following variant
+will be loaded over HTTPS:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;?wpt_flags=https&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">https</span></code>, <code class="docutils literal notranslate"><span class="pre">h2</span></code> and <code class="docutils literal notranslate"><span class="pre">www</span></code> features are supported by <code class="docutils literal notranslate"><span class="pre">wpt_flags</span></code>.</p>
 </div>
 </div>
 
@@ -216,17 +226,15 @@ unless <code class="docutils literal notranslate"><span class="pre">--enable-qui
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -243,7 +251,7 @@ unless <code class="docutils literal notranslate"><span class="pre">--enable-qui
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

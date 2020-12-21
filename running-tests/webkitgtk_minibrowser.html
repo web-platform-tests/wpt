@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>WebKitGTK MiniBrowser &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Running Tests on CI" href="from-ci.html" />
@@ -39,19 +37,20 @@
 <p>To be able to run tests with the WebKitGTK MiniBrowser you need the
 following packages installed:</p>
 <ul class="simple">
-<li>Fedora: <code class="docutils literal notranslate"><span class="pre">webkit2gtk3-devel</span></code></li>
-<li>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">webkit2gtk-driver</span></code></li>
+<li><p>Fedora: <code class="docutils literal notranslate"><span class="pre">webkit2gtk3-devel</span></code></p></li>
+<li><p>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">webkit2gtk-driver</span></code></p></li>
 </ul>
 <p>The WebKitGTK MiniBrowser is not installed on the default binary path.
 The <code class="docutils literal notranslate"><span class="pre">wpt</span></code> script will try to automatically locate it, but if you need
 to run it manually you can find it on any of this paths:</p>
 <ul class="simple">
-<li>Fedora: <code class="docutils literal notranslate"><span class="pre">/usr/libexec/webkit2gtk-4.0/MiniBrowser</span></code></li>
-<li>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">/usr/lib/x86_64-linux-gnu/webkit2gtk-4.0/MiniBrowser</span></code><ul>
-<li>Note: if the machine architecture is not <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>, then it will be located
+<li><p>Fedora: <code class="docutils literal notranslate"><span class="pre">/usr/libexec/webkit2gtk-4.0/MiniBrowser</span></code></p></li>
+<li><p>Debian or Ubuntu: <code class="docutils literal notranslate"><span class="pre">/usr/lib/x86_64-linux-gnu/webkit2gtk-4.0/MiniBrowser</span></code></p>
+<ul>
+<li><p>Note: if the machine architecture is not <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>, then it will be located
 inside:
 <code class="docutils literal notranslate"><span class="pre">/usr/lib/${TRIPLET}/webkit2gtk-4.0/MiniBrowser</span></code>
-where <code class="docutils literal notranslate"><span class="pre">TRIPLET=$(gcc</span> <span class="pre">-dumpmachine)</span></code></li>
+where <code class="docutils literal notranslate"><span class="pre">TRIPLET=$(gcc</span> <span class="pre">-dumpmachine)</span></code></p></li>
 </ul>
 </li>
 </ul>
@@ -104,17 +103,15 @@ where <code class="docutils literal notranslate"><span class="pre">TRIPLET=$(gcc
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -131,7 +128,7 @@ where <code class="docutils literal notranslate"><span class="pre">TRIPLET=$(gcc
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Test Assumptions &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CSS Metadata" href="css-metadata.html" />
@@ -39,54 +37,41 @@
 <p>The tests make a number of assumptions of the user agent, and new
 tests can freely rely on these assumptions being true:</p>
 <ul>
-<li><p class="first">The device is a full-color device.</p>
-</li>
-<li><p class="first">The device has a viewport width of at least 800px.</p>
-</li>
-<li><p class="first">The UA imposes no minimum font size.</p>
-</li>
-<li><p class="first">The <code class="docutils literal notranslate"><span class="pre">medium</span></code> <code class="docutils literal notranslate"><span class="pre">font-size</span></code> computes to 16px.</p>
-</li>
-<li><p class="first">The canvas background is <code class="docutils literal notranslate"><span class="pre">white</span></code>.</p>
-</li>
-<li><p class="first">The initial value of <code class="docutils literal notranslate"><span class="pre">color</span></code> is <code class="docutils literal notranslate"><span class="pre">black</span></code>.</p>
-</li>
-<li><p class="first">The user stylesheet is empty (except where indicated by the tests).</p>
-</li>
-<li><p class="first">The device is interactive and uses scroll bars.</p>
-</li>
-<li><p class="first">The HTML <code class="docutils literal notranslate"><span class="pre">div</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">block;</span></code>, the
+<li><p>The device is a full-color device.</p></li>
+<li><p>The device has a viewport width of at least 800px.</p></li>
+<li><p>The UA imposes no minimum font size.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">medium</span></code> <code class="docutils literal notranslate"><span class="pre">font-size</span></code> computes to 16px.</p></li>
+<li><p>The canvas background is <code class="docutils literal notranslate"><span class="pre">white</span></code>.</p></li>
+<li><p>The initial value of <code class="docutils literal notranslate"><span class="pre">color</span></code> is <code class="docutils literal notranslate"><span class="pre">black</span></code>.</p></li>
+<li><p>The user stylesheet is empty (except where indicated by the tests).</p></li>
+<li><p>The device is interactive and uses scroll bars.</p></li>
+<li><p>The HTML <code class="docutils literal notranslate"><span class="pre">div</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">block;</span></code>, the
 <code class="docutils literal notranslate"><span class="pre">unicode-bidi</span></code> property may be declared, and no other property
 declarations.</p>
 <!-- unicode-bidi: isolate should be required; we currently don't
 assume this because Chrome and Safari are yet to ship this: see
 https://bugs.chromium.org/p/chromium/issues/detail?id=296863 and
 https://bugs.webkit.org/show_bug.cgi?id=65617 --></li>
-<li><p class="first">The HTML <code class="docutils literal notranslate"><span class="pre">span</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">inline;</span></code> and no other
-property declaration.</p>
-</li>
-<li><p class="first">The HTML <code class="docutils literal notranslate"><span class="pre">p</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">block;</span></code></p>
-</li>
-<li><p class="first">The HTML <code class="docutils literal notranslate"><span class="pre">li</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">list-item;</span></code></p>
-</li>
-<li><p class="first">The HTML <code class="docutils literal notranslate"><span class="pre">table</span></code> elements <code class="docutils literal notranslate"><span class="pre">table</span></code>, <code class="docutils literal notranslate"><span class="pre">tbody</span></code>, <code class="docutils literal notranslate"><span class="pre">tr</span></code>, and <code class="docutils literal notranslate"><span class="pre">td</span></code> are
+<li><p>The HTML <code class="docutils literal notranslate"><span class="pre">span</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">inline;</span></code> and no other
+property declaration.</p></li>
+<li><p>The HTML <code class="docutils literal notranslate"><span class="pre">p</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">block;</span></code></p></li>
+<li><p>The HTML <code class="docutils literal notranslate"><span class="pre">li</span></code> element is assigned <code class="docutils literal notranslate"><span class="pre">display:</span> <span class="pre">list-item;</span></code></p></li>
+<li><p>The HTML <code class="docutils literal notranslate"><span class="pre">table</span></code> elements <code class="docutils literal notranslate"><span class="pre">table</span></code>, <code class="docutils literal notranslate"><span class="pre">tbody</span></code>, <code class="docutils literal notranslate"><span class="pre">tr</span></code>, and <code class="docutils literal notranslate"><span class="pre">td</span></code> are
 assigned the <code class="docutils literal notranslate"><span class="pre">display</span></code> values <code class="docutils literal notranslate"><span class="pre">table</span></code>, <code class="docutils literal notranslate"><span class="pre">table-row-group</span></code>,
-<code class="docutils literal notranslate"><span class="pre">table-row</span></code>, and <code class="docutils literal notranslate"><span class="pre">table-cell</span></code>, respectively.</p>
-</li>
-<li><p class="first">The UA implements reasonable line-breaking behavior; e.g., it is
+<code class="docutils literal notranslate"><span class="pre">table-row</span></code>, and <code class="docutils literal notranslate"><span class="pre">table-cell</span></code>, respectively.</p></li>
+<li><p>The UA implements reasonable line-breaking behavior; e.g., it is
 assumed that spaces between alphanumeric characters provide line
 breaking opportunities and that UAs will not break at every
 opportunity, but only near the end of a line unless a line break is
-forced.</p>
-</li>
+forced.</p></li>
 </ul>
 <p>Tests for printing behavior make some further assumptions:</p>
 <ul class="simple">
-<li>The UA is set to print background colors and, if it supports
-graphics, background images.</li>
-<li>The UA implements reasonable page-breaking behavior; e.g., it is
+<li><p>The UA is set to print background colors and, if it supports
+graphics, background images.</p></li>
+<li><p>The UA implements reasonable page-breaking behavior; e.g., it is
 assumed that UAs will not break at every opportunity, but only near
-the end of a page unless a page break is forced.</li>
+the end of a page unless a page break is forced.</p></li>
 </ul>
 </div>
 
@@ -133,17 +118,15 @@ the end of a page unless a page break is forced.</li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -160,7 +143,7 @@ the end of a page unless a page break is forced.</li>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

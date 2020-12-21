@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Router &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Handlers" href="handlers.html" />
@@ -56,10 +54,9 @@ follow a custom syntax intended to make matching URLs straightforward
 and, in particular, to be easier to use than raw regexp for URL
 matching. There are three possible components of a match expression:</p>
 <ul>
-<li><p class="first">Literals. These match any character. The special characters *, {
-and } must be escaped by prefixing them with a .</p>
-</li>
-<li><p class="first">Match groups. These match any character other than / and save the
+<li><p>Literals. These match any character. The special characters *, {
+and } must be escaped by prefixing them with a .</p></li>
+<li><p>Match groups. These match any character other than / and save the
 result as a named group. They are delimited by curly braces; for
 example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">abc</span><span class="p">}</span>
@@ -67,10 +64,9 @@ example:</p>
 </div>
 <p>would create a match group with the name <cite>abc</cite>.</p>
 </li>
-<li><p class="first">Stars. These are denoted with a <cite>*</cite> and match any character
+<li><p>Stars. These are denoted with a <cite>*</cite> and match any character
 including /. There can be at most one star
-per pattern and it must follow any match groups.</p>
-</li>
+per pattern and it must follow any match groups.</p></li>
 </ul>
 <p>Path expressions always match the entire request path and a leading /
 in the expression is implied even if it is not explicitly
@@ -105,60 +101,52 @@ responsible for constructing the response to the HTTP request. See
 <span id="interface"></span><span id="router-interface"></span><h2><a class="reference internal" href="#module-wptserve.router" title="wptserve.router"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.router" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="wptserve.router.Router">
-<em class="property">class </em><code class="descclassname">wptserve.router.</code><code class="descname">Router</code><span class="sig-paren">(</span><em>doc_root</em>, <em>routes</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.router.</code><code class="sig-name descname">Router</code><span class="sig-paren">(</span><em class="sig-param">doc_root</em>, <em class="sig-param">routes</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object for matching handler functions to requests.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>doc_root</strong> – Absolute path of the filesystem location from
-which to serve tests</li>
-<li><strong>routes</strong> – Initial routes to add; a list of three item tuples
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc_root</strong> – Absolute path of the filesystem location from
+which to serve tests</p></li>
+<li><p><strong>routes</strong> – Initial routes to add; a list of three item tuples
 (method, path_pattern, handler_function), defined
-as for register()</li>
+as for register()</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="wptserve.router.Router.get_handler">
-<code class="descname">get_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router.get_handler" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_handler</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router.get_handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a handler for a request or None if there is no handler.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> – Request to get a handler for.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Callable or <a class="reference external" href="https://docs.python.org/2/library/constants.html#None" title="(in Python v2.7)">None</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request</strong> – Request to get a handler for.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Callable or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.router.Router.register">
-<code class="descname">register</code><span class="sig-paren">(</span><em>methods</em>, <em>path</em>, <em>handler</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router.register" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">methods</em>, <em class="sig-param">path</em>, <em class="sig-param">handler</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register a handler for a set of paths.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>methods</strong> – Set of methods this should match. “*” is a
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>methods</strong> – Set of methods this should match. “*” is a
 special value indicating that all methods should
-be matched.</li>
-<li><strong>path_pattern</strong> – <dl class="docutils">
-<dt>Match pattern that will be used to determine if</dt>
-<dd>a request path matches this route. Match patterns
+be matched.</p></li>
+<li><p><strong>path_pattern</strong> – <dl>
+<dt>Match pattern that will be used to determine if</dt><dd><p>a request path matches this route. Match patterns
 consist of either literal text, match groups,
 denoted {name}, which match any character except /,
 and, at most one *, which matches and character and
 creates a match group to the end of the string.
 If there is no leading “/” on the pattern, this is
-automatically implied. For example:<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">/</span><span class="p">{</span><span class="n">resource</span><span class="p">}</span><span class="o">/*.</span><span class="n">json</span>
+automatically implied. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">/</span><span class="p">{</span><span class="n">resource</span><span class="p">}</span><span class="o">/*.</span><span class="n">json</span>
 </pre></div>
 </div>
 </dd>
@@ -173,22 +161,20 @@ contain:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span> <span class="s2">&quot;data.json&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
-</li>
-<li><strong>handler</strong> – Function that will be called to process matching
+</p></li>
+<li><p><strong>handler</strong> – Function that will be called to process matching
 requests. This must take two parameters, the request
-object and the response object.</li>
+object and the response object.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="function">
 <dt id="wptserve.router.compile_path_match">
-<code class="descclassname">wptserve.router.</code><code class="descname">compile_path_match</code><span class="sig-paren">(</span><em>route_pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.compile_path_match" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">wptserve.router.</code><code class="sig-name descname">compile_path_match</code><span class="sig-paren">(</span><em class="sig-param">route_pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.compile_path_match" title="Permalink to this definition">¶</a></dt>
 <dd><p>tokens: / or literal or match or *</p>
 </dd></dl>
 
@@ -241,17 +227,15 @@ object and the response object.</li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -268,7 +252,7 @@ object and the response object.</li>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Reftests &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Writing a reftest" href="reftest-tutorial.html" />
@@ -92,8 +90,8 @@ as a reference.</p>
 reference.</p>
 <p>If a test has multiple links, then the test passes if:</p>
 <ul class="simple">
-<li>If there are any match references, at least one must match, and</li>
-<li>If there are any mismatch references, all must mismatch.</li>
+<li><p>If there are any match references, at least one must match, and</p></li>
+<li><p>If there are any mismatch references, all must mismatch.</p></li>
 </ul>
 <p>If you need multiple matches to succeed, these can be turned into
 multiple tests (for example, by just having a reference be a test
@@ -105,9 +103,9 @@ a bug and let us know!</p>
 <p>By default, reftest screenshots are taken after the following
 conditions are met:</p>
 <ul class="simple">
-<li>The <code class="docutils literal notranslate"><span class="pre">load</span></code> event has fired</li>
-<li>Web fonts (if any) are loaded</li>
-<li>Pending paints have completed</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">load</span></code> event has fired</p></li>
+<li><p>Web fonts (if any) are loaded</p></li>
+<li><p>Pending paints have completed</p></li>
 </ul>
 <p>In some cases it is necessary to delay the screenshot later than this,
 for example because some DOM manipulation is required to set up the
@@ -115,14 +113,14 @@ desired test conditions. To enable this, the test may have a
 <code class="docutils literal notranslate"><span class="pre">class=&quot;reftest-wait&quot;</span></code> attribute specified on the root element. In
 this case the harness will run the following sequence of steps:</p>
 <ul class="simple">
-<li>Wait for the <code class="docutils literal notranslate"><span class="pre">load</span></code> event to fire and fonts to load.</li>
-<li>Wait for pending paints to complete.</li>
-<li>Fire an event named <code class="docutils literal notranslate"><span class="pre">TestRendered</span></code> at the root element, with the
-<code class="docutils literal notranslate"><span class="pre">bubbles</span></code> attribute set to true.</li>
-<li>Wait for the <code class="docutils literal notranslate"><span class="pre">reftest-wait</span></code> class to be removed from the root
-element.</li>
-<li>Wait for pending paints to complete.</li>
-<li>Screenshot the viewport.</li>
+<li><p>Wait for the <code class="docutils literal notranslate"><span class="pre">load</span></code> event to fire and fonts to load.</p></li>
+<li><p>Wait for pending paints to complete.</p></li>
+<li><p>Fire an event named <code class="docutils literal notranslate"><span class="pre">TestRendered</span></code> at the root element, with the
+<code class="docutils literal notranslate"><span class="pre">bubbles</span></code> attribute set to true.</p></li>
+<li><p>Wait for the <code class="docutils literal notranslate"><span class="pre">reftest-wait</span></code> class to be removed from the root
+element.</p></li>
+<li><p>Wait for pending paints to complete.</p></li>
+<li><p>Screenshot the viewport.</p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">TestRendered</span></code> event provides a hook for tests to make
 modifications to the test document that are not batched into the
@@ -135,8 +133,8 @@ compared to the reference due to, e.g., anti-aliasing. To allow for
 these small differences, we allow tests to specify a fuzziness
 characterised by two parameters, both of which must be specified:</p>
 <ul class="simple">
-<li>A maximum difference in the per-channel color value for any pixel.</li>
-<li>A number of total pixels that may be different.</li>
+<li><p>A maximum difference in the per-channel color value for any pixel.</p></li>
+<li><p>A number of total pixels that may be different.</p></li>
 </ul>
 <p>The maximum difference in the per pixel color value is formally
 defined as follows: let <code>T<sub>x,y,c</sub></code> be the value of
@@ -235,17 +233,15 @@ a block element, by constructing a reference using underlines on a
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -262,7 +258,7 @@ a block element, by constructing a reference using underlines on a
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

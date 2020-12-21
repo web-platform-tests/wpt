@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>wptrunner Design &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="wptrunner Internals" href="internals.html" />
@@ -40,20 +38,20 @@
 requirements:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Possible to run tests from W3C web-platform-tests.</li>
-<li>Tests should be run as fast as possible. In particular it should
-not be necessary to restart the browser between tests, or similar.</li>
-<li>As far as possible, the tests should run in a “normal” browser and
+<li><p>Possible to run tests from W3C web-platform-tests.</p></li>
+<li><p>Tests should be run as fast as possible. In particular it should
+not be necessary to restart the browser between tests, or similar.</p></li>
+<li><p>As far as possible, the tests should run in a “normal” browser and
 browsing context. In particular many tests assume that they are
 running in a top-level browsing context, so we must avoid the use
-of an <code class="docutils literal notranslate"><span class="pre">iframe</span></code> test container.</li>
-<li>It must be possible to deal with all kinds of behaviour of the
-browser under test, for example, crashing, hanging, etc.</li>
-<li>It should be possible to add support for new platforms and browsers
-with minimal code changes.</li>
-<li>It must be possible to run tests in parallel to further improve
-performance.</li>
-<li>Test output must be in a machine readable form.</li>
+of an <code class="docutils literal notranslate"><span class="pre">iframe</span></code> test container.</p></li>
+<li><p>It must be possible to deal with all kinds of behaviour of the
+browser under test, for example, crashing, hanging, etc.</p></li>
+<li><p>It should be possible to add support for new platforms and browsers
+with minimal code changes.</p></li>
+<li><p>It must be possible to run tests in parallel to further improve
+performance.</p></li>
+<li><p>Test output must be in a machine readable form.</p></li>
 </ul>
 </div></blockquote>
 <div class="section" id="architecture">
@@ -82,10 +80,10 @@ run the tests.</p>
 from the command line to restrict the set of tests that will be
 run. The <a class="reference internal" href="internals.html#wptrunner.testloader.TestLoader" title="wptrunner.testloader.TestLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestLoader</span></code></a> reads both the <code class="docutils literal notranslate"><span class="pre">web-platform-tests</span></code>
 JSON manifest and the expectation data stored in ini files and
-produces a <a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a> of tests to run, and
+produces a <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a> of tests to run, and
 their expected results.</p>
 <p>Actually running the tests happens through the
-<a class="reference internal" href="internals.html#wptrunner.testrunner.ManagerGroup" title="wptrunner.testrunner.ManagerGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManagerGroup</span></code></a> object. This takes the <a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Queue</span></code></a> of
+<a class="reference internal" href="internals.html#wptrunner.testrunner.ManagerGroup" title="wptrunner.testrunner.ManagerGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManagerGroup</span></code></a> object. This takes the <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Queue</span></code></a> of
 tests to be run and starts a <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunnerManager" title="wptrunner.testrunner.TestRunnerManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code></a> for each
 instance of the browser under test that will be started. These
 <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunnerManager" title="wptrunner.testrunner.TestRunnerManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code></a> instances are each started in their own
@@ -101,7 +99,7 @@ provided for each product that is supported.</p>
 <p>The functionality for actually running the tests is provided by a
 <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunner" title="wptrunner.testrunner.TestRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code></a> object. <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunner" title="wptrunner.testrunner.TestRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code></a> instances are
 run in their own child process created with the
-<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#module-multiprocessing" title="(in Python v2.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code></a> module. This allows them to run concurrently
+<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code></a> module. This allows them to run concurrently
 and to be killed and restarted as required. Communication between the
 <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunnerManager" title="wptrunner.testrunner.TestRunnerManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunnerManager</span></code></a> and the <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunner" title="wptrunner.testrunner.TestRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code></a> is
 provided by a pair of queues, one for sending messages in each
@@ -116,7 +114,7 @@ protocols (or none at all). These protocol-specific parts are placed
 in the <a class="reference internal" href="internals.html#wptrunner.executors.base.TestExecutor" title="wptrunner.executors.base.TestExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestExecutor</span></code></a> object. There is typically a different
 <a class="reference internal" href="internals.html#wptrunner.executors.base.TestExecutor" title="wptrunner.executors.base.TestExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestExecutor</span></code></a> class for each combination of control protocol
 and test type. The <a class="reference internal" href="internals.html#wptrunner.testrunner.TestRunner" title="wptrunner.testrunner.TestRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestRunner</span></code></a> is responsible for pulling
-each test off the <a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a> of tests and passing it down to
+each test off the <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a> of tests and passing it down to
 the <a class="reference internal" href="internals.html#wptrunner.executors.base.TestExecutor" title="wptrunner.executors.base.TestExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestExecutor</span></code></a>.</p>
 <p>The executor often requires access to details of the particular
 browser instance that it is testing so that it knows e.g. which port
@@ -171,17 +169,15 @@ encapsulated in the <a class="reference internal" href="internals.html#wptrunner
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -198,7 +194,7 @@ encapsulated in the <a class="reference internal" href="internals.html#wptrunner
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Server &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Router" href="router.html" />
@@ -51,114 +49,160 @@ run on port 8080 until it is killed:</p>
 <span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.server" title="wptserve.server"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.server" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="wptserve.server.BaseWebTestRequestHandler">
-<em class="property">class </em><code class="descclassname">wptserve.server.</code><code class="descname">BaseWebTestRequestHandler</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.BaseWebTestRequestHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.server.</code><code class="sig-name descname">BaseWebTestRequestHandler</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.BaseWebTestRequestHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>RequestHandler for WebTestHttpd</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wptserve.server.H2ConnectionGuard">
-<em class="property">class </em><code class="descclassname">wptserve.server.</code><code class="descname">H2ConnectionGuard</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.H2ConnectionGuard" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.server.</code><code class="sig-name descname">H2ConnectionGuard</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.H2ConnectionGuard" title="Permalink to this definition">¶</a></dt>
 <dd><p>H2Connection objects are not threadsafe, so this keeps thread safety</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wptserve.server.H2Headers">
-<em class="property">class </em><code class="descclassname">wptserve.server.</code><code class="descname">H2Headers</code><span class="sig-paren">(</span><em>headers</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.H2Headers" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.server.</code><code class="sig-name descname">H2Headers</code><span class="sig-paren">(</span><em class="sig-param">headers</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.H2Headers" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
+<dt id="wptserve.server.Http1WebTestRequestHandler">
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.server.</code><code class="sig-name descname">Http1WebTestRequestHandler</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http1WebTestRequestHandler" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="wptserve.server.Http1WebTestRequestHandler.handle_one_request">
+<code class="sig-name descname">handle_one_request</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http1WebTestRequestHandler.handle_one_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle a single HTTP request.</p>
+<p>You normally don’t need to override this method; see the class
+__doc__ string for information on how to handle specific HTTP
+commands such as GET and POST.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wptserve.server.Http2WebTestRequestHandler">
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.server.</code><code class="sig-name descname">Http2WebTestRequestHandler</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http2WebTestRequestHandler" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="wptserve.server.Http2WebTestRequestHandler.handle_one_request">
+<code class="sig-name descname">handle_one_request</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http2WebTestRequestHandler.handle_one_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the main HTTP/2.0 Handler.</p>
+<p>When a browser opens a connection to the server
+on the HTTP/2.0 port, the server enters this which will initiate the h2 connection
+and keep running throughout the duration of the interaction, and will read/write directly
+from the socket.</p>
+<p>Because there can be multiple H2 connections active at the same
+time, a UUID is created for each so that it is easier to tell them apart in the logs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptserve.server.Http2WebTestRequestHandler.start_stream_thread">
+<code class="sig-name descname">start_stream_thread</code><span class="sig-paren">(</span><em class="sig-param">frame</em>, <em class="sig-param">queue</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.Http2WebTestRequestHandler.start_stream_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>This starts a new thread to handle frames for a specific stream.
+:param frame: The first frame on the stream
+:param queue: A queue object that the thread will use to check for new frames
+:return: The thread object that has already been started</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="wptserve.server.WebTestHttpd">
-<em class="property">class </em><code class="descclassname">wptserve.server.</code><code class="descname">WebTestHttpd</code><span class="sig-paren">(</span><em>host='127.0.0.1'</em>, <em>port=8000</em>, <em>server_cls=None</em>, <em>handler_cls=&lt;class wptserve.server.Http1WebTestRequestHandler&gt;</em>, <em>use_ssl=False</em>, <em>key_file=None</em>, <em>certificate=None</em>, <em>encrypt_after_connect=False</em>, <em>router_cls=&lt;class 'wptserve.router.Router'&gt;</em>, <em>doc_root='.'</em>, <em>routes=None</em>, <em>rewriter_cls=&lt;class 'wptserve.server.RequestRewriter'&gt;</em>, <em>bind_address=True</em>, <em>rewrites=None</em>, <em>latency=None</em>, <em>config=None</em>, <em>http2=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>host</strong> – Host from which to serve (default: 127.0.0.1)</li>
-<li><strong>port</strong> – Port from which to serve (default: 8000)</li>
-<li><strong>server_cls</strong> – Class to use for the server (default depends on ssl vs non-ssl)</li>
-<li><strong>handler_cls</strong> – Class to use for the RequestHandler</li>
-<li><strong>use_ssl</strong> – Use a SSL server if no explicit server_cls is supplied</li>
-<li><strong>key_file</strong> – Path to key file to use if ssl is enabled</li>
-<li><strong>certificate</strong> – Path to certificate file to use if ssl is enabled</li>
-<li><strong>encrypt_after_connect</strong> – For each connection, don’t start encryption
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.server.</code><code class="sig-name descname">WebTestHttpd</code><span class="sig-paren">(</span><em class="sig-param">host='127.0.0.1'</em>, <em class="sig-param">port=8000</em>, <em class="sig-param">server_cls=None</em>, <em class="sig-param">handler_cls=&lt;class 'wptserve.server.Http1WebTestRequestHandler'&gt;</em>, <em class="sig-param">use_ssl=False</em>, <em class="sig-param">key_file=None</em>, <em class="sig-param">certificate=None</em>, <em class="sig-param">encrypt_after_connect=False</em>, <em class="sig-param">router_cls=&lt;class 'wptserve.router.Router'&gt;</em>, <em class="sig-param">doc_root='.'</em>, <em class="sig-param">ws_doc_root=None</em>, <em class="sig-param">routes=None</em>, <em class="sig-param">rewriter_cls=&lt;class 'wptserve.server.RequestRewriter'&gt;</em>, <em class="sig-param">bind_address=True</em>, <em class="sig-param">rewrites=None</em>, <em class="sig-param">latency=None</em>, <em class="sig-param">config=None</em>, <em class="sig-param">http2=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> – Host from which to serve (default: 127.0.0.1)</p></li>
+<li><p><strong>port</strong> – Port from which to serve (default: 8000)</p></li>
+<li><p><strong>server_cls</strong> – Class to use for the server (default depends on ssl vs non-ssl)</p></li>
+<li><p><strong>handler_cls</strong> – Class to use for the RequestHandler</p></li>
+<li><p><strong>use_ssl</strong> – Use a SSL server if no explicit server_cls is supplied</p></li>
+<li><p><strong>key_file</strong> – Path to key file to use if ssl is enabled</p></li>
+<li><p><strong>certificate</strong> – Path to certificate file to use if ssl is enabled</p></li>
+<li><p><strong>encrypt_after_connect</strong> – For each connection, don’t start encryption
 until a CONNECT message has been received.
 This enables the server to act as a
-self-proxy.</li>
-<li><strong>router_cls</strong> – Router class to use when matching URLs to handlers</li>
-<li><strong>doc_root</strong> – Document root for serving files</li>
-<li><strong>routes</strong> – List of routes with which to initialize the router</li>
-<li><strong>rewriter_cls</strong> – Class to use for request rewriter</li>
-<li><strong>rewrites</strong> – List of rewrites with which to initialize the rewriter_cls</li>
-<li><strong>config</strong> – Dictionary holding environment configuration settings for
-handlers to read, or None to use the default values.</li>
-<li><strong>bind_address</strong> – Boolean indicating whether to bind server to IP address.</li>
-<li><strong>latency</strong> – Delay in ms to wait before serving each response, or
-callable that returns a delay in ms</li>
+self-proxy.</p></li>
+<li><p><strong>router_cls</strong> – Router class to use when matching URLs to handlers</p></li>
+<li><p><strong>doc_root</strong> – Document root for serving files</p></li>
+<li><p><strong>ws_doc_root</strong> – Document root for websockets</p></li>
+<li><p><strong>routes</strong> – List of routes with which to initialize the router</p></li>
+<li><p><strong>rewriter_cls</strong> – Class to use for request rewriter</p></li>
+<li><p><strong>rewrites</strong> – List of rewrites with which to initialize the rewriter_cls</p></li>
+<li><p><strong>config</strong> – Dictionary holding environment configuration settings for
+handlers to read, or None to use the default values.</p></li>
+<li><p><strong>bind_address</strong> – Boolean indicating whether to bind server to IP address.</p></li>
+<li><p><strong>latency</strong> – Delay in ms to wait before serving each response, or
+callable that returns a delay in ms</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>HTTP server designed for testing scenarios.</p>
 <p>Takes a router class which provides one method get_handler which takes a Request
 and returns a handler function.</p>
 <dl class="attribute">
 <dt id="wptserve.server.WebTestHttpd.host">
-<code class="descname">host</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.host" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">host</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.host" title="Permalink to this definition">¶</a></dt>
 <dd><p>The host name or ip address of the server</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="wptserve.server.WebTestHttpd.port">
-<code class="descname">port</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.port" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">port</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.port" title="Permalink to this definition">¶</a></dt>
 <dd><p>The port on which the server is running</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="wptserve.server.WebTestHttpd.router">
-<code class="descname">router</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.router" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">router</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.router" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Router object used to associate requests with resources for this server</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="wptserve.server.WebTestHttpd.rewriter">
-<code class="descname">rewriter</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.rewriter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">rewriter</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.rewriter" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Rewriter object used for URL rewriting</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="wptserve.server.WebTestHttpd.use_ssl">
-<code class="descname">use_ssl</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.use_ssl" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">use_ssl</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.use_ssl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean indicating whether the server is using ssl</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="wptserve.server.WebTestHttpd.started">
-<code class="descname">started</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">started</code><a class="headerlink" href="#wptserve.server.WebTestHttpd.started" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean indicating whether the server is running</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.server.WebTestHttpd.start">
-<code class="descname">start</code><span class="sig-paren">(</span><em>block=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd.start" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><em class="sig-param">block=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the server.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>block</strong> – True to run the server on the current thread, blocking,
-False to run on a separate thread.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>block</strong> – True to run the server on the current thread, blocking,
+False to run on a separate thread.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.server.WebTestHttpd.stop">
-<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd.stop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestHttpd.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stops the server.</p>
 <p>If the server is not running, this method has no effect.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wptserve.server.WebTestServer">
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.server.</code><code class="sig-name descname">WebTestServer</code><span class="sig-paren">(</span><em class="sig-param">server_address</em>, <em class="sig-param">request_handler_cls</em>, <em class="sig-param">router</em>, <em class="sig-param">rewriter</em>, <em class="sig-param">bind_address</em>, <em class="sig-param">ws_doc_root=None</em>, <em class="sig-param">config=None</em>, <em class="sig-param">use_ssl=False</em>, <em class="sig-param">key_file=None</em>, <em class="sig-param">certificate=None</em>, <em class="sig-param">encrypt_after_connect=False</em>, <em class="sig-param">latency=None</em>, <em class="sig-param">http2=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestServer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="wptserve.server.WebTestServer.handle_error">
+<code class="sig-name descname">handle_error</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">client_address</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.server.WebTestServer.handle_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle an error gracefully.  May be overridden.</p>
+<p>The default is to print a traceback and continue.</p>
 </dd></dl>
 
 </dd></dl>
@@ -212,17 +256,15 @@ False to run on a separate thread.</td>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -239,7 +281,7 @@ False to run on a separate thread.</td>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

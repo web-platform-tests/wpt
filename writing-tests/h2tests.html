@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Writing H2 Tests &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Command-line utility scripts" href="tools.html" />
@@ -37,9 +35,10 @@
   <div class="section" id="writing-h2-tests">
 <h1>Writing H2 Tests<a class="headerlink" href="#writing-h2-tests" title="Permalink to this headline">¶</a></h1>
 <blockquote>
-<div><b>Important:</b> The HTTP/2.0 server requires you to have Python 2.7.10+
+<div><p><b>Important:</b> The HTTP/2.0 server requires you to have Python 2.7.10+
 and OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
-<a class="reference external" href="https://tools.ietf.org/html/rfc7301">TLS ALPN</a> extension, which is only supported in <a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</div></blockquote>
+<a class="reference external" href="https://tools.ietf.org/html/rfc7301">TLS ALPN</a> extension, which is only supported in <a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</p>
+</div></blockquote>
 <p>These instructions assume you are already familiar with the testing
 infrastructure and know how to write a standard HTTP/1.1 test.</p>
 <p>On top of the standard <code class="docutils literal notranslate"><span class="pre">main</span></code> handler that the H1 server offers, the
@@ -70,16 +69,17 @@ the request in its entirety.</p>
 </div>
 <p>The above script is fairly simple:</p>
 <ol class="simple">
-<li>Upon receiving the HEADERS frame, <code class="docutils literal notranslate"><span class="pre">handle_headers</span></code> is run.<ul>
-<li>This checks for a header called ‘test’ and checks if it is set to ‘pass’.
+<li><p>Upon receiving the HEADERS frame, <code class="docutils literal notranslate"><span class="pre">handle_headers</span></code> is run.</p>
+<ul class="simple">
+<li><p>This checks for a header called ‘test’ and checks if it is set to ‘pass’.
 If true, it will immediately send a response header, otherwise it responds
-with a 403 and ends the stream.</li>
+with a 403 and ends the stream.</p></li>
 </ul>
 </li>
-<li>Any DATA frames received will then be handled by <code class="docutils literal notranslate"><span class="pre">handle_data</span></code>. This will
-simply reverse the data and send it back.</li>
-<li>Once the request has been fully received, <code class="docutils literal notranslate"><span class="pre">main</span></code> is run which will send
-one last DATA frame and signal its the end of the stream.</li>
+<li><p>Any DATA frames received will then be handled by <code class="docutils literal notranslate"><span class="pre">handle_data</span></code>. This will
+simply reverse the data and send it back.</p></li>
+<li><p>Once the request has been fully received, <code class="docutils literal notranslate"><span class="pre">main</span></code> is run which will send
+one last DATA frame and signal its the end of the stream.</p></li>
 </ol>
 <div class="section" id="response-writer-api">
 <h2>Response Writer API<a class="headerlink" href="#response-writer-api" title="Permalink to this headline">¶</a></h2>
@@ -94,13 +94,15 @@ the headers so that pseudo headers are at the start of the list and correctly
 prefixed with ‘:’. Since this using the H2 Connection object, it requires that
 the stream is in the correct state to be sending this frame.</p>
 <blockquote>
-<div><b>Note</b>: Will raise ProtocolErrors if pseudo headers are missing.</div></blockquote>
+<div><p><b>Note</b>: Will raise ProtocolErrors if pseudo headers are missing.</p>
+</div></blockquote>
 <ul class="simple">
-<li><b>Parameters</b><ul>
-<li><b>headers</b>: List of (header, value) tuples</li>
-<li><b>status_code</b>: The HTTP status code of the response</li>
-<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
-<li><b>last</b>: Flag to signal if this is the last frame in stream.</li>
+<li><p><b>Parameters</b></p>
+<ul>
+<li><p><b>headers</b>: List of (header, value) tuples</p></li>
+<li><p><b>status_code</b>: The HTTP status code of the response</p></li>
+<li><p><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</p></li>
+<li><p><b>last</b>: Flag to signal if this is the last frame in stream.</p></li>
 </ul>
 </li>
 </ul>
@@ -114,10 +116,11 @@ into multiple data frames if it exceeds the size that can be in a single frame.
 Since this using the H2 Connection object, it requires that the stream is in
 the correct state to be sending this frame.</p>
 <ul class="simple">
-<li><b>Parameters</b><ul>
-<li><b>item</b>: The content of the DATA frame</li>
-<li><b>last</b>: Flag to signal if this is the last frame in stream.</li>
-<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
+<li><p><b>Parameters</b></p>
+<ul>
+<li><p><b>item</b>: The content of the DATA frame</p></li>
+<li><p><b>last</b>: Flag to signal if this is the last frame in stream.</p></li>
+<li><p><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</p></li>
 </ul>
 </li>
 </ul>
@@ -129,17 +132,18 @@ the correct state to be sending this frame.</p>
 headers and data for the response, then no response will be pushed, and you
 should send them yourself using the ID returned from this function.</p>
 <ul class="simple">
-<li><b>Parameters</b><ul>
-<li><b>promise_headers</b>: A list of header tuples that matches what the client would use to
-request the pushed response</li>
-<li><b>push_stream_id</b>: The ID of the stream the response should be pushed to. If none given, will
-use the next available id.</li>
-<li><b>status</b>: The status code of the response, REQUIRED if response_headers given</li>
-<li><b>response_headers</b>: The headers of the response</li>
-<li><b>response_data</b>: The response data.</li>
+<li><p><b>Parameters</b></p>
+<ul>
+<li><p><b>promise_headers</b>: A list of header tuples that matches what the client would use to
+request the pushed response</p></li>
+<li><p><b>push_stream_id</b>: The ID of the stream the response should be pushed to. If none given, will
+use the next available id.</p></li>
+<li><p><b>status</b>: The status code of the response, REQUIRED if response_headers given</p></li>
+<li><p><b>response_headers</b>: The headers of the response</p></li>
+<li><p><b>response_data</b>: The response data.</p></li>
 </ul>
 </li>
-<li><b>Returns</b>: The ID of the push stream</li>
+<li><p><b>Returns</b>: The ID of the push stream</p></li>
 </ul>
 </div>
 <hr class="docutils" />
@@ -151,14 +155,16 @@ the order of the headers or make sure pseudo headers are prefixed with ‘:’.
 It will build a HEADER frame and send it without using the H2 Connection
 object other than to HPACK encode the headers.</p>
 <blockquote>
-<div><b>Note</b>: The <code class="docutils literal notranslate"><span class="pre">frame_cls</span></code> parameter is so that this class can be reused
-by <code class="docutils literal notranslate"><span class="pre">write_raw_continuation_frame</span></code>, as their construction is identical.</div></blockquote>
+<div><p><b>Note</b>: The <code class="docutils literal notranslate"><span class="pre">frame_cls</span></code> parameter is so that this class can be reused
+by <code class="docutils literal notranslate"><span class="pre">write_raw_continuation_frame</span></code>, as their construction is identical.</p>
+</div></blockquote>
 <ul class="simple">
-<li><b>Parameters</b><ul>
-<li><b>headers</b>: List of (header, value) tuples</li>
-<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
-<li><b>end_stream</b>: Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to add END_STREAM flag to frame</li>
-<li><b>end_headers</b>: Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to add END_HEADERS flag to frame</li>
+<li><p><b>Parameters</b></p>
+<ul>
+<li><p><b>headers</b>: List of (header, value) tuples</p></li>
+<li><p><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</p></li>
+<li><p><b>end_stream</b>: Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to add END_STREAM flag to frame</p></li>
+<li><p><b>end_headers</b>: Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to add END_HEADERS flag to frame</p></li>
 </ul>
 </li>
 </ul>
@@ -170,10 +176,11 @@ by <code class="docutils literal notranslate"><span class="pre">write_raw_contin
 state to have DATA frames sent through to it. It will build a DATA frame and
 send it without using the H2 Connection object. It will not perform any flow control checks.</p>
 <ul class="simple">
-<li><b>Parameters</b><ul>
-<li><b>data</b>: The data to be sent in the frame</li>
-<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
-<li><b>end_stream</b>: Set to True to add END_STREAM flag to frame</li>
+<li><p><b>Parameters</b></p>
+<ul>
+<li><p><b>data</b>: The data to be sent in the frame</p></li>
+<li><p><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</p></li>
+<li><p><b>end_stream</b>: Set to True to add END_STREAM flag to frame</p></li>
 </ul>
 </li>
 </ul>
@@ -188,10 +195,11 @@ encoding on the headers. It also ignores the state of the stream.</p>
 <p>This calls <code class="docutils literal notranslate"><span class="pre">write_raw_data_frame</span></code> with <code class="docutils literal notranslate"><span class="pre">frame_cls=ContinuationFrame</span></code> since
 the HEADER and CONTINUATION frames are constructed in the same way.</p>
 <ul class="simple">
-<li><b>Parameters</b>:<ul>
-<li><b>headers</b>: List of (header, value) tuples</li>
-<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
-<li><b>end_headers</b>: Set to True to add END_HEADERS flag to frame</li>
+<li><p><b>Parameters</b>:</p>
+<ul>
+<li><p><b>headers</b>: List of (header, value) tuples</p></li>
+<li><p><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</p></li>
+<li><p><b>end_headers</b>: Set to True to add END_HEADERS flag to frame</p></li>
 </ul>
 </li>
 </ul>
@@ -201,8 +209,9 @@ the HEADER and CONTINUATION frames are constructed in the same way.</p>
 <h3><code class="docutils literal notranslate"><span class="pre">end_stream(self,</span> <span class="pre">stream_id=None):</span></code><a class="headerlink" href="#end-stream-self-stream-id-none" title="Permalink to this headline">¶</a></h3>
 <p>Ends the stream with the given ID, or the one that request was made on if no ID given.</p>
 <ul class="simple">
-<li><b>Parameters</b><ul>
-<li><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</li>
+<li><p><b>Parameters</b></p>
+<ul>
+<li><p><b>stream_id</b>: Id of stream to send frame on. Will use the request stream ID if None</p></li>
 </ul>
 </li>
 </ul>
@@ -253,17 +262,15 @@ the HEADER and CONTINUATION frames are constructed in the same way.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -280,7 +287,7 @@ the HEADER and CONTINUATION frames are constructed in the same way.</p>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

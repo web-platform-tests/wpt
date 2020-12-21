@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Writing Tests &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="General Test Guidelines" href="general-guidelines.html" />
@@ -46,35 +44,36 @@ testing plan</span></a> will help you decide what to write.</p>
 <h2>Test Types<a class="headerlink" href="#test-types" title="Permalink to this headline">¶</a></h2>
 <p>There are various different ways of writing tests:</p>
 <ul class="simple">
-<li><a class="reference internal" href="testharness.html"><span class="doc">JavaScript tests (testharness.js)</span></a> are preferred for testing APIs and may be used
+<li><p><a class="reference internal" href="testharness.html"><span class="doc">JavaScript tests (testharness.js)</span></a> are preferred for testing APIs and may be used
 for other features too. They are built with the testharness.js unit testing framework, and consist
 of assertions written in JavaScript. A high-level <a class="reference internal" href="testharness-tutorial.html"><span class="doc">testharness.js tutorial</span></a>
-is available.</li>
-<li>Rendering tests should be used to verify that the browser graphically
+is available.</p></li>
+<li><p>Rendering tests should be used to verify that the browser graphically
 displays pages as expected. See the <a class="reference internal" href="rendering.html"><span class="doc">rendering test guidelines</span></a>
 for tips on how to write great rendering tests. There are a few different
-ways to write rendering tests:<ul>
-<li><a class="reference internal" href="reftests.html"><span class="doc">Reftests</span></a> should be used to test rendering and layout. They
+ways to write rendering tests:</p>
+<ul>
+<li><p><a class="reference internal" href="reftests.html"><span class="doc">Reftests</span></a> should be used to test rendering and layout. They
 consist of two or more pages with assertions as to whether they render
 identically or not. A high-level <a class="reference internal" href="reftest-tutorial.html"><span class="doc">reftest tutorial</span></a> is available. A
-<a class="reference internal" href="print-reftests.html"><span class="doc">print reftests</span></a> variant is available too.</li>
-<li><a class="reference internal" href="visual.html"><span class="doc">Visual tests</span></a> should be used for checking rendering where there is
+<a class="reference internal" href="print-reftests.html"><span class="doc">print reftests</span></a> variant is available too.</p></li>
+<li><p><a class="reference internal" href="visual.html"><span class="doc">Visual tests</span></a> should be used for checking rendering where there is
 a large number of conforming renderings such that reftests are impractical.
 They consist of a page that renders to final state at which point a
 screenshot can be taken and compared to an expected rendering for that user
-agent on that platform.</li>
+agent on that platform.</p></li>
 </ul>
 </li>
-<li><a class="reference internal" href="crashtest.html"><span class="doc">Crashtests</span></a> tests are used to check that the browser is
+<li><p><a class="reference internal" href="crashtest.html"><span class="doc">Crashtests</span></a> tests are used to check that the browser is
 able to load a given document without crashing or experiencing other
 low-level issues (asserts, leaks, etc.). They pass if the load
-completes without error.</li>
-<li><a class="reference internal" href="wdspec.html"><span class="doc">wdspec</span></a> tests are written in Python using
+completes without error.</p></li>
+<li><p><a class="reference internal" href="wdspec.html"><span class="doc">wdspec</span></a> tests are written in Python using
 <a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a> and test <a class="reference external" href="https://w3c.github.io/webdriver/">the WebDriver browser
-automation protocol</a></li>
-<li><a class="reference internal" href="manual.html"><span class="doc">Manual tests</span></a> are used as a last resort for anything that can’t be
+automation protocol</a></p></li>
+<li><p><a class="reference internal" href="manual.html"><span class="doc">Manual tests</span></a> are used as a last resort for anything that can’t be
 tested using any of the above. They consist of a page that needs manual
-interaction or verification of the final result.</li>
+interaction or verification of the final result.</p></li>
 </ul>
 <p>See <a class="reference internal" href="file-names.html"><span class="doc">file names</span></a> for test types and features determined by the file names,
 and <a class="reference internal" href="server-features.html"><span class="doc">server features</span></a> for advanced testing features.</p>
@@ -161,17 +160,15 @@ make sure you run the <a class="reference internal" href="lint-tool.html"><span 
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -188,7 +185,7 @@ make sure you run the <a class="reference internal" href="lint-tool.html"><span 
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

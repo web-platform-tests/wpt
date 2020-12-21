@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>CSS Metadata &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CSS User Stylesheets" href="css-user-styles.html" />
@@ -46,19 +44,20 @@
 <p>The specification link elements provide a way to align the test with
 information in the specification being tested.</p>
 <ul class="simple">
-<li>Links should link to relevant sections within the specification</li>
-<li>Use the anchors from the specification’s Table of Contents</li>
-<li>A test can have multiple specification links<ul>
-<li>Always list the primary section that is being tested as the
-first item in the list of specification links</li>
-<li>Order the list from the most used/specific to least used/specific</li>
-<li>There is no need to list common incidental features like the
+<li><p>Links should link to relevant sections within the specification</p></li>
+<li><p>Use the anchors from the specification’s Table of Contents</p></li>
+<li><p>A test can have multiple specification links</p>
+<ul>
+<li><p>Always list the primary section that is being tested as the
+first item in the list of specification links</p></li>
+<li><p>Order the list from the most used/specific to least used/specific</p></li>
+<li><p>There is no need to list common incidental features like the
 color green if it is being used to validate the test unless the
-case is specifically testing the color green</li>
+case is specifically testing the color green</p></li>
 </ul>
 </li>
-<li>If the test is part of multiple test suites, link to the relevant
-sections of each spec.</li>
+<li><p>If the test is part of multiple test suites, link to the relevant
+sections of each spec.</p></li>
 </ul>
 <p>Example 1:</p>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;help&quot;</span>
@@ -180,11 +179,11 @@ is only valid in certain cases, those conditions should be described
 in the statement.</p>
 <p>The assertion should not be:</p>
 <ul class="simple">
-<li>A copy of the title text</li>
-<li>A copy of the test verification instructions</li>
-<li>A duplicate of another assertion in the test suite</li>
-<li>A line or reference from the CSS specification unless that line is
-a complete assertion when taken out of context.</li>
+<li><p>A copy of the title text</p></li>
+<li><p>A copy of the test verification instructions</p></li>
+<li><p>A duplicate of another assertion in the test suite</p></li>
+<li><p>A line or reference from the CSS specification unless that line is
+a complete assertion when taken out of context.</p></li>
 </ul>
 <p>The test assertion is <strong>optional</strong>, but is highly recommended.
 It helps the reviewer understand
@@ -195,16 +194,16 @@ can be changed (e.g. to using <code class="docutils literal notranslate"><span c
 the intent of the test (e.g. testing support for ID selectors).</p>
 <p>Examples of good test assertions:</p>
 <ul class="simple">
-<li>“This test checks that a background image with no intrinsic size
-covers the entire padding box.”</li>
-<li>“This test checks that ‘word-spacing’ affects each space (U+0020)
-and non-breaking space (U+00A0).”</li>
-<li>“This test checks that if ‘top’ and ‘bottom’ offsets are specified
+<li><p>“This test checks that a background image with no intrinsic size
+covers the entire padding box.”</p></li>
+<li><p>“This test checks that ‘word-spacing’ affects each space (U+0020)
+and non-breaking space (U+00A0).”</p></li>
+<li><p>“This test checks that if ‘top’ and ‘bottom’ offsets are specified
 on an absolutely-positioned replaced element, then any remaining
-space is split amongst the ‘auto’ vertical margins.”</li>
-<li>“This test checks that ‘text-indent’ affects only the first line
+space is split amongst the ‘auto’ vertical margins.”</p></li>
+<li><p>“This test checks that ‘text-indent’ affects only the first line
 of a block container if that line is also the first formatted line
-of an element.”</li>
+of an element.”</p></li>
 </ul>
 </div>
 </div>
@@ -252,17 +251,15 @@ of an element.”</li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -279,7 +276,7 @@ of an element.”</li>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Stash &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="wptserve Pipes" href="../../../writing-tests/server-pipes.html" />
@@ -62,17 +60,17 @@ part of the stash corresponding to its own path.</p>
 <span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.stash" title="wptserve.stash"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.stash" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="wptserve.stash.ClientDictManager">
-<em class="property">class </em><code class="descclassname">wptserve.stash.</code><code class="descname">ClientDictManager</code><span class="sig-paren">(</span><em>address=None</em>, <em>authkey=None</em>, <em>serializer='pickle'</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.ClientDictManager" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.stash.</code><code class="sig-name descname">ClientDictManager</code><span class="sig-paren">(</span><em class="sig-param">address=None</em>, <em class="sig-param">authkey=None</em>, <em class="sig-param">serializer='pickle'</em>, <em class="sig-param">ctx=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.ClientDictManager" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
 <dt id="wptserve.stash.ServerDictManager">
-<em class="property">class </em><code class="descclassname">wptserve.stash.</code><code class="descname">ServerDictManager</code><span class="sig-paren">(</span><em>address=None</em>, <em>authkey=None</em>, <em>serializer='pickle'</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.ServerDictManager" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.stash.</code><code class="sig-name descname">ServerDictManager</code><span class="sig-paren">(</span><em class="sig-param">address=None</em>, <em class="sig-param">authkey=None</em>, <em class="sig-param">serializer='pickle'</em>, <em class="sig-param">ctx=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.ServerDictManager" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
 <dt id="wptserve.stash.Stash">
-<em class="property">class </em><code class="descclassname">wptserve.stash.</code><code class="descname">Stash</code><span class="sig-paren">(</span><em>default_path</em>, <em>address=None</em>, <em>authkey=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.stash.</code><code class="sig-name descname">Stash</code><span class="sig-paren">(</span><em class="sig-param">default_path</em>, <em class="sig-param">address=None</em>, <em class="sig-param">authkey=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash" title="Permalink to this definition">¶</a></dt>
 <dd><p>Key-value store for persisting data across HTTP/S and WS/S requests.</p>
 <p>This data store is specifically designed for persisting data across server
 requests. The synchronization is achieved by using the BaseManager from
@@ -93,48 +91,40 @@ between different resources or different requests for the same
 resource.</p>
 <dl class="method">
 <dt id="wptserve.stash.Stash.put">
-<code class="descname">put</code><span class="sig-paren">(</span><em>key</em>, <em>value</em>, <em>path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash.put" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">put</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em>, <em class="sig-param">path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash.put" title="Permalink to this definition">¶</a></dt>
 <dd><p>Place a value in the shared stash.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> – A UUID to use as the data’s key.</li>
-<li><strong>value</strong> – The data to store. This can be any python object.</li>
-<li><strong>path</strong> – The path that has access to read the data (by default
-the current request path)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – A UUID to use as the data’s key.</p></li>
+<li><p><strong>value</strong> – The data to store. This can be any python object.</p></li>
+<li><p><strong>path</strong> – The path that has access to read the data (by default
+the current request path)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.stash.Stash.take">
-<code class="descname">take</code><span class="sig-paren">(</span><em>key</em>, <em>path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash.take" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">take</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.Stash.take" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a value from the shared stash and return it.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> – A UUID to use as the data’s key.</li>
-<li><strong>path</strong> – The path that has access to read the data (by default
-the current request path)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – A UUID to use as the data’s key.</p></li>
+<li><p><strong>path</strong> – The path that has access to read the data (by default
+the current request path)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="exception">
 <dt id="wptserve.stash.StashError">
-<em class="property">exception </em><code class="descclassname">wptserve.stash.</code><code class="descname">StashError</code><a class="headerlink" href="#wptserve.stash.StashError" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><code class="sig-prename descclassname">wptserve.stash.</code><code class="sig-name descname">StashError</code><a class="headerlink" href="#wptserve.stash.StashError" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -187,17 +177,15 @@ the current request path)</li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -214,7 +202,7 @@ the current request path)</li>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

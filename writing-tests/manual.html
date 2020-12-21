@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Manual Tests &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="File Name Flags" href="file-names.html" />
@@ -49,17 +47,17 @@ tests.</p>
 <p>However, there are certain scenarios in which this is not yet
 possible. For example:</p>
 <ul class="simple">
-<li>Test which require observing animation (e.g., a test for CSS
-animation or for video playback),</li>
-<li>Tests that require interaction with browser security UI (e.g., a
-test in which a user refuses a geolocation permissions grant),</li>
-<li>Tests that require interaction with the underlying OS (e.g., tests
-for drag and drop from the desktop onto the browser),</li>
-<li>Tests that require non-default browser configuration (e.g., images
-disabled), and</li>
-<li>Tests that require interaction with the physical environment (e.g.,
+<li><p>Test which require observing animation (e.g., a test for CSS
+animation or for video playback),</p></li>
+<li><p>Tests that require interaction with browser security UI (e.g., a
+test in which a user refuses a geolocation permissions grant),</p></li>
+<li><p>Tests that require interaction with the underlying OS (e.g., tests
+for drag and drop from the desktop onto the browser),</p></li>
+<li><p>Tests that require non-default browser configuration (e.g., images
+disabled), and</p></li>
+<li><p>Tests that require interaction with the physical environment (e.g.,
 tests that the vibration API causes the device to vibrate or that
-various sensor APIs respond in the expected way).</li>
+various sensor APIs respond in the expected way).</p></li>
 </ul>
 </div>
 <div class="section" id="requirements-for-a-manual-test">
@@ -148,17 +146,15 @@ passes, otherwise it fails<span class="p">&lt;/</span><span class="nt">p</span><
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -175,7 +171,7 @@ passes, otherwise it fails<span class="p">&lt;/</span><span class="nt">p</span><
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>testharness.js API &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="testdriver.js Automation" href="testdriver.html" />
@@ -246,7 +244,7 @@ of events, including ensuring that unexpected events are not fired at any point.
 <p>Here’s an example of how to use <code class="docutils literal notranslate"><span class="pre">EventWatcher</span></code>:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">t</span> <span class="o">=</span> <span class="nx">async_test</span><span class="p">(</span><span class="s2">&quot;Event order on animation start&quot;</span><span class="p">);</span>
 
-<span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">watchedNode</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">()[</span><span class="mi">0</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">watchedNode</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">()[</span><span class="mf">0</span><span class="p">];</span>
 <span class="kd">var</span> <span class="nx">eventWatcher</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">EventWatcher</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">watchedNode</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;animationstart&#39;</span><span class="p">,</span>
                                                      <span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span>
                                                      <span class="s1">&#39;animationend&#39;</span><span class="p">]);</span>
@@ -290,7 +288,7 @@ tests”.</p>
 <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
     <span class="nx">setup</span><span class="p">({</span> <span class="nx">single_test</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
-    <span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="nx">assert_equals</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)[</span><span class="mf">0</span><span class="p">])</span>
     <span class="nx">done</span><span class="p">()</span>
  <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
@@ -391,17 +389,17 @@ that only passes if some event is <em>not</em> fired). In this case it is
 <em>not</em> permitted to use the standard <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> function.</p>
 <p>Instead, one of these functions can be used:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">step_wait</span></code> (returns a promise)</li>
-<li><code class="docutils literal notranslate"><span class="pre">step_wait_func</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">step_wait_func_done</span></code></li>
-<li>As a last resort, <code class="docutils literal notranslate"><span class="pre">step_timeout</span></code></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">step_wait</span></code> (returns a promise)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">step_wait_func</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">step_wait_func_done</span></code></p></li>
+<li><p>As a last resort, <code class="docutils literal notranslate"><span class="pre">step_timeout</span></code></p></li>
 </ul>
 <div class="section" id="step-wait-step-wait-func-and-step-wait-func-done">
 <h3><code class="docutils literal notranslate"><span class="pre">step_wait</span></code>, <code class="docutils literal notranslate"><span class="pre">step_wait_func</span></code>, and <code class="docutils literal notranslate"><span class="pre">step_wait_func_done</span></code><a class="headerlink" href="#step-wait-step-wait-func-and-step-wait-func-done" title="Permalink to this headline">¶</a></h3>
 <p>These functions are preferred over <code class="docutils literal notranslate"><span class="pre">step_timeout</span></code> as they end when a condition or a timeout is reached, rather than just a timeout. This allows for setting a longer timeout while shortening the runtime of tests on faster machines.</p>
 <p><code class="docutils literal notranslate"><span class="pre">step_wait(cond,</span> <span class="pre">description,</span> <span class="pre">timeout=3000,</span> <span class="pre">interval=100)</span></code> is useful inside <code class="docutils literal notranslate"><span class="pre">promise_test</span></code>, e.g.:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="nx">async</span> <span class="nx">t</span> <span class="p">=&gt;</span> <span class="p">{</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="k">async</span> <span class="nx">t</span> <span class="p">=&gt;</span> <span class="p">{</span>
   <span class="c1">// …</span>
-  <span class="nx">await</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_wait</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">frame</span><span class="p">.</span><span class="nx">contentDocument</span> <span class="o">===</span> <span class="kc">null</span><span class="p">,</span> <span class="s2">&quot;Frame navigated to a cross-origin document&quot;</span><span class="p">);</span>
+  <span class="k">await</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_wait</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">frame</span><span class="p">.</span><span class="nx">contentDocument</span> <span class="o">===</span> <span class="kc">null</span><span class="p">,</span> <span class="s2">&quot;Frame navigated to a cross-origin document&quot;</span><span class="p">);</span>
   <span class="c1">// …</span>
 <span class="p">},</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
 </pre></div>
@@ -429,7 +427,7 @@ that only passes if some event is <em>not</em> fired). In this case it is
   <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">assert_false</span><span class="p">(</span><span class="nx">gotEvent</span><span class="p">,</span> <span class="s2">&quot;Unexpected DOMContentLoaded event&quot;</span><span class="p">);</span>
     <span class="nx">gotEvent</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-    <span class="nx">t</span><span class="p">.</span><span class="nx">step_timeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">step_timeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span> <span class="p">},</span> <span class="mf">2000</span><span class="p">);</span>
   <span class="p">});</span>
 <span class="p">},</span> <span class="s2">&quot;Only one DOMContentLoaded&quot;</span><span class="p">);</span>
 </pre></div>
@@ -519,8 +517,8 @@ implicitly-defined subtest.</p>
 <p>By default the test harness will assume there are no more results to come
 when:</p>
 <ol class="simple">
-<li>There are no <code class="docutils literal notranslate"><span class="pre">Test</span></code> objects that have been created but not completed</li>
-<li>The load event on the document has fired</li>
+<li><p>There are no <code class="docutils literal notranslate"><span class="pre">Test</span></code> objects that have been created but not completed</p></li>
+<li><p>The load event on the document has fired</p></li>
 </ol>
 <p>This behaviour can be overridden by setting the <code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> property to
 true in a call to <code class="docutils literal notranslate"><span class="pre">setup()</span></code>. If <code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> is true, the test harness will
@@ -546,17 +544,17 @@ function to be called with each set of parameters in a list:</p>
 </div>
 <p>For example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">generate_tests</span><span class="p">(</span><span class="nx">assert_equals</span><span class="p">,</span> <span class="p">[</span>
-    <span class="p">[</span><span class="s2">&quot;Sum one and one&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
-    <span class="p">[</span><span class="s2">&quot;Sum one and zero&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">[</span><span class="s2">&quot;Sum one and one&quot;</span><span class="p">,</span> <span class="mf">1</span><span class="o">+</span><span class="mf">1</span><span class="p">,</span> <span class="mf">2</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;Sum one and zero&quot;</span><span class="p">,</span> <span class="mf">1</span><span class="o">+</span><span class="mf">0</span><span class="p">,</span> <span class="mf">1</span><span class="p">]</span>
     <span class="p">])</span>
 </pre></div>
 </div>
 <p>Is equivalent to:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">a_got</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">a_exp</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">a_got</span> <span class="o">=</span> <span class="mf">1</span><span class="o">+</span><span class="mf">1</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">a_exp</span> <span class="o">=</span> <span class="mf">2</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">a_nam</span> <span class="o">=</span> <span class="s2">&quot;Sum one and one&quot;</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">b_got</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="mi">0</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">b_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">b_got</span> <span class="o">=</span> <span class="mf">1</span><span class="o">+</span><span class="mf">0</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">b_exp</span> <span class="o">=</span> <span class="mf">1</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">b_nam</span> <span class="o">=</span> <span class="s2">&quot;Sum one and zero&quot;</span><span class="p">;</span>
 <span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">a_got</span><span class="p">,</span> <span class="nx">a_exp</span><span class="p">)},</span> <span class="nx">a_nam</span><span class="p">);</span>
 <span class="nx">test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span><span class="nx">assert_equals</span><span class="p">(</span><span class="nx">b_got</span><span class="p">,</span> <span class="nx">b_exp</span><span class="p">)},</span> <span class="nx">b_nam</span><span class="p">);</span>
@@ -575,10 +573,10 @@ use to generate the parameter list array.</p>
 <h2>Callback API<a class="headerlink" href="#callback-api" title="Permalink to this headline">¶</a></h2>
 <p>The framework provides callbacks corresponding to 4 events:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">start</span></code> - triggered when the first Test is created</li>
-<li><code class="docutils literal notranslate"><span class="pre">test_state</span></code> - triggered when a test state changes</li>
-<li><code class="docutils literal notranslate"><span class="pre">result</span></code> - triggered when a test result is received</li>
-<li><code class="docutils literal notranslate"><span class="pre">complete</span></code> - triggered when all results are received</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code> - triggered when the first Test is created</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_state</span></code> - triggered when a test state changes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code> - triggered when a test result is received</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">complete</span></code> - triggered when all results are received</p></li>
 </ul>
 <p>The page defining the tests may add callbacks for these events by calling
 the following methods:</p>
@@ -589,19 +587,19 @@ the following methods:</p>
 and a status object</p>
 <p>Tests have the following properties:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">status</span></code> - A status code. This can be compared to the <code class="docutils literal notranslate"><span class="pre">PASS</span></code>, <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>,
+<li><p><code class="docutils literal notranslate"><span class="pre">status</span></code> - A status code. This can be compared to the <code class="docutils literal notranslate"><span class="pre">PASS</span></code>, <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>,
 <code class="docutils literal notranslate"><span class="pre">PRECONDITION_FAILED</span></code>, <code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code> and <code class="docutils literal notranslate"><span class="pre">NOTRUN</span></code> properties on the
-test object</li>
-<li><code class="docutils literal notranslate"><span class="pre">message</span></code> - A message indicating the reason for failure. In the future this
-will always be a string</li>
+test object</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">message</span></code> - A message indicating the reason for failure. In the future this
+will always be a string</p></li>
 </ul>
 <p>The status object gives the overall status of the harness. It has the
 following properties:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">status</span></code> - Can be compared to the <code class="docutils literal notranslate"><span class="pre">OK</span></code>, <code class="docutils literal notranslate"><span class="pre">PRECONDITION_FAILED</span></code>, <code class="docutils literal notranslate"><span class="pre">ERROR</span></code> and
-<code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code> properties</li>
-<li><code class="docutils literal notranslate"><span class="pre">message</span></code> - An error message set when the status is <code class="docutils literal notranslate"><span class="pre">PRECONDITION_FAILED</span></code>
-or <code class="docutils literal notranslate"><span class="pre">ERROR</span></code>.</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">status</span></code> - Can be compared to the <code class="docutils literal notranslate"><span class="pre">OK</span></code>, <code class="docutils literal notranslate"><span class="pre">PRECONDITION_FAILED</span></code>, <code class="docutils literal notranslate"><span class="pre">ERROR</span></code> and
+<code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code> properties</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">message</span></code> - An error message set when the status is <code class="docutils literal notranslate"><span class="pre">PRECONDITION_FAILED</span></code>
+or <code class="docutils literal notranslate"><span class="pre">ERROR</span></code>.</p></li>
 </ul>
 </div>
 <div class="section" id="external-api">
@@ -610,10 +608,10 @@ or <code class="docutils literal notranslate"><span class="pre">ERROR</span></co
 harness will, when loaded in a nested browsing context, attempt to call
 certain functions in each ancestor and opener browsing context:</p>
 <ul class="simple">
-<li>start - <code class="docutils literal notranslate"><span class="pre">start_callback</span></code></li>
-<li>test_state - <code class="docutils literal notranslate"><span class="pre">test_state_callback</span></code></li>
-<li>result - <code class="docutils literal notranslate"><span class="pre">result_callback</span></code></li>
-<li>complete - <code class="docutils literal notranslate"><span class="pre">completion_callback</span></code></li>
+<li><p>start - <code class="docutils literal notranslate"><span class="pre">start_callback</span></code></p></li>
+<li><p>test_state - <code class="docutils literal notranslate"><span class="pre">test_state_callback</span></code></p></li>
+<li><p>result - <code class="docutils literal notranslate"><span class="pre">result_callback</span></code></p></li>
+<li><p>complete - <code class="docutils literal notranslate"><span class="pre">completion_callback</span></code></p></li>
 </ul>
 <p>These are given the same arguments as the corresponding internal callbacks
 described above.</p>
@@ -629,10 +627,10 @@ modified to accommodate message event API. Each message is sent by the harness
 is passed a single vanilla object, available as the <code class="docutils literal notranslate"><span class="pre">data</span></code> property of the event
 object. These objects are structured as follows:</p>
 <ul class="simple">
-<li>start - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;start&quot;</span> <span class="pre">}</span></code></li>
-<li>test_state - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;test_state&quot;,</span> <span class="pre">test:</span> <span class="pre">Test</span> <span class="pre">}</span></code></li>
-<li>result - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;result&quot;,</span> <span class="pre">test:</span> <span class="pre">Test</span> <span class="pre">}</span></code></li>
-<li>complete - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;complete&quot;,</span> <span class="pre">tests:</span> <span class="pre">[Test,</span> <span class="pre">...],</span> <span class="pre">status:</span> <span class="pre">TestsStatus</span> <span class="pre">}</span></code></li>
+<li><p>start - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;start&quot;</span> <span class="pre">}</span></code></p></li>
+<li><p>test_state - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;test_state&quot;,</span> <span class="pre">test:</span> <span class="pre">Test</span> <span class="pre">}</span></code></p></li>
+<li><p>result - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;result&quot;,</span> <span class="pre">test:</span> <span class="pre">Test</span> <span class="pre">}</span></code></p></li>
+<li><p>complete - <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">type:</span> <span class="pre">&quot;complete&quot;,</span> <span class="pre">tests:</span> <span class="pre">[Test,</span> <span class="pre">...],</span> <span class="pre">status:</span> <span class="pre">TestsStatus</span> <span class="pre">}</span></code></p></li>
 </ul>
 </div>
 <div class="section" id="consolidating-tests-from-other-documents">
@@ -693,27 +691,27 @@ workers</a>.</p>
 <p>Testing from a worker script is different from testing from an HTML document in
 several ways:</p>
 <ul class="simple">
-<li>Workers have no reporting capability since they are running in the background.
+<li><p>Workers have no reporting capability since they are running in the background.
 Hence they rely on <code class="docutils literal notranslate"><span class="pre">testharness.js</span></code> running in a companion client HTML document
-for reporting.</li>
-<li>Shared and service workers do not have a unique client document since there
+for reporting.</p></li>
+<li><p>Shared and service workers do not have a unique client document since there
 could be more than one document that communicates with these workers. So a
 client document needs to explicitly connect to a worker and fetch test results
 from it using <code class="docutils literal notranslate"><span class="pre">fetch_tests_from_worker</span></code>. This is true even for a dedicated
 worker. Once connected, the individual tests running in the worker (or those
 that have already run to completion) will be automatically reflected in the
-client document.</li>
-<li>The client document controls the timeout of the tests. All worker scripts act
+client document.</p></li>
+<li><p>The client document controls the timeout of the tests. All worker scripts act
 as if they were started with the <code class="docutils literal notranslate"><span class="pre">explicit_timeout</span></code> option (see the <a class="reference external" href="#harness-timeout">Harness
-timeout</a> section).</li>
-<li>Dedicated and shared workers don’t have an equivalent of an <code class="docutils literal notranslate"><span class="pre">onload</span></code> event.
+timeout</a> section).</p></li>
+<li><p>Dedicated and shared workers don’t have an equivalent of an <code class="docutils literal notranslate"><span class="pre">onload</span></code> event.
 Thus the test harness has no way to know when all tests have completed (see
 <a class="reference external" href="#determining-when-all-tests-are-complete">Determining when all tests are
 complete</a>). So these worker tests
 behave as if they were started with the <code class="docutils literal notranslate"><span class="pre">explicit_done</span></code> option. Service
 workers depend on the
 <a class="reference external" href="https://w3c.github.io/ServiceWorker/#service-worker-global-scope-install-event">oninstall</a>
-event and don’t require an explicit <code class="docutils literal notranslate"><span class="pre">done</span></code> call.</li>
+event and don’t require an explicit <code class="docutils literal notranslate"><span class="pre">done</span></code> call.</p></li>
 </ul>
 <p>Here’s an example that uses a dedicated worker.</p>
 <p><code class="docutils literal notranslate"><span class="pre">worker.js</span></code>:</p>
@@ -750,9 +748,9 @@ behaves as if those tests were running in the containing document itself.</p>
 <p><code class="docutils literal notranslate"><span class="pre">fetch_tests_from_worker</span></code> returns a promise that resolves once all the remote
 tests have completed. This is useful if you’re importing tests from multiple
 workers and want to ensure they run in series:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nx">async</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="nx">await</span> <span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-1.js&quot;</span><span class="p">));</span>
-  <span class="nx">await</span> <span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-2.js&quot;</span><span class="p">));</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="k">async</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-1.js&quot;</span><span class="p">));</span>
+  <span class="k">await</span> <span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-2.js&quot;</span><span class="p">));</span>
 <span class="p">})();</span>
 </pre></div>
 </div>
@@ -868,13 +866,13 @@ attribute attribute_name following the conditions specified by WebIDL</p>
 <h3><code class="docutils literal notranslate"><span class="pre">assert_throws_dom(code,</span> <span class="pre">func,</span> <span class="pre">description)</span></code> or <code class="docutils literal notranslate"><span class="pre">assert_throws_dom(code,</span> <span class="pre">constructor,</span> <span class="pre">func,</span> <span class="pre">description)</span></code><a class="headerlink" href="#assert-throws-dom-code-func-description-or-assert-throws-dom-code-constructor-func-description" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">code</span></code> - the expected exception. This can take several forms:</p>
 <ul class="simple">
-<li>string - asserts that the thrown exception must be a DOMException
+<li><p>string - asserts that the thrown exception must be a DOMException
 with the given name, e.g., “TimeoutError”. (For
 compatibility with existing tests, the name of a
 DOMException constant can also be given, e.g.,
-“TIMEOUT_ERR”)</li>
-<li>number - asserts that the thrown exception must be a DOMException
-with the fiven code value (e.g. DOMException.TIMEOUT_ERR).</li>
+“TIMEOUT_ERR”)</p></li>
+<li><p>number - asserts that the thrown exception must be a DOMException
+with the fiven code value (e.g. DOMException.TIMEOUT_ERR).</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">func</span></code> - a function that should throw</p>
 <p><code class="docutils literal notranslate"><span class="pre">constructor</span></code> - The DOMException constructor that the resulting DOMException should have as its <code class="docutils literal notranslate"><span class="pre">.constructor</span></code>.  This should be used when a DOMException from a non-default global is expected to be thrown.</p>
@@ -935,7 +933,7 @@ arrays and the more important DOM Node types. It also translates String values
 containing control characters to include human-readable representations.</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">format_value</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span> <span class="c1">// &quot;Document node with 2 children&quot;</span>
 <span class="nx">format_value</span><span class="p">(</span><span class="s2">&quot;foo\uffffbar&quot;</span><span class="p">);</span> <span class="c1">// &quot;\&quot;foo\\uffffbar\&quot;&quot;</span>
-<span class="nx">format_value</span><span class="p">([</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="kc">Infinity</span><span class="p">]);</span> <span class="c1">// &quot;[-0, Infinity]&quot;</span>
+<span class="nx">format_value</span><span class="p">([</span><span class="o">-</span><span class="mf">0</span><span class="p">,</span> <span class="kc">Infinity</span><span class="p">]);</span> <span class="c1">// &quot;[-0, Infinity]&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -994,17 +992,15 @@ document containing the tests, or by adding the metadata to individual
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -1021,7 +1017,7 @@ document containing the tests, or by adding the metadata to individual
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>testdriver.js Automation &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Testdriver extension tutorial" href="testdriver-extension-tutorial.html" />
@@ -68,7 +66,7 @@ was thrown.</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">text_box</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">);</span>
 
 <span class="kd">let</span> <span class="nx">actions</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span>
-    <span class="p">.</span><span class="nx">pointerMove</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="nx">origin</span><span class="o">:</span> <span class="nx">text_box</span><span class="p">})</span>
+    <span class="p">.</span><span class="nx">pointerMove</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="p">{</span><span class="nx">origin</span><span class="o">:</span> <span class="nx">text_box</span><span class="p">})</span>
     <span class="p">.</span><span class="nx">pointerDown</span><span class="p">()</span>
     <span class="p">.</span><span class="nx">pointerUp</span><span class="p">()</span>
     <span class="p">.</span><span class="nx">addTick</span><span class="p">()</span>
@@ -106,8 +104,8 @@ window.name property remaining unset on the target window.</p>
 <h3>bless<a class="headerlink" href="#bless" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.bless(intent,</span> <span class="pre">action)</span></code></p>
 <ul class="simple">
-<li><em>intent</em>: a string describing the motivation for this invocation</li>
-<li><em>action</em>: an optional function</li>
+<li><p><em>intent</em>: a string describing the motivation for this invocation</p></li>
+<li><p><em>action</em>: an optional function</p></li>
 </ul>
 <p>This function simulates <a class="reference external" href="https://html.spec.whatwg.org/multipage/interaction.html#activation">activation</a>, allowing tests to
 perform privileged operations that require user interaction. For
@@ -132,7 +130,7 @@ promise is resolved with the value <code class="docutils literal notranslate"><s
 <h3>click<a class="headerlink" href="#click" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.click(element)</span></code></p>
 <ul class="simple">
-<li><em>element</em>: a DOM Element object</li>
+<li><p><em>element</em>: a DOM Element object</p></li>
 </ul>
 <p>This function causes a click to occur on the target element (an
 <code class="docutils literal notranslate"><span class="pre">Element</span></code> object), potentially scrolling the document to make it
@@ -146,12 +144,21 @@ window.name property remaining unset on the target window.</p>
 document must not have any DOM mutations made between the function
 being called and the promise settling.</p>
 </div>
+</div>
+<div class="section" id="delete-all-cookies">
+<h2>delete_all_cookies<a class="headerlink" href="#delete-all-cookies" title="Permalink to this headline">¶</a></h2>
+<p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.delete_all_cookies(context=null)</span></code></p>
+<ul class="simple">
+<li><p><em>context</em>: an optional WindowProxy for the browsing context in which to
+perform the call.</p></li>
+</ul>
+<p>This function deletes all cookies for the current browsing context.</p>
 <div class="section" id="send-keys">
 <h3>send_keys<a class="headerlink" href="#send-keys" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.send_keys(element,</span> <span class="pre">keys)</span></code></p>
 <ul class="simple">
-<li><em>element</em>: a DOM Element object</li>
-<li><em>keys</em>: string to send to the element</li>
+<li><p><em>element</em>: a DOM Element object</p></li>
+<li><p><em>keys</em>: string to send to the element</p></li>
 </ul>
 <p>This function causes the string <em>keys</em> to be sent to the target
 element (an <code class="docutils literal notranslate"><span class="pre">Element</span></code> object), potentially scrolling the document to
@@ -171,23 +178,23 @@ For example, to send the tab key you would send “\uE004”.</p>
 <h3>set_permission<a class="headerlink" href="#set-permission" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.set_permission(descriptor,</span> <span class="pre">state,</span> <span class="pre">one_realm,</span> <span class="pre">context=null)</span></code></p>
 <ul class="simple">
-<li><em>descriptor</em>: a
+<li><p><em>descriptor</em>: a
 <a class="reference external" href="https://w3c.github.io/permissions/#dictdef-permissiondescriptor">PermissionDescriptor</a>
-or derived object</li>
-<li><em>state</em>: a
+or derived object</p></li>
+<li><p><em>state</em>: a
 <a class="reference external" href="https://w3c.github.io/permissions/#enumdef-permissionstate">PermissionState</a>
-value</li>
-<li><em>one_realm</em>: a boolean that indicates whether the permission settings
-apply to only one realm</li>
-<li>context: a WindowProxy for the browsing context in which to perform the call</li>
+value</p></li>
+<li><p><em>one_realm</em>: a boolean that indicates whether the permission settings
+apply to only one realm</p></li>
+<li><p>context: a WindowProxy for the browsing context in which to perform the call</p></li>
 </ul>
 <p>This function causes permission requests and queries for the status of a
 certain permission type (e.g. “push”, or “background-fetch”) to always
 return <em>state</em>. It returns a promise that resolves after the permission has
 been set to be overridden with <em>state</em>.</p>
 <p>Example:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;background-fetch&quot;</span> <span class="p">},</span> <span class="s2">&quot;denied&quot;</span><span class="p">);</span>
-<span class="nx">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;push&quot;</span><span class="p">,</span> <span class="nx">userVisibleOnly</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span> <span class="s2">&quot;granted&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;background-fetch&quot;</span> <span class="p">},</span> <span class="s2">&quot;denied&quot;</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;push&quot;</span><span class="p">,</span> <span class="nx">userVisibleOnly</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span> <span class="s2">&quot;granted&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -289,17 +296,15 @@ obtained e.g. in the case of <code class="docutils literal notranslate"><span cl
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -316,7 +321,7 @@ obtained e.g. in the case of <code class="docutils literal notranslate"><span cl
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Expectation Data &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="wptrunner Design" href="design.html" />
@@ -50,11 +48,11 @@ structured log data is not a suitable format for storing these
 files. Instead something is required that is:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Human readable</li>
-<li>Human editable</li>
-<li>Machine readable / writable</li>
-<li>Capable of storing test id / result pairs</li>
-<li>Suitable for storing in a version control system (i.e. text-based)</li>
+<li><p>Human readable</p></li>
+<li><p>Human editable</p></li>
+<li><p>Machine readable / writable</p></li>
+<li><p>Capable of storing test id / result pairs</p></li>
+<li><p>Suitable for storing in a version control system (i.e. text-based)</p></li>
 </ul>
 </div></blockquote>
 <p>The need for different results per platform means either having
@@ -64,7 +62,7 @@ rather cumbersome for humans updating the expectation files, so the
 latter approach has been adopted, leading to the requirement:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Capable of storing result values that are conditional on the platform.</li>
+<li><p>Capable of storing result values that are conditional on the platform.</p></li>
 </ul>
 </div></blockquote>
 <p>There are few extant formats that meet these requirements, so
@@ -106,37 +104,37 @@ all the test data for the particular combination of hardware and OS
 used in the run corresponding to the log data, whilst leaving any
 other expectations untouched.</p>
 <p>wptupdate takes several useful options:</p>
-<dl class="docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">--sync</span></code></dt>
-<dd>Pull the latest version of web-platform-tests from the
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">--sync</span></code></dt><dd><p>Pull the latest version of web-platform-tests from the
 upstream specified in the config file. If this is specified in
 combination with logfiles, it is assumed that the results in the log
-files apply to the post-update tests.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--no-check-clean</span></code></dt>
-<dd>Don’t attempt to check if the working directory is clean before
+files apply to the post-update tests.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--no-check-clean</span></code></dt><dd><p>Don’t attempt to check if the working directory is clean before
 doing the update (assuming that the working directory is a git or
-mercurial tree).</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--patch</span></code></dt>
-<dd>Create a a git commit, or a mq patch, with the changes made by wptupdate.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--ignore-existing</span></code></dt>
-<dd>Overwrite all the expectation data for any tests that have a result
-in the passed log files, not just data for the same platform.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--disable-intermittent</span></code></dt>
-<dd>When updating test results, disable tests that have inconsistent
+mercurial tree).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--patch</span></code></dt><dd><p>Create a a git commit, or a mq patch, with the changes made by wptupdate.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--ignore-existing</span></code></dt><dd><p>Overwrite all the expectation data for any tests that have a result
+in the passed log files, not just data for the same platform.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--disable-intermittent</span></code></dt><dd><p>When updating test results, disable tests that have inconsistent
 results across many runs. This can precede a message providing a
 reason why that test is disable. If no message is provided,
-<code class="docutils literal notranslate"><span class="pre">unstable</span></code> is the default text.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--update-intermittent</span></code></dt>
-<dd>When this option is used, the <code class="docutils literal notranslate"><span class="pre">expected</span></code> key (see below) stores
+<code class="docutils literal notranslate"><span class="pre">unstable</span></code> is the default text.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--update-intermittent</span></code></dt><dd><p>When this option is used, the <code class="docutils literal notranslate"><span class="pre">expected</span></code> key (see below) stores
 expected intermittent statuses in addition to the primary expected
 status. If there is more than one status, it appears as a list. The
 default behaviour of this option is to retain any existing intermittent
-statuses in the list unless <code class="docutils literal notranslate"><span class="pre">--remove-intermittent</span></code> is specified.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--remove-intermittent</span></code></dt>
-<dd>This option is used in conjunction with <code class="docutils literal notranslate"><span class="pre">--update-intermittent</span></code>.
+statuses in the list unless <code class="docutils literal notranslate"><span class="pre">--remove-intermittent</span></code> is specified.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--remove-intermittent</span></code></dt><dd><p>This option is used in conjunction with <code class="docutils literal notranslate"><span class="pre">--update-intermittent</span></code>.
 When the <code class="docutils literal notranslate"><span class="pre">expected</span></code> statuses are updated, any obsolete intermittent
 statuses that did not occur in the specified logfiles are removed from
-the list.</dd>
+the list.</p>
+</dd>
 </dl>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
@@ -165,9 +163,9 @@ pairs. There are several notable differences from standard .ini files,
 however:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Sections may be hierarchically nested, with significant whitespace
-indicating nesting depth.</li>
-<li>Only <code class="docutils literal notranslate"><span class="pre">:</span></code> is valid as a key/value separator</li>
+<li><p>Sections may be hierarchically nested, with significant whitespace
+indicating nesting depth.</p></li>
+<li><p>Only <code class="docutils literal notranslate"><span class="pre">:</span></code> is valid as a key/value separator</p></li>
 </ul>
 </div></blockquote>
 <p>A simple example of a manifest file is:</p>
@@ -184,19 +182,19 @@ indicating nesting depth.</li>
 </pre></div>
 </div>
 <p>The web-platform-test harness knows about several keys:</p>
-<dl class="docutils">
-<dt><cite>expected</cite></dt>
-<dd>Must evaluate to a possible test status indicating the expected
+<dl class="simple">
+<dt><cite>expected</cite></dt><dd><p>Must evaluate to a possible test status indicating the expected
 result of the test. The implicit default is PASS or OK when the
 field isn’t present. When <cite>expected</cite> is a list, the first status
 is the primary expected status and the trailing statuses listed are
-expected intermittent statuses.</dd>
-<dt><cite>disabled</cite></dt>
-<dd>Any value indicates that the test is disabled.</dd>
-<dt><cite>reftype</cite></dt>
-<dd>The type of comparison for reftests; either <cite>==</cite> or <cite>!=</cite>.</dd>
-<dt><cite>refurl</cite></dt>
-<dd>The reference url for reftests.</dd>
+expected intermittent statuses.</p>
+</dd>
+<dt><cite>disabled</cite></dt><dd><p>Any value indicates that the test is disabled.</p>
+</dd>
+<dt><cite>reftype</cite></dt><dd><p>The type of comparison for reftests; either <cite>==</cite> or <cite>!=</cite>.</p>
+</dd>
+<dt><cite>refurl</cite></dt><dd><p>The reference url for reftests.</p>
+</dd>
 </dl>
 <div class="section" id="conditional-values">
 <h3>Conditional Values<a class="headerlink" href="#conditional-values" title="Permalink to this headline">¶</a></h3>
@@ -238,21 +236,21 @@ supplied when the manifest is used.</p>
 <p>When used for expectation data, manifests have the following format:</p>
 <blockquote>
 <div><ul class="simple">
-<li>A section per test URL described by the manifest, with the section
+<li><p>A section per test URL described by the manifest, with the section
 heading being the part of the test URL following the last <code class="docutils literal notranslate"><span class="pre">/</span></code> in
 the path (this allows multiple tests in a single manifest file with
-the same path part of the URL, but different query parts).</li>
-<li>A subsection per subtest, with the heading being the title of the
-subtest.</li>
-<li>A key <code class="docutils literal notranslate"><span class="pre">expected</span></code> giving the expectation value or values of each
-(sub)test.</li>
-<li>A key <code class="docutils literal notranslate"><span class="pre">disabled</span></code> which can be set to any value to indicate that
+the same path part of the URL, but different query parts).</p></li>
+<li><p>A subsection per subtest, with the heading being the title of the
+subtest.</p></li>
+<li><p>A key <code class="docutils literal notranslate"><span class="pre">expected</span></code> giving the expectation value or values of each
+(sub)test.</p></li>
+<li><p>A key <code class="docutils literal notranslate"><span class="pre">disabled</span></code> which can be set to any value to indicate that
 the (sub)test is disabled and should either not be run (for tests)
-or that its results should be ignored (subtests).</li>
-<li>A key <code class="docutils literal notranslate"><span class="pre">restart-after</span></code> which can be set to any value to indicate that
+or that its results should be ignored (subtests).</p></li>
+<li><p>A key <code class="docutils literal notranslate"><span class="pre">restart-after</span></code> which can be set to any value to indicate that
 the runner should restart the browser after running this test (e.g. to
-clear out unwanted state).</li>
-<li>A key <code class="docutils literal notranslate"><span class="pre">fuzzy</span></code> that is used for reftests. This is interpreted as a
+clear out unwanted state).</p></li>
+<li><p>A key <code class="docutils literal notranslate"><span class="pre">fuzzy</span></code> that is used for reftests. This is interpreted as a
 list containing entries like <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">name=fuzzy&gt;</span></code> content value,
 which consists of an optional reference identifier followed by a
 colon, then a range indicating the maximum permitted pixel
@@ -263,8 +261,8 @@ base test URL, in which case the fuzziness applies to any
 comparison with that URL, or takes the form lhs url, comparison,
 rhs url, in which case the fuzziness only applies for any
 comparison involving that specific pair of URLs. Some illustrative
-examples are given below.</li>
-<li>Variables <code class="docutils literal notranslate"><span class="pre">debug</span></code>, <code class="docutils literal notranslate"><span class="pre">os</span></code>, <code class="docutils literal notranslate"><span class="pre">version</span></code>, <code class="docutils literal notranslate"><span class="pre">processor</span></code> and
+examples are given below.</p></li>
+<li><p>Variables <code class="docutils literal notranslate"><span class="pre">debug</span></code>, <code class="docutils literal notranslate"><span class="pre">os</span></code>, <code class="docutils literal notranslate"><span class="pre">version</span></code>, <code class="docutils literal notranslate"><span class="pre">processor</span></code> and
 <code class="docutils literal notranslate"><span class="pre">bits</span></code> that describe the configuration of the browser under
 test. <code class="docutils literal notranslate"><span class="pre">debug</span></code> is a boolean indicating whether a build is a debug
 build. <code class="docutils literal notranslate"><span class="pre">os</span></code> is a string indicating the operating system, and
@@ -272,11 +270,11 @@ build. <code class="docutils literal notranslate"><span class="pre">os</span></c
 operating system. <code class="docutils literal notranslate"><span class="pre">processor</span></code> is a string indicating the
 processor architecture and <code class="docutils literal notranslate"><span class="pre">bits</span></code> an integer indicating the
 number of bits. This information is typically provided by
-<a class="reference external" href="https://firefox-source-docs.mozilla.org/mozbase/mozinfo.html#module-mozinfo" title="(in Firefox Source Docs)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mozinfo</span></code></a>.</li>
-<li>Top level keys are taken as defaults for the whole file. So, for
+<a class="reference external" href="https://firefox-source-docs.mozilla.org/mozbase/mozinfo.html#module-mozinfo" title="(in Firefox Source Docs)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mozinfo</span></code></a>.</p></li>
+<li><p>Top level keys are taken as defaults for the whole file. So, for
 example, a top level key with <code class="docutils literal notranslate"><span class="pre">expected:</span> <span class="pre">FAIL</span></code> would indicate
 that all tests and subtests in the file are expected to fail,
-unless they have an <code class="docutils literal notranslate"><span class="pre">expected</span></code> key of their own.</li>
+unless they have an <code class="docutils literal notranslate"><span class="pre">expected</span></code> key of their own.</p></li>
 </ul>
 </div></blockquote>
 <p>An simple example manifest might look like:</p>
@@ -369,17 +367,15 @@ respectively.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -396,7 +392,7 @@ respectively.</p>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Safari &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="WebKitGTK MiniBrowser" href="webkitgtk_minibrowser.html" />
@@ -39,27 +37,31 @@
 <p>To run Safari on macOS, some manual setup is required. Some steps are different
 for Safari and Safari Technology Preview.</p>
 <ul class="simple">
-<li>Allow Safari to be controlled by SafariDriver:<ul>
-<li><code class="docutils literal notranslate"><span class="pre">safaridriver</span> <span class="pre">--enable</span></code> or</li>
-<li><code class="docutils literal notranslate"><span class="pre">&quot;/Applications/Safari</span> <span class="pre">Technology</span> <span class="pre">Preview.app/Contents/MacOS/safaridriver&quot;</span> <span class="pre">--enable</span></code></li>
+<li><p>Allow Safari to be controlled by SafariDriver:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">safaridriver</span> <span class="pre">--enable</span></code> or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;/Applications/Safari</span> <span class="pre">Technology</span> <span class="pre">Preview.app/Contents/MacOS/safaridriver&quot;</span> <span class="pre">--enable</span></code></p></li>
 </ul>
 </li>
-<li>Allow pop-up windows:<ul>
-<li><code class="docutils literal notranslate"><span class="pre">defaults</span> <span class="pre">write</span> <span class="pre">com.apple.Safari</span> <span class="pre">WebKitJavaScriptCanOpenWindowsAutomatically</span> <span class="pre">1</span></code> or</li>
-<li><code class="docutils literal notranslate"><span class="pre">defaults</span> <span class="pre">write</span> <span class="pre">com.apple.SafariTechnologyPreview</span> <span class="pre">WebKitJavaScriptCanOpenWindowsAutomatically</span> <span class="pre">1</span></code></li>
+<li><p>Allow pop-up windows:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">defaults</span> <span class="pre">write</span> <span class="pre">com.apple.Safari</span> <span class="pre">WebKitJavaScriptCanOpenWindowsAutomatically</span> <span class="pre">1</span></code> or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">defaults</span> <span class="pre">write</span> <span class="pre">com.apple.SafariTechnologyPreview</span> <span class="pre">WebKitJavaScriptCanOpenWindowsAutomatically</span> <span class="pre">1</span></code></p></li>
 </ul>
 </li>
-<li>Turn on additional experimental features Safari Technology Preview:<ul>
-<li><code class="docutils literal notranslate"><span class="pre">defaults</span> <span class="pre">write</span> <span class="pre">com.apple.SafariTechnologyPreview</span> <span class="pre">ExperimentalServerTimingEnabled</span> <span class="pre">1</span></code></li>
+<li><p>Turn on additional experimental features Safari Technology Preview:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">defaults</span> <span class="pre">write</span> <span class="pre">com.apple.SafariTechnologyPreview</span> <span class="pre">ExperimentalServerTimingEnabled</span> <span class="pre">1</span></code></p></li>
 </ul>
 </li>
-<li>Trust the certificate:<ul>
-<li><code class="docutils literal notranslate"><span class="pre">security</span> <span class="pre">add-trusted-cert</span> <span class="pre">-k</span> <span class="pre">&quot;$(security</span> <span class="pre">default-keychain</span> <span class="pre">|</span> <span class="pre">cut</span> <span class="pre">-d\&quot;</span> <span class="pre">-f2)&quot;</span> <span class="pre">tools/certs/cacert.pem</span></code></li>
+<li><p>Trust the certificate:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">security</span> <span class="pre">add-trusted-cert</span> <span class="pre">-k</span> <span class="pre">&quot;$(security</span> <span class="pre">default-keychain</span> <span class="pre">|</span> <span class="pre">cut</span> <span class="pre">-d\&quot;</span> <span class="pre">-f2)&quot;</span> <span class="pre">tools/certs/cacert.pem</span></code></p></li>
 </ul>
 </li>
-<li>Set <code class="docutils literal notranslate"><span class="pre">no_proxy='*'</span></code> in your environment. This is a
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">no_proxy='*'</span></code> in your environment. This is a
 workaround for a known
-<a class="reference external" href="https://github.com/web-platform-tests/wpt/issues/9007">macOS High Sierra issue</a>.</li>
+<a class="reference external" href="https://github.com/web-platform-tests/wpt/issues/9007">macOS High Sierra issue</a>.</p></li>
 </ul>
 <p>Now, run the tests using the <code class="docutils literal notranslate"><span class="pre">safari</span></code> product:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="n">safari</span> <span class="p">[</span><span class="n">test_list</span><span class="p">]</span>
@@ -131,17 +133,15 @@ See <code class="docutils literal notranslate"><span class="pre">man</span> <spa
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -158,7 +158,7 @@ See <code class="docutils literal notranslate"><span class="pre">man</span> <spa
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

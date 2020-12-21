@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Request &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Response" href="response.html" />
@@ -41,18 +39,18 @@
 <span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.request" title="wptserve.request"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.request" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="wptserve.request.Authentication">
-<em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">Authentication</code><span class="sig-paren">(</span><em>headers</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Authentication" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.request.</code><code class="sig-name descname">Authentication</code><span class="sig-paren">(</span><em class="sig-param">headers</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Authentication" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object for dealing with HTTP Authentication</p>
 <dl class="attribute">
 <dt id="wptserve.request.Authentication.username">
-<code class="descname">username</code><a class="headerlink" href="#wptserve.request.Authentication.username" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">username</code><a class="headerlink" href="#wptserve.request.Authentication.username" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The username supplied in the HTTP Authorization
 header, or None</p>
 <dl class="attribute">
 <dt id="wptserve.request.Authentication.password">
-<code class="descname">password</code><a class="headerlink" href="#wptserve.request.Authentication.password" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">password</code><a class="headerlink" href="#wptserve.request.Authentication.password" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The password supplied in the HTTP Authorization
@@ -65,12 +63,12 @@ choice if callers need to decode them as most browsers use it.</p>
 
 <dl class="class">
 <dt id="wptserve.request.BinaryCookieParser">
-<em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">BinaryCookieParser</code><span class="sig-paren">(</span><em>input=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.request.</code><code class="sig-name descname">BinaryCookieParser</code><span class="sig-paren">(</span><em class="sig-param">input=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser" title="Permalink to this definition">¶</a></dt>
 <dd><p>A subclass of BaseCookie that returns values in binary strings</p>
 <p>This is not intended to store the cookies; use Cookies instead.</p>
 <dl class="method">
 <dt id="wptserve.request.BinaryCookieParser.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>rawdata</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.load" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">rawdata</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load cookies from a binary string.</p>
 <p>This overrides and calls BaseCookie.load. Unlike BaseCookie.load, it
 does not accept dictionaries.</p>
@@ -78,14 +76,14 @@ does not accept dictionaries.</p>
 
 <dl class="method">
 <dt id="wptserve.request.BinaryCookieParser.value_decode">
-<code class="descname">value_decode</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.value_decode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">value_decode</code><span class="sig-paren">(</span><em class="sig-param">val</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.value_decode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decode value from network to (real_value, coded_value).</p>
 <p>Override BaseCookie.value_decode.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.request.BinaryCookieParser.value_encode">
-<code class="descname">value_encode</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.value_encode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">value_encode</code><span class="sig-paren">(</span><em class="sig-param">val</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.BinaryCookieParser.value_encode" title="Permalink to this definition">¶</a></dt>
 <dd><p>real_value, coded_value = value_encode(VALUE)
 Called prior to setting a cookie’s value from the dictionary
 representation.  The VALUE is the value being assigned.
@@ -96,62 +94,62 @@ Override this function to modify the behavior of cookies.</p>
 
 <dl class="class">
 <dt id="wptserve.request.CookieValue">
-<em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">CookieValue</code><span class="sig-paren">(</span><em>morsel</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.CookieValue" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.request.</code><code class="sig-name descname">CookieValue</code><span class="sig-paren">(</span><em class="sig-param">morsel</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.CookieValue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Representation of cookies.</p>
 <p>Note that cookies are considered read-only and the string value
 of the cookie will not change if you update the field values.
 However this is not enforced.</p>
 <dl class="attribute">
 <dt id="wptserve.request.CookieValue.key">
-<code class="descname">key</code><a class="headerlink" href="#wptserve.request.CookieValue.key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">key</code><a class="headerlink" href="#wptserve.request.CookieValue.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The name of the cookie.</p>
 <dl class="attribute">
 <dt id="wptserve.request.CookieValue.value">
-<code class="descname">value</code><a class="headerlink" href="#wptserve.request.CookieValue.value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">value</code><a class="headerlink" href="#wptserve.request.CookieValue.value" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The value of the cookie</p>
 <dl class="attribute">
 <dt id="wptserve.request.CookieValue.expires">
-<code class="descname">expires</code><a class="headerlink" href="#wptserve.request.CookieValue.expires" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">expires</code><a class="headerlink" href="#wptserve.request.CookieValue.expires" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The expiry date of the cookie</p>
 <dl class="attribute">
 <dt id="wptserve.request.CookieValue.path">
-<code class="descname">path</code><a class="headerlink" href="#wptserve.request.CookieValue.path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">path</code><a class="headerlink" href="#wptserve.request.CookieValue.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The path of the cookie</p>
 <dl class="attribute">
 <dt id="wptserve.request.CookieValue.comment">
-<code class="descname">comment</code><a class="headerlink" href="#wptserve.request.CookieValue.comment" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">comment</code><a class="headerlink" href="#wptserve.request.CookieValue.comment" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The comment of the cookie.</p>
 <dl class="attribute">
 <dt id="wptserve.request.CookieValue.domain">
-<code class="descname">domain</code><a class="headerlink" href="#wptserve.request.CookieValue.domain" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">domain</code><a class="headerlink" href="#wptserve.request.CookieValue.domain" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The domain with which the cookie is associated</p>
 <dl class="attribute">
 <dt id="wptserve.request.CookieValue.max_age">
-<code class="descname">max_age</code><a class="headerlink" href="#wptserve.request.CookieValue.max_age" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">max_age</code><a class="headerlink" href="#wptserve.request.CookieValue.max_age" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The max-age value of the cookie.</p>
 <dl class="attribute">
 <dt id="wptserve.request.CookieValue.secure">
-<code class="descname">secure</code><a class="headerlink" href="#wptserve.request.CookieValue.secure" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">secure</code><a class="headerlink" href="#wptserve.request.CookieValue.secure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Whether the cookie is marked as secure</p>
 <dl class="attribute">
 <dt id="wptserve.request.CookieValue.httponly">
-<code class="descname">httponly</code><a class="headerlink" href="#wptserve.request.CookieValue.httponly" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">httponly</code><a class="headerlink" href="#wptserve.request.CookieValue.httponly" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Whether the cookie is marked as httponly</p>
@@ -159,195 +157,180 @@ However this is not enforced.</p>
 
 <dl class="class">
 <dt id="wptserve.request.Cookies">
-<em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">Cookies</code><a class="headerlink" href="#wptserve.request.Cookies" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.request.</code><code class="sig-name descname">Cookies</code><a class="headerlink" href="#wptserve.request.Cookies" title="Permalink to this definition">¶</a></dt>
 <dd><p>MultiDict specialised for Cookie values</p>
 <p>Keys and values are binary strings.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wptserve.request.H2Request">
-<em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">H2Request</code><span class="sig-paren">(</span><em>request_handler</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.H2Request" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.request.</code><code class="sig-name descname">H2Request</code><span class="sig-paren">(</span><em class="sig-param">request_handler</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.H2Request" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
 <dt id="wptserve.request.MultiDict">
-<em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">MultiDict</code><a class="headerlink" href="#wptserve.request.MultiDict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.request.</code><code class="sig-name descname">MultiDict</code><a class="headerlink" href="#wptserve.request.MultiDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dictionary type that holds multiple values for each key</p>
 <dl class="method">
 <dt id="wptserve.request.MultiDict.first">
-<code class="descname">first</code><span class="sig-paren">(</span><em>key</em>, <em>default=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.first" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">first</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">default=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.first" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the first value with a given key</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> – The key to lookup</li>
-<li><strong>default</strong> – The default to return if key is
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – The key to lookup</p></li>
+<li><p><strong>default</strong> – The default to return if key is
 not found (throws if nothing is
-specified)</li>
+specified)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="wptserve.request.MultiDict.from_field_storage">
-<em class="property">classmethod </em><code class="descname">from_field_storage</code><span class="sig-paren">(</span><em>fs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.from_field_storage" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_field_storage</code><span class="sig-paren">(</span><em class="sig-param">fs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.from_field_storage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct a MultiDict from a cgi.FieldStorage</p>
 <p>Note that all keys and values are binary strings.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.request.MultiDict.get">
-<code class="descname">get</code><span class="sig-paren">(</span><em>key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the first value with a given key</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> – The key to lookup</li>
-<li><strong>default</strong> – The default to return if key is
-not found (None by default)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – The key to lookup</p></li>
+<li><p><strong>default</strong> – The default to return if key is
+not found (None by default)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.request.MultiDict.get_list">
-<code class="descname">get_list</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.get_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_list</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.get_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all values with a given key as a list</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – The key to lookup</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – The key to lookup</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.request.MultiDict.last">
-<code class="descname">last</code><span class="sig-paren">(</span><em>key</em>, <em>default=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.last" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">last</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">default=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.MultiDict.last" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the last value with a given key</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> – The key to lookup</li>
-<li><strong>default</strong> – The default to return if key is
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – The key to lookup</p></li>
+<li><p><strong>default</strong> – The default to return if key is
 not found (throws if nothing is
-specified)</li>
+specified)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="wptserve.request.Request">
-<em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">Request</code><span class="sig-paren">(</span><em>request_handler</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Request" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.request.</code><code class="sig-name descname">Request</code><span class="sig-paren">(</span><em class="sig-param">request_handler</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object representing a HTTP request.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.doc_root">
-<code class="descname">doc_root</code><a class="headerlink" href="#wptserve.request.Request.doc_root" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">doc_root</code><a class="headerlink" href="#wptserve.request.Request.doc_root" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The local directory to use as a base when resolving paths</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.route_match">
-<code class="descname">route_match</code><a class="headerlink" href="#wptserve.request.Request.route_match" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">route_match</code><a class="headerlink" href="#wptserve.request.Request.route_match" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Regexp match object from matching the request path to the route
 selected for the request.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.client_address">
-<code class="descname">client_address</code><a class="headerlink" href="#wptserve.request.Request.client_address" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">client_address</code><a class="headerlink" href="#wptserve.request.Request.client_address" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Contains a tuple of the form (host, port) representing the client’s address.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.protocol_version">
-<code class="descname">protocol_version</code><a class="headerlink" href="#wptserve.request.Request.protocol_version" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">protocol_version</code><a class="headerlink" href="#wptserve.request.Request.protocol_version" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>HTTP version specified in the request.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.method">
-<code class="descname">method</code><a class="headerlink" href="#wptserve.request.Request.method" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">method</code><a class="headerlink" href="#wptserve.request.Request.method" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>HTTP method in the request.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.request_path">
-<code class="descname">request_path</code><a class="headerlink" href="#wptserve.request.Request.request_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">request_path</code><a class="headerlink" href="#wptserve.request.Request.request_path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Request path as it appears in the HTTP request.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.url_base">
-<code class="descname">url_base</code><a class="headerlink" href="#wptserve.request.Request.url_base" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">url_base</code><a class="headerlink" href="#wptserve.request.Request.url_base" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>The prefix part of the path; typically / unless the handler has a url_base set</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.url">
-<code class="descname">url</code><a class="headerlink" href="#wptserve.request.Request.url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">url</code><a class="headerlink" href="#wptserve.request.Request.url" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Absolute URL for the request.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.url_parts">
-<code class="descname">url_parts</code><a class="headerlink" href="#wptserve.request.Request.url_parts" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">url_parts</code><a class="headerlink" href="#wptserve.request.Request.url_parts" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Parts of the requested URL as obtained by urlparse.urlsplit(path)</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.request_line">
-<code class="descname">request_line</code><a class="headerlink" href="#wptserve.request.Request.request_line" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">request_line</code><a class="headerlink" href="#wptserve.request.Request.request_line" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Raw request line</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.headers">
-<code class="descname">headers</code><a class="headerlink" href="#wptserve.request.Request.headers" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">headers</code><a class="headerlink" href="#wptserve.request.Request.headers" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>RequestHeaders object providing a dictionary-like representation of
 the request headers.</p>
 <dl class="attribute">
 <dt>
-<code class="descname">raw_headers.</code></dt>
+<code class="sig-name descname">raw_headers.</code></dt>
 <dd></dd></dl>
 
 <p>Dictionary of non-normalized request headers.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.body">
-<code class="descname">body</code><a class="headerlink" href="#wptserve.request.Request.body" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">body</code><a class="headerlink" href="#wptserve.request.Request.body" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Request body as a string</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.raw_input">
-<code class="descname">raw_input</code><a class="headerlink" href="#wptserve.request.Request.raw_input" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">raw_input</code><a class="headerlink" href="#wptserve.request.Request.raw_input" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>File-like object representing the body of the request.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.GET">
-<code class="descname">GET</code><a class="headerlink" href="#wptserve.request.Request.GET" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">GET</code><a class="headerlink" href="#wptserve.request.Request.GET" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>MultiDict representing the parameters supplied with the request.
@@ -356,7 +339,7 @@ chosen to be familiar to users of other systems such as PHP.
 Both keys and values are binary strings.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.POST">
-<code class="descname">POST</code><a class="headerlink" href="#wptserve.request.Request.POST" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">POST</code><a class="headerlink" href="#wptserve.request.Request.POST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>MultiDict representing the request body parameters. Most parameters
@@ -364,21 +347,21 @@ are present as string values, but file uploads have file-like
 values. All string values (including keys) have binary type.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.cookies">
-<code class="descname">cookies</code><a class="headerlink" href="#wptserve.request.Request.cookies" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">cookies</code><a class="headerlink" href="#wptserve.request.Request.cookies" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>A Cookies object representing cookies sent with the request with a
 dictionary-like interface.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.auth">
-<code class="descname">auth</code><a class="headerlink" href="#wptserve.request.Request.auth" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">auth</code><a class="headerlink" href="#wptserve.request.Request.auth" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>An instance of Authentication with username and password properties
 representing any credentials supplied using HTTP authentication.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Request.server">
-<code class="descname">server</code><a class="headerlink" href="#wptserve.request.Request.server" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">server</code><a class="headerlink" href="#wptserve.request.Request.server" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Server object containing information about the server environment.</p>
@@ -386,64 +369,50 @@ representing any credentials supplied using HTTP authentication.</p>
 
 <dl class="class">
 <dt id="wptserve.request.RequestHeaders">
-<em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">RequestHeaders</code><span class="sig-paren">(</span><em>items</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.request.</code><code class="sig-name descname">RequestHeaders</code><span class="sig-paren">(</span><em class="sig-param">items</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read-only dictionary-like API for accessing request headers.</p>
 <p>Unlike BaseHTTPRequestHandler.headers, this class always returns all
 headers with the same name (separated by commas). And it ensures all keys
 (i.e. names of headers) and values have binary type.</p>
 <dl class="method">
 <dt id="wptserve.request.RequestHeaders.get">
-<code class="descname">get</code><span class="sig-paren">(</span><em>key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a string representing all headers with a particular value,
 with multiple headers separated by a comma. If no header is found
 return a default value</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> – The header name to look up (case-insensitive)</li>
-<li><strong>default</strong> – The value to return in the case of no match</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – The header name to look up (case-insensitive)</p></li>
+<li><p><strong>default</strong> – The value to return in the case of no match</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="wptserve.request.RequestHeaders.get_list">
-<code class="descname">get_list</code><span class="sig-paren">(</span><em>key</em>, <em>default=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders.get_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_list</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">default=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.RequestHeaders.get_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all the header values for a particular field name as
 a list</p>
 </dd></dl>
-
-<dl class="method">
-<dt id="wptserve.request.RequestHeaders.iteritems">
-<code class="descname">iteritems</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; an iterator over the (key, value) items of D<a class="headerlink" href="#wptserve.request.RequestHeaders.iteritems" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wptserve.request.RequestHeaders.itervalues">
-<code class="descname">itervalues</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; an iterator over the values of D<a class="headerlink" href="#wptserve.request.RequestHeaders.itervalues" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="wptserve.request.Server">
-<em class="property">class </em><code class="descclassname">wptserve.request.</code><code class="descname">Server</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Server" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wptserve.request.</code><code class="sig-name descname">Server</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.request.Server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data about the server environment</p>
 <dl class="attribute">
 <dt id="wptserve.request.Server.config">
-<code class="descname">config</code><a class="headerlink" href="#wptserve.request.Server.config" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">config</code><a class="headerlink" href="#wptserve.request.Server.config" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Environment configuration information with information about the
 various servers running, their hostnames and ports.</p>
 <dl class="attribute">
 <dt id="wptserve.request.Server.stash">
-<code class="descname">stash</code><a class="headerlink" href="#wptserve.request.Server.stash" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">stash</code><a class="headerlink" href="#wptserve.request.Server.stash" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Stash object holding state stored on the server between requests.</p>
@@ -499,17 +468,15 @@ various servers running, their hostnames and ports.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -526,7 +493,7 @@ various servers running, their hostnames and ports.</p>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

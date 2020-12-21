@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Rendering Test Guidelines &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Reftests" href="reftests.html" />
@@ -45,17 +43,17 @@ given test passed or not.</p>
 <p>Success is largely indicated by the color green; typically in one of
 two ways:</p>
 <ul class="simple">
-<li><strong>The green paragraph</strong>: arguably the simplest form of test, this
+<li><p><strong>The green paragraph</strong>: arguably the simplest form of test, this
 typically consists of single line of text with a pass condition of,
 “This text should be green”. A variant of this is using the
 background instead, with a pass condition of, “This should have a
-green background”.</li>
-<li><strong>The green square</strong>: applicable to many block layout tests, the test
+green background”.</p></li>
+<li><p><strong>The green square</strong>: applicable to many block layout tests, the test
 renders a green square when it passes; these can mostly be written to
 match <a class="reference external" href="https://github.com/w3c/csswg-test/blob/master/reference/ref-filled-green-100px-square.xht">this</a> reference. This green square is
 often rendered over a red square, such that when the test fails there is red
 visible on the page; this can even be done using text by using the
-<a class="reference internal" href="ahem.html"><span class="doc">Ahem</span></a> font.</li>
+<a class="reference internal" href="ahem.html"><span class="doc">Ahem</span></a> font.</p></li>
 </ul>
 <p>More occasionally, the entire canvas is rendered green, typically when
 testing parts of CSS that affect the entire page. Care has to be taken
@@ -77,16 +75,16 @@ agents will fail! Furthermore, in a rather ironic twist, the best
 tests are those that catch the most unpredictable failures!</p>
 <p>Having said that, here are the best ways to indicate failures:</p>
 <ul class="simple">
-<li>Using the color red is probably the best way of highlighting
+<li><p>Using the color red is probably the best way of highlighting
 failures. Tests should be designed so that if the rendering is a
 few pixels off some red is uncovered or otherwise rendered on the
-page.</li>
-<li>Tests of the <code class="docutils literal notranslate"><span class="pre">line-height</span></code>, <code class="docutils literal notranslate"><span class="pre">font-size</span></code> and similar properties can
+page.</p></li>
+<li><p>Tests of the <code class="docutils literal notranslate"><span class="pre">line-height</span></code>, <code class="docutils literal notranslate"><span class="pre">font-size</span></code> and similar properties can
 sometimes be devised in such a way that a failure will result in
-the text overlapping.</li>
-<li>Some properties lend themselves well to making “FAIL” render in the
+the text overlapping.</p></li>
+<li><p>Some properties lend themselves well to making “FAIL” render in the
 case of something going wrong, for example <code class="docutils literal notranslate"><span class="pre">quotes</span></code> and
-<code class="docutils literal notranslate"><span class="pre">content</span></code>.</li>
+<code class="docutils literal notranslate"><span class="pre">content</span></code>.</p></li>
 </ul>
 </div>
 <div class="section" id="other-colors">
@@ -94,14 +92,14 @@ case of something going wrong, for example <code class="docutils literal notrans
 <p>Aside from green and red, other colors are generally used in specific
 ways:</p>
 <ul class="simple">
-<li>Black is typically used for descriptive text,</li>
-<li>Blue is frequently used as an obvious color for tests with complex
-pass conditions,</li>
-<li>Fuchsia, yellow, teal, and orange are typically used when multiple
-colors are needed,</li>
-<li>Dark gray is often used for descriptive lines, and</li>
-<li>Silver or light gray is often used for irrelevant content, such as
-filler text.</li>
+<li><p>Black is typically used for descriptive text,</p></li>
+<li><p>Blue is frequently used as an obvious color for tests with complex
+pass conditions,</p></li>
+<li><p>Fuchsia, yellow, teal, and orange are typically used when multiple
+colors are needed,</p></li>
+<li><p>Dark gray is often used for descriptive lines, and</p></li>
+<li><p>Silver or light gray is often used for irrelevant content, such as
+filler text.</p></li>
 </ul>
 <p>None of these rules are absolute because testing
 color-related functionality will necessitate using some of these
@@ -152,17 +150,15 @@ colors!</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -179,7 +175,7 @@ colors!</p>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

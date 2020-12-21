@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>“Introduction to WPT” video transcript &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Running Tests" href="running-tests/index.html" />
@@ -56,7 +54,8 @@ main parts.</p>
 </div></blockquote>
 <p><strong>A top-down shot of a blank sheet of graph paper</strong></p>
 <blockquote>
-<div>First, there are the web browsers.</div></blockquote>
+<div><p>First, there are the web browsers.</p>
+</div></blockquote>
 <p>A hand places a paper cutout depicting a browser window in the lower-right
 corner of the sheet.</p>
 <blockquote>
@@ -67,41 +66,49 @@ pages and with each other.</p>
 <p>A hand places a paper cutout depicting a scroll of parchment paper in the
 lower-left corner of the sheet.</p>
 <blockquote>
-<div>These documents define how the browsers are supposed to behave.</div></blockquote>
+<div><p>These documents define how the browsers are supposed to behave.</p>
+</div></blockquote>
 <p><strong>A screen recording of a web browser</strong></p>
 <p><code class="docutils literal notranslate"><span class="pre">https://platform.html5.org</span></code> is entered into the location bar, and the browser
 loads the page.</p>
 <blockquote>
-<div>That includes everything from how text is rendered to how augmented reality
-apps are built. Specifying it all takes a lot of work!</div></blockquote>
+<div><p>That includes everything from how text is rendered to how augmented reality
+apps are built. Specifying it all takes a lot of work!</p>
+</div></blockquote>
 <p>The browser clicks through to the Fetch standard and begins scrolling.</p>
 <blockquote>
-<div>And as you might expect, the standards can get really complicated.</div></blockquote>
+<div><p>And as you might expect, the standards can get really complicated.</p>
+</div></blockquote>
 <p><strong>Return to the graph paper</strong></p>
 <p>A hand draws an arrow from the cutout of the scroll to the cutout of the
 browser window.</p>
 <blockquote>
-<div>The people who build the browsers use the specifications as a blue print for
+<div><p>The people who build the browsers use the specifications as a blue print for
 their work. A shared set of generic instructions like these make it possible
 for people to choose between different browsers, but only if the browsers get
-it right.</div></blockquote>
+it right.</p>
+</div></blockquote>
 <p>A hand places a cutout representing a stack of papers on the top-center of the
 sheet and draws an arrow from that cutout to the cutout of the browser window.</p>
 <blockquote>
-<div>To verify their work, the browser maintainers rely on the third part of the
-web platform: conformance tests.</div></blockquote>
+<div><p>To verify their work, the browser maintainers rely on the third part of the
+web platform: conformance tests.</p>
+</div></blockquote>
 <p>A hand draws an arrow from the cutout of the scroll to the cutout of the tests.</p>
 <blockquote>
-<div>We author tests to describe the same behavior as the standards, just
-formatted in a way that a computer can understand.</div></blockquote>
+<div><p>We author tests to describe the same behavior as the standards, just
+formatted in a way that a computer can understand.</p>
+</div></blockquote>
 <p>A hand draws an arrow from the cutout of the browser window to the cutout of
 the scroll.</p>
 <blockquote>
-<div>In the process, the maintainers sometimes uncover problems in the design of
-the specifications, and they recommend changes to fix them.</div></blockquote>
+<div><p>In the process, the maintainers sometimes uncover problems in the design of
+the specifications, and they recommend changes to fix them.</p>
+</div></blockquote>
 <p>A hand draws an arrow from the cutout of the tests to the cutout of the scroll.</p>
 <blockquote>
-<div>Test authors also find and fix these so-called “spec bugs.”</div></blockquote>
+<div><p>Test authors also find and fix these so-called “spec bugs.”</p>
+</div></blockquote>
 <p>A hand draws an arrow from the cutout of the browser window to the cutout of
 the tests.</p>
 <blockquote>
@@ -117,8 +124,9 @@ themselves.</p>
 <p><code class="docutils literal notranslate"><span class="pre">http://wpt.live</span></code> is entered into the location bar, and the browser loads the
 page.</p>
 <blockquote>
-<div>The latest version of the tests is publicly hosted in executable form on the
-web at wpt.live.</div></blockquote>
+<div><p>The latest version of the tests is publicly hosted in executable form on the
+web at wpt.live.</p>
+</div></blockquote>
 <p>The browser begins scrolling through the enormous list of directories.</p>
 <blockquote>
 <div><p>There, were can navigate among all the tests for all the different web
@@ -128,16 +136,18 @@ technologies.</p>
 <p>The browser stops scrolling, and a mouse cursor clicks on <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, then <code class="docutils literal notranslate"><span class="pre">api</span></code>,
 then <code class="docutils literal notranslate"><span class="pre">headers</span></code>, and finally <code class="docutils literal notranslate"><span class="pre">headers-basic.html</span></code>.</p>
 <blockquote>
-<div>This test is written with the web-platform-tests’s testing framework,
+<div><p>This test is written with the web-platform-tests’s testing framework,
 testharness.js. The test completes almost instantly, and testharness.js
 reports that this browser passes all but one subtest. To understand the
-failure, we can read the source code.</div></blockquote>
+failure, we can read the source code.</p>
+</div></blockquote>
 <p>The mouse opens a context menu, selects “View Source”, and scrolls to the
 source of the failing test.</p>
 <blockquote>
-<div>It looks like the failing subtest is for what happens when a <code class="docutils literal notranslate"><span class="pre">Headers</span></code>
+<div><p>It looks like the failing subtest is for what happens when a <code class="docutils literal notranslate"><span class="pre">Headers</span></code>
 instance has a custom JavaScript iterator method. That’s a strange edge case,
-but it’s important for browsers to agree on every detail!</div></blockquote>
+but it’s important for browsers to agree on every detail!</p>
+</div></blockquote>
 <p>The mouse clicks on the browser’s “Back” button and then navigates through the
 directory structure to the test at
 <code class="docutils literal notranslate"><span class="pre">css/css-transforms/transform-transformed-tr-contains-fixed-position.html</span></code>. It
@@ -155,14 +165,16 @@ pages.</p>
 <p>The mouse opens a context menu, selects “View Source”, and clicks on the <code class="docutils literal notranslate"><span class="pre">href</span></code>
 value for the matching reference. It looks identical to the previous page.</p>
 <blockquote>
-<div>Inside of it, we’ll find a link to a second page. This second page is the
+<div><p>Inside of it, we’ll find a link to a second page. This second page is the
 reference page. It’s designed to use a different approach to produce the same
-output.</div></blockquote>
+output.</p>
+</div></blockquote>
 <p>The mouse clicks back and forth between the browser tabs displaying the test
 page and the reference page.</p>
 <blockquote>
-<div>When tests like these are run automatically, a computer verifies that
-screenshots of the two pages are identical.</div></blockquote>
+<div><p>When tests like these are run automatically, a computer verifies that
+screenshots of the two pages are identical.</p>
+</div></blockquote>
 <p>The mouse clicks on the browser’s “Back” button and then navigates through the
 directory structure to the test at
 <code class="docutils literal notranslate"><span class="pre">css/css-animations/animation-fill-mode-002-manual.html</span></code>. The page includes the
@@ -180,53 +192,62 @@ determine whether the browser is behaving correctly.</p>
 <p><code class="docutils literal notranslate"><span class="pre">https://web-platform-tests.org</span></code> is entered into the location bar, and the
 browser loads the page.</p>
 <blockquote>
-<div>You can read more about all the test types in the project documentation at
-<a class="reference external" href="https://web-platform-tests.org">web-platform-tests.org</a>.</div></blockquote>
+<div><p>You can read more about all the test types in the project documentation at
+<a class="reference external" href="https://web-platform-tests.org">web-platform-tests.org</a>.</p>
+</div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">https://wpt.fyi</span></code> is entered into the location bar, and the browser loads the
 page.</p>
 <blockquote>
-<div><a class="reference external" href="https://wpt.fyi">wpt.fyi</a> is a great way to see how today’s browsers are
-performing on the web-platform-tests.</div></blockquote>
+<div><p><a class="reference external" href="https://wpt.fyi">wpt.fyi</a> is a great way to see how today’s browsers are
+performing on the web-platform-tests.</p>
+</div></blockquote>
 <p>The browser scrolls to <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, and a mouse cursor clicks on <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, then
 <code class="docutils literal notranslate"><span class="pre">api</span></code>, then <code class="docutils literal notranslate"><span class="pre">headers</span></code>, and finally <code class="docutils literal notranslate"><span class="pre">headers-basic.html</span></code>.</p>
 <blockquote>
-<div>Here, you’ll find all the same tests, just presented with the results from
-various browsers.</div></blockquote>
+<div><p>Here, you’ll find all the same tests, just presented with the results from
+various browsers.</p>
+</div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">https://web-platform-tests.live/LICENSE.md</span></code> is entered into the location bar,
 and the browser loads the page.</p>
 <blockquote>
-<div>The web-platform-tests project is free and open source software. From bug
+<div><p>The web-platform-tests project is free and open source software. From bug
 reports to documentation improvements and brand new tests, we welcome all
-sorts of contributions from everyone.</div></blockquote>
+sorts of contributions from everyone.</p>
+</div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">https://github.com/web-platform-tests/wpt</span></code> is entered into the location bar,
 and the browser loads the page.</p>
 <blockquote>
-<div>To get involved, you can visit the project management website hosted on
-GitHub.com.</div></blockquote>
+<div><p>To get involved, you can visit the project management website hosted on
+GitHub.com.</p>
+</div></blockquote>
 <p>The browser navigates to the project’s “issues” list and filters the list for
 just the ones labeled as “good first issue.”</p>
 <blockquote>
-<div>Some issues are more difficult than others, but many are perfect for people who
+<div><p>Some issues are more difficult than others, but many are perfect for people who
 are just getting started with the project. When we come across an issue like
-that, we label it as a “good first issue.”</div></blockquote>
+that, we label it as a “good first issue.”</p>
+</div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">https://lists.w3.org/Archives/Public/public-test-infra</span></code> is entered into the
 location bar, and the browser loads the page.</p>
 <blockquote>
-<div>You can also join the mailing list to receive e-mail with announcements and
-discussion about the project.</div></blockquote>
+<div><p>You can also join the mailing list to receive e-mail with announcements and
+discussion about the project.</p>
+</div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">http://irc.w3.org/</span></code> is entered into the location bar, and the browser loads
 the page. <code class="docutils literal notranslate"><span class="pre">web4all</span></code> is entered as the Nickname, and <code class="docutils literal notranslate"><span class="pre">#testing</span></code> is entered as
 the channel name. A mouse clicks on the “Connect” button.</p>
 <blockquote>
-<div>For more immediate communication, you can join the “testing” channel on the
-IRC server run by the W3C.</div></blockquote>
+<div><p>For more immediate communication, you can join the “testing” channel on the
+IRC server run by the W3C.</p>
+</div></blockquote>
 <p><strong>Return to the graph paper</strong></p>
 <p>A hand places a paper cutout depicting a human silhouette on the sheet. It then
 draws arrows from the new cutout to each of the three previously-introduced
 cutouts.</p>
 <p><img alt="_images/web-platform.png" src="_images/web-platform.png" /></p>
 <blockquote>
-<div>We’re looking forward to working with you!</div></blockquote>
+<div><p>We’re looking forward to working with you!</p>
+</div></blockquote>
 </div>
 
 
@@ -265,17 +286,15 @@ cutouts.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -292,7 +311,7 @@ cutouts.</p>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

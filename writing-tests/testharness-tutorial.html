@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>testharness.js tutorial &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Rendering Test Guidelines" href="rendering.html" />
@@ -58,13 +56,13 @@ purposes of this guide, we’ll only consider the features we need to test the
 behavior of <code class="docutils literal notranslate"><span class="pre">fetch</span></code>.</p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#setting-up-your-workspace" id="id1">Setting up your workspace</a></li>
-<li><a class="reference internal" href="#writing-a-subtest" id="id2">Writing a subtest</a></li>
-<li><a class="reference internal" href="#refining-the-subtest" id="id3">Refining the subtest</a></li>
-<li><a class="reference internal" href="#writing-a-second-subtest" id="id4">Writing a second subtest</a></li>
-<li><a class="reference internal" href="#verifying-our-work" id="id5">Verifying our work</a></li>
-<li><a class="reference internal" href="#submitting-the-test" id="id6">Submitting the test</a></li>
-<li><a class="reference internal" href="#more-practice" id="id7">More practice</a></li>
+<li><p><a class="reference internal" href="#setting-up-your-workspace" id="id1">Setting up your workspace</a></p></li>
+<li><p><a class="reference internal" href="#writing-a-subtest" id="id2">Writing a subtest</a></p></li>
+<li><p><a class="reference internal" href="#refining-the-subtest" id="id3">Refining the subtest</a></p></li>
+<li><p><a class="reference internal" href="#writing-a-second-subtest" id="id4">Writing a second subtest</a></p></li>
+<li><p><a class="reference internal" href="#verifying-our-work" id="id5">Verifying our work</a></p></li>
+<li><p><a class="reference internal" href="#submitting-the-test" id="id6">Submitting the test</a></p></li>
+<li><p><a class="reference internal" href="#more-practice" id="id7">More practice</a></p></li>
 </ul>
 </div>
 <div class="section" id="setting-up-your-workspace">
@@ -130,7 +128,7 @@ same directory and insert the following text:</p>
 </div>
 <p>Let’s step through each part of this file.</p>
 <ul>
-<li><div class="first highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
 </pre></div>
 </div>
@@ -139,19 +137,19 @@ don’t infer them to be something we aren’t expecting. We’re omitting the
 <code class="docutils literal notranslate"><span class="pre">&lt;html&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;head&gt;</span></code> tags. That’s a common practice in WPT, preferred
 because it makes tests more concise.</p>
 </li>
-<li><div class="first highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>fetch: setting cookies<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>fetch: setting cookies<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <p>The document’s title should succinctly describe the feature under test.</p>
 </li>
-<li><div class="first highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 <p>These two <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tags retrieve the code that powers testharness.js. A
 testharness.js test can’t run without them!</p>
 </li>
-<li><div class="first highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<li><div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;thing.asis&#39;</span><span class="p">)</span>
     <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
@@ -285,7 +283,7 @@ our first subtest.</p>
 <p>This may look familiar from the previous subtest, but there are some important
 differences.</p>
 <ul>
-<li><div class="first highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kr">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">get_host_info</span><span class="p">().</span><span class="nx">HTTP_NOTSAMESITE_ORIGIN</span> <span class="o">+</span>
+<li><div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kr">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">get_host_info</span><span class="p">().</span><span class="nx">HTTP_NOTSAMESITE_ORIGIN</span> <span class="o">+</span>
   <span class="s1">&#39;/fetch/api/basic/set-cookie.asis&#39;</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -293,7 +291,7 @@ differences.</p>
 alternate host name. The name of the host depends on how the WPT server has
 been configured, so we rely on the helper to provide an appropriate value.</p>
 </li>
-<li><div class="first highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+<li><div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
       <span class="nx">assert_unreached</span><span class="p">(</span><span class="s1">&#39;The promise for the aborted fetch operation should reject.&#39;</span><span class="p">);</span>
     <span class="p">},</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
@@ -384,13 +382,13 @@ GitHub</span></a> has all the details on how to do that.</p>
 <h2><a class="toc-backref" href="#id7">More practice</a><a class="headerlink" href="#more-practice" title="Permalink to this headline">¶</a></h2>
 <p>Here are some ways you can keep experimenting with WPT using this test:</p>
 <ul class="simple">
-<li>Improve the test’s readability by defining helper functions like
-<code class="docutils literal notranslate"><span class="pre">cookieIsSet</span></code> and <code class="docutils literal notranslate"><span class="pre">deleteCookie</span></code></li>
-<li>Improve the test’s coverage by refactoring it into <a class="reference internal" href="testharness.html"><span class="doc">a “multi-global”
-test</span></a></li>
-<li>Improve the test’s coverage by writing more subtests (e.g. the behavior when
+<li><p>Improve the test’s readability by defining helper functions like
+<code class="docutils literal notranslate"><span class="pre">cookieIsSet</span></code> and <code class="docutils literal notranslate"><span class="pre">deleteCookie</span></code></p></li>
+<li><p>Improve the test’s coverage by refactoring it into <a class="reference internal" href="testharness.html"><span class="doc">a “multi-global”
+test</span></a></p></li>
+<li><p>Improve the test’s coverage by writing more subtests (e.g. the behavior when
 the fetch operation is aborted by <code class="docutils literal notranslate"><span class="pre">window.stop</span></code>, or the behavior when the
-HTTP response sets multiple cookies)</li>
+HTTP response sets multiple cookies)</p></li>
 </ul>
 </div>
 </div>
@@ -438,17 +436,15 @@ HTTP response sets multiple cookies)</li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -465,7 +461,7 @@ HTTP response sets multiple cookies)</li>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

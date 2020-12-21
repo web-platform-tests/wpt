@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Pipes &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="pywebsocket3: A Standalone WebSocket Server for testing purposes" href="../../../admin/pywebsocket3.html" />
@@ -40,7 +38,7 @@
 <span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.pipes" title="wptserve.pipes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.pipes" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="wptserve.pipes.gzip">
-<code class="descclassname">wptserve.pipes.</code><code class="descname">gzip</code><span class="sig-paren">(</span><em>request</em>, <em>response</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.gzip" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">gzip</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.gzip" title="Permalink to this definition">¶</a></dt>
 <dd><p>This pipe gzip-encodes response data.</p>
 <p>It sets (or overwrites) these HTTP headers:
 Content-Encoding is set to gzip
@@ -49,111 +47,95 @@ Content-Length is set to the length of the compressed content</p>
 
 <dl class="function">
 <dt id="wptserve.pipes.header">
-<code class="descclassname">wptserve.pipes.</code><code class="descname">header</code><span class="sig-paren">(</span><em>request</em>, <em>response</em>, <em>name</em>, <em>value</em>, <em>append=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.header" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">header</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em>, <em class="sig-param">name</em>, <em class="sig-param">value</em>, <em class="sig-param">append=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a HTTP header.</p>
 <p>Replaces any existing HTTP header of the same name unless
 append is set, in which case the header is appended without
 replacement.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> – Name of the header to set.</li>
-<li><strong>value</strong> – Value to use for the header.</li>
-<li><strong>append</strong> – True if existing headers should not be replaced</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Name of the header to set.</p></li>
+<li><p><strong>value</strong> – Value to use for the header.</p></li>
+<li><p><strong>append</strong> – True if existing headers should not be replaced</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="wptserve.pipes.slice">
-<code class="descclassname">wptserve.pipes.</code><code class="descname">slice</code><span class="sig-paren">(</span><em>request</em>, <em>response</em>, <em>start</em>, <em>end=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.slice" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">slice</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em>, <em class="sig-param">start</em>, <em class="sig-param">end=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.slice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a byte range of the response body</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>start</strong> – The starting offset. Follows python semantics including
-negative numbers.</li>
-<li><strong>end</strong> – The ending offset, again with python semantics and None
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – The starting offset. Follows python semantics including
+negative numbers.</p></li>
+<li><p><strong>end</strong> – The ending offset, again with python semantics and None
 (spelled “null” in a query string) to indicate the end of
-the file.</li>
+the file.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="wptserve.pipes.status">
-<code class="descclassname">wptserve.pipes.</code><code class="descname">status</code><span class="sig-paren">(</span><em>request</em>, <em>response</em>, <em>code</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">status</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em>, <em class="sig-param">code</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alter the status code.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>code</strong> – Status code to use for the response.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>code</strong> – Status code to use for the response.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="wptserve.pipes.sub">
-<code class="descclassname">wptserve.pipes.</code><code class="descname">sub</code><span class="sig-paren">(</span><em>request</em>, <em>response</em>, <em>escape_type='html'</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.sub" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">sub</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em>, <em class="sig-param">escape_type='html'</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.sub" title="Permalink to this definition">¶</a></dt>
 <dd><p>Substitute environment information about the server and request into the script.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>escape_type</strong> – String detailing the type of escaping to use. Known values are
-“html” and “none”, with “html” the default for historic reasons.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>escape_type</strong> – String detailing the type of escaping to use. Known values are
+“html” and “none”, with “html” the default for historic reasons.</p>
+</dd>
+</dl>
 <p>The format is a very limited template language. Substitutions are
 enclosed by {{ and }}. There are several available substitutions:</p>
-<dl class="docutils">
-<dt>host</dt>
-<dd>A simple string value and represents the primary host from which the
-tests are being run.</dd>
-<dt>domains</dt>
-<dd>A dictionary of available domains indexed by subdomain name.</dd>
-<dt>ports</dt>
-<dd>A dictionary of lists of ports indexed by protocol.</dd>
-<dt>location</dt>
-<dd>A dictionary of parts of the request URL. Valid keys are
+<dl>
+<dt>host</dt><dd><p>A simple string value and represents the primary host from which the
+tests are being run.</p>
+</dd>
+<dt>domains</dt><dd><p>A dictionary of available domains indexed by subdomain name.</p>
+</dd>
+<dt>ports</dt><dd><p>A dictionary of lists of ports indexed by protocol.</p>
+</dd>
+<dt>location</dt><dd><p>A dictionary of parts of the request URL. Valid keys are
 ‘server, ‘scheme’, ‘host’, ‘hostname’, ‘port’, ‘path’ and ‘query’.
 ‘server’ is scheme://host:port, ‘host’ is hostname:port, and query
-includes the leading ‘?’, but other delimiters are omitted.</dd>
-<dt>headers</dt>
-<dd>A dictionary of HTTP headers in the request.</dd>
-<dt>header_or_default(header, default)</dt>
-<dd><p class="first">The value of an HTTP header, or a default value if it is absent.
+includes the leading ‘?’, but other delimiters are omitted.</p>
+</dd>
+<dt>headers</dt><dd><p>A dictionary of HTTP headers in the request.</p>
+</dd>
+<dt>header_or_default(header, default)</dt><dd><p>The value of an HTTP header, or a default value if it is absent.
 For example:</p>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{{</span><span class="n">header_or_default</span><span class="p">(</span><span class="n">X</span><span class="o">-</span><span class="n">Test</span><span class="p">,</span> <span class="n">test</span><span class="o">-</span><span class="n">header</span><span class="o">-</span><span class="n">absent</span><span class="p">)}}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{{</span><span class="n">header_or_default</span><span class="p">(</span><span class="n">X</span><span class="o">-</span><span class="n">Test</span><span class="p">,</span> <span class="n">test</span><span class="o">-</span><span class="n">header</span><span class="o">-</span><span class="n">absent</span><span class="p">)}}</span>
 </pre></div>
 </div>
 </dd>
-<dt>GET</dt>
-<dd>A dictionary of query parameters supplied with the request.</dd>
-<dt>uuid()</dt>
-<dd>A pesudo-random UUID suitable for usage with stash</dd>
-<dt>file_hash(algorithm, filepath)</dt>
-<dd><p class="first">The cryptographic hash of a file. Supported algorithms: md5, sha1,
+<dt>GET</dt><dd><p>A dictionary of query parameters supplied with the request.</p>
+</dd>
+<dt>uuid()</dt><dd><p>A pesudo-random UUID suitable for usage with stash</p>
+</dd>
+<dt>file_hash(algorithm, filepath)</dt><dd><p>The cryptographic hash of a file. Supported algorithms: md5, sha1,
 sha224, sha256, sha384, and sha512. For example:</p>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{{</span><span class="n">file_hash</span><span class="p">(</span><span class="n">md5</span><span class="p">,</span> <span class="n">dom</span><span class="o">/</span><span class="n">interfaces</span><span class="o">.</span><span class="n">html</span><span class="p">)}}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{{</span><span class="n">file_hash</span><span class="p">(</span><span class="n">md5</span><span class="p">,</span> <span class="n">dom</span><span class="o">/</span><span class="n">interfaces</span><span class="o">.</span><span class="n">html</span><span class="p">)}}</span>
 </pre></div>
 </div>
 </dd>
-<dt>fs_path(filepath)</dt>
-<dd>The absolute path to a file inside the wpt document root</dd>
+<dt>fs_path(filepath)</dt><dd><p>The absolute path to a file inside the wpt document root</p>
+</dd>
 </dl>
 <p>So for example in a setup running on localhost with a www
 subdomain and a http server on ports 80 and 81:</p>
@@ -176,13 +158,11 @@ by name e.g.:</p>
 
 <dl class="function">
 <dt id="wptserve.pipes.trickle">
-<code class="descclassname">wptserve.pipes.</code><code class="descname">trickle</code><span class="sig-paren">(</span><em>request</em>, <em>response</em>, <em>delays</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.trickle" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">trickle</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em>, <em class="sig-param">delays</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.trickle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send the response in parts, with time delays.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>delays</strong> – <p>A string of delays and amounts, in bytes, of the
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>delays</strong> – <p>A string of delays and amounts, in bytes, of the
 response to send. Each component is separated by
 a colon. Amounts in bytes are plain integers, whilst
 delays are floats prefixed with a single d e.g.
@@ -197,10 +177,9 @@ d1:100:d2:r2
 Causes a delay of 1s, then 100 bytes to be sent, then a 2s delay
 and then a further 100 bytes followed by a two second delay
 until the response has been fully sent.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -252,17 +231,15 @@ until the response has been fully sent.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -279,7 +256,7 @@ until the response has been fully sent.</p>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

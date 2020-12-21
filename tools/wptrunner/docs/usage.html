@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Getting Started &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Expectation Data" href="expectation.html" />
@@ -85,49 +83,41 @@ there is a tool called <code class="docutils literal notranslate"><span class="p
 <h2>Running the Tests<a class="headerlink" href="#running-the-tests" title="Permalink to this headline">¶</a></h2>
 <p>A test run is started using the <code class="docutils literal notranslate"><span class="pre">wptrunner</span></code> command.  The command
 takes multiple options, of which the following are most significant:</p>
-<dl class="docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">--product</span></code> (defaults to <cite>firefox</cite>)</dt>
-<dd>The product to test against: <cite>chrome</cite>, <cite>firefox</cite>, or <cite>servo</cite>.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--binary</span></code> (required if product is <cite>firefox</cite> or <cite>servo</cite>)</dt>
-<dd>The path to a binary file for the product (browser) to test against.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--webdriver-binary</span></code> (required if product is <cite>chrome</cite>)</dt>
-<dd>The path to a <cite>*driver</cite> binary; e.g., a <cite>chromedriver</cite> binary.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--certutil-binary</span></code> (required if product is <cite>firefox</cite> <a class="footnote-reference" href="#id4" id="id1">[1]</a>)</dt>
-<dd>The path to a <cite>certutil</cite> binary (for tests that must be run over https).</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--metadata</span></code> (required only when not <a class="reference internal" href="#using-default-paths">using default paths</a>)</dt>
-<dd>The path to a directory containing test metadata. <a class="footnote-reference" href="#id5" id="id2">[2]</a></dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--tests</span></code> (required only when not <a class="reference internal" href="#using-default-paths">using default paths</a>)</dt>
-<dd>The path to a directory containing a web-platform-tests checkout.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--prefs-root</span></code> (required only when testing a Firefox binary)</dt>
-<dd>The path to a directory containing Firefox test-harness preferences. <a class="footnote-reference" href="#id6" id="id3">[3]</a></dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--config</span></code> (should default to <cite>wptrunner.default.ini</cite>)</dt>
-<dd>The path to the config (ini) file.</dd>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">--product</span></code> (defaults to <cite>firefox</cite>)</dt><dd><p>The product to test against: <cite>chrome</cite>, <cite>firefox</cite>, or <cite>servo</cite>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--binary</span></code> (required if product is <cite>firefox</cite> or <cite>servo</cite>)</dt><dd><p>The path to a binary file for the product (browser) to test against.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--webdriver-binary</span></code> (required if product is <cite>chrome</cite>)</dt><dd><p>The path to a <cite>*driver</cite> binary; e.g., a <cite>chromedriver</cite> binary.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--certutil-binary</span></code> (required if product is <cite>firefox</cite> <a class="footnote-reference brackets" href="#id4" id="id1">1</a>)</dt><dd><p>The path to a <cite>certutil</cite> binary (for tests that must be run over https).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--metadata</span></code> (required only when not <a class="reference internal" href="#using-default-paths">using default paths</a>)</dt><dd><p>The path to a directory containing test metadata. <a class="footnote-reference brackets" href="#id5" id="id2">2</a></p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--tests</span></code> (required only when not <a class="reference internal" href="#using-default-paths">using default paths</a>)</dt><dd><p>The path to a directory containing a web-platform-tests checkout.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--prefs-root</span></code> (required only when testing a Firefox binary)</dt><dd><p>The path to a directory containing Firefox test-harness preferences. <a class="footnote-reference brackets" href="#id6" id="id3">3</a></p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--config</span></code> (should default to <cite>wptrunner.default.ini</cite>)</dt><dd><p>The path to the config (ini) file.</p>
+</dd>
 </dl>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>The <code class="docutils literal notranslate"><span class="pre">--certutil-binary</span></code> option is required when the product is
-<code class="docutils literal notranslate"><span class="pre">firefox</span></code> unless <code class="docutils literal notranslate"><span class="pre">--ssl-type=none</span></code> is specified.</td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id5" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td><p class="first">The <code class="docutils literal notranslate"><span class="pre">--metadata</span></code> path is to a directory that contains:</p>
-<ul class="last simple">
-<li>a <code class="docutils literal notranslate"><span class="pre">MANIFEST.json</span></code> file (the web-platform-tests documentation has
-instructions on generating this file)</li>
-<li>(optionally) any expectation files (see <a class="reference internal" href="expectation.html#wptupdate-label"><span class="std std-ref">Generating Expectation Files</span></a>)</li>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">--certutil-binary</span></code> option is required when the product is
+<code class="docutils literal notranslate"><span class="pre">firefox</span></code> unless <code class="docutils literal notranslate"><span class="pre">--ssl-type=none</span></code> is specified.</p>
+</dd>
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">--metadata</span></code> path is to a directory that contains:</p>
+<ul class="simple">
+<li><p>a <code class="docutils literal notranslate"><span class="pre">MANIFEST.json</span></code> file (the web-platform-tests documentation has
+instructions on generating this file)</p></li>
+<li><p>(optionally) any expectation files (see <a class="reference internal" href="expectation.html#wptupdate-label"><span class="std std-ref">Generating Expectation Files</span></a>)</p></li>
 </ul>
-</td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id6" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td>Example <code class="docutils literal notranslate"><span class="pre">--prefs-root</span></code> value: <code class="docutils literal notranslate"><span class="pre">~/mozilla-central/testing/profiles</span></code>.</td></tr>
-</tbody>
-</table>
+</dd>
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
+<dd><p>Example <code class="docutils literal notranslate"><span class="pre">--prefs-root</span></code> value: <code class="docutils literal notranslate"><span class="pre">~/mozilla-central/testing/profiles</span></code>.</p>
+</dd>
+</dl>
 <p>There are also a variety of other command-line options available; use
 <code class="docutils literal notranslate"><span class="pre">--help</span></code> to list them.</p>
 <p>The following examples show how to start wptrunner with various options.</p>
@@ -256,10 +246,10 @@ to the default values for unspecified fields is not yet supported.</p>
 files in the following order:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Any path supplied with a <code class="docutils literal notranslate"><span class="pre">--config</span></code> flag to the command.</li>
-<li>A file called <code class="docutils literal notranslate"><span class="pre">wptrunner.ini</span></code> in the current directory</li>
-<li>The default configuration file (<code class="docutils literal notranslate"><span class="pre">wptrunner.default.ini</span></code> in the
-source directory)</li>
+<li><p>Any path supplied with a <code class="docutils literal notranslate"><span class="pre">--config</span></code> flag to the command.</p></li>
+<li><p>A file called <code class="docutils literal notranslate"><span class="pre">wptrunner.ini</span></code> in the current directory</p></li>
+<li><p>The default configuration file (<code class="docutils literal notranslate"><span class="pre">wptrunner.default.ini</span></code> in the
+source directory)</p></li>
 </ul>
 </div></blockquote>
 </div>
@@ -311,17 +301,15 @@ source directory)</li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -338,7 +326,7 @@ source directory)</li>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -7,7 +7,7 @@
 'use strict';
 
 idl_test(
-  ['webgl1', 'webgl2'],
+  ['webgl1', 'webgl2', 'EXT_disjoint_timer_query_webgl2', 'EXT_texture_norm16', 'OVR_multiview2', 'WEBGL_compressed_texture_etc1'],
   ['dom'],
   idl_array => {
     // TODO: objects

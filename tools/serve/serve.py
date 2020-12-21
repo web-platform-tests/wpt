@@ -6,6 +6,7 @@ import abc
 import argparse
 import json
 import logging
+import multiprocessing
 import os
 import platform
 import signal
@@ -971,7 +972,10 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, **kwargs)
     received_signal = threading.Event()
 
     if mp_context is None:
-        import multiprocessing as mp_context
+        if hasattr(multiprocessing, "get_context"):
+            mp_context = multiprocessing.get_context()
+        else:
+            mp_context = multiprocessing
 
     with build_config(os.path.join(repo_root, "config.json"),
                       config_cls=config_cls,

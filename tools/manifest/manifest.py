@@ -173,6 +173,8 @@ class Manifest(object):
         constructed in the case we are not updating a path, but the absence of an item from
         the iterator may be used to remove defunct entries from the manifest."""
 
+        logger = get_logger()
+
         changed = False
 
         # Create local variable references to these dicts so we avoid the
@@ -221,6 +223,7 @@ class Manifest(object):
                     to_update.append(source_file)
 
         if to_update:
+            logger.debug("Computing manifest update for %s items" % len(to_update))
             changed = True
 
         if parallel and len(to_update) > 25 and cpu_count() > 1:
@@ -232,9 +235,12 @@ class Manifest(object):
             # chunksize set > 1 when more than 10000 tests, because
             # chunking is a net-gain once we get to very large numbers
             # of items (again, experimentally, 2020-01)
+            chunksize = max(1, len(to_update) // 10000)
+            logger.debug("Doing a multiprocessed update. "
+                "CPU count: %s, chunksize: %s" % (cpu_count(), chunksize))
             results = pool.imap_unordered(compute_manifest_items,
                                           to_update,
-                                          chunksize=max(1, len(to_update) // 10000)
+                                          chunksize=chunksize
                                           )  # type: Iterator[Tuple[Tuple[Text, ...], Text, Set[ManifestItem], Text]]
         elif PY3:
             results = map(compute_manifest_items, to_update)
@@ -444,6 +450,7 @@ def _load_and_update(tests_root,  # type: Text
         update = True
 
     if rebuild or update:
+        logger.info("Updating manifest")
         for retry in range(2):
             try:
                 tree = vcs.get_tree(tests_root, manifest, manifest_path, cache_root,

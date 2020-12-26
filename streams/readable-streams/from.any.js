@@ -98,3 +98,27 @@ for (const [label, factory] of iterableFactories) {
 
   }, `ReadableStream.from accepts ${label}`);
 }
+
+const badIterables = [
+  ['null', null],
+  ['undefined', undefined],
+  ['0', 0],
+  ['NaN', NaN],
+  ['true', true],
+  ['{}', {}],
+  ['Object.create(null)', Object.create(null)],
+  ['a function', () => 42],
+  ['a symbol', Symbol()],
+  ['an object with a non-callable @@iterator method', {
+    [Symbol.iterator]: 42
+  }],
+  ['an object with a non-callable @@asyncIterator method', {
+    [Symbol.asyncIterator]: 42
+  }],
+];
+
+for (const [label, iterable] of badIterables) {
+  test(() => {
+    assert_throws_js(TypeError, () => ReadableStream.from(iterable), 'from() should throw a TypeError')
+  }, `ReadableStream.from throws on invalid iterables; specifically ${label}`);
+}

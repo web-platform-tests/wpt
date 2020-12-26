@@ -80,6 +80,16 @@ const iterableFactories = [
       [Symbol.asyncIterator]: () => it
     };
     return it;
+  }],
+
+  ['a ReadableStream', () => {
+    return new ReadableStream({
+      start(c) {
+        c.enqueue('a');
+        c.enqueue('b');
+        c.close();
+      }
+    });
   }]
 ];
 

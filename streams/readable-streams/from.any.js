@@ -122,3 +122,37 @@ for (const [label, iterable] of badIterables) {
     assert_throws_js(TypeError, () => ReadableStream.from(iterable), 'from() should throw a TypeError')
   }, `ReadableStream.from throws on invalid iterables; specifically ${label}`);
 }
+
+test(() => {
+  const theError = new Error('a unique string');
+  const iterable = {
+    [Symbol.iterator]() {
+      throw theError;
+    }
+  };
+
+  assert_throws_exactly(theError, () => ReadableStream.from(iterable), 'from() should re-throw the error');
+}, `ReadableStream.from re-throws errors from calling the @@iterator method`);
+
+test(() => {
+  const theError = new Error('a unique string');
+  const iterable = {
+    [Symbol.asyncIterator]() {
+      throw theError;
+    }
+  };
+
+  assert_throws_exactly(theError, () => ReadableStream.from(iterable), 'from() should re-throw the error');
+}, `ReadableStream.from re-throws errors from calling the @@asyncIterator method`);
+
+test(t => {
+  const theError = new Error('a unique string');
+  const iterable = {
+    [Symbol.iterator]: t.unreached_func('@@iterator should not be called'),
+    [Symbol.asyncIterator]() {
+      throw theError;
+    }
+  };
+
+  assert_throws_exactly(theError, () => ReadableStream.from(iterable), 'from() should re-throw the error');
+}, `ReadableStream.from ignores @@iterator if @@asyncIterator exists`);

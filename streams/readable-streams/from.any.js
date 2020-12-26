@@ -1,4 +1,5 @@
 // META: global=window,worker,jsshell
+// META: script=../resources/test-utils.js
 'use strict';
 
 const iterableFactories = [
@@ -166,3 +167,48 @@ test(t => {
 
   assert_throws_exactly(theError, () => ReadableStream.from(iterable), 'from() should re-throw the error');
 }, `ReadableStream.from ignores @@iterator if @@asyncIterator exists`);
+
+promise_test(async t => {
+
+  const theError = new Error('a unique string');
+
+  let returnCalled = false;
+  let returnArgs;
+  let resolveReturnCall;
+  let resolveReturn;
+  const returnCallPromise = new Promise(r => resolveReturnCall = r);
+
+  const iterable = {
+    next: t.unreached_func('next() should not be called'),
+    return(...args) {
+      returnCalled = true;
+      returnArgs = args;
+      resolveReturnCall();
+      return new Promise(r => resolveReturn = r);
+    },
+    [Symbol.asyncIterator]: () => iterable
+  };
+
+  const rs = ReadableStream.from(iterable);
+  const reader = rs.getReader();
+  assert_false(returnCalled, 'return() should not be called yet');
+
+  let cancelResolved = false;
+  const cancelPromise = reader.cancel(theError).then(() => {
+    cancelResolved = true;
+  });
+
+  await returnCallPromise;
+  assert_true(returnCalled, 'return() should be called');
+  assert_array_equals(returnArgs, [theError], 'return() should be called with cancel reason');
+
+  await flushAsyncEvents();
+  assert_false(cancelResolved, 'cancel() should not resolve while promise from return() is pending');
+
+  resolveReturn({ done: true });
+  await Promise.all([
+    cancelPromise,
+    reader.closed
+  ]);
+
+}, `ReadableStream.from: cancelling the returned stream calls and awaits return()`);

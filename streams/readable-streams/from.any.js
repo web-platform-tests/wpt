@@ -168,6 +168,49 @@ test(t => {
   assert_throws_exactly(theError, () => ReadableStream.from(iterable), 'from() should re-throw the error');
 }, `ReadableStream.from ignores @@iterator if @@asyncIterator exists`);
 
+promise_test(async () => {
+
+  let nextCalled = false;
+  let nextArgs;
+  let resolveNextCall;
+  let resolveNext;
+  const nextCallPromise = new Promise(r => resolveNextCall = r);
+
+  const iterable = {
+    next(...args) {
+      nextCalled = true;
+      nextArgs = args;
+      resolveNextCall();
+      return new Promise(r => resolveNext = r);
+    },
+    [Symbol.asyncIterator]: () => iterable
+  };
+
+  const rs = ReadableStream.from(iterable);
+  const reader = rs.getReader();
+
+  await flushAsyncEvents();
+  assert_false(nextCalled, 'next() should not be called yet');
+
+  const readPromise = reader.read();
+  let readResolved = false;
+  readPromise.then(() => {
+    readResolved = true;
+  });
+
+  await nextCallPromise;
+  assert_true(nextCalled, 'next() should be called after first read()');
+  assert_array_equals(nextArgs, [], 'next() should be called with no arguments');
+
+  await flushAsyncEvents();
+  assert_false(readResolved, 'read() should not resolve while promise from next() is pending');
+
+  resolveNext({ value: 'a', done: false });
+  const readResult = await readPromise;
+  assert_object_equals(readResult, { value: 'a', done: false }, 'read() should resolve with chunk from next() promise');
+
+}, `ReadableStream.from: calls next() after first read()`);
+
 promise_test(async t => {
 
   const theError = new Error('a unique string');

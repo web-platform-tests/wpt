@@ -13,6 +13,11 @@ const iterableFactories = [
     ];
   }],
 
+  ['a string', () => {
+    // This iterates over the code points of the string.
+    return 'ab';
+  }],
+
   ['a Set', () => {
     return new Set(['a', 'b']);
   }],

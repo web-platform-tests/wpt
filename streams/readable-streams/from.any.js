@@ -170,18 +170,13 @@ test(t => {
 
 promise_test(async () => {
 
-  let nextCalled = false;
+  let nextCalls = 0;
   let nextArgs;
-  let resolveNextCall;
-  let resolveNext;
-  const nextCallPromise = new Promise(r => resolveNextCall = r);
-
   const iterable = {
-    next(...args) {
-      nextCalled = true;
+    async next(...args) {
+      nextCalls += 1;
       nextArgs = args;
-      resolveNextCall();
-      return new Promise(r => resolveNext = r);
+      return { value: 'a', done: false };
     },
     [Symbol.asyncIterator]: () => iterable
   };
@@ -190,24 +185,12 @@ promise_test(async () => {
   const reader = rs.getReader();
 
   await flushAsyncEvents();
-  assert_false(nextCalled, 'next() should not be called yet');
+  assert_equals(nextCalls, 0, 'next() should not be called yet');
 
-  const readPromise = reader.read();
-  let readResolved = false;
-  readPromise.then(() => {
-    readResolved = true;
-  });
-
-  await nextCallPromise;
-  assert_true(nextCalled, 'next() should be called after first read()');
+  const read = await reader.read();
+  assert_object_equals(read, { value: 'a', done: false }, 'first read should be correct');
+  assert_equals(nextCalls, 1, 'next() should be called after first read()');
   assert_array_equals(nextArgs, [], 'next() should be called with no arguments');
-
-  await flushAsyncEvents();
-  assert_false(readResolved, 'read() should not resolve while promise from next() is pending');
-
-  resolveNext({ value: 'a', done: false });
-  const readResult = await readPromise;
-  assert_object_equals(readResult, { value: 'a', done: false }, 'read() should resolve with chunk from next() promise');
 
 }, `ReadableStream.from: calls next() after first read()`);
 
@@ -215,40 +198,35 @@ promise_test(async t => {
 
   const theError = new Error('a unique string');
 
-  let returnCalled = false;
+  let returnCalls = 0;
   let returnArgs;
-  let resolveReturnCall;
   let resolveReturn;
-  const returnCallPromise = new Promise(r => resolveReturnCall = r);
-
   const iterable = {
     next: t.unreached_func('next() should not be called'),
-    return(...args) {
-      returnCalled = true;
+    async return(...args) {
+      returnCalls += 1;
       returnArgs = args;
-      resolveReturnCall();
-      return new Promise(r => resolveReturn = r);
+      await new Promise(r => resolveReturn = r);
+      return { done: true };
     },
     [Symbol.asyncIterator]: () => iterable
   };
 
   const rs = ReadableStream.from(iterable);
   const reader = rs.getReader();
-  assert_false(returnCalled, 'return() should not be called yet');
+  assert_equals(returnCalls, 0, 'return() should not be called yet');
 
   let cancelResolved = false;
   const cancelPromise = reader.cancel(theError).then(() => {
     cancelResolved = true;
   });
 
-  await returnCallPromise;
-  assert_true(returnCalled, 'return() should be called');
-  assert_array_equals(returnArgs, [theError], 'return() should be called with cancel reason');
-
   await flushAsyncEvents();
+  assert_equals(returnCalls, 1, 'return() should be called');
+  assert_array_equals(returnArgs, [theError], 'return() should be called with cancel reason');
   assert_false(cancelResolved, 'cancel() should not resolve while promise from return() is pending');
 
-  resolveReturn({ done: true });
+  resolveReturn();
   await Promise.all([
     cancelPromise,
     reader.closed

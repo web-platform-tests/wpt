@@ -233,3 +233,31 @@ promise_test(async t => {
   ]);
 
 }, `ReadableStream.from: cancelling the returned stream calls and awaits return()`);
+
+promise_test(async () => {
+
+  let nextCalls = 0;
+  let returnCalls = 0;
+
+  const iterable = {
+    async next() {
+      nextCalls += 1;
+      return { value: undefined, done: true };
+    },
+    async return() {
+      returnCalls += 1;
+    },
+    [Symbol.asyncIterator]: () => iterable
+  };
+
+  const rs = ReadableStream.from(iterable);
+  const reader = rs.getReader();
+
+  const read = await reader.read();
+  assert_object_equals(read, { value: undefined, done: true }, 'first read should be done');
+  assert_equals(nextCalls, 1, 'next() should be called once');
+
+  await reader.closed;
+  assert_equals(returnCalls, 0, 'return() should not be called');
+
+}, `ReadableStream.from: return() is not called when iterator completes normally`);

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>CSS Test (Selectors): Mouse focus does not match :focus-visible</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<style>
+  @supports not (selector(:focus-visible)) {
+    :focus {
+      background-color: red;
+    }
+  }
+
+  :focus-visible {
+    background-color: red;
+  }
+
+  :focus:not(:focus-visible) {
+    background-color: lime;
+  }
+</style>
+
+<p>This test checks that using the mouse to focus an element does not trigger <code>:focus-visible</code> matching, and the element doesn't show any focus ring.</p>
+<ol id="instructions">
+  <li>If the user-agent does not claim to support the <code>:focus-visible</code> pseudo-class then SKIP this test.</li>
+  <li>Click on the element below that says "Click me."</li>
+  <li>If the element has a focus ring, then the test result is FAILURE. If the element has a green background and not a focus ring, then the test result is SUCCESS.</li>
+</ol>
+<br>
+<div id="target" tabindex="0">Click me.</div>
+<script>
+  async_test(function(t) {
+    target.addEventListener("focus", t.step_func(function() {
+      assert_equals(getComputedStyle(target).outlineStyle, "none", `outline-style for ${target.tagName}#${target.id} should be none`);
+      assert_equals(getComputedStyle(target).backgroundColor, "rgb(0, 255, 0)", `backgroundColor for ${target.tagName}#${target.id} should be lime`);
+      t.done();
+    }));
+    test_driver.click(target);
+  }, "Mouse focus should not match :focus-visible and should not show a focus ring");
+</script>

@@ -606,6 +606,7 @@ tasks:
       use:
         - wpt-base
         - trigger-pr
+        - browser-firefox
       command: ./tools/ci/ci_wptrunner_infrastructure.sh --py3
       install:
         - python3-pip
@@ -615,6 +616,7 @@ tasks:
       options:
         oom-killer: true
         browser:
+          - firefox
           - chrome
         channel: experimental
         xvfb: true

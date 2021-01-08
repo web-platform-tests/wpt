@@ -19,7 +19,7 @@ transition the state to "complete."
 setup({ allow_uncaught_exception: true });
 
 async_test(function(t) {
-  var events = [];
+  const events = [];
   document.addEventListener('readystatechange', t.step_func(function() {
     events.push('readystatechange:' + document.readyState);
   }));

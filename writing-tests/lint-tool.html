@@ -134,6 +134,9 @@ the tests. Note that the CSS build system is primarily used by
 <code class="docutils literal notranslate"><span class="pre">wptserve</span></code>, so <code class="docutils literal notranslate"><span class="pre">*.any.js</span></code> and similar tests won’t work there; stick
 with the <code class="docutils literal notranslate"><span class="pre">.html</span></code> equivalent.</p>
 </dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MISSING-REFTESTWAIT</span></code></dt><dd><p>Missing <code class="docutils literal notranslate"><span class="pre">class=reftest-wait</span></code></p>
+<strong>To fix:</strong><p>ensure tests that include reftest-wait.js also use class=reftest-wait on the root element.</p>
+</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">MISSING-TESTDRIVER-VENDOR</span></code></dt><dd><p>Missing <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testdriver-vendor.js'&gt;</span></code></p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">MISSING-TESTHARNESSREPORT</span></code></dt><dd><p>Missing <code class="docutils literal notranslate"><span class="pre">&lt;script</span> <span class="pre">src='/resources/testharnessreport.js'&gt;</span></code></p>

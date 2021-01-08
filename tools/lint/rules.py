@@ -201,7 +201,7 @@ class MissingReftestWait(Rule):
     name = "MISSING-REFTESTWAIT"
     description = "Missing `class=reftest-wait`"
     to_fix = """
-        ensure tests that will take delayed screenshots use class=reftest-wait on the root element.
+        ensure tests that include reftest-wait.js also use class=reftest-wait on the root element.
     """
 
 

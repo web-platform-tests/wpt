@@ -206,8 +206,8 @@
   }, 'Radio buttons in an orphan tree should make a group');
 
   test(() => {
-    const container = document.implementation.createHTMLDocument();
-    container.body.innerHTML =
+    const container = document.createElement('div');
+    container.innerHTML =
         '<form>' +
           '<input type=radio name=group1 id=radio1 checked>' +
           '<input type=radio name=group1 id=radio2>' +
@@ -256,8 +256,8 @@
   }, "Radio buttons in different groups (because they have different form owners or no form owner) do not affect each other's checkedness");
 
   test(() => {
-    const container = document.implementation.createHTMLDocument();
-    container.body.innerHTML =
+    const container = document.createElement('div');
+    container.innerHTML =
         '<form>' +
           '<input type=radio name=group1 id=radio1 checked>' +
           '<input type=radio name=group1 id=radio2>' +
@@ -286,8 +286,8 @@
   }, "Radio buttons in different groups (because they are not in the same tree) do not affect each other's checkedness");
 
   test(() => {
-    const container = document.implementation.createHTMLDocument();
-    container.body.innerHTML =
+    const container = document.createElement('div');
+    container.innerHTML =
         '<form>' +
           '<input type=radio name=group1 id=radio1 checked>' +
           '<input type=radio name=group1 id=radio2>' +

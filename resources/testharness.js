@@ -1956,10 +1956,6 @@ policies and contribution forms [3].
         this.index = null;
 
         this.properties = properties || {};
-        this.timeout_length = settings.test_timeout;
-        if (this.timeout_length !== null) {
-            this.timeout_length *= tests.timeout_multiplier;
-        }
 
         this.message = null;
         this.stack = null;
@@ -2029,10 +2025,6 @@ policies and contribution forms [3].
 
         tests.started = true;
         tests.notify_test_state(this);
-
-        if (this.timeout_id === null) {
-            this.set_timeout();
-        }
 
         this.steps.push(func);
 
@@ -2222,17 +2214,6 @@ policies and contribution forms [3].
     Test.prototype.add_cleanup = function(callback) {
         this._user_defined_cleanup_count += 1;
         this._add_cleanup(callback);
-    };
-
-    Test.prototype.set_timeout = function()
-    {
-        if (this.timeout_length !== null) {
-            var this_obj = this;
-            this.timeout_id = setTimeout(function()
-                                         {
-                                             this_obj.timeout();
-                                         }, this.timeout_length);
-        }
     };
 
     Test.prototype.set_status = function(status, message, stack)

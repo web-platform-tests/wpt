@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(function(t) {
+  t.step_timeout(function() {
+    assert_true(true, "Normal timeout");
+    t.done();
+  }, 8000);
+}, "Test normal timeout");
+</script>

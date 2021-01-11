@@ -16,14 +16,13 @@ policies and contribution forms [3].
 (function (global_scope)
 {
     var debug = false;
-    // default timeout is 10 seconds, test can override if needed
+    // Default timeout is 10 seconds, test can extend it to 60 seconds if needed.
     var settings = {
         output:true,
         harness_timeout:{
             "normal":10000,
             "long":60000
         },
-        test_timeout:null,
         message_events: ["start", "test_state", "result", "completion"]
     };
 
@@ -1952,14 +1951,9 @@ policies and contribution forms [3].
             this.phases.COMPLETE : this.phases.INITIAL;
 
         this.status = this.NOTRUN;
-        this.timeout_id = null;
         this.index = null;
 
         this.properties = properties || {};
-        this.timeout_length = settings.test_timeout;
-        if (this.timeout_length !== null) {
-            this.timeout_length *= tests.timeout_multiplier;
-        }
 
         this.message = null;
         this.stack = null;
@@ -2029,10 +2023,6 @@ policies and contribution forms [3].
 
         tests.started = true;
         tests.notify_test_state(this);
-
-        if (this.timeout_id === null) {
-            this.set_timeout();
-        }
 
         this.steps.push(func);
 
@@ -2224,17 +2214,6 @@ policies and contribution forms [3].
         this._add_cleanup(callback);
     };
 
-    Test.prototype.set_timeout = function()
-    {
-        if (this.timeout_length !== null) {
-            var this_obj = this;
-            this.timeout_id = setTimeout(function()
-                                         {
-                                             this_obj.timeout();
-                                         }, this.timeout_length);
-        }
-    };
-
     Test.prototype.set_status = function(status, message, stack)
     {
         this.status = status;
@@ -2244,7 +2223,6 @@ policies and contribution forms [3].
 
     Test.prototype.timeout = function()
     {
-        this.timeout_id = null;
         this.set_status(this.TIMEOUT, "Test timed out");
         this.phase = this.phases.HAS_RESULT;
         this.done();
@@ -2264,10 +2242,6 @@ policies and contribution forms [3].
 
         if (this.phase <= this.phases.STARTED) {
             this.set_status(this.PASS, null);
-        }
-
-        if (global_scope.clearTimeout) {
-            clearTimeout(this.timeout_id);
         }
 
         this.cleanup();

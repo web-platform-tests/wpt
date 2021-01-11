@@ -1,12 +1,3 @@
-<!DOCTYPE HTML>
-<html>
- <head>
-  <title>WebStorage Test: StorageEvent - constructor</title>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
- </head>
- <body>
-    <script>
         test(function() {
             assert_throws_js(TypeError, () => new StorageEvent());
             // should be redundant, but .length can be wrong with custom bindings
@@ -76,6 +67,3 @@
             assert_equals(event.url, '', 'url'); // not 'undefined'!
             assert_equals(event.storageArea, null, 'storageArea');
         }, 'constructor with undefined type argument and members');
-    </script>
- </body>
-</html>

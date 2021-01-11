@@ -1,12 +1,3 @@
-<!DOCTYPE HTML>
-<html>
- <head>
-  <title>WebStorage Test: StorageEvent - initStorageEvent</title>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
- </head>
- <body>
-    <script>
         test(() => {
             const event = new StorageEvent('storage');
             assert_throws_js(TypeError, () => event.initStorageEvent());
@@ -67,6 +58,3 @@
             assert_equals(event.url, '', 'event.url');
             assert_equals(event.storageArea, null, 'event.storageArea');
         }, 'initStorageEvent with 8 undefined arguments');
-    </script>
- </body>
-</html>

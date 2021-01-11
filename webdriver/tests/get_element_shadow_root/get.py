@@ -4,7 +4,7 @@ from tests.support.asserts import assert_error, assert_success
 
 def get_shadow_root(session, element):
     return session.transport.send(
-        "POST", "session/{session_id}/element/{element_id}/shadow".format(
+        "GET", "session/{session_id}/element/{element_id}/shadow".format(
             session_id=session.session_id,
             element_id=element.id))
 

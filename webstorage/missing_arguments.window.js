@@ -1,12 +1,3 @@
-<!DOCTYPE HTML>
-<html>
- <head>
-  <title>WebStorage Test: missing arguments</title>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
- </head>
- <body>
-    <script>
         var tests = [
             function() { localStorage.key(); },
             function() { localStorage.getItem(); },
@@ -24,6 +15,3 @@
                 assert_throws_js(TypeError, fun);
             }, "Should throw TypeError for " + format_value(fun) + ".");
         });
-    </script>
- </body>
-</html>

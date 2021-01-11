@@ -1,10 +1,3 @@
-<!DOCTYPE HTML>
-<meta charset=utf-8>
-<title>Storage Test: Supported property names</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
     ["localStorage", "sessionStorage"].forEach(function(name) {
         test(function() {
             var storage = window[name];
@@ -20,4 +13,3 @@
             assert_array_equals(Object.getOwnPropertyNames(storage), []);
         }, "Object.getOwnPropertyNames on " + name + " storage with empty collection");
     });
-</script>

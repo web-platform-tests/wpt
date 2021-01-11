@@ -1,11 +1,3 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>WebStorage Test: Storage - set value with enumerate</title>
-<link rel="author" title="Intel" href="http://www.intel.com">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
   var store_list = [
     ["key0", "value0"],
     ["key1", "value1"],
@@ -26,5 +18,4 @@
       }
     }, "enumerate a " + name + " object with the key and get the values");
   });
-</script>
 

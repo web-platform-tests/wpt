@@ -1,15 +1,3 @@
-<!DOCTYPE HTML>
-<html>
- <head>
-  <title>WebStorage Test: sessionStorage - setItem throws QuotaExceededError</title>
-  <meta name="timeout" content="long">
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
- </head>
- <body>
-    <h1>storage_session_setItem_QUOTA_EXCEEDED_ERR</h1>
-    <div id="log"></div>
-    <script>
         test(function() {
             sessionStorage.clear();
 
@@ -26,6 +14,3 @@
 
             sessionStorage.clear();
         }, "Throws QuotaExceededError when the quota has been exceeded");
-    </script>
- </body>
-</html>

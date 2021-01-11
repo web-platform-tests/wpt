@@ -24,12 +24,12 @@ def test_no_user_prompt(session):
     assert_error(response, "no such alert")
 
 
-@pytest.mark.parametrize("tag,role", [
-    ("li", "menuitem"),
-    ("input", "searchbox"),
-    ("img", "presentation")])
-def test_computed_roles(session, tag, role):
-    session.url = inline("<{0} role={1}>".format(tag, role))
+@pytest.mark.parametrize("html,tag,expected", [
+    ("<li role=menuitem>foo", "li", "menu"),
+    ("<input role=searchbox>", "input", "searchbox"),
+    ("<img role=presentation>", "img", "presentation")])
+def test_computed_roles(session, html, tag, expected):
+    session.url = inline(html)
     element = session.find.css(tag, all=False)
     result = get_computed_role(session, element.id)
-    assert_success(result, role)
+    assert_success(result, expected)

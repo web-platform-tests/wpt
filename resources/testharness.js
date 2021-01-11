@@ -1956,10 +1956,6 @@ policies and contribution forms [3].
         this.index = null;
 
         this.properties = properties || {};
-        this.timeout_length = settings.test_timeout;
-        if (this.timeout_length !== null) {
-            this.timeout_length *= tests.timeout_multiplier;
-        }
 
         this.message = null;
         this.stack = null;

@@ -394,13 +394,12 @@ cache_test(async (cache) => {
     assert_true(original_response_type.includes(original_type),
                 'original response should include the expected mime type');
 
-    // Verify overwriting the content-type header does not change the mime
-    // type.  It should be fixed at Response construction time.
+    // Verify overwriting the content-type header changes the mime type.
     const overwritten_response = new Response('hello world', init_with_headers);
     overwritten_response.headers.set('content-type', 'text/plain');
     const overwritten_response_type = (await overwritten_response.blob()).type;
-    assert_equals(overwritten_response_type, original_response_type,
-                  'original and overwritten response mime types should match');
+    assert_equals(overwritten_response_type, 'text/plain',
+                  'mime type can be overridden');
 
     // Verify the Response read from Cache uses the original mime type
     // computed when it was first constructed.
@@ -409,9 +408,8 @@ cache_test(async (cache) => {
     await cache.put(url, tmp);
     const cache_response = await cache.match(url);
     const cache_mime_type = (await cache_response.blob()).type;
-    assert_equals(cache_mime_type, original_response_type,
-                  'original and cached overwritten response mime types ' +
-                  'should match');
-  }, 'MIME type should be frozen at response construction.');
+    assert_equals(cache_mime_type, 'text/plain',
+                  'overwritten and cached response mime types should match');
+  }, 'MIME type should reflect Content-Type headers of response.');
 
 done();

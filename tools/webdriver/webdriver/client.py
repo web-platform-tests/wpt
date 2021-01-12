@@ -392,7 +392,7 @@ class ShadowRoot(object):
         return cls(uuid, session)
 
     def send_shadow_command(self, method, uri, body=None):
-        url = "shadow/%s/%s" % (self.id, uri)
+        url = "shadow/{}/{}" % (self.id, uri)
         return self.session.send_session_command(method, url, body)
 
     @command

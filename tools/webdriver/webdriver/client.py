@@ -375,7 +375,7 @@ class Frame(object):
 class ShadowRoot(object):
     identifier = "shadow-075b-4da1-b6ba-e579c2d3230a"
 
-    def __init__(self, id, session):
+    def __init__(self, session, id):
         """
         Construct a new shadow root representation.
 
@@ -391,19 +391,21 @@ class ShadowRoot(object):
         uuid = json[ShadowRoot.identifier]
         return cls(uuid, session)
 
+    def send_shadow_command(self, method, uri, body=None):
+        url = "shadow/%s/%s" % (self.id, uri)
+        return self.session.send_session_command(method, url, body)
+
     @command
     def find_element(self, strategy, selector):
         body = {"using": strategy,
                 "value": selector}
-        url = "shadow/%s/element" % (self.id)
-        return self.session.send_session_command("POST", url, body)
+        return self.send_shadow_command("POST", "element", body)
 
     @command
     def find_elements(self, strategy, selector):
         body = {"using": strategy,
                 "value": selector}
-        url = "shadow/%s/elements" % (self.id)
-        return self.session.send_session_command("POST", url, body)
+        return self.send_shadow_command("POST", "elements", body)
 
 
 class Find(object):
@@ -838,6 +840,7 @@ class Element(object):
     def screenshot(self):
         return self.send_element_command("GET", "screenshot")
 
+    @property
     @command
     def shadow_root(self):
         return self.send_element_command("GET", "shadow")

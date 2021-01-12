@@ -13,8 +13,8 @@ def find_element(session, shadow_id, using, value):
         {"using": using, "value": value})
 
 
-def test_found_element_equivalence(session, test_shadow_page):
-    session.url = test_shadow_page("<div><input type='checkbox'/></div>")
+def test_found_element_equivalence(session, get_shadow_page):
+    session.url = get_shadow_page("<div><input type='checkbox'/></div>")
     custom_element = session.find.css("custom-shadow-element", all=False)
     expected = session.execute_script("return arguments[0].shadowRoot.querySelector('input')",
                                       args=(custom_element,))
@@ -24,8 +24,8 @@ def test_found_element_equivalence(session, test_shadow_page):
     assert_same_element(session, value, expected)
 
 
-def test_null_parameter_value(session, http, test_shadow_page):
-    session.url = test_shadow_page("<div><a href=# id=linkText>full link text</a></div>")
+def test_null_parameter_value(session, http, get_shadow_page):
+    session.url = get_shadow_page("<div><a href=# id=linkText>full link text</a></div>")
     custom_element = session.find.css("custom-shadow-element", all=False)
     shadow_root = custom_element.shadow_root
 
@@ -65,9 +65,9 @@ def test_invalid_selector_argument(session, value):
                           ("partial link text", "link text"),
                           ("tag name", "a"),
                           ("xpath", "//a")])
-def test_find_element(session, test_shadow_page, using, value):
+def test_find_element(session, get_shadow_page, using, value):
     # Step 8 - 9
-    session.url = test_shadow_page("<div><a href=# id=linkText>full link text</a></div>")
+    session.url = get_shadow_page("<div><a href=# id=linkText>full link text</a></div>")
     custom_element = session.find.css("custom-shadow-element", all=False)
     shadow_root = custom_element.shadow_root
     response = find_element(session, shadow_root.id, using, value)
@@ -82,9 +82,9 @@ def test_find_element(session, test_shadow_page, using, value):
     ("<a href=#>LINK TEXT</a>", "LINK TEXT"),
     ("<a href=# style='text-transform: uppercase'>link text</a>", "LINK TEXT"),
 ])
-def test_find_element_link_text(session, test_shadow_page, document, value):
+def test_find_element_link_text(session, get_shadow_page, document, value):
     # Step 8 - 9
-    session.url = test_shadow_page("<div>{0}</div>".format(document))
+    session.url = get_shadow_page("<div>{0}</div>".format(document))
     custom_element = session.find.css("custom-shadow-element", all=False)
     shadow_root = custom_element.shadow_root
 
@@ -101,20 +101,20 @@ def test_find_element_link_text(session, test_shadow_page, document, value):
     ("<a href=#>PARTIAL LINK TEXT</a>", "LINK"),
     ("<a href=# style='text-transform: uppercase'>partial link text</a>", "LINK"),
 ])
-def test_find_element_partial_link_text(session, test_shadow_page, document, value):
+def test_find_element_partial_link_text(session, get_shadow_page, document, value):
     # Step 8 - 9
-    session.url = test_shadow_page("<div>{0}</div>".format(document))
+    session.url = get_shadow_page("<div>{0}</div>".format(document))
     custom_element = session.find.css("custom-shadow-element", all=False)
     shadow_root = custom_element.shadow_root
-    
+
     response = find_element(session, shadow_root.id, "partial link text", value)
     assert_success(response)
 
 
 @pytest.mark.parametrize("using,value", [("css selector", "#wontExist")])
-def test_no_element(session, test_shadow_page, using, value):
+def test_no_element(session, get_shadow_page, using, value):
     # Step 8 - 9
-    session.url = test_shadow_page("<div></div>")
+    session.url = get_shadow_page("<div></div>")
     custom_element = session.find.css("custom-shadow-element", all=False)
     shadow_root = custom_element.shadow_root
 

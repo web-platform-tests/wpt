@@ -1,5 +1,5 @@
 @pytest.fixture
-def test_shadow_page(inline, shadow_content):
+def get_shadow_page(inline, shadow_content):
     return inline("""
         <custom-shadow-element></custom-shadow-element>
         <script>

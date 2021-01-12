@@ -18,64 +18,6 @@ def find_elements(session, shadow_id, using, value):
         {"using": using, "value": value})
 
 
-@pytest.fixture
-def check_user_prompt_closed_without_exception(session, create_dialog, get_shadow_page):
-    def check_user_prompt_closed_without_exception(dialog_type, retval):
-        session.url = get_shadow_page("<div><p>bar</p><div>")
-        outer_element = session.find.css("custom-shadow-element", all=False)
-        shadow_root = outer_element.shadow_root
-        inner_element = session.execute_script("return arguments[0].shadowRoot.querySelector('p')",
-                                               args=(outer_element,))
-
-        create_dialog(dialog_type, text=dialog_type)
-
-        response = find_elements(session, shadow_root.id, "css selector", "p")
-        value = assert_success(response)
-        assert isinstance(value, list)
-        assert len(value) == 1
-
-        assert_dialog_handled(session, expected_text=dialog_type, expected_retval=retval)
-
-        assert_same_element(session, value[0], inner_element)
-
-    return check_user_prompt_closed_without_exception
-
-
-@pytest.fixture
-def check_user_prompt_closed_with_exception(session, create_dialog, get_shadow_page):
-    def check_user_prompt_closed_with_exception(dialog_type, retval):
-        session.url = get_shadow_page("<div><p>bar</p><div>")
-        outer_element = session.find.css("custom-shadow-element", all=False)
-        shadow_root = outer_element.shadow_root
-
-        create_dialog(dialog_type, text=dialog_type)
-
-        response = find_elements(session, shadow_root.id, "css selector", "p")
-        assert_error(response, "unexpected alert open")
-
-        assert_dialog_handled(session, expected_text=dialog_type, expected_retval=retval)
-
-    return check_user_prompt_closed_with_exception
-
-
-@pytest.fixture
-def check_user_prompt_not_closed_but_exception(session, create_dialog, get_shadow_page):
-    def check_user_prompt_not_closed_but_exception(dialog_type):
-        session.url = get_shadow_page("<div><p>bar</p><div>")
-        outer_element = session.find.css("custom-shadow-element", all=False)
-        shadow_root = outer_element.shadow_root
-
-        create_dialog(dialog_type, text=dialog_type)
-
-        response = find_elements(session, shadow_root.id, "css selector", "p")
-        assert_error(response, "unexpected alert open")
-
-        assert session.alert.text == dialog_type
-        session.alert.dismiss()
-
-    return check_user_prompt_not_closed_but_exception
-
-
 @pytest.mark.capabilities({"unhandledPromptBehavior": "accept"})
 @pytest.mark.parametrize("dialog_type, retval", [
     ("alert", None),

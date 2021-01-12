@@ -2,33 +2,42 @@ import pytest
 from tests.support.asserts import assert_error, assert_success
 
 
-def get_shadow_root(session, element):
+def get_shadow_root(session, shadow_id):
     return session.transport.send(
-        "GET", "session/{session_id}/element/{element_id}/shadow".format(
+        "GET", "session/{session_id}/element/{shadow_id}/shadow".format(
             session_id=session.session_id,
-            element_id=element.id))
+            shadow_id=shadow_id))
 
 
-@pytest.fixture
-def get_checkbox_dom(inline):
-    return inline("""
-        <style>
-            custom-checkbox-element {
-                display:block; width:20px; height:20px;
-            }
-        </style>
-        <custom-checkbox-element></custom-checkbox-element>
-        <script>
-            customElements.define('custom-checkbox-element',
-                class extends HTMLElement {
-                    constructor() {
-                            super();
-                            this.attachShadow({mode: 'open'}).innerHTML = `
-                                <div><input type="checkbox"/></div>
-                            `;
-                        }
-                });
-        </script>""")
+def test_no_top_browsing_context(session, closed_window):
+    original_handle, element = closed_window
+    response = get_shadow_root(session, element.id)
+    assert_error(response, "no such window")
+    response = get_shadow_root(session, "foo")
+    assert_error(response, "no such window")
+
+    session.window_handle = original_handle
+    response = get_shadow_root(session, element.id)
+    assert_error(response, "no such element")
+
+
+def test_no_browsing_context(session, closed_frame):
+    response = get_shadow_root(session, "foo")
+    assert_error(response, "no such window")
+
+
+def test_element_not_found(session):
+    result = get_shadow_root(session, "foo")
+    assert_error(result, "no such element")
+
+
+def test_element_stale(session, get_checkbox_dom):
+    session.url = get_checkbox_dom
+    element = session.find.css("custom-checkbox-element", all=False)
+    session.refresh()
+
+    result = get_shadow_root(session, element.id)
+    assert_error(result, "stale element reference")
 
 
 def test_get_shadow_root(session, get_checkbox_dom):

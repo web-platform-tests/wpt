@@ -117,8 +117,8 @@ have the necessary HTML boilerplate generated for you at <code class="docutils l
 creating a <code class="docutils literal notranslate"><span class="pre">FileAPI/FileReaderSync.worker.js</span></code> as follows:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">importScripts</span><span class="p">(</span><span class="s2">&quot;/resources/testharness.js&quot;</span><span class="p">);</span>
 <span class="nx">test</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-    <span class="kr">const</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="s2">&quot;Hello&quot;</span><span class="p">]);</span>
-    <span class="kr">const</span> <span class="nx">fr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FileReaderSync</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="s2">&quot;Hello&quot;</span><span class="p">]);</span>
+    <span class="kd">const</span> <span class="nx">fr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FileReaderSync</span><span class="p">();</span>
     <span class="nx">assert_equals</span><span class="p">(</span><span class="nx">fr</span><span class="p">.</span><span class="nx">readAsText</span><span class="p">(</span><span class="nx">blob</span><span class="p">),</span> <span class="s2">&quot;Hello&quot;</span><span class="p">);</span>
 <span class="p">},</span> <span class="s2">&quot;FileReaderSync#readAsText.&quot;</span><span class="p">);</span>
 <span class="nx">done</span><span class="p">();</span>
@@ -137,7 +137,7 @@ JavaScript file with extension <code class="docutils literal notranslate"><span 
 <p>For example, one could write a test for the <code class="docutils literal notranslate"><span class="pre">Blob</span></code> constructor by
 creating a <code class="docutils literal notranslate"><span class="pre">FileAPI/Blob-constructor.any.js</span></code> as follows:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">test</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-    <span class="kr">const</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">();</span>
     <span class="nx">assert_equals</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">size</span><span class="p">,</span> <span class="mf">0</span><span class="p">);</span>
     <span class="nx">assert_equals</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
     <span class="nx">assert_false</span><span class="p">(</span><span class="nx">blob</span><span class="p">.</span><span class="nx">isClosed</span><span class="p">);</span>
@@ -229,11 +229,11 @@ otherwise too many tests to complete inside the timeout. For example:</p>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharnessreport.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/common/subset-tests.js&quot;</span><span class="p">&gt;</span>
 <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
- <span class="kr">const</span> <span class="nx">tests</span> <span class="o">=</span> <span class="p">[</span>
+ <span class="kd">const</span> <span class="nx">tests</span> <span class="o">=</span> <span class="p">[</span>
                  <span class="p">{</span> <span class="nx">fn</span><span class="o">:</span> <span class="nx">t</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;...&quot;</span> <span class="p">},</span>
                  <span class="p">...</span> <span class="nx">lots</span> <span class="k">of</span> <span class="nx">tests</span> <span class="p">...</span>
                <span class="p">];</span>
- <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">test</span> <span class="k">of</span> <span class="nx">tests</span><span class="p">)</span> <span class="p">{</span>
+ <span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">test</span> <span class="k">of</span> <span class="nx">tests</span><span class="p">)</span> <span class="p">{</span>
    <span class="nx">subsetTest</span><span class="p">(</span><span class="nx">async_test</span><span class="p">,</span> <span class="nx">test</span><span class="p">.</span><span class="nx">fn</span><span class="p">,</span> <span class="nx">test</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
  <span class="p">}</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>

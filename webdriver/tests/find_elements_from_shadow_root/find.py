@@ -13,14 +13,6 @@ def find_elements(session, shadow_id, using, value):
         {"using": using, "value": value})
 
 
-def test_find_elements_equivalence(session, get_shadow_page):
-    session.url = get_shadow_page("<div><input id='check' type='checkbox'/><input id='text'/></div>")
-    custom_element = session.find.css("custom-shadow-element", all=False)
-    shadow_root = custom_element.shadow_root
-    response = find_elements(session, shadow_root.id, "css", "input")
-    assert_success(response)
-
-
 def test_null_parameter_value(session, http, inline):
     session.url = inline("<div><a href=# id=linkText>full link text</a></div>")
     custom_element = session.find.css("custom-shadow-element", all=False)
@@ -54,6 +46,14 @@ def test_invalid_selector_argument(session, value):
     # Step 3 - 4
     response = find_elements(session, "notReal", "css selector", value)
     assert_error(response, "invalid argument")
+
+
+def test_find_elements_equivalence(session, get_shadow_page):
+    session.url = get_shadow_page("<div><input id='check' type='checkbox'/><input id='text'/></div>")
+    custom_element = session.find.css("custom-shadow-element", all=False)
+    shadow_root = custom_element.shadow_root
+    response = find_elements(session, shadow_root.id, "css", "input")
+    assert_success(response)
 
 
 @pytest.mark.parametrize("using,value",

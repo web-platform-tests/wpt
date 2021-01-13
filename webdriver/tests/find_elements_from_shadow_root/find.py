@@ -48,6 +48,16 @@ def test_invalid_selector_argument(session, value):
     assert_error(response, "invalid argument")
 
 
+def test_detached_shadow_root(session, get_shadow_page):
+    session.url = get_shadow_page("<div><input type='checkbox'/></div>")
+    custom_element = session.find.css("custom-shadow-element", all=False)
+    shadow_root = custom_element.shadow_root
+    session.refresh()
+
+    response = find_elements(session, shadow_root.id, "css", "input")
+    assert_error(response, "detached shadow root")
+
+
 def test_find_elements_equivalence(session, get_shadow_page):
     session.url = get_shadow_page("<div><input id='check' type='checkbox'/><input id='text'/></div>")
     custom_element = session.find.css("custom-shadow-element", all=False)

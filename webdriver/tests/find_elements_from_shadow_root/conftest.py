@@ -1,3 +1,5 @@
+import pytest
+
 @pytest.fixture
 def get_shadow_page(inline):
     def get_shadow_page(shadow_content):

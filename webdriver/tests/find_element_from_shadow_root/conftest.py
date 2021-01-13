@@ -1,6 +1,8 @@
+import pytest
+
 @pytest.fixture
 def get_shadow_page(inline):
-    def get_shadow_page(shadow_content):
+    def inner(shadow_content):
         return inline("""
             <custom-shadow-element></custom-shadow-element>
             <script>
@@ -14,4 +16,4 @@ def get_shadow_page(inline):
                             }}
                     }});
             </script>""".format(shadow_content))
-    return get_shadow_page
+    return inner

@@ -64,7 +64,7 @@ function testSerializedEntry({name, value, expected, description}) {
       assert_equals(query, `?${expectedName}=${expectedValue}`);
     }, `${description} (urlencoded)`);
   }
-  
+
   // formdata
   {
     const {name: expectedName, filename: expectedFilename, value: expectedValue} = expected.formdata;

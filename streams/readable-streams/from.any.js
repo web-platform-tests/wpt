@@ -188,6 +188,25 @@ test(t => {
 
 promise_test(async () => {
 
+  const iterable = {
+    async next() {
+      return { value: undefined, done: true };
+    },
+    [Symbol.asyncIterator]: () => iterable
+  };
+
+  const rs = ReadableStream.from(iterable);
+  const reader = rs.getReader();
+
+  const read = await reader.read();
+  assert_object_equals(read, { value: undefined, done: true }, 'first read should be done');
+
+  await reader.closed;
+
+}, `ReadableStream.from accepts an empty iterable`);
+
+promise_test(async () => {
+
   let nextCalls = 0;
   let nextArgs;
   const iterable = {

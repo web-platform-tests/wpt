@@ -205,6 +205,27 @@ promise_test(async () => {
 
 }, `ReadableStream.from accepts an empty iterable`);
 
+promise_test(async t => {
+
+  const theError = new Error('a unique string');
+
+  const iterable = {
+    async next() {
+      throw theError;
+    },
+    [Symbol.asyncIterator]: () => iterable
+  };
+
+  const rs = ReadableStream.from(iterable);
+  const reader = rs.getReader();
+
+  await Promise.all([
+    promise_rejects_exactly(t, theError, reader.read()),
+    promise_rejects_exactly(t, theError, reader.closed)
+  ]);
+
+}, `ReadableStream.from: stream errors when next() rejects`);
+
 promise_test(async () => {
 
   let nextCalls = 0;

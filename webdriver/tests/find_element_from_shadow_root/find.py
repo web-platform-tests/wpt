@@ -79,9 +79,12 @@ def test_find_element(session, get_shadow_page, using, value):
     # Step 8 - 9
     session.url = get_shadow_page("<div><a href=# id=linkText>full link text</a></div>")
     custom_element = session.find.css("custom-shadow-element", all=False)
+    expected = session.execute_script("return arguments[0].shadowRoot.querySelector('#linkText')",
+                                      args=(custom_element,))
     shadow_root = custom_element.shadow_root
     response = find_element(session, shadow_root.id, using, value)
     assert_success(response)
+    assert_same_element(session, value, expected)
 
 
 @pytest.mark.parametrize("document,value", [
@@ -96,10 +99,13 @@ def test_find_element_link_text(session, get_shadow_page, document, value):
     # Step 8 - 9
     session.url = get_shadow_page("<div>{0}</div>".format(document))
     custom_element = session.find.css("custom-shadow-element", all=False)
+    expected = session.execute_script("return arguments[0].shadowRoot.querySelectorAll('a')[0]",
+                                      args=(custom_element,))
     shadow_root = custom_element.shadow_root
 
     response = find_element(session, shadow_root.id, "link text", value)
     assert_success(response)
+    assert_same_element(session, value, expected)
 
 
 @pytest.mark.parametrize("document,value", [
@@ -115,10 +121,13 @@ def test_find_element_partial_link_text(session, get_shadow_page, document, valu
     # Step 8 - 9
     session.url = get_shadow_page("<div>{0}</div>".format(document))
     custom_element = session.find.css("custom-shadow-element", all=False)
+    expected = session.execute_script("return arguments[0].shadowRoot.querySelectorAll('a')[0]",
+                                      args=(custom_element,))
     shadow_root = custom_element.shadow_root
 
     response = find_element(session, shadow_root.id, "partial link text", value)
     assert_success(response)
+    assert_same_element(session, value, expected)
 
 
 @pytest.mark.parametrize("using,value", [("css selector", "#wontExist")])

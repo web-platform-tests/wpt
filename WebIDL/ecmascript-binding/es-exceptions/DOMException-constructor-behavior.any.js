@@ -88,9 +88,11 @@ test(function() {
 
 [
   {name: "IndexSizeError", code: 1},
+  {name: "DOMStringSizeError", code: 2},
   {name: "HierarchyRequestError", code: 3},
   {name: "WrongDocumentError", code: 4},
   {name: "InvalidCharacterError", code: 5},
+  {name: "NoDataAllowedError", code: 6},
   {name: "NoModificationAllowedError", code: 7},
   {name: "NotFoundError", code: 8},
   {name: "NotSupportedError", code: 9},
@@ -100,6 +102,8 @@ test(function() {
   {name: "InvalidModificationError", code: 13},
   {name: "NamespaceError", code: 14},
   {name: "InvalidAccessError", code: 15},
+  {name: "ValidationError", code: 16},
+  {name: "TypeMismatchError", code: 17},
   {name: "SecurityError", code: 18},
   {name: "NetworkError", code: 19},
   {name: "AbortError", code: 20},

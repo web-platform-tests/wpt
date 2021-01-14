@@ -14,6 +14,10 @@ const iterableFactories = [
     ];
   }],
 
+  ['an array iterator', () => {
+    return ['a', 'b'][Symbol.iterator]();
+  }],
+
   ['a string', () => {
     // This iterates over the code points of the string.
     return 'ab';
@@ -21,6 +25,10 @@ const iterableFactories = [
 
   ['a Set', () => {
     return new Set(['a', 'b']);
+  }],
+
+  ['a Set iterator', () => {
+    return new Set(['a', 'b'])[Symbol.iterator]();
   }],
 
   ['a sync generator', () => {
@@ -91,6 +99,16 @@ const iterableFactories = [
         c.close();
       }
     });
+  }],
+
+  ['a ReadableStream async iterator', () => {
+    return new ReadableStream({
+      start(c) {
+        c.enqueue('a');
+        c.enqueue('b');
+        c.close();
+      }
+    })[Symbol.asyncIterator]();
   }]
 ];
 

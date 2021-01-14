@@ -32,8 +32,8 @@ def test_element_not_found(session):
     assert_error(result, "no such element")
 
 
-def test_element_stale(session, get_checkbox_dom):
-    session.url = get_checkbox_dom
+def test_element_stale(session, checkbox_dom):
+    session.url = checkbox_dom
     element = session.find.css("custom-checkbox-element", all=False)
     session.refresh()
 
@@ -41,8 +41,8 @@ def test_element_stale(session, get_checkbox_dom):
     assert_error(result, "stale element reference")
 
 
-def test_get_shadow_root(session, get_checkbox_dom):
-    session.url = get_checkbox_dom
+def test_get_shadow_root(session, checkbox_dom):
+    session.url = checkbox_dom
     expected = session.execute_script(
         "return document.querySelector('custom-checkbox-element').shadowRoot.host")
     custom_element = session.find.css("custom-checkbox-element", all=False)

@@ -1,7 +1,7 @@
 import pytest
 
 @pytest.fixture
-def get_checkbox_dom(inline):
+def checkbox_dom(inline):
     return inline("""
         <style>
             custom-checkbox-element {

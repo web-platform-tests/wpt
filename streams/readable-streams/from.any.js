@@ -228,6 +228,26 @@ promise_test(async t => {
 
 promise_test(async () => {
 
+  const iterable = {
+    next() {
+      return new Promise(() => {});
+    },
+    [Symbol.asyncIterator]: () => iterable
+  };
+
+  const rs = ReadableStream.from(iterable);
+  const reader = rs.getReader();
+
+  await Promise.race([
+    reader.read().then(() => assert_unreached(), () => assert_unreached()),
+    reader.closed.then(() => assert_unreached(), () => assert_unreached()),
+    flushAsyncEvents()
+  ]);
+
+}, 'ReadableStream.from: stream stalls when next() never settles');
+
+promise_test(async () => {
+
   let nextCalls = 0;
   let nextArgs;
   const iterable = {

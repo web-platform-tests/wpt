@@ -18,11 +18,6 @@ var unexpected = [
   "HashChangeEvent",
   "PageTransitionEvent",
   // https://streams.spec.whatwg.org/
-  "ReadableStreamDefaultReader",
-  "ReadableStreamBYOBReader",
-  "ReadableStreamDefaultController",
-  "ReadableByteStreamController",
-  "WritableStreamDefaultWriter",
   "WritableStreamDefaultController",
   // http://w3c.github.io/IndexedDB/
   "IDBEnvironment",

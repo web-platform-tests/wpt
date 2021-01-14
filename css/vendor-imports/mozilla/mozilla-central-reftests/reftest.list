@@ -22,9 +22,6 @@ include break3/reftest.list
 # Color Level 4
 include color4/reftest.list
 
-# Conditional Rules Level 3
-include conditional3/reftest.list
-
 # Containment
 include contain/reftest.list
 
@@ -60,9 +57,6 @@ include text3/reftest.list
 
 # Text Decoration Level 3
 include text-decor-3/reftest.list
-
-# User Interface Level 3
-include ui3/reftest.list
 
 # Values and Units Level 3
 include values3/reftest.list

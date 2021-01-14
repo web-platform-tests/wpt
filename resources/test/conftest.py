@@ -114,7 +114,11 @@ class HTMLItem(pytest.Item, pytest.Collector):
                 continue
             if element.tag == 'script':
                 if element.attrib.get('id') == 'expected':
-                    self.expected = json.loads(text_type(element.text))
+                    try:
+                        self.expected = json.loads(text_type(element.text))
+                    except ValueError:
+                        # Continue so we can print the actual data
+                        pass
 
                 src = element.attrib.get('src', '')
 
@@ -126,8 +130,6 @@ class HTMLItem(pytest.Item, pytest.Collector):
         if not name:
             raise ValueError('No name found in %s add a <title> element' % filename)
         elif self.type == 'functional':
-            if not self.expected:
-                raise ValueError('Functional tests must specify expected report data')
             if not includes_variants_script:
                 raise ValueError('No variants script found in file %s add '
                                  '\'<script src="../../variants.js"></script>\'' % filename)
@@ -201,6 +203,7 @@ class HTMLItem(pytest.Item, pytest.Collector):
         indices = [test_obj.get('index') for test_obj in actual['tests']]
         self._assert_sequence(indices)
 
+        assert self.expected is not None, "Missing <script type=text/json id=expected> element"
         self.expected[u'summarized_tests'].sort(key=lambda test_obj: test_obj.get('name'))
 
         assert summarized == self.expected

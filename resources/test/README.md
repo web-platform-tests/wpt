@@ -88,3 +88,8 @@ test may be executed under a number of distinct conditions. These conditions
 are applied using WPT's "test variants" pattern. The available variants are
 defined in the `variants.js` file; this file must be included before
 `testharness.js`. Every test must specify at least one variant.
+
+When the tests are run using `tox`, the actual data for failing tests
+is written to stdout. If this is verified to match author
+expectations, the JSON string can be copied directly into the `<script
+id=expected>` element in the test to provide the expected data.

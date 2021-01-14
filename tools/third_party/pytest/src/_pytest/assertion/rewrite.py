@@ -27,7 +27,7 @@ from typing import Union
 import py
 
 from _pytest._io.saferepr import saferepr
-from _pytest._version import version
+#from _pytest._version import version
 from _pytest.assertion import util
 from _pytest.assertion.util import (  # noqa: F401
     format_explanation as _format_explanation,
@@ -49,7 +49,8 @@ assertstate_key = StoreKey["AssertionState"]()
 
 
 # pytest caches rewritten pycs in pycache dirs
-PYTEST_TAG = "{}-pytest-{}".format(sys.implementation.cache_tag, version)
+# PYTEST_TAG = "{}-pytest-{}".format(sys.implementation.cache_tag, version)
+PYTEST_TAG = "{}-pytest-{}".format(sys.implementation.cache_tag, "6.1.1")
 PYC_EXT = ".py" + (__debug__ and "c" or "o")
 PYC_TAIL = "." + PYTEST_TAG + PYC_EXT
 

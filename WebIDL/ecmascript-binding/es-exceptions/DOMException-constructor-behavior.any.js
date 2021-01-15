@@ -88,11 +88,9 @@ test(function() {
 
 [
   {name: "IndexSizeError", code: 1},
-  {name: "DOMStringSizeError", code: 2},
   {name: "HierarchyRequestError", code: 3},
   {name: "WrongDocumentError", code: 4},
   {name: "InvalidCharacterError", code: 5},
-  {name: "NoDataAllowedError", code: 6},
   {name: "NoModificationAllowedError", code: 7},
   {name: "NotFoundError", code: 8},
   {name: "NotSupportedError", code: 9},
@@ -102,7 +100,6 @@ test(function() {
   {name: "InvalidModificationError", code: 13},
   {name: "NamespaceError", code: 14},
   {name: "InvalidAccessError", code: 15},
-  {name: "ValidationError", code: 16},
   {name: "TypeMismatchError", code: 17},
   {name: "SecurityError", code: 18},
   {name: "NetworkError", code: 19},
@@ -111,7 +108,25 @@ test(function() {
   {name: "QuotaExceededError", code: 22},
   {name: "TimeoutError", code: 23},
   {name: "InvalidNodeTypeError", code: 24},
-  {name: "DataCloneError", code: 25}
+  {name: "DataCloneError", code: 25},
+
+  // These were removed from the error names table.
+  // See https://github.com/heycam/webidl/pull/946.
+  {name: "DOMStringSizeError", code: 0},
+  {name: "NoDataAllowedError", code: 0},
+  {name: "ValidationError", code: 0},
+
+  // The error names which don't have legacy code values.
+  {name: "EncodingError", code: 0},
+  {name: "NotReadableError", code: 0},
+  {name: "UnknownError", code: 0},
+  {name: "ConstraintError", code: 0},
+  {name: "DataError", code: 0},
+  {name: "TransactionInactiveError", code: 0},
+  {name: "ReadOnlyError", code: 0},
+  {name: "VersionError", code: 0},
+  {name: "OperationError", code: 0},
+  {name: "NotAllowedError", code: 0}
 ].forEach(function(test_case) {
   test(function() {
     var ex = new DOMException("msg", test_case.name);

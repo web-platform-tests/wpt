@@ -264,8 +264,8 @@ function form({
       formTargetFrame.onload = resolve;
     });
 
-    const urlencoded = formTargetFrame.contentDocument.body.textContent;
-    assert_equals(unescape(urlencoded), expected);
+    const serialized = formTargetFrame.contentDocument.body.textContent;
+    assert_equals(unescape(serialized), expected);
   }, `text/plain: ${description} (normal form)`);
 
   // formdata event
@@ -306,8 +306,8 @@ function form({
       formTargetFrame.onload = resolve;
     });
 
-    const urlencoded = formTargetFrame.contentDocument.body.textContent;
-    assert_equals(unescape(urlencoded), expected);
+    const serialized = formTargetFrame.contentDocument.body.textContent;
+    assert_equals(unescape(serialized), expected);
   }, `text/plain: ${description} (formdata event)`);
 }
 

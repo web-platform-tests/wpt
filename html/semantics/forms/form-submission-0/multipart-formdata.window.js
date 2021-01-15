@@ -1,196 +1,293 @@
+// Form submissions in multipart/form-data are also tested in
+// /FileAPI/file/send-file*
+
 form({
   name: "basic",
   value: "test",
-  expected: "basic=test",
+  expected: {
+    name: "basic",
+    value: "test",
+  },
   description: "Basic test",
 });
 
 form({
   name: "basic",
-  value: new File([], "file-test.txt"),
-  expected: "basic=file-test.txt",
+  value: new File([], "file-test.txt", { type: "text/plain" }),
+  expected: {
+    name: "basic",
+    filename: "file-test.txt",
+    value: "",
+  },
   description: "Basic File test",
 });
 
 form({
   name: "a\0b",
   value: "c",
-  expected: "a%00b=c",
+  expected: {
+    name: "a\0b",
+    value: "c",
+  },
   description: "0x00 in name",
 });
 
 form({
   name: "a",
   value: "b\0c",
-  expected: "a=b%00c",
+  expected: {
+    name: "a",
+    value: "b\0c",
+  },
   description: "0x00 in value",
 });
 
 form({
   name: "a",
-  value: new File([], "b\0c"),
-  expected: "a=b%00c",
+  value: new File([], "b\0c", { type: "text/plain" }),
+  expected: {
+    name: "a",
+    filename: "b\0c",
+    value: "",
+  },
   description: "0x00 in filename",
 });
 
 form({
   name: "a\nb",
   value: "c",
-  expected: "a%0D%0Ab=c",
+  expected: {
+    name: "a%0D%0Ab",
+    value: "c",
+  },
   description: "\\n in name",
 });
 
 form({
   name: "a\rb",
   value: "c",
-  expected: "a%0D%0Ab=c",
+  expected: {
+    name: "a%0D%0Ab",
+    value: "c",
+  },
   description: "\\r in name",
 });
 
 form({
   name: "a\r\nb",
   value: "c",
-  expected: "a%0D%0Ab=c",
+  expected: {
+    name: "a%0D%0Ab",
+    value: "c",
+  },
   description: "\\r\\n in name",
 });
 
 form({
   name: "a\n\rb",
   value: "c",
-  expected: "a%0D%0A%0D%0Ab=c",
+  expected: {
+    name: "a%0D%0A%0D%0Ab",
+    value: "c",
+  },
   description: "\\n\\r in name",
 });
 
 form({
   name: "a",
   value: "b\nc",
-  expected: "a=b%0D%0Ac",
+  expected: {
+    name: "a",
+    value: "b\r\nc",
+  },
   description: "\\n in value",
 });
 
 form({
   name: "a",
   value: "b\rc",
-  expected: "a=b%0D%0Ac",
+  expected: {
+    name: "a",
+    value: "b\r\nc",
+  },
   description: "\\r in value",
 });
 
 form({
   name: "a",
   value: "b\r\nc",
-  expected: "a=b%0D%0Ac",
+  expected: {
+    name: "a",
+    value: "b\r\nc",
+  },
   description: "\\r\\n in value",
 });
 
 form({
   name: "a",
   value: "b\n\rc",
-  expected: "a=b%0D%0A%0D%0Ac",
+  expected: {
+    name: "a",
+    value: "b\r\n\r\nc",
+  },
   description: "\\n\\r in value",
 });
 
 form({
   name: "a",
-  value: new File([], "b\nc"),
-  expected: "a=b%0D%0Ac",
+  value: new File([], "b\nc", { type: "text/plain" }),
+  expected: {
+    name: "a",
+    filename: "b%0Ac",
+    value: "",
+  },
   description: "\\n in filename",
 });
 
 form({
   name: "a",
-  value: new File([], "b\rc"),
-  expected: "a=b%0D%0Ac",
+  value: new File([], "b\rc", { type: "text/plain" }),
+  expected: {
+    name: "a",
+    filename: "b%0Dc",
+    value: "",
+  },
   description: "\\r in filename",
 });
 
 form({
   name: "a",
-  value: new File([], "b\r\nc"),
-  expected: "a=b%0D%0Ac",
+  value: new File([], "b\r\nc", { type: "text/plain" }),
+  expected: {
+    name: "a",
+    filename: "b%0D%0Ac",
+    value: "",
+  },
   description: "\\r\\n in filename",
 });
 
 form({
   name: "a",
-  value: new File([], "b\n\rc"),
-  expected: "a=b%0D%0A%0D%0Ac",
+  value: new File([], "b\n\rc", { type: "text/plain" }),
+  expected: {
+    name: "a",
+    filename: "b%0A%0Dc",
+    value: "",
+  },
   description: "\\n\\r in filename",
 });
 
 form({
   name: 'a"b',
   value: "c",
-  expected: "a%22b=c",
+  expected: {
+    name: "a%22b",
+    value: "c",
+  },
   description: "double quote in name",
 });
 
 form({
   name: "a",
   value: 'b"c',
-  expected: "a=b%22c",
+  expected: {
+    name: "a",
+    value: 'b"c',
+  },
   description: "double quote in value",
 });
 
 form({
   name: "a",
-  value: new File([], 'b"c'),
-  expected: "a=b%22c",
+  value: new File([], 'b"c', { type: "text/plain" }),
+  expected: {
+    name: "a",
+    filename: "b%22c",
+    value: "",
+  },
   description: "double quote in filename",
 });
 
 form({
   name: "a'b",
   value: "c",
-  expected: "a%27b=c",
+  expected: {
+    name: "a'b",
+    value: "c",
+  },
   description: "single quote in name",
 });
 
 form({
   name: "a",
   value: "b'c",
-  expected: "a=b%27c",
+  expected: {
+    name: "a",
+    value: "b'c",
+  },
   description: "single quote in value",
 });
 
 form({
   name: "a",
-  value: new File([], "b'c"),
-  expected: "a=b%27c",
+  value: new File([], "b'c", { type: "text/plain" }),
+  expected: {
+    name: "a",
+    filename: "b'c",
+    value: "",
+  },
   description: "single quote in filename",
 });
 
 form({
   name: "a\\b",
   value: "c",
-  expected: "a%5Cb=c",
+  expected: {
+    name: "a\\b",
+    value: "c",
+  },
   description: "backslash in name",
 });
 
 form({
   name: "a",
   value: "b\\c",
-  expected: "a=b%5Cc",
+  expected: {
+    name: "a",
+    value: "b\\c",
+  },
   description: "backslash in value",
 });
 
 form({
   name: "a",
-  value: new File([], "b\\c"),
-  expected: "a=b%5Cc",
+  value: new File([], "b\\c", { type: "text/plain" }),
+  expected: {
+    name: "a",
+    filename: "b\\c",
+    value: "",
+  },
   description: "backslash in filename",
 });
 
 form({
   name: "áb",
   value: "ç",
-  expected: "%C3%A1b=%C3%A7",
+  expected: {
+    name: "\xC3\xA1b",
+    value: "\xC3\xA7",
+  },
   description: "non-ASCII in name and value",
 });
 
 form({
   name: "a",
-  value: new File([], "ə.txt"),
-  expected: "a=%C9%99.txt",
+  value: new File([], "ə.txt", { type: "text/plain" }),
+  expected: {
+    name: "a",
+    filename: "\xC9\x99.txt",
+    value: "",
+  },
   description: "non-ASCII in filename",
 });
 
@@ -198,25 +295,26 @@ form({
   name: "aəb",
   value: "c\uFFFDd",
   formEncoding: "windows-1252",
-  expected: "a%26%23601%3Bb=c%26%2365533%3Bd",
+  expected: {
+    name: "a&#601;b",
+    value: "c&#65533;d",
+  },
   description: "characters not in encoding in name and value",
 });
 
 form({
   name: "á",
-  value: new File([], "💩"),
+  value: new File([], "💩", { type: "text/plain" }),
   formEncoding: "windows-1252",
-  expected: "%E1=%26%23128169%3B",
+  expected: {
+    name: "\xE1",
+    filename: "&#128169;",
+    value: "",
+  },
   description: "character not in encoding in filename",
 });
 
-function form({
-  name,
-  value,
-  expected,
-  formEncoding = "utf-8",
-  description,
-}) {
+function form({ name, value, expected, formEncoding = "utf-8", description }) {
   // Normal form
   promise_test(async (testCase) => {
     if (document.readyState !== "complete") {
@@ -234,12 +332,11 @@ function form({
     const form = Object.assign(document.createElement("form"), {
       acceptCharset: formEncoding,
       // Using echo-content-escaped.py rather than /fetch/api/resources/echo-content.py
-      // to work around WebKit not percent-encoding \x00 (which causes the
-      // response to be detected as a binary file and served as a download).
-      // The output should not change if the urlencoded serializer is correct.
+      // because we're doing tests with \x00, which can cause the response to be
+      // detected as a binary file and served as a download).
       action: "/FileAPI/file/resources/echo-content-escaped.py",
       method: "POST",
-      enctype: "application/x-www-form-urlencoded",
+      enctype: "multipart/form-data",
       target: formTargetFrame.name,
     });
     document.body.append(form);
@@ -265,9 +362,12 @@ function form({
       formTargetFrame.onload = resolve;
     });
 
-    const serialized = formTargetFrame.contentDocument.body.textContent;
-    assert_equals(unescape(serialized), expected);
-  }, `application/x-www-form-urlencoded: ${description} (normal form)`);
+    const serialized = unescape(
+      formTargetFrame.contentDocument.body.textContent,
+    );
+    const boundary = serialized.split("\r\n")[0];
+    assert_equals(serialized, expectedPayload(expected, boundary));
+  }, `multipart/form-data: ${description} (normal form)`);
 
   // formdata event
   promise_test(async (testCase) => {
@@ -286,12 +386,11 @@ function form({
     const form = Object.assign(document.createElement("form"), {
       acceptCharset: formEncoding,
       // Using echo-content-escaped.py rather than /fetch/api/resources/echo-content.py
-      // to work around WebKit not percent-encoding \x00 (which causes the
-      // response to be detected as a binary file and served as a download).
-      // The output should not change if the urlencoded serializer is correct.
+      // because we're doing tests with \x00, which can cause the response to be
+      // detected as a binary file and served as a download).
       action: "/FileAPI/file/resources/echo-content-escaped.py",
       method: "POST",
-      enctype: "application/x-www-form-urlencoded",
+      enctype: "multipart/form-data",
       target: formTargetFrame.name,
     });
     document.body.append(form);
@@ -308,9 +407,12 @@ function form({
       formTargetFrame.onload = resolve;
     });
 
-    const serialized = formTargetFrame.contentDocument.body.textContent;
-    assert_equals(unescape(serialized), expected);
-  }, `application/x-www-form-urlencoded: ${description} (formdata event)`);
+    const serialized = unescape(
+      formTargetFrame.contentDocument.body.textContent,
+    );
+    const boundary = serialized.split("\r\n")[0];
+    assert_equals(serialized, expectedPayload(expected, boundary));
+  }, `multipart/form-data: ${description} (formdata event)`);
 }
 
 function unescape(str) {
@@ -318,4 +420,25 @@ function unescape(str) {
     /\\x[0-9A-Fa-f]{2}/g,
     (escape) => String.fromCodePoint(parseInt(escape.substring(2), 16)),
   ).replace(/\\\\/g, "\\");
+}
+
+function expectedPayload({ name, filename, value }, boundary) {
+  let headers;
+  if (filename === undefined) {
+    headers = [`Content-Disposition: form-data; name="${name}"`];
+  } else {
+    headers = [
+      `Content-Disposition: form-data; name="${name}"; filename="${filename}"`,
+      "Content-Type: text/plain",
+    ];
+  }
+
+  return [
+    boundary,
+    ...headers,
+    "",
+    value,
+    boundary + "--",
+    "",
+  ].join("\r\n");
 }

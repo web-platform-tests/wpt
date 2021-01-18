@@ -1,4 +1,4 @@
-body = '''
+body = b'''
 'use strict';
 
 onconnect = (event) => {
@@ -16,9 +16,9 @@ onconnect = (event) => {
 };'''
 
 def main(request, response):
-    headers = [('Content-Type', 'text/html')]
+    headers = [(b'Content-Type', b'text/javascript')]
 
-    for value in request.GET.get_list('value'):
-        headers.append(('Cross-Origin-Embedder-Policy', value))
+    for value in request.GET.get_list(b'value'):
+        headers.append((b'Cross-Origin-Embedder-Policy', value))
 
     return (200, headers, body)

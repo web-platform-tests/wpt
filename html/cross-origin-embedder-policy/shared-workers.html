@@ -48,9 +48,6 @@ function create(t, ownerCoep, workerUrl) {
       document.body.appendChild(iframe);
       t.add_cleanup(() => iframe.remove());
       iframe.onload = () => resolve(iframe);
-      iframe.onerror = () => {
-        reject(new Error('failed to load frame at ' + iframe.src));
-      };
     })
     .then((iframe) => {
       const sw = new iframe.contentWindow.SharedWorker(workerUrl);

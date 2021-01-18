@@ -87,14 +87,15 @@ policies and contribution forms [3].
                                              test: test.structured_clone()});
                      }],
             completion: [add_completion_callback, remove_completion_callback,
-                         function (tests, harness_status) {
+                         function (tests, harness_status, asserts) {
                              var cloned_tests = map(tests, function(test) {
                                  return test.structured_clone();
                              });
                              this_obj._dispatch("completion_callback", [tests, harness_status],
                                                 {type: "complete",
                                                  tests: cloned_tests,
-                                                 status: harness_status.structured_clone()});
+                                                 status: harness_status.structured_clone(),
+                                                 asserts: asserts.map(assert => assert.structured_clone())});
                          }]
         }
 
@@ -192,8 +193,8 @@ policies and contribution forms [3].
             this_obj.output_handler.show_status();
         });
 
-        add_completion_callback(function (tests, harness_status) {
-            this_obj.output_handler.show_results(tests, harness_status);
+        add_completion_callback(function (tests, harness_status, asserts_run) {
+            this_obj.output_handler.show_results(tests, harness_status, asserts_run);
         });
         this.setup_messages(settings.message_events);
     };
@@ -314,14 +315,15 @@ policies and contribution forms [3].
                     });
                 });
         add_completion_callback(
-                function(tests, harness_status) {
+                function(tests, harness_status, asserts) {
                     this_obj._dispatch({
                         type: "complete",
                         tests: map(tests,
                             function(test) {
                                 return test.structured_clone();
                             }),
-                        status: harness_status.structured_clone()
+                        status: harness_status.structured_clone(),
+                        asserts: asserts.map(assert => assert.structured_clone()),
                     });
                 });
     };
@@ -1183,19 +1185,50 @@ policies and contribution forms [3].
      * Assertions
      */
 
+    function expose_assert(f, name) {
+        function assert_wrapper(...args) {
+            let status = Test.statuses.TIMEOUT;
+            let stack = null;
+            try {
+                if (settings.output) {
+                    tests.set_assert(name, ...args);
+                }
+                rv = f(...args);
+                status = Test.statuses.PASS;
+                return rv;
+            } catch(e) {
+                if (e instanceof AssertionError) {
+                    status = Test.statuses.FAIL;
+                    stack = e.stack;
+                 } else {
+                    status = Test.statuses.ERROR;
+                 }
+                throw e;
+            } finally {
+                if (settings.output && !stack) {
+                    stack = get_stack();
+                }
+                if (settings.output) {
+                    tests.set_assert_status(status, stack);
+                }
+            }
+        }
+        expose(assert_wrapper, name);
+    }
+
     function assert_true(actual, description)
     {
         assert(actual === true, "assert_true", description,
                                 "expected true got ${actual}", {actual:actual});
     }
-    expose(assert_true, "assert_true");
+    expose_assert(assert_true, "assert_true");
 
     function assert_false(actual, description)
     {
         assert(actual === false, "assert_false", description,
                                  "expected false got ${actual}", {actual:actual});
     }
-    expose(assert_false, "assert_false");
+    expose_assert(assert_false, "assert_false");
 
     function same_value(x, y) {
         if (y !== y) {
@@ -1225,7 +1258,7 @@ policies and contribution forms [3].
                                              "expected ${expected} but got ${actual}",
                                              {expected:expected, actual:actual});
     }
-    expose(assert_equals, "assert_equals");
+    expose_assert(assert_equals, "assert_equals");
 
     function assert_not_equals(actual, expected, description)
     {
@@ -1237,7 +1270,7 @@ policies and contribution forms [3].
                                               "got disallowed value ${actual}",
                                               {actual:actual});
     }
-    expose(assert_not_equals, "assert_not_equals");
+    expose_assert(assert_not_equals, "assert_not_equals");
 
     function assert_in_array(actual, expected, description)
     {
@@ -1245,7 +1278,7 @@ policies and contribution forms [3].
                                                "value ${actual} not in array ${expected}",
                                                {actual:actual, expected:expected});
     }
-    expose(assert_in_array, "assert_in_array");
+    expose_assert(assert_in_array, "assert_in_array");
 
     // This function was deprecated in July of 2015.
     // See https://github.com/web-platform-tests/wpt/issues/2033
@@ -1283,7 +1316,7 @@ policies and contribution forms [3].
          }
          check_equal(actual, expected, []);
     }
-    expose(assert_object_equals, "assert_object_equals");
+    expose_assert(assert_object_equals, "assert_object_equals");
 
     function assert_array_equals(actual, expected, description)
     {
@@ -1340,7 +1373,7 @@ policies and contribution forms [3].
                     arrayExpected:shorten_array(expected, i), arrayActual:shorten_array(actual, i)});
         }
     }
-    expose(assert_array_equals, "assert_array_equals");
+    expose_assert(assert_array_equals, "assert_array_equals");
 
     function assert_array_approx_equals(actual, expected, epsilon, description)
     {
@@ -1368,7 +1401,7 @@ policies and contribution forms [3].
                    {i:i, expected:expected[i], actual:actual[i], epsilon:epsilon});
         }
     }
-    expose(assert_array_approx_equals, "assert_array_approx_equals");
+    expose_assert(assert_array_approx_equals, "assert_array_approx_equals");
 
     function assert_approx_equals(actual, expected, epsilon, description)
     {
@@ -1391,7 +1424,7 @@ policies and contribution forms [3].
             assert_equals(actual, expected);
         }
     }
-    expose(assert_approx_equals, "assert_approx_equals");
+    expose_assert(assert_approx_equals, "assert_approx_equals");
 
     function assert_less_than(actual, expected, description)
     {
@@ -1408,7 +1441,7 @@ policies and contribution forms [3].
                "expected a number less than ${expected} but got ${actual}",
                {expected:expected, actual:actual});
     }
-    expose(assert_less_than, "assert_less_than");
+    expose_assert(assert_less_than, "assert_less_than");
 
     function assert_greater_than(actual, expected, description)
     {
@@ -1425,7 +1458,7 @@ policies and contribution forms [3].
                "expected a number greater than ${expected} but got ${actual}",
                {expected:expected, actual:actual});
     }
-    expose(assert_greater_than, "assert_greater_than");
+    expose_assert(assert_greater_than, "assert_greater_than");
 
     function assert_between_exclusive(actual, lower, upper, description)
     {
@@ -1443,7 +1476,7 @@ policies and contribution forms [3].
                "and less than ${upper} but got ${actual}",
                {lower:lower, upper:upper, actual:actual});
     }
-    expose(assert_between_exclusive, "assert_between_exclusive");
+    expose_assert(assert_between_exclusive, "assert_between_exclusive");
 
     function assert_less_than_equal(actual, expected, description)
     {
@@ -1460,7 +1493,7 @@ policies and contribution forms [3].
                "expected a number less than or equal to ${expected} but got ${actual}",
                {expected:expected, actual:actual});
     }
-    expose(assert_less_than_equal, "assert_less_than_equal");
+    expose_assert(assert_less_than_equal, "assert_less_than_equal");
 
     function assert_greater_than_equal(actual, expected, description)
     {
@@ -1477,7 +1510,7 @@ policies and contribution forms [3].
                "expected a number greater than or equal to ${expected} but got ${actual}",
                {expected:expected, actual:actual});
     }
-    expose(assert_greater_than_equal, "assert_greater_than_equal");
+    expose_assert(assert_greater_than_equal, "assert_greater_than_equal");
 
     function assert_between_inclusive(actual, lower, upper, description)
     {
@@ -1495,7 +1528,7 @@ policies and contribution forms [3].
                "and less than or equal to ${upper} but got ${actual}",
                {lower:lower, upper:upper, actual:actual});
     }
-    expose(assert_between_inclusive, "assert_between_inclusive");
+    expose_assert(assert_between_inclusive, "assert_between_inclusive");
 
     function assert_regexp_match(actual, expected, description) {
         /*
@@ -1506,7 +1539,7 @@ policies and contribution forms [3].
                "expected ${expected} but got ${actual}",
                {expected:expected, actual:actual});
     }
-    expose(assert_regexp_match, "assert_regexp_match");
+    expose_assert(assert_regexp_match, "assert_regexp_match");
 
     function assert_class_string(object, class_string, description) {
         var actual = {}.toString.call(object);
@@ -1515,22 +1548,21 @@ policies and contribution forms [3].
                                              "expected ${expected} but got ${actual}",
                                              {expected:expected, actual:actual});
     }
-    expose(assert_class_string, "assert_class_string");
-
+    expose_assert(assert_class_string, "assert_class_string");
 
     function assert_own_property(object, property_name, description) {
         assert(object.hasOwnProperty(property_name),
                "assert_own_property", description,
                "expected property ${p} missing", {p:property_name});
     }
-    expose(assert_own_property, "assert_own_property");
+    expose_assert(assert_own_property, "assert_own_property");
 
     function assert_not_own_property(object, property_name, description) {
         assert(!object.hasOwnProperty(property_name),
                "assert_not_own_property", description,
                "unexpected property ${p} is found on object", {p:property_name});
     }
-    expose(assert_not_own_property, "assert_not_own_property");
+    expose_assert(assert_not_own_property, "assert_not_own_property");
 
     function _assert_inherits(name) {
         return function (object, property_name, description)
@@ -1556,8 +1588,8 @@ policies and contribution forms [3].
                    {p:property_name});
         };
     }
-    expose(_assert_inherits("assert_inherits"), "assert_inherits");
-    expose(_assert_inherits("assert_idl_attribute"), "assert_idl_attribute");
+    expose_assert(_assert_inherits("assert_inherits"), "assert_inherits");
+    expose_assert(_assert_inherits("assert_idl_attribute"), "assert_idl_attribute");
 
     function assert_readonly(object, property_name, description)
     {
@@ -1574,7 +1606,7 @@ policies and contribution forms [3].
              object[property_name] = initial_value;
          }
     }
-    expose(assert_readonly, "assert_readonly");
+    expose_assert(assert_readonly, "assert_readonly");
 
     /**
      * Assert a JS Error with the expected constructor is thrown.
@@ -1588,7 +1620,7 @@ policies and contribution forms [3].
         assert_throws_js_impl(constructor, func, description,
                               "assert_throws_js");
     }
-    expose(assert_throws_js, "assert_throws_js");
+    expose_assert(assert_throws_js, "assert_throws_js");
 
     /**
      * Like assert_throws_js but allows specifying the assertion type
@@ -1686,7 +1718,7 @@ policies and contribution forms [3].
         }
         assert_throws_dom_impl(type, func, description, "assert_throws_dom", constructor)
     }
-    expose(assert_throws_dom, "assert_throws_dom");
+    expose_assert(assert_throws_dom, "assert_throws_dom");
 
     /**
      * Similar to assert_throws_dom but allows specifying the assertion type
@@ -1849,7 +1881,7 @@ policies and contribution forms [3].
         assert_throws_exactly_impl(exception, func, description,
                                    "assert_throws_exactly");
     }
-    expose(assert_throws_exactly, "assert_throws_exactly");
+    expose_assert(assert_throws_exactly, "assert_throws_exactly");
 
     /**
      * Like assert_throws_exactly but allows specifying the assertion type
@@ -1877,7 +1909,7 @@ policies and contribution forms [3].
          assert(false, "assert_unreached", description,
                 "Reached unreachable code");
     }
-    expose(assert_unreached, "assert_unreached");
+    expose_assert(assert_unreached, "assert_unreached");
 
     function assert_any(assert_func, actual, expected_array)
     {
@@ -1898,7 +1930,7 @@ policies and contribution forms [3].
             throw new AssertionError(errors.join("\n\n"));
         }
     }
-    expose(assert_any, "assert_any");
+    expose_assert(assert_any, "assert_any");
 
     /**
      * Assert that a feature is implemented, based on a 'truthy' condition.
@@ -1915,7 +1947,7 @@ policies and contribution forms [3].
     function assert_implements(condition, description) {
         assert(!!condition, "assert_implements", description);
     }
-    expose(assert_implements, "assert_implements")
+    expose_assert(assert_implements, "assert_implements")
 
     /**
      * Assert that an optional feature is implemented, based on a 'truthy' condition.
@@ -1935,7 +1967,7 @@ policies and contribution forms [3].
             throw new OptionalFeatureUnsupportedError(description);
         }
     }
-    expose(assert_implements_optional, "assert_implements_optional")
+    expose_assert(assert_implements_optional, "assert_implements_optional")
 
     function Test(name, properties)
     {
@@ -2024,6 +2056,7 @@ policies and contribution forms [3].
         this.set_status(this.TIMEOUT, "Test timed out");
 
         tests.started = true;
+        tests.current_test = this;
         tests.notify_test_state(this);
 
         if (this.timeout_id === null) {
@@ -2049,6 +2082,8 @@ policies and contribution forms [3].
             this.set_status(status, message, stack);
             this.phase = this.phases.HAS_RESULT;
             this.done();
+        } finally {
+            this.current_test = null;
         }
     };
 
@@ -2573,6 +2608,16 @@ policies and contribution forms [3].
             tests.set_status(data.status.status, data.status.message, data.status.sack);
         }
 
+        for (let assert of data.asserts) {
+            var record = new AssertRecord();
+            record.assert_name = assert.assert_name;
+            record.args = assert.args;
+            record.test = this.tests[assert.test.index];
+            record.status = assert.status;
+            record.stack = assert.stack;
+            tests.asserts_run.push(record);
+        }
+
         this.message_target.removeEventListener("message", this.message_handler);
         this.running = false;
 
@@ -2636,6 +2681,23 @@ policies and contribution forms [3].
         return this._structured_clone;
     };
 
+    function AssertRecord(test, assert_name, ...args) {
+        this.assert_name = assert_name;
+        this.test = test;
+        // Avoid keeping complex objects alive
+        this.args = args.map(x => {try {return JSON.stringify(x)} catch(e) { return x.toString()}});
+        this.status = null;
+    }
+
+    AssertRecord.prototype.structured_clone = function() {
+        return {
+            assert_name: this.assert_name,
+            test: this.test ? this.test.structured_clone() : null,
+            args: this.args,
+            status: this.status,
+        }
+    }
+
     function Tests()
     {
         this.tests = [];
@@ -2674,6 +2736,9 @@ policies and contribution forms [3].
 
         this.hide_test_state = false;
         this.pending_remotes = [];
+
+        this.current_test = null;
+        this.asserts_run = [];
 
         this.status = new TestsStatus();
 
@@ -2910,6 +2975,16 @@ policies and contribution forms [3].
                   all_complete);
     };
 
+    Tests.prototype.set_assert = function(assert_name, ...args) {
+        this.asserts_run.push(new AssertRecord(this.current_test, assert_name, ...args))
+    }
+
+    Tests.prototype.set_assert_status = function(status, stack) {
+        let assert_record = this.asserts_run[this.asserts_run.length - 1];
+        assert_record.status = status;
+        assert_record.stack = stack;
+    }
+
     /**
      * Update the harness status to reflect an unrecoverable harness error that
      * should cancel all further testing. Update all previously-defined tests
@@ -3007,7 +3082,7 @@ policies and contribution forms [3].
         forEach (this.all_done_callbacks,
                  function(callback)
                  {
-                     callback(this_obj.tests, this_obj.status);
+                     callback(this_obj.tests, this_obj.status, this_obj.asserts_run);
                  });
     };
 
@@ -3233,7 +3308,7 @@ policies and contribution forms [3].
         }
     };
 
-    Output.prototype.show_results = function (tests, harness_status) {
+    Output.prototype.show_results = function (tests, harness_status, asserts_run) {
         if (this.phase >= this.COMPLETE) {
             return;
         }
@@ -3606,13 +3681,13 @@ policies and contribution forms [3].
             message = sanitize_unpaired_surrogates(message);
         }
         this.message = message;
-        this.stack = this.get_stack();
+        this.stack = get_stack();
     }
     expose(AssertionError, "AssertionError");
 
     AssertionError.prototype = Object.create(Error.prototype);
 
-    AssertionError.prototype.get_stack = function() {
+    get_stack = function() {
         var stack = new Error().stack;
         // IE11 does not initialize 'Error.stack' until the object is thrown.
         if (!stack) {

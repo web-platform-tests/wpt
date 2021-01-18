@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-Test adapted from https://dxr.mozilla.org/chromium/source/src/third_party/WebKit/LayoutTests/fast/dom/TreeWalker/script-tests/acceptNode-filter.js
+Test adapted from chromium/source/src/third_party/WebKit/LayoutTests/fast/dom/TreeWalker/script-tests/acceptNode-filter.js
 -->
 <head>
 <title>TreeWalker: acceptNode-filter</title>
@@ -171,6 +171,24 @@ test(function()
     assert_throws_exactly(test_error, function () { walker.nextNode(); });
     assert_node(walker.currentNode, { type: Element, id: 'root' });
 }, 'Testing with filter object that throws');
+
+test(() =>
+{
+    let thisValue, nodeArgID;
+    const filter = {
+        acceptNode(node) {
+            thisValue = this;
+            nodeArgID = node.id;
+            return NodeFilter.FILTER_ACCEPT;
+        },
+    };
+
+    const walker = document.createTreeWalker(testElement, NodeFilter.SHOW_ELEMENT, filter);
+    walker.nextNode();
+
+    assert_equals(thisValue, filter);
+    assert_equals(nodeArgID, 'A1');
+}, 'Testing with filter object: this value and `node` argument');
 
 </script>
 </body>

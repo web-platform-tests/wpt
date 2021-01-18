@@ -3,12 +3,15 @@ from __future__ import print_function, unicode_literals
 import json
 import os
 import sys
+
 from six import iteritems, itervalues
 
+import wptserve
 from wptserve import sslutils
 
 from . import environment as env
 from . import instruments
+from . import mpcontext
 from . import products
 from . import testloader
 from . import wptcommandline
@@ -19,7 +22,7 @@ from .font import FontInstaller
 from .testrunner import ManagerGroup
 from .browsers.base import NullBrowser
 
-here = os.path.split(__file__)[0]
+here = os.path.dirname(__file__)
 
 logger = None
 
@@ -45,7 +48,8 @@ def setup_logging(*args, **kwargs):
     return logger
 
 
-def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kwargs=None, **kwargs):
+def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kwargs=None,
+               test_groups=None, **kwargs):
     if run_info_extras is None:
         run_info_extras = {}
 
@@ -62,14 +66,19 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
 
     manifest_filters = []
 
-    if kwargs["include"] or kwargs["exclude"] or kwargs["include_manifest"] or kwargs["default_exclude"]:
-        manifest_filters.append(testloader.TestFilter(include=kwargs["include"],
+    include = kwargs["include"]
+    if test_groups:
+        include = testloader.update_include_for_groups(test_groups, include)
+
+    if include or kwargs["exclude"] or kwargs["include_manifest"] or kwargs["default_exclude"]:
+        manifest_filters.append(testloader.TestFilter(include=include,
                                                       exclude=kwargs["exclude"],
                                                       manifest_path=kwargs["include_manifest"],
                                                       test_manifests=test_manifests,
                                                       explicit=kwargs["default_exclude"]))
 
     ssl_enabled = sslutils.get_cls(kwargs["ssl_type"]).ssl_enabled
+    h2_enabled = wptserve.utils.http2_compatible()
     test_loader = testloader.TestLoader(test_manifests,
                                         kwargs["test_types"],
                                         run_info,
@@ -78,6 +87,8 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
                                         total_chunks=kwargs["total_chunks"],
                                         chunk_number=kwargs["this_chunk"],
                                         include_https=ssl_enabled,
+                                        include_h2=h2_enabled,
+                                        include_quic=kwargs["enable_quic"],
                                         skip_timeout=kwargs["skip_timeout"],
                                         skip_implementation_status=kwargs["skip_implementation_status"],
                                         chunker_kwargs=chunker_kwargs)
@@ -142,11 +153,14 @@ def get_pause_after_test(test_loader, **kwargs):
 def run_tests(config, test_paths, product, **kwargs):
     """Set up the test environment, load the list of tests to be executed, and
     invoke the remainder of the code to execute tests"""
+    mp = mpcontext.get_context()
     if kwargs["instrument_to_file"] is None:
         recorder = instruments.NullInstrument()
     else:
         recorder = instruments.Instrument(kwargs["instrument_to_file"])
-    with recorder as recording, capture.CaptureIO(logger, not kwargs["no_capture_stdio"]):
+    with recorder as recording, capture.CaptureIO(logger,
+                                                  not kwargs["no_capture_stdio"],
+                                                  mp_context=mp):
         recording.set(["startup"])
         env.do_delayed_imports(logger, test_paths)
 
@@ -165,22 +179,20 @@ def run_tests(config, test_paths, product, **kwargs):
 
         recording.set(["startup", "load_tests"])
 
-        test_source_kwargs = {"processes": kwargs["processes"]}
-        chunker_kwargs = {}
-        if kwargs["run_by_dir"] is False:
-            test_source_cls = testloader.SingleTestSource
-        else:
-            # A value of None indicates infinite depth
-            test_source_cls = testloader.PathGroupedSource
-            test_source_kwargs["depth"] = kwargs["run_by_dir"]
-            chunker_kwargs["depth"] = kwargs["run_by_dir"]
+        test_groups = (testloader.TestGroupsFile(logger, kwargs["test_groups_file"])
+                       if kwargs["test_groups_file"] else None)
 
+        (test_source_cls,
+         test_source_kwargs,
+         chunker_kwargs) = testloader.get_test_src(logger=logger,
+                                                   test_groups=test_groups,
+                                                   **kwargs)
         run_info, test_loader = get_loader(test_paths,
                                            product.name,
                                            run_info_extras=product.run_info_extras(**kwargs),
                                            chunker_kwargs=chunker_kwargs,
+                                           test_groups=test_groups,
                                            **kwargs)
-
 
         logger.info("Using %i client processes" % kwargs["processes"])
 
@@ -202,7 +214,11 @@ def run_tests(config, test_paths, product, **kwargs):
                                        "host_cert_path": kwargs["host_cert_path"],
                                        "ca_cert_path": kwargs["ca_cert_path"]}}
 
-        testharness_timeout_multipler = product.get_timeout_multiplier("testharness", run_info, **kwargs)
+        testharness_timeout_multipler = product.get_timeout_multiplier("testharness",
+                                                                       run_info,
+                                                                       **kwargs)
+
+        mojojs_path = kwargs["mojojs_path"] if kwargs["enable_mojojs"] else None
 
         recording.set(["startup", "start_environment"])
         with env.TestEnvironment(test_paths,
@@ -211,7 +227,9 @@ def run_tests(config, test_paths, product, **kwargs):
                                  kwargs["debug_info"],
                                  product.env_options,
                                  ssl_config,
-                                 env_extras) as test_environment:
+                                 env_extras,
+                                 kwargs["enable_quic"],
+                                 mojojs_path) as test_environment:
             recording.set(["startup", "ensure_environment"])
             try:
                 test_environment.ensure_started()
@@ -234,7 +252,18 @@ def run_tests(config, test_paths, product, **kwargs):
 
                 test_count = 0
                 unexpected_count = 0
-                logger.suite_start(test_loader.test_ids,
+
+                tests = []
+                for test_type in test_loader.test_types:
+                    tests.extend(test_loader.tests[test_type])
+
+                try:
+                    test_groups = test_source_cls.tests_by_group(tests, **test_source_kwargs)
+                except Exception:
+                    logger.critical("Loading tests failed")
+                    return False
+
+                logger.suite_start(test_groups,
                                    name='web-platform-test',
                                    run_info=run_info,
                                    extra={"run_by_dir": kwargs["run_by_dir"]})
@@ -251,13 +280,15 @@ def run_tests(config, test_paths, product, **kwargs):
                     else:
                         browser_cls = product.browser_cls
 
-                    browser_kwargs = product.get_browser_kwargs(test_type,
+                    browser_kwargs = product.get_browser_kwargs(logger,
+                                                                test_type,
                                                                 run_info,
                                                                 config=test_environment.config,
                                                                 **kwargs)
 
                     executor_cls = product.executor_classes.get(test_type)
-                    executor_kwargs = product.get_executor_kwargs(test_type,
+                    executor_kwargs = product.get_executor_kwargs(logger,
+                                                                  test_type,
                                                                   test_environment.config,
                                                                   test_environment.cache_manager,
                                                                   run_info,

@@ -6,13 +6,8 @@ WPT_ROOT=$SCRIPT_DIR/../..
 cd $WPT_ROOT
 
 test_infrastructure() {
-    local ARGS="";
-    if [ $PRODUCT == "firefox" ]; then
-        ARGS="--binary=~/build/firefox/firefox"
-    else
-        ARGS=$1
-    fi
-    TERM=dumb ./wpt run --log-mach - --yes --manifest ~/meta/MANIFEST.json --metadata infrastructure/metadata/ --install-fonts $ARGS $PRODUCT infrastructure/
+    PY2_FLAG="$2"
+    TERM=dumb ./wpt $PY2_FLAG run --log-mach - --yes --manifest ~/meta/MANIFEST.json --metadata infrastructure/metadata/ --install-fonts --install-webdriver $1 $PRODUCT infrastructure/
 }
 
 main() {
@@ -20,11 +15,11 @@ main() {
     ./wpt manifest --rebuild -p ~/meta/MANIFEST.json
     for PRODUCT in "${PRODUCTS[@]}"; do
         if [[ "$PRODUCT" == "chrome" ]]; then
-            test_infrastructure "--binary=$(which google-chrome-unstable) --channel dev"
+            test_infrastructure "--binary=$(which google-chrome-unstable) --channel dev" "$1"
         else
-            test_infrastructure
+            test_infrastructure "--binary=~/build/firefox/firefox" "$1"
         fi
     done
 }
 
-main
+main $1

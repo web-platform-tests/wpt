@@ -1,4 +1,4 @@
-// META: global=worker
+// META: global=window,worker
 
 'use strict';
 
@@ -24,6 +24,12 @@ const encodings = [
     value: [144, 133],
     expected: "\u{6c34}",
     invalid: [255]
+  },
+  {
+    name: 'ISO-2022-JP',
+    value: [65, 66, 67, 0x1B, 65, 66, 67],
+    expected: "ABC\u{fffd}ABC",
+    invalid: [0x0E]
   },
   {
     name: 'ISO-8859-14',

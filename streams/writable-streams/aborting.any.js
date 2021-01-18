@@ -1,4 +1,4 @@
-// META: global=worker,jsshell
+// META: global=window,worker,jsshell
 // META: script=../resources/test-utils.js
 // META: script=../resources/recording-streams.js
 'use strict';
@@ -362,7 +362,7 @@ promise_test(t => {
     write() {
       return flushAsyncEvents();
     }
-  }, new CountQueuingStrategy(4));
+  }, new CountQueuingStrategy({ highWaterMark: 4 }));
   const writer = ws.getWriter();
   return writer.ready.then(() => {
     const settlementOrder = [];
@@ -382,7 +382,7 @@ promise_test(t => {
     write() {
       return Promise.reject(error1);
     }
-  }, new CountQueuingStrategy(4));
+  }, new CountQueuingStrategy({ highWaterMark: 4 }));
   const writer = ws.getWriter();
   return writer.ready.then(() => {
     const settlementOrder = [];

@@ -185,7 +185,34 @@ assertions don't need to be wrapped in `step` or `step_func`
 calls. However when mixing event handlers and `promise_test`, the
 event handler callback functions *do* need to be wrapped since an
 exception in these functions does not cause the promise chain to
-reject.
+reject. The best way to simplify tests and avoid confusion is to **limit the
+code in Promise "executor" functions to only track asynchronous operations**;
+place fallible assertion code in subsequent reaction handlers.
+
+For example, instead of
+
+```js
+promise_test(t => {
+  return new Promise(resolve => {
+    window.addEventListener("DOMContentLoaded", t.step_func(event => {
+      assert_true(event.bubbles, "bubbles should be true");
+      resolve();
+    }));
+  });
+}, "DOMContentLoaded");
+```
+
+Try,
+
+```js
+promise_test(() => {
+  return new Promise(resolve => {
+    window.addEventListener("DOMContentLoaded", resolve);
+  }).then(event => {
+    assert_true(event.bubbles, "bubbles should be true");
+  });
+}, "DOMContentLoaded");
+```
 
 Unlike Asynchronous Tests, Promise Tests don't start running until after the
 previous Promise Test finishes. [Under rare
@@ -313,40 +340,44 @@ NOTE: All asserts must be located in a `test()` or a step of an
 these places won't be detected correctly by the harness and may cause
 unexpected exceptions that will lead to an error in the harness.
 
-## Preconditions ##
+## Optional Features ##
 
-When a test would be invalid unless certain conditions are met, but yet
-doesn't explicitly depend on those preconditions, `assert_precondition` can be
-used. For example:
+If a test depends on a specification or specification feature that is OPTIONAL
+(in the [RFC 2119 sense](https://tools.ietf.org/html/rfc2119)),
+`assert_implements_optional` can be used to indicate that failing the test does
+not mean violating a web standard. For example:
 
 ```js
 async_test((t) => {
   const video = document.createElement("video");
-  assert_precondition(video.canPlayType("video/webm"));
+  assert_implements_optional(video.canPlayType("video/webm"));
   video.src = "multitrack.webm";
   // test something specific to multiple audio tracks in a WebM container
   t.done();
 }, "WebM with multiple audio tracks");
 ```
 
-A failing `assert_precondition` call is reported as a status of
-`PRECONDITION_FAILED` for the subtest.
+A failing `assert_implements_optional` call is reported as a status of
+`PRECONDITION_FAILED` for the subtest. This unusual status code is a legacy
+leftover; see the [RFC that introduced
+`assert_implements_optional`](https://github.com/web-platform-tests/rfcs/pull/48).
 
-`assert_precondition` can also be used during test setup. For example:
+`assert_implements_optional` can also be used during test setup. For example:
 
 ```js
 setup(() => {
-  assert_precondition("onfoo" in document.body, "'foo' event supported");
+  assert_implements_optional("optionalfeature" in document.body,
+                             "'optionalfeature' event supported");
 });
-async_test(() => { /* test #1 waiting for "foo" event */ });
-async_test(() => { /* test #2 waiting for "foo" event */ });
+async_test(() => { /* test #1 waiting for "optionalfeature" event */ });
+async_test(() => { /* test #2 waiting for "optionalfeature" event */ });
 ```
 
-A failing `assert_precondition` during setup is reported as a status of
+A failing `assert_implements_optional` during setup is reported as a status of
 `PRECONDITION_FAILED` for the test, and the subtests will not run.
 
-See also the `.optional` [file name convention](file-names.md), which is
-appropriate when the precondition is explicitly optional behavior.
+See also the `.optional` [file name convention](file-names.md), which may be
+preferable if the entire test is optional.
 
 ## Cleanup ##
 
@@ -388,8 +419,47 @@ timeout to use.
 
 In other cases it may be necessary to use a timeout (e.g., for a test
 that only passes if some event is *not* fired). In this case it is
-*not* permitted to use the standard `setTimeout` function. Instead one
-must use the `step_timeout` function:
+*not* permitted to use the standard `setTimeout` function.
+
+Instead, one of these functions can be used:
+
+* `step_wait` (returns a promise)
+* `step_wait_func` & `step_wait_func_done`
+* As a last resort, `step_timeout`
+
+### `step_wait`, `step_wait_func`, and `step_wait_func_done` ###
+
+These functions are preferred over `step_timeout` as they end when a condition or a timeout is reached, rather than just a timeout. This allows for setting a longer timeout while shortening the runtime of tests on faster machines.
+
+`step_wait(cond, description, timeout=3000, interval=100)` is useful inside `promise_test`, e.g.:
+
+```js
+promise_test(async t => {
+  // …
+  await t.step_wait(() => frame.contentDocument === null, "Frame navigated to a cross-origin document");
+  // …
+}, "");
+```
+
+`step_wait_func(cond, func, description, timeout=3000, interval=100)` and `step_wait_func_done(cond, func, description, timeout=3000, interval=100)` are useful inside `async_test`:
+
+```js
+async_test(t => {
+  const popup = window.open("resources/coop-coep.py?coop=same-origin&coep=&navigate=about:blank");
+  t.add_cleanup(() => popup.close());
+  assert_equals(window, popup.opener);
+
+  popup.onload = t.step_func(() => {
+    assert_true(popup.location.href.endsWith("&navigate=about:blank"));
+    // Use step_wait_func_done as about:blank cannot message back.
+    t.step_wait_func_done(() => popup.location.href === "about:blank");
+  });
+}, "Navigating a popup to about:blank");
+```
+
+### `step_timeout` ###
+
+As a last resort one can use the `step_timeout` function:
 
 ```js
 async_test(function(t) {
@@ -472,7 +542,7 @@ properties of the test harness (enumerated in the following section).
 Both setup functions recognize the following properties:
 
 `explicit_done` - Wait for an explicit call to done() before declaring all
-tests complete (see below; implicitly true for single page tests)
+tests complete (see below; always true for single page tests)
 
 `output_document` - The document to which results should be logged. By default
 this is the current document but could be an ancestor document in some cases
@@ -484,6 +554,10 @@ with some existing test framework that has its own timeout mechanism).
 
 `allow_uncaught_exception` - don't treat an uncaught exception as an error;
 needed when e.g. testing the `window.onerror` handler.
+
+`hide_test_state` - hide the test state output while the test is
+running; This is helpful when the output of the test state may interfere
+the test results.
 
 `timeout_multiplier` - Multiplier to apply to per-test timeouts.
 
@@ -772,10 +846,6 @@ workers and want to ensure they run in series:
 
 ## List of Assertions ##
 
-### `assert_precondition(condition, description)`
-asserts that `condition` is truthy.
-See [preconditions](#preconditions) for usage.
-
 ### `assert_true(actual, description)`
 asserts that `actual` is strictly true
 
@@ -796,6 +866,8 @@ asserts that `expected` is an Array, and `actual` is equal to one of the
 members i.e. `expected.indexOf(actual) != -1`
 
 ### `assert_object_equals(actual, expected, description)`
+**DEPRECATED**: see [issue #2033](https://github.com/web-platform-tests/wpt/issues/2033).
+
 asserts that `actual` is an object and not null and that all enumerable
 properties on `actual` are own properties on `expected` with the same values,
 recursing if the value is an object and not null.
@@ -884,6 +956,13 @@ that the exception should have as its .constructor.  For example,
 `value` - the exact value that `func` is expected to throw if called.
 
 `func` - a function that should throw
+
+### `assert_implements(condition, description)`
+asserts that a feature is supported, by checking if `condition` is truthy.
+
+### `assert_implements_optional(condition, description)`
+asserts that an optional feature is supported, by checking if `condition` is truthy.
+See [Optional Features](#optional-features) for usage.
 
 ### `assert_unreached(description)`
 asserts if called. Used to ensure that some codepath is *not* taken e.g.

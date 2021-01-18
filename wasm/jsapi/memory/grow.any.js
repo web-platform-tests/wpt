@@ -1,28 +1,5 @@
-// META: global=jsshell
-
-function assert_ArrayBuffer(actual, expected, message) {
-  // https://github.com/WebAssembly/spec/issues/840
-  const bufferType = expected.shared ? self.SharedArrayBuffer : ArrayBuffer;
-  assert_equals(Object.getPrototypeOf(actual), bufferType.prototype,
-                `${message}: prototype`);
-  if (expected.detached) {
-    // https://github.com/tc39/ecma262/issues/678
-    let byteLength;
-    try {
-      byteLength = actual.byteLength;
-    } catch (e) {
-      byteLength = 0;
-    }
-    assert_equals(byteLength, 0, `${message}: detached size`);
-  } else {
-    assert_equals(actual.byteLength, 0x10000 * expected.size, `${message}: size`);
-    if (expected.size > 0) {
-      const array = new Uint8Array(actual);
-      assert_equals(array[0], 0, `${message}: first element`);
-      assert_equals(array[array.byteLength - 1], 0, `${message}: last element`);
-    }
-  }
-}
+// META: global=window,dedicatedworker,jsshell
+// META: script=/wasm/jsapi/memory/assertions.js
 
 test(() => {
   const argument = { "initial": 0 };

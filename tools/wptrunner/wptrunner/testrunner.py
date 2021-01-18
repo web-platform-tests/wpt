@@ -1,13 +1,13 @@
 from __future__ import unicode_literals
 
-import multiprocessing
 import threading
 import traceback
 from six.moves.queue import Empty
 from collections import namedtuple
-from multiprocessing import Process, current_process, Queue
 
 from mozlog import structuredlog, capture
+
+from . import mpcontext
 
 # Special value used as a sentinal in various commands
 Stop = object()
@@ -68,7 +68,7 @@ class TestRunner(object):
         self.result_queue = result_queue
 
         self.executor = executor
-        self.name = current_process().name
+        self.name = mpcontext.get_context().current_process().name
         self.logger = logger
 
     def __enter__(self):
@@ -98,7 +98,12 @@ class TestRunner(object):
     def run(self):
         """Main loop accepting commands over the pipe and triggering
         the associated methods"""
-        self.setup()
+        try:
+            self.setup()
+        except Exception:
+            self.logger.warning("An error occured during executor setup:\n%s" %
+                                traceback.format_exc())
+            raise
         commands = {"run_test": self.run_test,
                     "reset": self.reset,
                     "stop": self.stop,
@@ -158,7 +163,7 @@ def start_runner(runner_command_queue, runner_result_queue,
     with capture.CaptureIO(logger, capture_stdio):
         try:
             browser = executor_browser_cls(**executor_browser_kwargs)
-            executor = executor_cls(browser, **executor_kwargs)
+            executor = executor_cls(logger, browser, **executor_kwargs)
             with TestRunner(logger, runner_command_queue, runner_result_queue, executor) as runner:
                 try:
                     runner.run()
@@ -306,9 +311,11 @@ class TestRunnerManager(threading.Thread):
         self.executor_cls = executor_cls
         self.executor_kwargs = executor_kwargs
 
+        mp = mpcontext.get_context()
+
         # Flags used to shut down this thread if we get a sigint
         self.parent_stop_flag = stop_flag
-        self.child_stop_flag = multiprocessing.Event()
+        self.child_stop_flag = mp.Event()
 
         self.rerun = rerun
         self.run_count = 0
@@ -321,8 +328,8 @@ class TestRunnerManager(threading.Thread):
         assert recording is not None
         self.recording = recording
 
-        self.command_queue = Queue()
-        self.remote_queue = Queue()
+        self.command_queue = mp.Queue()
+        self.remote_queue = mp.Queue()
 
         self.test_runner_proc = None
 
@@ -514,9 +521,11 @@ class TestRunnerManager(threading.Thread):
                 executor_browser_kwargs,
                 self.capture_stdio,
                 self.child_stop_flag)
-        self.test_runner_proc = Process(target=start_runner,
-                                        args=args,
-                                        name="TestRunner-%i" % self.manager_number)
+
+        mp = mpcontext.get_context()
+        self.test_runner_proc = mp.Process(target=start_runner,
+                                           args=args,
+                                           name="TestRunner-%i" % self.manager_number)
         self.test_runner_proc.start()
         self.logger.debug("Test runner started")
         # Now we wait for either an init_succeeded event or an init_failed event
@@ -645,8 +654,12 @@ class TestRunnerManager(threading.Thread):
         known_intermittent = test.known_intermittent()
         status = status_subns.get(file_result.status, file_result.status)
 
-        if self.browser.check_crash(test.id):
-            status = "CRASH"
+        if self.browser.check_crash(test.id) and status != "CRASH":
+            if test.test_type == "crashtest":
+                self.logger.info("Found a crash dump file; changing status to CRASH")
+                status = "CRASH"
+            else:
+                self.logger.warning("Found a crash dump; should change status from %s to CRASH but this causes instability" % (status,))
 
         self.test_count += 1
         is_unexpected = expected != status and status not in known_intermittent
@@ -655,8 +668,8 @@ class TestRunnerManager(threading.Thread):
             self.logger.debug("Unexpected count in this thread %i" % self.unexpected_count)
 
         if "assertion_count" in file_result.extra:
-            assertion_count = file_result.extra.pop("assertion_count")
-            if assertion_count > 0:
+            assertion_count = file_result.extra["assertion_count"]
+            if assertion_count is not None and assertion_count > 0:
                 self.logger.assertion_count(test.id,
                                             int(assertion_count),
                                             test.min_assertion_count,
@@ -700,8 +713,9 @@ class TestRunnerManager(threading.Thread):
             test, test_group, group_metadata = self.get_next_test()
             if test is None:
                 return RunnerManagerState.stop()
-            if test_group != self.state.test_group:
+            if test_group is not self.state.test_group:
                 # We are starting a new group of tests, so force a restart
+                self.logger.info("Restarting browser for new test group")
                 restart = True
         else:
             test_group = self.state.test_group
@@ -756,6 +770,7 @@ class TestRunnerManager(threading.Thread):
         self.logger.debug("waiting for runner process to end")
         self.test_runner_proc.join(10)
         self.logger.debug("After join")
+        mp = mpcontext.get_context()
         if self.test_runner_proc.is_alive():
             # This might leak a file handle from the queue
             self.logger.warning("Forcibly terminating runner process")
@@ -767,9 +782,9 @@ class TestRunnerManager(threading.Thread):
             # (subsequent attempts to retrieve items may block indefinitely).
             # Discard the potentially-corrupted queue and create a new one.
             self.command_queue.close()
-            self.command_queue = Queue()
+            self.command_queue = mp.Queue()
             self.remote_queue.close()
-            self.remote_queue = Queue()
+            self.remote_queue = mp.Queue()
         else:
             self.logger.debug("Runner process exited with code %i" % self.test_runner_proc.exitcode)
 

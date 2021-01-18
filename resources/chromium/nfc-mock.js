@@ -94,10 +94,10 @@ function compareNDEFRecords(providedRecord, receivedRecord) {
 // Compares NDEFWriteOptions structures that were provided to API and
 // received by the mock mojo service.
 function assertNDEFWriteOptionsEqual(provided, received) {
-  if (provided.ignoreRead !== undefined)
-    assert_equals(provided.ignoreRead, !!received.ignoreRead);
+  if (provided.overwrite !== undefined)
+    assert_equals(provided.overwrite, !!received.overwrite);
   else
-    assert_equals(!!received.ignore_read, true);
+    assert_equals(!!received.overwrite, true);
 }
 
 // Compares NDEFReaderOptions structures that were provided to API and
@@ -116,33 +116,6 @@ function assertNDEFReaderOptionsEqual(provided, received) {
   if (provided.recordType !== undefined) {
     assert_equals(provided.recordType, received.recordType);
   }
-}
-
-// Checks whether NDEFReaderOptions are matched with given message.
-function matchesWatchOptions(message, options) {
-  // A message with no records is to notify that the tag is already formatted to
-  // support NDEF but does not contain a message yet. We always dispatch it for
-  // all options.
-  if (message.records.length == 0)
-    return true;
-
-  for (let record of message.records) {
-    if (options.id != null && options.id !== record.id) {
-      continue;
-    }
-    if (options.recordType != null &&
-        options.recordType !== record.recordType) {
-      continue;
-    }
-    if (options.mediaType != null && options.mediaType !== record.mediaType) {
-      continue;
-    }
-
-    // Found one record matches, means the message matches.
-    return true;
-  }
-
-  return false;
 }
 
 function createNDEFError(type) {
@@ -220,46 +193,32 @@ var WebNFCTest = (() => {
       this.client_ = client;
     }
 
-    async watch(options, id) {
+    async watch(id) {
       assert_true(id > 0);
       let error = this.getHWError();
       if (error) {
         return error;
       }
 
-      this.watchers_.push({id: id, options: options});
+      this.watchers_.push({id: id});
       // Ignores reading if NFC operation is suspended
       // or the NFC tag does not expose NDEF technology.
       if (!this.operations_suspended_) {
         // Triggers onWatch if the new watcher matches existing messages.
         for (let message of this.reading_messages_) {
-          if (matchesWatchOptions(message, options)) {
-            this.client_.onWatch(
-                [id], fake_tag_serial_number, toMojoNDEFMessage(message));
-          }
+          this.client_.onWatch(
+              [id], fake_tag_serial_number, toMojoNDEFMessage(message));
         }
       }
 
       return createNDEFError(null);
     }
 
-    async cancelWatch(id) {
+    cancelWatch(id) {
       let index = this.watchers_.findIndex(value => value.id === id);
-      if (index === -1) {
-        return createNDEFError(device.mojom.NDEFErrorType.NOT_FOUND);
+      if (index !== -1) {
+        this.watchers_.splice(index, 1);
       }
-
-      this.watchers_.splice(index, 1);
-      return createNDEFError(null);
-    }
-
-    async cancelAllWatches() {
-      if (this.watchers_.length === 0) {
-        return createNDEFError(device.mojom.NDEFErrorType.NOT_FOUND);
-      }
-
-      this.watchers_.splice(0, this.watchers_.length);
-      return createNDEFError(null);
     }
 
     getHWError() {
@@ -319,16 +278,15 @@ var WebNFCTest = (() => {
       this.reading_messages_.push(message);
       // Ignores reading if NFC operation is suspended.
       if(this.operations_suspended_) return;
-      // Ignores reading if NDEFWriteOptions.ignoreRead is true.
-      if (this.pending_write_options_ && this.pending_write_options_.ignoreRead)
+      // when overwrite is false, the write algorithm will read the NFC tag
+      // to determine if it has NDEF records on it.
+      if (this.pending_write_options_ && this.pending_write_options_.overwrite)
         return;
       // Triggers onWatch if the new message matches existing watchers.
       for (let watcher of this.watchers_) {
-        if (matchesWatchOptions(message, watcher.options)) {
-          this.client_.onWatch(
-              [watcher.id], fake_tag_serial_number,
-              toMojoNDEFMessage(message));
-        }
+        this.client_.onWatch(
+            [watcher.id], fake_tag_serial_number,
+            toMojoNDEFMessage(message));
       }
     }
 
@@ -344,11 +302,9 @@ var WebNFCTest = (() => {
       // Resumes pending NFC reading.
       for (let watcher of this.watchers_) {
         for (let message of this.reading_messages_) {
-          if (matchesWatchOptions(message, watcher.options)) {
-            this.client_.onWatch(
-                [watcher.id], fake_tag_serial_number,
-                toMojoNDEFMessage(message));
-          }
+          this.client_.onWatch(
+              [watcher.id], fake_tag_serial_number,
+              toMojoNDEFMessage(message));
         }
       }
       // Resumes pending push operation.

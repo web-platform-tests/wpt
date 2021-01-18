@@ -24,12 +24,13 @@ from .base import (get_free_port,
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # noqa: F401
                                             MarionetteRefTestExecutor,  # noqa: F401
+                                            MarionettePrintRefTestExecutor,  # noqa: F401
                                             MarionetteWdspecExecutor,  # noqa: F401
                                             MarionetteCrashtestExecutor)  # noqa: F401
 from ..process import cast_env
 
 
-here = os.path.join(os.path.split(__file__)[0])
+here = os.path.dirname(__file__)
 
 __wptrunner__ = {"product": "firefox",
                  "check_args": "check_args",
@@ -37,6 +38,7 @@ __wptrunner__ = {"product": "firefox",
                  "executor": {"crashtest": "MarionetteCrashtestExecutor",
                               "testharness": "MarionetteTestharnessExecutor",
                               "reftest": "MarionetteRefTestExecutor",
+                              "print-reftest": "MarionettePrintRefTestExecutor",
                               "wdspec": "MarionetteWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
@@ -74,7 +76,7 @@ def check_args(**kwargs):
     require_arg(kwargs, "binary")
 
 
-def browser_kwargs(test_type, run_info_data, config, **kwargs):
+def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
     return {"binary": kwargs["binary"],
             "prefs_root": kwargs["prefs_root"],
             "extra_prefs": kwargs["extra_prefs"],
@@ -99,10 +101,11 @@ def browser_kwargs(test_type, run_info_data, config, **kwargs):
             "config": config,
             "browser_channel": kwargs["browser_channel"],
             "headless": kwargs["headless"],
-            "preload_browser": kwargs["preload_browser"]}
+            "preload_browser": kwargs["preload_browser"],
+            "specialpowers_path": kwargs["specialpowers_path"]}
 
 
-def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
+def executor_kwargs(logger, test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
     executor_kwargs = base_executor_kwargs(test_type, server_config,
                                            cache_manager, run_info_data,
@@ -115,7 +118,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     capabilities = {}
     if test_type == "testharness":
         capabilities["pageLoadStrategy"] = "eager"
-    if test_type == "reftest":
+    if test_type in ("reftest", "print-reftest"):
         executor_kwargs["reftest_internal"] = kwargs["reftest_internal"]
         executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
     if test_type == "wdspec":
@@ -135,12 +138,26 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         for pref, value in kwargs["extra_prefs"]:
             options["prefs"].update({pref: Preferences.cast(value)})
         capabilities["moz:firefoxOptions"] = options
+
+        # This gets reused for firefox_android, but the environment setup
+        # isn't required in that case
+        if kwargs["binary"]:
+            environ = get_environ(logger,
+                                  kwargs["binary"],
+                                  kwargs["debug_info"],
+                                  kwargs["stylo_threads"],
+                                  kwargs["headless"],
+                                  kwargs["enable_webrender"],
+                                  kwargs["chaos_mode_flags"])
+
+            executor_kwargs["environ"] = environ
     if kwargs["certutil_binary"] is None:
         capabilities["acceptInsecureCerts"] = True
     if capabilities:
         executor_kwargs["capabilities"] = capabilities
     executor_kwargs["debug"] = run_info_data["debug"]
     executor_kwargs["ccov"] = run_info_data.get("ccov", False)
+    executor_kwargs["browser_version"] = run_info_data.get("browser_version")
     return executor_kwargs
 
 
@@ -175,7 +192,10 @@ def run_info_extras(**kwargs):
           "verify": kwargs["verify"],
           "headless": kwargs.get("headless", False) or "MOZ_HEADLESS" in os.environ,
           "sw-e10s": True,
-          "fission": kwargs.get("enable_fission") or get_bool_pref("fission.autostart")}
+          "fission": kwargs.get("enable_fission") or get_bool_pref("fission.autostart"),
+          "sessionHistoryInParent": (kwargs.get("enable_fission") or
+                                     get_bool_pref("fission.autostart") or
+                                     get_bool_pref("fission.sessionHistoryInParent"))}
 
     # The value of `sw-e10s` defaults to whether the "parent_intercept"
     # implementation is enabled for the current build. This value, however,
@@ -185,24 +205,48 @@ def run_info_extras(**kwargs):
     if sw_e10s_override is not None:
         rv["sw-e10s"] = sw_e10s_override
 
-    rv.update(run_info_browser_version(kwargs["binary"]))
+    rv.update(run_info_browser_version(**kwargs))
+
     return rv
 
 
-def run_info_browser_version(binary):
+def run_info_browser_version(**kwargs):
     try:
-        version_info = mozversion.get_version(binary)
+        version_info = mozversion.get_version(kwargs["binary"])
     except mozversion.errors.VersionError:
         version_info = None
     if version_info:
-        return {"browser_build_id": version_info.get("application_buildid", None),
-                "browser_changeset": version_info.get("application_changeset", None)}
+        rv = {"browser_build_id": version_info.get("application_buildid", None),
+              "browser_changeset": version_info.get("application_changeset", None)}
+        if "browser_version" not in kwargs:
+            rv["browser_version"] = version_info.get("application_version")
+        return rv
     return {}
 
 
 def update_properties():
     return (["os", "debug", "webrender", "fission", "e10s", "sw-e10s", "processor"],
             {"os": ["version"], "processor": ["bits"]})
+
+
+def get_environ(logger, binary, debug_info, stylo_threads, headless, enable_webrender,
+                chaos_mode_flags=None):
+    env = test_environment(xrePath=os.path.abspath(os.path.dirname(binary)),
+                           debugger=debug_info is not None,
+                           useLSan=True,
+                           log=logger)
+
+    env["STYLO_THREADS"] = str(stylo_threads)
+    if chaos_mode_flags is not None:
+        env["MOZ_CHAOSMODE"] = str(chaos_mode_flags)
+    if headless:
+        env["MOZ_HEADLESS"] = "1"
+    if enable_webrender:
+        env["MOZ_WEBRENDER"] = "1"
+        env["MOZ_ACCELERATED"] = "1"
+    else:
+        env["MOZ_WEBRENDER"] = "0"
+    return env
 
 
 class FirefoxInstanceManager(object):
@@ -260,20 +304,8 @@ class FirefoxInstanceManager(object):
         marionette_port = get_free_port()
         profile.set_preferences({"marionette.port": marionette_port})
 
-        env = test_environment(xrePath=os.path.dirname(self.binary),
-                               debugger=self.debug_info is not None,
-                               useLSan=True, log=self.logger)
-
-        env["STYLO_THREADS"] = str(self.stylo_threads)
-        if self.chaos_mode_flags is not None:
-            env["MOZ_CHAOSMODE"] = str(self.chaos_mode_flags)
-        if self.headless:
-            env["MOZ_HEADLESS"] = "1"
-        if self.enable_webrender:
-            env["MOZ_WEBRENDER"] = "1"
-            env["MOZ_ACCELERATED"] = "1"
-        else:
-            env["MOZ_WEBRENDER"] = "0"
+        env = get_environ(self.logger, self.binary, self.debug_info, self.stylo_threads,
+                          self.headless, self.enable_webrender, self.chaos_mode_flags)
 
         args = self.binary_args[:] if self.binary_args else []
         args += [cmd_arg("marionette"), "about:blank"]
@@ -319,7 +351,7 @@ class SingleInstanceManager(FirefoxInstanceManager):
         return self.current
 
     def teardown(self, force=False):
-        for instance, skip_marionette in [self.previous, self.current]:
+        for instance in [self.previous, self.current]:
             if instance:
                 instance.stop(force)
                 instance.cleanup()
@@ -345,10 +377,13 @@ class PreloadInstanceManager(FirefoxInstanceManager):
         return self.current
 
     def teardown(self, force=False):
-        for instance, skip_marionette in [(self.previous, False), (self.current, False), (self.pending, True)]:
+        for instance, skip_marionette in [(self.previous, False),
+                                          (self.current, False),
+                                          (self.pending, True)]:
             if instance:
                 instance.stop(force, skip_marionette=skip_marionette)
                 instance.cleanup()
+
 
 class BrowserInstance(object):
     shutdown_timeout = 70
@@ -363,7 +398,8 @@ class BrowserInstance(object):
 
     def stop(self, force=False, skip_marionette=False):
         """Stop Firefox"""
-        if self.runner is not None and self.runner.is_running():
+        is_running = self.runner is not None and self.runner.is_running()
+        if is_running:
             self.logger.debug("Stopping Firefox %s" % self.pid())
             shutdown_methods = [(True, lambda: self.runner.wait(self.shutdown_timeout)),
                                 (False, lambda: self.runner.stop(signal.SIGTERM)),
@@ -382,8 +418,12 @@ class BrowserInstance(object):
             except OSError:
                 # This can happen on Windows if the process is already dead
                 pass
+        elif self.runner:
+            # The browser was already stopped, which we assume was a crash
+            # TODO: Should we check the exit code here?
+            clean = False
         if not skip_marionette:
-            self.output_handler.after_stop()
+            self.output_handler.after_stop(clean_shutdown=clean)
 
     def pid(self):
         if self.runner.process_handler is None:
@@ -422,8 +462,11 @@ class OutputHandler(object):
 
         self.symbols_path = symbols_path
         if stackfix_dir:
+            # We hide errors because they cause disconcerting `CRITICAL`
+            # warnings in web platform test output.
             self.stack_fixer = get_stack_fixer_function(stackfix_dir,
-                                                        self.symbols_path)
+                                                        self.symbols_path,
+                                                        hideErrors=True)
         else:
             self.stack_fixer = None
         self.asan = asan
@@ -436,8 +479,8 @@ class OutputHandler(object):
         self.line_buffer = []
         self.setup_ran = False
 
-    def setup(self, instance=None, group_metadata=None, lsan_allowed=None,
-              lsan_max_stack_depth=None, mozleak_allowed=None,
+    def setup(self, instance=None, group_metadata=None, lsan_disabled=False,
+              lsan_allowed=None, lsan_max_stack_depth=None, mozleak_allowed=None,
               mozleak_thresholds=None, **kwargs):
         """Configure the output handler"""
         self.instance = instance
@@ -453,7 +496,8 @@ class OutputHandler(object):
             self.lsan_handler = mozleak.LSANLeaks(self.logger,
                                                   scope=group_metadata.get("scope", "/"),
                                                   allowed=lsan_allowed,
-                                                  maxNumRecordedFrames=lsan_max_stack_depth)
+                                                  maxNumRecordedFrames=lsan_max_stack_depth,
+                                                  allowAll=lsan_disabled)
         else:
             self.lsan_handler = None
 
@@ -463,26 +507,30 @@ class OutputHandler(object):
             self.__call__(line)
         self.line_buffer = []
 
-    def after_stop(self):
+    def after_stop(self, clean_shutdown=True):
         self.logger.info("PROCESS LEAKS %s" % self.instance.leak_report_file)
         if self.lsan_handler:
             self.lsan_handler.process()
         if self.instance.leak_report_file is not None:
-            # We have to ignore missing leaks in the tab because it can happen that the
-            # content process crashed and in that case we don't want the test to fail.
-            # Ideally we would record which content process crashed and just skip those.
-            mozleak.process_leak_log(
-                self.instance.leak_report_file,
-                leak_thresholds=self.mozleak_thresholds,
-                ignore_missing_leaks=["tab", "gmplugin"],
-                log=self.logger,
-                stack_fixer=self.stack_fixer,
-                scope=self.group_metadata.get("scope"),
-                allowed=self.mozleak_allowed)
+            if not clean_shutdown:
+                # If we didn't get a clean shutdown there probably isn't a leak report file
+                self.logger.warning("Firefox didn't exit cleanly, not processing leak logs")
+            else:
+                # We have to ignore missing leaks in the tab because it can happen that the
+                # content process crashed and in that case we don't want the test to fail.
+                # Ideally we would record which content process crashed and just skip those.
+                mozleak.process_leak_log(
+                    self.instance.leak_report_file,
+                    leak_thresholds=self.mozleak_thresholds,
+                    ignore_missing_leaks=["tab", "gmplugin"],
+                    log=self.logger,
+                    stack_fixer=self.stack_fixer,
+                    scope=self.group_metadata.get("scope"),
+                    allowed=self.mozleak_allowed)
 
     def __call__(self, line):
         """Write a line of output from the firefox process to the log"""
-        if "GLib-GObject-CRITICAL" in line:
+        if b"GLib-GObject-CRITICAL" in line:
             return
         if line:
             if not self.setup_ran:
@@ -517,12 +565,16 @@ class ProfileCreator(object):
         self.certutil_binary = certutil_binary
         self.ca_certificate_path = ca_certificate_path
 
-    def create(self):
+    def create(self, **kwargs):
         """Create a Firefox profile and return the mozprofile Profile object pointing at that
-        profile"""
+        profile
+
+        :param kwargs: Additional arguments to pass into the profile constructor
+        """
         preferences = self._load_prefs()
 
-        profile = FirefoxProfile(preferences=preferences)
+        profile = FirefoxProfile(preferences=preferences,
+                                 **kwargs)
         self._set_required_prefs(profile)
         if self.ca_certificate_path is not None:
             self._setup_ssl(profile)
@@ -583,8 +635,11 @@ class ProfileCreator(object):
         if self.enable_fission:
             profile.set_preferences({"fission.autostart": True})
 
-        if self.test_type == "reftest":
+        if self.test_type in ("reftest", "print-reftest"):
             profile.set_preferences({"layout.interruptible-reflow.enabled": False})
+
+        if self.test_type == "print-reftest":
+            profile.set_preferences({"print.always_print_silent": True})
 
         # Bug 1262954: winxp + e10s, disable hwaccel
         if (self.e10s and platform.system() in ("Windows", "Microsoft") and
@@ -644,7 +699,6 @@ class ProfileCreator(object):
         certutil("-L", "-d", cert_db_path)
 
 
-
 class FirefoxBrowser(Browser):
     init_timeout = 70
 
@@ -653,7 +707,8 @@ class FirefoxBrowser(Browser):
                  ca_certificate_path=None, e10s=False, enable_webrender=False, enable_fission=False,
                  stackfix_dir=None, binary_args=None, timeout_multiplier=None, leak_check=False,
                  asan=False, stylo_threads=1, chaos_mode_flags=None, config=None,
-                 browser_channel="nightly", headless=None, preload_browser=False, **kwargs):
+                 browser_channel="nightly", headless=None, preload_browser=False,
+                 specialpowers_path=None, **kwargs):
         Browser.__init__(self, logger)
 
         self.logger = logger
@@ -662,6 +717,7 @@ class FirefoxBrowser(Browser):
             self.init_timeout = self.init_timeout * timeout_multiplier
 
         self.instance = None
+        self._settings = None
 
         self.stackfix_dir = stackfix_dir
         self.symbols_path = symbols_path
@@ -669,6 +725,8 @@ class FirefoxBrowser(Browser):
 
         self.asan = asan
         self.leak_check = leak_check
+
+        self.specialpowers_path = specialpowers_path
 
         profile_creator = ProfileCreator(logger,
                                          prefs_root,
@@ -700,13 +758,15 @@ class FirefoxBrowser(Browser):
                                                      symbols_path,
                                                      asan)
 
-
     def settings(self, test):
-        return {"check_leaks": self.leak_check and not test.leaks,
-                "lsan_allowed": test.lsan_allowed,
-                "lsan_max_stack_depth": test.lsan_max_stack_depth,
-                "mozleak_allowed": self.leak_check and test.mozleak_allowed,
-                "mozleak_thresholds": self.leak_check and test.mozleak_threshold}
+        self._settings = {"check_leaks": self.leak_check and not test.leaks,
+                          "lsan_disabled": test.lsan_disabled,
+                          "lsan_allowed": test.lsan_allowed,
+                          "lsan_max_stack_depth": test.lsan_max_stack_depth,
+                          "mozleak_allowed": self.leak_check and test.mozleak_allowed,
+                          "mozleak_thresholds": self.leak_check and test.mozleak_threshold,
+                          "special_powers": self.specialpowers_path and test.url_base == "/_mozilla/"}
+        return self._settings
 
     def start(self, group_metadata=None, **kwargs):
         self.instance = self.instance_manager.get()
@@ -729,7 +789,11 @@ class FirefoxBrowser(Browser):
 
     def executor_browser(self):
         assert self.instance is not None
-        return ExecutorBrowser, {"marionette_port": self.instance.marionette_port}
+        extensions = []
+        if self._settings.get("special_powers", False):
+            extensions.append(self.specialpowers_path)
+        return ExecutorBrowser, {"marionette_port": self.instance.marionette_port,
+                                 "extensions": extensions}
 
     def check_crash(self, process, test):
         dump_dir = os.path.join(self.instance.runner.profile.profile, "minidumps")

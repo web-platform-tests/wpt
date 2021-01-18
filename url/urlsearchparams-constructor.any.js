@@ -56,6 +56,28 @@ test(function() {
     assert_false(params.has('c'), 'Search params object did not have the name "c"');
     assert_true(params.has(' c'), 'Search params object has name " c"');
     assert_true(params.has('møø'), 'Search params object has name "møø"');
+
+    params = new URLSearchParams('id=0&value=%');
+    assert_true(params != null, 'constructor returned non-null value.');
+    assert_true(params.has('id'), 'Search params object has name "id"');
+    assert_true(params.has('value'), 'Search params object has name "value"');
+    assert_equals(params.get('id'), '0');
+    assert_equals(params.get('value'), '%');
+
+    params = new URLSearchParams('b=%2sf%2a');
+    assert_true(params != null, 'constructor returned non-null value.');
+    assert_true(params.has('b'), 'Search params object has name "b"');
+    assert_equals(params.get('b'), '%2sf*');
+
+    params = new URLSearchParams('b=%2%2af%2a');
+    assert_true(params != null, 'constructor returned non-null value.');
+    assert_true(params.has('b'), 'Search params object has name "b"');
+    assert_equals(params.get('b'), '%2*f*');
+
+    params = new URLSearchParams('b=%%2a');
+    assert_true(params != null, 'constructor returned non-null value.');
+    assert_true(params.has('b'), 'Search params object has name "b"');
+    assert_equals(params.get('b'), '%*');
 }, 'URLSearchParams constructor, string.');
 
 test(function() {
@@ -72,6 +94,23 @@ test(function() {
     params.append('g', 'h');
     assert_false(seed.has('g'));
 }, 'URLSearchParams constructor, object.');
+
+test(function() {
+    var formData = new FormData()
+    formData.append('a', 'b')
+    formData.append('c', 'd')
+    var params = new URLSearchParams(formData);
+    assert_true(params != null, 'constructor returned non-null value.');
+    assert_equals(params.get('a'), 'b');
+    assert_equals(params.get('c'), 'd');
+    assert_false(params.has('d'));
+    // The name-value pairs are copied when created; later updates
+    // should not be observable.
+    formData.append('e', 'f');
+    assert_false(params.has('e'));
+    params.append('g', 'h');
+    assert_false(formData.has('g'));
+}, 'URLSearchParams constructor, FormData.');
 
 test(function() {
     var params = new URLSearchParams('a=b+c');
@@ -161,6 +200,8 @@ test(function() {
   { "input": {"+": "%C2"}, "output": [["+", "%C2"]], "name": "object with +" },
   { "input": {c: "x", a: "?"}, "output": [["c", "x"], ["a", "?"]], "name": "object with two keys" },
   { "input": [["c", "x"], ["a", "?"]], "output": [["c", "x"], ["a", "?"]], "name": "array with two keys" },
+  { "input": {"\uD835x": "1", "xx": "2", "\uD83Dx": "3"}, "output": [["\uFFFDx", "3"], ["xx", "2"]], "name": "2 unpaired surrogates (no trailing)" },
+  { "input": {"x\uDC53": "1", "x\uDC5C": "2", "x\uDC65": "3"}, "output": [["x\uFFFD", "3"]], "name": "3 unpaired surrogates (no leading)" },
   { "input": {"a\0b": "42", "c\uD83D": "23", "d\u1234": "foo"}, "output": [["a\0b", "42"], ["c\uFFFD", "23"], ["d\u1234", "foo"]], "name": "object with NULL, non-ASCII, and surrogate keys" }
 ].forEach((val) => {
     test(() => {

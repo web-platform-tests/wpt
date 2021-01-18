@@ -3,7 +3,6 @@ import pytest
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_same_element, assert_success
-from tests.support.inline import inline
 
 
 def find_elements(session, element_id, using, value):
@@ -14,7 +13,7 @@ def find_elements(session, element_id, using, value):
         {"using": using, "value": value})
 
 
-def test_null_parameter_value(session, http):
+def test_null_parameter_value(session, http, inline):
     session.url = inline("<div><a href=# id=linkText>full link text</a></div>")
     element = session.find.css("div", all=False)
 
@@ -24,7 +23,12 @@ def test_null_parameter_value(session, http):
         assert_error(Response.from_http(response), "invalid argument")
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, closed_window):
+    response = find_elements(session, "notReal", "css selector", "foo")
+    assert_error(response, "no such window")
+
+
+def test_no_browsing_context(session, closed_frame):
     response = find_elements(session, "notReal", "css selector", "foo")
     assert_error(response, "no such window")
 
@@ -49,7 +53,7 @@ def test_invalid_selector_argument(session, value):
                           ("partial link text", "link text"),
                           ("tag name", "a"),
                           ("xpath", "//a")])
-def test_find_elements(session, using, value):
+def test_find_elements(session, inline, using, value):
     # Step 8 - 9
     session.url = inline("<div><a href=# id=linkText>full link text</a></div>")
     element = session.find.css("div", all=False)
@@ -65,7 +69,7 @@ def test_find_elements(session, using, value):
     ("<a href=#>LINK TEXT</a>", "LINK TEXT"),
     ("<a href=# style='text-transform: uppercase'>link text</a>", "LINK TEXT"),
 ])
-def test_find_elements_link_text(session, document, value):
+def test_find_elements_link_text(session, inline, document, value):
     # Step 8 - 9
     session.url = inline("<div><a href=#>not wanted</a><br/>{0}</div>".format(document))
     element = session.find.css("div", all=False)
@@ -89,7 +93,7 @@ def test_find_elements_link_text(session, document, value):
     ("<a href=#>PARTIAL LINK TEXT</a>", "LINK"),
     ("<a href=# style='text-transform: uppercase'>partial link text</a>", "LINK"),
 ])
-def test_find_elements_partial_link_text(session, document, value):
+def test_find_elements_partial_link_text(session, inline, document, value):
     # Step 8 - 9
     session.url = inline("<div><a href=#>not wanted</a><br/>{0}</div>".format(document))
     element = session.find.css("div", all=False)
@@ -105,7 +109,7 @@ def test_find_elements_partial_link_text(session, document, value):
 
 
 @pytest.mark.parametrize("using,value", [("css selector", "#wontExist")])
-def test_no_element(session, using, value):
+def test_no_element(session, inline, using, value):
     # Step 8 - 9
     session.url = inline("<div></div>")
     element = session.find.css("div", all=False)
@@ -119,7 +123,7 @@ def test_no_element(session, using, value):
                           ("partial link text", "link text"),
                           ("tag name", "a"),
                           ("xpath", "//*[name()='a']")])
-def test_xhtml_namespace(session, using, value):
+def test_xhtml_namespace(session, inline, using, value):
     session.url = inline("""<p><a href="#" id="linkText">full link text</a></p>""",
                          doctype="xhtml")
     from_element = session.execute_script("""return document.querySelector("p")""")
@@ -134,7 +138,7 @@ def test_xhtml_namespace(session, using, value):
     assert_same_element(session, found_element, expected)
 
 
-def test_parent_htmldocument(session):
+def test_parent_htmldocument(session, inline):
     session.url = inline("")
     from_element = session.execute_script("""return document.querySelector("body")""")
     expected = session.execute_script("return document.documentElement")
@@ -148,7 +152,7 @@ def test_parent_htmldocument(session):
     assert_same_element(session, found_element, expected)
 
 
-def test_parent_of_document_node_errors(session):
+def test_parent_of_document_node_errors(session, inline):
     session.url = inline("")
     from_element = session.execute_script("return document.documentElement")
 

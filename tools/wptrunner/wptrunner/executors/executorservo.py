@@ -20,7 +20,7 @@ from .base import (ConnectionlessProtocol,
                    reftest_result_converter,
                    TimedRunner,
                    WdspecExecutor,
-                   WebDriverProtocol)
+                   WdspecProtocol)
 from .process import ProcessTestExecutor
 from ..browsers.base import browser_command
 from ..process import cast_env
@@ -65,9 +65,9 @@ def build_servo_command(test, test_url_func, browser, binary, pause_after_test, 
 class ServoTestharnessExecutor(ProcessTestExecutor):
     convert_result = testharness_result_converter
 
-    def __init__(self, browser, server_config, timeout_multiplier=1, debug_info=None,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1, debug_info=None,
                  pause_after_test=False, **kwargs):
-        ProcessTestExecutor.__init__(self, browser, server_config,
+        ProcessTestExecutor.__init__(self, logger, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
         self.pause_after_test = pause_after_test
@@ -182,10 +182,11 @@ class TempFilename(object):
 class ServoRefTestExecutor(ProcessTestExecutor):
     convert_result = reftest_result_converter
 
-    def __init__(self, browser, server_config, binary=None, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, binary=None, timeout_multiplier=1,
                  screenshot_cache=None, debug_info=None, pause_after_test=False,
                  **kwargs):
         ProcessTestExecutor.__init__(self,
+                                     logger,
                                      browser,
                                      server_config,
                                      timeout_multiplier=timeout_multiplier,
@@ -208,7 +209,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
         os.rmdir(self.tempdir)
         ProcessTestExecutor.teardown(self)
 
-    def screenshot(self, test, viewport_size, dpi):
+    def screenshot(self, test, viewport_size, dpi, page_ranges):
         with TempFilename(self.tempdir) as output_path:
             extra_args = ["--exit",
                           "--output=%s" % output_path,
@@ -263,7 +264,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             with open(output_path, "rb") as f:
                 # Might need to strip variable headers or something here
                 data = f.read()
-                return True, ensure_str(base64.b64encode(data))
+                return True, [ensure_str(base64.b64encode(data))]
 
     def do_test(self, test):
         result = self.implementation.run_test(test)
@@ -280,7 +281,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
                                        " ".join(self.command))
 
 
-class ServoDriverProtocol(WebDriverProtocol):
+class ServoDriverProtocol(WdspecProtocol):
     server_cls = ServoDriverServer
 
 
@@ -308,10 +309,11 @@ class ServoTimedRunner(TimedRunner):
 class ServoCrashtestExecutor(ProcessTestExecutor):
     convert_result = crashtest_result_converter
 
-    def __init__(self, browser, server_config, binary=None, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, binary=None, timeout_multiplier=1,
                  screenshot_cache=None, debug_info=None, pause_after_test=False,
                  **kwargs):
         ProcessTestExecutor.__init__(self,
+                                     logger,
                                      browser,
                                      server_config,
                                      timeout_multiplier=timeout_multiplier,

@@ -9,8 +9,17 @@
 
 <script>
 test_valid_value("aspect-ratio", "auto");
+test_valid_value("aspect-ratio", "16", "16 / 1");
+test_valid_value("aspect-ratio", "1/1", "1 / 1");
+test_valid_value("aspect-ratio", "16.3 / 1", "16.3 / 1");
 test_valid_value("aspect-ratio", "16 / 9");
+test_valid_value("aspect-ratio", "16.3 / 9.4");
 test_valid_value("aspect-ratio", "16/9", "16 / 9");
 test_valid_value("aspect-ratio", "16 /9", "16 / 9");
 test_valid_value("aspect-ratio", "16/ 9", "16 / 9");
+test_valid_value("aspect-ratio", "0 / 9");
+test_valid_value("aspect-ratio", "16 / 0");
+test_valid_value("aspect-ratio", "auto 16", "auto 16 / 1");
+test_valid_value("aspect-ratio", "16 auto", "auto 16 / 1");
+test_valid_value("aspect-ratio", "0 / 0");
 </script>

@@ -3,14 +3,18 @@ import json
 
 from six import itervalues
 
+
 class WebDriverException(Exception):
     http_status = None
     status_code = None
 
     def __init__(self, http_status=None, status_code=None, message=None, stacktrace=None):
         super(WebDriverException, self)
-        self.http_status = http_status
-        self.status_code = status_code
+
+        if http_status is not None:
+            self.http_status = http_status
+        if status_code is not None:
+            self.status_code = status_code
         self.message = message
         self.stacktrace = stacktrace
 
@@ -28,6 +32,11 @@ class WebDriverException(Exception):
             message += ("\nRemote-end stacktrace:\n\n%s" % self.stacktrace)
 
         return message
+
+
+class DetachedShadowRootException(WebDriverException):
+    http_status = 404
+    status_code = "detached shadow root"
 
 
 class ElementClickInterceptedException(WebDriverException):
@@ -108,6 +117,11 @@ class NoSuchElementException(WebDriverException):
 class NoSuchFrameException(WebDriverException):
     http_status = 404
     status_code = "no such frame"
+
+
+class NoSuchShadowRootException(WebDriverException):
+    http_status = 404
+    status_code = "no such shadow root"
 
 
 class NoSuchWindowException(WebDriverException):

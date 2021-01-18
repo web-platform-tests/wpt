@@ -3,7 +3,8 @@ from .base import get_timeout_multiplier   # noqa: F401
 from ..webdriver_server import SafariDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
-                                           WebDriverRefTestExecutor)  # noqa: F401
+                                           WebDriverRefTestExecutor,  # noqa: F401
+                                           WebDriverCrashtestExecutor)  # noqa: F401
 from ..executors.executorsafari import SafariDriverWdspecExecutor  # noqa: F401
 
 
@@ -12,7 +13,8 @@ __wptrunner__ = {"product": "safari",
                  "browser": "SafariBrowser",
                  "executor": {"testharness": "WebDriverTestharnessExecutor",
                               "reftest": "WebDriverRefTestExecutor",
-                              "wdspec": "SafariDriverWdspecExecutor"},
+                              "wdspec": "SafariDriverWdspecExecutor",
+                              "crashtest": "WebDriverCrashtestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -24,12 +26,12 @@ def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 
 
-def browser_kwargs(test_type, run_info_data, config, **kwargs):
+def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
     return {"webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs.get("webdriver_args")}
 
 
-def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
+def executor_kwargs(logger, test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
     executor_kwargs = base_executor_kwargs(test_type, server_config,
                                            cache_manager, run_info_data, **kwargs)

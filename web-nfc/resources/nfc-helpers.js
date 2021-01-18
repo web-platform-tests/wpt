@@ -7,40 +7,35 @@
 // these tests the browser must be run with these options:
 //
 //   --enable-blink-features=MojoJS,MojoJSTest
-let loadChromiumResources = Promise.resolve().then(() => {
-  if (!window.MojoInterfaceInterceptor) {
-    // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
-    // not present in the global namespace.
-    return;
-  }
 
-  let chain = Promise.resolve();
-  [
-    '/gen/layout_test_data/mojo/public/js/mojo_bindings.js',
-    '/gen/services/device/public/mojom/nfc.mojom.js',
-    '/resources/testdriver.js',
-    '/resources/testdriver-vendor.js',
-    '/resources/chromium/nfc-mock.js',
-  ].forEach(path => {
-    let script = document.createElement('script');
-    script.src = path;
-    script.async = false;
-    chain = chain.then(() => new Promise(resolve => {
-      script.onload = resolve;
-    }));
-    document.head.appendChild(script);
-  });
+async function loadChromiumResources() {
+  const chromiumResources = [
+  '/gen/services/device/public/mojom/nfc.mojom.js',
+  ];
 
-  return chain;
-});
+  await loadMojoResources(chromiumResources);
+  await loadScript('/resources/testdriver.js');
+  await loadScript('/resources/testdriver-vendor.js');
+  await loadScript('/resources/chromium/nfc-mock.js');
+}
 
 async function initialize_nfc_tests() {
   if (typeof WebNFCTest === 'undefined') {
-    await loadChromiumResources;
+    const script = document.createElement('script');
+    script.src = '/resources/test-only-api.js';
+    script.async = false;
+    const p = new Promise((resolve, reject) => {
+      script.onload = () => { resolve(); };
+      script.onerror = e => { reject(e); };
+    })
+    document.head.appendChild(script);
+    await p;
+
+    if (isChromiumBased) {
+      await loadChromiumResources();
+    }
   }
-  assert_true(
-      typeof WebNFCTest !== 'undefined',
-      'WebNFC testing interface is not available.');
+  assert_implements( WebNFCTest, 'WebNFC testing interface is unavailable.');
   let NFCTest = new WebNFCTest();
   await NFCTest.initialize();
   return NFCTest;
@@ -154,12 +149,8 @@ function createUrlRecord(url, isAbsUrl) {
   return createRecord('url', url, test_record_id);
 }
 
-function createNDEFWriteOptions(ignoreRead) {
-  return {ignoreRead};
-}
-
 // Compares NDEFMessageSource that was provided to the API
-// (e.g. NDEFWriter.write), and NDEFMessage that was received by the
+// (e.g. NDEFReader.write), and NDEFMessage that was received by the
 // mock NFC service.
 function assertNDEFMessagesEqual(providedMessage, receivedMessage) {
   // If simple data type is passed, e.g. String or ArrayBuffer or
@@ -183,7 +174,7 @@ function assertNDEFMessagesEqual(providedMessage, receivedMessage) {
 }
 
 // Used to compare two NDEFMessage, one that is received from
-// NDEFWriter.onreading() EventHandler and another that is provided to mock NFC
+// NDEFReader.onreading() EventHandler and another that is provided to mock NFC
 // service.
 function assertWebNDEFMessagesEqual(message, expectedMessage) {
   assert_equals(message.records.length, expectedMessage.records.length);
@@ -204,22 +195,22 @@ function assertWebNDEFMessagesEqual(message, expectedMessage) {
 
 function testMultiScanOptions(message, scanOptions, unmatchedScanOptions, desc) {
   nfc_test(async (t, mockNFC) => {
-    const reader1 = new NDEFReader();
-    const reader2 = new NDEFReader();
+    const ndef1 = new NDEFReader();
+    const ndef2 = new NDEFReader();
     const controller = new AbortController();
 
-    // Reading from unmatched reader will not be triggered
-    reader1.onreading = t.unreached_func("reading event should not be fired.");
+    // Reading from unmatched ndef will not be triggered
+    ndef1.onreading = t.unreached_func("reading event should not be fired.");
     unmatchedScanOptions.signal = controller.signal;
-    await reader1.scan(unmatchedScanOptions);
+    await ndef1.scan(unmatchedScanOptions);
 
-    const readerWatcher = new EventWatcher(t, reader2, ["reading", "error"]);
-    const promise = readerWatcher.wait_for("reading").then(event => {
+    const ndefWatcher = new EventWatcher(t, ndef2, ["reading", "readingerror"]);
+    const promise = ndefWatcher.wait_for("reading").then(event => {
       controller.abort();
       assertWebNDEFMessagesEqual(event.message, new NDEFMessage(message));
     });
     scanOptions.signal = controller.signal;
-    await reader2.scan(scanOptions);
+    await ndef2.scan(scanOptions);
 
     mockNFC.setReadingMessage(message);
     await promise;
@@ -228,15 +219,15 @@ function testMultiScanOptions(message, scanOptions, unmatchedScanOptions, desc) 
 
 function testMultiMessages(message, scanOptions, unmatchedMessage, desc) {
   nfc_test(async (t, mockNFC) => {
-    const reader = new NDEFReader();
+    const ndef = new NDEFReader();
     const controller = new AbortController();
-    const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
-    const promise = readerWatcher.wait_for("reading").then(event => {
+    const ndefWatcher = new EventWatcher(t, ndef, ["reading", "readingerror"]);
+    const promise = ndefWatcher.wait_for("reading").then(event => {
       controller.abort();
       assertWebNDEFMessagesEqual(event.message, new NDEFMessage(message));
     });
     scanOptions.signal = controller.signal;
-    await reader.scan(scanOptions);
+    await ndef.scan(scanOptions);
 
     // Unmatched message will not be read
     mockNFC.setReadingMessage(unmatchedMessage);

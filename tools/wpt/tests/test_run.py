@@ -1,9 +1,14 @@
 import mock
+import os
 import tempfile
 import shutil
 import sys
 
 import pytest
+
+here = os.path.dirname(__file__)
+root = os.path.abspath(os.path.join(here, "..", "..", ".."))
+sys.path.insert(0, root)
 
 from tools.wpt import run
 from tools import localpaths  # noqa: F401
@@ -69,5 +74,6 @@ def test_setup_wptrunner(venv, logger, product):
     kwargs["binary"] = sys.argv[0]
     kwargs["webdriver_binary"] = sys.argv[0]
     if kwargs["product"] == "sauce":
-        kwargs["product"] = "sauce:firefox:63"
+        kwargs["sauce_browser"] = "firefox"
+        kwargs["sauce_version"] = "63"
     run.setup_wptrunner(venv, **kwargs)

@@ -1,4 +1,4 @@
-// META: global=worker,jsshell
+// META: global=window,worker,jsshell
 // META: script=../resources/test-utils.js
 // META: script=../resources/recording-streams.js
 'use strict';
@@ -102,12 +102,8 @@ promise_test(t => {
 
 promise_test(t => {
 
-  const startPromise = Promise.resolve();
   let rejectSinkWritePromise;
   const ws = recordingWritableStream({
-    start() {
-      return startPromise;
-    },
     write() {
       return new Promise((r, reject) => {
         rejectSinkWritePromise = reject;
@@ -115,7 +111,7 @@ promise_test(t => {
     }
   });
 
-  return startPromise.then(() => {
+  return flushAsyncEvents().then(() => {
     const writer = ws.getWriter();
     const writePromise = writer.write('a');
     rejectSinkWritePromise(error1);
@@ -160,6 +156,24 @@ promise_test(t => {
   .then(() => assert_array_equals(ws.events, ['write', 'a', 'write', 'b']));
 
 }, 'write: returning a rejected promise (second write) should cause writer write() and ready to reject');
+
+test(() => {
+  assert_throws_js(TypeError, () => new WritableStream({
+    start: 'test'
+  }), 'constructor should throw');
+}, 'start: non-function start method');
+
+test(() => {
+  assert_throws_js(TypeError, () => new WritableStream({
+    write: 'test'
+  }), 'constructor should throw');
+}, 'write: non-function write method');
+
+test(() => {
+  assert_throws_js(TypeError, () => new WritableStream({
+    close: 'test'
+  }), 'constructor should throw');
+}, 'close: non-function close method');
 
 test(() => {
   assert_throws_js(TypeError, () => new WritableStream({

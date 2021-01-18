@@ -1,39 +1,40 @@
 import abc
-import json
 import os
 import stat
 from collections import deque
-from collections import MutableMapping
 
 from six import with_metaclass, PY2
+from six.moves.collections_abc import MutableMapping
 
-from .sourcefile import SourceFile
+from . import jsonlib
 from .utils import git
 
-try:
-    from ..gitignore import gitignore
-except ValueError:
-    # relative import beyond toplevel throws *ValueError*!
-    from gitignore import gitignore  # type: ignore
+# Cannot do `from ..gitignore import gitignore` because
+# relative import beyond toplevel throws *ImportError*!
+from gitignore import gitignore  # type: ignore
 
 
 MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
-    from typing import Dict, Optional, List, Set, Text, Iterable, Any, Tuple, Union, Iterator
+    from typing import Dict, Optional, List, Set, Text, Iterable, Any, Tuple, Iterator
     from .manifest import Manifest  # cyclic import under MYPY guard
     if PY2:
         stat_result = Any
     else:
         stat_result = os.stat_result
 
+    GitIgnoreCacheType = MutableMapping[bytes, bool]
+else:
+    GitIgnoreCacheType = MutableMapping
+
 
 def get_tree(tests_root, manifest, manifest_path, cache_root,
              working_copy=True, rebuild=False):
-    # type: (bytes, Manifest, Optional[bytes], Optional[bytes], bool, bool) -> FileSystem
+    # type: (Text, Manifest, Optional[Text], Optional[Text], bool, bool) -> FileSystem
     tree = None
     if cache_root is None:
-        cache_root = os.path.join(tests_root, ".wptcache")
+        cache_root = os.path.join(tests_root, u".wptcache")
     if not os.path.exists(cache_root):
         try:
             os.makedirs(cache_root)
@@ -54,7 +55,7 @@ def get_tree(tests_root, manifest, manifest_path, cache_root,
 
 class GitHasher(object):
     def __init__(self, path):
-        # type: (bytes) -> None
+        # type: (Text) -> None
         self.git = git(path)
 
     def _local_changes(self):
@@ -90,37 +91,39 @@ class GitHasher(object):
 
 
 class FileSystem(object):
-    def __init__(self, root, url_base, cache_path, manifest_path=None, rebuild=False):
-        # type: (bytes, Text, Optional[bytes], Optional[bytes], bool) -> None
-        self.root = os.path.abspath(root)
+    def __init__(self, tests_root, url_base, cache_path, manifest_path=None, rebuild=False):
+        # type: (Text, Text, Optional[Text], Optional[Text], bool) -> None
+        self.tests_root = tests_root
         self.url_base = url_base
         self.ignore_cache = None
         self.mtime_cache = None
+        tests_root_bytes = tests_root.encode("utf8")
         if cache_path is not None:
             if manifest_path is not None:
-                self.mtime_cache = MtimeCache(cache_path, root, manifest_path, rebuild)
-            if gitignore.has_ignore(root):
-                self.ignore_cache = GitIgnoreCache(cache_path, root, rebuild)
-        self.path_filter = gitignore.PathFilter(self.root,
-                                                extras=[".git/"],
+                self.mtime_cache = MtimeCache(cache_path, tests_root, manifest_path, rebuild)
+            if gitignore.has_ignore(tests_root_bytes):
+                self.ignore_cache = GitIgnoreCache(cache_path, tests_root, rebuild)
+        self.path_filter = gitignore.PathFilter(tests_root_bytes,
+                                                extras=[b".git/"],
                                                 cache=self.ignore_cache)
-        git = GitHasher(root)
+        git = GitHasher(tests_root)
         if git is not None:
             self.hash_cache = git.hash_cache()
         else:
             self.hash_cache = {}
 
     def __iter__(self):
-        # type: () -> Iterator[Tuple[Union[bytes, SourceFile], bool]]
+        # type: () -> Iterator[Tuple[Text, Optional[Text], bool]]
         mtime_cache = self.mtime_cache
-        for dirpath, dirnames, filenames in self.path_filter(walk(self.root)):
+        for dirpath, dirnames, filenames in self.path_filter(
+                walk(self.tests_root.encode("utf8"))):
             for filename, path_stat in filenames:
-                path = os.path.join(dirpath, filename)
+                path = os.path.join(dirpath, filename).decode("utf8")
                 if mtime_cache is None or mtime_cache.updated(path, path_stat):
-                    hash = self.hash_cache.get(path, None)
-                    yield SourceFile(self.root, path, self.url_base, hash), True
+                    file_hash = self.hash_cache.get(path, None)
+                    yield path, file_hash, True
                 else:
-                    yield path, False
+                    yield path, None, False
 
     def dump_caches(self):
         # type: () -> None
@@ -131,7 +134,7 @@ class FileSystem(object):
 
 class CacheFile(with_metaclass(abc.ABCMeta)):
     def __init__(self, cache_root, tests_root, rebuild=False):
-        # type: (bytes, bytes, bool) -> None
+        # type: (Text, Text, bool) -> None
         self.tests_root = tests_root
         if not os.path.exists(cache_root):
             os.makedirs(cache_root)
@@ -141,7 +144,7 @@ class CacheFile(with_metaclass(abc.ABCMeta)):
 
     @abc.abstractproperty
     def file_name(self):
-        # type: () -> bytes
+        # type: () -> Text
         pass
 
     def dump(self):
@@ -149,16 +152,16 @@ class CacheFile(with_metaclass(abc.ABCMeta)):
         if not self.modified:
             return
         with open(self.path, 'w') as f:
-            json.dump(self.data, f, indent=1)
+            jsonlib.dump_local(self.data, f)
 
     def load(self, rebuild=False):
-        # type: (bool) -> Dict[Any, Any]
-        data = {}  # type: Dict[Any, Any]
+        # type: (bool) -> Dict[Text, Any]
+        data = {}  # type: Dict[Text, Any]
         try:
             if not rebuild:
                 with open(self.path, 'r') as f:
                     try:
-                        data = json.load(f)
+                        data = jsonlib.load(f)
                     except ValueError:
                         pass
                 data = self.check_valid(data)
@@ -167,22 +170,22 @@ class CacheFile(with_metaclass(abc.ABCMeta)):
         return data
 
     def check_valid(self, data):
-        # type: (Dict[Any, Any]) -> Dict[Any, Any]
+        # type: (Dict[Text, Any]) -> Dict[Text, Any]
         """Check if the cached data is valid and return an updated copy of the
         cache containing only data that can be used."""
         return data
 
 
 class MtimeCache(CacheFile):
-    file_name = "mtime.json"
+    file_name = u"mtime.json"
 
     def __init__(self, cache_root, tests_root, manifest_path, rebuild=False):
-        # type: (bytes, bytes, bytes, bool) -> None
+        # type: (Text, Text, Text, bool) -> None
         self.manifest_path = manifest_path
         super(MtimeCache, self).__init__(cache_root, tests_root, rebuild)
 
     def updated(self, rel_path, stat):
-        # type: (bytes, stat_result) -> bool
+        # type: (Text, stat_result) -> bool
         """Return a boolean indicating whether the file changed since the cache was last updated.
 
         This implicitly updates the cache with the new mtime data."""
@@ -195,12 +198,12 @@ class MtimeCache(CacheFile):
 
     def check_valid(self, data):
         # type: (Dict[Any, Any]) -> Dict[Any, Any]
-        if data.get("/tests_root") != self.tests_root:
+        if data.get(u"/tests_root") != self.tests_root:
             self.modified = True
         else:
             if self.manifest_path is not None and os.path.exists(self.manifest_path):
                 mtime = os.path.getmtime(self.manifest_path)
-                if data.get("/manifest_path") != [self.manifest_path, mtime]:
+                if data.get(u"/manifest_path") != [self.manifest_path, mtime]:
                     self.modified = True
             else:
                 self.modified = True
@@ -221,42 +224,50 @@ class MtimeCache(CacheFile):
         super(MtimeCache, self).dump()
 
 
-class GitIgnoreCache(CacheFile, MutableMapping):  # type: ignore
-    file_name = "gitignore.json"
+class GitIgnoreCache(CacheFile, GitIgnoreCacheType):
+    file_name = "gitignore2.json"
 
     def check_valid(self, data):
         # type: (Dict[Any, Any]) -> Dict[Any, Any]
-        ignore_path = os.path.join(self.tests_root, b".gitignore")
+        ignore_path = os.path.join(self.tests_root, ".gitignore")
         mtime = os.path.getmtime(ignore_path)
-        if data.get(b"/gitignore_file") != [ignore_path, mtime]:
+        if data.get(u"/gitignore_file") != [ignore_path, mtime]:
             self.modified = True
             data = {}
-            data[b"/gitignore_file"] = [ignore_path, mtime]
+            data[u"/gitignore_file"] = [ignore_path, mtime]
         return data
 
     def __contains__(self, key):
         # type: (Any) -> bool
+        try:
+            key = key.decode("utf-8")
+        except Exception:
+            return False
+
         return key in self.data
 
     def __getitem__(self, key):
         # type: (bytes) -> bool
-        v = self.data[key]
+        real_key = key.decode("utf-8")
+        v = self.data[real_key]
         assert isinstance(v, bool)
         return v
 
     def __setitem__(self, key, value):
         # type: (bytes, bool) -> None
-        if self.data.get(key) != value:
+        real_key = key.decode("utf-8")
+        if self.data.get(real_key) != value:
             self.modified = True
-            self.data[key] = value
+            self.data[real_key] = value
 
     def __delitem__(self, key):
         # type: (bytes) -> None
-        del self.data[key]
+        real_key = key.decode("utf-8")
+        del self.data[real_key]
 
     def __iter__(self):
         # type: () -> Iterator[bytes]
-        return iter(self.data)
+        return (key.encode("utf-8") for key in self.data)
 
     def __len__(self):
         # type: () -> int
@@ -286,7 +297,7 @@ def walk(root):
     relpath = os.path.relpath
 
     root = os.path.abspath(root)
-    stack = deque([(root, "")])
+    stack = deque([(root, b"")])
 
     while stack:
         dir_path, rel_path = stack.popleft()

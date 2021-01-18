@@ -1,13 +1,17 @@
 import copy
 import json
 import os
-import urlparse
 
 import pytest
 import webdriver
 
+from six import string_types
+
+from six.moves.urllib.parse import urlunsplit
+
 from tests.support import defaults
-from tests.support.helpers import cleanup_session
+from tests.support.helpers import cleanup_session, deep_update
+from tests.support.inline import build_inline
 from tests.support.http_request import HTTPRequest
 from tests.support.sync import Poll
 
@@ -85,18 +89,6 @@ def create_frame(session):
 
 
 @pytest.fixture
-def create_window(session):
-    """Open new window and return the window handle."""
-    def create_window():
-        windows_before = session.handles
-        name = session.execute_script("window.open()")
-        assert len(session.handles) == len(windows_before) + 1
-        new_windows = list(set(session.handles) - set(windows_before))
-        return new_windows.pop()
-    return create_window
-
-
-@pytest.fixture
 def http(configuration):
     return HTTPRequest(configuration["host"], configuration["port"])
 
@@ -132,7 +124,7 @@ def session(capabilities, configuration, request):
     # Update configuration capabilities with custom ones from the
     # capabilities fixture, which can be set by tests
     caps = copy.deepcopy(configuration["capabilities"])
-    caps.update(capabilities)
+    deep_update(caps, capabilities)
     caps = {"alwaysMatch": caps}
 
     # If there is a session with different capabilities active, end it now
@@ -168,14 +160,13 @@ def current_session():
 
 @pytest.fixture
 def url(server_config):
-    def inner(path, protocol="http", domain="", subdomain="", query="", fragment=""):
+    def url(path, protocol="http", domain="", subdomain="", query="", fragment=""):
         domain = server_config["domains"][domain][subdomain]
         port = server_config["ports"][protocol][0]
         host = "{0}:{1}".format(domain, port)
-        return urlparse.urlunsplit((protocol, host, path, query, fragment))
+        return urlunsplit((protocol, host, path, query, fragment))
 
-    inner.__name__ = "url"
-    return inner
+    return url
 
 
 @pytest.fixture
@@ -191,7 +182,7 @@ def create_dialog(session):
         if text is None:
             text = ""
 
-        assert isinstance(text, basestring), "`text` parameter must be a string"
+        assert isinstance(text, string_types), "`text` parameter must be a string"
 
         # Script completes itself when the user prompt has been opened.
         # For prompt() dialogs, add a value for the 'default' argument,
@@ -221,15 +212,80 @@ def create_dialog(session):
 
 
 @pytest.fixture
-def closed_window(session, create_window):
+def closed_frame(session, url):
     original_handle = session.window_handle
+    new_handle = session.new_window()
 
-    new_handle = create_window()
     session.window_handle = new_handle
 
-    session.close()
+    session.url = url("/webdriver/tests/support/html/frames.html")
+
+    subframe = session.find.css("#sub-frame", all=False)
+    session.switch_frame(subframe)
+
+    deleteframe = session.find.css("#delete-frame", all=False)
+    session.switch_frame(deleteframe)
+
+    button = session.find.css("#remove-parent", all=False)
+    button.click()
+
+    yield
+
+    session.window.close()
     assert new_handle not in session.handles, "Unable to close window {}".format(new_handle)
 
-    yield new_handle
+    session.window_handle = original_handle
+
+
+@pytest.fixture
+def closed_window(session, inline):
+    original_handle = session.window_handle
+    new_handle = session.new_window()
+
+    session.window_handle = new_handle
+    session.url = inline("<input id='a' value='b'>")
+    element = session.find.css("input", all=False)
+
+    session.window.close()
+    assert new_handle not in session.handles, "Unable to close window {}".format(new_handle)
+
+    yield (original_handle, element)
 
     session.window_handle = original_handle
+
+
+@pytest.fixture
+def inline(url):
+    """Takes a source extract and produces well-formed documents.
+
+    Based on the desired document type, the extract is embedded with
+    predefined boilerplate in order to produce well-formed documents.
+    The media type and character set may also be individually configured.
+
+    This helper function originally used data URLs, but since these
+    are not universally supported (or indeed standardised!) across
+    browsers, it now delegates the serving of the document to wptserve.
+    This file also acts as a wptserve handler (see the main function
+    below) which configures the HTTP response using query parameters.
+
+    This function returns a URL to the wptserve handler, which in turn
+    will serve an HTTP response with the requested source extract
+    inlined in a well-formed document, and the Content-Type header
+    optionally configured using the desired media type and character set.
+
+    Any additional keyword arguments are passed on to the build_url
+    function, which comes from the url fixture.
+    """
+    def inline(src, **kwargs):
+        return build_inline(url, src, **kwargs)
+
+    return inline
+
+
+@pytest.fixture
+def iframe(inline):
+    """Inlines document extract as the source document of an <iframe>."""
+    def iframe(src, **kwargs):
+        return "<iframe src='{}'></iframe>".format(inline(src, **kwargs))
+
+    return iframe

@@ -196,23 +196,23 @@ class XRMathHelper {
     const result2 = [
       // First column (m0r):
       invDet * det3x3(m11, m12, m13, m21, m22, m23, m32, m32, m33),
-      invDet * det3x3(m10, m12, m13, m20, m22, m23, m30, m32, m33),
+      -invDet * det3x3(m10, m12, m13, m20, m22, m23, m30, m32, m33),
       invDet * det3x3(m10, m11, m13, m20, m21, m23, m30, m31, m33),
-      invDet * det3x3(m10, m11, m12, m20, m21, m22, m30, m31, m32),
+      -invDet * det3x3(m10, m11, m12, m20, m21, m22, m30, m31, m32),
       // Second column (m1r):
-      invDet * det3x3(m01, m02, m03, m21, m22, m23, m32, m32, m33),
+      -invDet * det3x3(m01, m02, m03, m21, m22, m23, m32, m32, m33),
       invDet * det3x3(m00, m02, m03, m20, m22, m23, m30, m32, m33),
-      invDet * det3x3(m00, m01, m03, m20, m21, m23, m30, m31, m33),
+      -invDet * det3x3(m00, m01, m03, m20, m21, m23, m30, m31, m33),
       invDet * det3x3(m00, m01, m02, m20, m21, m22, m30, m31, m32),
       // Third column (m2r):
       invDet * det3x3(m01, m02, m03, m11, m12, m13, m31, m32, m33),
-      invDet * det3x3(m00, m02, m03, m10, m12, m13, m30, m32, m33),
+      -invDet * det3x3(m00, m02, m03, m10, m12, m13, m30, m32, m33),
       invDet * det3x3(m00, m01, m03, m10, m11, m13, m30, m31, m33),
-      invDet * det3x3(m00, m01, m02, m10, m11, m12, m30, m31, m32),
+      -invDet * det3x3(m00, m01, m02, m10, m11, m12, m30, m31, m32),
       // Fourth column (m3r):
-      invDet * det3x3(m01, m02, m03, m11, m12, m13, m21, m22, m23),
+      -invDet * det3x3(m01, m02, m03, m11, m12, m13, m21, m22, m23),
       invDet * det3x3(m00, m02, m03, m10, m12, m13, m20, m22, m23),
-      invDet * det3x3(m00, m01, m03, m10, m11, m13, m20, m21, m23),
+      -invDet * det3x3(m00, m01, m03, m10, m11, m13, m20, m21, m23),
       invDet * det3x3(m00, m01, m02, m10, m11, m12, m20, m21, m22),
     ];
 
@@ -238,6 +238,61 @@ class XRMathHelper {
 
     return result;
   }
+
+  // Decomposes a matrix, with the assumption that the passed in matrix is
+  // a rigid transformation (i.e. position and rotation *only*!).
+  // The result is an object with `position` and `orientation` keys, which should
+  // be compatible with FakeXRRigidTransformInit.
+  // The implementation should match the behavior of gfx::Transform, but assumes
+  // that scale, skew & perspective are not present in the matrix so it could be
+  // simplified.
+  static decomposeRigidTransform(m) {
+    const m00 = m[0],  m01 = m[1],  m02 = m[2],  m03 = m[3];
+    const m10 = m[4],  m11 = m[5],  m12 = m[6],  m13 = m[7];
+    const m20 = m[8],  m21 = m[9],  m22 = m[10], m23 = m[11];
+    const m30 = m[12], m31 = m[13], m32 = m[14], m33 = m[15];
+
+    const position = [m30, m31, m32];
+    const orientation = [0, 0, 0, 0];
+
+    const trace = m00 + m11 + m22;
+    if (trace > 0) {
+      const S = Math.sqrt(trace + 1) * 2;
+      orientation[3] = 0.25 * S;
+      orientation[0] = (m12 - m21) / S;
+      orientation[1] = (m20 - m02) / S;
+      orientation[2] = (m01 - m10) / S;
+    } else if (m00 > m11 && m00 > m22) {
+      const S = Math.sqrt(1.0 + m00 - m11 - m22) * 2;
+      orientation[3] = (m12 - m21) / S;
+      orientation[0] = 0.25 * S;
+      orientation[1] = (m01 + m10) / S;
+      orientation[2] = (m20 + m02) / S;
+    } else if (m11 > m22) {
+      const S = Math.sqrt(1.0 + m11 - m00 - m22) * 2;
+      orientation[3] = (m20 - m02) / S;
+      orientation[0] = (m01 + m10) / S;
+      orientation[1] = 0.25 * S;
+      orientation[2] = (m12 + m21) / S;
+    } else {
+      const S = Math.sqrt(1.0 + m22 - m00 - m11) * 2;
+      orientation[3] = (m01 - m10) / S;
+      orientation[0] = (m20 + m02) / S;
+      orientation[1] = (m12 + m21) / S;
+      orientation[2] = 0.25 * S;
+    }
+
+    return { position, orientation };
+  }
+
+  static identity() {
+    return [
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1
+    ];
+  };
 }
 
 XRMathHelper.EPSILON = 0.001;

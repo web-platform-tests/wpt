@@ -49,7 +49,7 @@
           assert_not_own_property(headers, '[%subtest.headerName%]');
         {%- else %}
           assert_own_property(headers, '[%subtest.headerName%]');
-          assert_equals(headers['[%subtest.headerName%]'], '[%subtest.expected%]');
+          assert_array_equals(headers['[%subtest.headerName%]'], ['[%subtest.expected%]']);
         {%- endif %}
         });
   }, '[%subtest.headerName%] - img[src] - [%subtest.description | pad("end", ", ")%][%subtest.elementAttrs | collection("attributes")%]');
@@ -69,7 +69,7 @@
           assert_not_own_property(headers, '[%subtest.headerName%]');
         {%- else %}
           assert_own_property(headers, '[%subtest.headerName%]');
-          assert_equals(headers['[%subtest.headerName%]'], '[%subtest.expected%]');
+          assert_array_equals(headers['[%subtest.headerName%]'], ['[%subtest.expected%]']);
         {%- endif %}
         });
   }, '[%subtest.headerName%] - img[srcset] - [%subtest.description | pad("end", ", ")%][%subtest.elementAttrs | collection("attributes")%]');
@@ -89,7 +89,7 @@
           assert_not_own_property(headers, '[%subtest.headerName%]');
         {%- else %}
           assert_own_property(headers, '[%subtest.headerName%]');
-          assert_equals(headers['[%subtest.headerName%]'], '[%subtest.expected%]');
+          assert_array_equals(headers['[%subtest.headerName%]'], ['[%subtest.expected%]']);
         {%- endif %}
         });
   }, '[%subtest.headerName%] - source[srcset] - [%subtest.description | pad("end", ", ")%][%subtest.elementAttrs | collection("attributes")%]');

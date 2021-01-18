@@ -38,7 +38,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-site'], ['same-origin']);
         });
   }, 'sec-fetch-site - Same origin, no options - registration');
 
@@ -52,7 +52,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-site'], ['same-origin']);
         });
   }, 'sec-fetch-site - Same origin, no options - updating');
 
@@ -66,7 +66,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-mode'], ['same-origin']);
         });
   }, 'sec-fetch-mode - options: type=classic - registration');
 
@@ -80,7 +80,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-mode'], ['same-origin']);
         });
   }, 'sec-fetch-mode - options: type=classic - updating');
 
@@ -94,7 +94,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-mode'], ['same-origin']);
         });
   }, 'sec-fetch-mode - no options - registration');
 
@@ -108,7 +108,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-mode'], ['same-origin']);
         });
   }, 'sec-fetch-mode - no options - updating');
 
@@ -122,7 +122,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-dest');
-          assert_equals(headers['sec-fetch-dest'], 'serviceworker');
+          assert_array_equals(headers['sec-fetch-dest'], ['serviceworker']);
         });
   }, 'sec-fetch-dest - no options - registration');
 
@@ -136,7 +136,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-dest');
-          assert_equals(headers['sec-fetch-dest'], 'serviceworker');
+          assert_array_equals(headers['sec-fetch-dest'], ['serviceworker']);
         });
   }, 'sec-fetch-dest - no options - updating');
 

@@ -179,7 +179,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
       });
   }, 'sec-fetch-site - HTTPS upgrade');
 
@@ -190,7 +190,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
       });
   }, 'sec-fetch-site - HTTPS downgrade-upgrade');
   </script>

@@ -99,7 +99,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-site'], ['same-origin']);
         });
   }, 'sec-fetch-site - Same origin - history.back');
 
@@ -111,7 +111,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-site'], ['same-origin']);
         });
   }, 'sec-fetch-site - Same origin - history.forward');
 
@@ -123,7 +123,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - Cross-site - history.back');
 
@@ -135,7 +135,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - Cross-site - history.forward');
 
@@ -147,7 +147,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-site');
+          assert_array_equals(headers['sec-fetch-site'], ['same-site']);
         });
   }, 'sec-fetch-site - Same site - history.back');
 
@@ -159,7 +159,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-site');
+          assert_array_equals(headers['sec-fetch-site'], ['same-site']);
         });
   }, 'sec-fetch-site - Same site - history.forward');
 
@@ -171,7 +171,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'navigate');
+          assert_array_equals(headers['sec-fetch-mode'], ['navigate']);
         });
   }, 'sec-fetch-mode - history.back');
 
@@ -183,7 +183,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'navigate');
+          assert_array_equals(headers['sec-fetch-mode'], ['navigate']);
         });
   }, 'sec-fetch-mode - history.forward');
 
@@ -195,7 +195,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-dest');
-          assert_equals(headers['sec-fetch-dest'], 'document');
+          assert_array_equals(headers['sec-fetch-dest'], ['document']);
         });
   }, 'sec-fetch-dest - history.back');
 
@@ -207,7 +207,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-dest');
-          assert_equals(headers['sec-fetch-dest'], 'document');
+          assert_array_equals(headers['sec-fetch-dest'], ['document']);
         });
   }, 'sec-fetch-dest - history.forward');
 

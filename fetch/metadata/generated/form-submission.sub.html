@@ -355,7 +355,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - HTTPS upgrade - GET');
 
@@ -367,7 +367,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - HTTPS upgrade - POST');
 
@@ -379,7 +379,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - HTTPS downgrade-upgrade - GET');
 
@@ -391,7 +391,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - HTTPS downgrade-upgrade - POST');
   </script>

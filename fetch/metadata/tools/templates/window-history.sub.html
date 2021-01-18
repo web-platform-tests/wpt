@@ -107,7 +107,7 @@
           assert_not_own_property(headers, '[%subtest.headerName%]');
         {%- else %}
           assert_own_property(headers, '[%subtest.headerName%]');
-          assert_equals(headers['[%subtest.headerName%]'], '[%subtest.expected%]');
+          assert_array_equals(headers['[%subtest.headerName%]'], ['[%subtest.expected%]']);
         {%- endif %}
         });
   }, '[%subtest.headerName%] - [%subtest.description | pad("right", " - ")%]history.back[%subtest.api%][% " with user activation" if subtest.userActivated%]');
@@ -123,7 +123,7 @@
           assert_not_own_property(headers, '[%subtest.headerName%]');
         {%- else %}
           assert_own_property(headers, '[%subtest.headerName%]');
-          assert_equals(headers['[%subtest.headerName%]'], '[%subtest.expected%]');
+          assert_array_equals(headers['[%subtest.headerName%]'], ['[%subtest.expected%]']);
         {%- endif %}
         });
   }, '[%subtest.headerName%] - [%subtest.description | pad("right", " - ")%]history.forward[%subtest.api%][% " with user activation" if subtest.userActivated%]');

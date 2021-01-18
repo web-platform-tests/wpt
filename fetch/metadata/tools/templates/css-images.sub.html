@@ -62,7 +62,7 @@
           assert_not_own_property(headers, '[%subtest.headerName%]');
         {%- else %}
           assert_own_property(headers, '[%subtest.headerName%]');
-          assert_equals(headers['[%subtest.headerName%]'], '[%subtest.expected%]');
+          assert_array_equals(headers['[%subtest.headerName%]'], ['[%subtest.expected%]']);
         {%- endif %}
         })
       .then(t.step_func_done(), t.unreached_func());
@@ -81,7 +81,7 @@
           assert_not_own_property(headers, '[%subtest.headerName%]');
         {%- else %}
           assert_own_property(headers, '[%subtest.headerName%]');
-          assert_equals(headers['[%subtest.headerName%]'], '[%subtest.expected%]');
+          assert_array_equals(headers['[%subtest.headerName%]'], ['[%subtest.expected%]']);
         {%- endif %}
         })
       .then(t.step_func_done(), t.unreached_func());
@@ -100,7 +100,7 @@
           assert_not_own_property(headers, '[%subtest.headerName%]');
         {%- else %}
           assert_own_property(headers, '[%subtest.headerName%]');
-          assert_equals(headers['[%subtest.headerName%]'], '[%subtest.expected%]');
+          assert_array_equals(headers['[%subtest.headerName%]'], ['[%subtest.expected%]']);
         {%- endif %}
         })
       .then(t.step_func_done(), t.unreached_func());
@@ -119,7 +119,7 @@
           assert_not_own_property(headers, '[%subtest.headerName%]');
         {%- else %}
           assert_own_property(headers, '[%subtest.headerName%]');
-          assert_equals(headers['[%subtest.headerName%]'], '[%subtest.expected%]');
+          assert_array_equals(headers['[%subtest.headerName%]'], ['[%subtest.expected%]']);
         {%- endif %}
         })
       .then(t.step_func_done(), t.unreached_func());

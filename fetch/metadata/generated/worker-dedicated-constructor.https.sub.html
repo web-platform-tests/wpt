@@ -33,7 +33,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-mode'], ['same-origin']);
         });
   }, 'sec-fetch-mode - no options');
 
@@ -49,7 +49,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-mode'], ['same-origin']);
         });
   }, 'sec-fetch-mode - options: type=module');
 
@@ -65,7 +65,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-dest');
-          assert_equals(headers['sec-fetch-dest'], 'worker');
+          assert_array_equals(headers['sec-fetch-dest'], ['worker']);
         });
   }, 'sec-fetch-dest - no options');
 
@@ -81,7 +81,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-dest');
-          assert_equals(headers['sec-fetch-dest'], 'worker');
+          assert_array_equals(headers['sec-fetch-dest'], ['worker']);
         });
   }, 'sec-fetch-dest - options: type=module');
 

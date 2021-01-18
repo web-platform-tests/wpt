@@ -29,7 +29,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-site'], ['same-origin']);
         });
   }, 'sec-fetch-site - Same origin, init: mode=no-cors');
 
@@ -43,7 +43,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - Cross-site, init: mode=no-cors');
 
@@ -57,7 +57,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-site');
+          assert_array_equals(headers['sec-fetch-site'], ['same-site']);
         });
   }, 'sec-fetch-site - Same site, init: mode=no-cors');
 
@@ -71,7 +71,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect, init: mode=no-cors');
 
@@ -85,7 +85,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-site');
+          assert_array_equals(headers['sec-fetch-site'], ['same-site']);
         });
   }, 'sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect, init: mode=no-cors');
 
@@ -99,7 +99,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - Cross-Site -> Same Origin, init: mode=no-cors');
 
@@ -113,7 +113,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - Cross-Site -> Same-Site, init: mode=no-cors');
 
@@ -127,7 +127,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - Cross-Site -> Cross-Site, init: mode=no-cors');
 
@@ -141,7 +141,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-site'], ['same-origin']);
         });
   }, 'sec-fetch-site - Same-Origin -> Same Origin, init: mode=no-cors');
 
@@ -155,7 +155,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-site');
+          assert_array_equals(headers['sec-fetch-site'], ['same-site']);
         });
   }, 'sec-fetch-site - Same-Origin -> Same-Site, init: mode=no-cors');
 
@@ -169,7 +169,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - Same-Origin -> Cross-Site, init: mode=no-cors');
 
@@ -183,7 +183,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-site');
+          assert_array_equals(headers['sec-fetch-site'], ['same-site']);
         });
   }, 'sec-fetch-site - Same-Site -> Same Origin, init: mode=no-cors');
 
@@ -197,7 +197,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'same-site');
+          assert_array_equals(headers['sec-fetch-site'], ['same-site']);
         });
   }, 'sec-fetch-site - Same-Site -> Same-Site, init: mode=no-cors');
 
@@ -211,7 +211,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-site');
-          assert_equals(headers['sec-fetch-site'], 'cross-site');
+          assert_array_equals(headers['sec-fetch-site'], ['cross-site']);
         });
   }, 'sec-fetch-site - Same-Site -> Cross-Site, init: mode=no-cors');
 
@@ -225,7 +225,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'cors');
+          assert_array_equals(headers['sec-fetch-mode'], ['cors']);
         });
   }, 'sec-fetch-mode - no init');
 
@@ -239,7 +239,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'cors');
+          assert_array_equals(headers['sec-fetch-mode'], ['cors']);
         });
   }, 'sec-fetch-mode - init: mode=cors');
 
@@ -253,7 +253,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'no-cors');
+          assert_array_equals(headers['sec-fetch-mode'], ['no-cors']);
         });
   }, 'sec-fetch-mode - init: mode=no-cors');
 
@@ -267,7 +267,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-mode');
-          assert_equals(headers['sec-fetch-mode'], 'same-origin');
+          assert_array_equals(headers['sec-fetch-mode'], ['same-origin']);
         });
   }, 'sec-fetch-mode - init: mode=same-origin');
 
@@ -281,7 +281,7 @@ Sources:
       .then(() => retrieve(key))
       .then((headers) => {
           assert_own_property(headers, 'sec-fetch-dest');
-          assert_equals(headers['sec-fetch-dest'], 'empty');
+          assert_array_equals(headers['sec-fetch-dest'], ['empty']);
         });
   }, 'sec-fetch-dest - no init');
 

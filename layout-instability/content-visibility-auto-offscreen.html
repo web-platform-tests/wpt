@@ -18,18 +18,17 @@ promise_test(async () => {
 
   assert_equals(watcher.score, 0);
 
-  // This should report a layout shift as target is now visible.
+  // Content visibility auto toggling rendering should not report any layout shifts.
   target.style.top = '100100px';
 
-  await watcher.promise;
-  const expectedScore = computeExpectedScore(100 * 100, 100);
-  assert_equals(watcher.score, expectedScore);
+  await waitForAnimationFrames(2);
+  assert_equals(watcher.score, 0);
 
   // No new layout shift should be reported when target is scrolled out of screeen.
   window.scrollTo(0, 0);
   await waitForAnimationFrames(2);
 
-  assert_equals(watcher.score, expectedScore);
+  assert_equals(watcher.score, 0);
 }, 'off-screen content-visibility:auto');
 </script>
 <style>

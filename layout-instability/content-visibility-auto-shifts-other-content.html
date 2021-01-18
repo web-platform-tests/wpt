@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<title>Layout Instability: scrolling content-visibility:auto content</title>
+<link rel="help" href="https://wicg.github.io/layout-instability/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/util.js"></script>
+
+<style>
+  .auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 10px 3000px;
+    width: 100px;
+  }
+  .contained {
+    height: 1000px;
+  }
+</style>
+
+<div class=auto><div class=contained></div></div>
+<div class=auto><div class=contained></div></div>
+<div class=auto><div class=contained></div></div>
+
+<script>
+promise_test(async () => {
+  const watcher = new ScoreWatcher;
+
+  // Wait for the initial render to complete.
+  await waitForAnimationFrames(2);
+
+  // Scroll by 1000 5 times down.
+  for (let i = 0; i < 5; ++i) {
+    document.scrollingElement.scrollBy(0, 1000);
+    await waitForAnimationFrames(2);
+  }
+  // Scroll back up.
+  for (let i = 0; i < 5; ++i) {
+    document.scrollingElement.scrollBy(0, -1000);
+    await waitForAnimationFrames(2);
+  }
+
+  // There should be no layout shifts reported.
+  assert_equals(watcher.score, 0);
+}, 'content-visibility:auto scrolling');
+</script>

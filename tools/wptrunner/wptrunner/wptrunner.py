@@ -224,6 +224,7 @@ def run_tests(config, test_paths, product, **kwargs):
         with env.TestEnvironment(test_paths,
                                  testharness_timeout_multipler,
                                  kwargs["pause_after_test"],
+                                 kwargs["debug_test"],
                                  kwargs["debug_info"],
                                  product.env_options,
                                  ssl_config,

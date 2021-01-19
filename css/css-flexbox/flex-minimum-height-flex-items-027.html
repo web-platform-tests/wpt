@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-flexbox/#flex-direction-property">
+<meta name="assert" content="" />
+<link rel="match" href="../reference/ref-filled-green-100px-square-only.html">
+<p>Test passes if there is a filled green square.</p>
+
+<style>
+.OuterFlexbox {
+  display: flex;
+  flex-direction: column;
+  height: 100px;
+  width: 100px;
+}
+
+.InnerFlexbox {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* adding min-height fixes it */
+}
+
+.InnerFlexbox-body {
+  background: green;
+  min-height: 0;
+  /* Adding height: 100% fixes it */
+}
+</style>
+
+<div class="OuterFlexbox" id=mine>
+  <div class="InnerFlexbox" id=mine2>
+    <div class="InnerFlexbox-body">
+      <div style="height: 200px;">
+    </div>
+  </div>
+</div>

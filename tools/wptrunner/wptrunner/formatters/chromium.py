@@ -272,5 +272,6 @@ class ChromiumFormatter(base.BaseFormatter):
         return json.dumps(final_result)
 
     def process_output(self, data):
-        if 'command' in data and 'chromedriver' in data['command']:
+        if 'command' in data and 'chromedriver' in data['command']\
+            or 'command' in data and 'logcat' in data['command']:
             self.browser_log.append(data['data'])

@@ -68,16 +68,11 @@ def env_options():
     # allow the use of host-resolver-rules in lieu of modifying /etc/hosts file
     return {"server_host": "127.0.0.1"}
 
-
-class ChromeAndroidBrowser(Browser):
-    """Chrome is backed by chromedriver, which is supplied through
-    ``wptrunner.webdriver.ChromeDriverServer``.
-    """
-
-    def __init__(self, logger, package_name, webdriver_binary="chromedriver",
+class AndroidBrowser(Browser):
+    def __init__(self, logger, webdriver_binary="chromedriver",
                  device_serial=None, webdriver_args=None):
-        Browser.__init__(self, logger)
-        self.package_name = package_name
+        super(AndroidBrowser, self).__init__(logger)
+        self.is_android = True
         self.device_serial = device_serial
         self.server = ChromeDriverServer(self.logger,
                                          binary=webdriver_binary,
@@ -93,12 +88,7 @@ class ChromeAndroidBrowser(Browser):
         subprocess.check_call(cmd)
 
     def setup_adb_reverse(self):
-        self._adb_run(['wait-for-device'])
-        self._adb_run(['forward', '--remove-all'])
-        self._adb_run(['reverse', '--remove-all'])
-        # "adb reverse" forwards network connection from device to host.
-        for port in _wptserve_ports:
-            self._adb_run(['reverse', 'tcp:%d' % port, 'tcp:%d' % port])
+        pass
 
     def start(self, **kwargs):
         self.server.start(block=False)
@@ -122,3 +112,29 @@ class ChromeAndroidBrowser(Browser):
 
     def executor_browser(self):
         return ExecutorBrowser, {"webdriver_url": self.server.url}
+
+    def logcat_cmd(self):
+        cmd = ['adb']
+        if self.device_serial:
+            cmd.extend(['-s', self.device_serial])
+        cmd.extend(['logcat', '*:D'])
+        return cmd
+
+class ChromeAndroidBrowser(AndroidBrowser):
+    """Chrome is backed by chromedriver, which is supplied through
+    ``wptrunner.webdriver.ChromeDriverServer``.
+    """
+
+    def __init__(self, logger, package_name, webdriver_binary="chromedriver",
+                 device_serial=None, webdriver_args=None):
+        super(ChromeAndroidBrowser, self).__init__(logger,
+                webdriver_binary, device_serial, webdriver_args)
+        self.package_name = package_name
+
+    def setup_adb_reverse(self):
+        self._adb_run(['wait-for-device'])
+        self._adb_run(['forward', '--remove-all'])
+        self._adb_run(['reverse', '--remove-all'])
+        # "adb reverse" forwards network connection from device to host.
+        for port in _wptserve_ports:
+            self._adb_run(['reverse', 'tcp:%d' % port, 'tcp:%d' % port])

@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import subprocess
 import threading
 import traceback
 from six.moves.queue import Empty
@@ -183,6 +184,35 @@ def next_manager_number():
     local = manager_count = manager_count + 1
     return local
 
+class LogcatRunner(threading.Thread):
+    def __init__(self, browser, command_queue):
+        self.browser = browser
+        self.command_queue = command_queue
+        self.stopped = False
+        threading.Thread.__init__(self, name="LogcatRunner")
+
+    def run(self):
+        cmd = self.browser.logcat_cmd()
+        self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        while self.proc.poll() is None:
+            line = self.proc.stdout.readline()
+            if not self.stopped:
+                self.send_logcat(line)
+
+    def stop(self):
+        self.stopped = True
+        self.proc.kill()
+
+    def send_message(self, command, *args):
+        self.command_queue.put((command, args))
+
+    def send_logcat(self, message):
+        data = {
+            "process": "logcat",
+            "command": "logcat",
+            "data": message
+        }
+        self.send_message("log", "process_output", data)
 
 class BrowserManager(object):
     def __init__(self, logger, browser, command_queue, no_timeout=False):
@@ -362,6 +392,9 @@ class TestRunnerManager(threading.Thread):
         self.recording.set(["testrunner", "startup"])
         self.logger = structuredlog.StructuredLogger(self.suite_name)
         with self.browser_cls(self.logger, **self.browser_kwargs) as browser:
+            if browser.is_android:
+                logcat_runner = LogcatRunner(browser, self.command_queue)
+                logcat_runner.start()
             self.browser = BrowserManager(self.logger,
                                           browser,
                                           self.command_queue,
@@ -408,6 +441,8 @@ class TestRunnerManager(threading.Thread):
                 clean = isinstance(self.state, RunnerManagerState.stop)
                 self.stop_runner(force=not clean)
                 self.teardown()
+                if not logcat_runner:
+                    logcat_runner.stop()
         self.logger.debug("TestRunnerManager main loop terminated")
 
     def wait_event(self):

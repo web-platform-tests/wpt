@@ -113,6 +113,7 @@ class Browser(object):
 
     def __init__(self, logger):
         self.logger = logger
+        self.is_android = False
 
     def __enter__(self):
         self.setup()

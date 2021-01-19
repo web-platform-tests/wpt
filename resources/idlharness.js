@@ -131,6 +131,29 @@ function awaitNCallbacks(n, cb, ctx)
     };
 }
 
+var boundCallHasOwnProperty = Function.prototype.call.bind(Object.prototype.hasOwnProperty);
+
+/**
+ * Like `assert_class_string`, but checks that the object has an own property
+ * whose name is the `@@toStringTag` symbol with the default
+ * PropertyDescriptor{[[Writable]]: false, [[Enumerable]]: false,
+ * [[Configurable]]: true, [[Value]]: class_string}.
+ *
+ * @param {*} object The object to check.
+ * @param {string} class_string The expected class string.
+ * @param {string} [description] An optional description.
+ */
+function assert_toStringTag(object, class_string, description) {
+    var prefix = description ? description + ": " : "";
+    var desc = Object.getOwnPropertyDescriptor(object, Symbol.toStringTag);
+    assert_equals(desc.value, class_string, prefix + "wrong value in @@toStringTag property descriptor");
+    assert_false(desc.writable, prefix + "@@toStringTag should not be writable");
+    assert_false(desc.enumerable, prefix + "@@toStringTag should not be enumerable");
+    assert_true(desc.configurable, prefix + "@@toStringTag should be configurable");
+    assert_false(boundCallHasOwnProperty(desc, 'get'), prefix + "@@toStringTag should not have a getter");
+    assert_false(boundCallHasOwnProperty(desc, 'set'), prefix + "@@toStringTag should not have a setter");
+}
+
 /// IdlHarnessError ///
 // Entry point
 self.IdlHarnessError = function(message)
@@ -1795,10 +1818,10 @@ IdlInterface.prototype.test_self = function()
         //     object %ErrorPrototype%."
         //
         if (this.name === "Window") {
-            assert_class_string(Object.getPrototypeOf(this.get_interface_object().prototype),
-                                'WindowProperties',
-                                'Class name for prototype of Window' +
-                                '.prototype is not "WindowProperties"');
+            assert_toStringTag(Object.getPrototypeOf(this.get_interface_object().prototype),
+                               'WindowProperties',
+                               'Class string for prototype of Window' +
+                               '.prototype is not "WindowProperties"');
         } else {
             var inherit_interface, inherit_interface_interface_object;
             if (this.base) {
@@ -1827,29 +1850,30 @@ IdlInterface.prototype.test_self = function()
                 // We can't test that we get the correct object, because this is the
                 // only way to get our hands on it. We only test that its class
                 // string, at least, is correct.
-                assert_class_string(Object.getPrototypeOf(this.get_interface_object().prototype),
-                                    inherit_interface + 'Prototype',
-                                    'Class name for prototype of ' + this.name +
-                                    '.prototype is not "' + inherit_interface + 'Prototype"');
+                assert_toStringTag(Object.getPrototypeOf(this.get_interface_object().prototype),
+                                   inherit_interface,
+                                   'Class string for prototype of ' + this.name +
+                                   '.prototype is not "' + inherit_interface + '"');
             }
         }
 
         // "The class string of an interface prototype object is the
-        // concatenation of the interface’s qualified identifier and the string
-        // “Prototype”."
+        // interface’s qualified name."
 
-        // Skip these tests for now due to a specification issue about
-        // prototype name.
-        // https://www.w3.org/Bugs/Public/show_bug.cgi?id=28244
+        // "If an object has a class string classString, then the object must,
+        // at the time it is created, have a property whose name is the
+        // `@@toStringTag` symbol with PropertyDescriptor{[[Writable]]: false,
+        // [[Enumerable]]: false, [[Configurable]]: true, [[Value]]: classString}."
 
-        // assert_class_string(this.get_interface_object().prototype, this.get_qualified_name() + "Prototype",
-        //                     "class string of " + this.name + ".prototype");
+        assert_toStringTag(this.get_interface_object().prototype, this.get_qualified_name(),
+                           "class string of " + this.name + ".prototype");
 
         // String() should end up calling {}.toString if nothing defines a
         // stringifier.
         if (!this.has_stringifier()) {
-            // assert_equals(String(this.get_interface_object().prototype), "[object " + this.get_qualified_name() + "Prototype]",
-            //         "String(" + this.name + ".prototype)");
+            assert_equals(String(this.get_interface_object().prototype),
+                          "[object " + this.get_qualified_name() + "]",
+                          "String(" + this.name + ".prototype)");
         }
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 

@@ -32,14 +32,14 @@ test(function() {
                "Should not be supported on the instance");
 }, "TouchList::identifiedTouch");
 
-test(function() {
-  assert_false("initTouchEvent" in TouchEvent.prototype,
-               "Should not be supported on the prototype");
+// test(function() {
+//   assert_false("initTouchEvent" in TouchEvent.prototype,
+//                "Should not be supported on the prototype");
 
-  var touchEvent = document.createEvent("touchevent");
-  assert_false("initTouchEvent" in touchEvent,
-               "Should not be supported on the instance");
-}, "TouchEvent::initTouchEvent");
+//   var touchEvent = document.createEvent("touchevent");
+//   assert_false("initTouchEvent" in touchEvent,
+//                "Should not be supported on the instance");
+// }, "TouchEvent::initTouchEvent");
 
 test(function() {
   assert_false("createTouch" in Document.prototype,

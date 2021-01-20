@@ -141,6 +141,8 @@ def get_pause_after_test(test_loader, **kwargs):
             return False
         if kwargs["headless"]:
             return False
+        if kwargs["debug_test"]:
+            return True
         tests = test_loader.tests
         is_single_testharness = (sum(len(item) for item in itervalues(tests)) == 1 and
                                  len(tests.get("testharness", [])) == 1)

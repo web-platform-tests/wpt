@@ -11,7 +11,7 @@
 // Run captureStream() on cross-origin <video> content
   async_test(function() {
     const video = document.createElement('video');
-    video.src = location.origin.replace("//", "//www1.") + "/media/test-v-128k-320x240-24fps-8kfr.webm";
+    video.src = location.origin.replace("//", "//www1.") + "/media/white.webm";
     video.onerror = this.unreached_func("<video> error");
     video.loop = true;
     video.play();

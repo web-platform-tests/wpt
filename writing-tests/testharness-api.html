@@ -583,8 +583,8 @@ the following methods:</p>
 <p><code class="docutils literal notranslate"><span class="pre">add_start_callback(callback)</span></code> - callback called with no arguments</p>
 <p><code class="docutils literal notranslate"><span class="pre">add_test_state_callback(callback)</span></code> - callback called with a test argument</p>
 <p><code class="docutils literal notranslate"><span class="pre">add_result_callback(callback)</span></code> - callback called with a test argument</p>
-<p><code class="docutils literal notranslate"><span class="pre">add_completion_callback(callback)</span></code> - callback called with an array of tests
-and a status object</p>
+<p><code class="docutils literal notranslate"><span class="pre">add_completion_callback(callback)</span></code> - callback called with an array of tests,
+a status object, and an array of asserts</p>
 <p>Tests have the following properties:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">status</span></code> - A status code. This can be compared to the <code class="docutils literal notranslate"><span class="pre">PASS</span></code>, <code class="docutils literal notranslate"><span class="pre">FAIL</span></code>,
@@ -601,6 +601,17 @@ following properties:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">message</span></code> - An error message set when the status is <code class="docutils literal notranslate"><span class="pre">PRECONDITION_FAILED</span></code>
 or <code class="docutils literal notranslate"><span class="pre">ERROR</span></code>.</p></li>
 </ul>
+<p>Asserts have the following properties:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test</span></code> - The test that caused the assert.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">assert_name</span></code> - The name of the assert that ran e.g. <code class="docutils literal notranslate"><span class="pre">assert_equals</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">args</span></code> - An array of string representations of arguments passed to the assert
+function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">status</span></code> - An integer representing the assert status. This has the same values
+as the status property on a test.</p></li>
+</ul>
+<p>For performance reasons asserts are only tracked when visual output is enabled.
+When it’s disabled the array of asserts will be empty.</p>
 </div>
 <div class="section" id="external-api">
 <h2>External API<a class="headerlink" href="#external-api" title="Permalink to this headline">¶</a></h2>

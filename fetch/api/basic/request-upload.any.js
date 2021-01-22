@@ -123,3 +123,12 @@ testUploadFailure("Fetch with POST with ReadableStream containing Blob", url,
       controller.close();
     }})
   });
+testUploadFailure('Fetch with POST with ReadableStream on 421.',
+  RESOURCES_DIR + 'status.py?code=421', 'POST',
+  () => {
+    return new ReadableStream({start: controller => {
+      const encoder = new TextEncoder();
+      controller.enqueue(encoder.encode('Test'));
+      controller.close();
+    }})
+  });

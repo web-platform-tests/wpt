@@ -633,7 +633,7 @@ class MarionetteDebugProtocolPart(DebugProtocolPart):
 
     def load_devtools(self):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
-                self.parent.base.execute_script("""
+            self.parent.base.execute_script("""
 const { require } = ChromeUtils.import("resource://devtools/shared/Loader.jsm");
 const { TargetFactory } = require("devtools/client/framework/target");
 const { gDevTools } = require("devtools/client/framework/devtools");

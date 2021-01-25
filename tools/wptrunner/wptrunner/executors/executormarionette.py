@@ -642,7 +642,7 @@ const callback = arguments[arguments.length - 1];
 
 async function loadDevTools() {
     const target = await TargetFactory.forTab(window.gBrowser.selectedTab);
-    await gDevTools.showToolbox(target, "webconsole", "bottom");
+    await gDevTools.showToolbox(target, "webconsole", "window");
 }
 
 loadDevTools().catch(() => dump("Devtools failed to load"))

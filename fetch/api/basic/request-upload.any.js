@@ -1,5 +1,7 @@
 // META: global=window,worker
 // META: script=../resources/utils.js
+// META: script=/common/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function testUpload(desc, url, method, createBody, expectedBody) {
   const requestInit = {"method": method}
@@ -123,3 +125,27 @@ testUploadFailure("Fetch with POST with ReadableStream containing Blob", url,
       controller.close();
     }})
   });
+
+promise_test(async (test) => {
+  const resp = await fetch(
+    "/fetch/connection-pool/resources/network-partition-key.py?"
+    + `status=421&uuid=${token()}&partition_id=${get_host_info().ORIGIN}`
+    + `&dispatch=check_partition&addcounter=true`,
+    {method: "POST", body: "foobar"});
+  assert_equals(resp.status, 421);
+  const text = await resp.text();
+  assert_equals(text, "ok21");
+}, "Fetch with POST with text body on 421 response should be retried once on new connection.");
+
+promise_test(t => {
+  const body = new ReadableStream({start: controller => {
+    const encoder = new TextEncoder();
+    controller.enqueue(encoder.encode("Test"));
+    controller.close();
+  }});
+  return promise_rejects_js(t, TypeError, fetch(
+    "/fetch/connection-pool/resources/network-partition-key.py?"
+    + `status=42&uuid=${token()}&partition_id=${get_host_info().ORIGIN}`
+    + `&dispatch=check_partition`,
+    {method: "POST", body: body}));
+}, "Fetch with POST with ReadableStream on 421 response should be rejected.");

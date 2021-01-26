@@ -155,6 +155,12 @@ function handleIsHistoryNavigation(event) {
   event.respondWith(new Response(body));
 }
 
+function useAndIgnore(event) {
+  const request = event.request;
+  request.text();
+  return;
+}
+
 self.addEventListener('fetch', function(event) {
     var url = event.request.url;
     var handlers = [
@@ -180,6 +186,7 @@ self.addEventListener('fetch', function(event) {
       { pattern: '?keepalive', fn: handleKeepalive },
       { pattern: '?isReloadNavigation', fn: handleIsReloadNavigation },
       { pattern: '?isHistoryNavigation', fn: handleIsHistoryNavigation },
+      { pattern: '?use-and-ignore', fn: useAndIgnore },
     ];
 
     var handler = null;

@@ -1,4 +1,5 @@
 version: 1
+reporting: checks-v1
 policy:
   pullRequests: public
 tasks:
@@ -6,13 +7,13 @@ tasks:
     run_task:
       $if: 'tasks_for == "github-push"'
       then:
-        $if: 'event.ref in ["refs/heads/master", "refs/heads/epochs/daily", "refs/heads/epochs/weekly", "refs/heads/triggers/chrome_stable", "refs/heads/triggers/chrome_beta", "refs/heads/triggers/chrome_dev", "refs/heads/triggers/firefox_stable", "refs/heads/triggers/firefox_beta", "refs/heads/triggers/firefox_nightly", "refs/heads/triggers/webkitgtk_minibrowser_stable", "refs/heads/triggers/webkitgtk_minibrowser_nightly", "refs/heads/triggers/servo_nightly"]'
+        $if: 'event.ref in ["refs/heads/master", "refs/heads/epochs/daily", "refs/heads/epochs/weekly", "refs/heads/triggers/chrome_stable", "refs/heads/triggers/chrome_beta", "refs/heads/triggers/chrome_dev", "refs/heads/triggers/chrome_nightly", "refs/heads/triggers/firefox_stable", "refs/heads/triggers/firefox_beta", "refs/heads/triggers/firefox_nightly", "refs/heads/triggers/webkitgtk_minibrowser_stable", "refs/heads/triggers/webkitgtk_minibrowser_beta", "refs/heads/triggers/webkitgtk_minibrowser_nightly", "refs/heads/triggers/servo_nightly"]'
         then: true
         else: false
       else:
         $if: 'tasks_for == "github-pull-request"'
         then:
-          $if: 'event.action in ["opened", "reopened", "synchronize", "ready_for_review"]  && !(event.pull_request.draft)'
+          $if: 'event.action in ["opened", "reopened", "synchronize"]'
           then: true
           else: false
         else: false
@@ -56,7 +57,7 @@ tasks:
             owner: ${owner}
             source: ${event.repository.clone_url}
           payload:
-            image: harjgam/web-platform-tests:0.33
+            image: webplatformtests/wpt:0.46
             maxRunTime: 7200
             artifacts:
               public/results:

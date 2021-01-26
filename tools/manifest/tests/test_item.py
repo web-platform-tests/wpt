@@ -47,6 +47,37 @@ def test_url_not_https(path):
     assert m.https is False
 
 
+@pytest.mark.parametrize("path", [
+    "a.www.c",
+    "a.b.www.c",
+    "a.www.b.c",
+    "a.b.www.c.d",
+    "a.https.www.c",
+    "a.b.https.www.c",
+    "a.https.www.b.c",
+    "a.b.https.www.c.d",
+])
+def test_url_subdomain(path):
+    m = HarnessTest("/foo", "bar/" + path, "/", "bar/" + path)
+
+    assert m.subdomain is True
+
+
+@pytest.mark.parametrize("path", [
+    "www",
+    "a.www",
+    "a.b.www",
+    "www.a",
+    "www.a.b",
+    "a.bwwww.c",
+    "a.wwwwb.c",
+])
+def test_url_not_subdomain(path):
+    m = HarnessTest("/foo", "bar/" + path, "/", "bar/" + path)
+
+    assert m.subdomain is False
+
+
 @pytest.mark.parametrize("fuzzy", [
     {('/foo/test.html', u'/foo/ref.html', '=='): [[1, 1], [200, 200]]},
     {('/foo/test.html', u'/foo/ref.html', '=='): [[0, 1], [100, 200]]},
@@ -103,3 +134,25 @@ def test_item_types():
     for key, value in item_types.items():
         assert isinstance(key, str)
         assert not inspect.isabstract(value)
+
+
+def test_wpt_flags():
+    m1 = HarnessTest("/foo", "bar", "/", "bar" + "?wpt_flags=www")
+    assert m1.subdomain is True
+    assert m1.https is False
+    assert m1.h2 is False
+
+    m2 = HarnessTest("/foo", "bar", "/", "bar" + "?wpt_flags=https")
+    assert m2.subdomain is False
+    assert m2.https is True
+    assert m2.h2 is False
+
+    m3 = HarnessTest("/foo", "bar", "/", "bar" + "?wpt_flags=h2")
+    assert m3.subdomain is False
+    assert m3.https is False
+    assert m3.h2 is True
+
+    m4 = HarnessTest("/foo", "bar", "/", "bar" + "?wpt_flags=https&wpt_flags=www")
+    assert m4.subdomain is True
+    assert m4.https is True
+    assert m4.h2 is False

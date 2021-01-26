@@ -50,19 +50,41 @@
     assert_throws_js(TypeError, () => {
       new Request('https://example.com', {
         trustToken: {
-          type: "send-srr",
-          issuer: "not a valid URL"
+          type: "send-redemption-record",
+          issuers: []
         }
       });
     });
-  }, 'Trust Tokens fetches require valid issuer URLs, if provided.');
+  }, 'Trust Tokens signing operations require at least one issuer URL');
 
   test(() => {
     assert_throws_js(TypeError, () => {
       new Request('https://example.com', {
         trustToken: {
-          type: "send-srr",
-          issuer: "http://not-secure.com"
+          type: "send-redemption-record",
+          issuers: [3]
+        }
+      });
+    });
+  }, 'Trust Tokens signing operations require string issuer URLs, if provided.');
+
+  test(() => {
+    assert_throws_js(TypeError, () => {
+      new Request('https://example.com', {
+        trustToken: {
+          type: "send-redemption-record",
+          issuers: ["not a valid URL"]
+        }
+      });
+    });
+  }, 'Trust Tokens signing operations require valid issuer URLs, if provided.');
+
+  test(() => {
+    assert_throws_js(TypeError, () => {
+      new Request('https://example.com', {
+        trustToken: {
+          type: "send-redemption-record",
+          issuers: ["http://not-secure.com"]
         }
       });
     });
@@ -71,8 +93,8 @@
   test(() => {
     new Request('https://example.com', {
       trustToken: {
-        type: "send-srr",
-        issuer: "http://localhost"
+        type: "send-redemption-record",
+        issuers: ["http://localhost"]
       }
     });
   }, 'Since localhost URLs are potentially trustworthy, setting an issuer to localhost should succeed.');

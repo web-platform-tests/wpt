@@ -337,6 +337,33 @@ def test_multiple_testharnessreport():
             ]
 
 
+def test_early_testdriver_vendor():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("EARLY-TESTDRIVER-VENDOR",
+                    "Test file has an instance of "
+                    "`<script src='/resources/testdriver-vendor.js'>` "
+                    "prior to `<script src='/resources/testdriver.js'>`",
+                    filename,
+                    None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
 def test_multiple_testdriver():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -796,6 +823,20 @@ def test_css_missing_file_manual():
     ]
 
 
+def test_css_missing_file_tentative():
+    code = b"""\
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</html>
+"""
+
+    # The tentative flag covers tests that make assertions 'not yet required by
+    # any specification', so they need not have a specification link.
+    errors = check_file_contents("", "css/foo/bar.tentative.html", six.BytesIO(code))
+    assert not errors
+
+
 @pytest.mark.parametrize("filename", [
     "foo.worker.js",
     "foo.any.js",
@@ -844,17 +885,17 @@ def test_script_metadata(filename, input, error):
 
 @pytest.mark.parametrize("globals,error", [
     (b"", None),
-    (b"default", None),
-    (b"!default", None),
+    (b"default", "UNKNOWN-GLOBAL-METADATA"),
+    (b"!default", "UNKNOWN-GLOBAL-METADATA"),
     (b"window", None),
-    (b"!window", None),
-    (b"!dedicatedworker", None),
-    (b"window, !window", "BROKEN-GLOBAL-METADATA"),
-    (b"!serviceworker", "BROKEN-GLOBAL-METADATA"),
-    (b"serviceworker, !serviceworker", "BROKEN-GLOBAL-METADATA"),
-    (b"worker, !dedicatedworker", None),
-    (b"worker, !serviceworker", None),
-    (b"!worker", None),
+    (b"!window", "UNKNOWN-GLOBAL-METADATA"),
+    (b"!dedicatedworker", "UNKNOWN-GLOBAL-METADATA"),
+    (b"window, !window", "UNKNOWN-GLOBAL-METADATA"),
+    (b"!serviceworker", "UNKNOWN-GLOBAL-METADATA"),
+    (b"serviceworker, !serviceworker", "UNKNOWN-GLOBAL-METADATA"),
+    (b"worker, !dedicatedworker", "UNKNOWN-GLOBAL-METADATA"),
+    (b"worker, !serviceworker", "UNKNOWN-GLOBAL-METADATA"),
+    (b"!worker", "UNKNOWN-GLOBAL-METADATA"),
     (b"foo", "UNKNOWN-GLOBAL-METADATA"),
     (b"!foo", "UNKNOWN-GLOBAL-METADATA"),
 ])

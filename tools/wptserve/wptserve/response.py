@@ -1,18 +1,21 @@
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from six.moves.http_cookies import BaseCookie, Morsel
+from io import BytesIO
 import json
-import uuid
 import socket
+import uuid
+
+from hpack.struct import HeaderTuple
+from hyperframe.frame import HeadersFrame, DataFrame, ContinuationFrame
+from six import binary_type, text_type, integer_types, itervalues, PY3
+from six.moves.http_cookies import BaseCookie, Morsel
+
 from .constants import response_codes, h2_headers
 from .logger import get_logger
-from io import BytesIO
-
-from six import binary_type, text_type, integer_types, itervalues, PY3
-from hyperframe.frame import HeadersFrame, DataFrame, ContinuationFrame
-from hpack.struct import HeaderTuple
+from .utils import isomorphic_decode, isomorphic_encode
 
 missing = object()
+
 
 class Response(object):
     """Object representing the response to a HTTP request
@@ -38,19 +41,15 @@ class Response(object):
        Boolean, default False, indicating whether the body content should be
        sent when the request method is HEAD.
 
-    .. attribute:: explicit_flush
-
-       Boolean indicating whether output should be flushed automatically or only
-       when requested.
-
     .. attribute:: writer
 
        The ResponseWriter for this response
 
     .. attribute:: status
 
-       Status tuple (code, message). Can be set to an integer, in which case the
-       message part is filled in automatically, or a tuple.
+       Status tuple (code, message). Can be set to an integer in which case the
+       message part is filled in automatically, or a tuple (code, message) in
+       which case code is an int and message is a text or binary string.
 
     .. attribute:: headers
 
@@ -69,7 +68,6 @@ class Response(object):
 
         self.add_required_headers = True
         self.send_body_for_head_request = False
-        self.explicit_flush = False
         self.close_connection = False
 
         self.logger = get_logger()
@@ -78,7 +76,6 @@ class Response(object):
         self._status = (200, None)
         self.headers = ResponseHeaders()
         self.content = []
-
 
     @property
     def status(self):
@@ -90,7 +87,13 @@ class Response(object):
             if len(value) != 2:
                 raise ValueError
             else:
-                self._status = (int(value[0]), str(value[1]))
+                code = int(value[0])
+                message = value[1]
+                # Only call str() if message is not a string type, so that we
+                # don't get `str(b"foo") == "b'foo'"` in Python 3.
+                if not isinstance(message, (binary_type, text_type)):
+                    message = str(message)
+                self._status = (code, message)
         else:
             self._status = (int(value), None)
 
@@ -99,8 +102,8 @@ class Response(object):
         """Set a cookie to be sent with a Set-Cookie header in the
         response
 
-        :param name: String name of the cookie
-        :param value: String value of the cookie
+        :param name: name of the cookie (a binary string)
+        :param value: value of the cookie (a binary string, or None)
         :param max_age: datetime.timedelta int representing the time (in seconds)
                         until the cookie expires
         :param path: String path to which the cookie applies
@@ -113,14 +116,20 @@ class Response(object):
                         time or interval from now when the cookie expires
 
         """
+        # TODO(Python 3): Convert other parameters (e.g. path) to bytes, too.
+        if value is None:
+            value = b''
+            max_age = 0
+            expires = timedelta(days=-1)
+
+        if PY3:
+            name = isomorphic_decode(name)
+            value = isomorphic_decode(value)
+
         days = {i+1: name for i, name in enumerate(["jan", "feb", "mar",
                                                     "apr", "may", "jun",
                                                     "jul", "aug", "sep",
                                                     "oct", "nov", "dec"])}
-        if value is None:
-            value = ''
-            max_age = 0
-            expires = timedelta(days=-1)
 
         if isinstance(expires, timedelta):
             expires = datetime.utcnow() + expires
@@ -154,11 +163,14 @@ class Response(object):
 
     def unset_cookie(self, name):
         """Remove a cookie from those that are being sent with the response"""
+        if PY3:
+            name = isomorphic_decode(name)
         cookies = self.headers.get("Set-Cookie")
         parser = BaseCookie()
         for cookie in cookies:
             if PY3:
-                cookie = cookie.decode("iso-8859-1")
+                # BaseCookie.load expects a text string.
+                cookie = isomorphic_decode(cookie)
             parser.load(cookie)
 
         if name in parser.keys():
@@ -223,9 +235,12 @@ class Response(object):
         self.write_status_headers()
         self.write_content()
 
-    def set_error(self, code, message=""):
-        """Set the response status headers and body to indicate an
-        error"""
+    def set_error(self, code, message=u""):
+        """Set the response status headers and return a JSON error object:
+
+        {"error": {"code": code, "message": message}}
+        code is an int (HTTP status code), and message is a text string.
+        """
         err = {"code": code,
                "message": message}
         data = json.dumps({"error": err})
@@ -297,24 +312,10 @@ class MultipartPart(object):
 
 
 def _maybe_encode(s):
-    """Encodes a text-type string into binary data using iso-8859-1.
-
-    Returns `str` in Python 2 and `bytes` in Python 3. The function is a no-op
-    if the argument already has a binary type.
-    """
-    if isinstance(s, binary_type):
-        return s
-
-    # Python 3 assumes iso-8859-1 when parsing headers, which will garble text
-    # with non ASCII characters. We try to encode the text back to binary.
-    # https://github.com/python/cpython/blob/273fc220b25933e443c82af6888eb1871d032fb8/Lib/http/client.py#L213
-    if isinstance(s, text_type):
-        return s.encode("iso-8859-1")
-
+    """Encode a string or an int into binary data using isomorphic_encode()."""
     if isinstance(s, integer_types):
         return b"%i" % (s,)
-
-    raise TypeError("Unexpected value in ResponseHeaders: %r" % s)
+    return isomorphic_encode(s)
 
 
 class ResponseHeaders(object):
@@ -406,9 +407,9 @@ class H2Response(Response):
             item = None
             item_iter = self.iter_content()
             try:
-                item = item_iter.next()
+                item = next(item_iter)
                 while True:
-                    check_last = item_iter.next()
+                    check_last = next(item_iter)
                     self.writer.write_data(item, last=False)
                     item = check_last
             except StopIteration:
@@ -444,6 +445,13 @@ class H2ResponseWriter(object):
         secondary_headers = []  # Non ':' prefixed headers are to be added afterwards
 
         for header, value in headers:
+            # h2_headers are native strings
+            # header field names are strings of ASCII
+            if isinstance(header, binary_type):
+                header = header.decode('ascii')
+            # value in headers can be either string or integer
+            if isinstance(value, binary_type):
+                value = self.decode(value)
             if header in h2_headers:
                 header = ':' + header
                 formatted_headers.append((header, str(value)))
@@ -628,6 +636,15 @@ class H2ResponseWriter(object):
         self.content_written = True
         self.socket.sendall(raw_data)
 
+    def decode(self, data):
+        """Convert bytes to unicode according to response.encoding."""
+        if isinstance(data, binary_type):
+            return data.decode(self._response.encoding)
+        elif isinstance(data, text_type):
+            return data
+        else:
+            raise ValueError(type(data))
+
     def encode(self, data):
         """Convert unicode to bytes according to response.encoding."""
         if isinstance(data, binary_type):
@@ -642,11 +659,7 @@ class ResponseWriter(object):
     """Object providing an API to write out a HTTP response.
 
     :param handler: The RequestHandler being used.
-    :param response: The Response associated with this writer.
-
-    After each part of the response is written, the output is
-    flushed unless response.explicit_flush is False, in which case
-    the user must call .flush() explicitly."""
+    :param response: The Response associated with this writer."""
     def __init__(self, handler, response):
         self._wfile = handler.wfile
         self._response = response
@@ -673,8 +686,8 @@ class ResponseWriter(object):
                 message = response_codes[code][0]
             else:
                 message = ''
-        self.write("%s %d %s\r\n" %
-                   (self._response.request.protocol_version, code, message))
+        self.write(b"%s %d %s\r\n" %
+                   (isomorphic_encode(self._response.request.protocol_version), code, isomorphic_encode(message)))
         self._status_written = True
 
     def write_header(self, name, value):
@@ -684,58 +697,71 @@ class ResponseWriter(object):
 
         :param name: Name of the header field
         :param value: Value of the header field
+        :return: A boolean indicating whether the write succeeds
         """
         if not self._status_written:
             self.write_status(self.default_status)
         self._headers_seen.add(self.encode(name.lower()))
-        self.write(name)
-        self.write(b": ")
+        if not self.write(name):
+            return False
+        if not self.write(b": "):
+            return False
         if isinstance(value, int):
-            self.write(text_type(value))
-        else:
-            self.write(value)
-        self.write(b"\r\n")
-        if not self._response.explicit_flush:
-            self.flush()
+            if not self.write(text_type(value)):
+                return False
+        elif not self.write(value):
+            return False
+        return self.write(b"\r\n")
 
     def write_default_headers(self):
         for name, f in [("Server", self._handler.version_string),
                         ("Date", self._handler.date_time_string)]:
             if not self._seen_header(name):
-                self.write_header(name, f())
+                if not self.write_header(name, f()):
+                    return False
 
         if (isinstance(self._response.content, (binary_type, text_type)) and
             not self._seen_header("content-length")):
             #Would be nice to avoid double-encoding here
-            self.write_header("Content-Length", len(self.encode(self._response.content)))
+            if not self.write_header("Content-Length", len(self.encode(self._response.content))):
+                return False
+
+        return True
 
     def end_headers(self):
         """Finish writing headers and write the separator.
 
         Unless add_required_headers on the response is False,
         this will also add HTTP-mandated headers that have not yet been supplied
-        to the response headers"""
+        to the response headers.
+        :return: A boolean indicating whether the write succeeds
+        """
 
         if self._response.add_required_headers:
-            self.write_default_headers()
+            if not self.write_default_headers():
+                return False
 
-        self.write("\r\n")
+        if not self.write("\r\n"):
+            return False
         if not self._seen_header("content-length"):
             self._response.close_connection = True
-        if not self._response.explicit_flush:
-            self.flush()
         self._headers_complete = True
+
+        return True
 
     def write_content(self, data):
         """Write the body of the response.
 
-        HTTP-mandated headers will be automatically added with status default to 200 if they have not been explicitly set."""
+        HTTP-mandated headers will be automatically added with status default to 200 if they have
+        not been explicitly set.
+        :return: A boolean indicating whether the write succeeds
+        """
         if not self._status_written:
             self.write_status(self.default_status)
         if not self._headers_complete:
             self._response.content = data
             self.end_headers()
-        self.write_raw_content(data)
+        return self.write_raw_content(data)
 
     def write_raw_content(self, data):
         """Writes the data 'as is'"""
@@ -743,35 +769,39 @@ class ResponseWriter(object):
             raise ValueError('data cannot be None')
         if isinstance(data, (text_type, binary_type)):
             # Deliberately allows both text and binary types. See `self.encode`.
-            self.write(data)
+            return self.write(data)
         else:
-            self.write_content_file(data)
-        if not self._response.explicit_flush:
-            self.flush()
+            return self.write_content_file(data)
 
     def write(self, data):
         """Write directly to the response, converting unicode to bytes
-        according to response.encoding. Does not flush."""
+        according to response.encoding.
+        :return: A boolean indicating whether the write succeeds
+        """
         self.content_written = True
         try:
             self._wfile.write(self.encode(data))
+            return True
         except socket.error:
             # This can happen if the socket got closed by the remote end
-            pass
+            return False
 
     def write_content_file(self, data):
-        """Write a file-like object directly to the response in chunks.
-        Does not flush."""
+        """Write a file-like object directly to the response in chunks."""
         self.content_written = True
+        success = True
         while True:
             buf = data.read(self.file_chunk_size)
             if not buf:
+                success = False
                 break
             try:
                 self._wfile.write(buf)
             except socket.error:
+                success = False
                 break
         data.close()
+        return success
 
     def encode(self, data):
         """Convert unicode to bytes according to response.encoding."""
@@ -781,13 +811,3 @@ class ResponseWriter(object):
             return data.encode(self._response.encoding)
         else:
             raise ValueError("data %r should be text or binary, but is %s" % (data, type(data)))
-
-    def flush(self):
-        """Flush the output. Returns False if the flush failed due to
-        the socket being closed by the remote end."""
-        try:
-            self._wfile.flush()
-            return True
-        except socket.error:
-            # This can happen if the socket got closed by the remote end
-            return False

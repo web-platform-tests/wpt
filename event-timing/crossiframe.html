@@ -24,7 +24,7 @@
   function validateEntries(entries) {
     assert_equals(entries.length, 1, "Only 1 entry should be received");
     const entry = entries[0];
-    verifyClickEvent(entry, true);
+    verifyClickEvent(entry, 'button', true);
 
     assert_less_than(entry.processingStart, clickDone,
         "The entry's processing start should be before clickDone.");
@@ -38,37 +38,46 @@
     }
     // |childFrameData| has properties with the same names as its
     // PerformanceEventTiming counterpart.
-    verifyClickEvent(childFrameData);
+    verifyClickEvent(childFrameData, null);
+    assert_equals(childFrameData.target, 'iframe_div');
 
     assert_less_than(childFrameData.processingStart, childFrameData.clickDone,
         "The entry's processing start should be before than the child frame's clickDone.");
-    assert_greater_than(childFrameData.startTime, childFrameData.clickTimeMin,
-        "The entry's start time should be later than the child frame's \
-        clickTimeMin.");
   }
 
   promise_test(async t => {
-    assert_precondition(window.PerformanceEventTiming, "Event Timing is not supported");
+    assert_implements(window.PerformanceEventTiming, "Event Timing is not supported");
+    // Wait for load event so we can interact with the iframe.
+    await new Promise(resolve => {
+      window.addEventListener('load', resolve);
+    });
     clickTimeMin = performance.now();
-    let observedEntries = false;
+    let observedMouseDown = false;
     const observerPromise = new Promise(resolve => {
       new PerformanceObserver(t.step_func(entries => {
-        assert_false(observedEntries,
+        const mouseDowns = entries.getEntriesByName('mousedown');
+        // Ignore the callback if there were no mousedown entries.
+        if (mouseDowns.length === 0)
+          return;
+
+        assert_false(observedMouseDown,
             "Observer of main frames should only capture main-frame event-timing entries");
-        validateEntries(entries.getEntriesByName('mousedown'));
-        observedEntries = true;
+        validateEntries(mouseDowns);
+        observedMouseDown = true;
         resolve();
       })).observe({type: 'event'});
     });
-    await clickAndBlockMain('button');
-    clickDone = performance.now();
-    await observerPromise;
+    clickAndBlockMain('button').then(() => {
+      clickDone = performance.now();
+    });
     const childFrameEntriesPromise = new Promise(resolve => {
       window.addEventListener("message", (event) => {
-        resolve(event.data);
+        t.step(() => {
+          validateChildFrameEntries(event.data);
+        });
+        resolve();
       }, false);
     });
-
     let iframe = document.getElementById('iframe');
     const iframeX = document.getElementById('iframe').offsetLeft;
     const iframeY = document.getElementById('iframe').offsetTop;
@@ -78,10 +87,7 @@
         .pointerDown()
         .pointerUp()
     actions.send();
-    const childFrameData = await childFrameEntriesPromise;
-    t.step(() => {
-      validateChildFrameEntries(childFrameData);
-    });
+    return Promise.all([observerPromise, childFrameEntriesPromise]);
   }, "Event Timing: entries should only be observable by its own frame.");
 
 </script>

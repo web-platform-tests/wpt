@@ -1,10 +1,14 @@
 import base64
 import json
 import os
-import uuid
+import six
 import threading
+import uuid
+
 from multiprocessing.managers import AcquirerProxy, BaseManager, DictProxy
-from six import text_type
+from six import text_type, binary_type
+
+from .utils import isomorphic_encode
 
 
 class ServerDictManager(BaseManager):
@@ -30,13 +34,16 @@ ClientDictManager.register("Lock")
 
 
 class StashServer(object):
-    def __init__(self, address=None, authkey=None):
+    def __init__(self, address=None, authkey=None, mp_context=None):
         self.address = address
         self.authkey = authkey
         self.manager = None
+        self.mp_context = mp_context
 
     def __enter__(self):
-        self.manager, self.address, self.authkey = start_server(self.address, self.authkey)
+        self.manager, self.address, self.authkey = start_server(self.address,
+                                                                self.authkey,
+                                                                self.mp_context)
         store_env_config(self.address, self.authkey)
 
     def __exit__(self, *args, **kwargs):
@@ -59,13 +66,19 @@ def store_env_config(address, authkey):
     os.environ["WPT_STASH_CONFIG"] = json.dumps((address, authkey.decode("ascii")))
 
 
-def start_server(address=None, authkey=None):
+def start_server(address=None, authkey=None, mp_context=None):
     if isinstance(authkey, text_type):
         authkey = authkey.encode("ascii")
-    manager = ServerDictManager(address, authkey)
+    kwargs = {}
+    if six.PY3 and mp_context is not None:
+        kwargs["ctx"] = mp_context
+    manager = ServerDictManager(address, authkey, **kwargs)
     manager.start()
 
-    return (manager, manager._address, manager._authkey)
+    address = manager._address
+    if isinstance(address, bytes):
+        address = address.decode("ascii")
+    return (manager, address, manager._authkey)
 
 
 class LockWrapper(object):
@@ -145,9 +158,12 @@ class Stash(object):
         if path is None:
             path = self.default_path
         # This key format is required to support using the path. Since the data
-        # passed into the stash can be a DictProxy which wouldn't detect changes
-        # when writing to a subdict.
-        return (str(path), str(uuid.UUID(key)))
+        # passed into the stash can be a DictProxy which wouldn't detect
+        # changes when writing to a subdict.
+        if isinstance(key, binary_type):
+            # UUIDs are within the ASCII charset.
+            key = key.decode('ascii')
+        return (isomorphic_encode(path), uuid.UUID(key).bytes)
 
     def put(self, key, value, path=None):
         """Place a value in the shared stash.
@@ -162,7 +178,7 @@ class Stash(object):
         if internal_key in self.data:
             raise StashError("Tried to overwrite existing shared stash value "
                              "for key %s (old value was %s, new value is %s)" %
-                             (internal_key, self.data[str(internal_key)], value))
+                             (internal_key, self.data[internal_key], value))
         else:
             self.data[internal_key] = value
 

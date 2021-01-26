@@ -39,6 +39,8 @@ const fakeDeviceInitParams = {
   views: VALID_VIEWS,
   viewerOrigin: IDENTITY_TRANSFORM,
   supportedFeatures: ALL_FEATURES,
+  environmentBlendMode: "alpha-blend",
+  interactionMode: "screen-space"
 };
 
 let testBasicProperties = function(overlayElement, session, fakeDeviceController, t) {
@@ -53,7 +55,7 @@ let testBasicProperties = function(overlayElement, session, fakeDeviceController
                   ["screen", "floating", "head-locked"]);
 
   // Verify SameObject property for domOverlayState
-  assert_true(session.domOverlayState === session.domOverlayState);
+  assert_equals(session.domOverlayState, session.domOverlayState);
 
   // The overlay element should have a transparent background.
   assert_equals(window.getComputedStyle(overlayElement).backgroundColor,
@@ -69,43 +71,36 @@ let testBasicProperties = function(overlayElement, session, fakeDeviceController
   });
 };
 
-let testFullscreen = function(overlayElement, session, fakeDeviceController, t) {
+let testFullscreen = async function(overlayElement, session, fakeDeviceController, t) {
   // If the browser implements DOM Overlay using Fullscreen API,
   // it must not be possible to change the DOM Overlay element by using
   // Fullscreen API, and attempts to do so must be rejected.
   // Since this is up to the UA, this test also passes if the fullscreen
   // element is different from the overlay element.
 
-  let rafPromise = new Promise((resolve) => {
-    session.requestAnimationFrame((time, xrFrame) => {
-      resolve();
-    });
-  });
-  let promises = [rafPromise];
+  // Wait for a rAF call before proceeding.
+  await new Promise((resolve) => session.requestAnimationFrame(resolve));
 
-  if (document.fullscreenElement == overlayElement) {
-    let elem = document.getElementById('div_other');
-    assert_true(elem != null);
-    assert_not_equals(elem, overlayElement);
+  assert_implements_optional(document.fullscreenElement == overlayElement,
+                             "WebXR DOM overlay is not using Fullscreen API");
+  let elem = document.getElementById('div_other');
+  assert_not_equals(elem, null);
+  assert_not_equals(elem, overlayElement);
 
-    let fullscreenPromise = new Promise((resolve, reject) => {
-      elem.requestFullscreen().then(() => {
-        assert_unreached("fullscreen change should be blocked");
-        reject();
-      }).catch(() => {
-        resolve();
-      });
-    });
-    promises.push(fullscreenPromise);
+  try {
+    await elem.requestFullscreen();
+    assert_unreached("fullscreen change should be blocked");
+  } catch {
+    // pass if the call rejects
   }
-
-  return Promise.all(promises);
+  // This is an async function, its return value is automatically a promise.
 };
 
 let watcherStep = new Event("watcherstep");
 let watcherDone = new Event("watcherdone");
 
 let testInput = function(overlayElement, session, fakeDeviceController, t) {
+  let debug = xr_debug.bind(this, 'testInput');
 
   // Use two DIVs for this test. "inner_a" uses a "beforexrselect" handler
   // that uses preventDefault(). Controller interactions with it should trigger
@@ -135,30 +130,38 @@ let testInput = function(overlayElement, session, fakeDeviceController, t) {
       fakeDeviceController.simulateInputSourceConnection(SCREEN_CONTROLLER);
   session.requestReferenceSpace('viewer').then(function(viewerSpace) {
     // Press the primary input button and then release it a short time later.
-    session.requestAnimationFrame((time, xrFrame) => {
+    debug('got viewerSpace');
+    requestSkipAnimationFrame(session, (time, xrFrame) => {
+      debug('got rAF 1');
       input_source.setOverlayPointerPosition(inner_a.offsetLeft + 1,
                                              inner_a.offsetTop + 1);
       input_source.startSelection();
 
       session.requestAnimationFrame((time, xrFrame) => {
+        debug('got rAF 2');
         input_source.endSelection();
 
         session.requestAnimationFrame((time, xrFrame) => {
+          debug('got rAF 3');
           // Need to process one more frame to allow select to propagate.
           session.requestAnimationFrame((time, xrFrame) => {
+            debug('got rAF 4');
             session.dispatchEvent(watcherStep);
 
             assert_true(got_beforexrselect);
 
             session.requestAnimationFrame((time, xrFrame) => {
+              debug('got rAF 5');
               input_source.setOverlayPointerPosition(inner_b.offsetLeft + 1,
                                                      inner_b.offsetTop + 1);
               input_source.startSelection();
 
               session.requestAnimationFrame((time, xrFrame) => {
+                debug('got rAF 6');
                 input_source.endSelection();
 
                 session.requestAnimationFrame((time, xrFrame) => {
+                  debug('got rAF 7');
                   // Need to process one more frame to allow select to propagate.
                   session.dispatchEvent(watcherDone);
                 });
@@ -173,6 +176,8 @@ let testInput = function(overlayElement, session, fakeDeviceController, t) {
 };
 
 let testCrossOriginContent = function(overlayElement, session, fakeDeviceController, t) {
+  let debug = xr_debug.bind(this, 'testCrossOriginContent');
+
   let iframe = document.getElementById('iframe');
   assert_true(iframe != null);
   let inner_b = document.getElementById('inner_b');
@@ -191,28 +196,35 @@ let testCrossOriginContent = function(overlayElement, session, fakeDeviceControl
       fakeDeviceController.simulateInputSourceConnection(SCREEN_CONTROLLER);
   session.requestReferenceSpace('viewer').then(function(viewerSpace) {
     // Press the primary input button and then release it a short time later.
-    session.requestAnimationFrame((time, xrFrame) => {
+    requestSkipAnimationFrame(session, (time, xrFrame) => {
+      debug('got rAF 1');
       input_source.setOverlayPointerPosition(iframe.offsetLeft + 1,
                                              iframe.offsetTop + 1);
       input_source.startSelection();
 
       session.requestAnimationFrame((time, xrFrame) => {
+        debug('got rAF 2');
         input_source.endSelection();
 
         session.requestAnimationFrame((time, xrFrame) => {
+          debug('got rAF 3');
           // Need to process one more frame to allow select to propagate.
           session.requestAnimationFrame((time, xrFrame) => {
+            debug('got rAF 4');
             session.dispatchEvent(watcherStep);
 
             session.requestAnimationFrame((time, xrFrame) => {
+              debug('got rAF 5');
               input_source.setOverlayPointerPosition(inner_b.offsetLeft + 1,
                                                      inner_b.offsetTop + 1);
               input_source.startSelection();
 
               session.requestAnimationFrame((time, xrFrame) => {
+                debug('got rAF 6');
                 input_source.endSelection();
 
                 session.requestAnimationFrame((time, xrFrame) => {
+                  debug('got rAF 7');
                   // Need to process one more frame to allow select to propagate.
                   session.dispatchEvent(watcherDone);
                 });

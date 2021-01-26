@@ -1,7 +1,7 @@
 import os.path
 from inspect import isabstract
 from six import iteritems, with_metaclass
-from six.moves.urllib.parse import urljoin, urlparse
+from six.moves.urllib.parse import urljoin, urlparse, parse_qs
 from abc import ABCMeta, abstractproperty
 
 from .utils import to_os_path
@@ -21,6 +21,7 @@ if MYPY:
     from typing import Hashable
     from .manifest import Manifest
     Fuzzy = Dict[Optional[Tuple[Text, Text, Text]], List[int]]
+    PageRanges = Dict[Text, List[int]]
 
 item_types = {}  # type: Dict[str, Type[ManifestItem]]
 
@@ -103,7 +104,7 @@ class ManifestItem(with_metaclass(ManifestItemMeta)):
 
 
 class URLManifestItem(ManifestItem):
-    __slots__ = ("url_base", "_url", "_extras")
+    __slots__ = ("url_base", "_url", "_extras", "_flags")
 
     def __init__(self,
                  tests_root,  # type: Text
@@ -119,6 +120,9 @@ class URLManifestItem(ManifestItem):
         assert url is None or url[0] != "/"
         self._url = url
         self._extras = extras
+        parsed_url = urlparse(self.url)
+        self._flags = (set(parsed_url.path.rsplit("/", 1)[1].split(".")[1:-1]) |
+                       set(parse_qs(parsed_url.query).get("wpt_flags", [])))
 
     @property
     def id(self):
@@ -137,14 +141,19 @@ class URLManifestItem(ManifestItem):
     @property
     def https(self):
         # type: () -> bool
-        flags = set(urlparse(self.url).path.rsplit("/", 1)[1].split(".")[1:-1])
-        return "https" in flags or "serviceworker" in flags
+        return "https" in self._flags or "serviceworker" in self._flags
 
     @property
     def h2(self):
         # type: () -> bool
-        flags = set(urlparse(self.url).path.rsplit("/", 1)[1].split(".")[1:-1])
-        return "h2" in flags
+        return "h2" in self._flags
+
+    @property
+    def subdomain(self):
+        # type: () -> bool
+        # Note: this is currently hard-coded to check for `www`, rather than
+        # all possible valid subdomains. It can be extended if needed.
+        return "www" in self._flags
 
     def to_json(self):
         # type: () -> Tuple[Optional[Text], Dict[Any, Any]]
@@ -191,8 +200,13 @@ class TestharnessTest(URLManifestItem):
         return self._extras.get("jsshell")
 
     @property
+    def quic(self):
+        # type: () -> Optional[bool]
+        return self._extras.get("quic")
+
+    @property
     def script_metadata(self):
-        # type: () -> Optional[Text]
+        # type: () -> Optional[List[Tuple[Text, Text]]]
         return self._extras.get("script_metadata")
 
     def to_json(self):
@@ -204,8 +218,10 @@ class TestharnessTest(URLManifestItem):
             rv[-1]["testdriver"] = self.testdriver
         if self.jsshell:
             rv[-1]["jsshell"] = True
+        if self.quic is not None:
+            rv[-1]["quic"] = self.quic
         if self.script_metadata:
-            rv[-1]["script_metadata"] = [(k.decode('utf8'), v.decode('utf8')) for (k,v) in self.script_metadata]
+            rv[-1]["script_metadata"] = [(k, v) for (k,v) in self.script_metadata]
         return rv
 
 
@@ -293,6 +309,23 @@ class RefTest(URLManifestItem):
                    url,
                    references,
                    **extras)
+
+
+class PrintRefTest(RefTest):
+    __slots__ = ("references",)
+
+    item_type = "print-reftest"
+
+    @property
+    def page_ranges(self):
+        # type: () -> PageRanges
+        return self._extras.get("page_ranges", {})
+
+    def to_json(self):  # type: ignore
+        rv = super(PrintRefTest, self).to_json()
+        if self.page_ranges:
+            rv[-1]["page_ranges"] = self.page_ranges
+        return rv
 
 
 class ManualTest(URLManifestItem):

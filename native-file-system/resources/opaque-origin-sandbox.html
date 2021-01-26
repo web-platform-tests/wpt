@@ -3,8 +3,8 @@
   'use strict'
 
   // Sends two messages to its creator:
-  // (1) The result of chooseFileSystemEntries().
-  // (2) The result of FileSystemDirectoryHandle.getSystemDirectory().
+  // (1) The result of showDirectoryPicker().
+  // (2) The result of navigator.storage.getDirectory().
 
   function post_message(data) {
     if (window.parent !== null) {
@@ -16,24 +16,24 @@
   }
 
   try {
-    window.chooseFileSystemEntries({ type: 'open-directory' })
+    window.showDirectoryPicker()
       .then(() => {
-        post_message('chooseFileSystemEntries(): FULFILLED');
+        post_message('showDirectoryPicker(): FULFILLED');
       }).catch(error => {
-        post_message(`chooseFileSystemEntries(): REJECTED: ${error.name}`);
+        post_message(`showDirectoryPicker(): REJECTED: ${error.name}`);
       });
   } catch (error) {
-    post_message(`chooseFileSystemEntries(): EXCEPTION: ${error.name}`);
+    post_message(`showDirectoryPicker(): EXCEPTION: ${error.name}`);
   }
 
   try {
-    window.FileSystemDirectoryHandle.getSystemDirectory({ type: 'sandbox' })
+    navigator.storage.getDirectory()
       .then(() => {
-        post_message('getSystemDirectory(): FULFILLED');
+        post_message('navigator.storage.getDirectory(): FULFILLED');
       }).catch(error => {
-        post_message(`getSystemDirectory(): REJECTED: ${error.name}`);
+        post_message(`navigator.storage.getDirectory(): REJECTED: ${error.name}`);
       });
   } catch (error) {
-    post_message(`getSystemDirectory(): EXCEPTION: ${error.name}`);
+    post_message(`navigator.storage.getDirectory(): EXCEPTION: ${error.name}`);
   }
 </script>

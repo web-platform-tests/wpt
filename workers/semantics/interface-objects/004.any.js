@@ -1,4 +1,4 @@
-// META: global=!default,sharedworker
+// META: global=sharedworker
 
 var unexpected = [
   // https://html.spec.whatwg.org/
@@ -11,7 +11,6 @@ var unexpected = [
   "Audio",
   "HTMLCanvasElement",
   "Path",
-  "TextMetrics",
   "CanvasProxy",
   "CanvasRenderingContext2D",
   "DrawingStyle",
@@ -19,11 +18,6 @@ var unexpected = [
   "HashChangeEvent",
   "PageTransitionEvent",
   // https://streams.spec.whatwg.org/
-  "ReadableStreamDefaultReader",
-  "ReadableStreamBYOBReader",
-  "ReadableStreamDefaultController",
-  "ReadableByteStreamController",
-  "WritableStreamDefaultWriter",
   "WritableStreamDefaultController",
   // http://w3c.github.io/IndexedDB/
   "IDBEnvironment",

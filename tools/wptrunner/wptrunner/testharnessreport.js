@@ -1,11 +1,15 @@
 class MessageQueue {
   constructor() {
+    this.item_id = 0;
     this._queue = [];
   }
 
   push(item) {
+    let cmd_id = this.item_id++;
+    item.id = cmd_id;
     this._queue.push(item);
     __wptrunner_process_next_event();
+    return cmd_id;
   }
 
   shift() {
@@ -69,6 +73,7 @@ window.__wptrunner_process_next_event = function() {
   var props = {output: %(output)d,
                timeout_multiplier: %(timeout_multiplier)s,
                explicit_timeout: %(explicit_timeout)s,
+               debug: %(debug)s,
                message_events: ["completion"]};
 
   add_completion_callback(function(tests, harness_status) {

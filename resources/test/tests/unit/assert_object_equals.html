@@ -3,28 +3,10 @@
 <meta charset="utf-8">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/test/tests/unit/helpers.js"></script>
 <title>Assertion functions</title>
 <script>
 'use strict';
-
-// The `assert_throws_*` functions cannot be used for this
-// purpose because they fail in response to AssertionError exceptions, even
-// when this is expressed as the expected error.
-function test_failure(fn, name) {
-  test(function() {
-    try {
-      fn();
-    } catch (err) {
-      if (err instanceof AssertionError) {
-        return;
-      }
-      throw new AssertionError('Expected an AssertionError, but');
-    }
-    throw new AssertionError(
-      'Expected an AssertionError, but no error was thrown'
-    );
-  }, name);
-}
 
 test(function() {
   assert_object_equals({}, {});
@@ -61,7 +43,7 @@ test(function() {
   var expected = {};
   Object.defineProperty(actual, 'a', { value: 1, enumerable: false });
 
-  assert_true(actual.a !== expected.a);
+  assert_not_equals(actual.a, expected.a);
   assert_object_equals(actual, expected);
 }, 'non-enumerable properties in actual value ignored');
 
@@ -70,7 +52,7 @@ test(function() {
   var expected = {};
   Object.defineProperty(expected, 'a', { value: 1, enumerable: false });
 
-  assert_true(actual.a !== expected.a);
+  assert_not_equals(actual.a, expected.a);
   assert_object_equals(actual, expected);
 }, 'non-enumerable properties in expected value ignored');
 

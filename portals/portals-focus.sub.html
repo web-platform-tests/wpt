@@ -8,7 +8,7 @@
 <body>
 <script>
   async function createPortal(doc, url) {
-    assert_precondition("HTMLPortalElement" in self);
+    assert_implements("HTMLPortalElement" in self);
     let portal = doc.createElement("portal");
     portal.src = url;
     doc.body.appendChild(portal);
@@ -22,7 +22,7 @@
       portal.onmessage = t.step_func(e => {
         assert_unreached("button inside portal should not be focused");
       });
-      portal.postMessage("focus", "*");
+      portal.postMessage("focus");
       await new Promise(r => t.step_timeout(r, 500));
     } finally {
       document.body.removeChild(portal);
@@ -35,7 +35,7 @@
       portal.onmessage = t.step_func(e => {
         assert_unreached("button inside portal should not be focused");
       });
-      portal.postMessage("focus", "*");
+      portal.postMessage("focus");
       await new Promise(r => t.step_timeout(r, 500));
     } finally {
       document.body.removeChild(portal);
@@ -121,7 +121,9 @@
     try {
       portal.focus();
       for (let key of [SPACE, RETURN]) {
-        let clickPromise = new Promise(r => portal.onclick = r);
+        let clickPromise = new Promise((resolve) => {
+          portal.onclick = e => { e.preventDefault(); resolve(); };
+        });
         await test_driver.send_keys(document.body, key);
         await clickPromise;
       }

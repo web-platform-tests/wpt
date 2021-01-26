@@ -1,6 +1,6 @@
 import json
 import os
-import multiprocessing
+
 import signal
 import socket
 import sys
@@ -9,9 +9,10 @@ from six import iteritems
 
 from mozlog import get_default_logger, handlers, proxy
 
+from . import mpcontext
 from .wptlogging import LogLevelRewriter
 
-here = os.path.split(__file__)[0]
+here = os.path.dirname(__file__)
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))
 
 sys.path.insert(0, repo_root)
@@ -53,22 +54,28 @@ class TestEnvironmentError(Exception):
 class TestEnvironment(object):
     """Context manager that owns the test environment i.e. the http and
     websockets servers"""
-    def __init__(self, test_paths, testharness_timeout_multipler, pause_after_test, debug_info, options, ssl_config, env_extras):
+    def __init__(self, test_paths, testharness_timeout_multipler,
+                 pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
+                 enable_quic=False, mojojs_path=None):
         self.test_paths = test_paths
         self.server = None
         self.config_ctx = None
         self.config = None
         self.testharness_timeout_multipler = testharness_timeout_multipler
         self.pause_after_test = pause_after_test
+        self.debug_test = debug_test
         self.test_server_port = options.pop("test_server_port", True)
         self.debug_info = debug_info
         self.options = options if options is not None else {}
 
-        self.cache_manager = multiprocessing.Manager()
-        self.stash = serve.stash.StashServer()
+        mp_context = mpcontext.get_context()
+        self.cache_manager = mp_context.Manager()
+        self.stash = serve.stash.StashServer(mp_context=mp_context)
         self.env_extras = env_extras
         self.env_extras_cms = None
         self.ssl_config = ssl_config
+        self.enable_quic = enable_quic
+        self.mojojs_path = mojojs_path
 
     def __enter__(self):
         self.config_ctx = self.build_config()
@@ -91,7 +98,8 @@ class TestEnvironment(object):
             self.env_extras_cms.append(cm)
 
         self.servers = serve.start(self.config,
-                                   self.get_routes())
+                                   self.get_routes(),
+                                   mp_context=mpcontext.get_context())
 
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
             self.ignore_interrupts()
@@ -123,13 +131,16 @@ class TestEnvironment(object):
 
         config = serve.ConfigBuilder()
 
-        config.ports = {
+        ports = {
             "http": [8000, 8001],
-            "https": [8443],
+            "https": [8443, 8444],
             "ws": [8888],
             "wss": [8889],
             "h2": [9000],
         }
+        if self.enable_quic:
+            ports["quic-transport"] = [10000]
+        config.ports = ports
 
         if os.path.exists(override_path):
             with open(override_path) as f:
@@ -156,15 +167,16 @@ class TestEnvironment(object):
     def setup_server_logging(self):
         server_logger = get_default_logger(component="wptserve")
         assert server_logger is not None
-        log_filter = handlers.LogLevelFilter(lambda x:x, "info")
+        log_filter = handlers.LogLevelFilter(lambda x: x, "info")
         # Downgrade errors to warnings for the server
         log_filter = LogLevelRewriter(log_filter, ["error"], "warning")
         server_logger.component_filter = log_filter
 
-        server_logger = proxy.QueuedProxyLogger(server_logger)
+        server_logger = proxy.QueuedProxyLogger(server_logger,
+                                                mpcontext.get_context())
 
         try:
-            #Set as the default logger for wptserve
+            # Set as the default logger for wptserve
             serve.set_logger(server_logger)
             serve.logger = server_logger
         except Exception:
@@ -176,10 +188,16 @@ class TestEnvironment(object):
 
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),
+                ("print_reftest_runner.html", {}, "text/html", "/print_reftest_runner.html"),
+                (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.js"), None,
+                 "text/javascript", "/_pdf_js/pdf.js"),
+                (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.worker.js"), None,
+                 "text/javascript", "/_pdf_js/pdf.worker.js"),
                 (self.options.get("testharnessreport", "testharnessreport.js"),
                  {"output": self.pause_after_test,
                   "timeout_multiplier": self.testharness_timeout_multipler,
-                  "explicit_timeout": "true" if self.debug_info is not None else "false"},
+                  "explicit_timeout": "true" if self.debug_info is not None else "false",
+                  "debug": "true" if self.debug_test else "false"},
                  "text/javascript;charset=utf8",
                  "/resources/testharnessreport.js")]:
             path = os.path.normpath(os.path.join(here, path))
@@ -204,6 +222,9 @@ class TestEnvironment(object):
 
         if "/" not in self.test_paths:
             del route_builder.mountpoint_routes["/"]
+
+        if self.mojojs_path:
+            route_builder.add_mount_point("/gen/", self.mojojs_path)
 
         return route_builder.get_routes()
 
@@ -233,6 +254,9 @@ class TestEnvironment(object):
 
         if not failed and self.test_server_port:
             for scheme, servers in iteritems(self.servers):
+                # TODO(Hexcles): Find a way to test QUIC's UDP port.
+                if scheme == "quic-transport":
+                    continue
                 for port, server in servers:
                     s = socket.socket()
                     s.settimeout(0.1)

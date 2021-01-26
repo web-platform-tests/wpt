@@ -84,8 +84,7 @@ def request(url, desc, method=None, data=None, json_data=None, params=None, head
     try:
         return resp.json()
     except ValueError:
-        logger.error("%s failed: Returned data was not JSON Response:" %
-                     (desc, resp.status_code))
+        logger.error("%s failed: Returned data was not JSON Response:" % desc)
         logger.error(resp.text)
 
 
@@ -108,6 +107,7 @@ def get_pr(owner, repo, sha):
 
 
 def create_release(manifest_path, owner, repo, sha, tag, body):
+    logger.info("Creating a release for tag='%s', target_commitish='%s'" % (tag, sha))
     create_url = "https://api.github.com/repos/%s/%s/releases" % (owner, repo)
     create_data = {"tag_name": tag,
                    "target_commitish": sha,
@@ -174,7 +174,7 @@ def main():
     owner, repo = os.environ["GITHUB_REPOSITORY"].split("/", 1)
 
     git = get_git_cmd(wpt_root)
-    head_rev = git("rev-parse", "HEAD")
+    head_rev = git("rev-parse", "HEAD").strip()
     body = git("show", "--no-patch", "--format=%B", "HEAD")
 
     if dry_run:

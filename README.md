@@ -1,7 +1,7 @@
 The web-platform-tests Project
 ==============================
 
-[![Taskcluster CI Status](https://community-tc.services.mozilla.com/api/github/v1/repository/web-platform-tests/wpt/master/badge.svg)](https://community-tc.services.mozilla.com/api/github/v1/repository/web-platform-tests/wpt/master/latest)
+[![Taskcluster CI Status](https://community-tc.services.mozilla.com/api/github/v1/repository/web-platform-tests/wpt/master/badge.svg)](https://community-tc.services.mozilla.com/api/github/v1/repository/web-platform-tests/wpt/master/latest) [![documentation](https://github.com/web-platform-tests/wpt/workflows/documentation/badge.svg)](https://github.com/web-platform-tests/wpt/actions?query=workflow%3Adocumentation+branch%3Amaster) [![manifest](https://github.com/web-platform-tests/wpt/workflows/manifest/badge.svg)](https://github.com/web-platform-tests/wpt/actions?query=workflow%3Amanifest+branch%3Amaster) [![Python 3](https://pyup.io/repos/github/web-platform-tests/wpt/python-3-shield.svg)](https://pyup.io/repos/github/web-platform-tests/wpt/)
 
 The web-platform-tests Project is a cross-browser test suite for the
 Web-platform stack. Writing tests in a way that allows them to be run in all
@@ -69,6 +69,8 @@ commands are:
 * `wpt manifest` - For updating or generating a `MANIFEST.json` test manifest
 * `wpt install` - For installing the latest release of a browser or
   webdriver server on the local machine.
+* `wpt serve-wave` - For starting the wpt http server and the WAVE test runner.
+For more details on how to use the WAVE test runner see the [documentation](./tools/wave/docs/usage/usage.md).
 
 <span id="windows-notes">Windows Notes</span>
 =============================================
@@ -99,13 +101,6 @@ Pull requests are
 that modify sensitive resources (such as `.py`). The latter require
 someone with merge access to comment with "LGTM" or "w3c-test:mirror" to
 indicate the pull request has been checked.
-
-Branches
-========
-
-In the vast majority of cases the **only** upstream branch that you
-should need to care about is `master`. If you see other branches in
-the repository, you can generally safely ignore them.
 
 Contributing
 ============

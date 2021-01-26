@@ -12,7 +12,6 @@ import argparse
 import json
 import logging
 import os
-import subprocess
 import time
 
 import requests
@@ -25,7 +24,7 @@ API_RATE_LIMIT_THRESHOLD = 0.2
 LABEL = 'safe for preview'
 # The number of seconds to wait between attempts to verify that a submission
 # preview is available on the Pull Request preview server
-POLLING_PERIOD = 5
+POLLING_PERIOD = 15
 # Pull Requests from authors with the following associations to the project
 # should automatically receive previews
 #
@@ -44,7 +43,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def gh_request(method_name, url, body=None, media_type=None):
-    github_token = os.environ['DEPLOY_TOKEN']
+    github_token = os.environ['GITHUB_TOKEN']
 
     kwargs = {
         'headers': {
@@ -63,9 +62,20 @@ def gh_request(method_name, url, body=None, media_type=None):
 
     logger.info('Response status code: %s', resp.status_code)
 
+    # If GitHub thinks the fields are invalid, it will send a 422 back and
+    # include debugging information in the body. See
+    # https://developer.github.com/v3/#client-errors
+    if resp.status_code == 422:
+        logger.error(resp.json())
+
     resp.raise_for_status()
 
+    if resp.status_code == 204:
+        return None
     return resp.json()
+
+class GitHubRateLimitException(Exception):
+    pass
 
 def guard(resource):
     '''Decorate a `Project` instance method which interacts with the GitHub
@@ -90,7 +100,7 @@ def guard(resource):
             )
 
             if limit and float(remaining) / limit < API_RATE_LIMIT_THRESHOLD:
-                raise Exception(
+                raise GitHubRateLimitException(
                     'Exiting to avoid GitHub.com API request throttling.'
                 )
 
@@ -102,47 +112,6 @@ class Project(object):
     def __init__(self, host, github_project):
         self._host = host
         self._github_project = github_project
-
-    @guard('search')
-    def get_pull_requests(self, updated_since):
-        window_start = time.strftime('%Y-%m-%dT%H:%M:%SZ', updated_since)
-        url = '{}/search/issues?q=repo:{}+is:pr+updated:>{}'.format(
-            self._host, self._github_project, window_start
-        )
-
-        logger.info(
-            'Searching for Pull Requests updated since %s', window_start
-        )
-
-        data = gh_request('GET', url)
-
-        logger.info('Found %d Pull Requests', len(data['items']))
-
-        if data['incomplete_results']:
-            raise Exception('Incomplete results')
-
-        return data['items']
-
-    @guard('core')
-    def pull_request_is_from_fork(self, pull_request):
-        pr_number = pull_request['number']
-        url = '{}/repos/{}/pulls/{}'.format(
-            self._host, self._github_project, pr_number
-        )
-
-        logger.info('Checking if pull request %s is from a fork', pr_number)
-
-        data = gh_request('GET', url)
-
-        repo_name = data['head']['repo']['full_name']
-        is_fork = repo_name != self._github_project
-
-        logger.info(
-            'Pull request %s is from \'%s\'. Is a fork: %s',
-            pr_number, repo_name, is_fork
-        )
-
-        return is_fork
 
     @guard('core')
     def create_ref(self, refspec, revision):
@@ -156,6 +125,23 @@ class Project(object):
         })
 
     @guard('core')
+    def get_ref_revision(self, refspec):
+        url = '{}/repos/{}/git/refs/{}'.format(
+            self._host, self._github_project, refspec
+        )
+
+        logger.info('Fetching ref "%s"', refspec)
+
+        try:
+            body = gh_request('GET', url)
+            logger.info('Ref data: %s', json.dumps(body, indent=2))
+            return body['object']['sha']
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                return None
+            raise e
+
+    @guard('core')
     def update_ref(self, refspec, revision):
         url = '{}/repos/{}/git/refs/{}'.format(
             self._host, self._github_project, refspec
@@ -164,6 +150,16 @@ class Project(object):
         logger.info('Updating ref "%s" (%s)', refspec, revision)
 
         gh_request('PATCH', url, {'sha': revision})
+
+    @guard('core')
+    def delete_ref(self, refspec):
+        url = '{}/repos/{}/git/refs/{}'.format(
+            self._host, self._github_project, refspec
+        )
+
+        logger.info('Deleting ref "%s"', refspec)
+
+        gh_request('DELETE', url)
 
     @guard('core')
     def create_deployment(self, pull_request, revision):
@@ -199,7 +195,7 @@ class Project(object):
         return deployments.pop() if len(deployments) else None
 
     @guard('core')
-    def update_deployment(self, target, deployment, state, description=''):
+    def add_deployment_status(self, target, deployment, state, description=''):
         if state in ('pending', 'success'):
             pr_number = deployment['environment'][len(DEPLOYMENT_PREFIX):]
             environment_url = '{}/{}'.format(target, pr_number)
@@ -214,47 +210,6 @@ class Project(object):
             'description': description,
             'environment_url': environment_url
         }, 'application/vnd.github.ant-man-preview+json')
-
-class Remote(object):
-    def __init__(self, github_project):
-        # The repository in the GitHub Actions environment is configured with
-        # a remote whose URL uses unauthenticated HTTPS, making it unsuitable
-        # for pushing changes.
-        self._token = os.environ['DEPLOY_TOKEN']
-
-    def get_revision(self, refspec):
-        output = subprocess.check_output([
-            'git',
-            '-c',
-            'credential.username={}'.format(self._token),
-            '-c',
-            'core.askPass=true',
-            'ls-remote',
-            'origin',
-            'refs/{}'.format(refspec)
-        ])
-
-        if not output:
-            return None
-
-        return output.decode('utf-8').split()[0]
-
-    def delete_ref(self, refspec):
-        full_ref = 'refs/{}'.format(refspec)
-
-        logger.info('Deleting ref "%s"', refspec)
-
-        subprocess.check_call([
-            'git',
-            '-c',
-            'credential.username={}'.format(self._token),
-            '-c',
-            'core.askPass=true',
-            'push',
-            'origin',
-            '--delete',
-            full_ref
-        ])
 
 def is_open(pull_request):
     return not pull_request['closed_at']
@@ -273,119 +228,128 @@ def should_be_mirrored(project, pull_request):
                 pull_request['user']['login'] not in AUTOMATION_GITHUB_USERS and
                 pull_request['author_association'] in TRUSTED_AUTHOR_ASSOCIATIONS
             )
-        ) and
-        # Query this last as it requires another API call to verify
-        not project.pull_request_is_from_fork(pull_request)
+        )
     )
 
 def is_deployed(host, deployment):
     worktree_name = deployment['environment'][len(DEPLOYMENT_PREFIX):]
-    response = requests.get(
-        '{}/.git/worktrees/{}/HEAD'.format(host, worktree_name)
-    )
+    url = '{}/.git/worktrees/{}/HEAD'.format(host, worktree_name)
+    logger.info('Issuing request: GET %s', url)
+    response = requests.get(url)
 
+    logger.info('Response status code: %s', response.status_code)
     if response.status_code != 200:
         return False
 
+    logger.info('Response text: %s', response.text.strip())
     return response.text.strip() == deployment['sha']
 
-def synchronize(host, github_project, window):
-    '''Inspect all Pull Requests which have been modified in a given window of
-    time. Add or remove the "preview" label and update or delete the relevant
-    git refs according to the status of each Pull Request.'''
+def update_mirror_refs(project, pull_request):
+    '''Update the WPT refs that control mirroring of this pull request.
 
-    project = Project(host, github_project)
-    remote = Remote(github_project)
+    Two sets of refs are used to control wptpr.live's mirroring of pull
+    requests:
 
-    pull_requests = project.get_pull_requests(
-        time.gmtime(time.time() - window)
+        1. refs/prs-trusted-for-preview/{number}
+        2. refs/prs-open/{number}
+
+    wptpr.live will only mirror a pull request if both exist for the given pull
+    request number; otherwise the pull request is either not open or is not
+    trustworthy (e.g. came from someone who doesn't have push access anyway.)
+
+    This method returns the revision that is being mirrored, or None if the
+    pull request should not be mirrored.
+    '''
+
+    refspec_trusted = 'prs-trusted-for-preview/{number}'.format(
+        **pull_request
     )
+    refspec_open = 'prs-open/{number}'.format(**pull_request)
 
-    for pull_request in pull_requests:
-        logger.info('Processing Pull Request #%(number)d', pull_request)
+    revision_latest = pull_request['head']['sha']
+    revision_trusted = project.get_ref_revision(refspec_trusted)
+    revision_open = project.get_ref_revision(refspec_open)
 
-        refspec_trusted = 'prs-trusted-for-preview/{number}'.format(
-            **pull_request
-        )
-        refspec_open = 'prs-open/{number}'.format(**pull_request)
-        revision_latest = remote.get_revision(
-            'pull/{number}/head'.format(**pull_request)
-        )
-        revision_trusted = remote.get_revision(refspec_trusted)
-        revision_open = remote.get_revision(refspec_open)
+    if should_be_mirrored(project, pull_request):
+        logger.info('Pull Request should be mirrored')
 
-        if should_be_mirrored(project, pull_request):
-            logger.info('Pull Request should be mirrored')
+        if revision_trusted is None:
+            project.create_ref(refspec_trusted, revision_latest)
+        elif revision_trusted != revision_latest:
+            project.update_ref(refspec_trusted, revision_latest)
 
-            if revision_trusted is None:
-                project.create_ref(refspec_trusted, revision_latest)
-            elif revision_trusted != revision_latest:
-                project.update_ref(refspec_trusted, revision_latest)
+        if revision_open is None:
+            project.create_ref(refspec_open, revision_latest)
+        elif revision_open != revision_latest:
+            project.update_ref(refspec_open, revision_latest)
 
-            if revision_open is None:
-                project.create_ref(refspec_open, revision_latest)
-            elif revision_open != revision_latest:
-                project.update_ref(refspec_open, revision_latest)
+        return revision_latest
 
-            if project.get_deployment(revision_latest) is None:
-                project.create_deployment(
-                    pull_request, revision_latest
-                )
-        else:
-            logger.info('Pull Request should not be mirrored')
+    logger.info('Pull Request should not be mirrored')
 
-            if not has_mirroring_label(pull_request) and revision_trusted is not None:
-                remote.delete_ref(refspec_trusted)
+    if not has_mirroring_label(pull_request) and revision_trusted is not None:
+        project.delete_ref(refspec_trusted)
 
-            if revision_open is not None and not is_open(pull_request):
-                remote.delete_ref(refspec_open)
+    if revision_open is not None and not is_open(pull_request):
+        project.delete_ref(refspec_open)
 
-def detect(host, github_project, target, timeout):
-    '''Manage the status of a GitHub Deployment by polling the Pull Request
-    preview website until the Deployment is complete or a timeout is
-    reached.'''
+    # No revision to be deployed to wptpr.live
+    return None
 
-    project = Project(host, github_project)
+class DeploymentFailedException(Exception):
+    pass
 
-    with open(os.environ['GITHUB_EVENT_PATH']) as handle:
-        data = json.loads(handle.read())
+def deploy(project, target, pull_request, revision, timeout):
+    '''Create a GitHub deployment for the given pull request and revision.
 
-    logger.info('Event data: %s', json.dumps(data, indent=2))
-
-    deployment = data['deployment']
-
-    if not deployment['environment'].startswith(DEPLOYMENT_PREFIX):
-        logger.info(
-            'Deployment environment "%s" is unrecognized. Exiting.',
-            deployment['environment']
-        )
+    This method creates a pending GitHub deployment, waits for the
+    corresponding revision to be available on wptpr.live and marks the
+    deployment as successful. If the revision does not appear in the given
+    timeout, the deployment is marked as errored instead.'''
+    if project.get_deployment(revision) is not None:
         return
+
+    deployment = project.create_deployment(pull_request, revision)
 
     message = 'Waiting up to {} seconds for Deployment {} to be available on {}'.format(
         timeout, deployment['environment'], target
     )
     logger.info(message)
-    project.update_deployment(target, deployment, 'pending', message)
+    project.add_deployment_status(target, deployment, 'pending', message)
 
     start = time.time()
-
     while not is_deployed(target, deployment):
         if time.time() - start > timeout:
             message = 'Deployment did not become available after {} seconds'.format(timeout)
-            project.update_deployment(target, deployment, 'error', message)
-            raise Exception(message)
+            project.add_deployment_status(target, deployment, 'error', message)
+            raise DeploymentFailedException(message)
 
         time.sleep(POLLING_PERIOD)
 
-    result = project.update_deployment(target, deployment, 'success')
+    result = project.add_deployment_status(target, deployment, 'success')
     logger.info(json.dumps(result, indent=2))
+
+def main(host, github_project, target, timeout):
+    project = Project(host, github_project)
+
+    with open(os.environ['GITHUB_EVENT_PATH']) as handle:
+        data = json.load(handle)
+
+    logger.info('Event data: %s', json.dumps(data, indent=2))
+
+    pull_request = data['pull_request']
+
+    logger.info('Processing Pull Request #%(number)d', pull_request)
+
+    revision_to_mirror = update_mirror_refs(project, pull_request)
+    if revision_to_mirror:
+        deploy(project, target, pull_request, revision_to_mirror, timeout)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='''Synchronize the state of a GitHub.com project with the
-            underlying git repository in order to support a externally-hosted
-            Pull Request preview system. Communicate the state of that system
-            via GitHub Deployments associated with each Pull Request.'''
+        description='''Mirror a pull request to an externally-hosted preview
+            system, and create a GitHub Deployment associated with the pull
+            request pointing at the preview.'''
     )
     parser.add_argument(
         '--host', required=True, help='the location of the GitHub API server'
@@ -396,36 +360,19 @@ if __name__ == '__main__':
         help='''the GitHub organization and GitHub project name, separated by
             a forward slash (e.g. "web-platform-tests/wpt")'''
     )
-    subparsers = parser.add_subparsers(title='subcommands')
-
-    parser_sync = subparsers.add_parser(
-        'synchronize', help=synchronize.__doc__
-    )
-    parser_sync.add_argument(
-        '--window',
-        type=int,
-        required=True,
-        help='''the number of seconds prior to the current moment within which
-            to search for GitHub Pull Requests. Any Pull Requests updated in
-            this time frame will be considered for synchronization.'''
-    )
-    parser_sync.set_defaults(func=synchronize)
-
-    parser_detect = subparsers.add_parser('detect', help=detect.__doc__)
-    parser_detect.add_argument(
+    parser.add_argument(
         '--target',
         required=True,
         help='''the URL of the website to which submission previews are
             expected to become available'''
     )
-    parser_detect.add_argument(
+    parser.add_argument(
         '--timeout',
         type=int,
         required=True,
         help='''the number of seconds to wait for a submission preview to
             become available before reporting a GitHub Deployment failure'''
     )
-    parser_detect.set_defaults(func=detect)
 
     values = dict(vars(parser.parse_args()))
-    values.pop('func')(**values)
+    main(**values)

@@ -31,23 +31,29 @@ def load_commands():
                     "script": props["script"],
                     "parser": props.get("parser"),
                     "parse_known": props.get("parse_known", False),
+                    "py3only": props.get("py3only", False),
                     "help": props.get("help"),
                     "virtualenv": props.get("virtualenv", True),
                     "install": props.get("install", []),
                     "requirements": [os.path.join(base_dir, item)
                                      for item in props.get("requirements", [])]
                 }
+                if rv[command]["install"] or rv[command]["requirements"]:
+                    assert rv[command]["virtualenv"]
     return rv
 
 
-def parse_args(argv, commands = load_commands()):
+def parse_args(argv, commands=load_commands()):
     parser = argparse.ArgumentParser()
     parser.add_argument("--venv", action="store", help="Path to an existing virtualenv to use")
     parser.add_argument("--skip-venv-setup", action="store_true",
                         dest="skip_venv_setup",
                         help="Whether to use the virtualenv as-is. Must set --venv as well")
     parser.add_argument("--debug", action="store_true", help="Run the debugger in case of an exception")
-    parser.add_argument("--py3", action="store_true", help="Run with python3")
+    parser.add_argument("--py3", action="store_true",
+                        help="Run with Python 3 (requires a `python3` binary on the PATH)")
+    parser.add_argument("--py2", action="store_true",
+                        help="Run with Python 2 (requires a `python2` binary on the PATH)")
     subparsers = parser.add_subparsers(dest="command")
     for command, props in iteritems(commands):
         subparsers.add_parser(command, help=props["help"], add_help=False)
@@ -94,7 +100,8 @@ def create_complete_parser():
     for command in commands:
         props = commands[command]
 
-        if props["virtualenv"]:
+        if (props["virtualenv"] and
+            (not props["py3only"] or sys.version_info.major == 3)):
             setup_virtualenv(None, False, props)
 
         subparser = import_command('wpt', command, props)[1]
@@ -108,8 +115,10 @@ def create_complete_parser():
 
     return parser
 
+
 def venv_dir():
     return "_venv" + str(sys.version_info[0])
+
 
 def setup_virtualenv(path, skip_venv_setup, props):
     if skip_venv_setup and path is None:

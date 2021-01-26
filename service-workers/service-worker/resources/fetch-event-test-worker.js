@@ -155,7 +155,7 @@ function handleIsHistoryNavigation(event) {
   event.respondWith(new Response(body));
 }
 
-function useAndIgnore(event) {
+function handleUseAndIgnore(event) {
   const request = event.request;
   request.text();
   return;
@@ -186,7 +186,7 @@ self.addEventListener('fetch', function(event) {
       { pattern: '?keepalive', fn: handleKeepalive },
       { pattern: '?isReloadNavigation', fn: handleIsReloadNavigation },
       { pattern: '?isHistoryNavigation', fn: handleIsHistoryNavigation },
-      { pattern: '?use-and-ignore', fn: useAndIgnore },
+      { pattern: '?use-and-ignore', fn: handleUseAndIgnore },
     ];
 
     var handler = null;

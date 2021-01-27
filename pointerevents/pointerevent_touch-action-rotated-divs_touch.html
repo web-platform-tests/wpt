@@ -9,6 +9,9 @@
     <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
     <script type="text/javascript" src="pointerevent_support.js"></script>
     <script type="text/javascript">
       var event_log = [];
@@ -19,26 +22,29 @@
 
       function run() {
         var current_test = 0;
+        var target = document.getElementById("target");
+        var btnDone = document.getElementById("btnDone");
         var test_params = [
           {
             test_obj: setup_pointerevent_test("'touch-action: pan-x' in a rotated div", ["touch"]),
             touch_action: "pan-x",
-            expected_events: "pointercancel, pointercancel, pointerup, pointerup"
+            expected_events: "pointerup, pointerup, pointercancel, pointercancel"
           },
           {
             test_obj: setup_pointerevent_test("'touch-action: pan-y' in a rotated div", ["touch"]),
             touch_action: "pan-y",
-            expected_events: "pointerup, pointerup, pointercancel, pointercancel"
+            expected_events: "pointercancel, pointercancel, pointerup, pointerup"
           },
         ];
+        var actions_promise;
 
         function setCurrentTouchAction() {
-          document.getElementById("target").style.touchAction = test_params[current_test].touch_action;
+          target.style.touchAction = test_params[current_test].touch_action;
         }
 
         setCurrentTouchAction();
 
-        on_event(document.getElementById("btnDone"), "click", function() {
+        on_event(btnDone, "click", function() {
           test_params[current_test].test_obj.step(function () {
             assert_equals(event_log.join(", "), test_params[current_test].expected_events);
           });
@@ -51,9 +57,29 @@
         });
 
         ["pointerup", "pointercancel"].forEach(function(eventName) {
-          on_event(document.getElementById("target"), eventName, function (event) {
+          on_event(target, eventName, function (event) {
             event_log.push(event.type);
           });
+        });
+
+        actions_promise = touchScrollInTarget(target, 'down').then(function() {
+          return touchScrollInTarget(target, 'up');
+        }).then(function() {
+          return touchScrollInTarget(target, 'right');
+        }).then(function() {
+          return touchScrollInTarget(target, 'left');
+        }).then(function() {
+          return clickInTarget("touch", btnDone);
+        }).then(function() {
+          return touchScrollInTarget(target, 'down');
+        }).then(function() {
+          return touchScrollInTarget(target, 'up');
+        }).then(function() {
+          return touchScrollInTarget(target, 'right');
+        }).then(function() {
+          return touchScrollInTarget(target, 'left');
+        }).then(function() {
+          return clickInTarget("touch", btnDone);
         });
       }
     </script>

@@ -161,6 +161,12 @@ function handleUseAndIgnore(event) {
   return;
 }
 
+function handleCloneAndIgnore(event) {
+  const request = event.request;
+  request.clone();
+  return;
+}
+
 self.addEventListener('fetch', function(event) {
     var url = event.request.url;
     var handlers = [
@@ -187,6 +193,7 @@ self.addEventListener('fetch', function(event) {
       { pattern: '?isReloadNavigation', fn: handleIsReloadNavigation },
       { pattern: '?isHistoryNavigation', fn: handleIsHistoryNavigation },
       { pattern: '?use-and-ignore', fn: handleUseAndIgnore },
+      { pattern: '?clone-and-ignore', fn: handleCloneAndIgnore },
     ];
 
     var handler = null;

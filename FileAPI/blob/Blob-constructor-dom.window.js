@@ -2,6 +2,11 @@
 // META: script=../support/Blob.js
 'use strict';
 
+var test_error = {
+  name: "test",
+  message: "test error",
+};
+
 test(function() {
   var args = [
     document.createElement("div"),

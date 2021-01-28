@@ -163,7 +163,7 @@ function handleUseAndIgnore(event) {
 
 function handleCloneAndIgnore(event) {
   const request = event.request;
-  request.clone();
+  request.clone().text();
   return;
 }
 

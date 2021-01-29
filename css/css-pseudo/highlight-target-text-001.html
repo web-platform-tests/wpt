@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Pseudo-Elements Test: ::target-text selection (basic)</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-pseudos">
+  <link rel="match" href="reference/highlight-target-text-001-ref.html">
+
+  <meta content="" name="flags">
+
+  <style>
+  div
+    {
+      color: white;
+      font-size: 300%;
+    }
+
+  span#test
+    {
+      background-color: red;
+      color: yellow;
+    }
+
+  span#test::target-text
+    {
+      background-color: yellow;
+      color: green;
+    }
+  </style>
+
+  <script>
+  function startTest()
+  {
+    /*
+    If the document URL of the current
+    test page does not end with "#test",
+    then append "#test" to it.
+    */
+
+    if(window.location.href.substr(-5) !== "#test")
+      {
+      window.location.href += "#test";
+      };
+  }
+  </script>
+
+  <body onload="startTest();">
+
+  <p>Test passes if "Target text" is green, has a yellow background and if there is <strong>no red</strong>.
+
+  <div>A</div>
+
+  <div>B <span id="test">Target text</span> C</div>
+
+  <div>D</div>

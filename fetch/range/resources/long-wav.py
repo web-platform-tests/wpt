@@ -53,8 +53,9 @@ def main(request, response):
     range_header_match = range_header and re.search(r'^bytes=(\d*)-(\d*)$', isomorphic_decode(range_header))
     range_received_key = request.GET.first(b'range-received-key', b'')
     accept_encoding_key = request.GET.first(b'accept-encoding-key', b'')
-    source_key = request.GET.first(b'source-key', b'')
     chunked = b'chunked' in request.GET
+    source_key = request.GET.first(b'source-key', b'')
+    scenario = request.GET.first(b'scenario', b'')
 
     if source_key:
         take = request.server.stash.take(source_key, b'/fetch/range/')
@@ -62,11 +63,19 @@ def main(request, response):
             take = 0
         request_count = take + 1
         request.server.stash.put(source_key, request_count, b'/fetch/range/')
-        if request_count == 1:
-            return (302, [(b"Location", b"./long-wav.py?source-key=" + source_key + b"&chunked")], b'')
-        elif request_count == 4:
-            return (302, [(b"Location", b"./long-wav.py?source-key=" + source_key + b"&chunked&1")], b'')
-            #return (307, [(b"Location", b"http://web-platform.test:8000/fetch/range/resources/long-wav.py?source-key=" + source_key + b"&chunked")], b'')
+
+        if scenario == b'redirect-second-request':
+            if request_count == 2:
+                return (302, [(b"Location", b"./long-wav.py?source-key=" + source_key + b"&chunked&scenario=" + scenario)], b'')
+
+        elif scenario == b'':
+            # TODO
+            pass
+
+
+        #elif request_count == 4:
+            #return (302, [(b"Location", b"./long-wav.py?source-key=" + source_key + b"&chunked&1")], b'')
+        #    return (307, [(b"Location", b"http://web-platform.test:8000/fetch/range/resources/long-wav.py?source-key=" + source_key + b"&chunked")], b'')
         #elif request_count == 5:
         #    return (307, [(b"Location", b"http://www1.web-platform.test:8000/fetch/range/resources/long-wav.py?source-key=" + source_key + b"&chunked")], b'')
             #return (302, [(b"Location", b"http://www1.web-platform.test:8000/fetch/range/resources/long-wav.py?source-key=" + source_key + b"&chunked")], b'')

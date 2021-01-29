@@ -30,6 +30,13 @@ gen-bundle \
 
 gen-bundle \
   -version b1 \
+  -baseURL $wpt_test_http_origin/web-bundle/resources/wbn/static-element/ \
+  -primaryURL $wpt_test_http_origin/web-bundle/resources/wbn/static-element/resources/style.css \
+  -dir static-element/ \
+  -o wbn/static-element.wbn
+
+gen-bundle \
+  -version b1 \
   -baseURL $wpt_test_http_origin/web-bundle/resources/wbn/dynamic/ \
   -primaryURL $wpt_test_http_origin/web-bundle/resources/wbn/dynamic/resource1.js \
   -dir dynamic1/ \
@@ -70,3 +77,15 @@ gen-bundle \
   -har urn-uuid.har \
   -primaryURL urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720 \
   -o wbn/urn-uuid.wbn
+
+gen-bundle \
+  -version b1 \
+  -har cross-origin.har \
+  -primaryURL $wpt_test_https_origin/web-bundle/resources/wbn/cors/resource.cors.json \
+  -o wbn/cors/cross-origin.wbn
+
+gen-bundle \
+  -version b1 \
+  -har cross-origin-no-cors.har \
+  -primaryURL $wpt_test_https_origin/web-bundle/resources/wbn/no-cors/resource.cors.json \
+  -o wbn/no-cors/cross-origin.wbn

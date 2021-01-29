@@ -97,7 +97,7 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
+      versionSpec: '3.8.x'
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/pip_install.yml
     parameters:
@@ -233,7 +233,11 @@ jobs:
   - template: tools/ci/azure/install_chrome.yml
   - template: tools/ci/azure/install_firefox.yml
   - template: tools/ci/azure/update_hosts.yml
+    parameters:
+      pyflag: --py2
   - template: tools/ci/azure/update_manifest.yml
+    parameters:
+      pyflag: --py2
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
       directory: tools/wpt/
@@ -403,7 +407,11 @@ jobs:
   # - template: tools/ci/azure/install_chrome.yml
   # - template: tools/ci/azure/install_firefox.yml
   - template: tools/ci/azure/update_hosts.yml
+    parameters:
+      pyflag: --py2
   - template: tools/ci/azure/update_manifest.yml
+    parameters:
+      pyflag: --py2
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
       directory: tools/wpt/

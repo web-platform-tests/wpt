@@ -1,9 +1,7 @@
-import subprocess
-
-from .base import Browser, ExecutorBrowser, require_arg
+from .base import require_arg
 from .base import get_timeout_multiplier   # noqa: F401
 from .chrome import executor_kwargs as chrome_executor_kwargs
-from .chrome_android import AndroidBrowser
+from .chrome_android import ChromeAndroidBrowserBase
 from ..webdriver_server import ChromeDriverServer
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
                                            WebDriverRefTestExecutor)  # noqa: F401
@@ -75,7 +73,7 @@ def env_options():
     return {"server_host": "127.0.0.1"}
 
 
-class WeblayerShell(AndroidBrowser):
+class WeblayerShell(ChromeAndroidBrowserBase):
     """Chrome is backed by chromedriver, which is supplied through
     ``wptrunner.webdriver.ChromeDriverServer``.
     """
@@ -90,12 +88,5 @@ class WeblayerShell(AndroidBrowser):
         super(WeblayerShell, self).__init__(logger,
                 webdriver_binary, remote_queue, device_serial, webdriver_args)
         self.binary = binary
+        self.wptserver_ports = _wptserve_ports
 
-    def setup_adb_reverse(self):
-        self._adb_run(['wait-for-device'])
-        self._adb_run(['forward', '--remove-all'])
-        self._adb_run(['reverse', '--remove-all'])
-        # "adb reverse" basically forwards network connection from device to
-        # host.
-        for port in _wptserve_ports:
-            self._adb_run(['reverse', 'tcp:%d' % port, 'tcp:%d' % port])

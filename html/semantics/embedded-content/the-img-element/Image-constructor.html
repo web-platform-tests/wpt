@@ -28,7 +28,7 @@
 
   test(function() {
       assert_equals(Image.name, "Image", "Image name should be Image (not HTMLImageElement)");
-      assert_equals(Object.getPrototypeOf(Image), Function.prototype, "Object.getPrototypeOf(Image) is Function prototype");
+      assert_equals(Object.getPrototypeOf(Image), Function.prototype, "Image's prototype is Function.prototype");
       assert_equals(Image.prototype, HTMLImageElement.prototype, "Image.prototype is same as HTMLImageElement.prototype");
       assert_equals(Object.getPrototypeOf(new Image()), HTMLImageElement.prototype, "Object.getPrototypeOf(new Image()) is HTMLImageElement prototype ");
       assert_equals(Object.getPrototypeOf(Image.prototype), HTMLElement.prototype, "Object.getPrototypeOf(Image.prototype) is HTMLElement prototype");

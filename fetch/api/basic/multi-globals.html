@@ -70,7 +70,7 @@ window.addEventListener("load", () => {
       // This data URL was chosen as it works for formData() and json()
       const response = await incumbentFrame.contentWindow.runFetch("data:application/x-www-form-urlencoded,[]");
 
-      const bodyPromise = response[method]();
+      const bodyPromise = currentFrame.contentWindow.Response.prototype[method].call(response);
 
       assert_true(isObjectFromGlobal(bodyPromise, relevantFrame.contentWindow), `Response's ${method}()'s promise should use the relevant global`);
 
@@ -93,9 +93,9 @@ window.addEventListener("load", () => {
 
     // Verify rejected promises
     return Promise.all(bodyMethods.map(method => {
-      const rejectedPromise = response[method]();
-      assert_true(isObjectFromGlobal(rejectedPromise, relevantFrame.contentWindow), `Response's ${method}()'s rejected promise should use the relevant global`)
-      return promise_rejects_js(t, relevantFrame.contentWindow.TypeError, rejectedPromise);
+      const rejectedPromise = currentFrame.contentWindow.Response.prototype[method].call(response);
+      assert_true(isObjectFromGlobal(rejectedPromise, currentFrame.contentWindow), `Response's ${method}()'s rejected promise should use the current global`)
+      return promise_rejects_js(t, currentFrame.contentWindow.TypeError, rejectedPromise);
     }));
   }, `Response's Body methods and rejected promises`);
 

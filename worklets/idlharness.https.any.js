@@ -6,5 +6,6 @@
 'use strict';
 
 idl_test(
-  ['worklets']
+  ['worklets'],
+  []
 );

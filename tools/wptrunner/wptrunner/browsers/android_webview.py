@@ -2,7 +2,6 @@ from .base import require_arg
 from .base import get_timeout_multiplier   # noqa: F401
 from .chrome import executor_kwargs as chrome_executor_kwargs
 from .chrome_android import ChromeAndroidBrowserBase
-from ..webdriver_server import ChromeDriverServer
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
                                            WebDriverRefTestExecutor)  # noqa: F401
 from ..executors.executorchrome import ChromeDriverWdspecExecutor  # noqa: F401

@@ -29,10 +29,24 @@
     }
   },
   {
+    input: "077 77",
+    expected: {
+      status: 77,
+      statusText: "77"
+    }
+  },
+  {
     input: "099 HELLO",
     expected: {
       status: 99,
       statusText: "HELLO"
+    }
+  },
+  {
+    input: "200",
+    expected: {
+      status: 200,
+      statusText: ""
     }
   },
   {
@@ -47,11 +61,27 @@
     expected: null
   },
   {
+    input: "0200 BOO",
+    expected: null
+  },
+  {
     input: "65736 NOT 200 OR SOME SUCH",
     expected: null
   },
   {
     input: "131072 HI",
+    expected: null
+  },
+  {
+    input: "-200 TEST",
+    expected: null
+  },
+  {
+    input: "0xA",
+    expected: null
+  },
+  {
+    input: "C8",
     expected: null
   }
 ].forEach(({ description, input, expected }) => {

@@ -228,9 +228,10 @@ class PathFilter(object):
                ):
         # type: (...) -> Iterable[Tuple[bytes, List[Tuple[bytes, T]], List[Tuple[bytes, T]]]]
         empty = {}  # type: Dict[Any, Any]
+        replace_seperator = ensure_binary(os.path.sep) != b"/"
         for dirpath, dirnames, filenames in iterator:
             orig_dirpath = dirpath
-            if ensure_binary(os.path.sep) != b"/":
+            if replace_seperator:
                 dirpath = dirpath.replace(ensure_binary(os.path.sep), b"/")
 
             keep_dirs = []  # type: List[Tuple[bytes, T]]

@@ -3,7 +3,7 @@ import os
 import stat
 from collections import deque
 
-from six import with_metaclass, PY2
+from six import iteritems, with_metaclass, PY2
 from six.moves.collections_abc import MutableMapping
 
 from . import jsonlib
@@ -224,17 +224,61 @@ class MtimeCache(CacheFile):
         super(MtimeCache, self).dump()
 
 
-class GitIgnoreCache(CacheFile, GitIgnoreCacheType):
-    file_name = "gitignore2.json"
+class GitIgnoreCache(GitIgnoreCacheType):
+    file_name = "gitignore"
 
-    def check_valid(self, data):
-        # type: (Dict[Any, Any]) -> Dict[Any, Any]
-        ignore_path = os.path.join(self.tests_root, ".gitignore")
-        mtime = os.path.getmtime(ignore_path)
-        if data.get(u"/gitignore_file") != [ignore_path, mtime]:
-            self.modified = True
+    def __init__(self, cache_root, tests_root, rebuild=False):
+        # type: (Text, Text, bool) -> None
+        self.tests_root = tests_root
+        if not os.path.exists(cache_root):
+            os.makedirs(cache_root)
+
+        self.path = os.path.join(cache_root, self.file_name)
+        self.ignore_path = os.path.join(self.tests_root, ".gitignore")
+        self.ignore_path_bytes = self.ignore_path.encode("utf8")
+
+        self.modified = False
+        self.data = self.load(rebuild)
+
+    def get_cache_key(self):
+        # type: () -> Tuple[bytes, int]
+        mtime = int(os.path.getmtime(self.ignore_path) * 1000)
+        return (self.ignore_path_bytes, mtime)
+
+    def dump(self):
+        # type: () -> None
+        if not self.modified:
+            return
+        with open(self.path, 'wb') as f:
+            f.write(b"%s\0%d\n" % self.get_cache_key())
+            for name, value in iteritems(self.data):
+                f.write(b"%s\0%s\n" % (name, b"1" if value else b"0"))
+
+    def load(self, rebuild=False):
+        # type: (bool) -> Dict[bytes, bool]
+        data = {}  # type: Dict[bytes, bool]
+        cache_valid = False
+        try:
+            if not rebuild:
+                try:
+                    with open(self.path, 'rb') as f:
+                        ignore_path_bytes, mtime_bytes = f.readline().split(b"\0")
+                        mtime = int(mtime_bytes.decode("ascii"))
+                        cache_key = (ignore_path_bytes, mtime)
+                        for item in f:
+                            item = item.strip()
+                            path, value = item.split(b"\0")
+                            data[path] = value == b"1"
+                        cache_valid = cache_key == self.get_cache_key()
+                except ValueError:
+                    pass
+        except IOError:
+            pass
+
+        if not cache_valid:
             data = {}
-            data[u"/gitignore_file"] = [ignore_path, mtime]
+            self.modified = True
+
         return data
 
     def __contains__(self, key):
@@ -248,26 +292,23 @@ class GitIgnoreCache(CacheFile, GitIgnoreCacheType):
 
     def __getitem__(self, key):
         # type: (bytes) -> bool
-        real_key = key.decode("utf-8")
-        v = self.data[real_key]
-        assert isinstance(v, bool)
+        v = self.data[key]
         return v
 
     def __setitem__(self, key, value):
         # type: (bytes, bool) -> None
-        real_key = key.decode("utf-8")
-        if self.data.get(real_key) != value:
+        if self.data.get(key) != value:
             self.modified = True
-            self.data[real_key] = value
+            self.data[key] = value
 
     def __delitem__(self, key):
         # type: (bytes) -> None
-        real_key = key.decode("utf-8")
-        del self.data[real_key]
+        self.modified = True
+        del self.data[key]
 
     def __iter__(self):
         # type: () -> Iterator[bytes]
-        return (key.encode("utf-8") for key in self.data)
+        return iter(self.data)
 
     def __len__(self):
         # type: () -> int

@@ -102,20 +102,6 @@ files in every directory down to the helper. For example, if your helper is
 <p>This requirement will be removed once we move to Python 3, due to
 <a class="reference external" href="https://www.python.org/dev/peps/pep-0420/">PEP 420</a>.</p>
 </div>
-<div class="section" id="python3-compatibility">
-<h2>Python3 compatibility<a class="headerlink" href="#python3-compatibility" title="Permalink to this headline">¶</a></h2>
-<p>Even though Python3 is not fully supported at this point, some work is being
-done to add compatibility for it. This is why you can see in multiple places
-the use of the <code class="docutils literal notranslate"><span class="pre">six</span></code> python module which is meant to provide a set of simple
-utilities that work for both generation of python (see
-<a class="reference external" href="https://six.readthedocs.io/">docs</a>). The module is vendored in
-tools/third_party/six/six.py.</p>
-<p>When an handler is added, it should be at least syntax-compatible with Python3.
-You can check that by running:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">py_compile</span> <span class="o">&lt;</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">handler</span><span class="o">.</span><span class="n">py</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-</div>
 <div class="section" id="example-dynamic-http-headers">
 <h2>Example: Dynamic HTTP headers<a class="headerlink" href="#example-dynamic-http-headers" title="Permalink to this headline">¶</a></h2>
 <p>The following code defines a Python handler that allows the requester to

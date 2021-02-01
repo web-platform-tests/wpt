@@ -203,4 +203,3 @@ class ChromeAndroidBrowser(ChromeAndroidBrowserBase):
                 webdriver_binary, remote_queue, device_serial, webdriver_args)
         self.package_name = package_name
         self.wptserver_ports = _wptserve_ports
-

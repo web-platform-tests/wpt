@@ -88,4 +88,3 @@ class WeblayerShell(ChromeAndroidBrowserBase):
                 webdriver_binary, remote_queue, device_serial, webdriver_args)
         self.binary = binary
         self.wptserver_ports = _wptserve_ports
-

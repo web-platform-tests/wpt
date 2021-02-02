@@ -11,8 +11,6 @@ body { margin: 0; }
   position: relative;
   width: 100vw;
   height: 100vh;
-  left: -2000vw;
-  top: -2000vh;
 }
 </style>
 <div id="shifter"></div>
@@ -25,7 +23,7 @@ promise_test(async () => {
   await waitForAnimationFrames(2);
 
   // Modify the position of the div.
-  document.querySelector("#shifter").style = "left: 0; top: 0";
+  document.querySelector("#shifter").style = "left: 2000vw; top: 2000vh";
 
   const docElement = document.documentElement;
   const viewWidth = docElement.clientWidth;

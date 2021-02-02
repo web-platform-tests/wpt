@@ -23,14 +23,9 @@ promise_test(async () => {
   document.querySelector("#j").style.top =
       document.documentElement.clientHeight - 200 + "px";
 
-  // The element moves from outside the viewport to within the viewport, which
-  // should generate a shift.
-  // (width 600) * (height 0 + move 200)
-  const expectedScore = computeExpectedScore(600 * 200, 200);
-
-  await watcher.promise;
-  assert_equals(watcher.score, expectedScore);
-}, "Shift into viewport.");
+  await waitForAnimationFrames(3);
+  assert_equals(watcher.score, 0);
+}, "Shift into viewport is ignored.");
 
 </script>
 

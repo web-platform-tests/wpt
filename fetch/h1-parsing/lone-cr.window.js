@@ -10,7 +10,6 @@
   "HTTP/1.1 200 OK\n\rHeader: Value\n\nBODY",
   "HTTP/1.1 200 OK\nHeader\r: Value\n\nBODY",
   "HTTP/1.1 200 OK\nHeader:\r Value\n\nBODY",
-  "HTTP/1.1 200 OK\nHeader:\r Value\n\nBODY",
   "HTTP/1.1 200 OK\nHeader: Value\r\r\nBODY",
   "HTTP/1.1 200 OK\nHeader: Value\rHeader2: Value2\n\nBODY",
 ].forEach(input => {

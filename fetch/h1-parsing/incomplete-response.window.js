@@ -7,7 +7,8 @@ const statusLine = "HTTP/1.1 200 OKAYISH\n";
   "header: value\t",
   "header: value ",
   "header: value\f",
-  "header: value\r"
+  "header: value\r",
+  "header: value\r\r"
 ].forEach(input => {
   promise_test(t => {
     const message = encodeURIComponent(statusLine + input)

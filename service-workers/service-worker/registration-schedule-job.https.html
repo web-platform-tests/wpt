@@ -35,11 +35,11 @@ promise_test(async t => {
   navigator.serviceWorker.register(script1, {scope});
   navigator.serviceWorker.register(script2, {scope});
   await navigator.serviceWorker.register(script2,
-                                         {scope, updateViaCache: 'none'});
+                                         {scope, updateViaCache: 'imports'});
 
   // None of the changes should have been coalesced.
   assert_equals(registration.installing.scriptURL, absolute_url(script2));
-  assert_equals(registration.updateViaCache, 'none');
+  assert_equals(registration.updateViaCache, 'imports');
 }, 'different scriptURL and updateViaCache');
 
 // Test |type| in another test case because most browsers don't support it.

@@ -1,3 +1,5 @@
+// See ../api/redirect/redirect-to-dataurl.any.js for fetch() tests
+
 async_test(t => {
   const img = document.createElement("img");
   img.onload = t.unreached_func();
@@ -13,10 +15,6 @@ async_test(t => {
   script.onerror = t.step_func_done();
   document.body.append(script);
 }, "<script> fetch that redirects to data: URL");
-
-promise_test(t => {
-  return promise_rejects_js(t, TypeError, fetch("../api/resources/redirect.py?location=data:,"));
-}, "fetch() fetch that redirects to data: URL");
 
 async_test(t => {
   const client = new XMLHttpRequest();

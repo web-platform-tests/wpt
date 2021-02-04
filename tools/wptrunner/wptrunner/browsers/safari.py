@@ -1,6 +1,5 @@
 import os
 import plistlib
-import subprocess
 from distutils.spawn import find_executable
 
 import psutil
@@ -98,18 +97,8 @@ class SafariBrowser(Browser):
             if not os.path.isfile(info_path):
                 continue
 
-            # NB: converting to XML is only needed on PY2
-            try:
-                xml_plist = subprocess.check_output(["plutil", "-convert", "xml1", "-o", "-", info_path])
-            except subprocess.CalledProcessError:
-                continue
-
-            try:
-                load_plist = plistlib.loads
-            except AttributeError:
-                load_plist = plistlib.readPlistFromString  # PY2
-
-            info = load_plist(xml_plist)
+            with open(info_path, "rb") as fp:
+                info = plistlib.load(fp)
 
             # check we have a Safari family bundle
             if "CFBundleIdentifier" not in info:

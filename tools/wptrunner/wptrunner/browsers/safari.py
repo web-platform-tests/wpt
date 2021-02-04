@@ -1,4 +1,6 @@
 import os
+import plistlib
+import subprocess
 from distutils.spawn import find_executable
 
 import psutil
@@ -77,14 +79,57 @@ class SafariBrowser(Browser):
             wd_path = find_executable(webdriver_binary)
         else:
             wd_path = webdriver_binary
-        if os.path.samefile(wd_path, "/usr/bin/safaridriver"):
-            self.safari_path = "/Applications/Safari.app/Contents/MacOS/Safari"
-        else:
-            self.safari_path = os.path.join(os.path.dirname(wd_path), "Safari")
-        logger.debug("wd_path: %s" % wd_path)
-        logger.debug("safari_path: %s" % self.safari_path)
+        self.safari_path = self._findAssociatedSafariExecutable(wd_path)
+
+        logger.debug("WebDriver executable path: %s" % wd_path)
+        logger.debug("Safari executable path: %s" % self.safari_path)
 
         self.kill_safari = kill_safari
+
+    def _findAssociatedSafariExecutable(self, wd_path):
+        bundle_paths = [
+            os.path.join(os.path.dirname(wd_path), "..", ".."),  # bundled Safari (e.g. STP)
+            os.path.join(os.path.dirname(wd_path), "Safari.app"),  # local Safari build
+            "/Applications/Safari.app",  # system Safari
+        ]
+
+        for bundle_path in bundle_paths:
+            info_path = os.path.join(bundle_path, "Contents", "Info.plist")
+            if not os.path.isfile(info_path):
+                continue
+
+            # NB: converting to XML is only needed on PY2
+            try:
+                xml_plist = subprocess.check_output(["plutil", "-convert", "xml1", "-o", "-", info_path])
+            except subprocess.CalledProcessError:
+                continue
+
+            try:
+                load_plist = plistlib.loads
+            except AttributeError:
+                load_plist = plistlib.readPlistFromString  # PY2
+
+            info = load_plist(xml_plist)
+
+            # check we have a Safari family bundle
+            if "CFBundleIdentifier" not in info:
+                continue
+            ident = info["CFBundleIdentifier"]
+            if not isinstance(ident, str) or not ident.startswith("com.apple.Safari"):
+                continue
+
+            # get the executable name
+            if "CFBundleExecutable" not in info:
+                continue
+            exe = info["CFBundleExecutable"]
+            if not isinstance(exe, str):
+                continue
+
+            exe_path = os.path.join(bundle_path, "Contents", "MacOS", exe)
+            if not os.path.isfile(exe_path):
+                continue
+
+            return exe_path
 
     def start(self, **kwargs):
         self.server.start(block=False)

@@ -10,8 +10,11 @@
   "HTTP/1.1 200 OK\n\rHeader: Value\n\nBODY",
   "HTTP/1.1 200 OK\nHeader\r: Value\n\nBODY",
   "HTTP/1.1 200 OK\nHeader:\r Value\n\nBODY",
+  "HTTP/1.1 200 OK\nHeader: Value\r\n\nBody",
   "HTTP/1.1 200 OK\nHeader: Value\r\r\nBODY",
   "HTTP/1.1 200 OK\nHeader: Value\rHeader2: Value2\n\nBODY",
+  "HTTP/1.1 200 OK\nHeader: Value\n\rBODY",
+  "HTTP/1.1 200 OK\nHeader: Value\n\r"
 ].forEach(input => {
   promise_test(t => {
     const message = encodeURIComponent(input);

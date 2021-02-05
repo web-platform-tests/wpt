@@ -2,21 +2,34 @@
 // META: script=resources/utils.js
 // META: script=/common/utils.js
 // META: timeout=long
+// META: variant=
+// META: variant=?foreign-redirect-second-request
 
 const foreignOrigin = get_host_info().REMOTE_ORIGIN;
 
 const onload = new Promise(r => window.addEventListener('load', r));
 
-[
-  {
+const defaultVariant = "same-redirect-second-request";
+const currentVariant = () => {
+  const query = self.location.search;
+  if (!query) {
+    return defaultVariant;
+  }
+  return query.substring(1);
+};
+
+const scenarios = {
+  "same-redirect-second-request": {
     origin: "",
     scenario: "redirect-second-request"
   },
-  {
+  "foreign-redirect-second-request": {
     origin: foreignOrigin,
     scenario: "redirect-second-request"
   }
-].forEach(({ origin, scenario }) => {
+}
+
+const runTest = ({ origin, scenario }) => {
   promise_test(async t => {
     const wavURL = `${origin}${new URL('resources/long-wav.py', location).pathname}?chunked&source-key=${token()}&scenario=${scenario}`;
     await onload;
@@ -26,4 +39,6 @@ const onload = new Promise(r => window.addEventListener('load', r));
       audio.onerror = resolve;
     });
   }, "meh");
-});
+};
+
+runTest(scenarios[currentVariant()]);

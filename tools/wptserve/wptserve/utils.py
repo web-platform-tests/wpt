@@ -7,6 +7,8 @@ from six import binary_type, text_type
 def isomorphic_decode(s):
     """Decodes a binary string into a text string using iso-8859-1.
 
+    This helper also works with dicts whose keys and values are both strings.
+
     Returns `unicode` in Python 2 and `str` in Python 3. The function is a
     no-op if the argument already has a text type. iso-8859-1 is chosen because
     it is an 8-bit encoding whose code points range from 0x0 to 0xFF and the
@@ -15,6 +17,9 @@ def isomorphic_decode(s):
     loss. Python 3 also uses iso-8859-1 (or latin-1) extensively in http:
     https://github.com/python/cpython/blob/273fc220b25933e443c82af6888eb1871d032fb8/Lib/http/client.py#L213
     """
+    if isinstance(s, dict):
+        return {isomorphic_decode(k): isomorphic_decode(v) for k, v in s.items()}
+
     if isinstance(s, text_type):
         return s
 
@@ -27,10 +32,15 @@ def isomorphic_decode(s):
 def isomorphic_encode(s):
     """Encodes a text-type string into binary data using iso-8859-1.
 
+    This helper also works with dicts whose keys and values are both strings.
+
     Returns `str` in Python 2 and `bytes` in Python 3. The function is a no-op
     if the argument already has a binary type. This is the counterpart of
     isomorphic_decode.
     """
+    if isinstance(s, dict):
+        return {isomorphic_encode(k): isomorphic_encode(v) for k, v in s.items()}
+
     if isinstance(s, binary_type):
         return s
 
@@ -155,6 +165,7 @@ def get_port(host=''):
         if not is_bad_port(port):
             break
     return port
+
 
 def http2_compatible():
     # Currently, the HTTP/2.0 server is only working in python 2.7.10+ or 3.6+ and OpenSSL 1.0.2+

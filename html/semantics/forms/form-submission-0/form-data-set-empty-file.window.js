@@ -1,4 +1,4 @@
-test((t) => {
+test(t => {
   const form = document.body.appendChild(document.createElement("form")),
         input = form.appendChild(document.createElement("input"));
   input.type = "file";

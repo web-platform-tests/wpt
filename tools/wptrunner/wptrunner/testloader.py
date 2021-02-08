@@ -494,9 +494,8 @@ class GroupFileTestSource(TestSource):
         for test in tests:
             try:
                 group = test_groups.group_by_test[test.id]
+                tests_by_group[group].append(test.id)
             except KeyError:
-                logger.error("%s is missing from test groups file" % test.id)
-                raise
-            tests_by_group[group].append(test.id)
+                logger.warning("%s is missing from test groups file" % test.id)
 
         return tests_by_group

@@ -20,5 +20,5 @@ test(() => {
   assert_equals(navigator.plugins[Symbol.iterator], arrayIterator, "plugins array must provide @@iterator");
   assert_equals(navigator.mimeTypes[Symbol.iterator], arrayIterator, "mimeTypes array must provide @@iterator");
   assert_equals(Plugin.prototype[Symbol.iterator], arrayIterator, "Plugin must provide @@iterator");
-}, "@@iterator must exist")
+}, "@@iterator must exist");
 </script>

@@ -436,4 +436,16 @@ test(function(t) {
     assert_equals(element.getAttribute("aria-valuetext"), "51%");
 }, "aria-valuetext attribute reflects.");
 </script>
+
+<div id="virtualContent" aria-virtualcontent="block-end"></div>
+
+<script>
+test(function(t) {
+    var element = document.getElementById("virtualContent");
+    assert_equals(element.ariaVirtualContent, "block-end");
+    element.ariaVirtualContent = "inline-start";
+    assert_equals(element.getAttribute("aria-virtualcontent"), "inline-start");
+}, "aria-virtualcontent attribute reflects.");
+</script>
+
 </html>

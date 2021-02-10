@@ -1,4 +1,4 @@
-== Existing tests ==
+## Existing tests ##
 
 - access-reporting
   - access-from-coop-page-to-openee_coop-ro.https.html
@@ -98,17 +98,17 @@
   - reporting-redirect-with-same-origin-allow-popups.https.html
     - Tests the redirect interaction with COOP same-origin-allow-popups.
 
-== Testing plan ==
+## Testing plan ##
 
 
 
 - access-reporting
-  - Test all members of Window with testAccessProperty: https://html.spec.whatwg.org/#the-window-object
+  - Test all members of Window with testAccessProperty? https://html.spec.whatwg.org/#the-window-object ...or are these enough? https://whatpr.org/html/5518/895fd80...c8265a7/browsers.html#crossoriginproperties-(-o-)
 - navigation-reporting
   - report-only-same-origin-with-coep.https.html is identical to report-only-same-origin-with-coep-report-only.https.html
 
 
-Per spec:
+### Reporting API ###
 
 https://w3c.github.io/reporting/#generic-reporting
 
@@ -151,9 +151,42 @@ https://w3c.github.io/reporting/#disable
 
 - "User agents MUST allow users to disable reporting with some reasonable amount of granularity in order to maintain the priority of constituencies espoused in [HTML-DESIGN-PRINCIPLES]." - manual test
 
+### HTML ###
 
+https://whatpr.org/html/5518/895fd80...c8265a7/browsers.html#virtual-browsing-context-group-id
 
-General todos/bugs:
+- How to test? (TODO) (Also "initial URL", "opener origin at creation")
+  - window.open
+  - iframe
+  - https://whatpr.org/html/5518/895fd80...c8265a7/browsers.html#creating-a-new-auxiliary-browsing-context step 6, 7
+
+https://whatpr.org/html/5518/895fd80...c8265a7/browsers.html#crossoriginproperties-(-o-)
+- Property access for these should be tested already.
+
+https://whatpr.org/html/5518/895fd80...c8265a7/browsing-the-web.html#navigate
+
+- step 7...
+
+https://whatpr.org/html/5518/895fd80...c8265a7/origin.html#the-headers
+
+- update Structured Fields parsing tests
+
+https://whatpr.org/html/5518/895fd80...c8265a7/origin.html#browsing-context-group-switches-due-to-cross-origin-opener-policy
+
+- test same COOPRO with same-origin navigation, expect no report
+- test initial about:blank (expect no report)
+- test non-initial about:blank (expect report)
+- test sandboxFlags
+- test COOP+COOPRO with different  (expect report)
+- test COOP+COOPRO with same values (expect no report)
+
+https://whatpr.org/html/5518/895fd80...c8265a7/origin.html#reporting
+
+- test step 2. Nested iframes: originA nests originB nests originA. The innermost iframe is accessor. (expect no report)
+- test step 3. Come up with interesting cases where virtual browsing context group ID has unexpected values.
+- ...
+
+### General todos/bugs ###
 
 - Add <!doctype html> to all tests
 - Add meta charset to all tests

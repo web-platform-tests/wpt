@@ -15,9 +15,12 @@
      document and it should not receive a SPV event -->
 <script>
   var t = async_test("Test that no spv event is raised");
-  window.onmessage = t.step_func(function(e) {
-    if (e.data == "end_test") t.done();
-    else assert_unreached("Should not have raised a spv event");
+  window.onmessage = t.step_func_done(function(e) {
+    if (e.data === "delayed_frame_loaded") {
+      assert_unreached("Navigation to frame should have been blocked.");
+    } else if (e.data !== "end_test") {
+      assert_unreached("Should not have raised a spv event");
+    }
   });
 
   var frames_loaded_count = 0;

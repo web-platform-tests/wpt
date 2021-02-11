@@ -8,5 +8,8 @@ def main(request, response):
 </head>
 <body>
     DELAYED FRAME
-</body
+<script>
+    top.postMessage('delayed_frame_loaded', '*');
+</script>
+</body>
 '''

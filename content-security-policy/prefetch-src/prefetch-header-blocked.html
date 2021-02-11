@@ -14,17 +14,18 @@
           assert_equals(e.violatedDirective, 'prefetch-src');
           assert_resource_not_downloaded(t, url);
         }));
+      setTimeout(t.step_func_done(() => {
+        assert_unreached('CSP violation event should have been triggered.');
+      }), 4000);
 
       // Load a stylesheet that tries to trigger a prefetch:
       let link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = '/content-security-policy/support/prefetch-subresource.css';
       document.head.appendChild(link);
-    }, 'Prefetch via `Link` header succeeds when allowed by prefetch-src');
+    }, 'Prefetch via `Link` header blocked by prefetch-src');
   </script>
 </head>
 <body>
 </body>
 </html>
-
-

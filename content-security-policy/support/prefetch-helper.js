@@ -59,7 +59,9 @@ function assert_link_does_not_prefetch(test, link) {
     if (cspEvent)
       test.done();
   });
-  link.onload = test.unreached_func('onload should not fire.');
+  link.onload = test.step_func_done(e => {
+    assert_unreached('onload should not fire.');
+  });
 
   document.head.appendChild(link);
 }

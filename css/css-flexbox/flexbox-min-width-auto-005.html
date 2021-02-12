@@ -6,35 +6,32 @@
 <meta name="assert" content="Test that min-width:auto does not incorrectly stretch items with aspect ratio" />
 
 <style>
-#reference-overlapped-red {
+.reference-overlapped-red {
     position: absolute;
     background-color: red;
     width: 100px;
     height: 50px;
     z-index: -1;
 }
-#constrained-flex {
+.constrained-flex {
     display: flex;
     height: 50px;
-}
-#unconstrained-flex {
-    display: flex;
 }
 br { margin: 50px; }
 </style>
 
 <p>Test passes if there is <strong>no red</strong> visible on the page.</p>
 
-<div id="reference-overlapped-red"></div>
-<div id="constrained-flex">
+<div class="reference-overlapped-red"></div>
+<div class="constrained-flex">
     <img src="support/40x20-green.png" />
 </div>
 
 <br>
 
-<div id="reference-overlapped-red" style="width: 40px;"></div>
-<div id="unconstrained-flex">
-    <div id="constrained-flex">
+<div class="reference-overlapped-red" style="width: 40px;"></div>
+<div style="display: flex">
+    <div class="constrained-flex">
         <img src="support/40x20-green.png" />
     </div>
 </div>

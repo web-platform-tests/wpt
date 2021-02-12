@@ -14,22 +14,21 @@
     top: 40px;
     z-index: -1;
 }
-.outer {
+.constrained-width-flex {
     width: 100px;
     display: flex;
-    /*background: #eee;*/
     border: 1px solid black;
 }
-.inner {
+.constrained-height-flex {
     display: flex;
     height: 100px;
 }
 </style>
 
-<p>Test passes if there are a 20x20 and a 60x100 green boxes enclosed on each 100x100 square.</p>
+<p>Test passes if there are a (vertically centered) 20x20 and a 60x100 green boxes enclosed on each 100x100 square.</p>
 
-<div class="outer">
-    <div class="inner">
+<div class="constrained-width-flex">
+    <div class="constrained-height-flex">
         <img  src="data:image/svg+xml,
                 <svg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>
                     <rect width='100%' height='100%' fill='green'/>
@@ -39,8 +38,8 @@
 
 <br>
 
-<div class="outer">
-    <div class="inner">
+<div class="constrained-width-flex">
+    <div class="constrained-height-flex">
         <img  src="support/60x60-green.png"/>
     </div>
 </div>

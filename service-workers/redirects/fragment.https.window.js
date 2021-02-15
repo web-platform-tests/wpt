@@ -3,7 +3,6 @@
 
 promise_test(async t => {
   const reg = await service_worker_unregister_and_register(t, "resources/fragment-serviceworker.js", "resources/");
-  t.add_cleanup(async () => await reg.unregister());
   await wait_for_state(t, reg.installing, 'activated');
   const frame = await with_iframe("resources/dummy.html");
   const canvas = frame.contentDocument.body.appendChild(document.createElement("canvas"));
@@ -30,4 +29,6 @@ promise_test(async t => {
       _assertPixelApprox(canvas, 40, 40, red, green, blue, alpha, undefined, undefined, 4);
     }, "Forward response fragments: " + subtitle);
   });
+
+  // HOW? t.add_cleanup(async () => await reg.unregister());
 }, "Forward response fragments: setup");

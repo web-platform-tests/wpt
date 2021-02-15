@@ -1,5 +1,5 @@
 onfetch = e => {
-  // Changing this list requires corresponding changes in ..//fragment.window.js
+  // Changing this list requires corresponding changes in ../fragment.https.window.js
   [
     { input: "?1#green", output: "#green" },
     { input: "?2#green", output: "#red" },

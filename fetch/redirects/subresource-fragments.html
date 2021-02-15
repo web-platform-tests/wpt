@@ -22,14 +22,16 @@
 <script>
 setup({ explicit_done:true });
 onload = () => {
-  const ctx = document.querySelector("canvas").getContext("2d");
+  const canvas = document.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
   document.querySelectorAll("img").forEach(img => {
     test(t => {
       t.add_cleanup(() => {
         ctx.clearRect(0, 0, 100, 50);
       });
       ctx.drawImage(img, 0, 0);
-      _assertGreen(ctx, 100, 50);
+      // canvas, pixelX, pixelY, r, g, b, alpha, ?, ?, tolerance
+      _assertPixelApprox(canvas, 40, 40, 0, 255, 0, 255, undefined, undefined, 4);
     }, img.dataset.desc);
   });
   done();

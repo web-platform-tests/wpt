@@ -2,6 +2,8 @@
 
 promise_test(async t => {
   const reg = await service_worker_unregister_and_register(t, "resources/navigate-fragment-serviceworker.js", "resources/");
+  // Not add_cleanup as we want this to run after all tests
+  add_completion_callback(async () => await reg.unregister());
   await wait_for_state(t, reg.installing, 'activated');
 
   // Changing this list requires corresponding changes in
@@ -19,6 +21,4 @@ promise_test(async t => {
       assert_equals(iframe.contentWindow.location.href, `${new URL("resources/dummy.html", location).href}${output}`);
     }, `Navigate and fragments: ${subtitle}`);
   });
-
-  // HOW?! t.add_cleanup(async () => await reg.unregister());
 }, "Setup");

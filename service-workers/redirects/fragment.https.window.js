@@ -11,22 +11,23 @@ promise_test(async t => {
   canvas.height = 50;
   const ctx = canvas.getContext("2d");
 
-  // Changing this list requires corresponding changes in resources/fragment-serviceworker.js. Note
-  // that expected here is intentionally not output there in some cases.
+  // Changing this list requires corresponding changes in resources/fragment-serviceworker.js
   [
-    { "input": "?1#green", "subtitle": "control" },
-    { "input": "?2#green", "subtitle": "request overrides" },
-    { "input": "?3", "subtitle": "response wins in case of fragment conflict" }
-  ].forEach(val => {
+    { input: "?1#green", subtitle: "control" },
+    { input: "?2#green", subtitle: "request overrides" },
+    { input: "?3", subtitle: "request overrides when null too", color: [0, 0, 0, 0] },
+    { input: "?4#red", subtitle: "request does not override with syntehtic redirects to non-null fragments" },
+    { input: "?5green", subtitle: "request does override with syntehtic redirect to null fragment" }
+  ].forEach(({ input, subtitle, color: [red, green, blue, alpha] = [0, 255, 0, 255] }) => {
     promise_test(async t => {
       t.add_cleanup(() => {
         ctx.clearRect(0, 0, 100, 50);
       });
       const img = frame.contentDocument.body.appendChild(document.createElement("img"));
-      img.src = `/images/colors.svg${val.input}`;
+      img.src = `/images/colors.svg${input}`;
       await new Promise(resolve => img.onload = resolve);
       ctx.drawImage(img, 0, 0);
-      _assertGreen(ctx, 100, 50);
-    }, "Forward response fragments: " + val.subtitle);
+      _assertPixelApprox(canvas, 40, 40, red, green, blue, alpha, undefined, undefined, 4);
+    }, "Forward response fragments: " + subtitle);
   });
 }, "Forward response fragments: setup");

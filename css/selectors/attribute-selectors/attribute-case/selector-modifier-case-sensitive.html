@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>Selectors: case-sensitivity attribute selector modifier</title>
+<link rel="author" title="Jaeyong Bae" href="jdragon.bae@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/selectors/#attribute-case">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="styleSheet">
+<style>
+  link[rel="stylesheet"] { color: green; }
+  link[rel="stylesheet" s] { color: red; }
+</style>
+<script>
+test(function() {
+   let rule = document.styleSheets[0].cssRules[0];
+   assert_equals(rule.style["color"], "green");
+});
+</script>

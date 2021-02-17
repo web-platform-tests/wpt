@@ -57,7 +57,7 @@ def update_include_from_file(file):
         for line in f:
             line = line.strip()
             if len(line) > 0:
-                new_include.append(line.rstrip())
+                new_include.append(line)
     return new_include
 
 def update_include_for_groups(test_groups, include):

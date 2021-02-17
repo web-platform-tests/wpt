@@ -982,5 +982,52 @@ promise_test(async (t) => {
     assert_equals(frame.contentDocument.body.textContent,
                   'method = POST, isHistoryNavigation = true');
   }, 'FetchEvent#request.isHistoryNavigation is true (POST + history.go(-1))');
+
+// When service worker responds with a Response, no XHR upload progress
+// events are delivered.
+promise_test(async t => {
+    const page_url = 'resources/simple.html?ignore-for-request-body-string';
+    const frame = await with_iframe(page_url);
+    t.add_cleanup(() => { frame.remove(); });
+
+    const xhr = new frame.contentWindow.XMLHttpRequest();
+    xhr.open('POST', 'simple.html?request-body');
+    xhr.upload.addEventListener('progress', t.unreached_func('progress'));
+    xhr.upload.addEventListener('error', t.unreached_func('error'));
+    xhr.upload.addEventListener('abort', t.unreached_func('abort'));
+    xhr.upload.addEventListener('timeout', t.unreached_func('timeout'));
+    xhr.upload.addEventListener('load', t.unreached_func('load'));
+    xhr.upload.addEventListener('loadend', t.unreached_func('loadend'));
+    xhr.send('i am the request body');
+
+    await new Promise((resolve) => xhr.addEventListener('load', resolve));
+  }, 'XHR upload progress events for response coming from SW');
+
+// Upload progress events should be delivered for the network fallback case.
+promise_test(async t => {
+    const page_url = 'resources/simple.html?ignore-for-request-body-string';
+    const frame = await with_iframe(page_url);
+    t.add_cleanup(() => { frame.remove(); });
+
+    let progress = false;
+    let load = false;
+    let loadend = false;
+
+    const xhr = new frame.contentWindow.XMLHttpRequest();
+    xhr.open('POST', '/fetch/api/resources/echo-content.py?ignore');
+    xhr.upload.addEventListener('progress', () => progress = true);
+    xhr.upload.addEventListener('error', t.unreached_func('error'));
+    xhr.upload.addEventListener('abort', t.unreached_func('abort'));
+    xhr.upload.addEventListener('timeout', t.unreached_func('timeout'));
+    xhr.upload.addEventListener('load', () => load = true);
+    xhr.upload.addEventListener('loadend', () => loadend = true);
+    xhr.send('i am the request body');
+
+    await new Promise((resolve) => xhr.addEventListener('load', resolve));
+    assert_true(progress, 'progress');
+    assert_true(load, 'load');
+    assert_true(loadend, 'loadend');
+  }, 'XHR upload progress events for network fallback');
+
 </script>
 </body>

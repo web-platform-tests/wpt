@@ -51,11 +51,13 @@ class TestGroupsFile(object):
     def __getitem__(self, key):
         return self._data[key]
 
-def update_include_from_files(file):
+def update_include_from_file(file):
     new_include = []
     with open(file) as f:
         for line in f:
-            new_include.append(line.rstrip())
+            line = line.strip()
+            if len(line) > 0:
+                new_include.append(line.rstrip())
     return new_include
 
 def update_include_for_groups(test_groups, include):

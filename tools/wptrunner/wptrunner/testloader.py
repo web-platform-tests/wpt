@@ -56,7 +56,9 @@ def update_include_from_file(file):
     with open(file) as f:
         for line in f:
             line = line.strip()
-            if len(line) > 0:
+            # Allow whole-line comments;
+            # fragments mean we can't have partial line #-based comments
+            if len(line) > 0 and not line.startswith("#"):
                 new_include.append(line)
     return new_include
 

@@ -67,10 +67,10 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
     manifest_filters = []
 
     include = kwargs["include"]
+    if kwargs["include_file"]:
+        include.extend(testloader.update_include_from_file(kwargs["include_file"]))
     if test_groups:
         include = testloader.update_include_for_groups(test_groups, include)
-    elif kwargs["include_file"] is not None:
-        include = testloader.update_include_from_file(kwargs["include_file"])
 
     if include or kwargs["exclude"] or kwargs["include_manifest"] or kwargs["default_exclude"]:
         manifest_filters.append(testloader.TestFilter(include=include,

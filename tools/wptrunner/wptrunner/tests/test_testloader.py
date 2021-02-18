@@ -61,6 +61,7 @@ def test_loader_h2_tests():
 
 def test_include_file():
     test_cases = """
+# This is a comment
 /foo/bar-error.https.html
 /foo/bar-success.https.html
 /foo/idlharness.https.any.html

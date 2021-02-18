@@ -59,6 +59,8 @@ def test_loader_h2_tests():
     assert len(loader.disabled_tests["testharness"]) == 1
     assert loader.disabled_tests["testharness"][0].url == "/a/bar.h2.html"
 
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="NamedTemporaryFile cannot be reopened on Win32")
 def test_include_file():
     test_cases = """
 # This is a comment

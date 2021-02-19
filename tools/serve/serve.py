@@ -299,7 +299,7 @@ class ServiceWorkersHandler(HtmlWrapperHandler):
 class ServiceWorkersModuleHandler(HtmlWrapperHandler):
     global_type = "serviceworker-module"
     path_replace = [(".any.serviceworker-module.html",
-                     ".any.js", ".any.worker.js")]
+                     ".any.js", ".any.worker-module.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
 %(meta)s
@@ -342,6 +342,33 @@ done();
         if key == "script":
             attribute = value.replace("\\", "\\\\").replace('"', '\\"')
             return 'importScripts("%s")' % attribute
+        if key == "title":
+            value = value.replace("\\", "\\\\").replace('"', '\\"')
+            return 'self.META_TITLE = "%s";' % value
+        return None
+
+
+class AnyWorkerModuleHandler(WrapperHandler):
+    headers = [('Content-Type', 'text/javascript')]
+    path_replace = [(".any.worker-module.js", ".any.js")]
+    wrapper = """%(meta)s
+self.GLOBAL = {
+  isWindow: function() { return false; },
+  isWorker: function() { return true; },
+};
+import "/resources/testharness.js";
+%(script)s
+import "%(path)s";
+done();
+"""
+
+    def _meta_replacement(self, key, value):
+        return None
+
+    def _script_replacement(self, key, value):
+        if key == "script":
+            attribute = value.replace("\\", "\\\\").replace('"', '\\"')
+            return 'import "%s";' % attribute
         if key == "title":
             value = value.replace("\\", "\\\\").replace('"', '\\"')
             return 'self.META_TITLE = "%s";' % value
@@ -399,6 +426,7 @@ class RoutesBuilder(object):
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.serviceworker-module.html", ServiceWorkersModuleHandler),
             ("GET", "*.any.worker.js", AnyWorkerHandler),
+            ("GET", "*.any.worker-module.js", AnyWorkerModuleHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("GET", "/.well-known/origin-policy", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),

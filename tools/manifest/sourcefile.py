@@ -88,6 +88,7 @@ _any_variants = {
     "sharedworker": {},
     "dedicatedworker": {"suffix": ".any.worker.html"},
     "worker": {"longhand": {"dedicatedworker", "sharedworker", "serviceworker"}},
+    "worker-module": {},
     "jsshell": {"suffix": ".any.js"},
 }  # type: Dict[Text, Dict[Text, Any]]
 

@@ -338,18 +338,20 @@ done();
     def _meta_replacement(self, key, value):
         return None
 
+    def _create_script_import(self, attribute):
+        return 'importScripts("%s")' % attribute
+
     def _script_replacement(self, key, value):
         if key == "script":
             attribute = value.replace("\\", "\\\\").replace('"', '\\"')
-            return 'importScripts("%s")' % attribute
+            return self._create_script_import(attribute)
         if key == "title":
             value = value.replace("\\", "\\\\").replace('"', '\\"')
             return 'self.META_TITLE = "%s";' % value
         return None
 
 
-class AnyWorkerModuleHandler(WrapperHandler):
-    headers = [('Content-Type', 'text/javascript')]
+class AnyWorkerModuleHandler(AnyWorkerHandler):
     path_replace = [(".any.worker-module.js", ".any.js")]
     wrapper = """%(meta)s
 self.GLOBAL = {
@@ -362,17 +364,8 @@ import "%(path)s";
 done();
 """
 
-    def _meta_replacement(self, key, value):
-        return None
-
-    def _script_replacement(self, key, value):
-        if key == "script":
-            attribute = value.replace("\\", "\\\\").replace('"', '\\"')
-            return 'import "%s";' % attribute
-        if key == "title":
-            value = value.replace("\\", "\\\\").replace('"', '\\"')
-            return 'self.META_TITLE = "%s";' % value
-        return None
+    def _create_script_import(self, attribute):
+        return 'import "%s";' % attribute
 
 
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]

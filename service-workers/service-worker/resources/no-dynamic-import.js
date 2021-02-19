@@ -12,8 +12,7 @@ const importUrlTests = [
 
 for (const [name, url] of importUrlTests) {
   promise_test(
-    async (t) =>
-      promise_rejects_js(t, TypeError, import(url), "Import must reject"),
+    (t) => promise_rejects_js(t, TypeError, import(url), "Import must reject"),
     name
   );
 }

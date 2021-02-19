@@ -296,6 +296,31 @@ class ServiceWorkersHandler(HtmlWrapperHandler):
 """
 
 
+class ServiceWorkersModuleHandler(HtmlWrapperHandler):
+    global_type = "serviceworker-module"
+    path_replace = [(".any.serviceworker-module.html",
+                     ".any.js", ".any.worker.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+(async function() {
+  const scope = 'does/not/exist';
+  let reg = await navigator.serviceWorker.getRegistration(scope);
+  if (reg) await reg.unregister();
+  reg = await navigator.serviceWorker.register(
+    "%(path)s%(query)s",
+    { scope, type: 'module' },
+  );
+  fetch_tests_from_worker(reg.installing);
+})();
+</script>
+"""
+
+
 class AnyWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
     path_replace = [(".any.worker.js", ".any.js")]
@@ -372,6 +397,7 @@ class RoutesBuilder(object):
             ("GET", "*.any.html", AnyHtmlHandler),
             ("GET", "*.any.sharedworker.html", SharedWorkersHandler),
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
+            ("GET", "*.any.serviceworker-module.html", ServiceWorkersModuleHandler),
             ("GET", "*.any.worker.js", AnyWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("GET", "/.well-known/origin-policy", handlers.PythonScriptHandler),

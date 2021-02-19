@@ -51,7 +51,7 @@ class TestGroupsFile(object):
     def __getitem__(self, key):
         return self._data[key]
 
-def update_include_from_file(file):
+def read_include_from_file(file):
     new_include = []
     with open(file) as f:
         for line in f:

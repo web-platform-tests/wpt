@@ -8,7 +8,7 @@ import pytest
 
 from mozlog import structured
 from ..testloader import TestFilter as Filter, TestLoader as Loader
-from ..testloader import update_include_from_file
+from ..testloader import read_include_from_file
 from .test_wpttest import make_mock_manifest
 
 here = os.path.dirname(__file__)
@@ -74,7 +74,7 @@ def test_include_file():
         f.write(test_cases)
         f.flush()
 
-        include = update_include_from_file(f.name)
+        include = read_include_from_file(f.name)
 
         assert len(include) == 4
         assert "/foo/bar-error.https.html" in include

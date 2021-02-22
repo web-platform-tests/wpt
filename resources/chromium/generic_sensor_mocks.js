@@ -1,10 +1,9 @@
-import {ReportingMode, Sensor, SensorClientRemote, SensorReceiver, SensorRemote, SensorType} from '/gen/services/device/public/mojom/sensor.mojom.m.js';
-import {SensorCreationResult, SensorInitParams_READ_BUFFER_SIZE_FOR_TESTS, SensorProvider, SensorProviderReceiver} from '/gen/services/device/public/mojom/sensor_provider.mojom.m.js';
+'use strict';
 
 // A "sliding window" that iterates over |data| and returns one item at a
 // time, advancing and wrapping around as needed. |data| must be an array of
 // arrays.
-self.RingBuffer = class {
+class RingBuffer {
   constructor(data) {
     this.bufferPosition_ = 0;
     // Validate |data|'s format and deep-copy every element.
@@ -29,9 +28,9 @@ self.RingBuffer = class {
   [Symbol.iterator]() {
     return this;
   }
-};
+}
 
-self.GenericSensorTest = (() => {
+var GenericSensorTest = (() => {
   // Default sensor frequency in default configurations.
   const DEFAULT_FREQUENCY = 5;
 
@@ -57,8 +56,11 @@ self.GenericSensorTest = (() => {
       }
       this.buffer_ = new Float64Array(rv.buffer);
       this.buffer_.fill(0);
-      this.receiver_ = new SensorReceiver(this);
-      this.receiver_.$.bindHandle(sensorRequest.handle);
+      this.binding_ = new mojo.Binding(device.mojom.Sensor, this,
+                                       sensorRequest);
+      this.binding_.setConnectionErrorHandler(() => {
+        this.reset();
+      });
     }
 
     // Returns default configuration.
@@ -118,7 +120,7 @@ self.GenericSensorTest = (() => {
       this.notifyOnReadingChange_ = true;
       this.readingData_ = null;
       this.buffer_.fill(0);
-      this.receiver_.$.close();
+      this.binding_.close();
     }
 
     // Sets fake data that is used to deliver sensor reading updates.
@@ -164,7 +166,7 @@ self.GenericSensorTest = (() => {
         // increasing timestamp.
         this.buffer_[1] = this.timestamp_++;
 
-        if (this.reportingMode_ === ReportingMode.ON_CHANGE &&
+        if (this.reportingMode_ === device.mojom.ReportingMode.ON_CHANGE &&
             this.notifyOnReadingChange_) {
           this.client_.sensorReadingChanged();
         }
@@ -195,9 +197,9 @@ self.GenericSensorTest = (() => {
   class MockSensorProvider {
     constructor() {
       this.readingSizeInBytes_ =
-          Number(SensorInitParams_READ_BUFFER_SIZE_FOR_TESTS);
-      this.sharedBufferSizeInBytes_ =
-          this.readingSizeInBytes_ * (SensorType.MAX_VALUE + 1);
+          device.mojom.SensorInitParams.READ_BUFFER_SIZE_FOR_TESTS;
+      this.sharedBufferSizeInBytes_ = this.readingSizeInBytes_ *
+              (device.mojom.SensorType.MAX_VALUE + 1);
       const rv = Mojo.createSharedBuffer(this.sharedBufferSizeInBytes_);
       if (rv.result != Mojo.RESULT_OK) {
         throw new Error("MockSensorProvider: Failed to map shared buffer");
@@ -210,26 +212,28 @@ self.GenericSensorTest = (() => {
       this.maxFrequency_ = 60;
       this.minFrequency_ = 1;
       this.mojomSensorType_ = new Map([
-        ['Accelerometer', SensorType.ACCELEROMETER],
-        ['LinearAccelerationSensor', SensorType.LINEAR_ACCELERATION],
-        ['GravitySensor', SensorType.GRAVITY],
-        ['AmbientLightSensor', SensorType.AMBIENT_LIGHT],
-        ['Gyroscope', SensorType.GYROSCOPE],
-        ['Magnetometer', SensorType.MAGNETOMETER],
+        ['Accelerometer', device.mojom.SensorType.ACCELEROMETER],
+        ['LinearAccelerationSensor',
+            device.mojom.SensorType.LINEAR_ACCELERATION],
+        ['GravitySensor',
+            device.mojom.SensorType.GRAVITY],
+        ['AmbientLightSensor', device.mojom.SensorType.AMBIENT_LIGHT],
+        ['Gyroscope', device.mojom.SensorType.GYROSCOPE],
+        ['Magnetometer', device.mojom.SensorType.MAGNETOMETER],
         ['AbsoluteOrientationSensor',
-            SensorType.ABSOLUTE_ORIENTATION_QUATERNION],
+            device.mojom.SensorType.ABSOLUTE_ORIENTATION_QUATERNION],
         ['AbsoluteOrientationEulerAngles',
-            SensorType.ABSOLUTE_ORIENTATION_EULER_ANGLES],
+            device.mojom.SensorType.ABSOLUTE_ORIENTATION_EULER_ANGLES],
         ['RelativeOrientationSensor',
-            SensorType.RELATIVE_ORIENTATION_QUATERNION],
+            device.mojom.SensorType.RELATIVE_ORIENTATION_QUATERNION],
         ['RelativeOrientationEulerAngles',
-            SensorType.RELATIVE_ORIENTATION_EULER_ANGLES],
-        ['ProximitySensor', SensorType.PROXIMITY]
+            device.mojom.SensorType.RELATIVE_ORIENTATION_EULER_ANGLES],
+        ['ProximitySensor', device.mojom.SensorType.PROXIMITY]
       ]);
-      this.receiver_ = new SensorProviderReceiver(this);
+      this.binding_ = new mojo.Binding(device.mojom.SensorProvider, this);
 
       this.interceptor_ =
-          new MojoInterfaceInterceptor(SensorProvider.$interfaceName);
+          new MojoInterfaceInterceptor(device.mojom.SensorProvider.name);
       this.interceptor_.oninterfacerequest = e => {
         this.bindToPipe(e.handle);
       };
@@ -239,24 +243,25 @@ self.GenericSensorTest = (() => {
     // Returns initialized Sensor proxy to the client.
     async getSensor(type) {
       if (this.getSensorShouldFail_.get(type)) {
-        return {result: SensorCreationResult.ERROR_NOT_AVAILABLE,
+        return {result: device.mojom.SensorCreationResult.ERROR_NOT_AVAILABLE,
                 initParams: null};
       }
       if (this.permissionsDenied_.get(type)) {
-        return {result: SensorCreationResult.ERROR_NOT_ALLOWED,
+        return {result: device.mojom.SensorCreationResult.ERROR_NOT_ALLOWED,
                 initParams: null};
       }
 
       const offset = type * this.readingSizeInBytes_;
-      const reportingMode = ReportingMode.ON_CHANGE;
+      const reportingMode = device.mojom.ReportingMode.ON_CHANGE;
 
-      const sensor = new SensorRemote();
+      const sensorPtr = new device.mojom.SensorPtr();
       if (!this.activeSensors_.has(type)) {
         const mockSensor = new MockSensor(
-            sensor.$.bindNewPipeAndPassReceiver(), this.sharedBufferHandle_,
-            offset, this.readingSizeInBytes_, reportingMode);
+            mojo.makeRequest(sensorPtr), this.sharedBufferHandle_, offset,
+            this.readingSizeInBytes_, reportingMode);
         this.activeSensors_.set(type, mockSensor);
-        this.activeSensors_.get(type).client_ = new SensorClientRemote();
+        this.activeSensors_.get(type).client_ =
+            new device.mojom.SensorClientPtr();
       }
 
       const rv = this.sharedBufferHandle_.duplicateBufferHandle();
@@ -267,7 +272,8 @@ self.GenericSensorTest = (() => {
       const defaultConfig = { frequency: DEFAULT_FREQUENCY };
       // Consider sensor traits to meet assertions in C++ code (see
       // services/device/public/cpp/generic_sensor/sensor_traits.h)
-      if (type == SensorType.AMBIENT_LIGHT || type == SensorType.MAGNETOMETER) {
+      if (type == device.mojom.SensorType.AMBIENT_LIGHT ||
+          type == device.mojom.SensorType.MAGNETOMETER) {
         this.maxFrequency_ = Math.min(10, this.maxFrequency_);
       }
 
@@ -277,24 +283,23 @@ self.GenericSensorTest = (() => {
       // each reading return a different value that is significantly different
       // from the previous one when setSensorReading() is not called by client
       // code (e.g. run_generic_sensor_iframe_tests()).
-      if (type == SensorType.AMBIENT_LIGHT) {
+      if (type == device.mojom.SensorType.AMBIENT_LIGHT) {
         this.activeSensors_.get(type).setSensorReading([
           [window.performance.now() * 100],
           [(window.performance.now() + 50) * 100]
         ]);
       }
 
-      const client = this.activeSensors_.get(type).client_;
-      const initParams = {
-        sensor,
-        clientReceiver: client.$.bindNewPipeAndPassReceiver(),
+      const initParams = new device.mojom.SensorInitParams({
+        sensor: sensorPtr,
+        clientReceiver: mojo.makeRequest(this.activeSensors_.get(type).client_),
         memory: rv.handle,
-        bufferOffset: BigInt(offset),
+        bufferOffset: offset,
         mode: reportingMode,
         defaultConfiguration: defaultConfig,
         minimumFrequency: this.minFrequency_,
         maximumFrequency: this.maxFrequency_
-      };
+      });
 
       if (this.resolveFuncs_.has(type)) {
         for (let resolveFunc of this.resolveFuncs_.get(type)) {
@@ -303,12 +308,16 @@ self.GenericSensorTest = (() => {
         this.resolveFuncs_.delete(type);
       }
 
-      return {result: SensorCreationResult.SUCCESS, initParams};
+      return {result: device.mojom.SensorCreationResult.SUCCESS,
+              initParams: initParams};
     }
 
     // Binds object to mojo message pipe
     bindToPipe(pipe) {
-      this.receiver_.$.bindHandle(pipe);
+      this.binding_.bind(pipe);
+      this.binding_.setConnectionErrorHandler(() => {
+        this.reset();
+      });
     }
 
     // Mock functions
@@ -324,7 +333,7 @@ self.GenericSensorTest = (() => {
       this.permissionsDenied_.clear();
       this.maxFrequency_ = 60;
       this.minFrequency_ = 1;
-      this.receiver_.$.close();
+      this.binding_.close();
       this.interceptor_.stop();
     }
 

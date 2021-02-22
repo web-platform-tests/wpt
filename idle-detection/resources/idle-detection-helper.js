@@ -10,5 +10,12 @@
 //   --enable-blink-features=MojoJS,MojoJSTest
 
 async function loadChromiumResources() {
-  await import('/resources/chromium/mock-idle-detection.js');
+  const chromiumResources = [
+    '/gen/mojo/public/mojom/base/string16.mojom.js',
+    '/gen/mojo/public/mojom/base/time.mojom.js',
+    '/gen/third_party/blink/public/mojom/idle/idle_manager.mojom.js'
+  ];
+
+  await loadMojoResources(chromiumResources);
+  await loadScript('/resources/chromium/mock-idle-detection.js');
 }

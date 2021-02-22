@@ -1,34 +1,34 @@
-import {FillLightMode, ImageCapture, ImageCaptureReceiver, MeteringMode, RedEyeReduction} from '/gen/media/capture/mojom/image_capture.mojom.m.js';
+"use strict";
 
-self.ImageCaptureTest = (() => {
+var ImageCaptureTest = (() => {
   // Class that mocks ImageCapture interface defined in
   // https://cs.chromium.org/chromium/src/media/capture/mojom/image_capture.mojom
   class MockImageCapture {
     constructor() {
       this.interceptor_ =
-          new MojoInterfaceInterceptor(ImageCapture.$interfaceName);
+          new MojoInterfaceInterceptor(media.mojom.ImageCapture.name);
       this.interceptor_.oninterfacerequest =
-        e => this.receiver_.$.bindHandle(e.handle);
+        e => this.bindingSet_.addBinding(this, e.handle);
       this.interceptor_.start();
 
       this.state_ = {
         state: {
           supportedWhiteBalanceModes: [
-            MeteringMode.SINGLE_SHOT,
-            MeteringMode.CONTINUOUS
+            media.mojom.MeteringMode.SINGLE_SHOT,
+            media.mojom.MeteringMode.CONTINUOUS
           ],
-          currentWhiteBalanceMode: MeteringMode.CONTINUOUS,
+          currentWhiteBalanceMode: media.mojom.MeteringMode.CONTINUOUS,
           supportedExposureModes: [
-            MeteringMode.MANUAL,
-            MeteringMode.SINGLE_SHOT,
-            MeteringMode.CONTINUOUS
+            media.mojom.MeteringMode.MANUAL,
+            media.mojom.MeteringMode.SINGLE_SHOT,
+            media.mojom.MeteringMode.CONTINUOUS
           ],
-          currentExposureMode: MeteringMode.MANUAL,
+          currentExposureMode: media.mojom.MeteringMode.MANUAL,
           supportedFocusModes: [
-            MeteringMode.MANUAL,
-            MeteringMode.SINGLE_SHOT
+            media.mojom.MeteringMode.MANUAL,
+            media.mojom.MeteringMode.SINGLE_SHOT
           ],
-          currentFocusMode: MeteringMode.MANUAL,
+          currentFocusMode: media.mojom.MeteringMode.MANUAL,
           pointsOfInterest: [{
             x: 0.4,
             y: 0.6
@@ -115,7 +115,7 @@ self.ImageCaptureTest = (() => {
           supportsTorch: true,
           torch: false,
 
-          redEyeReduction: RedEyeReduction.CONTROLLABLE,
+          redEyeReduction: media.mojom.RedEyeReduction.CONTROLLABLE,
           height: {
             min: 240.0,
             max: 2448.0,
@@ -128,16 +128,18 @@ self.ImageCaptureTest = (() => {
             current: 320.0,
             step: 3.0
           },
-          fillLightMode: [FillLightMode.AUTO, FillLightMode.FLASH],
+          fillLightMode: [
+            media.mojom.FillLightMode.AUTO, media.mojom.FillLightMode.FLASH
+          ],
         }
       };
       this.panTiltZoomPermissionStatus_ = null;
       this.settings_ = null;
-      this.receiver_ = new ImageCaptureReceiver(this);
+      this.bindingSet_ = new mojo.BindingSet(media.mojom.ImageCapture);
     }
 
     reset() {
-      this.receiver_.$.close();
+      this.bindingSet_.closeAllBindings();
       this.interceptor_.stop();
     }
 

@@ -1,20 +1,20 @@
-import {BarcodeDetectionReceiver, BarcodeFormat} from '/gen/services/shape_detection/public/mojom/barcodedetection.mojom.m.js';
-import {BarcodeDetectionProvider, BarcodeDetectionProviderReceiver} from '/gen/services/shape_detection/public/mojom/barcodedetection_provider.mojom.m.js';
+"use strict";
 
-self.BarcodeDetectionTest = (() => {
+var BarcodeDetectionTest = (() => {
   // Class that mocks BarcodeDetectionProvider interface defined in
   // https://cs.chromium.org/chromium/src/services/shape_detection/public/mojom/barcodedetection_provider.mojom
   class MockBarcodeDetectionProvider {
     constructor() {
-      this.receiver_ = new BarcodeDetectionProviderReceiver(this);
+      this.bindingSet_ = new mojo.BindingSet(
+          shapeDetection.mojom.BarcodeDetectionProvider);
 
       this.interceptor_ = new MojoInterfaceInterceptor(
-          BarcodeDetectionProvider.$interfaceName);
+          shapeDetection.mojom.BarcodeDetectionProvider.name);
       this.interceptor_.oninterfacerequest = e => {
         if (this.should_close_pipe_on_request_)
           e.handle.close();
         else
-          this.receiver_.$.bindHandle(e.handle);
+          this.bindingSet_.addBinding(this, e.handle);
       }
       this.interceptor_.start();
       this.should_close_pipe_on_request_ = false;
@@ -25,13 +25,13 @@ self.BarcodeDetectionTest = (() => {
     }
 
     enumerateSupportedFormats() {
-      return {
+      return Promise.resolve({
         supportedFormats: [
-          BarcodeFormat.AZTEC,
-          BarcodeFormat.DATA_MATRIX,
-          BarcodeFormat.QR_CODE,
+          shapeDetection.mojom.BarcodeFormat.AZTEC,
+          shapeDetection.mojom.BarcodeFormat.DATA_MATRIX,
+          shapeDetection.mojom.BarcodeFormat.QR_CODE,
         ]
-      };
+      });
     }
 
     getFrameData() {
@@ -45,7 +45,7 @@ self.BarcodeDetectionTest = (() => {
     reset() {
       this.mockService_ = null;
       this.should_close_pipe_on_request_ = false;
-      this.receiver_.$.close();
+      this.bindingSet_.closeAllBindings();
       this.interceptor_.stop();
     }
 
@@ -60,19 +60,20 @@ self.BarcodeDetectionTest = (() => {
   class MockBarcodeDetection {
     constructor(request, options) {
       this.options_ = options;
-      this.receiver_ = new BarcodeDetectionReceiver(this);
-      this.receiver_.$.bindHandle(request.handle);
+      this.binding_ =
+          new mojo.Binding(shapeDetection.mojom.BarcodeDetection,
+                           this, request);
     }
 
     detect(bitmapData) {
       this.bufferData_ =
           new Uint32Array(getArrayBufferFromBigBuffer(bitmapData.pixelData));
-      return {
+      return Promise.resolve({
         results: [
           {
             rawValue : "cats",
             boundingBox: { x: 1.0, y: 1.0, width: 100.0, height: 100.0 },
-            format: BarcodeFormat.QR_CODE,
+            format: shapeDetection.mojom.BarcodeFormat.QR_CODE,
             cornerPoints: [
               { x: 1.0, y: 1.0 },
               { x: 101.0, y: 1.0 },
@@ -83,7 +84,7 @@ self.BarcodeDetectionTest = (() => {
           {
             rawValue : "dogs",
             boundingBox: { x: 2.0, y: 2.0, width: 50.0, height: 50.0 },
-            format: BarcodeFormat.CODE_128,
+            format: shapeDetection.mojom.BarcodeFormat.CODE_128,
             cornerPoints: [
               { x: 2.0, y: 2.0 },
               { x: 52.0, y: 2.0 },
@@ -92,7 +93,7 @@ self.BarcodeDetectionTest = (() => {
             ],
           },
         ],
-      };
+      });
     }
   }
 
@@ -132,5 +133,3 @@ self.BarcodeDetectionTest = (() => {
 
   return BarcodeDetectionTestChromium;
 })();
-
-self.BarcodeFormat = BarcodeFormat;

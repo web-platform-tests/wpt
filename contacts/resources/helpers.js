@@ -9,7 +9,14 @@
 //
 //   --enable-blink-features=MojoJS,MojoJSTest
 async function loadChromiumResources() {
-  await import('/resources/chromium/contacts_manager_mock.js');
+
+  const chromiumResources = [
+    '/gen/third_party/blink/public/mojom/contacts/contacts_manager.mojom.js',
+    '/gen/components/payments/mojom/payment_request_data.mojom.js',
+  ];
+
+  await loadMojoResources(chromiumResources);
+  await loadScript('/resources/chromium/contacts_manager_mock.js');
 }
 
 // User Agents must provide their own implementation of `WebContacts`,

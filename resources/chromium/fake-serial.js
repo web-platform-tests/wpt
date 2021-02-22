@@ -1,6 +1,3 @@
-import {SerialPortFlushMode, SerialPortRemote, SerialReceiveError, SerialPortReceiver, SerialSendError} from '/gen/services/device/public/mojom/serial.mojom.m.js';
-import {SerialService, SerialServiceReceiver} from '/gen/third_party/blink/public/mojom/serial/serial.mojom.m.js';
-
 // Implementation of an UnderlyingSource to create a ReadableStream from a Mojo
 // data pipe consumer handle.
 class DataPipeSource {
@@ -87,7 +84,7 @@ class DataPipeSink {
   }
 }
 
-// Implementation of device.mojom.SerialPort.
+// Implementation of blink.mojom.SerialPort.
 class FakeSerialPort {
   constructor() {
     this.inputSignals_ = {
@@ -106,21 +103,24 @@ class FakeSerialPort {
   }
 
   open(options, client) {
-    if (this.receiver_ !== undefined) {
+    if (this.binding_ !== undefined) {
       // Port already open.
       return null;
     }
 
-    let port = new SerialPortRemote();
-    this.receiver_ = new SerialPortReceiver(this);
-    this.receiver_.$.bindHandle(port.$.bindNewPipeAndPassReceiver().handle);
+    let portPtr = new device.mojom.SerialPortPtr();
+    this.binding_ = new mojo.Binding(
+        device.mojom.SerialPort, this, mojo.makeRequest(portPtr));
+    this.binding_.setConnectionErrorHandler(() => {
+      this.close();
+    });
 
     this.options_ = options;
     this.client_ = client;
     // OS typically sets DTR on open.
     this.outputSignals_.dataTerminalReady = true;
 
-    return port;
+    return portPtr;
   }
 
   write(data) {
@@ -146,11 +146,11 @@ class FakeSerialPort {
   }
 
   simulateParityError() {
-    this.simulateReadError(SerialReceiveError.PARITY_ERROR);
+    this.simulateReadError(device.mojom.SerialReceiveError.PARITY_ERROR);
   }
 
   simulateDisconnectOnRead() {
-    this.simulateReadError(SerialReceiveError.DISCONNECTED);
+    this.simulateReadError(device.mojom.SerialReceiveError.DISCONNECTED);
   }
 
   simulateWriteError(error) {
@@ -161,11 +161,11 @@ class FakeSerialPort {
   }
 
   simulateSystemErrorOnWrite() {
-    this.simulateWriteError(SerialSendError.SYSTEM_ERROR);
+    this.simulateWriteError(device.mojom.SerialSendError.SYSTEM_ERROR);
   }
 
   simulateDisconnectOnWrite() {
-    this.simulateWriteError(SerialSendError.DISCONNECTED);
+    this.simulateWriteError(device.mojom.SerialSendError.DISCONNECTED);
   }
 
   simulateInputSignals(signals) {
@@ -232,13 +232,13 @@ class FakeSerialPort {
 
   async flush(mode) {
     switch (mode) {
-      case SerialPortFlushMode.kReceive:
+      case device.mojom.SerialPortFlushMode.kReceive:
         this.writer_.abort();
         this.writer_.releaseLock();
         this.writer_ = undefined;
         this.writable_ = undefined;
         break;
-      case SerialPortFlushMode.kTransmit:
+      case device.mojom.SerialPortFlushMode.kTransmit:
         this.reader_.cancel();
         this.reader_ = undefined;
         this.readable_ = undefined;
@@ -289,11 +289,11 @@ class FakeSerialPort {
   async getPortInfo() {
     return {
       bitrate: this.options_.bitrate,
-      dataBits: this.options_.datBits,
-      parityBit: this.options_.parityBit,
-      stopBits: this.options_.stopBits,
-      ctsFlowControl:
-          this.options_.hasCtsFlowControl && this.options_.ctsFlowControl,
+      data_bits: this.options_.data_bits,
+      parity_bit: this.options_.parity_bit,
+      stop_bits: this.options_.stop_bits,
+      cts_flow_control: this.options_.has_cts_flow_control ?
+          this.options_.cts_flow_control : false
     };
   }
 
@@ -307,9 +307,9 @@ class FakeSerialPort {
     }
     this.writable_ = undefined;
 
-    if (this.receiver_) {
-      this.receiver_.$.close();
-      this.receiver_ = undefined;
+    if (this.binding_) {
+      this.binding_.close();
+      this.binding_ = undefined;
     }
     return {};
   }
@@ -319,9 +319,9 @@ class FakeSerialPort {
 class FakeSerialService {
   constructor() {
     this.interceptor_ =
-        new MojoInterfaceInterceptor(SerialService.$interfaceName);
+        new MojoInterfaceInterceptor(blink.mojom.SerialService.name);
     this.interceptor_.oninterfacerequest = e => this.bind(e.handle);
-    this.receiver_ = new SerialServiceReceiver(this);
+    this.bindingSet_ = new mojo.BindingSet(blink.mojom.SerialService);
     this.clients_ = [];
     this.nextToken_ = 0;
     this.reset();
@@ -341,7 +341,7 @@ class FakeSerialService {
   }
 
   addPort(info) {
-    let portInfo = {};
+    let portInfo = new blink.mojom.SerialPortInfo();
     if (info?.usbVendorId !== undefined) {
       portInfo.hasUsbVendorId = true;
       portInfo.usbVendorId = info.usbVendorId;
@@ -352,7 +352,9 @@ class FakeSerialService {
     }
 
     let token = ++this.nextToken_;
-    portInfo.token = {high: 0n, low: BigInt(token)};
+    portInfo.token = new mojoBase.mojom.UnguessableToken();
+    portInfo.token.high = 0;
+    portInfo.token.low = token;
 
     let record = {
       portInfo: portInfo,
@@ -392,7 +394,7 @@ class FakeSerialService {
   }
 
   bind(handle) {
-    this.receiver_.$.bindHandle(handle);
+    this.bindingSet_.addBinding(this, handle);
   }
 
   async setClient(client_remote) {
@@ -413,7 +415,7 @@ class FakeSerialService {
   }
 
   async openPort(token, options, client) {
-    let record = this.ports_.get(Number(token.low));
+    let record = this.ports_.get(token.low);
     if (record !== undefined) {
       return {port: record.fakePort.open(options, client)};
     } else {
@@ -422,4 +424,4 @@ class FakeSerialService {
   }
 }
 
-export const fakeSerialService = new FakeSerialService();
+fakeSerialService = new FakeSerialService();

@@ -1,0 +1,17 @@
+<script>
+  window.addEventListener('message', e => {
+    if (e.data == 'navigate to self') {
+      location.assign(
+        "https://{{domains[]}}:{{location[port]}}/permissions-policy/resources/opaque-origin-reload.sub.https.html");
+    } else if (e.data == 'reload') {
+      location.reload();
+    }
+  });
+
+  parent.postMessage(
+    document.fullscreenEnabled ?
+    'fullscreen enabled in opaque-origin-reload.html' :
+    'fullscreen disabled in opaque-origin-reload.html',
+    '*'
+  );
+</script>

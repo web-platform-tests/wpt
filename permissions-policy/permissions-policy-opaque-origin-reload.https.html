@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<body>
+  <script src=/resources/testharness.js></script>
+  <script src=/resources/testharnessreport.js></script>
+  <script>
+
+    function get_response() {
+      return new Promise(resolve => {
+        window.addEventListener('message', e => {
+          resolve(e.data);
+        }, { once: true });
+      });
+    }
+
+    promise_test(async () => {
+      const iframe = document.createElement('iframe');
+      // sandbox iframe so that it has opaque origin.
+      iframe.sandbox = 'allow-scripts';
+      iframe.src = 'resources/opaque-origin-reload.sub.https.html';
+      iframe.allow = "fullscreen 'src'";
+      document.body.appendChild(iframe);
+
+      assert_equals(
+        await get_response(),
+        'fullscreen enabled in opaque-origin-reload.html',
+        'iframe should be able to access fullscreen.'
+      );
+
+      iframe.contentWindow.postMessage('reload', '*');
+
+      assert_equals(
+        await get_response(),
+        'fullscreen enabled in opaque-origin-reload.html',
+        'iframe should still be able to access fullscreen after reload.'
+      );
+
+      iframe.contentWindow.postMessage('navigate to self', '*');
+
+      assert_equals(
+        await get_response(),
+        'fullscreen disabled in opaque-origin-reload.html',
+        'iframe should not be able to access fullscreen after forward navigation.'
+      );
+
+      iframe.contentWindow.postMessage('reload', '*');
+
+      assert_equals(
+        await get_response(),
+        'fullscreen disabled in opaque-origin-reload.html',
+        'iframe should not be able to access fullscreen after reload after forward navigation.'
+      );
+    });
+  </script>
+</body>

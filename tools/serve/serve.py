@@ -358,6 +358,12 @@ class BaseWorkerHandler(WrapperHandler):
     def _meta_replacement(self, key, value):
         return None
 
+    @abc.abstractmethod
+    def _create_script_import(self, attribute):
+        # Take attribute (a string URL to a JS script) and return JS source to import the script
+        # into the worker.
+        pass
+
     def _script_replacement(self, key, value):
         if key == "script":
             attribute = value.replace("\\", "\\\\").replace('"', '\\"')

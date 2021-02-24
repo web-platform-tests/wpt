@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Test: borders of single cell tables with 'border-collapse' set to 'collapse'</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/CSS21/tables.html#collapsing-borders">
+  <link rel="match" href="reference/border-collapse-mono-cell-table-001.html">
+
+  <!--
+
+  Issue 693977: Border-collapse-ed mono-cell table should render beveled borders at corners
+  https://bugs.chromium.org/p/chromium/issues/detail?id=693977
+
+  -->
+
+  <meta content="" name="flags">
+  <meta content="This test checks that borders of single cell tables with 'border-collapse' set to 'collapse' render beveled borders at corners.">
+
+  <style>
+  table , div#ref1
+    {
+      border-collapse: collapse;
+      float: left;
+      margin: 16px 16px 16px 0px;
+    }
+
+  td , div#ref1
+    {
+      border-top: orange solid 50px;
+      border-right: teal solid 50px;
+      border-bottom: fuchsia solid 50px;
+      border-left: olive solid 50px;
+      padding: 0px;
+      width: 0px;
+    }
+
+  table#vrl
+    {
+      writing-mode: vertical-rl;
+    }
+
+  table#ref2
+    {
+      border-collapse: separate;
+      border-spacing: 0px;
+    }
+
+  table#vlr
+    {
+      writing-mode: vertical-lr;
+    }
+  </style>
+
+  <p>Test passes if 5 multi-colored squares are <strong>identical</strong>.
+
+  <table id="htb">
+    <tr><td>
+  </table>
+
+  <div id="ref1"></div>
+
+  <table id="vrl">
+    <tr><td>
+  </table>
+
+  <table id="ref2">
+    <tr><td>
+  </table>
+
+  <table id="vlr">
+    <tr><td>
+  </table>

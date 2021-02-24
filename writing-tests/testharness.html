@@ -153,6 +153,8 @@ as <code class="docutils literal notranslate"><span class="pre">FileAPI/Blob-con
 <span class="o">//</span>       <span class="o">==&gt;</span> <span class="n">would</span> <span class="n">only</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">window</span> <span class="ow">and</span> <span class="n">service</span> <span class="n">worker</span> <span class="n">scope</span>
 <span class="o">//</span> <span class="n">META</span><span class="p">:</span> <span class="k">global</span><span class="o">=</span><span class="n">dedicatedworker</span>
 <span class="o">//</span>       <span class="o">==&gt;</span> <span class="n">would</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">default</span> <span class="n">dedicated</span> <span class="n">worker</span> <span class="n">scope</span>
+<span class="o">//</span> <span class="n">META</span><span class="p">:</span> <span class="k">global</span><span class="o">=</span><span class="n">dedicatedworker</span><span class="o">-</span><span class="n">module</span>
+<span class="o">//</span>       <span class="o">==&gt;</span> <span class="n">would</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">dedicated</span> <span class="n">worker</span> <span class="n">scope</span> <span class="k">as</span> <span class="n">a</span> <span class="n">module</span>
 <span class="o">//</span> <span class="n">META</span><span class="p">:</span> <span class="k">global</span><span class="o">=</span><span class="n">worker</span>
 <span class="o">//</span>       <span class="o">==&gt;</span> <span class="n">would</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">dedicated</span><span class="p">,</span> <span class="n">shared</span><span class="p">,</span> <span class="ow">and</span> <span class="n">service</span> <span class="n">worker</span> <span class="n">scopes</span>
 </pre></div>
@@ -162,8 +164,13 @@ are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">window</span></code> (default): to be run at <code><var>x</var>.any.html</code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dedicatedworker</span></code> (default): to be run at <code><var>x</var>.any.worker.html</code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">serviceworker</span></code>: to be run at <code><var>x</var>.any.serviceworker.html</code> (<code class="docutils literal notranslate"><span class="pre">.https</span></code> is implied)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dedicatedworker-module</span></code> to be run at <code><var>x</var>.any.worker-module.html</code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">serviceworker</span></code>: to be run at <code><var>x</var>.any.serviceworker.html</code> (<code class="docutils literal notranslate"><span class="pre">.https</span></code> is
+implied)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">serviceworker-module</span></code>: to be run at <code><var>x</var>.any.serviceworker-module.html</code>
+(<code class="docutils literal notranslate"><span class="pre">.https</span></code> is implied)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sharedworker</span></code>: to be run at <code><var>x</var>.any.sharedworker.html</code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sharedworker-module</span></code>: to be run at <code><var>x</var>.any.sharedworker-module.html</code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">jsshell</span></code>: to be run in a JavaScript shell, without access to the DOM
 (currently only supported in SpiderMonkey, and skipped in wptrunner)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">worker</span></code>: shorthand for the dedicated, shared, and service worker scopes</p></li>
@@ -193,6 +200,9 @@ automatically invoked for tests defined using the “multi-global” pattern.</p
 </pre></div>
 </div>
 <p>can be used to include both the global and a local <code class="docutils literal notranslate"><span class="pre">utils.js</span></code> in a test.</p>
+<p>In window environments, the script will be included using a classic <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag. In classic
+worker environments, the script will be imported using <code class="docutils literal notranslate"><span class="pre">importScripts()</span></code>. In module worker
+environments, the script will be imported using a static <code class="docutils literal notranslate"><span class="pre">import</span></code>.</p>
 </div>
 <div class="section" id="specifying-a-timeout-of-long">
 <h3>Specifying a timeout of long<a class="headerlink" href="#specifying-a-timeout-of-long" title="Permalink to this headline">¶</a></h3>

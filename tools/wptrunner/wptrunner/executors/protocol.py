@@ -544,3 +544,14 @@ class DebugProtocolPart(ProtocolPart):
         self.parent.base.load(urljoin(self.parent.executor.server_url("https"),
                               "/common/third_party/reftest-analyzer.xhtml#log=%s" %
                                quote(output.getvalue())))
+
+class SetTimeZoneProtocolPart(ProtocolPart):
+    """Protocol part for setting time zone"""
+    __metaclass__ = ABCMeta
+
+    name = "set_time_zone"
+
+    @abstractmethod
+    def set_time_zone(self, time_zone):
+        """Set time_zone as default time zone."""
+        pass

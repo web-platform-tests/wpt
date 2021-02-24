@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Test shared worker handle ontimezonechange event.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+promise_test(async t => {
+  const oldTimeZone = "Pacific/Fakaofo";
+  const newTimeZone = "Asia/Taipei";
+  // First we set the time zone to a fixed time zone.
+  await window.test_driver.set_time_zone(oldTimeZone);
+  const worker = new SharedWorker('resources/shared-worker-timezonechange.js', 'name');
+  return new Promise(r => { worker.port.onmessage = r; })
+    .then(e => {
+      // Once we know the worker is ready, we change the time zone.
+      assert_equals(e.data, "READY:" + oldTimeZone);
+      return new Promise(async r => {
+        worker.port.onmessage = r;
+        await window.test_driver.set_time_zone(newTimeZone);
+      }).then(e => {
+        assert_equals(e.data, "SUCCESS:" + newTimeZone);
+      })
+    });
+}, "Test a shared worker handles ontimezonechange event.");
+</script>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestDriver set_time_zone method</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+function defaultTimeZone() {
+  return (new Intl.DateTimeFormat()).resolvedOptions().timeZone;
+}
+async_test(t => {
+  let timeZone = "Asia/Taipei";
+  let timeZone2 = "Pacific/Fakaofo";
+  test_driver
+    .set_time_zone(timeZone)
+    .then(() => {
+      assert_equals(defaultTimeZone(), timeZone);
+      test_driver
+        .set_time_zone(timeZone2)
+        .then(() => {
+          assert_equals(defaultTimeZone(), timeZone2);
+          t.done()
+      })
+    })
+    .catch(() => assert_unreached("set_time_zone failed"));
+});
+</script>

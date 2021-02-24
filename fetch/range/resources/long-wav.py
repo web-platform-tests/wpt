@@ -60,12 +60,13 @@ def main(request, response):
     if source_key:
         take = request.server.stash.take(source_key, b'/fetch/range/')
         if not take:
-            take = 0
-        request_count = take + 1
-        request.server.stash.put(source_key, request_count, b'/fetch/range/')
+            take = { "request_urls": [request.url] }
+        else:
+            take["request_urls"].append(request.url)
+        request.server.stash.put(source_key, take, b'/fetch/range/')
 
         if scenario == b'redirect-second-request':
-            if request_count == 2:
+            if len(take["request_urls"]) == 2:
                 return (302, [(b"Location", b"./long-wav.py?source-key=" + source_key + b"&chunked&scenario=" + scenario)], b'')
 
         elif scenario == b'':

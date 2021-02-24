@@ -11,8 +11,8 @@ function defaultTimeZone() {
   return (new Intl.DateTimeFormat()).resolvedOptions().timeZone;
 }
 async_test(t => {
-  let timeZone = "Asia/Taipei";
-  let timeZone2 = "Pacific/Fakaofo";
+  const timeZone = "Asia/Taipei";
+  const timeZone2 = "Pacific/Fakaofo";
   test_driver
     .set_time_zone(timeZone)
     .then(() => {

@@ -24,13 +24,15 @@
   <style>
   div
     {
-      color: purple;
+      color: yellow;
       font-family: Ahem;
-      font-size: 25px;
-      height: 4em;
+      font-size: 100px;
       line-height: 1;
+      margin: calc(1em + 8px) auto auto 1em;
       text-orientation: upright;
       writing-mode: vertical-rl;
+
+      text-shadow: 0em -1em purple, 1em 0em blue, 0em 1em fuchsia, -1em 0em orange;
     }
 
   /*
@@ -38,9 +40,6 @@
   Value: [ <color>? && <length>{2,3} ]#
 
   color: color of text-shadow
-  If the color of the shadow is not specified, it defaults
-  to currentColor, i.e. the shadow’s color is taken from
-  the element’s color property.
 
   1st <length>
     Specifies the horizontal offset
@@ -55,53 +54,24 @@
 
   */
 
-  span#B
-    {
-      text-shadow: -1em 0em;
-      /* text-shadow toward lefthand side */
-    }
-
-  span#F
-    {
-      text-shadow: 1em 0em;
-      /* text-shadow toward righthand side */
-    }
-
-  span#G
-    {
-      text-shadow: 0em 1em;
-      /* text-shadow toward down side */
-    }
-
-  span#K
-    {
-      text-shadow: 0em -1em;
-      /* text-shadow toward up side */
-    }
   </style>
 
-  <p>Test passes if there is a filled purple square.
-
-  <div>A<span id="B">B</span>C&nbsp;
-  D E<span id="F">F</span>
-  <span id="G">G</span> HI
-  J <span id="K">K</span>L</div>
+  <div>A</div>
 
   <!--
 
-  . . . . . . . . . .
-  .                 .
-  .  J   G   D   A  .
-  .      |          .
-  .  ^   v     <-B  .
-  .  |              .
-  .  K   H   E   C  .
-  .                 .
-  .  L   I   F ->   .
-  ...................
-
-  Arrows indicate where
-  the 4 shadow offsets
-  must be painted
+                  .........
+                  .       .
+                  .       . <-purple
+                  .       .
+           .......................
+           .      .       .      .
+  orange-> .      .  yel  .      . <-blue
+           .      .  low  .      .
+           .......................
+                  .       .
+                  .       . <-fuchsia
+                  .       .
+                  .........
 
   -->

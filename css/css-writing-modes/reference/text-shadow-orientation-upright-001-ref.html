@@ -5,35 +5,42 @@
   <title>CSS Reference Test</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
-  <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
 
   <style>
   div
     {
-      color: purple;
-      font-size: 25px;
-      height: 4em;
-      line-height: 1;
-      font-family: Ahem;
-      text-orientation: upright;
-      writing-mode: vertical-rl;
+      height: 100px;
+      margin-left: 100px;
+      width: 100px;
+    }
+
+  div#purple
+    {
+      background-color: purple;
+    }
+
+  img
+    {
+      height: 100px;
+      vertical-align: top;
+      width: 100px;
+    }
+
+  div#orange-blue
+    {
+      background-color: blue;
+      margin-left: 0px;
+      width: 300px;
+    }
+
+  div#fuchsia
+    {
+      background-color: fuchsia;
     }
   </style>
 
-  <p>Test passes if there is a filled purple square.
+  <div id="purple"></div>
 
-  <div>1234 5678 9012 3456</div>
+  <div id="orange-blue"><img src="../support/swatch-orange.png" alt="Image download support must be enabled"><img src="../support/swatch-yellow.png" alt="Image download support must be enabled"></div>
 
-  <!--
-  . . . . . . . . . .
-  .                 .
-  .  3   9   5   1  .
-  .                 .
-  .  4   0   6   2  .
-  .                 .
-  .  5   1   7   3  .
-  .                 .
-  .  6   2   8   4  .
-  ...................
-
-  -->
+  <div id="fuchsia"></div>

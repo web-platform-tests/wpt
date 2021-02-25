@@ -26,7 +26,7 @@ def main(request, response):
     stash = request.server.stash
     test_failed = False
     request_count = 0;
-    address_connection_count = 0;
+    connection_count = 0;
     if request.GET.first(b"nocheck_partition", None) != b"True":
         # Need to grab the lock to access the Stash, since requests are made in parallel.
         with stash.lock:
@@ -34,18 +34,18 @@ def main(request, response):
             # Server IP is not currently available, unfortunately.
             address_key = isomorphic_encode(str(request.client_address) + u"|" + str(request.url_parts.port))
             server_state = stash.take(uuid) or {b"test_failed": False,
-              b"request_count": 0}
+              b"request_count": 0, b"connection_count": 0}
             request_count = server_state[b"request_count"]
             request_count += 1
             server_state[b"request_count"] = request_count
             if address_key in server_state:
-              if server_state[address_key][b"partition_id"] != partition_id:
-                server_state[b"test_failed"] = True
+                if server_state[address_key] != partition_id:
+                    server_state[b"test_failed"] = True
             else:
-              server_state[address_key] = {b"partition_id": partition_id, b"connection_count": 0}
-            address_connection_count = server_state[address_key][b"connection_count"]
-            address_connection_count += 1
-            server_state[address_key][b"connection_count"] = address_connection_count
+                connection_count = server_state[b"connection_count"]
+                connection_count += 1
+                server_state[b"connection_count"] = connection_count
+            server_state[address_key] = partition_id
             test_failed = server_state[b"test_failed"]
             stash.put(uuid, server_state)
 
@@ -66,7 +66,8 @@ def main(request, response):
             return simple_response(request, response, status, b"OK", b"Multiple partition IDs used on a socket")
         body = b"ok"
         if request.GET.first(b"addcounter", False):
-            body += (str(request_count) + str(address_connection_count)) .encode('utf-8')
+            body += (". Request was sent " + str(request_count) + " times. " +
+             str(connection_count) + " connections were created.").encode('utf-8')
         return simple_response(request, response, status, b"OK", body)
 
     if dispatch == b"clean_up":

@@ -134,7 +134,7 @@ promise_test(async (test) => {
     {method: "POST", body: "foobar"});
   assert_equals(resp.status, 421);
   const text = await resp.text();
-  assert_equals(text, "ok21");
+  assert_equals(text, "ok. Request was sent 2 times. 2 connections were created.");
 }, "Fetch with POST with text body on 421 response should be retried once on new connection.");
 
 promise_test(t => {

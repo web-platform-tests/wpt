@@ -172,7 +172,7 @@ unless <code class="docutils literal notranslate"><span class="pre">--enable-qui
 </div>
 <div class="section" id="test-features-specified-as-query-params">
 <h2>Test Features specified as query params<a class="headerlink" href="#test-features-specified-as-query-params" title="Permalink to this headline">¶</a></h2>
-<p>Alternatively to specifying <a class="reference external" href="file-names.md#test-features">Test Features</a> in
+<p>Alternatively to specifying <a class="reference external" href="file-names.html#test-features">Test Features</a> in
 the test filename, they can be specified by setting the <code class="docutils literal notranslate"><span class="pre">wpt_flags</span></code> in the
 <a class="reference external" href="testharness.html#variants">test variant</a>. For example, the following variant
 will be loaded over HTTPS:</p>
@@ -180,6 +180,11 @@ will be loaded over HTTPS:</p>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">https</span></code>, <code class="docutils literal notranslate"><span class="pre">h2</span></code> and <code class="docutils literal notranslate"><span class="pre">www</span></code> features are supported by <code class="docutils literal notranslate"><span class="pre">wpt_flags</span></code>.</p>
+<p>Multiple features can be specified by having multiple <code class="docutils literal notranslate"><span class="pre">wpt_flags</span></code>. For example,
+the following variant will be loaded over HTTPS and run on the www subdomain.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;wpt_flags=www&amp;wpt_flags=https&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
 </div>
 </div>
 

@@ -40,6 +40,7 @@ from .protocol import (ActionSequenceProtocolPart,
                        VirtualAuthenticatorProtocolPart,
                        SetPermissionProtocolPart,
                        PrintProtocolPart,
+                       SetTimeZoneProtocolPart,
                        DebugProtocolPart)
 from ..webdriver_server import GeckoDriverServer
 
@@ -625,6 +626,12 @@ render('%s').then(result => callback(result))""" % pdf_base64, new_sandbox=False
         finally:
             _switch_to_window(self.marionette, handle)
 
+class MarionetteSetTimeZoneProtocolPart(SetTimeZoneProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def set_time_zone(self, time_zone):
+        raise NotImplementedError("set_time_zone not yet implemented")
 
 class MarionetteDebugProtocolPart(DebugProtocolPart):
     def setup(self):
@@ -666,6 +673,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteVirtualAuthenticatorProtocolPart,
                   MarionetteSetPermissionProtocolPart,
                   MarionettePrintProtocolPart,
+                  MarionetteSetTimeZoneProtocolPart,
                   MarionetteDebugProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):

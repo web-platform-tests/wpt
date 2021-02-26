@@ -113,7 +113,7 @@
   },
   {
     "input": "Content-Length: \"30\"",
-    "output": null
+    "output": 42
   },
   {
     "input": "Content-Length:30\r\nContent-Length:,\r\nContent-Length:30",

@@ -8,7 +8,7 @@ function runTests(testUnits) {
     promise_test(t => {
       const result = fetch("resources/content-length.py?length=" + input);
       if (testUnit.output === null) {
-        return promise_rejects(t, new TypeError(), result);
+        return promise_rejects_js(t, TypeError, result);
       } else {
         return result.then(res => res.text()).then(text => {
           assert_equals(text.length, testUnit.output);

@@ -110,5 +110,13 @@
   {
     "input": "Content-Length: 030, 30",
     "output": null
+  },
+  {
+    "input": "Content-Length: \"30\"",
+    "output": null
+  },
+  {
+    "input": "Content-Length:30\r\nContent-Length:,\r\nContent-Length:30",
+    "output": null
   }
 ]

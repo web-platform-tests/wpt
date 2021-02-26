@@ -29,14 +29,14 @@ navigate_test({
 navigate_test({
     description: 'in scope but not controlled test on installing worker',
     dest_url: 'blank.html?navigate',
-    expected: 'TypeError',
+    expected: normalizeURL(SCOPE) + '?navigate',
     wait_state: 'installing',
   });
 
 navigate_test({
     description: 'in scope but not controlled test on active worker',
     dest_url: 'blank.html?navigate',
-    expected: 'TypeError',
+    expected: normalizeURL(SCOPE) + '?navigate',
     should_be_reload: false,
   });
 
@@ -44,7 +44,7 @@ navigate_test({
     description: 'out of scope',
     src_url: '/common/blank.html',
     dest_url: 'blank.html?navigate',
-    expected: 'TypeError',
+    expected: normalizeURL(SCOPE) + '?navigate',
   });
 
 navigate_test({

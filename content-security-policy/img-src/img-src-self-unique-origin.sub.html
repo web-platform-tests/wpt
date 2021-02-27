@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>img-src-self-unique-origin</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+
+<body>
+    <p>
+        The origin of an URL is called "unique" when it is considered to be
+        different from every origin, including itself. The origin of a
+        data-url is unique. When the current origin is unique, the CSP source
+        'self' must not match any URL.
+    </p>
+    <script>
+        var iframe = document.createElement("iframe");
+        iframe.src = encodeURI(`data:text/html,
+          <script>
+              /* Add the CSP: frame-src: 'self'. */
+              var meta = document.createElement('meta');
+              meta.httpEquiv = 'Content-Security-Policy';
+              meta.content = "img-src 'self'";
+              document.getElementsByTagName('head')[0].appendChild(meta);
+              function notify(message) {
+                  window.parent.postMessage(message, '*');
+              }
+          </scr`+`ipt>
+
+          This image should be blocked by CSP:
+          <img src='http://{{host}}:{{ports[http][0]}}/content-security-policy/support/fail.png' onerror='notify("IMG 1 BLOCKED");' onload='notify("IMG 1 ALLOWED");'></img>
+          <img src='data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7' onerror='notify("IMG 2 BLOCKED");' onload='notify("IMG 2 ALLOWED");'></img>
+        `);
+        if (window.async_test) {
+            async_test(t => { 
+                window.addEventListener("message", t.step_func(e => {
+                    if (e.data === "IMG 1 BLOCKED") {
+                        t.done();
+                    } else if (e.data === "IMG 1 ALLOWED") {
+                        assert_unreached();
+                        t.done();
+                    }
+                }));
+            }, "Image's url (same origin with main page) must not match with 'self'. Image must be blocked.");
+            async_test(t => { 
+                window.addEventListener("message", t.step_func(e => {
+                    if (e.data === "IMG 2 BLOCKED") {
+                        t.done();
+                    } else if (e.data === "IMG 2 ALLOWED") {
+                        assert_unreached();
+                        t.done();
+                    }
+                }));
+            }, "Image's url (data:) must not match with 'self'. Image must be blocked.");
+        }
+        document.body.appendChild(iframe);
+    </script>
+</body>
+
+</html>

@@ -7,9 +7,24 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
 
   <style>
+  @font-face
+    {
+      font-family: "mplus-1p-regular";
+      src: url("/fonts/mplus-1p-regular.woff") format("woff");
+      /* filesize: 803300 bytes (784.5 KBytes) */
+    }
+
+  /* filesize of mplus-1p-regular.woff: 803300 bytes (784.5 KiloBytes) */
+
+  /*
+  mplus-1p-regular.ttf can be downloaded at, from
+
+  http://mplus-webfonts.osdn.jp/
+  */
+
   div
     {
-      font-family: monospace;
+      font-family: "mplus-1p-regular";
       font-size: 60px;
       line-height: 1.5em; /* computes to 90px */
     }

@@ -18,10 +18,11 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-text-3/#hanging">
+  <link rel="help" href="https://www.w3.org/TR/css-overflow-3/#ink">
   <link rel="match" href="reference/white-space-pre-wrap-trailing-spaces-021-ref.html">
 
   <meta content="should" name="flags">
-  <meta content="This test checks that overflowing hanging spaces at end of line should be treated as ink overflow." name="assert">
+  <meta content="This test checks that overflowing hanging spaces at end of line are treated as ink overflow. The overflowing hanging spaces at end of line should not extend the scrollable overflow area of the tested box. Therefore the no horizontal scrollbar condition of the test." name="assert">
 
   <style>
   div
@@ -41,6 +42,7 @@
 
   div#test
     {
+      overflow: auto;
       white-space: pre-wrap;
     }
 
@@ -50,12 +52,12 @@
     }
   </style>
 
-  <p>Test passes if the characters inside of each black-bordered rectangles are laid out identically and if there is a yellow stripe that juts outside the black-bordered rectangles.
+  <p>Test passes if the characters inside of each black-bordered rectangles are laid out identically and if each black-bordered rectangles do not generate an horizontal scrollbar.
 
   <div id="test">Lorem ipsum.<span>        </span>Dolor
    sit amet. <br>consectetur</div>
 
-  <div id="reference">Lorem&nbsp;ipsum.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+  <div id="reference">Lorem&nbsp;ipsum.<span>&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
 Dolor<br>
 &nbsp;&nbsp;&nbsp;sit amet. <br>
 consectetur</div>

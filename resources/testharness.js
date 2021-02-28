@@ -3404,7 +3404,7 @@ policies and contribution forms [3].
 
         function status_class(status)
         {
-            return status.replace(/\s/g, '').toLowerCase();
+            return (status || "").replace(/\s/g, '').toLowerCase();
         }
 
         var summary_template = ["section", {"id":"summary"},

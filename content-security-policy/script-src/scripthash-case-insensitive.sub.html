@@ -10,12 +10,13 @@
     'sHa256-BPe1cNQpEQoucXTYM91Ku9xnHT/BZXMOeOFeMZTPWis='
     'shA384-qNmIi2ya4g29IbFyUBBPFJ5BdkW43bygT/MrFSoe7o/ALn+a3iJDkssigmMHQ4J0'
     'Sha512-GuQbQFeVHDBySntDnOpbrNCe4xwjLhnnaVRAGz5JAnYK9pj0vOEAkmKgzNJApgufV3r37DE7Derx5DGUmqkukg=='
+    'nonce-EDNnf03nceIOfn39fn3e9h3sdfa'
     ">
     <title>Test whether hash-algorithm parts are matched case-insensitively</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="/content-security-policy/support/alertAssert.sub.js?alerts=%5B%22PASS%20(1%2F6)%22%2C%22PASS%20(2%2F6)%22%2C%22PASS%20(3%2F6)%22%2C%22PASS%20(4%2F6)%22%2C%22PASS%20(5%2F6)%22%2C%22PASS%20(6%2F6)%22%5D">
-    <script>
+    <script src="/content-security-policy/support/alertAssert.sub.js?alerts=%5B%22PASS%20(1%2F6)%22%2C%22PASS%20(2%2F6)%22%2C%22PASS%20(3%2F6)%22%2C%22PASS%20(4%2F6)%22%2C%22PASS%20(5%2F6)%22%2C%22PASS%20(6%2F6)%22%5D"></script>
+    <script nonce=EDNnf03nceIOfn39fn3e9h3sdfa>
         window.addEventListener('securitypolicyviolation', function(e) {
             alert_assert("Fail");
         });

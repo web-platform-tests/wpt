@@ -162,7 +162,7 @@ class Browser(object):
         with which it should be instantiated"""
         return ExecutorBrowser, {}
 
-    def possible_parse_tombstone(self):
+    def maybe_parse_tombstone(self):
         """Possibly parse tombstones on Android device for Android target"""
         pass
 

@@ -14,6 +14,6 @@ function runTests(testUnits) {
           assert_equals(text.length, testUnit.output);
         });
       }
-    }, "Content-Length: " + input);
+    }, input);
   });
 }

@@ -118,5 +118,9 @@
   {
     "input": "Content-Length:30\r\nContent-Length:,\r\nContent-Length:30",
     "output": null
+  },
+  {
+    "input": "Content-Length: ",
+    "output": 42
   }
 ]

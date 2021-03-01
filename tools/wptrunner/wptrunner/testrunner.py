@@ -616,7 +616,7 @@ class TestRunnerManager(threading.Thread):
         if self.timer is not None:
             self.timer.cancel()
 
-        self.browser.browser.possible_parse_tomestone(self.logger)
+        self.browser.browser.possible_parse_tombstone()
 
         # Write the result of each subtest
         file_result, test_results = results

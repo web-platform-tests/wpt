@@ -189,7 +189,7 @@ class ChromeAndroidBrowserBase(Browser):
         cmd.extend(['logcat', '*:D'])
         return cmd
 
-    def possible_parse_tomestone(self, logger):
+    def possible_parse_tombstone(self, logger):
         if self.stackparser_script:
             cmd = [self.stackparser_script, "-a", "-w"]
             if self.device_serial:

@@ -13,7 +13,7 @@
     <script src="/resources/testharnessreport.js"></script>
 
     <script>
-      var t = async_test("All style elements should load because they have proper hashes with hash-algorithm parts matched case-insensitively");
+      var t = async_test("All style elements should load because they have proper hashes");
       document.addEventListener("securitypolicyviolation", t.unreached_func("Should not trigger a security policy violation"));
     </script>
 

@@ -134,7 +134,10 @@ promise_test(async (test) => {
     {method: "POST", body: "foobar"});
   assert_equals(resp.status, 421);
   const text = await resp.text();
-  assert_equals(text, "ok. Request was sent 2 times. 2 connections were created.");
+  const match = text.match(/ok. Request was sent (\d+) times. (\d+) connections were created./);
+  assert_equals(match.length, 3);
+  assert_greater_than(parseInt(match[1]), 1, "Request should be retried at least once.");
+  assert_equals(match[1], match[2], "Connection should be created as same as request.")
 }, "Fetch with POST with text body on 421 response should be retried once on new connection.");
 
 promise_test(t => {

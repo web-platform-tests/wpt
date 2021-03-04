@@ -9,7 +9,7 @@ async_test(test => {
   });
   client.onload = test.step_func_done(() => {
     assert_true(happened);
-    assert_true(client.responseText.indexOf(`Content-Length: ${data.length}`) !== -1);
+    assert_true(client.responseText.includes(`Content-Length: ${data.length}`));
   });
   client.open("POST", "resources/echo-headers.py");
   client.send(data);

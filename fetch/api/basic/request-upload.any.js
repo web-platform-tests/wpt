@@ -134,21 +134,21 @@ promise_test(async (test) => {
     {method: "POST", body: "foobar"});
   assert_equals(resp.status, 421);
   const text = await resp.text();
-  const match = text.match(/ok. Request was sent (\d+) times. (\d+) connections were created./);
-  assert_equals(match.length, 3);
-  assert_greater_than(parseInt(match[1]), 1, "Request should be retried at least once.");
-  assert_equals(match[1], match[2], "Connection should be created as same as request.")
+  assert_equals(text, "ok. Request was sent 2 times. 2 connections were created.");
 }, "Fetch with POST with text body on 421 response should be retried once on new connection.");
 
-promise_test(t => {
+promise_test(async (test) => {
   const body = new ReadableStream({start: controller => {
     const encoder = new TextEncoder();
     controller.enqueue(encoder.encode("Test"));
     controller.close();
   }});
-  return promise_rejects_js(t, TypeError, fetch(
+  const resp = await fetch(
     "/fetch/connection-pool/resources/network-partition-key.py?"
-    + `status=42&uuid=${token()}&partition_id=${get_host_info().ORIGIN}`
-    + `&dispatch=check_partition`,
-    {method: "POST", body: body}));
+    + `status=421&uuid=${token()}&partition_id=${get_host_info().ORIGIN}`
+    + `&dispatch=check_partition&addcounter=true`,
+    {method: "POST", body: body});
+  assert_equals(resp.status, 421);
+  const text = await resp.text();
+  assert_equals(text, "ok. Request was sent 1 times. 1 connections were created.");
 }, "Fetch with POST with ReadableStream on 421 response should be rejected.");

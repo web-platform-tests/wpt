@@ -177,6 +177,20 @@ prefixing the <code class="docutils literal notranslate"><span class="pre">conte
 <p>One meta element is required per reference requiring a unique
 fuzziness value, but any unprefixed value will automatically be
 applied to any ref that doesn’t have a more specific value.</p>
+<div class="section" id="debugging-fuzzy-reftests">
+<h3>Debugging fuzzy reftests<a class="headerlink" href="#debugging-fuzzy-reftests" title="Permalink to this headline">¶</a></h3>
+<p>When debugging a fuzzy reftest via <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">run</span></code>, it can be useful to know what the
+allowed and detected differences were. Many of the output logger options will
+provide this information. For example, by passing <code class="docutils literal notranslate"><span class="pre">--log-mach=-</span></code> for a run of a
+hypothetical failing test, one might get:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="mi">0</span><span class="p">:</span><span class="mf">08.15</span> <span class="n">TEST_START</span><span class="p">:</span> <span class="o">/</span><span class="n">foo</span><span class="o">/</span><span class="n">bar</span><span class="o">.</span><span class="n">html</span>
+ <span class="mi">0</span><span class="p">:</span><span class="mf">09.70</span> <span class="n">INFO</span> <span class="n">Found</span> <span class="mi">250</span> <span class="n">pixels</span> <span class="n">different</span><span class="p">,</span> <span class="n">maximum</span> <span class="n">difference</span> <span class="n">per</span> <span class="n">channel</span> <span class="mi">6</span> <span class="n">on</span> <span class="n">page</span> <span class="mi">1</span>
+ <span class="mi">0</span><span class="p">:</span><span class="mf">09.70</span> <span class="n">INFO</span> <span class="n">Allowed</span> <span class="mi">0</span><span class="o">-</span><span class="mi">100</span> <span class="n">pixels</span> <span class="n">different</span><span class="p">,</span> <span class="n">maximum</span> <span class="n">difference</span> <span class="n">per</span> <span class="n">channel</span> <span class="mi">0</span><span class="o">-</span><span class="mi">0</span>
+ <span class="mi">0</span><span class="p">:</span><span class="mf">09.70</span> <span class="n">TEST_END</span><span class="p">:</span> <span class="n">FAIL</span><span class="p">,</span> <span class="n">expected</span> <span class="n">PASS</span> <span class="o">-</span> <span class="o">/</span><span class="n">foo</span><span class="o">/</span><span class="n">bar</span><span class="o">.</span><span class="n">html</span> <span class="p">[</span><span class="s1">&#39;f83385ed9c9bea168108b8c448366678c7941627&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>For other logging flags, see the output of <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">run</span> <span class="pre">--help</span></code>.</p>
+</div>
 </div>
 <div class="section" id="limitations">
 <h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>

@@ -151,4 +151,4 @@ promise_test(async (test) => {
   assert_equals(resp.status, 421);
   const text = await resp.text();
   assert_equals(text, "ok. Request was sent 1 times. 1 connections were created.");
-}, "Fetch with POST with ReadableStream on 421 response should be rejected.");
+}, "Fetch with POST with ReadableStream on 421 response should return the response and not retry.");

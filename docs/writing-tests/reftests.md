@@ -167,7 +167,7 @@ applied to any ref that doesn't have a more specific value.
 When debugging a fuzzy reftest via `wpt run`, it can be useful to know what the
 allowed and detected differences were. Many of the output logger options will
 provide this information. For example, by passing `--log-mach=-` for a run of a
-hypothetical failing test one might get:
+hypothetical failing test, one might get:
 
 ```
  0:08.15 TEST_START: /foo/bar.html

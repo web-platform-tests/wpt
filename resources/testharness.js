@@ -587,11 +587,6 @@ policies and contribution forms [3].
 
     function async_test(func, name, properties)
     {
-        if (tests.promise_setup_called) {
-            tests.status.status = tests.status.ERROR;
-            tests.status.message = '`async_test` invoked after `promise_setup`';
-            tests.complete();
-        }
         if (typeof func !== "function") {
             properties = name;
             name = func;
@@ -599,7 +594,12 @@ policies and contribution forms [3].
         }
         var test_name = get_test_name(func, name);
         var test_obj = new Test(test_name, properties);
-        if (func) {
+        if (!func) {
+            return test_obj;
+        }
+
+        var execute = function()
+        {
             var value = test_obj.step(func, test_obj, test_obj);
 
             // Test authors sometimes return values to async_test, expecting us
@@ -610,21 +610,32 @@ policies and contribution forms [3].
             // Note that we only perform this check on the initial function
             // passed to async_test, not on any later steps - we haven't seen a
             // consistent problem with those (and it's harder to check).
-            if (value !== undefined) {
-                var msg = 'Test named "' + test_name +
-                    '" passed a function to `async_test` that returned a value.';
-
-                try {
-                    if (value && typeof value.then === 'function') {
-                        msg += ' Consider using `promise_test` instead when ' +
-                            'using Promises or async/await.';
-                    }
-                } catch (err) {}
-
-                tests.set_status(tests.status.ERROR, msg);
-                tests.complete();
+            if (value === undefined) {
+                return;
             }
+
+            var msg = 'Test named "' + test_name +
+                '" passed a function to `async_test` that returned a value.';
+
+            try {
+                if (value && typeof value.then === 'function') {
+                    msg += ' Consider using `promise_test` instead when ' +
+                        'using Promises or async/await.';
+                }
+            } catch (err) {}
+
+            tests.set_status(tests.status.ERROR, msg);
+            tests.complete();
         }
+
+        // If a promise_setup() defined earlier is still pending, defer the
+        // execution until it resolves.
+        if (tests.pending_async_tests !== null) {
+            tests.pending_async_tests.push(execute);
+        } else {
+            execute();
+        }
+
         return test_obj;
     }
 
@@ -679,6 +690,23 @@ policies and contribution forms [3].
                 });
         });
     }
+
+    /**
+     * Similar to `promise_test`, but executing in parallel rather than
+     * sequentially.
+     *
+     * See RFC 75:
+     * https://github.com/web-platform-tests/rfcs/blob/master/rfcs/async_promise_test.md
+     */
+    function async_promise_test(func, name, properties) {
+        async_test(function(test) {
+            func(test)
+                .then(function() { test.done();})
+                .catch(test.step_func(function(error) {
+                    throw error;
+                }))
+        }, name, properties);
+    };
 
     /**
      * Make a copy of a Promise in the current realm.
@@ -912,6 +940,12 @@ policies and contribution forms [3].
         }
         tests.promise_setup_called = true;
 
+        // async_tests() / async_promise_tests() are deferred until the execution
+        // of the last promise_setup() defined earlier.
+        // This array stores functions to resume their executions.
+        var pending_async_tests = [];
+        tests.pending_async_tests = pending_async_tests;
+
         if (!tests.promise_tests) {
             tests.promise_tests = Promise.resolve();
         }
@@ -930,6 +964,17 @@ policies and contribution forms [3].
                           throw "Non-thenable returned by function passed to `promise_setup`";
                       }
                       return result;
+                  })
+            .then(function()
+                  {
+                    // Resume every async_tests/async_promise_tests defined
+                    // immediately after this promise_setup().
+                    if (pending_async_tests == tests.pending_async_tests) {
+                      tests.pending_async_tests = null;
+                    }
+                    for(var i in pending_async_tests) {
+                      pending_async_tests[i]();
+                    }
                   })
             .catch(function(e)
                    {
@@ -996,6 +1041,7 @@ policies and contribution forms [3].
     expose(test, 'test');
     expose(async_test, 'async_test');
     expose(promise_test, 'promise_test');
+    expose(async_promise_test , 'async_promise_test');
     expose(promise_rejects_js, 'promise_rejects_js');
     expose(promise_rejects_dom, 'promise_rejects_dom');
     expose(promise_rejects_exactly, 'promise_rejects_exactly');
@@ -2769,6 +2815,11 @@ policies and contribution forms [3].
         // dependency on ECMAScript 2015 Promises to all tests.
         this.promise_tests = null;
         this.promise_setup_called = false;
+
+        // async_tests() / async_promise_tests() are deferred until the execution
+        // of the last promise_setup() defined earlier.
+        // This array stores functions to resume their executions.
+        this.pending_async_tests = null;
 
         this.timeout_multiplier = 1;
         this.timeout_length = test_environment.test_timeout();

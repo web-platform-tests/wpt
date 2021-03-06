@@ -214,11 +214,11 @@ promise_test(() => {
         async_test((t) => t.done(), 'after');
       }
     ).then(({harness, tests}) => {
-      assert_equals(harness, 'ERROR');
+      assert_equals(harness, 'OK');
       assert_equals(tests.before, 'PASS');
-      assert_equals(tests.after, undefined);
+      assert_equals(tests.after, 'PASS');
     });
-}, 'Error for subsequent invocation of `async_test`');
+}, 'No errors for subsequent invocation of `async_test`');
 
 promise_test(() => {
   return makeTest(
@@ -328,6 +328,106 @@ promise_test(() => {
       assert_equals(tests.before, 'PASS');
     });
 }, 'Defers application of setup properties');
+
+promise_test(() => {
+  var expected_sequence = [
+    'test body',
+    'promise_setup begin',
+    'promise_setup end',
+    'async_promise_test body'
+  ];
+  var actual_sequence = window.actual_sequence = [];
+
+  return makeTest(
+      () => {
+        test(() => { parent.actual_sequence.push('test body'); }, 'before');
+        promise_setup(() => {
+          parent.actual_sequence.push('promise_setup begin');
+
+          return Promise.resolve()
+            .then(() => new Promise((resolve) => setTimeout(resolve, 300)))
+            .then(() => parent.actual_sequence.push('promise_setup end'));
+        });
+        async_promise_test(() => {
+          parent.actual_sequence.push('async_promise_test body');
+          return Promise.resolve();
+        }, 'after');
+      }
+    ).then(({harness, tests}) => {
+      assert_equals(harness, 'OK');
+      assert_equals(tests.before, 'PASS');
+      assert_equals(tests.after, 'PASS');
+      assert_array_equals(actual_sequence, expected_sequence);
+    });
+}, 'async_promise_test waits for promise_setup to settle');
+
+promise_test(() => {
+  var expected_sequence = ['a','b','c','d'];
+  var actual_sequence = window.actual_sequence = [];
+
+  return makeTest(
+      () => {
+        var unlock_1;
+        var lock_1 = new Promise(resolve => unlock_1= resolve);
+
+        var unlock_2;
+        var lock_2 = new Promise(resolve => unlock_2 = resolve);
+
+        async_promise_test(async test => {
+          parent.actual_sequence.push('a');
+          await lock_1;
+          parent.actual_sequence.push('c');
+          unlock_2();
+        }, 'track1');
+
+        async_promise_test(async test => {
+          parent.actual_sequence.push('b');
+          unlock_1();
+          await lock_2;
+          parent.actual_sequence.push('d');
+        }, 'track2');
+      }
+    ).then(({harness, tests}) => {
+      assert_equals(harness, 'OK');
+      assert_equals(tests.track1, 'PASS');
+      assert_equals(tests.track2, 'PASS');
+      assert_array_equals(actual_sequence, expected_sequence);
+    });
+}, 'async_promise_test are run in parallel');
+
+promise_test(() => {
+  return makeTest(
+      () => {
+        async_promise_test(async test => {
+          throw new Error('this error is expected');
+        }, 'track1');
+
+        async_promise_test(async test => {
+        }, 'track2');
+      }
+    ).then(({harness, tests}) => {
+      assert_equals(harness, 'OK');
+      assert_equals(tests.track1, 'FAIL');
+      assert_equals(tests.track2, 'PASS');
+    });
+}, 'async_promise_test [FAIL, PASS]');
+
+promise_test(() => {
+  return makeTest(
+      () => {
+        async_promise_test(async test => {
+        }, 'track1');
+
+        async_promise_test(async test => {
+          throw new Error('this error is expected');
+        }, 'track2');
+      }
+    ).then(({harness, tests}) => {
+      assert_equals(harness, 'OK');
+      assert_equals(tests.track1, 'PASS');
+      assert_equals(tests.track2, 'FAIL');
+    });
+}, 'async_promise_test [PASS, FAIL]');
 </script>
 </body>
 </html>

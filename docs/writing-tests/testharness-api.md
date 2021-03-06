@@ -248,6 +248,18 @@ promise_test(function(t) {
 }, "Another example");
 ```
 
+## Asynchronous Promise Tests ##
+
+`promise_test` are running sequentially. This might causes timeout when too many
+have to run. `async_promise_test` is a variant, running in parallel.
+
+|              | in sequence | in parallel       |
+| -------------| ----------: | ----------------: |
+| **Function** | test        | async_test        |
+| **Promise**  | promise_test| async_promise_test|
+
+`async_promise_test()` signature is the same as `promise_test()`:
+
 ## `EventWatcher` ##
 
 `EventWatcher` is a constructor function that allows DOM events to be handled
@@ -536,6 +548,12 @@ additional subtests defined with the `promise_test` function. If the value is
 rejected, the harness will report an error and cancel the remaining tests.
 `properties` may optionally be provided as an object which specifies global
 properties of the test harness (enumerated in the following section).
+
+`async_test()`, `promise_test()`, and `async_promise_test()` are guaranteed to
+execute after every `promise_setup()` defined earlier.
+
+Authors are encouraged to define add `setup()` and `promise_setup()` before
+tests. It is a bad practice to interleave setup and tests.
 
 ### Setup properties ##
 

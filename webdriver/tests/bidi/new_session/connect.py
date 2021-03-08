@@ -3,6 +3,8 @@ import asyncio
 import websockets
 import webdriver
 
+# Testing
+
 # classic session to enable bidi capability manually
 # Intended to be the first test in this file
 @pytest.mark.asyncio

@@ -375,7 +375,8 @@ def run_tests(config, test_paths, product, **kwargs):
         logger.info("Tolerating %s unexpected results" % unexpected_total)
         return True
 
-    all_unexpected_passed = (unexpected_total == unexpected_pass_total)
+    all_unexpected_passed = (unexpected_total and
+                             unexpected_total == unexpected_pass_total)
     if all_unexpected_passed and not kwargs["fail_on_unexpected_pass"]:
         logger.info("Tolerating %i unexpected results because they all PASS" %
                     unexpected_pass_total)

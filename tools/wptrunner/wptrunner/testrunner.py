@@ -947,4 +947,3 @@ class ManagerGroup(object):
 
     def unexpected_pass_count(self):
         return sum(manager.unexpected_pass_count for manager in self.pool)
-

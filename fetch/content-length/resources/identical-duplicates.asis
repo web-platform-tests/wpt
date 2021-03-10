@@ -1,4 +1,6 @@
 HTTP/1.1 200 BLAH
+Test: x
+Test: x
 Content-Type: text/plain
 Content-Type: text/plain
 Content-Length: 6

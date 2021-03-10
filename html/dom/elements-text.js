@@ -32,7 +32,9 @@ var textElements = {
   dfn: {},
   abbr: {},
   ruby: {},
+  rb: {},
   rt: {},
+  rtc: {},
   rp: {},
   data: {
     value: "string",

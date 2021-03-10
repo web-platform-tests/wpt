@@ -35,6 +35,8 @@
 <ruby name="ruby"></ruby>
 <rt name="rt"></rt>
 <rp name="rp"></rp>
+<rb name="rb"></rb>
+<rtc name="rtc"></rtc>
 <source name="source"/>
 </div>
 <script>
@@ -117,6 +119,12 @@ test(function() {
   assert_equals(document.getElementsByName("rp").length, 1);
   assert_equals(document.getElementsByName("rp")[0],
                 document.getElementsByTagName("rp")[0]);
+  assert_equals(document.getElementsByName("rb").length, 1);
+  assert_equals(document.getElementsByName("rb")[0],
+                document.getElementsByTagName("rb")[0]);
+  assert_equals(document.getElementsByName("rtc").length, 1);
+  assert_equals(document.getElementsByName("rtc")[0],
+                document.getElementsByTagName("rtc")[0]);
   assert_equals(document.getElementsByName("source").length, 1);
   assert_equals(document.getElementsByName("source")[0],
                 document.getElementsByTagName("source")[0]);

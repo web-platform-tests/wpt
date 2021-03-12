@@ -7,44 +7,42 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
 
   <style>
-  @font-face
-    {
-      font-family: "mplus-1p-regular";
-      src: url("/fonts/mplus-1p-regular.woff") format("woff");
-      /* filesize: 803300 bytes (784.5 KBytes) */
-    }
-
-  /* filesize of mplus-1p-regular.woff: 803300 bytes (784.5 KiloBytes) */
-
-  /*
-  mplus-1p-regular.ttf can be downloaded at, from
-
-  http://mplus-webfonts.osdn.jp/
-  */
-
   div
     {
-      font-family: "mplus-1p-regular";
+      font-family: monospace;
       font-size: 60px;
       line-height: 1.5em; /* computes to 90px */
     }
 
-  div#block
+  /*
+  We draw the box (perfectly fitted to the content
+  in the block axis, because it has the same content)
+  but not the text.
+  */
+
+  div#box-drawn-under
     {
       background-color: lime;
       border: black solid 3px;
+      color: transparent;
+      position: absolute;
       width: 240px;
+      z-index: -1;
     }
 
-  div#full-stop
+  /*
+  We draw the text, but into a wider box so
+  the period will fit, and overlap it with
+  the previously-drawn box.
+  */
+
+  div#text-drawn-over
     {
-      bottom: 183px; /* border-bottom-width + 2 line boxes */
-      display: inline;
-      left: 243px; /* content width + border-width */
-      position: relative;
+      border: transparent solid 3px;
+      width: 300px;
     }
   </style>
 
-  <div id="block">まだよく<br>ています<br>しかし特</div>
+   <div id="box-drawn-under">まだよく<br>ています。</div>
 
-  <div id="full-stop">。</div>
+   <div id="text-drawn-over">まだよく<br>ています。<br>しかし特</div>

@@ -19,26 +19,11 @@
   <meta content="This test checks that hanging punctuations has no effect on the boundary of a block box. The background of a block box does not include hanging punctuations." name="assert">
 
   <style>
-  @font-face
-    {
-      font-family: "mplus-1p-regular";
-      src: url("/fonts/mplus-1p-regular.woff") format("woff");
-      /* filesize: 803300 bytes (784.5 KBytes) */
-    }
-
-  /* filesize of mplus-1p-regular.woff: 803300 bytes (784.5 KiloBytes) */
-
-  /*
-  mplus-1p-regular.ttf can be downloaded at, from
-
-  http://mplus-webfonts.osdn.jp/
-  */
-
   div
     {
       background-color: lime;
       border: black solid 3px;
-      font-family: "mplus-1p-regular";
+      font-family: monospace;
       font-size: 60px;
       line-height: 1.5em; /* computes to 90px */
       hanging-punctuation: allow-end;

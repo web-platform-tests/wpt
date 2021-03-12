@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests advance-override in cursive script</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-5/#descdef-font-face-advance-override">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<link rel="assert" title="Tests advance-override in cursive script">
+<style>
+@font-face {
+  font-family: custom-font;
+  src: url(/fonts/noto/NotoSansMongolian-regular.woff2);
+  unicode-range: U+1800-18AF;
+}
+
+.target {
+  font: 20px custom-font, serif;
+  writing-mode: vertical-lr;
+}
+
+span.spacing {
+  --h: 0;
+  padding-inline: calc(var(--h) * 0.5px);
+}
+</style>
+
+<div class="target">
+  <span class="spacing">&#x182E;</span><span class="spacing">&#x1823;</span><span class="spacing">&#x1829;</span><span class="spacing">&#x182D;</span><span class="spacing">&#x1823;</span><span class="spacing">&#x182F;</span>
+  <span class="spacing">&#x182A;&#x1822;</span><span class="spacing">&#x1834;</span><span class="spacing">&#x1822;</span><span class="spacing">&#x182D;</span>
+</div>
+
+<script>
+document.fonts.ready.then(() => {
+  let spans = document.querySelectorAll('span.spacing');
+  for (let span of spans) {
+    let height = span.getBoundingClientRect().height;
+    span.style.setProperty("--h", height);
+  }
+});
+</script>

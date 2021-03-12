@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests advance-override in cursive script</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-5/#descdef-font-face-advance-override">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<link rel="assert" title="Tests advance-override in cursive script">
+<style>
+@font-face {
+  font-family: custom-font;
+  src: url(/fonts/noto/NotoNaskhArabic-regular.woff2);
+  unicode-range: U+0600-06FF;
+}
+
+.target {
+  font: 20px custom-font, serif;
+}
+
+span.spacing {
+  --w: 0;
+  padding-inline: calc(var(--w) * 0.5px);
+}
+</style>
+
+<div class="target" dir=rtl>
+  <span class="spacing">&#x0627;</span><span class="spacing">&#x0644;</span><span class="spacing">&#x062D;</span><span class="spacing">&#x0628;</span>
+  <span class="spacing">&#x0633;</span><span class="spacing">&#x0645;</span><span class="spacing">&#x0627;</span><span class="spacing">&#x0621;</span>
+  <span class="spacing">&#x0644;</span><span class="spacing">&#x0627;</span>
+  <span class="spacing">&#x062A;</span><span class="spacing">&#x0645;</span><span class="spacing">&#x0637;</span><span class="spacing">&#x0631;</span>
+  <span class="spacing">&#x063A;</span><span class="spacing">&#x064A;</span><span class="spacing">&#x0631;</span>
+  <span class="spacing">&#x0627;</span><span class="spacing">&#x0644;</span><span class="spacing">&#x0623;</span>
+  <span class="spacing">&#x062D;</span><span class="spacing">&#x0644;</span><span class="spacing">&#x0627;</span><span class="spacing">&#x0645;</span>.
+</div>
+
+<script>
+document.fonts.ready.then(() => {
+  let spans = document.querySelectorAll('span.spacing');
+  for (let span of spans) {
+    let width = span.getBoundingClientRect().width;
+    span.style.setProperty("--w", width);
+  }
+});
+</script>

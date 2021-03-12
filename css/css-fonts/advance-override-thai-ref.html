@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests that advance-override maintains the relative position of glyphs within a grapheme cluster</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-5/#descdef-font-face-advance-override">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<link rel="assert" title="advance-override maintains the relative position of glyphs in Thai characters">
+<style>
+@font-face {
+  font-family: custom-font;
+  src: url(/fonts/noto/NotoSerifThai-Regular.ttf);
+}
+
+.target {
+  font: 20px custom-font, serif;
+}
+
+span.spacing {
+  --w: 0;
+  padding-inline: calc(var(--w) * 0.5px);
+}
+</style>
+
+<div class="target">
+  <span class=spacing>ก</span><span class=spacing>า</span><span class=spacing>ร</span><span class=spacing>เ</span><span class=spacing>ดิ</span><span class=spacing>น</span><span class=spacing>ท</span><span class=spacing>า</span><span class=spacing>ง</span><span class=spacing>ข</span><span class=spacing>า</span><span class=spacing>ก</span><span class=spacing>ลั</span><span class=spacing>บ</span><span class=spacing>ค</span><span class=spacing>ง</span><span class=spacing>จ</span><span class=spacing>ะ</span><span class=spacing>เ</span><span class=spacing>ห</span><span class=spacing>ง</span><span class=spacing>า</span>
+</div>
+
+<script>
+document.fonts.ready.then(() => {
+  let spans = document.querySelectorAll('span.spacing');
+  for (let span of spans) {
+    let width = span.getBoundingClientRect().width;
+    span.style.setProperty("--w", width);
+  }
+});
+</script>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests advance-override in Bengali</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-5/#descdef-font-face-advance-override">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<link rel="assert" title="Tests advance-override in Bengali">
+<style>
+@font-face {
+  font-family: custom-font;
+  src: url(/fonts/noto/NotoSansBengali-Regular.ttf);
+  unicode-range: U+0964-0965, U+0981-09FB, U+200C-200D, U+20B9, U+25CC;
+}
+
+.target {
+  font: 20px custom-font, serif;
+}
+
+span.spacing {
+  --w: 0;
+  padding-inline: calc(var(--w) * 0.5px);
+}
+</style>
+
+<div class="target">
+  <!-- TODO(xiaochengh): Is there actually a way via CSS properties to add
+    spacing between a Bengali vowel and consonant when they form a cluster?
+    What I'm doing currently doesn't work, because:
+    1. The vowel glyphs have non-zero advance when shaping, but the client rect
+       is calculated from whole grapheme clusters. Therefore, the spans for
+       vowels have zero client rect widths.
+    2. Even if padding is added to a vowel span, it doesn't add spacing between
+      the vowel and the consonant.
+  -->
+  <span class="spacing">&#x0986;</span><span class="spacing">&#x0997;&#x09C1;</span><span class="spacing">&#x09A8;</span><span class="spacing">&#x09C7;</span><span class="spacing">&#x09B0;</span>
+  <span class="spacing">&#x09B6;</span><span class="spacing">&#x09BF;</span><span class="spacing">&#x0996;</span><span class="spacing">&#x09BE;</span>
+  <span class="spacing">&#x09A8;</span><span class="spacing">&#x09BF;</span><span class="spacing">&#x09AD;</span><span class="spacing">&#x09C7;</span>
+  <span class="spacing">&#x0997;</span><span class="spacing">&#x09BF;</span><span class="spacing">&#x09AF;&#x09BC;</span><span class="spacing">&#x09C7;</span><span class="spacing">&#x099B;</span><span class="spacing">&#x09BF;</span><span class="spacing">&#x09B2;</span>
+</div>
+
+<script>
+document.fonts.ready.then(() => {
+  let spans = document.querySelectorAll('span.spacing');
+  for (let span of spans) {
+    let width = span.getBoundingClientRect().width;
+    span.style.setProperty("--w", width);
+  }
+});
+</script>

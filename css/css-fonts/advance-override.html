@@ -3,7 +3,7 @@
 <link rel="author" href="mailto:xiaochengh@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-fonts-5/#descdef-font-face-advance-override">
 <link rel="match" href="advance-override-ref.html">
-<link rel="assert" title="Tests that advance-override sets advance to characters rendered with the font face only">
+<link rel="assert" title="Tests basics of advance-override">
 <title>Tests the advance-override descriptor of @font-face</title>
 <style>
 @font-face {
@@ -30,7 +30,7 @@
 
 </style>
 
-<p>advance-override should affect Ahem characters only.</p>
+<p>advance-override should affect Ahem characters only, and should add symmetric spacing to each glyph.</p>
 
 <div class="target">
   XXX一二三XXX

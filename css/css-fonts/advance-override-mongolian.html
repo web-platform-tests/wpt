@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests advance-override in vertical script</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-5/#descdef-font-face-advance-override">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<link rel="assert" title="Tests advance-override in vertical script">
+<link rel="match" href="advance-override-mongolian-ref.html">
+<style>
+@font-face {
+  font-family: custom-font;
+  src: url(/fonts/noto/NotoSansMongolian-regular.woff2);
+  unicode-range: U+1800-18AF;
+  advance-override: 200%;
+}
+
+.target {
+  font: 20px custom-font, serif;
+  writing-mode: vertical-lr;
+}
+</style>
+
+<div class="target">
+  &#x182E;&#x1823;&#x1829;&#x182D;&#x1823;&#x182F;
+  &#x182A;&#x1822;&#x1834;&#x1822;&#x182D;
+</div>

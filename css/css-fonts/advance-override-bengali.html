@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests advance-override in Bengali</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-5/#descdef-font-face-advance-override">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<link rel="assert" title="Tests advance-override in Bengali">
+<link rel="match" href="advance-override-bengali-ref.html">
+<style>
+@font-face {
+  font-family: custom-font;
+  src: url(/fonts/noto/NotoSansBengali-Regular.ttf);
+  unicode-range: U+0964-0965, U+0981-09FB, U+200C-200D, U+20B9, U+25CC;
+  advance-override: 200%;
+}
+
+.target {
+  font: 20px custom-font, serif;
+}
+</style>
+
+<div class="target">
+  &#x0986;&#x0997;&#x09C1;&#x09A8;&#x09C7;&#x09B0;
+  &#x09B6;&#x09BF;&#x0996;&#x09BE;
+  &#x09A8;&#x09BF;&#x09AD;&#x09C7;
+  &#x0997;&#x09BF;&#x09AF;&#x09BC;&#x09C7;&#x099B;&#x09BF;&#x09B2;
+</div>

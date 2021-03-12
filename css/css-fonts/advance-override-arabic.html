@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests advance-override in cursive script</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-5/#descdef-font-face-advance-override">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<link rel="assert" title="Tests advance-override in cursive script">
+<link rel="match" href="advance-override-arabic-ref.html">
+<style>
+@font-face {
+  font-family: custom-font;
+  src: url(/fonts/noto/NotoNaskhArabic-regular.woff2);
+  unicode-range: U+0600-06FF;
+  advance-override: 200%;
+}
+
+.target {
+  font: 20px custom-font, serif;
+}
+</style>
+
+<div class="target" dir=rtl>
+  &#x0627;&#x0644;&#x062D;&#x0628;
+  &#x0633;&#x0645;&#x0627;&#x0621;
+  &#x0644;&#x0627;
+  &#x062A;&#x0645;&#x0637;&#x0631;
+  &#x063A;&#x064A;&#x0631;
+  &#x0627;&#x0644;&#x0623;
+  &#x062D;&#x0644;&#x0627;&#x0645;.
+</div>

@@ -21,12 +21,22 @@
 .upright {
   text-orientation: upright;
 }
+
+span.spacing {
+  padding-inline: calc((var(--override) - 1) * 0.5em);
+}
 </style>
 
 <p>advance-override uses the second parameter to override advance of upright characters in vertical text.</p>
 
-<div class="test">X&nbsp;X&nbsp;X&nbsp;</div>
+<div class="test" style="--override: 2">
+  <span class="spacing">X</span><span class="spacing">X</span><span class="spacing">X</span>
+</div>
 
-<div class="test vertical">X&nbsp;X&nbsp;X&nbsp;</div>
+<div class="test vertical" style="--override: 2">
+  <span class="spacing">X</span><span class="spacing">X</span><span class="spacing">X</span>
+</div>
 
-<div class="test vertical upright">X&nbsp;&nbsp;X&nbsp;&nbsp;X&nbsp;&nbsp;</div>
+<div class="test vertical upright" style="--override: 3">
+  <span class="spacing">X</span><span class="spacing">X</span><span class="spacing">X</span>
+</div>

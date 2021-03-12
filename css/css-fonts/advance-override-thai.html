@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests advance-override in grapheme clusters</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-5/#descdef-font-face-advance-override">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<link rel="assert" title="advance-override maintains the relative position of diacritic glyphs in Thai characters">
+<link rel="match" href="advance-override-thai-ref.html">
+<style>
+@font-face {
+  font-family: custom-font;
+  src: url(/fonts/noto/NotoSerifThai-Regular.ttf);
+  advance-override: 200%;
+}
+
+.target {
+  font: 20px custom-font, serif;
+}
+</style>
+
+<div class="target">
+  การเดินทางขากลับคงจะเหงา
+</div>

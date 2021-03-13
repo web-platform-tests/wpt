@@ -13,7 +13,7 @@ jobs:
       with:
         python-version: '3.x'
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.3.4
     - name: Regenerate certs
       # Use a conditional step instead of a conditional job to work around #20700.
       if: github.repository == 'web-platform-tests/wpt'

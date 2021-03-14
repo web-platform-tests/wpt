@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <title>Ensures ordering between micro-tasks and setTimeout callbacks.</title>
+     <script src="/resources/testharness.js"></script>
+     <script src="/resources/testharnessreport.js"></script>
+     <script src="resources/common.js"></script>
+</head>
+<body>
+    <div id="micro-tasks-between-timeouts">
+    </div>
+
+    <script>
+        "use strict";
+        log_test(function(t, log) {
+            log('script start');
+
+            // Set up the mutator so we can log micro-tasks using MutationObserver
+            var mutator = document.getElementById("micro-tasks-between-timeouts");
+            var observer = new MutationObserver(function () {
+                log('mutation callback');
+            });
+
+            observer.observe(mutator, {attributes: true});
+
+            mutator.classList.toggle("foo");
+
+            setTimeout(function () {
+                log('set timeout - #1');
+                mutator.classList.toggle("foo");
+            }, 0);
+
+            setTimeout(function () {
+                log('set timeout - #2');
+            }, 0);
+
+            log('script end');
+        }, [
+            'script start',
+            'script end',
+            'mutation callback',
+            'set timeout - #1',
+            'mutation callback',
+            'set timeout - #2'
+        ], "Ensure micro-task checkpoints between timeouts.");
+    </script>
+</body>
+</html>

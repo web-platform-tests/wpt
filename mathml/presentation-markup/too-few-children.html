@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Test if elements layout properly if they have too few children</title>
+<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#script-and-limit-schemata">
+<meta name="assert" content="Elements should fill in their children so layout is maintained.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/mathml/support/feature-detection.js"></script>
+<script src="/mathml/support/layout-comparison.js"></script>
+<script>
+  function getBox(id, i) {
+    return document.getElementById(id+i)
+  }
+
+  function removeIgnoredMrows(children) {
+    let result = [];
+    Array.from(children).forEach(child => {
+      if (child.getAttribute("class")==="ignore_mrow") {
+        if (child.childElementCount > 0)
+          Array.prototype.push.apply(result, child.children);
+      } else {
+        result.push(child);
+      }
+    });
+    return result;
+  }
+
+
+  function compareLayout(element, reference, epsilon) {
+    // Compare sizes of elements and children.
+    compareSize(element, reference, epsilon);
+    const elementBox = element.getBoundingClientRect();
+    const referenceBox = reference.getBoundingClientRect();
+
+    const elementChildren = childrenParticipatingToLayout(element);
+    const referenceChildren = removeIgnoredMrows(childrenParticipatingToLayout(reference));
+    
+    if (elementChildren.length != referenceChildren.length) {
+      throw "Reference should have the same number of children participating to layout."
+    }
+
+
+    for (let i = 0; i < elementChildren.length; i++) {
+      compareLayout(elementChildren[i], referenceChildren[i], epsilon);
+    }
+  }
+
+
+  setup({ explicit_done: true });
+  window.addEventListener("load", () => { document.fonts.ready.then(runTests); });
+
+  function runTests() {
+
+    // elements being tested
+    const elements = [
+      {name:"mover", n:2},
+      {name:"munder", n:2},
+      {name:"munderover", n:3},
+      {name:"msub", n:2},
+      {name:"msup", n:2},
+      {name:"msubsup", n:3},
+      {name:"mmultiscripts", n:1},
+      {name:"mfrac", n:2},
+      {name:"mroot", n:2},
+      {name:"msqrt", n:1},
+      {name:"mstyle", n:1},
+      {name:"merror", n:1},
+      {name:"mpadded", n:1},
+      {name:"mphantom", n:1},
+      {name:"menclose", n:1},
+      {name:"mtable", n:1},
+      {name:"mtr", n:1},
+      {name:"mtd", n:1},
+      {name:"maction", n:1},
+      {name:"semantics", n:1},
+      {name:"math", n:1}
+    ];
+
+    // add a has_xxx key/value pair for feature dectection
+    elements.forEach((e) => { e.has = "has_"+e.name;});
+
+    // preconditions for all the tests running
+    // note: these could be done for each test, but repeatitive and really this is independent of what is really tested
+    test(
+      function() {
+        assert_true(MathMLFeatureDetection.has_mspace());
+        assert_true(MathMLFeatureDetection.has_mrow());
+        // check all tested elements (not all has_xxx functions implemented yet)
+        // elements.forEach(e) (
+        //  assert_true(MathMLFeatureDetection[e.has])
+        // )
+      },
+      "features/preconditions for running empty MathML tests"
+    );
+
+    // loop over number of children and elements and run a test on each
+    const epsilon = 0.001;
+    for (let i=0; i<3; i++) {
+      elements.forEach(function(element) {
+        if (i < element.n) {
+          test(
+            function() {
+              compareLayout(getBox(element.name, i), getBox("ref_" + element.name, i), epsilon);
+            },
+            "too few children for " + element.name + " (" + i + " " + (i==1 ? "child" : "children") + ")."
+          )
+        }
+      })
+    };
+    done();
+  }
+</script>
+</head>
+<body>
+  <div id="log"></div>
+    <p>
+      <math>
+        <munderover id="munderover0">
+        </munderover>
+      </math>
+      <math>
+        <munder id="munder0">
+        </munder>
+      </math>
+      <math>
+        <mover id="mover0">
+        </mover>
+      </math>
+      <math>
+        <msub id="msub0">
+        </msub>
+      </math>
+      <math>
+        <msup id="msup0">
+        </msup>
+      </math>
+      <math>
+        <msubsup id="msubsup0">
+        </msubsup>
+      </math>
+      <math>
+        <mmultiscripts id="mmultiscripts0">
+        </mmultiscripts>
+      </math>
+      <math>
+        <mfrac id="mfrac0">
+        </mfrac>
+      </math>
+      <math>
+        <mroot id="mroot0">
+        </mroot>
+      </math>
+      <math>
+        <msqrt id="msqrt0">
+        </msqrt>
+      </math>
+      <math>
+        <mstyle id="mstyle0">
+        </mstyle>
+      </math>
+      <math>
+        <merror id="merror0">
+        </merror>
+      </math>
+      <math>
+        <mpadded id="mpadded0">
+        </mpadded>
+      </math>
+      <math>
+        <mphantom id="mphantom0">
+        </mphantom>
+      </math>
+      <math>
+        <menclose id="menclose0">
+        </menclose>
+      </math>
+      <math>
+        <mtable id="mtable0">
+        </mtable>
+      </math>
+      <math>
+         <mtable>
+           <mtr id="mtr0">
+           </mtr>
+         </mtable>
+     </math>
+      <math>
+         <mtable>
+           <mtr>
+             <mtd id="mtd0">
+             </mtd>
+           </mtr>
+         </mtable>
+      </math>
+      <math>
+        <maction id="maction0">
+        </maction>
+      </math>
+      <math>
+        <semantics id="semantics0">
+        </semantics>
+      </math>
+      <math id="math0">
+      </math>
+
+
+      <math>
+        <munderover id="munderover1">
+          <mspace width="20px" height="10px" style="background: black"/>
+        </munderover>
+      </math>
+      <math>
+        <munder id="munder1">
+          <mspace width="20px" height="10px" style="background: black"/>
+        </munder>
+      </math>
+      <math>
+        <mover id="mover1">
+          <mspace width="20px" height="10px" style="background: black"/>
+       </mover>
+      </math>
+      <math>
+        <msub id="msub1">
+          <mspace width="20px" height="10px" style="background: black"/>
+       </msub>
+      </math>
+      <math>
+        <msup id="msup1">
+          <mspace width="20px" height="10px" style="background: black"/>
+        </msup>
+      </math>
+      <math>
+        <msubsup id="msubsup1">
+          <mspace width="20px" height="10px" style="background: black"/>
+        </msubsup>
+      </math>
+      <math>
+        <mfrac id="mfrac1">
+          <mspace width="20px" height="10px" style="background: black"/>
+        </mfrac>
+      </math>
+      <math>
+        <mroot id="mroot1">
+          <mspace width="20px" height="10px" style="background: black"/>
+        </mroot>
+      </math>
+
+
+      <math>
+        <munderover id="munderover2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="10px" height="10px" style="background: blue"/>
+        </munderover>
+      </math>
+      <math>
+        <msubsup id="msubsup2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="10px" height="10px" style="background: blue"/>
+        </msubsup>
+      </math>
+
+
+      <!-- reference MathML -->
+      <math>
+        <munderover id="ref_munderover0">
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+        </munderover>
+      </math>
+      <math>
+        <munder id="ref_munder0">
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+        </munder>
+      </math>
+      <math>
+        <mover id="ref_mover0">
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+        </mover>
+      </math>
+      <math>
+        <msub id="ref_msub0">
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+        </msub>
+      </math>
+      <math>
+        <msup id="ref_msup0">
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+        </msup>
+      </math>
+      <math>
+        <msubsup id="ref_msubsup0">
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+        </msubsup>
+      </math>
+      <math>
+        <mmultiscripts id="ref_mmultiscripts0">
+          <mrow class="ignore_mrow"></mrow>
+        </mmultiscripts>
+      </math>
+      <math>
+        <mfrac id="ref_mfrac0">
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+        </mfrac>
+      </math>
+      <math>
+        <mroot id="ref_mroot0">
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+       </mroot>
+      </math>
+
+      <math>
+        <munderover id="ref_munderover1">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+        </munderover>
+      </math>
+      <math>
+        <munder id="ref_munder1">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow"></mrow>
+        </munder>
+      </math>
+      <math>
+        <mover id="ref_mover1">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow"></mrow>
+      </mover>
+      </math>
+      <math>
+        <msub id="ref_msub1">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow"></mrow>
+      </msub>
+      </math>
+      <math>
+        <msup id="ref_msup1">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow"></mrow>
+       </msup>
+      </math>
+      <math>
+        <msubsup id="ref_msubsup1">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow"></mrow>
+          <mrow class="ignore_mrow"></mrow>
+        </msubsup>
+      </math>
+      <math>
+        <mfrac id="ref_mfrac1">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow"></mrow>
+        </mfrac>
+      </math>
+      <math>
+        <mroot id="ref_mroot1">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mrow class="ignore_mrow"></mrow>
+       </mroot>
+      </math>
+
+
+      <math>
+        <munderover id="ref_munderover2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="10px" height="10px" style="background: blue"/>
+          <mrow class="ignore_mrow"></mrow>
+        </munderover>
+      </math>
+      <math>
+        <msubsup id="ref_msubsup2">
+          <mspace width="20px" height="10px" style="background: black"/>
+          <mspace width="10px" height="10px" style="background: blue"/>
+          <mrow class="ignore_mrow"></mrow>
+       </msubsup>
+      </math>
+
+      <math>
+        <msqrt id="ref_msqrt0">
+          <mrow class="ignore_mrow"></mrow>
+        </msqrt>
+      </math>
+      <math>
+        <mstyle id="ref_mstyle0">
+          <mrow class="ignore_mrow"></mrow>
+        </mstyle>
+      </math>
+      <math>
+        <merror id="ref_merror0">
+          <mrow class="ignore_mrow"></mrow>
+        </merror>
+      </math>
+      <math>
+        <mpadded id="ref_mpadded0">
+          <mrow class="ignore_mrow"></mrow>
+        </mpadded>
+      </math>
+      <math>
+        <mphantom id="ref_mphantom0">
+          <mrow class="ignore_mrow"></mrow>
+        </mphantom>
+      </math>
+      <math>
+        <menclose id="ref_menclose0">
+          <mrow class="ignore_mrow"></mrow>
+        </menclose>
+      </math>
+      <math>
+        <mtable id="ref_mtable0">
+        </mtable>
+      </math>
+      <math>
+         <mtable>
+           <mtr id="ref_mtr0">
+           </mtr>
+         </mtable>
+     </math>
+      <math>
+         <mtable>
+           <mtr>
+             <mtd id="ref_mtd0">
+               <mrow class="ignore_mrow"></mrow>
+             </mtd>
+           </mtr>
+         </mtable>
+      </math>
+      <math>
+        <maction id="ref_maction0">
+          <mrow class="ignore_mrow"></mrow>
+        </maction>
+      </math>
+      <math>
+        <semantics id="ref_semantics0">
+          <mrow class="ignore_mrow"></mrow>
+        </semantics>
+      </math>
+      <math id="ref_math0">
+        <mrow class="ignore_mrow"></mrow>
+      </math>
+
+    </p>
+</body>
+</html>

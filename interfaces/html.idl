@@ -1505,14 +1505,14 @@ dictionary ImageBitmapRenderingContextSettings {
   boolean alpha = true;
 };
 
-typedef (OffscreenCanvasRenderingContext2D or ImageBitmapRenderingContext or WebGLRenderingContext or WebGL2RenderingContext) OffscreenRenderingContext;
+typedef (OffscreenCanvasRenderingContext2D or ImageBitmapRenderingContext or WebGLRenderingContext or WebGL2RenderingContext or GPUCanvasContext) OffscreenRenderingContext;
 
 dictionary ImageEncodeOptions {
   DOMString type = "image/png";
   unrestricted double quality;
 };
 
-enum OffscreenRenderingContextId { "2d", "bitmaprenderer", "webgl", "webgl2" };
+enum OffscreenRenderingContextId { "2d", "bitmaprenderer", "webgl", "webgl2", "gpupresent" };
 
 [Exposed=(Window,Worker), Transferable]
 interface OffscreenCanvas : EventTarget {

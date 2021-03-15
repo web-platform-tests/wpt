@@ -24,14 +24,7 @@
   test(() => {
     const results = window.testResults = {};
 
-    // (document[Symbol.unscopables] ||= {}).testVariable = true;
-    let documentUnscopables = document[Symbol.unscopables];
-    if (!documentUnscopables) {
-      documentUnscopables = {};
-      document[Symbol.unscopables] = documentUnscopables;
-    }
-
-    documentUnscopables.testVariable = true;
+    document[Symbol.unscopables].testVariable = true;
     document.testVariable = "FAIL (document)";
 
     document.getElementById("test1_target").click();
@@ -42,14 +35,7 @@
     const results = window.testResults = {};
     const element = document.getElementById("test1_target");
 
-    // (element[Symbol.unscopables] ||= {}).testVariable = true;
-    let elementUnscopables = element[Symbol.unscopables];
-    if (!elementUnscopables) {
-      elementUnscopables = {};
-      element[Symbol.unscopables] = elementUnscopables;
-    }
-
-    elementUnscopables.testVariable = true;
+    element[Symbol.unscopables].testVariable = true;
     element.testVariable = "FAIL (element)";
 
     element.click();
@@ -76,14 +62,7 @@
     const element = document.getElementById("test2_target");
     const formOwner = document.getElementById("test2_form_owner");
 
-    // (formOwner[Symbol.unscopables] ||= {}).testVariable = true;
-    let formOwnerUnscopables = formOwner[Symbol.unscopables];
-    if (!formOwnerUnscopables) {
-      formOwnerUnscopables = {};
-      formOwner[Symbol.unscopables] = formOwnerUnscopables;
-    }
-
-    formOwnerUnscopables.testVariable = true;
+    formOwner[Symbol.unscopables].testVariable = true;
     formOwner.testVariable = "FAIL (formOwner)";
 
     element.click();

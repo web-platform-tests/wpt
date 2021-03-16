@@ -18,13 +18,13 @@ setup(() => {
     performance.addEventListener('resourcetimingbufferfull', () => { assert_unreached("resourcetimingbufferfull should not fire")});
 });
 
-let overflowTheBuffer = () => {
+const overflowTheBuffer = () => {
     // These resources overflow the entry buffer, and go into the secondary buffer.
-    xhrScript('resources/empty.js?xhr2');
-    xhrScript('resources/empty.js?xhr3');
+    syncXHR('resources/empty.js?xhr2');
+    syncXHR('resources/empty.js?xhr3');
     performance.clearResourceTimings();
     performance.setResourceTimingBufferSize(3);
-    xhrScript('resources/empty.js?xhr4');
+    syncXHR('resources/empty.js?xhr4');
     window.entriesAfterAddition = performance.getEntriesByType('resource');
 };
 

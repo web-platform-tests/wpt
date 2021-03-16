@@ -22,12 +22,12 @@ let overflowTheBufferAndWaitForEvent = () => {
         var add_entry = () => {
             performance.setResourceTimingBufferSize(resource_timing_buffer_size + 1);
             // The sync entry is added to the secondary buffer, so will be the last one there and eventually dropped.
-            xhrScript("resources/empty.js?xhr");
+            syncXHR("resources/empty.js?xhr");
             resolve();
         }
         performance.addEventListener('resourcetimingbufferfull', add_entry);
         // This resource overflows the entry buffer, and goes into the secondary buffer.
-        appendScript('resources/empty_script.js');
+        appendScript('resources/empty_script.js', resolve);
     });
 };
 

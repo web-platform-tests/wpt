@@ -15,11 +15,11 @@ let eventFired = false;
 
 setup(() => {
     clearBufferAndSetSize(resource_timing_buffer_size);
-    var resize = function() {
+  const resize = () => {
         assert_equals(performance.getEntriesByType("resource").length, resource_timing_buffer_size, "resource timing buffer in resourcetimingbufferfull is the size of the limit");
         ++resource_timing_buffer_size;
         performance.setResourceTimingBufferSize(resource_timing_buffer_size);
-        xhrScript("resources/empty.js?xhr");
+        syncXHR("resources/empty.js?xhr");
         assert_equals(performance.getEntriesByType("resource").length, resource_timing_buffer_size - 1, "A sync request was not added to the primary buffer just yet, because it is full");
         ++resource_timing_buffer_size;
         performance.setResourceTimingBufferSize(resource_timing_buffer_size);

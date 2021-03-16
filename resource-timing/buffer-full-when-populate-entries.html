@@ -14,12 +14,13 @@
 const resource_timing_buffer_size = 2;
 let bufferFullCount = 0;
 let eventFired = false;
+let eventBubbles = true;
 setup(() => {
     clearBufferAndSetSize(resource_timing_buffer_size);
     performance.addEventListener('resourcetimingbufferfull', e => {
-        assert_equals(e.bubbles, false, "Event bubbles attribute is false");
         bufferFullCount++;
         eventFired = true;
+        eventBubbles = e.bubbles;
     });
 });
 
@@ -33,6 +34,7 @@ let overflowTheBuffer = () => {
 let testThatBufferContainsTheRightResources = () => {
     assert_equals(performance.getEntriesByType('resource').length, resource_timing_buffer_size, 'There should only be |bufferSize| resource entries.');
     assert_equals(bufferFullCount, 1, 'onresourcetimingbufferfull should have been invoked once.');
+    assert_false(eventBubbles, 'onresourcetimingbufferfull should not bubble.');
 };
 
 promise_test(async () => {

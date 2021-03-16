@@ -288,15 +288,15 @@ created Promise waiting to be fulfilled, or if the event is of a different type
 to the type currently expected. This ensures that only the events that are
 expected occur, in the correct order, and with the correct timing.
 
-## Single Page Tests ##
+## <a name=single-page-tests></a>Single-Test Pages ##
 
 Sometimes, particularly when dealing with asynchronous behaviour,
 having exactly one test per page is desirable, and the overhead of
 wrapping everything in functions for isolation becomes
-burdensome. For these cases `testharness.js` support "single page
-tests".
+burdensome. For these cases `testharness.js` support "single-test pages"
+(also known as "single page tests").
 
-In order for a test to be interpreted as a single page test, it should set the
+In order for a test to be interpreted as a single-test page, it should set the
 `single_test` [setup option](#setup) to `true`.
 
 ```html
@@ -312,7 +312,7 @@ In order for a test to be interpreted as a single page test, it should set the
  </script>
 ```
 
-The test title for single page tests is always taken from `document.title`.
+The test title for single-test pages is always taken from `document.title`.
 
 ## Making assertions ##
 
@@ -336,7 +336,7 @@ only fail due to one such violation, so if you would like to assert multiple
 behaviors independently, you should use multiple tests.
 
 NOTE: All asserts must be located in a `test()` or a step of an
-`async_test()`, unless the test is a single page test. Asserts outside
+`async_test()`, unless the test is a single-test page. Asserts outside
 these places won't be detected correctly by the harness and may cause
 unexpected exceptions that will lead to an error in the harness.
 
@@ -542,7 +542,7 @@ properties of the test harness (enumerated in the following section).
 Both setup functions recognize the following properties:
 
 `explicit_done` - Wait for an explicit call to done() before declaring all
-tests complete (see below; always true for single page tests)
+tests complete (see below; always true for single-test pages)
 
 `output_document` - The document to which results should be logged. By default
 this is the current document but could be an ancestor document in some cases
@@ -562,7 +562,7 @@ the test results.
 `timeout_multiplier` - Multiplier to apply to per-test timeouts.
 
 `single_test` - Test authors may set this property to `true` to enable [the
-"single page test" mode of testharness.js](#single-page-tests); the current
+"single-test page" mode of testharness.js](#single-page-tests); the current
 test must not declare any subtests; testharness.js will interpret all events
 which normally influence the harness status (e.g. uncaught exceptions,
 unhandled promise rejections, and timeouts) in terms of a single

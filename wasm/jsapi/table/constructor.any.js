@@ -167,3 +167,308 @@ test(() => {
     "maximum valueOf",
   ]);
 }, "Order of evaluation for descriptor");
+
+test(() => {
+  const order = [];
+
+  assert_throws_js(TypeError, () => {
+    new WebAssembly.Table({
+      get maximum() {
+        order.push("maximum");
+        return {
+          valueOf() {
+            order.push("maximum valueOf");
+            return 1;
+          },
+        };
+      },
+
+      get initial() {
+        order.push("initial");
+        return {
+          valueOf() {
+            order.push("initial valueOf");
+            return 1;
+          },
+        };
+      },
+
+      get element() {
+        order.push("element");
+        return undefined;
+      },
+    });
+  });
+
+  assert_array_equals(order, [
+    "element",
+  ]);
+}, "Order of evaluation for descriptor (element=undefined)");
+
+test(() => {
+  const order = [];
+
+  assert_throws_js(TypeError, () => {
+    new WebAssembly.Table({
+      get maximum() {
+        order.push("maximum");
+        return {
+          valueOf() {
+            order.push("maximum valueOf");
+            return 1;
+          },
+        };
+      },
+
+      get initial() {
+        order.push("initial");
+        return undefined;
+      },
+
+      get element() {
+        order.push("element");
+        return {
+          toString() {
+            order.push("element toString");
+            return "anyfunc";
+          },
+        };
+      },
+    });
+  });
+
+  assert_array_equals(order, [
+    "element",
+    "element toString",
+    "initial",
+  ]);
+}, "Order of evaluation for descriptor (initial=undefined)");
+
+test(() => {
+  const order = [];
+
+  assert_throws_js(TypeError, () => {
+    new WebAssembly.Table({
+      get maximum() {
+        order.push("maximum");
+        return {
+          valueOf() {
+            order.push("maximum valueOf");
+            return 0x100000000;
+          },
+        };
+      },
+
+      get initial() {
+        order.push("initial");
+        return {
+          valueOf() {
+            order.push("initial valueOf");
+            return 1;
+          },
+        };
+      },
+
+      get element() {
+        order.push("element");
+        return {
+          toString() {
+            order.push("element toString");
+            return "anyfunc";
+          },
+        };
+      },
+    });
+  });
+
+  assert_array_equals(order, [
+    "element",
+    "element toString",
+    "initial",
+    "initial valueOf",
+    "maximum",
+    "maximum valueOf",
+  ]);
+}, "Order of evaluation for descriptor (maximum out of range)");
+
+test(() => {
+  const order = [];
+
+  assert_throws_js(RangeError, () => {
+    new WebAssembly.Table({
+      get maximum() {
+        order.push("maximum");
+        return {
+          valueOf() {
+            order.push("maximum valueOf");
+            return 10_000_001;
+          },
+        };
+      },
+
+      get initial() {
+        order.push("initial");
+        return {
+          valueOf() {
+            order.push("initial valueOf");
+            return 1;
+          },
+        };
+      },
+
+      get element() {
+        order.push("element");
+        return {
+          toString() {
+            order.push("element toString");
+            return "anyfunc";
+          },
+        };
+      },
+    });
+  });
+
+  assert_array_equals(order, [
+    "element",
+    "element toString",
+    "initial",
+    "initial valueOf",
+    "maximum",
+    "maximum valueOf",
+  ]);
+}, "Order of evaluation for descriptor (maximum too large)");
+
+test(() => {
+  const order = [];
+
+  assert_throws_js(TypeError, () => {
+    new WebAssembly.Table({
+      get maximum() {
+        order.push("maximum");
+        return {
+          valueOf() {
+            order.push("maximum valueOf");
+            return 1;
+          },
+        };
+      },
+
+      get initial() {
+        order.push("initial");
+        return {
+          valueOf() {
+            order.push("initial valueOf");
+            return 0x100000000;
+          },
+        };
+      },
+
+      get element() {
+        order.push("element");
+        return {
+          toString() {
+            order.push("element toString");
+            return "anyfunc";
+          },
+        };
+      },
+    });
+  });
+
+  assert_array_equals(order, [
+    "element",
+    "element toString",
+    "initial",
+    "initial valueOf",
+  ]);
+}, "Order of evaluation for descriptor (initial out of range)");
+
+test(() => {
+  const order = [];
+
+  assert_throws_js(RangeError, () => {
+    new WebAssembly.Table({
+      get maximum() {
+        order.push("maximum");
+        return {
+          valueOf() {
+            order.push("maximum valueOf");
+            return 1;
+          },
+        };
+      },
+
+      get initial() {
+        order.push("initial");
+        return {
+          valueOf() {
+            order.push("initial valueOf");
+            return 10_000_001;
+          },
+        };
+      },
+
+      get element() {
+        order.push("element");
+        return {
+          toString() {
+            order.push("element toString");
+            return "anyfunc";
+          },
+        };
+      },
+    });
+  });
+
+  assert_array_equals(order, [
+    "element",
+    "element toString",
+    "initial",
+    "initial valueOf",
+    "maximum",
+    "maximum valueOf",
+  ]);
+}, "Order of evaluation for descriptor (initial too large)");
+
+test(() => {
+  const order = [];
+
+  assert_throws_js(TypeError, () => {
+    new WebAssembly.Table({
+      get maximum() {
+        order.push("maximum");
+        return {
+          valueOf() {
+            order.push("maximum valueOf");
+            return 1;
+          },
+        };
+      },
+
+      get initial() {
+        order.push("initial");
+        return {
+          valueOf() {
+            order.push("initial valueOf");
+            return 1;
+          },
+        };
+      },
+
+      get element() {
+        order.push("element");
+        return {
+          toString() {
+            order.push("element toString");
+            return "invalid";
+          },
+        };
+      },
+    });
+  });
+
+  assert_array_equals(order, [
+    "element",
+    "element toString",
+  ]);
+}, "Order of evaluation for descriptor (element invalid)");

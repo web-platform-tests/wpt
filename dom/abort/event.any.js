@@ -69,4 +69,24 @@ test(t => {
   assert_true(signal.aborted);
 }, "the AbortSignal.abort() static returns an already aborted signal");
 
+test(t => {
+  const acSignalGet = Object.getOwnPropertyDescriptor(AbortController.prototype, 'signal').get;
+  const acAbort = AbortController.prototype.abort;
+
+  const badAbortControllers = [null, undefined, 0, NaN, true, 'AbortController', Object.create(AbortController.prototype)];
+  for (const badController of badAbortControllers) {
+    assert_throws_js(TypeError, acSignalGet.bind(badController), 'controller.signal should throw');
+    assert_throws_js(TypeError, acAbort.bind(badController), 'controller.abort() should throw');
+  }
+}, "AbortController should perform brand checks");
+
+test(t => {
+  const signalAbortedGet = Object.getOwnPropertyDescriptor(AbortSignal.prototype, 'aborted').get;
+
+  const badAbortSignals = [null, undefined, 0, NaN, true, 'AbortSignal', Object.create(AbortSignal.prototype)];
+  for (const badSignal of badAbortSignals) {
+    assert_throws_js(TypeError, signalAbortedGet.bind(badSignal), 'signal.aborted should throw');
+  }
+}, "AbortSignal should perform brand checks");
+
 done();

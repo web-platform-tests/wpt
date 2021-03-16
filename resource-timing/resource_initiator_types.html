@@ -19,6 +19,7 @@ let ul_font_loaded = false;
 let xhr_loaded = false;
 let tests_run = false;
 let frameset_loaded = false;
+let all_resources_loaded = false;
 
 function check_finished() {
     if (!ul_font_loaded) {
@@ -27,7 +28,7 @@ function check_finished() {
     if (!ol_font_loaded) {
         ol_font_loaded = check_font_loaded('ol');
     }
-    if (page_loaded && ol_font_loaded && ul_font_loaded && background_loaded && xhr_loaded && frameset_loaded) {
+    if (page_loaded && ol_font_loaded && ul_font_loaded && background_loaded && xhr_loaded && frameset_loaded && all_resources_loaded) {
         perform_test();
     } else {
         step_timeout(check_finished, 100);
@@ -63,6 +64,12 @@ function onload_test() {
     }
 
     step_timeout(check_finished, 100);
+}
+
+function on_all_resources_loaded() {
+    all_resources_loaded = true;
+
+    step_timeout(check_finished, 10);
 }
 
 function frameset_onload() {

@@ -43,6 +43,8 @@ function test_fail(msg, properties)
 function test_resource_entries(entries, expected_entries)
 {
     test(function() {
+        assert_greater_than(entries.length, 0, 'There should be resources entries in buffer.');
+
         // This is slightly convoluted so that we can sort the output.
         var actual_entries = {};
         var origin = window.location.protocol + "//" + window.location.host;

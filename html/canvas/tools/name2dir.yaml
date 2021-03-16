@@ -6,6 +6,7 @@
 2d.voidreturn:                        "conformance-requirements"
 2d.drawImage:                         "drawing-images-to-the-canvas"
 2d.clearRect:                         "drawing-rectangles-to-the-canvas"
+2d.colorSpace:                        "color-space"
 2d.fillRect:                          "drawing-rectangles-to-the-canvas"
 2d.strokeRect:                        "drawing-rectangles-to-the-canvas"
 2d.text.draw:                         "drawing-text-to-the-canvas"

@@ -53,7 +53,7 @@ try:
 except ImportError:
     import yaml
 
-def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOFFSCREENCANVAS):
+def genTestUtils(INPUTFILE, TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOFFSCREENCANVAS):
 
     MISCOUTPUTDIR = './output'
     SPECOUTPUTDIR = '../'
@@ -135,13 +135,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
             spec_assertions.append(s)
 
     tests = []
-    test_yaml_directory = "yaml/element"
-    if ISOFFSCREENCANVAS:
-        test_yaml_directory = "yaml/offscreen"
-    TESTSFILES = [
-        os.path.join(test_yaml_directory, f) for f in os.listdir(test_yaml_directory)
-        if f.endswith(".yaml")]
-    for t in sum([ yaml.load(open(f, "r").read()) for f in TESTSFILES], []):
+    for t in sum([ yaml.load(open(INPUTFILE, "r").read())], []):
         if 'DISABLED' in t:
             continue
         if 'meta' in t:

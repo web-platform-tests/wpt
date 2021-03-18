@@ -13,7 +13,7 @@ div {
   flex-direction: row;
   justify-content: right;
 }
-p + div {
+div + div {
   flex-direction: row-reverse;
 }
 span {
@@ -28,19 +28,16 @@ span:nth-child(2) {background: pink;}
 span:nth-child(3) {background: lightblue;}
 </style>
 
-<div>
+<p>Test passes if the numbered boxes are placed in the top left corner of both flex containers, and left-to-right order is 1, 2, 3 in the first case and 3, 2, 1 in the second case.</p>
+
+<div id="row">
   <span>one</span>
   <span>two</span>
   <span>three</span>
 </div>
 
-<p>Test passes if left-to-right order is 1, 2, 3 and the boxes are placed in the top right corner of the flex container.</p>
-
-<div>
+<div id="row-reverse">
   <span>one</span>
   <span>two</span>
   <span>three</span>
 </div>
-
-<p>Test passes if left-to-right order is 3, 2, 1 and the boxes are placed in the top right corner of the flex container.</p>
-

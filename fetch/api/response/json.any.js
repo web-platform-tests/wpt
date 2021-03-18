@@ -10,5 +10,5 @@ promise_test(async t => {
 
 promise_test(async t => {
   const response = await fetch("/xhr/resources/utf16-bom.json");
-  return promise_rejects_js(t, TypeError, response.json());
+  return promise_rejects_js(t, SyntaxError, response.json());
 }, "Ensure UTF-16 results in an error");

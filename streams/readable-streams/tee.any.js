@@ -232,7 +232,7 @@ promise_test(t => {
 
 }, 'ReadableStream teeing: failing to cancel the original stream should cause cancel() to reject on branches');
 
-test(t => {
+promise_test(t => {
 
   const theError = { name: 'You just watch yourself!' };
   let controller;

@@ -281,6 +281,7 @@ promise_test(async t => {
   let resolveReturn;
   const iterable = {
     next: t.unreached_func('next() should not be called'),
+    throw: t.unreached_func('throw() should not be called'),
     async return(...args) {
       returnCalls += 1;
       returnArgs = args;
@@ -312,7 +313,7 @@ promise_test(async t => {
 
 }, `ReadableStream.from: cancelling the returned stream calls and awaits return()`);
 
-promise_test(async () => {
+promise_test(async t => {
 
   let nextCalls = 0;
   let returnCalls = 0;
@@ -322,6 +323,7 @@ promise_test(async () => {
       nextCalls += 1;
       return { value: undefined, done: true };
     },
+    throw: t.unreached_func('throw() should not be called'),
     async return() {
       returnCalls += 1;
     },

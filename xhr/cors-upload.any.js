@@ -1,4 +1,5 @@
 // META: title=Cross-Origin POST with preflight and FormData body should send body
+// META: script=/common/get-host-info.sub.js
 "use strict";
 
 function testCorsFormDataUpload(description, path, method, form, headers, withCredentials) {
@@ -30,7 +31,7 @@ function testCorsFormDataUpload(description, path, method, form, headers, withCr
 
 function corsURL(path) {
   const url = new URL(path, location.href);
-  url.hostname = "www1." + url.hostname;
+  url.hostname = get_host_info().REMOTE_HOST;
   return url.href;
 }
 

@@ -1,11 +1,11 @@
-// META: title=Access-Control-Request-Origin accept different origin between preflight and actual request
+// META: title=Access-Control-Allow-Headers supports *
 // META: script=/common/get-host-info.sub.js
 "use strict";
 
 async_test(t => {
   const xhr = new XMLHttpRequest();
 
-  xhr.open("GET", corsURL("resources/access-control-preflight-request-header-returns-origin.py"));
+  xhr.open("GET", corsURL("resources/access-control-preflight-request-allow-headers-returns-star.py"));
 
   xhr.setRequestHeader("X-Test", "foobar");
 

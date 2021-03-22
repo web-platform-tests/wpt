@@ -25,7 +25,10 @@
 // should be in its mid-point, that's the time we should take screenshot.
 let start_time;
 function startTransition(timestamp) {
-  document.getElementById('target').style.backgroundColor = "rgb(200, 0, 0)";
+  const target = document.getElementById('target');
+  getComputedStyle(target).backgroundColor;
+
+  target.style.backgroundColor = "rgb(200, 0, 0)";
   requestAnimationFrame(startTimer);
 }
 
@@ -42,7 +45,7 @@ function wait(timestamp) {
   takeScreenshot();
 }
 
-requestAnimationFrame(startTransition);
+startTransition();
 </script>
 </body>
 </html>

@@ -16,7 +16,11 @@ See `../cross-origin-opener-policy/README.md`.
 ### Testing plan ###
 
 - test multiple values with COEPRO
-- test "relevant settings object" is the right one
+- test "relevant settings object" is the right one:
+  - navigation with location.assign invoked as in https://github.com/web-platform-tests/wpt/pull/21206, shouldn't affect which settings object is used per spec.
+  - construct a worker normally. "owner" is the "responsible document": https://html.spec.whatwg.org/#relevant-owner-to-add
+  - construct a worker within a worker. "owner" is the outer worker (not the document).
+  - test that history.pushState() doesn't affect the report's "url"
 
 https://html.spec.whatwg.org/multipage/origin.html#embedder-policy-checks
 

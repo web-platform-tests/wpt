@@ -341,3 +341,57 @@ promise_test(async t => {
   assert_equals(returnCalls, 0, 'return() should not be called');
 
 }, `ReadableStream.from: return() is not called when iterator completes normally`);
+
+promise_test(async t => {
+
+  let nextCalls = 0;
+  let returnCalls = 0;
+  let reader;
+
+  const iterable = {
+    async next() {
+      nextCalls++;
+      await reader.cancel();
+      assert_equals(returnCalls, 1, 'return() should be called once');
+      return { value: 'something else', done: false };
+    },
+    async return() {
+      returnCalls++;
+    },
+    [Symbol.asyncIterator]: () => iterable
+  };
+
+  const rs = ReadableStream.from(iterable);
+  reader = rs.getReader();
+
+  const read = await reader.read();
+  assert_object_equals(read, { value: undefined, done: true }, 'first read should be done');
+  assert_equals(nextCalls, 1, 'next() should be called once');
+
+  await reader.closed;
+
+}, `ReadableStream.from: reader.cancel() inside next()`);
+
+promise_test(async t => {
+
+  let returnCalls = 0;
+  let reader;
+
+  const iterable = {
+    next: t.unreached_func('next() should not be called'),
+    async return() {
+      returnCalls++;
+      await reader.cancel();
+    },
+    [Symbol.asyncIterator]: () => iterable
+  };
+
+  const rs = ReadableStream.from(iterable);
+  reader = rs.getReader();
+
+  await reader.cancel();
+  assert_equals(returnCalls, 1, 'return() should be called once');
+
+  await reader.closed;
+
+}, `ReadableStream.from: reader.cancel() inside return()`);

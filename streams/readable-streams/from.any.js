@@ -226,7 +226,7 @@ promise_test(async t => {
 
 }, `ReadableStream.from: stream errors when next() rejects`);
 
-promise_test(async () => {
+promise_test(async t => {
 
   const iterable = {
     next() {
@@ -239,8 +239,8 @@ promise_test(async () => {
   const reader = rs.getReader();
 
   await Promise.race([
-    reader.read().then(() => assert_unreached(), () => assert_unreached()),
-    reader.closed.then(() => assert_unreached(), () => assert_unreached()),
+    reader.read().then(t.unreached_func('read() should not resolve'), t.unreached_func('read() should not reject')),
+    reader.closed.then(t.unreached_func('closed should not resolve'), t.unreached_func('closed should not reject')),
     flushAsyncEvents()
   ]);
 

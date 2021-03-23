@@ -342,7 +342,7 @@ promise_test(async t => {
 
 }, `ReadableStream.from: return() is not called when iterator completes normally`);
 
-promise_test(async t => {
+promise_test(async () => {
 
   let nextCalls = 0;
   let returnCalls = 0;

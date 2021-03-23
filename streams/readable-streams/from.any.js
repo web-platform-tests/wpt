@@ -345,6 +345,37 @@ promise_test(async t => {
 promise_test(async () => {
 
   let nextCalls = 0;
+  let reader;
+  let values = ['a', 'b', 'c'];
+
+  const iterable = {
+    async next() {
+      nextCalls += 1;
+      if (nextCalls === 1) {
+        reader.read();
+      }
+      return { value: values.shift(), done: false };
+    },
+    [Symbol.asyncIterator]: () => iterable
+  };
+
+  const rs = ReadableStream.from(iterable);
+  reader = rs.getReader();
+
+  const read1 = await reader.read();
+  assert_object_equals(read1, { value: 'a', done: false }, 'first read should be correct');
+  await flushAsyncEvents();
+  assert_equals(nextCalls, 2, 'next() should be called two times');
+
+  const read2 = await reader.read();
+  assert_object_equals(read2, { value: 'c', done: false }, 'second read should be correct');
+  assert_equals(nextCalls, 3, 'next() should be called three times');
+
+}, `ReadableStream.from: reader.read() inside next()`);
+
+promise_test(async () => {
+
+  let nextCalls = 0;
   let returnCalls = 0;
   let reader;
 

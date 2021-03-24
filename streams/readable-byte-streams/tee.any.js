@@ -224,3 +224,25 @@ promise_test(async () => {
   assert_array_equals([...chunks2[1]], [0x02], 'second chunk from branch2 should be correct');
 
 }, 'ReadableStream teeing with byte source: canceling branch1 should not impact branch2');
+
+promise_test(async () => {
+
+  const rs = new ReadableStream({
+    type: 'bytes',
+    start(c) {
+      c.enqueue(new Uint8Array([0x01]));
+      c.enqueue(new Uint8Array([0x02]));
+      c.close();
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  branch2.cancel();
+
+  const [chunks1, chunks2] = await Promise.all([readableStreamToArray(branch1), readableStreamToArray(branch2)]);
+  assert_equals(chunks1.length, 2, 'branch1 should have two chunks');
+  assert_array_equals([...chunks1[0]], [0x01], 'first chunk from branch1 should be correct');
+  assert_array_equals([...chunks1[1]], [0x02], 'second chunk from branch1 should be correct');
+  assert_array_equals(chunks2, [], 'branch2 should have no chunks');
+
+}, 'ReadableStream teeing with byte source: canceling branch2 should not impact branch1');

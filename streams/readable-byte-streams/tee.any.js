@@ -525,3 +525,33 @@ for (const branch of [1, 2]) {
 
   }, `ReadableStream teeing with byte source: stops pulling when original stream errors while branch ${branch} is reading`);
 }
+
+promise_test(async t => {
+
+  const rs = recordingReadableStream({ type: 'bytes' });
+  const theError = { name: 'boo!' };
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+
+  await flushAsyncEvents();
+  assert_array_equals(rs.events, [], 'pull should not be called');
+
+  const read1 = reader1.read(new Uint8Array(1));
+  const read2 = reader2.read(new Uint8Array(1));
+
+  await flushAsyncEvents();
+  assert_array_equals(rs.events, ['pull'], 'pull should be called once');
+
+  rs.controller.error(theError);
+
+  await Promise.all([
+    promise_rejects_exactly(t, theError, read1),
+    promise_rejects_exactly(t, theError, read2),
+    promise_rejects_exactly(t, theError, reader1.closed),
+    promise_rejects_exactly(t, theError, reader2.closed)
+  ]);
+
+  await flushAsyncEvents();
+  assert_array_equals(rs.events, ['pull'], 'pull should be called once');
+
+}, 'ReadableStream teeing with byte source: stops pulling when original stream errors while both branches are reading');

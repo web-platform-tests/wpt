@@ -16,6 +16,7 @@ function testCollapse(rangeEndpoints, toStart) {
     range.detach(); // should be a no-op and therefore the following should not throw
     range.collapse(toStart);
     assert_equals(true, range.collapsed);
+    return;
   }
 
   // Have to account for Ranges involving Documents!

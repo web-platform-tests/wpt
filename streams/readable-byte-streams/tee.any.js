@@ -445,3 +445,15 @@ promise_test(async t => {
   ]);
 
 }, 'ReadableStream teeing with byte source: canceling branch1 should finish when original stream errors');
+
+promise_test(async () => {
+
+  const rs = recordingReadableStream({ type: 'bytes' });
+
+  // Create two branches, each with a HWM of 0. This should result in no chunks being pulled.
+  rs.tee();
+
+  await flushAsyncEvents();
+  assert_array_equals(rs.events, [], 'pull should not be called');
+
+}, 'ReadableStream teeing with byte source: should not pull any chunks if no branches are reading');

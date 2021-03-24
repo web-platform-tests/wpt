@@ -314,3 +314,24 @@ promise_test(async t => {
   ]);
 
 }, 'ReadableStream teeing with byte source: failing to cancel the original stream should cause cancel() to reject on branches');
+
+promise_test(async t => {
+
+  const theError = { name: 'You just watch yourself!' };
+  let controller;
+  const stream = new ReadableStream({
+    type: 'bytes',
+    start(c) {
+      controller = c;
+    }
+  });
+
+  const [branch1, branch2] = stream.tee();
+  controller.error(theError);
+
+  await Promise.all([
+    promise_rejects_exactly(t, theError, branch1.cancel()),
+    promise_rejects_exactly(t, theError, branch2.cancel())
+  ]);
+
+}, 'ReadableStream teeing with byte source: erroring a teed stream should properly handle canceled branches');

@@ -162,3 +162,43 @@ promise_test(async () => {
   }
 
 }, 'ReadableStream teeing with byte source: chunks for BYOB requests from branch 1 should be cloned to branch 2');
+
+promise_test(async t => {
+
+  const theError = { name: 'boo!' };
+  const rs = new ReadableStream({
+    type: 'bytes',
+    start(c) {
+      c.enqueue(new Uint8Array([0x01]));
+      c.enqueue(new Uint8Array([0x02]));
+    },
+    pull() {
+      throw theError;
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  const reader1 = branch1.getReader({ mode: 'byob' });
+  const reader2 = branch2.getReader({ mode: 'byob' });
+
+  {
+    const result = await reader1.read(new Uint8Array(1));
+    assert_equals(result.done, false, 'first read from branch1 should not be done');
+    assert_array_equals([...result.value], [0x01], 'first read from branch1 should be correct');
+  }
+
+  {
+    const result = await reader1.read(new Uint8Array(1));
+    assert_equals(result.done, false, 'second read from branch1 should not be done');
+    assert_array_equals([...result.value], [0x02], 'second read from branch1 should be correct');
+  }
+
+  await promise_rejects_exactly(t, theError, reader1.read(new Uint8Array(1)));
+  await promise_rejects_exactly(t, theError, reader2.read(new Uint8Array(1)));
+
+  await Promise.all([
+    promise_rejects_exactly(t, theError, reader1.closed),
+    promise_rejects_exactly(t, theError, reader2.closed)
+  ]);
+
+}, 'ReadableStream teeing with byte source: errors in the source should propagate to both branches');

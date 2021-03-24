@@ -335,3 +335,30 @@ promise_test(async t => {
   ]);
 
 }, 'ReadableStream teeing with byte source: erroring a teed stream should properly handle canceled branches');
+
+promise_test(async () => {
+
+  let controller;
+  const rs = new ReadableStream({
+    type: 'bytes',
+    start(c) {
+      controller = c;
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  const reader1 = branch1.getReader({ mode: 'byob' });
+  const reader2 = branch2.getReader({ mode: 'byob' });
+
+  const promise = Promise.all([reader1.closed, reader2.closed]);
+
+  controller.close();
+
+  // The branches are created with HWM 0, so we need to read from at least one of them
+  // to observe the stream becoming closed.
+  const read1 = await reader1.read(new Uint8Array(1));
+  assert_equals(read1.done, true, 'first read from branch1 should be done');
+
+  await promise;
+
+}, 'ReadableStream teeing with byte source: closing the original should close the branches');

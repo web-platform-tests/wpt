@@ -140,7 +140,9 @@ def install_certificates():
 
 def install_chrome(channel):
     # Bisecting from 863581 to 865012
-    url = "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/865012/chrome-linux.zip"
+    # Verifying range: 863584..865011
+    rev = "865011"
+    url = "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/{}/chrome-linux.zip".format(rev)
     dest = "/tmp/google-chrome-unstable.zip"
     resp = urlopen(url)
     with open(dest, 'wb') as f:

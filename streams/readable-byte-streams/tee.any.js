@@ -457,3 +457,21 @@ promise_test(async () => {
   assert_array_equals(rs.events, [], 'pull should not be called');
 
 }, 'ReadableStream teeing with byte source: should not pull any chunks if no branches are reading');
+
+promise_test(async () => {
+
+  const rs = recordingReadableStream({
+    type: 'bytes',
+    pull(controller) {
+      controller.enqueue(new Uint8Array([0x01]));
+    }
+  });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+  await Promise.all([
+    reader1.read(new Uint8Array(1)),
+    reader2.read(new Uint8Array(1))
+  ]);
+  assert_array_equals(rs.events, ['pull'], 'pull should be called once');
+
+}, 'ReadableStream teeing with byte source: should only pull enough to fill the emptiest queue');

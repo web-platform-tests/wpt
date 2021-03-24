@@ -246,3 +246,53 @@ promise_test(async () => {
   assert_array_equals(chunks2, [], 'branch2 should have no chunks');
 
 }, 'ReadableStream teeing with byte source: canceling branch2 should not impact branch1');
+
+promise_test(async () => {
+
+  const reason1 = new Error('We\'re wanted men.');
+  const reason2 = new Error('I have the death sentence on twelve systems.');
+
+  let resolve;
+  const promise = new Promise(r => resolve = r);
+  const rs = new ReadableStream({
+    type: 'bytes',
+    cancel(reason) {
+      assert_array_equals(reason, [reason1, reason2],
+        'the cancel reason should be an array containing those from the branches');
+      resolve();
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  await Promise.all([
+    branch1.cancel(reason1),
+    branch2.cancel(reason2),
+    promise
+  ]);
+
+}, 'ReadableStream teeing with byte source: canceling both branches should aggregate the cancel reasons into an array');
+
+promise_test(async () => {
+
+  const reason1 = new Error('This little one\'s not worth the effort.');
+  const reason2 = new Error('Come, let me get you something.');
+
+  let resolve;
+  const promise = new Promise(r => resolve = r);
+  const rs = new ReadableStream({
+    type: 'bytes',
+    cancel(reason) {
+      assert_array_equals(reason, [reason1, reason2],
+        'the cancel reason should be an array containing those from the branches');
+      resolve();
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  await Promise.all([
+    branch2.cancel(reason2),
+    branch1.cancel(reason1),
+    promise
+  ]);
+
+}, 'ReadableStream teeing with byte source: canceling both branches in reverse order should aggregate the cancel reasons into an array');

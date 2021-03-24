@@ -117,3 +117,48 @@ promise_test(async () => {
   assert_not_equals(view1.buffer, view2.buffer, 'chunks should have different buffers');
 
 }, 'ReadableStream teeing with byte source: chunks should be cloned for each branch');
+
+promise_test(async () => {
+
+  let pullCount = 0;
+  const rs = new ReadableStream({
+    type: 'bytes',
+    pull(c) {
+      ++pullCount;
+      if (pullCount === 1) {
+        c.byobRequest.view[0] = 0x01;
+        c.byobRequest.respond(1);
+      }
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  const reader1 = branch1.getReader({ mode: 'byob' });
+  const reader2 = branch2.getReader();
+  const buffer = new Uint8Array([42, 42, 42]).buffer;
+
+  {
+    const result = await reader1.read(new Uint8Array(buffer, 0, 1));
+    assert_equals(result.done, false, 'done');
+
+    const view = result.value;
+    assert_equals(view.constructor, Uint8Array, 'value.constructor');
+    assert_equals(view.buffer.byteLength, 3, 'value.buffer.byteLength');
+    assert_array_equals([...new Uint8Array(view.buffer)], [0x01, 42, 42], `value.buffer`);
+    assert_equals(view.byteOffset, 0, 'value.byteOffset');
+    assert_equals(view.byteLength, 1, 'value.byteLength');
+  }
+
+  {
+    const result = await reader2.read();
+    assert_equals(result.done, false, 'done');
+
+    const view = result.value;
+    assert_equals(view.constructor, Uint8Array, 'value.constructor');
+    assert_equals(view.buffer.byteLength, 1, 'value.buffer.byteLength');
+    assert_array_equals([...new Uint8Array(view.buffer)], [0x01], `value.buffer`);
+    assert_equals(view.byteOffset, 0, 'value.byteOffset');
+    assert_equals(view.byteLength, 1, 'value.byteLength');
+  }
+
+}, 'ReadableStream teeing with byte source: chunks for BYOB requests from branch 1 should be cloned to branch 2');

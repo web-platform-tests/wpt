@@ -387,3 +387,36 @@ promise_test(async t => {
   await promise;
 
 }, 'ReadableStream teeing with byte source: erroring the original should immediately error the branches');
+
+promise_test(async () => {
+
+  let controller;
+  const rs = new ReadableStream({
+    type: 'bytes',
+    start(c) {
+      controller = c;
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  const reader1 = branch1.getReader({ mode: 'byob' });
+  const reader2 = branch2.getReader({ mode: 'byob' });
+  const cancelPromise = reader2.cancel();
+
+  controller.enqueue(new Uint8Array([0x01]));
+
+  const read1 = await reader1.read(new Uint8Array(1));
+  assert_equals(read1.done, false, 'first read() from branch1 should not be done');
+  assert_array_equals([...read1.value], [0x01], 'first read() from branch1 should fulfill with the chunk');
+
+  controller.close();
+
+  const read2 = await reader1.read(new Uint8Array(1));
+  assert_equals(read2.done, true, 'second read() from branch1 should be done');
+
+  await Promise.all([
+    reader1.closed,
+    cancelPromise
+  ]);
+
+}, 'ReadableStream teeing with byte source: canceling branch1 should finish when branch2 reads until end of stream');

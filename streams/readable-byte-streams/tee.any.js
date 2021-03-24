@@ -202,3 +202,25 @@ promise_test(async t => {
   ]);
 
 }, 'ReadableStream teeing with byte source: errors in the source should propagate to both branches');
+
+promise_test(async () => {
+
+  const rs = new ReadableStream({
+    type: 'bytes',
+    start(c) {
+      c.enqueue(new Uint8Array([0x01]));
+      c.enqueue(new Uint8Array([0x02]));
+      c.close();
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  branch1.cancel();
+
+  const [chunks1, chunks2] = await Promise.all([readableStreamToArray(branch1), readableStreamToArray(branch2)]);
+  assert_array_equals(chunks1, [], 'branch1 should have no chunks');
+  assert_equals(chunks2.length, 2, 'branch2 should have two chunks');
+  assert_array_equals([...chunks2[0]], [0x01], 'first chunk from branch2 should be correct');
+  assert_array_equals([...chunks2[1]], [0x02], 'second chunk from branch2 should be correct');
+
+}, 'ReadableStream teeing with byte source: canceling branch1 should not impact branch2');

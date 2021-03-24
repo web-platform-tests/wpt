@@ -296,3 +296,21 @@ promise_test(async () => {
   ]);
 
 }, 'ReadableStream teeing with byte source: canceling both branches in reverse order should aggregate the cancel reasons into an array');
+
+promise_test(async t => {
+
+  const theError = { name: 'I\'ll be careful.' };
+  const rs = new ReadableStream({
+    type: 'bytes',
+    cancel() {
+      throw theError;
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  await Promise.all([
+    promise_rejects_exactly(t, theError, branch1.cancel()),
+    promise_rejects_exactly(t, theError, branch2.cancel())
+  ]);
+
+}, 'ReadableStream teeing with byte source: failing to cancel the original stream should cause cancel() to reject on branches');

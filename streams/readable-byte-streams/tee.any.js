@@ -420,3 +420,28 @@ promise_test(async () => {
   ]);
 
 }, 'ReadableStream teeing with byte source: canceling branch1 should finish when branch2 reads until end of stream');
+
+promise_test(async t => {
+
+  let controller;
+  const theError = { name: 'boo!' };
+  const rs = new ReadableStream({
+    type: 'bytes',
+    start(c) {
+      controller = c;
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  const reader1 = branch1.getReader({ mode: 'byob' });
+  const reader2 = branch2.getReader({ mode: 'byob' });
+  const cancelPromise = reader2.cancel();
+
+  controller.error(theError);
+
+  await Promise.all([
+    promise_rejects_exactly(t, theError, reader1.read(new Uint8Array(1))),
+    cancelPromise
+  ]);
+
+}, 'ReadableStream teeing with byte source: canceling branch1 should finish when original stream errors');

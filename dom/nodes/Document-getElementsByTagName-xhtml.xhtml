@@ -88,7 +88,7 @@ test(function() {
   var actual = document.getElementsByTagName("*");
   var expected = [];
   var get_elements = function(node) {
-    for (var i = 0; i &lt; node.childNodes.length; i++) {
+    for (var i = 0; i < node.childNodes.length; i++) {
       var child = node.childNodes[i];
       if (child.nodeType === child.ELEMENT_NODE) {
         expected.push(child);

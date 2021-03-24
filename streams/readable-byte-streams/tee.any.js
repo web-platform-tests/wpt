@@ -475,3 +475,22 @@ promise_test(async () => {
   assert_array_equals(rs.events, ['pull'], 'pull should be called once');
 
 }, 'ReadableStream teeing with byte source: should only pull enough to fill the emptiest queue');
+
+promise_test(async t => {
+
+  const rs = recordingReadableStream({ type: 'bytes' });
+  const theError = { name: 'boo!' };
+
+  rs.controller.error(theError);
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+
+  await flushAsyncEvents();
+  assert_array_equals(rs.events, [], 'pull should not be called');
+
+  await Promise.all([
+    promise_rejects_exactly(t, theError, reader1.closed),
+    promise_rejects_exactly(t, theError, reader2.closed)
+  ]);
+
+}, 'ReadableStream teeing with byte source: should not pull when original is already errored');

@@ -45,6 +45,8 @@ import tarfile
 import tempfile
 import zipfile
 
+from urllib.request import urlopen
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from wpt.utils import get_download_to_descriptor
 
@@ -137,22 +139,14 @@ def install_certificates():
 
 
 def install_chrome(channel):
-    if channel in ("experimental", "dev"):
-        deb_archive = "google-chrome-unstable_current_amd64.deb"
-    elif channel == "beta":
-        deb_archive = "google-chrome-beta_current_amd64.deb"
-    elif channel == "stable":
-        deb_archive = "google-chrome-stable_current_amd64.deb"
-    else:
-        raise ValueError("Unrecognized release channel: %s" % channel)
-
-    dest = os.path.join("/tmp", deb_archive)
-    deb_url = "https://dl.google.com/linux/direct/%s" % deb_archive
-    with open(dest, "wb") as f:
-        get_download_to_descriptor(f, deb_url)
-
-    run(["sudo", "apt-get", "-qqy", "update"])
-    run(["sudo", "gdebi", "-qn", "/tmp/%s" % deb_archive])
+    # Bisecting from 863581 to 865012
+    url = "http://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/865012/chrome-linux.zip"
+    dest = "/tmp/google-chrome-unstable.zip"
+    resp = urlopen(url)
+    with open(dest, 'wb') as f:
+      f.write(resp.read())
+    run(["unzip", "/tmp/google-chrome-unstable.zip", "-d", "/tmp/"])
+    run(["sudo", "apt-get", "install", "libxss1"])
 
 
 def start_xvfb():

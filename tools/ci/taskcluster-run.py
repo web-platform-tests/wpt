@@ -21,7 +21,7 @@ def get_browser_args(product, channel):
     if product == "chrome":
         # Taskcluster machines do not have proper GPUs, so we need to use
         # software rendering for webgl: https://crbug.com/1130585
-        args = ["--binary-arg=--use-gl=swiftshader-webgl"]
+        args = ["--binary=/tmp/chrome-linux/chrome", "--binary-arg=--use-gl=swiftshader-webgl"]
         if channel == "nightly":
             args.extend(["--install-browser", "--install-webdriver"])
         return args

@@ -18,17 +18,6 @@ function testUpload(desc, url, method, createBody, expectedBody) {
   }, desc);
 }
 
-function testUploadFailure(desc, url, method, createBody) {
-  const requestInit = {"method": method};
-  promise_test(t => {
-    const body = createBody();
-    if (body) {
-      requestInit["body"] = body;
-    }
-    return promise_rejects_js(t, TypeError, fetch(url, requestInit));
-  }, desc);
-}
-
 const url = RESOURCES_DIR + "echo-content.py"
 
 testUpload("Fetch with PUT with body", url,
@@ -75,56 +64,6 @@ testUpload("Fetch with POST with Blob body with mime type", url,
   "POST",
   () => new Blob(["Test"], { type: "text/maybe" }),
   "Test");
-testUpload("Fetch with POST with ReadableStream", url,
-  "POST",
-  () => {
-    return new ReadableStream({start: controller => {
-      const encoder = new TextEncoder();
-      controller.enqueue(encoder.encode("Test"));
-      controller.close();
-    }})
-  },
-  "Test");
-testUploadFailure("Fetch with POST with ReadableStream containing String", url,
-  "POST",
-  () => {
-    return new ReadableStream({start: controller => {
-      controller.enqueue("Test");
-      controller.close();
-    }})
-  });
-testUploadFailure("Fetch with POST with ReadableStream containing null", url,
-  "POST",
-  () => {
-    return new ReadableStream({start: controller => {
-      controller.enqueue(null);
-      controller.close();
-    }})
-  });
-testUploadFailure("Fetch with POST with ReadableStream containing number", url,
-  "POST",
-  () => {
-    return new ReadableStream({start: controller => {
-      controller.enqueue(99);
-      controller.close();
-    }})
-  });
-testUploadFailure("Fetch with POST with ReadableStream containing ArrayBuffer", url,
-  "POST",
-  () => {
-    return new ReadableStream({start: controller => {
-      controller.enqueue(new ArrayBuffer());
-      controller.close();
-    }})
-  });
-testUploadFailure("Fetch with POST with ReadableStream containing Blob", url,
-  "POST",
-  () => {
-    return new ReadableStream({start: controller => {
-      controller.enqueue(new Blob());
-      controller.close();
-    }})
-  });
 
 promise_test(async (test) => {
   const resp = await fetch(

@@ -371,6 +371,20 @@ promise_test(async t => {
 
 }, 'ReadableStream teeing: canceling branch1 should finish when original stream errors');
 
+promise_test(async () => {
+
+  const rs = new ReadableStream({});
+
+  const [branch1, branch2] = rs.tee();
+
+  const cancel1 = branch1.cancel();
+  await flushAsyncEvents();
+  const cancel2 = branch2.cancel();
+
+  await Promise.all([cancel1, cancel2]);
+
+}, 'ReadableStream teeing: canceling both branches in sequence with delay');
+
 test(t => {
 
   // Copy original global.

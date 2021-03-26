@@ -70,8 +70,6 @@ function check(
   }, `Reporting to ${owner_coep} frame with ${worker_coep} worker`);
 
   promise_test(async (t) => {
-    console.log(owner_coep);
-    console.log(coep_header[owner_coep]);
     const worker_url = worker_path + coep_header[worker_coep];
     const parent_worker_url = parent_worker_path + coep_header[owner_coep];
     const parent_worker = new Worker('./resources/' + parent_worker_url);

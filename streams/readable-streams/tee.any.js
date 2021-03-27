@@ -385,6 +385,28 @@ promise_test(async () => {
 
 }, 'ReadableStream teeing: canceling both branches in sequence with delay');
 
+promise_test(async t => {
+
+  const theError = { name: 'boo!' };
+  const rs = new ReadableStream({
+    cancel() {
+      throw theError;
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+
+  const cancel1 = branch1.cancel();
+  await flushAsyncEvents();
+  const cancel2 = branch2.cancel();
+
+  await Promise.all([
+    promise_rejects_exactly(t, theError, cancel1),
+    promise_rejects_exactly(t, theError, cancel2)
+  ]);
+
+}, 'ReadableStream teeing: failing to cancel when canceling both branches in sequence with delay');
+
 test(t => {
 
   // Copy original global.

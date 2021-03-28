@@ -1,6 +1,6 @@
 // Compares two CSSStyleValues to check if they're the same type
 // and have the same attributes.
-function assert_style_value_equals(a, b) {
+function assert_style_value_equals(a, b, epsilon=1e-6) {
   if (a == null || b == null) {
     assert_equals(a, b);
     return;
@@ -16,7 +16,7 @@ function assert_style_value_equals(a, b) {
       assert_equals(a.value, b.value);
       break;
     case 'CSSUnitValue':
-      assert_approx_equals(a.value, b.value, 1e-6);
+      assert_approx_equals(a.value, b.value, epsilon);
       assert_equals(a.unit, b.unit);
       break;
     case 'CSSMathSum':
@@ -67,7 +67,7 @@ function assert_style_value_equals(a, b) {
       assert_style_value_equals(a.length, b.length);
       break;
     case 'CSSMatrixComponent':
-      assert_matrix_approx_equals(a.matrix, b.matrix, 1e-6);
+      assert_matrix_approx_equals(a.matrix, b.matrix, epsilon);
       break;
     default:
       assert_equals(a, b);

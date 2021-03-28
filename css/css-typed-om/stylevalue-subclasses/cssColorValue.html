@@ -1,0 +1,87 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSSColorValue tests</title>
+<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#csscolorvalue">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/testhelper.js"></script>
+<script>
+'use strict';
+
+// Color is is limited to 32bit RGBA, thus channels are values within 0-255.
+// https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/graphics/color.h;l=81
+// Our epsilon needs to reflect this relatively limited precision.
+const EPSILON = 0.5/255;
+
+const gInvalidColorTestCases = [
+  { color: CSS.deg(1), desc: 'an angle CSSUnitValue'},
+  { color: new CSSMathSum(CSS.px(1)), desc: 'a CSSMathValue that doesn\'t match <number>'},
+];
+
+for (const {color, desc} of gInvalidColorTestCases) {
+  test(() => {
+    assert_throws_js(TypeError, () => new CSSRGB(color, 0, 0));
+    assert_throws_js(TypeError, () => new CSSRGB(0, color, 0));
+    assert_throws_js(TypeError, () => new CSSRGB(0, 0, color));
+    assert_throws_js(TypeError, () => new CSSRGB(color, 0, 0, 0));
+    assert_throws_js(TypeError, () => new CSSRGB(0, color, 0, 0));
+    assert_throws_js(TypeError, () => new CSSRGB(0, 0, color, 0));
+    assert_throws_js(TypeError, () => new CSSRGB(0, 0, 0, color));
+  }, 'Constructing a CSSRGB with ' + desc + ' for the color channels throws a TypeError.');
+}
+
+for (const attr of ['r', 'g', 'b', 'alpha']) {
+  for (const {value, desc} of gInvalidColorTestCases) {
+    test(() => {
+      let result = new CSSRGB(0, 0, 0, 0);
+      assert_throws_js(TypeError, () => result[attr] = value);
+      assert_style_value_equals(result[attr], CSS.number(0), "", EPSILON);
+    }, 'Updating CSSRGB.' + attr + ' to ' + desc + ' throws a TypeError.');
+  }
+}
+
+test(() => {
+  const result = new CSSRGB(0.5, CSS.number(0.7), 0.9);
+  assert_style_value_equals(result.r, CSS.number(0.5), "", EPSILON);
+  assert_style_value_equals(result.g, CSS.number(0.7), "", EPSILON);
+  assert_style_value_equals(result.b, CSS.number(0.9), "", EPSILON);
+  assert_style_value_equals(result.alpha, CSS.number(1), "", EPSILON);
+}, 'CSSRGB can be constructed from three numbers and will get an alpha of 1.');
+
+test(() => {
+  const result = new CSSRGB(0.1, CSS.number(0.2), 0.3, 0.4);
+  assert_style_value_equals(result.r, CSS.number(0.1), "", EPSILON);
+  assert_style_value_equals(result.g, CSS.number(0.2), "", EPSILON);
+  assert_style_value_equals(result.b, CSS.number(0.3), "", EPSILON);
+  assert_style_value_equals(result.alpha, CSS.number(0.4), "", EPSILON);
+}, 'CSSRGB can be constructed from four numbers.');
+
+test(() => {
+  const result = new CSSRGB(-1, CSS.number(3.5), -4.1, CSS.number(-5));
+  assert_style_value_equals(result.r, CSS.number(0), "", EPSILON);
+  assert_style_value_equals(result.g, CSS.number(1), "", EPSILON);
+  assert_style_value_equals(result.b, CSS.number(0), "", EPSILON);
+  assert_style_value_equals(result.alpha, CSS.number(0), "", EPSILON);
+}, 'CSSRGB constructor clamps between 0 and 1.');
+
+for (const attr of ['r', 'g', 'b', 'alpha']) {
+  test(() => {
+    let result = new CSSRGB(0, 0, 0);
+    result[attr] = 0.5;
+    assert_style_value_equals(result[attr], CSS.number(0.5), "", EPSILON);
+  }, 'CSSRGB.' + attr + ' can be updated to a number');
+
+  test(() => {
+    let result = new CSSRGB(0, 0, 0);
+    result[attr] = CSS.number(0.5);
+    assert_style_value_equals(result[attr], CSS.number(0.5), "", EPSILON);
+  }, 'CSSRGB.' + attr + ' can be updated to a numberish');
+
+  test(() => {
+    let result = new CSSRGB(0, 0, 0);
+    result[attr] = new CSSMathSum(0.5);
+    assert_style_value_equals(result[attr], new CSSMathSum(0.5), "", EPSILON);
+  }, 'CSSRGB.' + attr + ' can be updated to a CSSMathValue');
+}
+
+</script>

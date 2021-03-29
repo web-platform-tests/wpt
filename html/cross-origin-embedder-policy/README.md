@@ -29,7 +29,13 @@ See `../cross-origin-opener-policy/README.md`.
   - tests: https://github.com/web-platform-tests/wpt/pull/28281
   - spec text: "Otherwise, if the result of checking a navigation response's adherence to `X-Frame-Options` given response, browsingContext, and navigationParams's origin is false, then set failure to true."
   https://html.spec.whatwg.org/multipage/browsing-the-web.html#process-a-navigate-response
-- test that "about" (is it testable?), "blob", and "data" inherit owner's embedder policy, and that other schemes don't.
+- test that "about", "blob", and "data" inherit owner's embedder policy, and that other schemes don't.
+  - tests:
+    - blob.https.html
+    - data.https.html
+    - javascript.https.html
+    - require-corp-about-blank.https.html
+    - require-corp-about-srcdoc.https.html
   - spec text: "If response's url's scheme is a local scheme, then set worker global scope's embedder policy to owner's embedder policy."
   https://html.spec.whatwg.org/multipage/workers.html#run-a-worker
 - test that .crossOriginIsolated is false for dedicated workers. (spec bug confusing shared workers vs dedicated workers?)

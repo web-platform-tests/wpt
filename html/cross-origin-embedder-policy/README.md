@@ -39,14 +39,18 @@ See `../cross-origin-opener-policy/README.md`.
   - spec text: "If response's url's scheme is a local scheme, then set worker global scope's embedder policy to owner's embedder policy."
   https://html.spec.whatwg.org/multipage/workers.html#run-a-worker
 - test that .crossOriginIsolated is true for shared worker with COEP: require-corp
+  - tests: cross-origin-isolated-permission.https.html
   - spec text: "If worker global scope's embedder policy is "require-corp" and is shared is true, then set agent's agent cluster's cross-origin isolation mode to "logical" or "concrete". The one chosen is implementation-defined."
 - test that .crossOriginIsolated dedicated workers equals the document's .crossOriginIsolated (with same COEP values)
+  - tests: cross-origin-isolated-permission.https.html
   - spec text: "If is shared is false and owner's cross-origin isolated capability is false, then set worker global scope's cross-origin isolated capability to false."
   https://html.spec.whatwg.org/multipage/workers.html#run-a-worker
 - test that .crossOriginIsolated is false for a data: URL dedicated worker
+  - tests: cross-origin-isolated-permission.https.html
   - spec text: "If is shared is false and response's url's scheme is "data", then set worker global scope's cross-origin isolated capability to false."
   https://html.spec.whatwg.org/multipage/workers.html#run-a-worker
 - test that type (note: different from "report type") is "worker initialization"
+  - tests: reporting-to-owner.https.html
 - test that blockedURL trims username, password, fragment.
 
 

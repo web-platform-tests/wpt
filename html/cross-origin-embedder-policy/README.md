@@ -22,9 +22,11 @@ See `../cross-origin-opener-policy/README.md`.
   - construct a worker within a worker. "owner" is the outer worker (not the document).
   - test that history.pushState() doesn't affect the report's "url"
 - test that a CSP failure doesn't give a COEP report. (CSP is checked before COEP)
+  - tests: https://github.com/web-platform-tests/wpt/pull/28281
   - spec text: "Otherwise, if the result of Should navigation response to navigation request of type in target be blocked by Content Security Policy? given navigationParams's request, response, navigationType, and browsingContext is "Blocked", then set failure to true. [CSP]"
   https://html.spec.whatwg.org/multipage/browsing-the-web.html#process-a-navigate-response
 - test that X-Frame-Options check happens after COEP check (expect a COEP report) (is this order of checks intentional?)
+  - tests: https://github.com/web-platform-tests/wpt/pull/28281
   - spec text: "Otherwise, if the result of checking a navigation response's adherence to `X-Frame-Options` given response, browsingContext, and navigationParams's origin is false, then set failure to true."
   https://html.spec.whatwg.org/multipage/browsing-the-web.html#process-a-navigate-response
 - test that "about" (is it testable?), "blob", and "data" inherit owner's embedder policy, and that other schemes don't.

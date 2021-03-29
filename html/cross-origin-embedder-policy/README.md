@@ -15,7 +15,10 @@ See `../cross-origin-opener-policy/README.md`.
 
 ### Testing plan ###
 
-- test multiple values with COEPRO
+- test multiple headers with COEP/COEPRO
+  - tests: https://github.com/web-platform-tests/wpt/pull/28285
+  spec text: "Return the values of all headers in list whose name is a byte-case-insensitive match for name, separated from each other by 0x2C 0x20, in order."
+  https://fetch.spec.whatwg.org/#concept-header-list-get
 - test "relevant settings object" is the right one:
   - navigation with location.assign invoked as in https://github.com/web-platform-tests/wpt/pull/21206, shouldn't affect which settings object is used per spec.
   - construct a worker normally. "owner" is the "responsible document": https://html.spec.whatwg.org/#relevant-owner-to-add

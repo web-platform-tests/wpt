@@ -10,7 +10,6 @@ https://w3c.github.io/reporting/#generic-reporting
 https://w3c.github.io/reporting/#try-delivery
 
 - check the 'Origin' request header
-- spec bug? where does it set the method to POST?
 
 https://w3c.github.io/reporting/#queue-report
 

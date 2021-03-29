@@ -21,9 +21,13 @@ See `../cross-origin-opener-policy/README.md`.
   https://fetch.spec.whatwg.org/#concept-header-list-get
 - test "relevant settings object" is the right one:
   - navigation with location.assign invoked as in https://github.com/web-platform-tests/wpt/pull/21206, shouldn't affect which settings object is used per spec.
+    - tests: TODO
   - construct a worker normally. "owner" is the "responsible document": https://html.spec.whatwg.org/#relevant-owner-to-add
+    - tests: https://github.com/web-platform-tests/wpt/pull/28261
   - construct a worker within a worker. "owner" is the outer worker (not the document).
+    - tests: https://github.com/web-platform-tests/wpt/pull/28261
   - test that history.pushState() doesn't affect the report's "url"
+    - tests: TODO
 - test that a CSP failure doesn't give a COEP report. (CSP is checked before COEP)
   - tests: https://github.com/web-platform-tests/wpt/pull/28281
   - spec text: "Otherwise, if the result of Should navigation response to navigation request of type in target be blocked by Content Security Policy? given navigationParams's request, response, navigationType, and browsingContext is "Blocked", then set failure to true. [CSP]"
@@ -55,6 +59,7 @@ See `../cross-origin-opener-policy/README.md`.
 - test that type (note: different from "report type") is "worker initialization"
   - tests: reporting-to-owner.https.html
 - test that blockedURL trims username, password, fragment.
+  - tests: TODO
 
 
 https://w3c.github.io/ServiceWorker/

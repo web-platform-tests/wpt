@@ -191,8 +191,8 @@ class ChromeAndroidBrowserBase(Browser):
 
     def check_crash(self, process, test):
         self.maybe_parse_tombstone()
-        # Existance of a tombstone does not necesssary mean test target has
-        # crashed. Always return False so we don't change the rest results.
+        # Existence of a tombstone does not necessarily mean test target has
+        # crashed. Always return False so we don't change the test results.
         return False
 
     def maybe_parse_tombstone(self):

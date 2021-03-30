@@ -29,8 +29,8 @@ https://w3c.github.io/reporting/#add-report
 - test that the right report types are visible or not visible to ReportingObserver
 - test `options` with a `types` member that throws on getting
 - test `options` with an empty `types` member (array with length 0)
-- "queue a task" - which task queue? (spec bug?)
-- "how to polymorphically initialize body?" (spec bug?) - help solve this spec issue and test it.
+- "queue a task" - which task queue? (https://github.com/w3c/reporting/issues/235)
+- "how to polymorphically initialize body?" (inline spec issue) - help solve this spec issue and test it.
 - "Let global be observer’s relevant global object." - test that the right global object is used.
 
 https://w3c.github.io/reporting/#interface-reporting-observer

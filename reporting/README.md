@@ -27,7 +27,8 @@ https://w3c.github.io/reporting/#notify-observers
 https://w3c.github.io/reporting/#add-report
 
 - test that the right report types are visible or not visible to ReportingObserver
-- test `options` with a `types` member that throws on getting
+- test `options` with a `types` member that throws on iteration
+  - tests: https://github.com/web-platform-tests/wpt/pull/28297
 - test `options` with an empty `types` member (array with length 0)
 - "queue a task" - which task queue? (https://github.com/w3c/reporting/issues/235)
 - "how to polymorphically initialize body?" (inline spec issue) - help solve this spec issue and test it.

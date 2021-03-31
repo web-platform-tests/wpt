@@ -26,6 +26,8 @@ See `../cross-origin-opener-policy/README.md`.
     - tests: https://github.com/web-platform-tests/wpt/pull/28261
   - construct a worker within a worker. "owner" is the outer worker (not the document).
     - tests: https://github.com/web-platform-tests/wpt/pull/28261
+  - construct a worker to differentiate between entry/incumbent/current.
+    - tests: https://github.com/web-platform-tests/wpt/pull/28313
   - test that history.pushState() doesn't affect the report's "url"
     - tests: TODO
 - test that a CSP failure doesn't give a COEP report. (CSP is checked before COEP)

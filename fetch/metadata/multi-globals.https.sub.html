@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Multi-globals: which one is the initiator?</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+"use strict";
+document.domain = "{{hosts[][]}}";
+
+promise_test(async t => {
+  const iframe = await insertIframe(t);
+
+  // In terms of https://github.com/whatwg/html/issues/6514,
+  // - incumbentNavigationOrigin = this page's origin, https://{{hosts[][]}}:{{ports[https][0]}}
+  // - source browsing context = iframe element's node document's BC so
+  //   source BC's active document's origin = outer frame origin, https://{{hosts[][www]}}:{{ports[https][0]}}
+  // - destination origin = https://{{hosts[][]}}:{{ports[https][0]}} (this page's origin)
+  //
+  // If Sec-Fetch-Site uses incumbentNavigationOrigin then the result will be same-origin.
+  // If Sec-Fech-Site uses source BC's active document's origin then the result will be same-site.
+  iframe.contentDocument.querySelector("iframe").src = "https://{{hosts[][]}}:{{ports[https][0]}}/fetch/metadata/resources/post-to-owner.py";
+
+  const data = await waitForMessage();
+  assert_equals(data.site, "same-origin"); // TODO figure out if this is correct. It'd be nice to get rid of incumbentNavigationOrigin.
+}, "Using iframeEl.src");
+
+promise_test(async t => {
+  const iframe = await insertIframe(t);
+
+  // Here, https://html.spec.whatwg.org/#location-object-navigate sets the source browsing context to the
+  // incumbent settings object's browsing context. So both incumbentNavigationOrigin and source BC's active document's
+  // origin both = this page's origin, https://{{hosts[][]}}:{{ports[https][0]}}.
+  //
+  // So, the result needs to be same-origin.
+
+  iframe.contentWindow.frames[0].location.href = "https://{{hosts[][]}}:{{ports[https][0]}}/fetch/metadata/resources/post-to-owner.py";
+
+  const data = await waitForMessage();
+  assert_equals(data.site, "same-origin");
+}, "Using location.href");
+
+function insertIframe(t) {
+  return new Promise((resolve, reject) => {
+    const iframe = document.createElement("iframe");
+    iframe.src = "https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/metadata/resources/multi-globals-subframe-1.sub.html";
+    iframe.onload = () => resolve(iframe);
+    iframe.onerror = () => reject(new Error("Failed to load iframe"));
+
+    t.add_cleanup(() => iframe.remove());
+
+    document.body.append(iframe);
+  });
+}
+
+function waitForMessage() {
+  return new Promise(resolve => {
+    window.addEventListener("message", e => {
+      resolve(e.data);
+    }, { once: true });
+  });
+}
+</script>

@@ -20,10 +20,11 @@ promise_test(async t => {
   //
   // If Sec-Fetch-Site uses incumbentNavigationOrigin then the result will be same-origin.
   // If Sec-Fech-Site uses source BC's active document's origin then the result will be same-site.
+  // The current spec for Sec-Fetch-Site uses request's origin = source BC's active document's origin.
   iframe.contentDocument.querySelector("iframe").src = "https://{{hosts[][]}}:{{ports[https][0]}}/fetch/metadata/resources/post-to-owner.py";
 
   const data = await waitForMessage();
-  assert_equals(data.site, "same-origin"); // TODO figure out if this is correct. It'd be nice to get rid of incumbentNavigationOrigin.
+  assert_equals(data.site, "same-site");
 }, "Using iframeEl.src");
 
 promise_test(async t => {

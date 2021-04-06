@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<body>
+<script>
+window.onload = function() {
+  window.addEventListener("pagehide", () => {
+    opener.postMessage(document.visibilityState, "*");
+  });
+  opener.postMessage("loaded", "*");
+}
+</script>
+</body>
+</html>

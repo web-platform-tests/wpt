@@ -1,0 +1,15 @@
+<!doctype html>
+<title>Tests that visibilityState == visible when pageshow is fired</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(function(t) {
+  var w = window.open("resources/visibility-on-pageshow.html");
+  window.onmessage = t.step_func(function(event) {
+    // Check that the visibilityState value when pageshow was fired on the
+    // opened window is "visible".
+    assert_equals(event.data, "visible");
+    t.done();
+  });
+});
+</script>

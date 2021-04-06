@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+<body>
+<script>
+window.addEventListener("pageshow", () => {
+  opener.postMessage(document.visibilityState, "*");
+});
+</script>
+</body>
+</html>

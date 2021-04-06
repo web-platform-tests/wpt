@@ -28,9 +28,9 @@ promise_test(async t => {
   scroller.scrollTo(0, 0);
   assert_equals(scroller.scrollTop, 0, "verify test pre-condition");
 
-  scroller.scrollBy({top:100, behavior:'smooth'})
   // Wait for the scroll to change.
   const startScroll = scroller.scrollTop;
+  scroller.scrollBy({top:100, behavior:'smooth'})
   do {
     await waitForNextFrame();
   } while(scroller.scrollTop == startScroll);

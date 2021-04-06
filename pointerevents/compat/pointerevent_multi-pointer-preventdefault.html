@@ -1,0 +1,146 @@
+<!DOCTYPE HTML>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script type="text/javascript" src="../pointerevent_support.js"></script>
+<style>
+div.box {
+  margin: 10px;
+  padding: 50px;
+  float: left;
+}
+</style>
+<h1>"Verifies the effect of pointer event prevent-default on pointerdown & mouse/pen events."</h1>
+<div id="target" class="box" style="background-color:green;">
+</div>
+<div id="logs"></div>
+
+<script>
+var receivedEvents = [];
+var mouseEventList = ["mousedown", "mouseup", "mouseenter", "mouseleave", "mouseover", "mouseout", "mousemove"];
+var pointerEventList = ["pointerdown", "pointerup", "pointerenter", "pointerleave", "pointerover", "pointerout", "pointermove"];
+
+var eventPointerTypeToPreventDefault = "";
+var eventIsPrimaryToPreventDefault = false;
+var seqNo = 0;
+
+var targetDiv = document.getElementById("target");
+var logDiv = document.getElementById("logs");
+
+var rect = targetDiv.getBoundingClientRect();
+var x1 = Math.ceil(rect.left - 3);
+var y1 = Math.ceil(rect.top - 5);
+var x2 = Math.ceil(rect.left + 3);
+var y2 = Math.ceil(rect.top + 5);
+
+function init() {
+  mouseEventList.forEach(function(eventName) {
+    targetDiv.addEventListener(eventName, function(event) {
+      ++seqNo;
+      let eventMessage = `${seqNo}. target received ${event.type}`;
+      receivedEvents.push(eventMessage);
+    });
+  });
+
+  pointerEventList.forEach(function(eventName) {
+    targetDiv.addEventListener(eventName, function(event) {
+      let preventDefaultMsg = "";
+      if (event.type == "pointerdown"
+          && event.pointerType == eventPointerTypeToPreventDefault
+          && event.isPrimary == eventIsPrimaryToPreventDefault) {
+        event.preventDefault();
+        preventDefaultMsg = ", prevented default";
+      }
+      ++seqNo;
+      let eventMessage = `${seqNo}. target received ${event.type} ${(event.isPrimary? 'primary':'non-primary')} ${event.pointerType} ${preventDefaultMsg} [pointerId:${event.pointerId}]`;
+      receivedEvents.push(eventMessage);
+    });
+  });
+}
+
+var expectedEvents = new Map([]);
+function runTestForDefaultEvent(pointerType, isPrimary) {
+    promise_test((test)=>
+    new Promise(async (resolve, reject)=>{
+        test.add_cleanup(()=>{
+          receivedEvents = [];
+          seqNo = 0;
+        });
+
+        eventPointerTypeToPreventDefault = pointerType;
+        eventIsPrimaryToPreventDefault = isPrimary;
+
+        try{
+          // if awaited Promise rejects then fail the test
+          await performActions(test);
+        }
+        catch(e){
+          reject(e);
+        }
+        //test.step(()=>{
+        //  assert_array_equals(receivedEvents, expectedEvents.get(preventDefaultEvent));});
+        resolve();
+    }), `Verifies the effect of pointer event prevent-default on for ${pointerType} and ${isPrimary?"primary":"non-primary"}`);
+}
+
+async function performActions(test){
+  const mousePointer = "mousePointer";
+  const primaryPen = "primaryPenPointer";
+  const nonPrimaryPen = "nonPrimaryPenPointer";
+
+  let eventWatcher = new EventWatcher(test, targetDiv, ["mouseup"], ()=>waitForAnimationFrames(900));
+  // wait for all expected events to happen.
+  // Because each test ends with mouseleave and there are 2 mouseleave events,
+  // we use EventWatcher to wait for the two mouseleave events to happen
+  let donePromise = eventWatcher.wait_for(["mouseup", "mouseup", "mouseup"], { record: 'all' });
+
+  let actions = new test_driver.Actions();
+  let actionsPromise = actions
+      // start with mouse, primary pen and non-primary pen outside target
+      .addPointer(mousePointer)
+      .addPointer(primaryPen, "pen", true)
+      .addPointer(nonPrimaryPen, "pen", false)
+      .pointerMove(x1, y1, {sourceName:mousePointer})
+      .pointerMove(x1, y1, {sourceName:primaryPen})
+      .pointerMove(x1, y1, {sourceName:nonPrimaryPen})
+      .pointerDown({sourceName:mousePointer})
+      .pointerUp({sourceName:mousePointer})
+      // move mouse into target and press the right button
+      .pointerMove(x2, y2, {sourceName:mousePointer})
+      .pointerDown({sourceName:mousePointer, button:actions.ButtonType.RIGHT})
+      // move primary pen into target and press the right button
+      .pointerMove(x2+1, y2+1, {sourceName:primaryPen})
+      .pointerDown({sourceName:primaryPen, button:actions.ButtonType.RIGHT})
+      // move non-primary pen into target and press the right button
+      .pointerMove(x2+2, y2+2, {sourceName:nonPrimaryPen})
+      .pointerDown({sourceName:nonPrimaryPen, button:actions.ButtonType.RIGHT})
+      // jiggle mouse in target
+      .pointerMove(x2+3, y2+3, {sourceName:mousePointer})
+      // jiggle non-primary pen in target
+      .pointerMove(x2+5, y2+5, {sourceName:nonPrimaryPen})
+      // jiggle primary pen in target
+      .pointerMove(x2+4, y2+4, {sourceName:primaryPen})
+      // release mouse
+      .pointerUp({sourceName:mousePointer, button:actions.ButtonType.RIGHT})
+      // release non-primary pen
+      .pointerUp({sourceName:nonPrimaryPen, button:actions.ButtonType.RIGHT})
+      // release primary pen
+      .pointerUp({sourceName:primaryPen, button:actions.ButtonType.RIGHT})
+      .send();
+
+  return Promise.all([donePromise, actionsPromise]);
+}
+
+function runTests(){
+   runTestForDefaultEvent("none", false);
+   //runTestForDefaultEvent("mouse", true);
+   //runTestForDefaultEvent("pen", true);
+   //runTestForDefaultEvent("pen", false);
+}
+
+init();
+runTests();
+
+</script>

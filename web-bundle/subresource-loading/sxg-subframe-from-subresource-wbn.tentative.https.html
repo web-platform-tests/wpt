@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<title>SXG subframe load from subresource Web Bundle</title>
+<link
+  rel="help"
+  href="https://github.com/WICG/webpackage/blob/master/explainers/subresource-loading.md"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+
+promise_test(async () => {
+  const frame_url = 'https://127.0.0.1:8444/web-bundle/sxg-page.html';
+  const link = document.createElement('link');
+  link.rel = 'webbundle';
+  link.href = '../resources/wbn/sxg-subframe-from-subresource-wbn.wbn';
+  link.resources = frame_url;
+  document.body.appendChild(link);
+  const message_promisse = new Promise((resolve) => {
+      window.addEventListener('message', (e) => {
+          resolve(e.data);
+      });
+    });
+  const iframe = document.createElement('iframe');
+  iframe.src = frame_url;
+  document.body.appendChild(iframe);
+  assert_equals(
+      await message_promisse,
+      'from SXG in WBN: location = ' +
+      'https://127.0.0.1:8444/web-bundle/sxg-page.html');
+  document.body.removeChild(link);
+  document.body.removeChild(iframe);
+}, "SXG subframe load from subresource Web Bundle");
+
+promise_test(async () => {
+  const frame_url = 'https://127.0.0.1:8444/web-bundle/different-url.html';
+  const link = document.createElement('link');
+  link.rel = 'webbundle';
+  link.href = '../resources/wbn/sxg-subframe-from-subresource-wbn.wbn';
+  link.resources = frame_url;
+  document.body.appendChild(link);
+
+  const iframe = document.createElement('iframe');
+  const message_promisse = new Promise((resolve) => {
+      // There is no cross-browser event to listen for to detect an
+      // iframe that fails to load due to a bad interception.  Unfortunately
+      // we have to use a timeout.
+      const timeout =
+          setTimeout(() => { resolve('iframe load timeout'); }, 1000);
+      window.addEventListener('message', (e) => {
+          clearTimeout(timeout);
+          resolve(e.data);
+      });
+      iframe.src = frame_url;
+      document.body.appendChild(iframe);
+    });
+
+  assert_equals(await message_promisse, 'iframe load timeout');
+  document.body.removeChild(link);
+  document.body.removeChild(iframe);
+}, "Different URL SXG subframe load from subresource Web Bundle");
+
+promise_test(async () => {
+  const frame_url = 'https://127.0.0.1:8444/web-bundle/page.html';
+  const link = document.createElement('link');
+  link.rel = 'webbundle';
+  link.href = '../resources/wbn/sxg-subframe-from-subresource-wbn.wbn';
+  link.resources = frame_url;
+  document.body.appendChild(link);
+
+  const iframe = document.createElement('iframe');
+  const message_promisse = new Promise((resolve) => {
+      // There is no cross-browser event to listen for to detect an
+      // iframe that fails to load due to a bad interception.  Unfortunately
+      // we have to use a timeout.
+      const timeout =
+          setTimeout(() => { resolve('iframe load timeout'); }, 1000);
+      window.addEventListener('message', (e) => {
+          clearTimeout(timeout);
+          resolve(e.data);
+      });
+      iframe.src = frame_url;
+      document.body.appendChild(iframe);
+    });
+
+  assert_equals(await message_promisse, 'iframe load timeout');
+  document.body.removeChild(link);
+  document.body.removeChild(iframe);
+}, "Unsigned HTML load from subresource Web Bundle");
+
+</script>
+</body>

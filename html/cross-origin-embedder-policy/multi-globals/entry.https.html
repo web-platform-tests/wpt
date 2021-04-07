@@ -5,7 +5,7 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <iframe src="incumbent/incumbent.html"></iframe>
-<button onclick="frames[0].hello()" id="button">Hello</button>
+<button onclick="" id="button">Hello</button>
 
 <script>
 async function observeReports(global) {
@@ -23,7 +23,7 @@ async function observeReports(global) {
 }
 
 async_test((t) => {
-  onload = () => {
+  onload = t.step_func(() => {
     Promise.all([
       observeReports(window),
       observeReports(frames[0]),
@@ -40,8 +40,8 @@ async_test((t) => {
       assert_equals(report.body.disposition, 'enforce');
     }));
 
-    document.getElementById('button').click();
-  };
+    frames[0].hello();
+  });
   onmessage = t.unreached_func('worker should have been blocked by COEP');
 });
 </script>

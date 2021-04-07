@@ -49,10 +49,10 @@ div {
 }
 .innerFlex {
   display: grid;
+  grid-template-columns: minmax(0, auto);
   border: 1px solid pink;
 }
 .innerFlex > input {
-  min-width: 0;
   justify-self: stretch;
   background: yellow;
   -moz-appearance: none;

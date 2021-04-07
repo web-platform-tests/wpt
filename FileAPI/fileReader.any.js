@@ -4,8 +4,8 @@
 
 test(function () {
   assert_true(
-    "FileReader" in window,
-    "window should have a FileReader property.",
+    "FileReader" in globalThis,
+    "globalThis should have a FileReader property.",
   );
 }, "FileReader interface object");
 

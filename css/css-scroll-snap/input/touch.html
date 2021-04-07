@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1" />
+<title>Touch scroll snapping</title>
+<meta name="flags" content="should">
+<meta name="assert"
+      content="Test passes if touch scrolling correctly snaps on a snap
+               container">
+
+<link rel="stylesheet" href="../support/common.css">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="../support/common.js"></script>
+
+<!-- for touch scrolling methods and waitFor -->
+<script src="/dom/events/scrolling/scroll_support.js"></script>
+
+<style>
+div {
+  position: absolute;
+}
+
+#scroller {
+  width: 500px;
+  height: 500px;
+  overflow: scroll;
+  border: solid black 1px;
+
+  scroll-snap-type: both mandatory;
+}
+
+#space {
+  width: 2000px;
+  height: 2000px;
+}
+
+.target {
+  width: 200px;
+  height: 200px;
+  background-color: blue;
+  border: solid black 1px;
+
+  scroll-snap-align: start;
+}
+</style>
+
+<div id="scroller">
+  <div id="space"></div>
+  <div class="target" style="left: 0px; top: 0px;"></div>
+  <div class="target" style="left: 80px; top: 80px;"></div>
+  <div class="target" style="left: 200px; top: 200px;"></div>
+</div>
+
+<script>
+var body = document.body;
+var scroller = document.getElementById("scroller");
+var space = document.getElementById("space");
+
+scrollLeft = () => scroller.scrollLeft;
+scrollTop = () => scroller.scrollTop;
+
+promise_test(async t => {
+  scroller.scrollTo(0, 0);
+  await touchScrollInTarget(100, scroller, "down");
+  await waitForAnimationEnd(scrollTop);
+  assert_approx_equals(scroller.scrollTop, 80, 1);
+}, "Vertical non-momentum scrolling ends at the closest snap point to the scroll destination.");
+
+promise_test(async t => {
+  scroller.scrollTo(0, 0);
+  await touchScrollInTarget(100, scroller, "right");
+  await waitForAnimationEnd(scrollLeft);
+  assert_approx_equals(scroller.scrollLeft, 80, 1);
+}, "Horizontal non-momentum scrolling ends at the closest snap point to the scroll destination.");
+
+
+promise_test(async t => {
+  scroller.scrollTo(0, 0);
+  await touchFlingInTarget(100, scroller, "down");
+  await waitForAnimationEnd(scrollTop);
+  assert_approx_equals(scroller.scrollTop, 200, 1);
+}, "Momentum scroll ends at the closest snap point to the fling destination.")
+
+promise_test(async t => {
+  scroller.scrollTo(0, 0);
+  await touchFlingInTarget(100, scroller, "right");
+  await waitForAnimationEnd(scrollLeft);
+  assert_approx_equals(scroller.scrollLeft, 200, 1);
+  assert_approx_equals(scroller.scrollTop, 0, 1, "The none scrolling direction should not be affected");
+}, "Momentum scroll in one direction ends at closest snap point to the fling destination without affecting the other direction.");
+
+// TODO(majidvp): Add two-directional test for momentum scrolling. In particular
+// where one direction goes out of bounds. http://crbug.com/1011066
+
+function MakeUnscrollable() {
+  scroller.removeChild(space);
+}
+function MakeScrollable() {
+  scroller.appendChild(space);
+}
+
+promise_test(async t => {
+  scroller.scrollTo(0, 0);
+  await touchFlingInTarget(100, scroller, "right");
+  await waitFor(() => {
+    return scroller.scrollLeft > 120;
+  });
+  MakeUnscrollable();
+  t.add_cleanup(MakeScrollable);
+  await waitForAnimationEnd(scrollLeft);
+  assert_equals(scroller.scrollLeft, 0);
+}, "Should not crash if the scroller becomes unscrollable during fling.");
+
+promise_test(async t => {
+  scroller.scrollTo(0, 0);
+  await touchFlingInTarget(100, scroller, "right");
+  await waitFor(() => {
+    return scroller.scrollLeft > 120;
+  });
+  body.removeChild(scroller);
+  t.add_cleanup(() => {
+    body.appendChild(scroller)
+  });
+  // Scroller is detached. Just wait one more frame to ensure nothing is
+  // crashing.
+  await new Promise(window.requestAnimationFrame)
+}, "Should not crash if the scroller is removed during fling.");
+</script>

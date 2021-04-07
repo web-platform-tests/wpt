@@ -4,14 +4,15 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
+<!-- This is the entry global -->
+
 <iframe src="incumbent/incumbent.html"></iframe>
-<button onclick="frames[0].hello()" id="button">Hello</button>
 
 <script>
 async_test((t) => {
-  onload = () => {
-    document.getElementById('button').click();
-  };
+  onload = t.step_func(() => {
+    frames[0].hello();
+  });
   onmessage = t.step_func_done(e => {
     assert_equals(e.data, 'current');
   });

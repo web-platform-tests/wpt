@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:drott@chromium.org">
+<title>Tests the size-adjust descriptor of @font-face</title>
+<style>
+@font-face {
+  font-family: reference-font;
+  src: local(Ahem), url(/fonts/Ahem.ttf);
+}
+
+@font-face {
+  font-family: large-font;
+  src: local(Ahem), url(/fonts/Ahem.ttf);
+}
+
+div {
+  font-size: 40px;
+  font-size-adjust: 0.6;
+}
+
+.reference {
+  font-family: reference-font, sans-serif;
+}
+</style>
+
+<p>font-size-adjust should equalize the size-adjusted font and the reference font's size.</p>
+
+<div>
+  <span class="reference">AaaAaa</span>
+</div>

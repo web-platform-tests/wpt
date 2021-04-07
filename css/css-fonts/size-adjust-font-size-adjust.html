@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:drott@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-fonts-5/"> <!-- XXX to be added -->
+<link rel="match" href="size-adjust-font-size-adjust-ref.html">
+<link rel="assert" title="Tests that font-size-adjust overrides size-adjust.">
+<title>Tests the size-adjust descriptor of @font-face</title>
+<style>
+@font-face {
+  font-family: reference-font;
+  src: local(Ahem), url(/fonts/Ahem.ttf);
+}
+
+@font-face {
+  font-family: large-font;
+  src: local(Ahem), url(/fonts/Ahem.ttf);
+  size-adjust: 400%;
+}
+
+div {
+  font-size: 40px;
+  font-size-adjust: 0.6;
+}
+
+.reference {
+  font-family: reference-font, sans-serif;
+}
+
+.large {
+  font-family: large-font, sans-serif;
+}
+</style>
+
+<p>font-size-adjust should equalize the size-adjusted font and the reference font's size.</p>
+
+<div>
+  <span class="reference">Aaa</span><span class="large">Aaa</span>
+</div>

@@ -146,6 +146,4 @@ https://whatpr.org/html/5518/895fd80...c8265a7/origin.html#reporting
 
 ### General todos/bugs ###
 
-- Add <!doctype html> to all tests
-- Add meta charset to all tests
 - Make sure titles are unique

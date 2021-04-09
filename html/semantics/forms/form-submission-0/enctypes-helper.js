@@ -18,6 +18,12 @@
       .replace(/\\\\/g, "\\");
   }
 
+  // `expectedBuilder` is a function that takes in the actual form body
+  // (necessary to get the multipart/form-data payload) and returns the form
+  // body that should be expected.
+  // If `testFormData` is false, the form entry will be submitted in for
+  // controls. If it is true, it will submitted by modifying the entry list
+  // during the `formdata` event.
   async function formSubmissionTest({
     name,
     value,
@@ -82,6 +88,13 @@
     assert_equals(serialized, expected);
   }
 
+  // This function returns a function to add individual form tests corresponding
+  // to some enctype.
+  // `expectedBuilder` is a function that takes two parameters: `expected` (the
+  // `expected` value of a test) and `serialized` (the actual form body
+  // submitted by the browser), and returns the correct form body that should
+  // have been submitted. This is necessary in order to account for th
+  // multipart/form-data boundary.
   window.formSubmissionTemplate = (enctype, expectedBuilder) => {
     function form({
       name,

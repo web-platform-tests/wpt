@@ -3,32 +3,29 @@
 // Form submissions in multipart/form-data are also tested in
 // /FileAPI/file/send-file*
 
-function expectedPayload({ name, filename, value }, boundary) {
-  let headers;
-  if (filename === undefined) {
-    headers = [`Content-Disposition: form-data; name="${name}"`];
-  } else {
-    headers = [
-      `Content-Disposition: form-data; name="${name}"; filename="${filename}"`,
-      "Content-Type: text/plain",
-    ];
-  }
-
-  return [
-    boundary,
-    ...headers,
-    "",
-    value,
-    boundary + "--",
-    "",
-  ].join("\r\n");
-}
-
 const form = formSubmissionTemplate(
   "multipart/form-data",
-  (expected, serialized) => {
+  ({ name, filename, value }, serialized) => {
+    let headers;
+    if (filename === undefined) {
+      headers = [`Content-Disposition: form-data; name="${name}"`];
+    } else {
+      headers = [
+        `Content-Disposition: form-data; name="${name}"; filename="${filename}"`,
+        "Content-Type: text/plain",
+      ];
+    }
+
     const boundary = serialized.split("\r\n")[0];
-    return expectedPayload(expected, boundary);
+
+    return [
+      boundary,
+      ...headers,
+      "",
+      value,
+      boundary + "--",
+      "",
+    ].join("\r\n");
   },
 );
 

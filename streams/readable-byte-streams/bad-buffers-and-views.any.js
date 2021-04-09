@@ -140,10 +140,10 @@ async_test(t => {
 async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
+      c.close();
+
       // Detach it by reading into it
       reader.read(c.byobRequest.view);
-
-      c.close();
 
       assert_throws_js(TypeError, () => c.byobRequest.respond(0),
         'respond() must throw if the corresponding view has become detached');
@@ -206,11 +206,11 @@ async_test(t => {
 async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
+      c.close();
+
       // Detach it by reading into it
       const view = new Uint8Array([1, 2, 3]);
       reader.read(view);
-
-      c.close();
 
       assert_throws_js(TypeError, () => c.byobRequest.respondWithNewView(view));
     }),

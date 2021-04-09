@@ -255,3 +255,39 @@ async_test(t => {
   reader.read(new Uint8Array([4, 5, 6]));
 }, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view is zero-length on a ' +
     'non-zero-length buffer (in the closed state)');
+
+async_test(t => {
+  const stream = new ReadableStream({
+    pull: t.step_func_done(c => {
+      // Detach it by reading into it
+      reader.read(c.byobRequest.view);
+
+      assert_throws_js(TypeError, () => c.enqueue(new Uint8Array([1])),
+        'enqueue() must throw if the BYOB request\'s buffer has become detached');
+    }),
+    type: 'bytes'
+  });
+  const reader = stream.getReader({ mode: 'byob' });
+
+  reader.read(new Uint8Array([4, 5, 6]));
+}, 'ReadableStream with byte source: enqueue() throws if the BYOB request\'s buffer has been detached (in the ' +
+  'readable state)');
+
+async_test(t => {
+  const stream = new ReadableStream({
+    pull: t.step_func_done(c => {
+      c.close();
+
+      // Detach it by reading into it
+      reader.read(c.byobRequest.view);
+
+      assert_throws_js(TypeError, () => c.enqueue(new Uint8Array([1])),
+        'enqueue() must throw if the BYOB request\'s buffer has become detached');
+    }),
+    type: 'bytes'
+  });
+  const reader = stream.getReader({ mode: 'byob' });
+
+  reader.read(new Uint8Array([4, 5, 6]));
+}, 'ReadableStream with byte source: enqueue() throws if the BYOB request\'s buffer has been detached (in the ' +
+  'closed state)');

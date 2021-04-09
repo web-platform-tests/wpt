@@ -1,5 +1,36 @@
+// META: script=enctypes-helper.js
+
 // Form submissions in multipart/form-data are also tested in
 // /FileAPI/file/send-file*
+
+function expectedPayload({ name, filename, value }, boundary) {
+  let headers;
+  if (filename === undefined) {
+    headers = [`Content-Disposition: form-data; name="${name}"`];
+  } else {
+    headers = [
+      `Content-Disposition: form-data; name="${name}"; filename="${filename}"`,
+      "Content-Type: text/plain",
+    ];
+  }
+
+  return [
+    boundary,
+    ...headers,
+    "",
+    value,
+    boundary + "--",
+    "",
+  ].join("\r\n");
+}
+
+const form = formSubmissionTemplate(
+  "multipart/form-data",
+  (expected, serialized) => {
+    const boundary = serialized.split("\r\n")[0];
+    return expectedPayload(expected, boundary);
+  },
+);
 
 form({
   name: "basic",
@@ -313,132 +344,3 @@ form({
   },
   description: "character not in encoding in filename",
 });
-
-function form({ name, value, expected, formEncoding = "utf-8", description }) {
-  // Normal form
-  promise_test(async (testCase) => {
-    if (document.readyState !== "complete") {
-      await new Promise((resolve) => addEventListener("load", resolve));
-    }
-
-    const formTargetFrame = Object.assign(document.createElement("iframe"), {
-      name: "formtargetframe",
-    });
-    document.body.append(formTargetFrame);
-    testCase.add_cleanup(() => {
-      document.body.removeChild(formTargetFrame);
-    });
-
-    const form = Object.assign(document.createElement("form"), {
-      acceptCharset: formEncoding,
-      // Using echo-content-escaped.py rather than /fetch/api/resources/echo-content.py
-      // because we're doing tests with \x00, which can cause the response to be
-      // detected as a binary file and served as a download).
-      action: "/FileAPI/file/resources/echo-content-escaped.py",
-      method: "POST",
-      enctype: "multipart/form-data",
-      target: formTargetFrame.name,
-    });
-    document.body.append(form);
-    testCase.add_cleanup(() => {
-      document.body.removeChild(form);
-    });
-
-    const input = document.createElement("input");
-    input.name = name;
-    if (value instanceof File) {
-      input.type = "file";
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(value);
-      input.files = dataTransfer.files;
-    } else {
-      input.type = "hidden";
-      input.value = value;
-    }
-    form.append(input);
-
-    await new Promise((resolve) => {
-      form.submit();
-      formTargetFrame.onload = resolve;
-    });
-
-    const serialized = unescape(
-      formTargetFrame.contentDocument.body.textContent,
-    );
-    const boundary = serialized.split("\r\n")[0];
-    assert_equals(serialized, expectedPayload(expected, boundary));
-  }, `multipart/form-data: ${description} (normal form)`);
-
-  // formdata event
-  promise_test(async (testCase) => {
-    if (document.readyState !== "complete") {
-      await new Promise((resolve) => addEventListener("load", resolve));
-    }
-
-    const formTargetFrame = Object.assign(document.createElement("iframe"), {
-      name: "formtargetframe",
-    });
-    document.body.append(formTargetFrame);
-    testCase.add_cleanup(() => {
-      document.body.removeChild(formTargetFrame);
-    });
-
-    const form = Object.assign(document.createElement("form"), {
-      acceptCharset: formEncoding,
-      // Using echo-content-escaped.py rather than /fetch/api/resources/echo-content.py
-      // because we're doing tests with \x00, which can cause the response to be
-      // detected as a binary file and served as a download).
-      action: "/FileAPI/file/resources/echo-content-escaped.py",
-      method: "POST",
-      enctype: "multipart/form-data",
-      target: formTargetFrame.name,
-    });
-    document.body.append(form);
-    testCase.add_cleanup(() => {
-      document.body.removeChild(form);
-    });
-
-    form.addEventListener("formdata", (evt) => {
-      evt.formData.append(name, value);
-    });
-
-    await new Promise((resolve) => {
-      form.submit();
-      formTargetFrame.onload = resolve;
-    });
-
-    const serialized = unescape(
-      formTargetFrame.contentDocument.body.textContent,
-    );
-    const boundary = serialized.split("\r\n")[0];
-    assert_equals(serialized, expectedPayload(expected, boundary));
-  }, `multipart/form-data: ${description} (formdata event)`);
-}
-
-function unescape(str) {
-  return str.replace(/\r\n?|\n/g, "\r\n").replace(
-    /\\x[0-9A-Fa-f]{2}/g,
-    (escape) => String.fromCodePoint(parseInt(escape.substring(2), 16)),
-  ).replace(/\\\\/g, "\\");
-}
-
-function expectedPayload({ name, filename, value }, boundary) {
-  let headers;
-  if (filename === undefined) {
-    headers = [`Content-Disposition: form-data; name="${name}"`];
-  } else {
-    headers = [
-      `Content-Disposition: form-data; name="${name}"; filename="${filename}"`,
-      "Content-Type: text/plain",
-    ];
-  }
-
-  return [
-    boundary,
-    ...headers,
-    "",
-    value,
-    boundary + "--",
-    "",
-  ].join("\r\n");
-}

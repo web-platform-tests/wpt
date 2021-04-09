@@ -1,3 +1,10 @@
+// META: script=enctypes-helper.js
+
+const form = formSubmissionTemplate(
+  "text/plain",
+  (expected) => expected,
+);
+
 form({
   name: "basic",
   value: "test",
@@ -209,111 +216,3 @@ form({
   expected: "\xE1=&#128169;\r\n",
   description: "character not in encoding in filename",
 });
-
-function form({
-  name,
-  value,
-  expected,
-  formEncoding = "utf-8",
-  description,
-}) {
-  // Normal form
-  promise_test(async (testCase) => {
-    if (document.readyState !== "complete") {
-      await new Promise((resolve) => addEventListener("load", resolve));
-    }
-
-    const formTargetFrame = Object.assign(document.createElement("iframe"), {
-      name: "formtargetframe",
-    });
-    document.body.append(formTargetFrame);
-    testCase.add_cleanup(() => {
-      document.body.removeChild(formTargetFrame);
-    });
-
-    const form = Object.assign(document.createElement("form"), {
-      acceptCharset: formEncoding,
-      // Using echo-content-escaped.py rather than /fetch/api/resources/echo-content.py
-      // because we're doing tests with \x00, which can cause the response to be
-      // detected as a binary file and served as a download).
-      action: "/FileAPI/file/resources/echo-content-escaped.py",
-      method: "POST",
-      enctype: "text/plain",
-      target: formTargetFrame.name,
-    });
-    document.body.append(form);
-    testCase.add_cleanup(() => {
-      document.body.removeChild(form);
-    });
-
-    const input = document.createElement("input");
-    input.name = name;
-    if (value instanceof File) {
-      input.type = "file";
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(value);
-      input.files = dataTransfer.files;
-    } else {
-      input.type = "hidden";
-      input.value = value;
-    }
-    form.append(input);
-
-    await new Promise((resolve) => {
-      form.submit();
-      formTargetFrame.onload = resolve;
-    });
-
-    const serialized = formTargetFrame.contentDocument.body.textContent;
-    assert_equals(unescape(serialized), expected);
-  }, `text/plain: ${description} (normal form)`);
-
-  // formdata event
-  promise_test(async (testCase) => {
-    if (document.readyState !== "complete") {
-      await new Promise((resolve) => addEventListener("load", resolve));
-    }
-
-    const formTargetFrame = Object.assign(document.createElement("iframe"), {
-      name: "formtargetframe",
-    });
-    document.body.append(formTargetFrame);
-    testCase.add_cleanup(() => {
-      document.body.removeChild(formTargetFrame);
-    });
-
-    const form = Object.assign(document.createElement("form"), {
-      acceptCharset: formEncoding,
-      // Using echo-content-escaped.py rather than /fetch/api/resources/echo-content.py
-      // because we're doing tests with \x00, which can cause the response to be
-      // detected as a binary file and served as a download).
-      action: "/FileAPI/file/resources/echo-content-escaped.py",
-      method: "POST",
-      enctype: "text/plain",
-      target: formTargetFrame.name,
-    });
-    document.body.append(form);
-    testCase.add_cleanup(() => {
-      document.body.removeChild(form);
-    });
-
-    form.addEventListener("formdata", (evt) => {
-      evt.formData.append(name, value);
-    });
-
-    await new Promise((resolve) => {
-      form.submit();
-      formTargetFrame.onload = resolve;
-    });
-
-    const serialized = formTargetFrame.contentDocument.body.textContent;
-    assert_equals(unescape(serialized), expected);
-  }, `text/plain: ${description} (formdata event)`);
-}
-
-function unescape(str) {
-  return str.replace(/\r\n?|\n/g, "\r\n").replace(
-    /\\x[0-9A-Fa-f]{2}/g,
-    (escape) => String.fromCodePoint(parseInt(escape.substring(2), 16)),
-  ).replace(/\\\\/g, "\\");
-}

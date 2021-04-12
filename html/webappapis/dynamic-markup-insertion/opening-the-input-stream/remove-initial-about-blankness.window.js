@@ -1,7 +1,7 @@
 // This tests the issues discussed in https://github.com/whatwg/html/issues/4299
 // and fixed in https://github.com/whatwg/html/pull/6567.
 
-// Note: because browser do not interoperate on the spec's notion of window reuse (see e.g. https://crbug.com/778318)
+// Note: because browsers do not interoperate on the spec's notion of window reuse (see e.g. https://crbug.com/778318)
 // we pick a specific interoperable test case, which is "currently on initial about:blank, but loading something".
 
 async_test(t => {

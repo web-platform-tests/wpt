@@ -50,6 +50,9 @@ function runUAStyleTests(props) {
   function contextAttrs(attributes) {
     let rv = "";
     for (let i = 0; i < attributes.length; ++i) {
+      if (attributes[i].name === 'data-skip') {
+        continue;
+      }
       rv += ` ${attributes[i].name}="${attributes[i].value}"`;
     }
     return rv;

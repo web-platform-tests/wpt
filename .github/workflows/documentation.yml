@@ -1,4 +1,4 @@
-name: documentation
+name: PhoenixDOM documentation
 on:
   push:
     branches:

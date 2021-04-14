@@ -12,13 +12,13 @@ promise_test(async t => {
   const startingHistoryLength = history.length;
 
   const code = `
-    const a = document.createElement(\`a\`);
-    a.href = \`/common/blank.html?thereplacement\`;
+    const a = document.createElement("a");
+    a.href = "/common/blank.html?thereplacement";
     document.currentScript.before(a);
     a.click();
   `;
 
-  const startURL = "resources/code-injector.sub.html?code=" + encodeURIComponent(code);
+  const startURL = "resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent(code);
   const afterReplacementURL = "/common/blank.html?thereplacement";
   const iframe = insertIframe(t, startURL);
 
@@ -29,5 +29,5 @@ promise_test(async t => {
 
   await checkSentinelIframe(t, sentinelIframe);
   assert_equals(history.length, startingHistoryLength, "history.length must not change after checking the sentinel iframe");
-}, "Replace before load, trigger by aElement.click()");
+}, "Replace before load, triggered by aElement.click()");
 </script>

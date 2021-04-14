@@ -12,19 +12,19 @@ promise_test(async t => {
   const startingHistoryLength = history.length;
 
   const code = `
-    const form = document.createElement(\`form\`);
-    form.action = \`/common/blank.html\`;
+    const form = document.createElement("form");
+    form.action = "/common/blank.html";
 
-    const input = document.createElement(\`input\`);
-    input.type = \`hidden\`;
-    input.name = \`thereplacement\`;
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "thereplacement";
     form.append(input);
 
     document.currentScript.before(form);
     form.submit();
   `;
 
-  const startURL = "resources/code-injector.sub.html?code=" + encodeURIComponent(code);
+  const startURL = "resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent(code);
   const afterReplacementURL = "/common/blank.html?thereplacement=";
   const iframe = insertIframe(t, startURL);
 
@@ -35,5 +35,5 @@ promise_test(async t => {
 
   await checkSentinelIframe(t, sentinelIframe);
   assert_equals(history.length, startingHistoryLength, "history.length must not change after checking the sentinel iframe");
-}, "Replace before load, trigger by formElement.submit()");
+}, "Replace before load, triggered by formElement.submit()");
 </script>

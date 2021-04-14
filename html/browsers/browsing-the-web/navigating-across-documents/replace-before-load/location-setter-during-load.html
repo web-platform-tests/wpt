@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Replace before load, triggered by location setters</title>
+<title>Replace during the load event, triggered by location setters</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/helpers.js"></script>
@@ -13,12 +13,18 @@ promise_test(async t => {
   const sentinelIframe = await setupSentinelIframe(t);
   const startingHistoryLength = history.length;
 
-  const startURL = "resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent("location.href = `/common/blank.html?thereplacement`;");
+  const code = `
+    window.onload = () => {
+      location.href = "/common/blank.html?thereplacement";
+    };
+  `;
+
+  const startURL = "resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent(code);
   const afterReplacementURL = "/common/blank.html?thereplacement";
   const iframe = insertIframe(t, startURL);
   assert_equals(history.length, startingHistoryLength, "Inserting the under-test iframe must not change history.length");
 
-  await waitForLoad(t, iframe, afterReplacementURL);
+  await waitForLoadAllowingIntermediateLoads(t, iframe, afterReplacementURL);
   assert_equals(history.length, startingHistoryLength, "history.length must not change after waiting for the replacement");
 
   await checkSentinelIframe(t, sentinelIframe);
@@ -29,12 +35,18 @@ promise_test(async t => {
   const sentinelIframe = await setupSentinelIframe(t);
   const startingHistoryLength = history.length;
 
-  const startURL = "resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent("location.search = `thereplacement`;");
+  const code = `
+    window.onload = () => {
+      location.search = "thereplacement";
+    };
+  `;
+
+  const startURL = "resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent(code);
   const afterReplacementURL = "resources/code-injector.html?thereplacement";
   const iframe = insertIframe(t, startURL);
   assert_equals(history.length, startingHistoryLength, "Inserting the under-test iframe must not change history.length");
 
-  await waitForLoad(t, iframe, afterReplacementURL);
+  await waitForLoadAllowingIntermediateLoads(t, iframe, afterReplacementURL);
   assert_equals(history.length, startingHistoryLength, "history.length must not change after waiting for the replacement");
 
   await checkSentinelIframe(t, sentinelIframe);
@@ -44,12 +56,18 @@ promise_test(async t => {
   const sentinelIframe = await setupSentinelIframe(t);
   const startingHistoryLength = history.length;
 
-  const startURL = "resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent("location.hash = `thereplacement`;");
+  const code = `
+    window.onload = () => {
+      location.hash = "thereplacement";
+    };
+  `;
+
+  const startURL = "resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent(code);
   const afterReplacementURL = startURL + "#thereplacement";
   const iframe = insertIframe(t, startURL);
   assert_equals(history.length, startingHistoryLength, "Inserting the under-test iframe must not change history.length");
 
-  await waitForLoad(t, iframe, afterReplacementURL);
+  await waitForLoadAllowingIntermediateLoads(t, iframe, afterReplacementURL);
   assert_equals(history.length, startingHistoryLength, "history.length must not change after waiting for the replacement");
 
   await checkSentinelIframe(t, sentinelIframe);

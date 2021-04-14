@@ -10,6 +10,21 @@ window.waitForLoad = (t, iframe, urlRelativeToThisDocument) => {
   });
 };
 
+window.waitForLoadAllowingIntermediateLoads = (t, iframe, urlRelativeToThisDocument) => {
+  return new Promise(resolve => {
+    const handler = t.step_func(() => {
+      if (iframe.contentWindow.location.href === (new URL(urlRelativeToThisDocument, location.href)).href) {
+        // Wait a bit longer to ensure all history stuff has settled, e.g. the document is "completely loaded"
+        // (which happens from a queued task).
+        setTimeout(resolve, 0);
+        iframe.removeEventListener("load", handler);
+      }
+    });
+
+    iframe.addEventListener("load", handler);
+  });
+};
+
 window.setupSentinelIframe = async (t) => {
   // If this iframe gets navigated by history.back(), then the iframe under test did not, so we did a replace.
   const sentinelIframe = document.createElement("iframe");

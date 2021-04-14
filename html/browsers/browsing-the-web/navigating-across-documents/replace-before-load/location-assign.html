@@ -11,7 +11,7 @@ promise_test(async t => {
   const sentinelIframe = await setupSentinelIframe(t);
   const startingHistoryLength = history.length;
 
-  const startURL = "resources/code-injector.sub.html?code=" + encodeURIComponent("location.assign(`/common/blank.html?thereplacement`);");
+  const startURL = "resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent("location.assign(`/common/blank.html?thereplacement`);");
   const afterReplacementURL = "/common/blank.html?thereplacement";
   const iframe = insertIframe(t, startURL);
   assert_equals(history.length, startingHistoryLength, "Inserting the under-test iframe must not change history.length");
@@ -21,5 +21,5 @@ promise_test(async t => {
 
   await checkSentinelIframe(t, sentinelIframe);
   assert_equals(history.length, startingHistoryLength, "history.length must not change after checking the sentinel iframe");
-}, "Replace before load, trigger by location.assign()");
+}, "Replace before load, triggered by location.assign()");
 </script>

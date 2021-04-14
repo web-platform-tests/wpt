@@ -11,34 +11,48 @@
 
 promise_test(async t => {
   const sentinelIframe = await setupSentinelIframe(t);
+  const startingHistoryLength = history.length;
 
   const startURL = "resources/code-injector.sub.html?code=" + encodeURIComponent("location.href = `/common/blank.html?thereplacement`;");
   const afterReplacementURL = "/common/blank.html?thereplacement";
   const iframe = insertIframe(t, startURL);
+  assert_equals(history.length, startingHistoryLength, "Inserting the under-test iframe must not change history.length");
+
   await waitForLoad(t, iframe, afterReplacementURL);
+  assert_equals(history.length, startingHistoryLength, "history.length must not change after waiting for the replacement");
 
   await checkSentinelIframe(t, sentinelIframe);
+  assert_equals(history.length, startingHistoryLength, "history.length must not change after checking the sentinel iframe");
 }, "href");
 
 promise_test(async t => {
   const sentinelIframe = await setupSentinelIframe(t);
+  const startingHistoryLength = history.length;
 
   const startURL = "resources/code-injector.sub.html?code=" + encodeURIComponent("location.search = `thereplacement`;");
   const afterReplacementURL = "resources/code-injector.sub.html?thereplacement";
   const iframe = insertIframe(t, startURL);
+  assert_equals(history.length, startingHistoryLength, "Inserting the under-test iframe must not change history.length");
+
   await waitForLoad(t, iframe, afterReplacementURL);
+  assert_equals(history.length, startingHistoryLength, "history.length must not change after waiting for the replacement");
 
   await checkSentinelIframe(t, sentinelIframe);
 }, "search");
 
 promise_test(async t => {
   const sentinelIframe = await setupSentinelIframe(t);
+  const startingHistoryLength = history.length;
 
   const startURL = "resources/code-injector.sub.html?code=" + encodeURIComponent("location.hash = `thereplacement`;");
   const afterReplacementURL = startURL + "#thereplacement";
   const iframe = insertIframe(t, startURL);
+  assert_equals(history.length, startingHistoryLength, "Inserting the under-test iframe must not change history.length");
+
   await waitForLoad(t, iframe, afterReplacementURL);
+  assert_equals(history.length, startingHistoryLength, "history.length must not change after waiting for the replacement");
 
   await checkSentinelIframe(t, sentinelIframe);
+  assert_equals(history.length, startingHistoryLength, "history.length must not change after checking the sentinel iframe");
 }, "hash");
 </script>

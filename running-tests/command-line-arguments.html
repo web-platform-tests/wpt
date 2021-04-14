@@ -298,7 +298,7 @@ a different set of command-line arguments.</p>
 </dd>
 <dt><kbd>--tests-root</kbd></dt>
 <dd><p>Path to root of tests.</p>
-<p>Default: /github/workspace</p>
+<p>Default: /home/runner/work/wpt/wpt</p>
 </dd>
 <dt><kbd>-r, --rebuild</kbd></dt>
 <dd><p>Force a full rebuild of the manifest.</p>
@@ -314,7 +314,7 @@ a different set of command-line arguments.</p>
 </dd>
 <dt><kbd>--cache-root</kbd></dt>
 <dd><p>Path in which to store any caches (default &lt;tests_root&gt;/.wptcache/)</p>
-<p>Default: “/github/workspace/.wptcache”</p>
+<p>Default: “/home/runner/work/wpt/wpt/.wptcache”</p>
 </dd>
 <dt><kbd>--no-parallel</kbd></dt>
 <dd><p>Do not parallelize building the manifest</p>
@@ -337,7 +337,7 @@ a different set of command-line arguments.</p>
 </dd>
 <dt><kbd>--tests-root</kbd></dt>
 <dd><p>Path to root of tests.</p>
-<p>Default: /github/workspace</p>
+<p>Default: /home/runner/work/wpt/wpt</p>
 </dd>
 <dt><kbd>--force</kbd></dt>
 <dd><p>Always download, even if the existing manifest is recent</p>
@@ -374,7 +374,7 @@ a different set of command-line arguments.</p>
 </dd>
 <dt><kbd>--tests-root</kbd></dt>
 <dd><p>Path to root of tests.</p>
-<p>Default: /github/workspace</p>
+<p>Default: /home/runner/work/wpt/wpt</p>
 </dd>
 <dt><kbd>--no-update</kbd></dt>
 <dd><p>Don’t update manifest before continuing</p>
@@ -390,7 +390,7 @@ a different set of command-line arguments.</p>
 </dd>
 <dt><kbd>--cache-root</kbd></dt>
 <dd><p>Path in which to store any caches (default &lt;tests_root&gt;/.wptcache/)</p>
-<p>Default: “/github/workspace/.wptcache”</p>
+<p>Default: “/home/runner/work/wpt/wpt/.wptcache”</p>
 </dd>
 <dt><kbd>--json</kbd></dt>
 <dd><p>Output as JSON</p>
@@ -411,7 +411,7 @@ a different set of command-line arguments.</p>
 <dl class="option-list">
 <dt><kbd>-c, --certificate</kbd></dt>
 <dd><p>load the TLS certificate from the specified file</p>
-<p>Default: “/github/workspace/tools/quic/certs/cert.pem”</p>
+<p>Default: “/home/runner/work/wpt/wpt/tools/quic/certs/cert.pem”</p>
 </dd>
 <dt><kbd>--host</kbd></dt>
 <dd><p>listen on the specified address (defaults to ::)</p>
@@ -423,11 +423,11 @@ a different set of command-line arguments.</p>
 </dd>
 <dt><kbd>-k, --private-key</kbd></dt>
 <dd><p>load the TLS private key from the specified file</p>
-<p>Default: “/github/workspace/tools/quic/certs/cert.key”</p>
+<p>Default: “/home/runner/work/wpt/wpt/tools/quic/certs/cert.key”</p>
 </dd>
 <dt><kbd>--handlers-path</kbd></dt>
 <dd><p>the directory path of QuicTransport event handlers</p>
-<p>Default: “/github/workspace/tools/quic/../../webtransport/quic/handlers”</p>
+<p>Default: “/home/runner/work/wpt/wpt/tools/quic/../../webtransport/quic/handlers”</p>
 </dd>
 <dt><kbd>-v, --verbose</kbd></dt>
 <dd><p>increase logging verbosity</p>
@@ -547,7 +547,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">}</span> <span class="p">[{</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">}</span> <span class="o">...</span><span class="p">]]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">crashtest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="p">[{</span><span class="n">crashtest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="o">...</span><span class="p">]]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">manifest</span> <span class="n">INCLUDE_MANIFEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span> <span class="n">TEST_GROUPS_FILE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span>
@@ -746,9 +746,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#Test Selection" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: crashtest, testharness, wdspec, reftest, print-reftest</p>
+<dd><p>Possible choices: crashtest, print-reftest, reftest, wdspec, testharness</p>
 <p>Test types to run</p>
-<p>Default: {‘crashtest’, ‘testharness’, ‘wdspec’, ‘reftest’, ‘print-reftest’}</p>
+<p>Default: {‘crashtest’, ‘print-reftest’, ‘reftest’, ‘wdspec’, ‘testharness’}</p>
 </dd>
 <dt><kbd>--include</kbd></dt>
 <dd><p>URL prefix to include</p>
@@ -1223,7 +1223,7 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 <dt><kbd>--tests-root</kbd></dt>
 <dd><p>Path to the root of the wpt directory</p>
-<p>Default: “/github/workspace/tools/wpt/../..”</p>
+<p>Default: “/home/runner/work/wpt/wpt/tools/wpt/../..”</p>
 </dd>
 </dl>
 </div>
@@ -1501,7 +1501,7 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 <dt><kbd>--metadata</kbd></dt>
 <dd><p>Directory that will contain MANIFEST.json</p>
-<p>Default: “/github/workspace”</p>
+<p>Default: “/home/runner/work/wpt/wpt”</p>
 </dd>
 </dl>
 </div>

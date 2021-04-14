@@ -48,10 +48,10 @@
 </pre></div>
 </div>
 <p>Note: when the channel is “dev”, <code class="docutils literal notranslate"><span class="pre">wpt</span></code> will <em>automatically</em> enable all
-<a class="reference external" href="https://www.chromium.org/blink/runtime-enabled-features">experimental web platform features</a>
+<a class="reference external" href="https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md">experimental web platform features</a>
 (chrome://flags/#enable-experimental-web-platform-features) by passing
 <code class="docutils literal notranslate"><span class="pre">--enable-experimental-web-platform-features</span></code> to Chrome.</p>
-<p>If you want to enable a specific <a class="reference external" href="https://www.chromium.org/blink/runtime-enabled-features">runtime enabled feature</a>, use
+<p>If you want to enable a specific <a class="reference external" href="https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md">runtime enabled feature</a>, use
 <code class="docutils literal notranslate"><span class="pre">--binary-arg</span></code> to specify the flag(s) that you want to pass to Chrome:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --binary-arg<span class="o">=</span>--enable-blink-features<span class="o">=</span>AsyncClipboard chrome clipboard-apis/
 </pre></div>

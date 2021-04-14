@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Replace before load, trigger by location setters</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+
+<body>
+<script>
+"use strict";
+
+promise_test(async t => {
+  const sentinelIframe = await setupSentinelIframe(t);
+
+  const startURL = "resources/code-injector.sub.html?code=" + encodeURIComponent("location.href = `/common/blank.html?thereplacement`;");
+  const afterReplacementURL = "/common/blank.html?thereplacement";
+  const iframe = insertIframe(t, startURL);
+  await waitForLoad(t, iframe, afterReplacementURL);
+
+  await checkSentinelIframe(t, sentinelIframe);
+}, "href");
+
+promise_test(async t => {
+  const sentinelIframe = await setupSentinelIframe(t);
+
+  const startURL = "resources/code-injector.sub.html?code=" + encodeURIComponent("location.search = `thereplacement`;");
+  const afterReplacementURL = "resources/code-injector.sub.html?thereplacement";
+  const iframe = insertIframe(t, startURL);
+  await waitForLoad(t, iframe, afterReplacementURL);
+
+  await checkSentinelIframe(t, sentinelIframe);
+}, "search");
+
+promise_test(async t => {
+  const sentinelIframe = await setupSentinelIframe(t);
+
+  const startURL = "resources/code-injector.sub.html?code=" + encodeURIComponent("location.hash = `thereplacement`;");
+  const afterReplacementURL = startURL + "#thereplacement";
+  const iframe = insertIframe(t, startURL);
+  await waitForLoad(t, iframe, afterReplacementURL);
+
+  await checkSentinelIframe(t, sentinelIframe);
+}, "hash");
+</script>

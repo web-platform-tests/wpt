@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang=en>
 <meta charset=utf-8>
-<title>FormData: get and getAll (with dom form)</title>
+<title>FormData: get and getAll (with form element)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
     <link rel="help" href="https://xhr.spec.whatwg.org/#dom-formdata-get" />
@@ -11,7 +11,7 @@
     <input type="hidden" name="key" value="value1">
     <input type="hidden" name="key" value="value2">
 </form>
-<form id="empty-form" />
+<form id="empty-form"></form>
 <script>
     test(function() {
         assert_equals(new FormData(document.getElementById('form')).get('key'), "value1");

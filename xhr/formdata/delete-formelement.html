@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang=en>
 <meta charset=utf-8>
-<title>FormData: delete (with dom form)</title>
+<title>FormData: delete (with form element)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
     <link rel="help" href="https://xhr.spec.whatwg.org/#dom-formdata-get" />
@@ -15,7 +15,7 @@
     <input type="hidden" name="key1" value="value1">
     <input type="hidden" name="key2" value="value2">
 </form>
-<form id="empty-form" />
+<form id="empty-form"></form>
 <script>
     test(function() {
         var fd = new FormData(document.getElementById('form1'));

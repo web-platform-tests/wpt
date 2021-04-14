@@ -47,13 +47,13 @@
   do_test("formdata with named blob", create_formdata(['key', new Blob(['value'], {type: 'text/x-value'}), 'blob.txt']), '\nkey=blob.txt:text/x-value:5,');
 
   // If 3rd argument is given and 2nd is not a Blob, formdata.append() should throw
-  var test = async_test('formdata.append() should throw if value is string and file name is given'); // needs to be async just because the others above are
-  test.step(function(){
+  const append_test = async_test('formdata.append() should throw if value is string and file name is given'); // needs to be async just because the others above are
+  append_test.step(function(){
     assert_throws_js(TypeError, function(){
       create_formdata('a', 'b', 'c');
     });
   });
-  test.done();
+  append_test.done();
 
   test(() => {
     let form = populateForm('<input name=n1 value=v1>');

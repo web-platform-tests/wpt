@@ -765,7 +765,6 @@ IdlArray.prototype.test = function()
 
 IdlArray.prototype.merge_partials = function()
 {
-    const testedPartials = new Map();
     this.partials.forEach(function(parsed_idl)
     {
         const originalExists = parsed_idl.name in this.members
@@ -773,36 +772,9 @@ IdlArray.prototype.merge_partials = function()
                 || this.members[parsed_idl.name] instanceof IdlDictionary
                 || this.members[parsed_idl.name] instanceof IdlNamespace);
 
-        // Ensure unique test name in case of multiple partials.
-        let partialTestName = parsed_idl.name;
-        let partialTestCount = 1;
-        if (testedPartials.has(parsed_idl.name)) {
-            partialTestCount += testedPartials.get(parsed_idl.name);
-            partialTestName = `${partialTestName}[${partialTestCount}]`;
-        }
-        testedPartials.set(parsed_idl.name, partialTestCount);
-
-        if (!parsed_idl.untested) {
-            test(function () {
-                assert_true(originalExists, `Original ${parsed_idl.type} should be defined`);
-
-                var expected;
-                switch (parsed_idl.type) {
-                    case 'dictionary': expected = IdlDictionary; break;
-                    case 'namespace': expected = IdlNamespace; break;
-                    case 'interface':
-                    case 'interface mixin':
-                    default:
-                        expected = IdlInterface; break;
-                }
-                assert_true(
-                    expected.prototype.isPrototypeOf(this.members[parsed_idl.name]),
-                    `Original ${parsed_idl.name} definition should have type ${parsed_idl.type}`);
-            }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: original ${parsed_idl.type} defined`);
-        }
-        if (!originalExists) {
-            // Not good.. but keep calm and carry on.
-            return;
+        if (!originalExists)
+        {
+            throw new IdlHarnessError(`Original definition of partial ${parsed_idl.name} not found`);
         }
 
         if (parsed_idl.extAttrs)
@@ -813,25 +785,6 @@ IdlArray.prototype.merge_partials = function()
             // other extended attributes on partial interfaces.
             const exposureAttr = parsed_idl.extAttrs.find(a => a.name === "Exposed");
             if (exposureAttr) {
-                if (!parsed_idl.untested) {
-                    test(function () {
-                        const partialExposure = exposure_set(parsed_idl);
-                        const memberExposure = exposure_set(this.members[parsed_idl.name]);
-                        if (memberExposure === "*") {
-                            return;
-                        }
-                        if (partialExposure === "*") {
-                            throw new IdlHarnessError(
-                                `Partial ${parsed_idl.name} ${parsed_idl.type} is exposed everywhere, the original ${parsed_idl.type} is not.`);
-                        }
-                        partialExposure.forEach(name => {
-                            if (!memberExposure || !memberExposure.has(name)) {
-                                throw new IdlHarnessError(
-                                    `Partial ${parsed_idl.name} ${parsed_idl.type} is exposed to '${name}', the original ${parsed_idl.type} is not.`);
-                            }
-                        });
-                    }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: valid exposure set`);
-                }
                 parsed_idl.members.forEach(function (member) {
                     member.extAttrs.push(exposureAttr);
                 }.bind(this));
@@ -846,20 +799,10 @@ IdlArray.prototype.merge_partials = function()
                 this.members[parsed_idl.name].extAttrs.push(extAttr);
             }.bind(this));
         }
-        if (parsed_idl.members.length) {
-            test(function () {
-                var clash = parsed_idl.members.find(function(member) {
-                    return this.members[parsed_idl.name].members.find(function(m) {
-                        return this.are_duplicate_members(m, member);
-                    }.bind(this));
-                }.bind(this));
-                parsed_idl.members.forEach(function(member)
-                {
-                    this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
-                }.bind(this));
-                assert_true(!clash, "member " + (clash && clash.name) + " is unique");
-            }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: member names are unique`);
-        }
+        parsed_idl.members.forEach(function(member)
+        {
+            this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
+        }.bind(this));
     }.bind(this));
     this.partials = [];
 }
@@ -877,22 +820,12 @@ IdlArray.prototype.merge_mixins = function()
         if (!(rhs in this.members)) throw errStr + rhs + " is undefined.";
         if (!(this.members[rhs] instanceof IdlInterface)) throw errStr + rhs + " is not an interface.";
 
-        if (this.members[rhs].members.length) {
-            test(function () {
-                var clash = this.members[rhs].members.find(function(member) {
-                    return this.members[lhs].members.find(function(m) {
-                        return this.are_duplicate_members(m, member);
-                    }.bind(this));
-                }.bind(this));
-                this.members[rhs].members.forEach(function(member) {
-                    assert_true(
-                        this.members[lhs].members.every(m => !this.are_duplicate_members(m, member)),
-                        "member " + member.name + " is unique");
-                    this.members[lhs].members.push(new IdlInterfaceMember(member));
-                }.bind(this));
-                assert_true(!clash, "member " + (clash && clash.name) + " is unique");
-            }.bind(this), lhs + " includes " + rhs + ": member names are unique");
-        }
+        this.members[rhs].members.forEach(function(member) {
+            assert_true(
+                this.members[lhs].members.every(m => !this.are_duplicate_members(m, member)),
+                "member " + member.name + " is unique");
+            this.members[lhs].members.push(new IdlInterfaceMember(member));
+        }.bind(this));
     }
     this.includes = [];
 }

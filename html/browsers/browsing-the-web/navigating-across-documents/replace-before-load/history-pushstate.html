@@ -17,9 +17,6 @@ promise_test(async t => {
   assert_equals(history.length, startingHistoryLength, "Inserting the under-test iframe must not change history.length");
 
   await waitForLoad(t, iframe, afterReplacementURL);
-  assert_equals(history.length, startingHistoryLength, "history.length must not change after waiting for the replacement");
-
-  await checkSentinelIframe(t, sentinelIframe);
-  assert_equals(history.length, startingHistoryLength, "history.length must not change after checking the sentinel iframe");
-}, "Replace before load, triggered by history.pushState()");
+  assert_equals(history.length, startingHistoryLength + 1, "history.length must change after waiting for the replacement");
+}, "history.pushState() before the load event must NOT replace");
 </script>

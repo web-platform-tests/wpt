@@ -13,7 +13,7 @@ WorkerNavigator includes NavigatorFonts;
 [SecureContext,
  Exposed=(Window,Worker)]
 interface FontManager {
-  Promise<sequence<FontMetadata>> query(optional QueryOptions options = {});
+  Promise<sequence<FontMetadata>> query(QueryOptions options);
 };
 
 dictionary QueryOptions {

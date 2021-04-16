@@ -191,7 +191,7 @@ async_test(t => {
 async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
-      const view = new Uint8Array(new ArrayBuffer(10), 0, 0);
+      const view = new Uint8Array(c.byobRequest.view.buffer, 0, 0);
 
       assert_throws_js(TypeError, () => c.byobRequest.respondWithNewView(view));
     }),
@@ -242,7 +242,7 @@ async_test(t => {
 async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
-      const view = new Uint8Array(new ArrayBuffer(10), 0, 0);
+      const view = new Uint8Array(c.byobRequest.view.buffer, 0, 0);
 
       c.close();
 

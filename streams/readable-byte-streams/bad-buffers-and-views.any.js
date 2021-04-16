@@ -221,6 +221,30 @@ async_test(t => {
 async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
+      const view = new Uint8Array(c.byobRequest.view.buffer, 0, 4);
+      view[0] = 20;
+      view[1] = 21;
+      view[2] = 22;
+      view[3] = 23;
+
+      assert_throws_js(RangeError, () => c.byobRequest.respondWithNewView(view));
+    }),
+    type: 'bytes'
+  });
+  const reader = stream.getReader({ mode: 'byob' });
+
+  const buffer = new ArrayBuffer(10);
+  const view = new Uint8Array(buffer, 0, 3);
+  view[0] = 10;
+  view[1] = 11;
+  view[2] = 12;
+  reader.read(view);
+}, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view has a larger length ' +
+   '(in the readable state)');
+
+async_test(t => {
+  const stream = new ReadableStream({
+    pull: t.step_func_done(c => {
       c.close();
 
       // Detach it by reading into it

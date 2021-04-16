@@ -206,6 +206,21 @@ async_test(t => {
 async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
+      const view = new Uint8Array(new ArrayBuffer(10), 0, 3);
+
+      assert_throws_js(RangeError, () => c.byobRequest.respondWithNewView(view));
+    }),
+    type: 'bytes'
+  });
+  const reader = stream.getReader({ mode: 'byob' });
+
+  reader.read(new Uint8Array([4, 5, 6]));
+}, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view\'s buffer has a ' +
+   'different length (in the readable state)');
+
+async_test(t => {
+  const stream = new ReadableStream({
+    pull: t.step_func_done(c => {
       c.close();
 
       // Detach it by reading into it
@@ -255,6 +270,23 @@ async_test(t => {
   reader.read(new Uint8Array([4, 5, 6]));
 }, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view is non-zero-length ' +
    '(in the closed state)');
+
+async_test(t => {
+  const stream = new ReadableStream({
+    pull: t.step_func_done(c => {
+      const view = new Uint8Array(new ArrayBuffer(10), 0, 0);
+
+      c.close();
+
+      assert_throws_js(RangeError, () => c.byobRequest.respondWithNewView(view));
+    }),
+    type: 'bytes'
+  });
+  const reader = stream.getReader({ mode: 'byob' });
+
+  reader.read(new Uint8Array([4, 5, 6]));
+}, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view\'s buffer has a ' +
+   'different length (in the closed state)');
 
 async_test(t => {
   const stream = new ReadableStream({

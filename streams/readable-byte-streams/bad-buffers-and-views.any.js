@@ -242,7 +242,7 @@ async_test(t => {
 async_test(t => {
   const stream = new ReadableStream({
     pull: t.step_func_done(c => {
-      const view = new Uint8Array(c.byobRequest.view.buffer, 0, 0);
+      const view = new Uint8Array(c.byobRequest.view.buffer, 0, 1);
 
       c.close();
 
@@ -253,8 +253,8 @@ async_test(t => {
   const reader = stream.getReader({ mode: 'byob' });
 
   reader.read(new Uint8Array([4, 5, 6]));
-}, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view is zero-length on a ' +
-    'non-zero-length buffer (in the closed state)');
+}, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view is non-zero-length ' +
+   '(in the closed state)');
 
 async_test(t => {
   const stream = new ReadableStream({

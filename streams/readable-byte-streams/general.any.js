@@ -2111,3 +2111,26 @@ test(() => {
   assert_throws_js(RangeError, () => new ReadableStream({ type: 'bytes' }, new HasSizeMethod()),
                    'constructor should throw when size on the prototype chain');
 }, 'ReadableStream constructor should not accept a strategy with a size defined if type is "bytes"');
+
+promise_test(async t => {
+  const stream = new ReadableStream({
+    pull: t.step_func(c => {
+      const view = new Uint8Array(c.byobRequest.view.buffer, 0, 0);
+
+      c.close();
+
+      c.byobRequest.respondWithNewView(view);
+    }),
+    type: 'bytes'
+  });
+  const reader = stream.getReader({ mode: 'byob' });
+
+  const result = await reader.read(new Uint8Array([4, 5, 6]));
+  assert_equals(result.done, true);
+
+  const view = result.value;
+  assert_equals(view.byteOffset, 0);
+  assert_equals(view.byteLength, 0);
+  assert_equals(view.buffer.byteLength, 3);
+  assert_array_equals([...new Uint8Array(view.buffer)], [4, 5, 6]);
+}, 'ReadableStream with byte source: respondWithNewView() with a zero-length view (in the closed state)');

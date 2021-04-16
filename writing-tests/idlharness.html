@@ -94,7 +94,7 @@ not use it.</p>
 are arrays of strings.  When an interface or exception is tested, every string registered for it
 with <code class="docutils literal notranslate"><span class="pre">add_objects()</span></code> will be evaluated, and tests will be run on the result to verify that it
 correctly implements that interface or exception.  This is the only way to test anything about
-<code class="docutils literal notranslate"><span class="pre">[NoInterfaceObject]</span></code> interfaces, and there are many tests that can’t be run on any interface
+<code class="docutils literal notranslate"><span class="pre">[LegacyNoInterfaceObject]</span></code> interfaces, and there are many tests that can’t be run on any interface
 without an object to fiddle with.</p>
 <p>The interface has to be the <em>primary</em> interface of all the objects provided.  For example, don’t
 pass <code class="docutils literal notranslate"><span class="pre">{Node:</span> <span class="pre">[&quot;document&quot;]}</span></code>, but rather <code class="docutils literal notranslate"><span class="pre">{Document:</span> <span class="pre">[&quot;document&quot;]}</span></code>.  Assuming the <code class="docutils literal notranslate"><span class="pre">Document</span></code>

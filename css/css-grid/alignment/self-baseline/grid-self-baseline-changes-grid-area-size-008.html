@@ -17,6 +17,7 @@
   background: green;
   width: 100px;
   height: 100px;
+  text-orientation: sideways;
 }
 .block > div {
   position: absolute;
@@ -30,6 +31,8 @@
   grid-auto-rows: 50px;
   justify-items: baseline;
   justify-content: space-evenly;
+  text-orientation: sideways;
+  line-height: 1;
 }
 .grid > div { writing-mode: vertical-lr; }
 .firstRowFirstColumn {
@@ -47,13 +50,13 @@
 </style>
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 <div class="block">
-  <div style="top: 0px; left: 23px;">XXX<br>XXX</div>
-  <div style="top: 0px; left: 72px;">X</div>
-  <div style="top: 10px; left: 72px;">X</div>
-  <div style="top: 20px; left: 33px;">X</div>
-  <div style="top: 30px; left: 33px;">X</div>
-  <div style="top: 30px; left: 72px;">X</div>
-  <div style="top: 50px; left: 18px" class="big">X</div>
+  <div style="top: 0px; left: 21px;">XXX<br>XXX</div>
+  <div style="top: 0px; left: 71px;">X</div>
+  <div style="top: 10px; left: 71px;">X</div>
+  <div style="top: 20px; left: 31px;">X</div>
+  <div style="top: 30px; left: 31px;">X</div>
+  <div style="top: 30px; left: 71px;">X</div>
+  <div style="top: 50px; left: 19px" class="big">X</div>
 </div>
 <div class="grid">
   <div class="firstRowFirstColumn">XX XXXX XX</div>

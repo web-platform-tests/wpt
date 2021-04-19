@@ -268,7 +268,7 @@ async_test(t => {
 
       c.close();
 
-      assert_throws_js(TypeError, () => c.byobRequest.respondWithNewView(view));
+      assert_throws_js(RangeError, () => c.byobRequest.respondWithNewView(view));
     }),
     type: 'bytes'
   });

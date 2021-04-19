@@ -2157,3 +2157,82 @@ promise_test(async t => {
   assert_equals(view.buffer.byteLength, 3);
   assert_array_equals([...new Uint8Array(view.buffer)], [4, 5, 6]);
 }, 'ReadableStream with byte source: respondWithNewView() with a zero-length view (in the closed state)');
+
+promise_test(async t => {
+  let controller;
+  let resolvePullCalledPromise;
+  const pullCalledPromise = new Promise(resolve => {
+    resolvePullCalledPromise = resolve;
+  });
+  const stream = new ReadableStream({
+    start: t.step_func((c) => {
+      controller = c;
+    }),
+    pull: t.step_func(() => {
+      resolvePullCalledPromise();
+    }),
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+  const readPromise = reader.read(new Uint8Array([4, 5, 6]));
+  await pullCalledPromise;
+
+  // Transfer the original BYOB request's buffer, and respond with a new view on that buffer
+  const transferredView = await transferArrayBufferView(controller.byobRequest.view);
+  const newView = transferredView.subarray(0, 1);
+  newView[0] = 42;
+
+  controller.byobRequest.respondWithNewView(newView);
+
+  const result = await readPromise;
+  assert_equals(result.done, false);
+
+  const view = result.value;
+  assert_equals(view.byteOffset, 0);
+  assert_equals(view.byteLength, 1);
+  assert_equals(view[0], 42);
+  assert_equals(view.buffer.byteLength, 3);
+  assert_array_equals([...new Uint8Array(view.buffer)], [42, 5, 6]);
+
+}, 'ReadableStream with byte source: respondWithNewView() with a transferred non-zero-length view ' +
+   '(in the readable state)');
+
+promise_test(async t => {
+  let controller;
+  let resolvePullCalledPromise;
+  const pullCalledPromise = new Promise(resolve => {
+    resolvePullCalledPromise = resolve;
+  });
+  const stream = new ReadableStream({
+    start: t.step_func((c) => {
+      controller = c;
+    }),
+    pull: t.step_func(() => {
+      resolvePullCalledPromise();
+    }),
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+  const readPromise = reader.read(new Uint8Array([4, 5, 6]));
+  await pullCalledPromise;
+
+  // Transfer the original BYOB request's buffer, and respond with an empty view on that buffer
+  const transferredView = await transferArrayBufferView(controller.byobRequest.view);
+  const newView = transferredView.subarray(0, 0);
+
+  controller.close();
+  controller.byobRequest.respondWithNewView(newView);
+
+  const result = await readPromise;
+  assert_equals(result.done, true);
+
+  const view = result.value;
+  assert_equals(view.byteOffset, 0);
+  assert_equals(view.byteLength, 0);
+  assert_equals(view.buffer.byteLength, 3);
+  assert_array_equals([...new Uint8Array(view.buffer)], [4, 5, 6]);
+
+}, 'ReadableStream with byte source: respondWithNewView() with a transferred zero-length view ' +
+   '(in the closed state)');

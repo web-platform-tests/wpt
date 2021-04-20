@@ -229,7 +229,9 @@ class WebTestServer(ThreadingMixIn, http.server.HTTPServer):
              error.errno in self.acceptable_errors)):
             pass  # remote hang up before the result is sent
         else:
-            self.logger.error(traceback.format_exc())
+            msg = traceback.format_exc()
+            self.logger.error("%s %s" % (type(error), error))
+            self.logger.info(msg)
 
 
 class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
@@ -623,6 +625,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
             self.respond_with_error(response, e)
             response.write()
 
+
 class H2ConnectionGuard(object):
     """H2Connection objects are not threadsafe, so this keeps thread safety"""
     lock = threading.Lock()
@@ -704,7 +707,6 @@ class Http1WebTestRequestHandler(BaseWebTestRequestHandler):
             if response:
                 response.set_error(500, err)
                 response.write()
-            self.logger.error(err)
 
     def get_request_line(self):
         try:

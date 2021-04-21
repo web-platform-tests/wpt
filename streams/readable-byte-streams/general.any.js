@@ -1543,6 +1543,7 @@ promise_test(() => {
 
   let controller;
   const viewInfos = [];
+  const viewInfosAfterRespond = [];
 
   const stream = new ReadableStream({
     start(c) {
@@ -1559,6 +1560,7 @@ promise_test(() => {
 
         view[0] = 0x01;
         controller.byobRequest.respond(1);
+        viewInfosAfterRespond.push(extractViewInfo(view));
       }
 
       ++pullCount;
@@ -1585,6 +1587,11 @@ promise_test(() => {
       assert_equals(viewInfos[i].byteOffset, i, 'view.byteOffset should be i');
       assert_equals(viewInfos[i].byteLength, 4 - i, 'view.byteLength should be 4 - i');
     }
+
+    for (let i = 0; i < 3; ++i) {
+      assert_equals(viewInfosAfterRespond[i].bufferByteLength, 4, 'view.buffer should not be transferred after partially fill');
+    }
+    assert_equals(viewInfosAfterRespond[3].bufferByteLength, 0, 'view.buffer should be transferred after complete fill');
   });
 }, 'ReadableStream with byte source: read(view) with Uint32Array, then fill it by multiple respond() calls');
 

@@ -17,7 +17,7 @@
 <img src="error.png">
 <img src="error.png" alt="Alt text" width=100 height=500>
 <script>
-let guard = async_test("Image width and height attributes are used to infer aspect-ratio tests guard");
+let guard = async_test("Image width and height attributes are used to infer aspect-ratio");
 function assert_ratio(img, expected, description) {
   let epsilon = 0.001;
   assert_approx_equals(parseFloat(getComputedStyle(img).width, 10) / parseFloat(getComputedStyle(img).height, 10),

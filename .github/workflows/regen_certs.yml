@@ -1,9 +1,5 @@
 name: Regenerate WPT certificates
-on:
-  schedule:
-    # Our certificates are good for ~1 year, but we regenerate them every
-    # month to be sure.
-    - cron: '0 0 12 * *'
+on: [push]
 jobs:
   update:
     runs-on: ubuntu-20.04

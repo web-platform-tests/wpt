@@ -149,17 +149,7 @@ def create_release(manifest_path, owner, repo, sha, tag, body):
 
 
 def should_dry_run():
-    with open(os.environ["GITHUB_EVENT_PATH"]) as f:
-        event = json.load(f)
-        logger.info(json.dumps(event, indent=2))
-
-    if "pull_request" in event:
-        logger.info("Dry run for PR")
-        return True
-    if event.get("ref") != "refs/heads/master":
-        logger.info("Dry run for ref %s" % event.get("ref"))
-        return True
-    return False
+    return True
 
 
 def main():

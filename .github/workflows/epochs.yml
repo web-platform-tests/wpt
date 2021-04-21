@@ -1,9 +1,5 @@
 name: epochs
-on:
-  schedule:
-    # Trigger 10 minutes past every 3rd hour. 10 minutes is a safety margin
-    # for any manifest workflow to finish, see tools/wpt/revlist.py.
-    - cron: 10 */3 * * *
+on: [push]
 jobs:
   update:
     runs-on: ubuntu-20.04

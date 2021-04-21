@@ -1,11 +1,5 @@
 name: manifest
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    paths:
-      - 'tools/**'
+on: [push]
 jobs:
   build-and-tag:
     runs-on: ubuntu-20.04

@@ -1615,8 +1615,7 @@ promise_test(() => {
         const view = controller.byobRequest.view;
         viewInfos.push(extractViewInfo(view));
 
-        view[0] = 0x01;
-        controller.byobRequest.respond(1);
+        controller.enqueue(new Uint8Array([0x01]));
         viewInfosAfterRespond.push(extractViewInfo(view));
       }
 
@@ -1650,7 +1649,7 @@ promise_test(() => {
     }
     assert_equals(viewInfosAfterRespond[3].bufferByteLength, 0, 'view.buffer should be transferred after complete fill');
   });
-}, 'ReadableStream with byte source: read(view) with Uint32Array, then fill it by multiple respond() calls');
+}, 'ReadableStream with byte source: read(view) with Uint32Array, then fill it by multiple enqueue() calls');
 
 promise_test(() => {
   let pullCount = 0;

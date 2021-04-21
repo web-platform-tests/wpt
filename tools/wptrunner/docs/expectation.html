@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Expectation Data &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -32,9 +33,9 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="expectation-data">
+  <section id="expectation-data">
 <h1>Expectation Data<a class="headerlink" href="#expectation-data" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>For use in continuous integration systems, and other scenarios where
 regression tracking is required, wptrunner supports storing and
@@ -68,8 +69,8 @@ latter approach has been adopted, leading to the requirement:</p>
 <p>There are few extant formats that meet these requirements, so
 wptrunner uses a bespoke <code class="docutils literal notranslate"><span class="pre">expectation</span> <span class="pre">manifest</span></code> format, which is
 closely based on the standard <code class="docutils literal notranslate"><span class="pre">ini</span></code> format.</p>
-</div>
-<div class="section" id="directory-layout">
+</section>
+<section id="directory-layout">
 <h2>Directory Layout<a class="headerlink" href="#directory-layout" title="Permalink to this headline">¶</a></h2>
 <p>Expectation manifest files must be stored under the <code class="docutils literal notranslate"><span class="pre">metadata</span></code>
 directory passed to the test runner. The directory layout follows that
@@ -88,8 +89,8 @@ of the path, suffixed with <code class="docutils literal notranslate"><span clas
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span><span class="o">/</span><span class="n">spec</span><span class="o">/</span><span class="n">section</span><span class="o">/</span><span class="n">file</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">ini</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="generating-expectation-files">
+</section>
+<section id="generating-expectation-files">
 <span id="wptupdate-label"></span><h2>Generating Expectation Files<a class="headerlink" href="#generating-expectation-files" title="Permalink to this headline">¶</a></h2>
 <p>wptrunner provides the tool <code class="docutils literal notranslate"><span class="pre">wptupdate</span></code> to generate expectation
 files from the results of a set of baseline test runs. The basic
@@ -136,7 +137,7 @@ statuses that did not occur in the specified logfiles are removed from
 the list.</p>
 </dd>
 </dl>
-<div class="section" id="examples">
+<section id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 <p>Update the local copy of web-platform-tests without changing the
 expectation data and commit (or create a mq patch for) the result:</p>
@@ -152,9 +153,9 @@ platform-independent:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wptupdate</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">check</span><span class="o">-</span><span class="n">clean</span> <span class="o">--</span><span class="n">patch</span> <span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">existing</span> <span class="n">tests</span><span class="o">.</span><span class="n">log</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="manifest-format">
+</section>
+</section>
+<section id="manifest-format">
 <h2>Manifest Format<a class="headerlink" href="#manifest-format" title="Permalink to this headline">¶</a></h2>
 <p>The format of the manifest files is based on the ini format. Files are
 divided into sections, each (apart from the root section) having a
@@ -196,7 +197,7 @@ expected intermittent statuses.</p>
 <dt><cite>refurl</cite></dt><dd><p>The reference url for reftests.</p>
 </dd>
 </dl>
-<div class="section" id="conditional-values">
+<section id="conditional-values">
 <h3>Conditional Values<a class="headerlink" href="#conditional-values" title="Permalink to this headline">¶</a></h3>
 <p>In order to support values that depend on some external data, the
 right hand side of a key/value pair can take a set of conditionals
@@ -229,9 +230,9 @@ grouping. For example:</p>
 </div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> are variables, the value of which will be
 supplied when the manifest is used.</p>
-</div>
-</div>
-<div class="section" id="expectation-manifests">
+</section>
+</section>
+<section id="expectation-manifests">
 <h2>Expectation Manifests<a class="headerlink" href="#expectation-manifests" title="Permalink to this headline">¶</a></h2>
 <p>When used for expectation data, manifests have the following format:</p>
 <blockquote>
@@ -318,8 +319,8 @@ difference count of not less than 200 and not more than 300. For the
 specific comparison subtest1.html == ref2.html (both resolved against
 the test URL) these limits would instead be 10 to 15 and 0 to 20,
 respectively.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

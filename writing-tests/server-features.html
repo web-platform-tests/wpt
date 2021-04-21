@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Server Features &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="server-features">
+  <section id="server-features">
 <h1>Server Features<a class="headerlink" href="#server-features" title="Permalink to this headline">¶</a></h1>
 <p>For many tests, writing one or more static HTML files is
 sufficient. However there are a large class of tests for which this
@@ -56,7 +57,7 @@ precise details of the response:</p>
 files in the test suite. For more sophisticated requirements, several
 mechanisms are available to take control of the response. These are
 outlined below.</p>
-<div class="section" id="tests-involving-multiple-origins">
+<section id="tests-involving-multiple-origins">
 <h2>Tests Involving Multiple Origins<a class="headerlink" href="#tests-involving-multiple-origins" title="Permalink to this headline">¶</a></h2>
 <p>Our test servers are guaranteed to be accessible through two domains
 and five subdomains under each. The ‘main’ domain is unnamed; the
@@ -93,8 +94,8 @@ also available under the <code class="docutils literal notranslate"><span class=
 <code class="docutils literal notranslate"><span class="pre">location</span></code> dictionary, which has entries matching the <code class="docutils literal notranslate"><span class="pre">window.location</span></code> API.
 For example, <code class="docutils literal notranslate"><span class="pre">{{location[host]}}</span></code> is replaced by <code class="docutils literal notranslate"><span class="pre">hostname:port</span></code> for the
 current request, matching <code class="docutils literal notranslate"><span class="pre">location.host</span></code>.</p>
-</div>
-<div class="section" id="tests-requiring-special-headers">
+</section>
+<section id="tests-requiring-special-headers">
 <h2>Tests Requiring Special Headers<a class="headerlink" href="#tests-requiring-special-headers" title="Permalink to this headline">¶</a></h2>
 <p>For tests requiring that a certain HTTP header is set to some static
 value, a file with the same path as the test file except for an an
@@ -113,8 +114,8 @@ additional <code class="docutils literal notranslate"><span class="pre">.headers
 directory and not subdirectories.</p>
 <p>Headers files may be used in combination with substitutions by naming
 the file e.g. <code class="docutils literal notranslate"><span class="pre">test.html.sub.headers</span></code>.</p>
-</div>
-<div class="section" id="tests-requiring-full-control-over-the-http-response">
+</section>
+<section id="tests-requiring-full-control-over-the-http-response">
 <h2>Tests Requiring Full Control Over The HTTP Response<a class="headerlink" href="#tests-requiring-full-control-over-the-http-response" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
@@ -132,8 +133,8 @@ timing is unnecessary, but the response does not conform to HTTP requirements.</
 “handlers”</span></a>–Python scripts that have access to request
 data and can manipulate the content and timing of the response. Responses are
 also influenced by <a class="reference internal" href="server-pipes.html"><span class="doc">the pipe query string parameter</span></a>.</p>
-</div>
-<div class="section" id="tests-requiring-http-2-0">
+</section>
+<section id="tests-requiring-http-2-0">
 <h2>Tests Requiring HTTP/2.0<a class="headerlink" href="#tests-requiring-http-2-0" title="Permalink to this headline">¶</a></h2>
 <p>The server now has a prototype HTTP/2.0 server which gives you access to
 some of the HTTP/2.0 specific functionality. Currently, the server is off
@@ -147,8 +148,8 @@ OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
 supported in
 <a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</p>
 </div></blockquote>
-</div>
-<div class="section" id="tests-requiring-quic">
+</section>
+<section id="tests-requiring-quic">
 <h2>Tests Requiring QUIC<a class="headerlink" href="#tests-requiring-quic" title="Permalink to this headline">¶</a></h2>
 <p>We do not support loading a test over QUIC yet, but a test can establish a QUIC
 connection to the test server (e.g. for WebTransport, similar to WebSocket).
@@ -169,8 +170,8 @@ following element:</p></li>
 </div>
 <p>The QUIC server is not yet enabled by default, so QUIC tests will be skipped
 unless <code class="docutils literal notranslate"><span class="pre">--enable-quic</span></code> is specified to <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code>.</p>
-</div>
-<div class="section" id="test-features-specified-as-query-params">
+</section>
+<section id="test-features-specified-as-query-params">
 <h2>Test Features specified as query params<a class="headerlink" href="#test-features-specified-as-query-params" title="Permalink to this headline">¶</a></h2>
 <p>Alternatively to specifying <a class="reference external" href="file-names.html#test-features">Test Features</a> in
 the test filename, they can be specified by setting the <code class="docutils literal notranslate"><span class="pre">wpt_flags</span></code> in the
@@ -185,8 +186,8 @@ the following variant will be loaded over HTTPS and run on the www subdomain.</p
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;variant&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;wpt_flags=www&amp;wpt_flags=https&quot;</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

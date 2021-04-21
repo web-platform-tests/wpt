@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>wptserve Pipes &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,14 +33,14 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="wptserve-pipes">
+  <section id="wptserve-pipes">
 <h1>wptserve Pipes<a class="headerlink" href="#wptserve-pipes" title="Permalink to this headline">¶</a></h1>
 <p>Pipes are designed to allow simple manipulation of the way that
 static files are sent without requiring any custom code. They are also
 useful for cross-origin tests because they can be used to activate a
 substitution mechanism which can fill in details of ports and server
 names in the setup on which the tests are being run.</p>
-<div class="section" id="enabling">
+<section id="enabling">
 <h2>Enabling<a class="headerlink" href="#enabling" title="Permalink to this headline">¶</a></h2>
 <p>Pipes are functions that may be used when serving files to alter parts
 of the response. These are invoked by adding a pipe= query parameter
@@ -58,10 +59,10 @@ more using the <code class="docutils literal notranslate"><span class="pre">&#64
 content-length of the response from being known in advance. In these cases the
 server will close the connection to indicate the end of the response,
 preventing the use of HTTP 1.1 keepalive.</p>
-</div>
-<div class="section" id="built-in-pipes">
+</section>
+<section id="built-in-pipes">
 <h2>Built-In Pipes<a class="headerlink" href="#built-in-pipes" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="sub">
+<section id="sub">
 <h3><code class="docutils literal notranslate"><span class="pre">sub</span></code><a class="headerlink" href="#sub" title="Permalink to this headline">¶</a></h3>
 <p>Used to substitute variables from the server environment, or from the
 request into the response. A typical use case is for testing
@@ -98,15 +99,15 @@ write:</p>
 </pre></div>
 </div>
 <p>This pipe can also be enabled by using a filename <code class="docutils literal notranslate"><span class="pre">*.sub.ext</span></code>, e.g. the file above could be called <code class="docutils literal notranslate"><span class="pre">xhr.sub.js</span></code>.</p>
-</div>
-<div class="section" id="status">
+</section>
+<section id="status">
 <h3><code class="docutils literal notranslate"><span class="pre">status</span></code><a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h3>
 <p>Used to set the HTTP status of the response, for example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>example.js?pipe=status(410)
 </pre></div>
 </div>
-</div>
-<div class="section" id="headers">
+</section>
+<section id="headers">
 <h3><code class="docutils literal notranslate"><span class="pre">headers</span></code><a class="headerlink" href="#headers" title="Permalink to this headline">¶</a></h3>
 <p>Used to add or replace http headers in the response. Takes two or
 three arguments; the header name, the header value and whether to
@@ -129,8 +130,8 @@ value, those characters  must be escaped with a backslash (<code class="docutils
 </div>
 <p>(Note that the programming environment from which the request is issued may
 require that the backslash character itself be escaped.)</p>
-</div>
-<div class="section" id="slice">
+</section>
+<section id="slice">
 <h3><code class="docutils literal notranslate"><span class="pre">slice</span></code><a class="headerlink" href="#slice" title="Permalink to this headline">¶</a></h3>
 <p>Used to send only part of a response body. Takes the start and,
 optionally, end bytes as arguments, although either can be null to
@@ -148,8 +149,8 @@ example.txt including byte 10 but excluding byte 20.</p>
 </pre></div>
 </div>
 <p>Would send the first 20 bytes of example.txt.</p>
-</div>
-<div class="section" id="trickle">
+</section>
+<section id="trickle">
 <h3><code class="docutils literal notranslate"><span class="pre">trickle</span></code><a class="headerlink" href="#trickle" title="Permalink to this headline">¶</a></h3>
 <p>Note: Using this function will force a connection close.</p>
 <p>Used to send the body of a response in chunks with delays. Takes a
@@ -178,9 +179,9 @@ and then the remainder of the file to be sent. On the other hand:</p>
 </div>
 <p>Will cause the file to be sent in 100 byte chunks separated by a 1s
 delay until the whole content has been sent.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>

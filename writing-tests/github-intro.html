@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Introduction to GitHub &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="introduction-to-github">
+  <section id="introduction-to-github">
 <h1>Introduction to GitHub<a class="headerlink" href="#introduction-to-github" title="Permalink to this headline">¶</a></h1>
 <p>All the basics that you need to know are documented on this page, but for the
 full GitHub documentation, visit <a class="reference external" href="https://help.github.com/">help.github.com</a>.</p>
@@ -40,7 +41,7 @@ full GitHub documentation, visit <a class="reference external" href="https://hel
 we use the <a class="reference external" href="https://guides.github.com/introduction/flow/">normal GitHub Pull Request workflow</a> for test
 submissions.</p>
 <p>If you are a first-time GitHub user, read on for more details of the workflow.</p>
-<div class="section" id="setup">
+<section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
 <ol>
 <li><p>Create a GitHub account if you do not already have one on
@@ -66,8 +67,8 @@ for different platforms.</p></li>
 time you talk to the remote server, you’ll need to set up password caching.
 See <a class="reference external" href="https://help.github.com/articles/caching-your-github-password-in-git">Caching your GitHub password in Git</a>.</p></li>
 </ol>
-</div>
-<div class="section" id="fork-the-test-repository">
+</section>
+<section id="fork-the-test-repository">
 <h2>Fork the test repository<a class="headerlink" href="#fork-the-test-repository" title="Permalink to this headline">¶</a></h2>
 <p>Now that you have Git set up, you will need to “fork” the test repository. Your
 fork will be a completely independent version of the repository, hosted on
@@ -82,11 +83,11 @@ You will now be at
 <strong>https://github.com/username/wpt</strong>.</p></li>
 <li><p>After the fork is complete, you’re ready to <a class="reference external" href="#clone">clone</a>.</p></li>
 </ol>
-</div>
-<div class="section" id="clone">
+</section>
+<section id="clone">
 <h2>Clone<a class="headerlink" href="#clone" title="Permalink to this headline">¶</a></h2>
 <p>If your <a class="reference external" href="#fork">fork</a> was successful, the next step is to clone (download a copy of the files).</p>
-<div class="section" id="clone-the-test-repository">
+<section id="clone-the-test-repository">
 <h3>Clone the test repository<a class="headerlink" href="#clone-the-test-repository" title="Permalink to this headline">¶</a></h3>
 <p>Open a command prompt in the directory where you want to keep the tests. Then
 execute the following command:</p>
@@ -98,9 +99,9 @@ execute the following command:</p>
 machine. Feel free to browse the directories on your hard drive. You can also
 <a class="reference external" href="https://github.com/web-platform-tests/wpt">browse them on github.com</a> and see the full history of
 contributions there.</p>
-</div>
-</div>
-<div class="section" id="configure-remote-upstream">
+</section>
+</section>
+<section id="configure-remote-upstream">
 <h2>Configure Remote / Upstream<a class="headerlink" href="#configure-remote-upstream" title="Permalink to this headline">¶</a></h2>
 <p>Your forked repository is completely independent of the canonical repository,
 which is commonly referred to as the “upstream” repository. Synchronizing your
@@ -138,15 +139,15 @@ otherwise accumulate in your local repository.</p>
 </li>
 </ol>
 <p>For additional information, please see the <a class="reference external" href="https://help.github.com/articles/fork-a-repo">GitHub docs</a>.</p>
-</div>
-<div class="section" id="configure-your-environment">
+</section>
+<section id="configure-your-environment">
 <h2>Configure your environment<a class="headerlink" href="#configure-your-environment" title="Permalink to this headline">¶</a></h2>
 <p>If all you intend to do is to load <a class="reference internal" href="manual.html"><span class="doc">manual tests</span></a> or <a class="reference internal" href="reftests.html"><span class="doc">ref tests</span></a> from your local file system,
 the above setup should be sufficient.
 But many tests (and in particular, all <a class="reference internal" href="testharness.html"><span class="doc">testharness.js tests</span></a>) require a local web server.</p>
 <p>See <a class="reference internal" href="../running-tests/from-local-system.html"><span class="doc">Local Setup</span></a> for more information.</p>
-</div>
-<div class="section" id="branch">
+</section>
+<section id="branch">
 <h2>Branch<a class="headerlink" href="#branch" title="Permalink to this headline">¶</a></h2>
 <p>Now that you have everything locally, create a branch for your tests.</p>
 <p><em>Note: If you have already been through these steps and created a branch
@@ -166,8 +167,8 @@ switch this to be your active working branch.</p>
 </div>
 <p>You’re ready to start writing tests! Come back to this page you’re ready to
 <a class="reference external" href="#commit">commit</a> them or <a class="reference external" href="#submit">submit</a> them for review.</p>
-</div>
-<div class="section" id="commit">
+</section>
+<section id="commit">
 <h2>Commit<a class="headerlink" href="#commit" title="Permalink to this headline">¶</a></h2>
 <p>Before you submit your tests for review and contribution to the main test
 repository, you’ll need to first commit them locally, where you now have your
@@ -205,8 +206,8 @@ set of changes:</p>
 </li>
 <li><p>Repeat these steps as many times as you’d like before you submit.</p></li>
 </ol>
-</div>
-<div class="section" id="verify">
+</section>
+<section id="verify">
 <h2>Verify<a class="headerlink" href="#verify" title="Permalink to this headline">¶</a></h2>
 <p>The Web Platform Test project has an automated tool
 to verify that coding conventions have been followed,
@@ -220,8 +221,8 @@ of the repository is located.</p></li>
 <li><p>Fix any mistake it reports and <a class="reference external" href="#commit">commit</a> again.</p></li>
 </ol>
 <p>For more details, see the <a class="reference internal" href="lint-tool.html"><span class="doc">documentation about the lint tool</span></a>.</p>
-</div>
-<div class="section" id="submit">
+</section>
+<section id="submit">
 <h2>Submit<a class="headerlink" href="#submit" title="Permalink to this headline">¶</a></h2>
 <p>If you’re here now looking for more instructions, that means you’ve written
 some awesome tests and are ready to submit them. Congratulations and welcome
@@ -269,8 +270,8 @@ accepted, delete your branch (see ‘<a class="reference external" href="#cleanu
 </ol>
 <p><a class="reference internal" href="submission-process.html"><span class="doc">This page on the submissions process</span></a> has more detail
 about what to expect when contributing code to WPT.</p>
-</div>
-<div class="section" id="refine">
+</section>
+<section id="refine">
 <h2>Refine<a class="headerlink" href="#refine" title="Permalink to this headline">¶</a></h2>
 <p>Once you submit your pull request, a reviewer will check your proposed changes
 for correctness and style. They may ask you to modify your code. When you are
@@ -296,8 +297,8 @@ before.</p></li>
 finally accepted. Don’t worry about this; it’s totally normal. The goal of test
 review is to work together to create the best possible set of tests for the web
 platform.</p>
-</div>
-<div class="section" id="cleanup">
+</section>
+<section id="cleanup">
 <h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h2>
 <p>Once your pull request has been accepted, you will be notified in the GitHub
 user interface, and you may get an email. At this point, your changes have been merged
@@ -310,15 +311,15 @@ the GitHub user interface by navigating to the pull request and clicking the
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git push origin --delete &lt;branchName&gt;
 </pre></div>
 </div>
-</div>
-<div class="section" id="further-reading">
+</section>
+<section id="further-reading">
 <h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
 <p>Git is a very powerful tool, and there are many ways to achieve subtly
 different results. Recognizing when (and understanding how) to use other
 approaches is beyond the scope of this tutorial. <a class="reference external" href="https://git-scm.com/book">The Pro Git Book</a>
 is a free digital resource that can help you learn more.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

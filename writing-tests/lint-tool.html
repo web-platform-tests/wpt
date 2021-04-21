@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Lint Tool &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="lint-tool">
+  <section id="lint-tool">
 <h1>Lint Tool<a class="headerlink" href="#lint-tool" title="Permalink to this headline">¶</a></h1>
 <p>We have a lint tool for catching common mistakes in test files. You can run
 it manually by running the <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">lint</span></code> command from the root of your local
@@ -44,7 +45,7 @@ web-platform-tests working directory like this:</p>
 and reviewers will not merge branches with tests that have lint errors, so
 you must either <a class="reference external" href="#fixing-lint-errors">fix all lint errors</a>, or you must
 <a class="reference external" href="#updating-the-ignored-files">add an exception</a> to suppress the errors.</p>
-<div class="section" id="fixing-lint-errors">
+<section id="fixing-lint-errors">
 <h2>Fixing lint errors<a class="headerlink" href="#fixing-lint-errors" title="Permalink to this headline">¶</a></h2>
 <p>You must fix any errors the lint tool reports, unless an error is for something
 essential to a certain test or that for some other exceptional reason shouldn’t
@@ -228,8 +229,8 @@ to replace web-platform.test with <code class="docutils literal notranslate"><sp
 <dt><code class="docutils literal notranslate"><span class="pre">WORKER</span> <span class="pre">COLLISION</span></code></dt><dd><p>path ends with %s which collides with generated tests from %s files</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="updating-the-ignored-files">
+</section>
+<section id="updating-the-ignored-files">
 <h2>Updating the ignored files<a class="headerlink" href="#updating-the-ignored-files" title="Permalink to this headline">¶</a></h2>
 <p>Normally you must <a class="reference external" href="#fixing-lint-errors">fix all lint errors</a>. But in the
 unusual case of error reports for things essential to certain tests or that
@@ -264,8 +265,8 @@ file <code class="docutils literal notranslate"><span class="pre">example/file.h
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TRAILING</span> <span class="n">WHITESPACE</span><span class="p">:</span><span class="n">example</span><span class="o">/</span><span class="n">file</span><span class="o">.</span><span class="n">html</span><span class="p">:</span><span class="mi">128</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

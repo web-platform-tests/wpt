@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>File Name Flags &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="file-name-flags">
+  <section id="file-name-flags">
 <h1>File Name Flags<a class="headerlink" href="#file-name-flags" title="Permalink to this headline">¶</a></h1>
 <p>The test filename is significant in determining the type of test it
 contains, and enabling specific optional features. This page documents
@@ -40,7 +41,7 @@ the various flags available and their meaning.</p>
 <p>In some cases flags can also be set via a directory name, such that any file
 that is a (recursive) descendent of the directory inherits the flag value.
 These are individually documented for each flag that supports it.</p>
-<div class="section" id="test-type">
+<section id="test-type">
 <h2>Test Type<a class="headerlink" href="#test-type" title="Permalink to this headline">¶</a></h2>
 <p>These flags must be the last element in the filename before the
 extension e.g. <code class="docutils literal notranslate"><span class="pre">foo-manual.html</span></code> will indicate a manual test, but
@@ -50,8 +51,8 @@ are mutually exclusive.</p>
 : Indicates that a test is a non-automated test.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-visual</span></code>
 : Indicates that a file is a visual test.</p>
-</div>
-<div class="section" id="test-features">
+</section>
+<section id="test-features">
 <h2>Test Features<a class="headerlink" href="#test-features" title="Permalink to this headline">¶</a></h2>
 <p>These flags are preceded by a <code class="docutils literal notranslate"><span class="pre">.</span></code> in the filename, and must
 themselves precede any test type flag, but are otherwise unordered.</p>
@@ -89,8 +90,8 @@ by naming the directory ‘tentative’. For example, every test underneath
 ‘foo/tentative/’ will be considered tentative.</p>
 <p>It’s preferable that <code class="docutils literal notranslate"><span class="pre">.window</span></code>, <code class="docutils literal notranslate"><span class="pre">.worker</span></code>, and <code class="docutils literal notranslate"><span class="pre">.any</span></code> are immediately followed
 by their final <code class="docutils literal notranslate"><span class="pre">.js</span></code> extension.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

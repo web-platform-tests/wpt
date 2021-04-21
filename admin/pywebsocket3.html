@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>pywebsocket3: A Standalone WebSocket Server for testing purposes &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="pywebsocket3-a-standalone-websocket-server-for-testing-purposes">
+  <section id="pywebsocket3-a-standalone-websocket-server-for-testing-purposes">
 <h1>pywebsocket3: A Standalone WebSocket Server for testing purposes<a class="headerlink" href="#pywebsocket3-a-standalone-websocket-server-for-testing-purposes" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -75,13 +76,13 @@
 </li>
 </ul>
 </div>
-<div class="section" id="module-mod_pywebsocket">
+<section id="module-mod_pywebsocket">
 <span id="mod-pywebsocket"></span><h2><a class="toc-backref" href="#id2"><a class="reference internal" href="#module-mod_pywebsocket" title="mod_pywebsocket"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket" title="Permalink to this headline">¶</a></h2>
 <p>A Standalone WebSocket Server for testing purposes</p>
 <p>mod_pywebsocket is an API that provides WebSocket functionalities with
 a standalone WebSocket server. It is intended for testing or
 experimental purposes.</p>
-<div class="section" id="installation">
+<section id="installation">
 <h3><a class="toc-backref" href="#id3">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
 <p>1. Follow standalone server documentation to start running the
 standalone server. It can be read by running the following command:</p>
@@ -92,8 +93,8 @@ standalone server. It can be read by running the following command:</p>
 <a class="reference external" href="http://localhost[:port]/console.html">http://localhost[:port]/console.html</a>. Include the port number when
 specified on launch. If everything is working correctly, you
 will see a simple echo console.</p>
-</div>
-<div class="section" id="writing-websocket-handlers">
+</section>
+<section id="writing-websocket-handlers">
 <h3><a class="toc-backref" href="#id4">Writing WebSocket handlers</a><a class="headerlink" href="#writing-websocket-handlers" title="Permalink to this headline">¶</a></h3>
 <p>When a WebSocket request comes in, the resource name
 specified in the handshake is considered as if it is a file path under
@@ -125,14 +126,14 @@ extra handshake (web_socket_do_extra_handshake):
 - ws_protocol
 - ws_requested_protocols</p>
 <p>The last two are a bit tricky. See the next subsection.</p>
-<div class="section" id="subprotocol-negotiation">
+<section id="subprotocol-negotiation">
 <h4><a class="toc-backref" href="#id5">Subprotocol Negotiation</a><a class="headerlink" href="#subprotocol-negotiation" title="Permalink to this headline">¶</a></h4>
 <p>ws_protocol is always set to None when
 web_socket_do_extra_handshake is called. If ws_requested_protocols is not
 None, you must choose one subprotocol from this list and set it to
 ws_protocol.</p>
-</div>
-<div class="section" id="data-transfer">
+</section>
+<section id="data-transfer">
 <h4><a class="toc-backref" href="#id6">Data Transfer</a><a class="headerlink" href="#data-transfer" title="Permalink to this headline">¶</a></h4>
 <p>web_socket_transfer_data is called after the handshake completed
 successfully. A handler can receive/send messages from/to the client
@@ -151,8 +152,8 @@ will raise some exception.</p>
 <blockquote>
 <div><p>request.ws_stream.send_message(message)</p>
 </div></blockquote>
-</div>
-<div class="section" id="closing-connection">
+</section>
+<section id="closing-connection">
 <h4><a class="toc-backref" href="#id7">Closing Connection</a><a class="headerlink" href="#closing-connection" title="Permalink to this headline">¶</a></h4>
 <p>Executing the following statement or just return-ing from
 web_socket_transfer_data cause connection close.</p>
@@ -169,13 +170,13 @@ from the server. A request object has the following properties that you can
 use in web_socket_passive_closing_handshake.
 - ws_close_code
 - ws_close_reason</p>
-</div>
-<div class="section" id="threading">
+</section>
+<section id="threading">
 <h4><a class="toc-backref" href="#id8">Threading</a><a class="headerlink" href="#threading" title="Permalink to this headline">¶</a></h4>
 <p>A WebSocket handler must be thread-safe. The standalone
 server uses threads by default.</p>
-</div>
-<div class="section" id="configuring-websocket-extension-processors">
+</section>
+<section id="configuring-websocket-extension-processors">
 <h4><a class="toc-backref" href="#id9">Configuring WebSocket Extension Processors</a><a class="headerlink" href="#configuring-websocket-extension-processors" title="Permalink to this headline">¶</a></h4>
 <p>See extensions.py for supported WebSocket extensions. Note that they are
 unstable and their APIs are subject to change substantially.</p>
@@ -197,10 +198,10 @@ processors.</p>
 extension you want to configure from it, and call its methods.</p>
 </li>
 </ul>
-</div>
-</div>
-</div>
-<div class="section" id="module-mod_pywebsocket.common">
+</section>
+</section>
+</section>
+<section id="module-mod_pywebsocket.common">
 <span id="mod-pywebsocket-common"></span><h2><a class="toc-backref" href="#id10"><a class="reference internal" href="#module-mod_pywebsocket.common" title="mod_pywebsocket.common"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.common</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.common" title="Permalink to this headline">¶</a></h2>
 <p>This file must not depend on any module specific to the WebSocket protocol.</p>
 <dl class="class">
@@ -271,8 +272,8 @@ extension you want to configure from it, and call its methods.</p>
 Leading LWSes must be trimmed.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.dispatch">
+</section>
+<section id="module-mod_pywebsocket.dispatch">
 <span id="mod-pywebsocket-dispatch"></span><h2><a class="toc-backref" href="#id11"><a class="reference internal" href="#module-mod_pywebsocket.dispatch" title="mod_pywebsocket.dispatch"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.dispatch</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.dispatch" title="Permalink to this headline">¶</a></h2>
 <p>Dispatch WebSocket request.</p>
 <dl class="exception">
@@ -363,8 +364,8 @@ web_socket_transfer_data function.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.extensions">
+</section>
+<section id="module-mod_pywebsocket.extensions">
 <span id="mod-pywebsocket-extensions"></span><h2><a class="toc-backref" href="#id12"><a class="reference internal" href="#module-mod_pywebsocket.extensions" title="mod_pywebsocket.extensions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.extensions</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.extensions" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="mod_pywebsocket.extensions.PerMessageDeflateExtensionProcessor">
@@ -410,8 +411,8 @@ from a client, configures and returns an instance of the corresponding
 extension processor class.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.handshake">
+</section>
+<section id="module-mod_pywebsocket.handshake">
 <span id="mod-pywebsocket-handshake"></span><h2><a class="toc-backref" href="#id13"><a class="reference internal" href="#module-mod_pywebsocket.handshake" title="mod_pywebsocket.handshake"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.handshake</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.handshake" title="Permalink to this headline">¶</a></h2>
 <p>WebSocket opening handshake processor. This class try to apply available
 opening handshake processors for each protocol version until a connection is
@@ -457,8 +458,8 @@ match with version the server supports.</p>
 handshake.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.request_handler">
+</section>
+<section id="module-mod_pywebsocket.request_handler">
 <span id="mod-pywebsocket-request-handler"></span><h2><a class="toc-backref" href="#id14"><a class="reference internal" href="#module-mod_pywebsocket.request_handler" title="mod_pywebsocket.request_handler"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.request_handler</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.request_handler" title="Permalink to this headline">¶</a></h2>
 <p>Request Handler and Request/Connection classes for standalone server.</p>
 <dl class="class">
@@ -516,8 +517,8 @@ WebSocketRequestHandler.parse_request.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.stream">
+</section>
+<section id="module-mod_pywebsocket.stream">
 <span id="mod-pywebsocket-stream"></span><h2><a class="toc-backref" href="#id15"><a class="reference internal" href="#module-mod_pywebsocket.stream" title="mod_pywebsocket.stream"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.stream</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.stream" title="Permalink to this headline">¶</a></h2>
 <p>This file provides classes and helper functions for parsing/building frames
 of the WebSocket protocol (RFC 6455).</p>
@@ -840,8 +841,8 @@ frame, raises InvalidFrameException.</p></li>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.http_header_util">
+</section>
+<section id="module-mod_pywebsocket.http_header_util">
 <span id="mod-pywebsocket-http-header-util"></span><h2><a class="toc-backref" href="#id16"><a class="reference internal" href="#module-mod_pywebsocket.http_header_util" title="mod_pywebsocket.http_header_util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.http_header_util</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.http_header_util" title="Permalink to this headline">¶</a></h2>
 <p>Utilities for parsing and formatting headers that follow the grammar defined
 in HTTP RFC <a class="reference external" href="http://www.ietf.org/rfc/rfc2616.txt">http://www.ietf.org/rfc/rfc2616.txt</a>.</p>
@@ -906,8 +907,8 @@ string. If no token or quoted-string was found, returns None.</p>
 <dd><p>Quotes arbitrary string into quoted-string.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.msgutil">
+</section>
+<section id="module-mod_pywebsocket.msgutil">
 <span id="mod-pywebsocket-msgutil"></span><h2><a class="toc-backref" href="#id17"><a class="reference internal" href="#module-mod_pywebsocket.msgutil" title="mod_pywebsocket.msgutil"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.msgutil</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.msgutil" title="Permalink to this headline">¶</a></h2>
 <p>Message related utilities.</p>
 <p>Note: request.connection.write/read are used in this module, even though
@@ -1057,8 +1058,8 @@ terminated by next or later send_message call with end=True.</p></li>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.util">
+</section>
+<section id="module-mod_pywebsocket.util">
 <span id="mod-pywebsocket-util"></span><h2><a class="toc-backref" href="#id18"><a class="reference internal" href="#module-mod_pywebsocket.util" title="mod_pywebsocket.util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.util</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.util" title="Permalink to this headline">¶</a></h2>
 <p>WebSocket utilities.</p>
 <dl class="class">
@@ -1145,8 +1146,8 @@ When Win32 Python is used, e.g. in Chromium, it couldn’t.  So, fix
 <dd><p>Prepend message to the exception.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.memorizingfile">
+</section>
+<section id="module-mod_pywebsocket.memorizingfile">
 <span id="mod-pywebsocket-memorizingfile"></span><h2><a class="toc-backref" href="#id19"><a class="reference internal" href="#module-mod_pywebsocket.memorizingfile" title="mod_pywebsocket.memorizingfile"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.memorizingfile</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.memorizingfile" title="Permalink to this headline">¶</a></h2>
 <p>Memorizing file.</p>
 <p>A memorizing file wraps a file and memorizes lines read by readline.</p>
@@ -1174,8 +1175,8 @@ subsequent readline calls.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.websocket_server">
+</section>
+<section id="module-mod_pywebsocket.websocket_server">
 <span id="mod-pywebsocket-websocket-server"></span><h2><a class="toc-backref" href="#id20"><a class="reference internal" href="#module-mod_pywebsocket.websocket_server" title="mod_pywebsocket.websocket_server"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.websocket_server</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.websocket_server" title="Permalink to this headline">¶</a></h2>
 <p>Standalone WebsocketServer</p>
 <p>This file deals with the main module of standalone server. Although it is fine
@@ -1238,8 +1239,8 @@ sockets close.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.server_util">
+</section>
+<section id="module-mod_pywebsocket.server_util">
 <span id="mod-pywebsocket-server-util"></span><h2><a class="toc-backref" href="#id21"><a class="reference internal" href="#module-mod_pywebsocket.server_util" title="mod_pywebsocket.server_util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.server_util</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.server_util" title="Permalink to this headline">¶</a></h2>
 <p>Server related utilities.</p>
 <dl class="class">
@@ -1257,12 +1258,12 @@ from the args and kwargs arguments, respectively.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-mod_pywebsocket.standalone">
+</section>
+<section id="module-mod_pywebsocket.standalone">
 <span id="mod-pywebsocket-standalone"></span><h2><a class="toc-backref" href="#id22"><a class="reference internal" href="#module-mod_pywebsocket.standalone" title="mod_pywebsocket.standalone"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.standalone</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.standalone" title="Permalink to this headline">¶</a></h2>
 <p>Standalone WebSocket server.</p>
 <p>Use this file to launch pywebsocket as a standalone server.</p>
-<div class="section" id="basic-usage">
+<section id="basic-usage">
 <h3><a class="toc-backref" href="#id23">BASIC USAGE</a><a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h3>
 <p>Go to the src directory and run</p>
 <blockquote>
@@ -1283,8 +1284,8 @@ run $ pydoc mod_pywebsocket) for how to write WebSocket handlers.</p>
 </div></blockquote>
 <p>or see _build_option_parser method below.</p>
 <p>For trouble shooting, adding “–log_level debug” might help you.</p>
-</div>
-<div class="section" id="try-demo">
+</section>
+<section id="try-demo">
 <h3><a class="toc-backref" href="#id24">TRY DEMO</a><a class="headerlink" href="#try-demo" title="Permalink to this headline">¶</a></h3>
 <p>Go to the src directory and run standalone.py with -d option to set the
 document root to the directory containing example HTMLs and handlers like this:</p>
@@ -1296,8 +1297,8 @@ $ PYTHONPATH=. python mod_pywebsocket/standalone.py -d example</p>
 <a class="reference external" href="http://localhost/console.html">http://localhost/console.html</a>, click the connect button, type something into
 the text box next to the send button and click the send button. If everything
 is working, you’ll see the message you typed echoed by the server.</p>
-</div>
-<div class="section" id="using-tls">
+</section>
+<section id="using-tls">
 <h3><a class="toc-backref" href="#id25">USING TLS</a><a class="headerlink" href="#using-tls" title="Permalink to this headline">¶</a></h3>
 <p>To run the standalone server with TLS support, run it with -t, -k, and -c
 options. When TLS is enabled, the standalone server accepts only TLS connection.</p>
@@ -1307,8 +1308,8 @@ TLS connection silently fails while pyOpenSSL fails on startup.</p>
 <p>$ PYTHONPATH=. python mod_pywebsocket/standalone.py         -d example         -p 10443         -t         -c ../test/cert/cert.pem         -k ../test/cert/key.pem</p>
 <p>Note that when passing a relative path to -c and -k option, it will be resolved
 using the document root directory as the base.</p>
-</div>
-<div class="section" id="using-client-authentication">
+</section>
+<section id="using-client-authentication">
 <h3><a class="toc-backref" href="#id26">USING CLIENT AUTHENTICATION</a><a class="headerlink" href="#using-client-authentication" title="Permalink to this headline">¶</a></h3>
 <p>To run the standalone server with TLS client authentication support, run it with
 –tls-client-auth and –tls-client-ca options in addition to ones required for
@@ -1317,8 +1318,8 @@ TLS support.</p>
 <p>$ PYTHONPATH=. python mod_pywebsocket/standalone.py -d example -p 10443 -t         -c ../test/cert/cert.pem -k ../test/cert/key.pem         –tls-client-auth         –tls-client-ca=../test/cert/cacert.pem</p>
 <p>Note that when passing a relative path to –tls-client-ca option, it will be
 resolved using the document root directory as the base.</p>
-</div>
-<div class="section" id="configuration-file">
+</section>
+<section id="configuration-file">
 <h3><a class="toc-backref" href="#id27">CONFIGURATION FILE</a><a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h3>
 <p>You can also write a configuration file and use it by specifying the path to
 the configuration file by –config option. Please write a configuration file
@@ -1334,20 +1335,20 @@ fake.</p>
 <p>When both a command line argument and a configuration file entry are set for
 the same configuration item, the command line value will override one in the
 configuration file.</p>
-</div>
-<div class="section" id="id1">
+</section>
+<section id="id1">
 <h3><a class="toc-backref" href="#id28">THREADING</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>This server is derived from SocketServer.ThreadingMixIn. Hence a thread is
 used for each request.</p>
-</div>
-<div class="section" id="security-warning">
+</section>
+<section id="security-warning">
 <h3><a class="toc-backref" href="#id29">SECURITY WARNING</a><a class="headerlink" href="#security-warning" title="Permalink to this headline">¶</a></h3>
 <p>This uses CGIHTTPServer and CGIHTTPServer is not secure.
 It may execute arbitrary Python code or external programs. It should not be
 used outside a firewall.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>

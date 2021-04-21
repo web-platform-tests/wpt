@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>IDL Tests (idlharness.js) &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,21 +33,21 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="idl-tests-idlharness-js">
+  <section id="idl-tests-idlharness-js">
 <h1>IDL Tests (idlharness.js)<a class="headerlink" href="#idl-tests-idlharness-js" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">idlharness.js</span></code> generates tests for Web IDL fragments, using the
 <a class="reference internal" href="testharness.html"><span class="doc">JavaScript Tests (testharness.js)</span></a> infrastructure. You typically want to use
 <code class="docutils literal notranslate"><span class="pre">.any.js</span></code> or <code class="docutils literal notranslate"><span class="pre">.window.js</span></code> for this to avoid having to write unnessary boilerplate.</p>
-</div>
-<div class="section" id="adding-idl-fragments">
+</section>
+<section id="adding-idl-fragments">
 <h2>Adding IDL fragments<a class="headerlink" href="#adding-idl-fragments" title="Permalink to this headline">¶</a></h2>
 <p>Web IDL is automatically scraped from specifications and added to the <code class="docutils literal notranslate"><span class="pre">/interfaces/</span></code> directory. See
 the <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/interfaces/README.md">README</a> there for
 details.</p>
-</div>
-<div class="section" id="testing-idl-fragments">
+</section>
+<section id="testing-idl-fragments">
 <h2>Testing IDL fragments<a class="headerlink" href="#testing-idl-fragments" title="Permalink to this headline">¶</a></h2>
 <p>For example, the Fetch API’s IDL is tested in
 <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/fetch/api/idlharness.any.js"><code class="docutils literal notranslate"><span class="pre">/fetch/api/idlharness.any.js</span></code></a>:</p>
@@ -82,13 +83,13 @@ These are needed to make the <code class="docutils literal notranslate"><span cl
 <li><p><em>deps</em>: a list of specifications the IDL listed in <em>srcs</em> depends upon. Be careful to list them in the order that the dependencies are revealed.</p></li>
 <li><p><em>setup_func</em>: a function or async function that takes care of creating the various objects that you want to test.</p></li>
 </ul>
-</div>
-<div class="section" id="methods-of-idlarray">
+</section>
+<section id="methods-of-idlarray">
 <h2>Methods of <code class="docutils literal notranslate"><span class="pre">IdlArray</span></code><a class="headerlink" href="#methods-of-idlarray" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">IdlArray</span></code> objects can be obtained through the <em>setup_func</em> argument of <code class="docutils literal notranslate"><span class="pre">idl_test</span></code>. Anything not
 documented in this section should be considered an implementation detail, and outside callers should
 not use it.</p>
-<div class="section" id="add-objects-dict">
+<section id="add-objects-dict">
 <h3><code class="docutils literal notranslate"><span class="pre">add_objects(dict)</span></code><a class="headerlink" href="#add-objects-dict" title="Permalink to this headline">¶</a></h3>
 <p><em>dict</em> should be an object whose keys are the names of interfaces or exceptions, and whose values
 are arrays of strings.  When an interface or exception is tested, every string registered for it
@@ -105,8 +106,8 @@ For instance, if a method has mandatory arguments, the test suite will try calli
 arguments to see if it throws an exception. If an implementation incorrectly runs the function
 instead of throwing, this might have side effects, possibly even preventing the test suite from
 running correctly.</p>
-</div>
-<div class="section" id="prevent-multiple-testing-name">
+</section>
+<section id="prevent-multiple-testing-name">
 <h3><code class="docutils literal notranslate"><span class="pre">prevent_multiple_testing(name)</span></code><a class="headerlink" href="#prevent-multiple-testing-name" title="Permalink to this headline">¶</a></h3>
 <p>This is a niche method for use in case you’re testing many objects that implement the same
 interfaces, and don’t want to retest the same interfaces every single time. For instance, HTML
@@ -128,9 +129,9 @@ other object will be.  Thus in the example code above, the harness would test th
 <code class="docutils literal notranslate"><span class="pre">document.documentElement</span></code> correctly implements <code class="docutils literal notranslate"><span class="pre">HTMLHtmlElement</span></code>, <code class="docutils literal notranslate"><span class="pre">HTMLElement</span></code>, <code class="docutils literal notranslate"><span class="pre">Element</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">Node</span></code>; but <code class="docutils literal notranslate"><span class="pre">document.head</span></code> would only be tested for <code class="docutils literal notranslate"><span class="pre">HTMLHeadElement</span></code>, and so on for further
 objects.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>

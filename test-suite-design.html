@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Test Suite Design &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -32,14 +33,14 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="test-suite-design">
+  <section id="test-suite-design">
 <h1>Test Suite Design<a class="headerlink" href="#test-suite-design" title="Permalink to this headline">¶</a></h1>
 <p>The vast majority of the test suite is formed of HTML pages, which can
 be loaded in a browser and either programmatically provide a result or
 provide a set of steps to run the test and obtain the result.</p>
 <p>The tests are, in general, short, cross-platform, and self-contained,
 and should be easy to run in any browser.</p>
-<div class="section" id="test-layout">
+<section id="test-layout">
 <h2>Test Layout<a class="headerlink" href="#test-layout" title="Permalink to this headline">¶</a></h2>
 <p>Most of the repository’s top-level directories hold tests for specific web
 standards. For <a class="reference external" href="https://www.w3.org/standards/">W3C specs</a>, these directories
@@ -69,8 +70,8 @@ people who are notified when pull requests modify files in the directory</p></li
 </ul>
 <p>Various resources that tests depend on are in <code class="docutils literal notranslate"><span class="pre">common</span></code>, <code class="docutils literal notranslate"><span class="pre">images</span></code>, <code class="docutils literal notranslate"><span class="pre">fonts</span></code>,
 <code class="docutils literal notranslate"><span class="pre">media</span></code>, and <code class="docutils literal notranslate"><span class="pre">resources</span></code>.</p>
-</div>
-<div class="section" id="test-types">
+</section>
+<section id="test-types">
 <h2>Test Types<a class="headerlink" href="#test-types" title="Permalink to this headline">¶</a></h2>
 <p>Tests in this project use a few different approaches to verify expected
 behavior. The tests can be classified based on the way they express
@@ -97,8 +98,8 @@ automation protocol</a></p></li>
 <li><p><a class="reference internal" href="writing-tests/manual.html"><span class="doc">Manual tests</span></a> rely on a human to run them and determine their
 result.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

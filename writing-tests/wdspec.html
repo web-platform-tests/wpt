@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>wdspec tests &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="wdspec-tests">
+  <section id="wdspec-tests">
 <h1>wdspec tests<a class="headerlink" href="#wdspec-tests" title="Permalink to this headline">¶</a></h1>
 <p>The term “wdspec” describes a type of test in WPT which verifies some aspect of
 <a class="reference external" href="https://w3c.github.io/webdriver/">the WebDriver protocol</a>. These tests are
@@ -46,7 +47,7 @@ command</a> are located in then
 <p>Similar to <a class="reference internal" href="testharness.html"><span class="doc">testharness.js</span></a> tests, wdspec tests contain within
 them any number of “sub-tests.” Sub-tests are defined as Python functions whose
 name begins with <code class="docutils literal notranslate"><span class="pre">test_</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">test_stale_element</span></code>.</p>
-<div class="section" id="the-webdriver-client-library">
+<section id="the-webdriver-client-library">
 <h2>The <code class="docutils literal notranslate"><span class="pre">webdriver</span></code> client library<a class="headerlink" href="#the-webdriver-client-library" title="Permalink to this headline">¶</a></h2>
 <p>web-platform-tests maintains a WebDriver client library called <code class="docutils literal notranslate"><span class="pre">webdriver</span></code>
 located in the <code class="docutils literal notranslate"><span class="pre">tools/webdriver/</span></code> directory. Like other client libraries, it
@@ -78,8 +79,8 @@ command</a>:</p>
     <span class="n">assert_success</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="utility-functions">
+</section>
+<section id="utility-functions">
 <h2>Utility functions<a class="headerlink" href="#utility-functions" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">wedbdriver</span></code> library is minimal by design. It mimics the structure of the
 WebDriver specification. Many conformance tests perform similar operations
@@ -92,8 +93,8 @@ a WebDriver session) are defined in terms of Pytest “fixtures” and must be
 loaded accordingly. For more detail on how to define and use test fixtures,
 please refer to <a class="reference external" href="https://docs.pytest.org/en/latest/fixture.html">the pytest project’s documentation on the
 topic</a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

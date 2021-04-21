@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Writing H2 Tests &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="writing-h2-tests">
+  <section id="writing-h2-tests">
 <h1>Writing H2 Tests<a class="headerlink" href="#writing-h2-tests" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><p><b>Important:</b> The HTTP/2.0 server requires you to have
@@ -81,12 +82,12 @@ simply reverse the data and send it back.</p></li>
 <li><p>Once the request has been fully received, <code class="docutils literal notranslate"><span class="pre">main</span></code> is run which will send
 one last DATA frame and signal its the end of the stream.</p></li>
 </ol>
-<div class="section" id="response-writer-api">
+<section id="response-writer-api">
 <h2>Response Writer API<a class="headerlink" href="#response-writer-api" title="Permalink to this headline">¶</a></h2>
 <p>The H2Response API is pretty much the same as the H1 variant, the main API
 difference lies in the H2ResponseWriter which is accessed through <code class="docutils literal notranslate"><span class="pre">response.writer</span></code></p>
 <hr class="docutils" />
-<div class="section" id="write-headers-self-headers-status-code-status-message-none-stream-id-none-last-false">
+<section id="write-headers-self-headers-status-code-status-message-none-stream-id-none-last-false">
 <h3><code class="docutils literal notranslate"><span class="pre">write_headers(self,</span> <span class="pre">headers,</span> <span class="pre">status_code,</span> <span class="pre">status_message=None,</span> <span class="pre">stream_id=None,</span> <span class="pre">last=False):</span></code><a class="headerlink" href="#write-headers-self-headers-status-code-status-message-none-stream-id-none-last-false" title="Permalink to this headline">¶</a></h3>
 <p>Write a HEADER frame using the H2 Connection object, will only work if the
 stream is in a state to send HEADER frames. This will automatically format
@@ -106,9 +107,9 @@ the stream is in the correct state to be sending this frame.</p>
 </ul>
 </li>
 </ul>
-</div>
+</section>
 <hr class="docutils" />
-<div class="section" id="write-data-self-item-last-false-stream-id-none">
+<section id="write-data-self-item-last-false-stream-id-none">
 <h3><code class="docutils literal notranslate"><span class="pre">write_data(self,</span> <span class="pre">item,</span> <span class="pre">last=False,</span> <span class="pre">stream_id=None):</span></code><a class="headerlink" href="#write-data-self-item-last-false-stream-id-none" title="Permalink to this headline">¶</a></h3>
 <p>Write a DATA frame using the H2 Connection object, will only work if the
 stream is in a state to send DATA frames. Uses flow control to split data
@@ -124,9 +125,9 @@ the correct state to be sending this frame.</p>
 </ul>
 </li>
 </ul>
-</div>
+</section>
 <hr class="docutils" />
-<div class="section" id="write-push-self-promise-headers-push-stream-id-none-status-none-response-headers-none-response-data-none">
+<section id="write-push-self-promise-headers-push-stream-id-none-status-none-response-headers-none-response-data-none">
 <h3><code class="docutils literal notranslate"><span class="pre">write_push(self,</span> <span class="pre">promise_headers,</span> <span class="pre">push_stream_id=None,</span> <span class="pre">status=None,</span> <span class="pre">response_headers=None,</span> <span class="pre">response_data=None):</span></code><a class="headerlink" href="#write-push-self-promise-headers-push-stream-id-none-status-none-response-headers-none-response-data-none" title="Permalink to this headline">¶</a></h3>
 <p>This will write a push promise to the request stream. If you do not provide
 headers and data for the response, then no response will be pushed, and you
@@ -145,9 +146,9 @@ use the next available id.</p></li>
 </li>
 <li><p><b>Returns</b>: The ID of the push stream</p></li>
 </ul>
-</div>
+</section>
 <hr class="docutils" />
-<div class="section" id="write-raw-header-frame-self-headers-stream-id-none-end-stream-false-end-headers-false-frame-cls-headersframe">
+<section id="write-raw-header-frame-self-headers-stream-id-none-end-stream-false-end-headers-false-frame-cls-headersframe">
 <h3><code class="docutils literal notranslate"><span class="pre">write_raw_header_frame(self,</span> <span class="pre">headers,</span> <span class="pre">stream_id=None,</span> <span class="pre">end_stream=False,</span> <span class="pre">end_headers=False,</span> <span class="pre">frame_cls=HeadersFrame):</span></code><a class="headerlink" href="#write-raw-header-frame-self-headers-stream-id-none-end-stream-false-end-headers-false-frame-cls-headersframe" title="Permalink to this headline">¶</a></h3>
 <p>Unlike <code class="docutils literal notranslate"><span class="pre">write_headers</span></code>, this does not check to see if a stream is in the
 correct state to have HEADER frames sent through to it. It also won’t force
@@ -168,9 +169,9 @@ by <code class="docutils literal notranslate"><span class="pre">write_raw_contin
 </ul>
 </li>
 </ul>
-</div>
+</section>
 <hr class="docutils" />
-<div class="section" id="write-raw-data-frame-self-data-stream-id-none-end-stream-false">
+<section id="write-raw-data-frame-self-data-stream-id-none-end-stream-false">
 <h3><code class="docutils literal notranslate"><span class="pre">write_raw_data_frame(self,</span> <span class="pre">data,</span> <span class="pre">stream_id=None,</span> <span class="pre">end_stream=False):</span></code><a class="headerlink" href="#write-raw-data-frame-self-data-stream-id-none-end-stream-false" title="Permalink to this headline">¶</a></h3>
 <p>Unlike <code class="docutils literal notranslate"><span class="pre">write_data</span></code>, this does not check to see if a stream is in the correct
 state to have DATA frames sent through to it. It will build a DATA frame and
@@ -184,9 +185,9 @@ send it without using the H2 Connection object. It will not perform any flow con
 </ul>
 </li>
 </ul>
-</div>
+</section>
 <hr class="docutils" />
-<div class="section" id="write-raw-continuation-frame-self-headers-stream-id-none-end-headers-false">
+<section id="write-raw-continuation-frame-self-headers-stream-id-none-end-headers-false">
 <h3><code class="docutils literal notranslate"><span class="pre">write_raw_continuation_frame(self,</span> <span class="pre">headers,</span> <span class="pre">stream_id=None,</span> <span class="pre">end_headers=False):</span></code><a class="headerlink" href="#write-raw-continuation-frame-self-headers-stream-id-none-end-headers-false" title="Permalink to this headline">¶</a></h3>
 <p>This provides the ability to create and write a CONTINUATION frame to the
 stream, which is not exposed by <code class="docutils literal notranslate"><span class="pre">write_headers</span></code> as the h2 library handles
@@ -203,9 +204,9 @@ the HEADER and CONTINUATION frames are constructed in the same way.</p>
 </ul>
 </li>
 </ul>
-</div>
+</section>
 <hr class="docutils" />
-<div class="section" id="end-stream-self-stream-id-none">
+<section id="end-stream-self-stream-id-none">
 <h3><code class="docutils literal notranslate"><span class="pre">end_stream(self,</span> <span class="pre">stream_id=None):</span></code><a class="headerlink" href="#end-stream-self-stream-id-none" title="Permalink to this headline">¶</a></h3>
 <p>Ends the stream with the given ID, or the one that request was made on if no ID given.</p>
 <ul class="simple">
@@ -215,9 +216,9 @@ the HEADER and CONTINUATION frames are constructed in the same way.</p>
 </ul>
 </li>
 </ul>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>

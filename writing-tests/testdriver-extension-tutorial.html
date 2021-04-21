@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Testdriver extension tutorial &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,10 +33,10 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="testdriver-extension-tutorial">
+  <section id="testdriver-extension-tutorial">
 <h1>Testdriver extension tutorial<a class="headerlink" href="#testdriver-extension-tutorial" title="Permalink to this headline">¶</a></h1>
 <p>Adding new commands to testdriver.js</p>
-<div class="section" id="assumptions">
+<section id="assumptions">
 <h2>Assumptions<a class="headerlink" href="#assumptions" title="Permalink to this headline">¶</a></h2>
 <p>We assume the following in this writeup:</p>
 <ul class="simple">
@@ -43,16 +44,16 @@
 <li><p>You know what WebDriver is</p></li>
 <li><p>Familiarity with JavaScript and Python</p></li>
 </ul>
-</div>
-<div class="section" id="introduction">
+</section>
+<section id="introduction">
 <h2>Introduction!<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>Let’s implement window resizing. We can do this via the <a class="reference external" href="https://w3c.github.io/webdriver/#set-window-rect">Set Window Rect</a> command in WebDriver.</p>
 <p>First, we need to think of what the API will look like a little. We will be using WebDriver and Marionette for this, so we can look and see that they take in x, y coordinates, width and height integers.</p>
 <p>The first part of this will be browser agnostic, but later we will need to implement a specific layer for each browser (here we will do Firefox and Chrome).</p>
-</div>
-<div class="section" id="rfc-process">
+</section>
+<section id="rfc-process">
 <h2>RFC Process<a class="headerlink" href="#rfc-process" title="Permalink to this headline">¶</a></h2>
-<p>Before we invest any significant work into extending the testdriver.js API, we should check in with other stakeholders of the Web Platform Tests community on the proposed changes, by writing an <a class="reference external" href="https://github.com/web-platform-tests/rfcs">RFC</a> (“request for comments”). This is especially useful for changes that may affect test authors or downstream users of web-platform-tests.</p>
+<p>Before we invest any significant work into extending the testdriver.js API, we should check in with other stakeholders of the Web Platform Tests community on the proposed changes, by writing an <a class="reference external" href="https://github.com/web-platform-tests/rfcs">RFC</a> (”request for comments”). This is especially useful for changes that may affect test authors or downstream users of web-platform-tests.</p>
 <p>The <a class="reference external" href="https://github.com/web-platform-tests/rfcs#the-rfc-process">process is given in more detail in the RFC repo</a>, but to start let’s send in a PR to the RFCs repo by adding a file named <code class="docutils literal notranslate"><span class="pre">rfcs/testdriver_set_window_rect.md</span></code>:</p>
 <div class="highlight-md notranslate"><div class="highlight"><pre><span></span><span class="gh"># RFC N: Add window resizing to testdriver.js</span>
 (<span class="ge">*Note: N should be replaced by the PR number*</span>)
@@ -70,10 +71,10 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 </div>
 <p>Members of the community will then have the opportunity to comment on our proposed changes, and perhaps suggest improvements to our ideas. If all goes well it will be approved and merged in.</p>
 <p>With that said, developing a prototype implementation may help others evaluate the proposal during the RFC process, so let’s move on to writing some code.</p>
-</div>
-<div class="section" id="code">
+</section>
+<section id="code">
 <h2>Code!<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="resources-testdriver-js">
+<section id="resources-testdriver-js">
 <h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver.js">resources/testdriver.js</a><a class="headerlink" href="#resources-testdriver-js" title="Permalink to this headline">¶</a></h3>
 <p>This is the main entry point the tests get. Here we need to add a function to the <code class="docutils literal notranslate"><span class="pre">test_driver</span></code> object that will call the <code class="docutils literal notranslate"><span class="pre">test_driver_internal</span></code> object.</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver</span> <span class="o">=</span> <span class="p">{</span>
@@ -110,8 +111,8 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 </pre></div>
 </div>
 <p>We will leave this unimplemented and override it in another file. Lets do that now!</p>
-</div>
-<div class="section" id="tools-wptrunner-wptrunner-testdriver-extra-js">
+</section>
+<section id="tools-wptrunner-wptrunner-testdriver-extra-js">
 <h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js">tools/wptrunner/wptrunner/testdriver-extra.js</a><a class="headerlink" href="#tools-wptrunner-wptrunner-testdriver-extra-js" title="Permalink to this headline">¶</a></h3>
 <p>This will be the default function called when invoking the test driver commands (sometimes it is overridden by testdriver-vendor.js, but that is outside the scope of this tutorial). In most cases this is just boilerplate:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nb">window</span><span class="p">.</span><span class="nx">test_driver_internal</span><span class="p">.</span><span class="nx">set_element_rect</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">)</span> <span class="p">{</span>
@@ -121,8 +122,8 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">create_action</span></code> helper function does the heavy lifting of setting up a postMessage to the wptrunner internals as well as returning a promise that will resolve once the call is complete.</p>
 <p>Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!</p>
-</div>
-<div class="section" id="tools-wptrunner-wptrunner-executors-protocol-py">
+</section>
+<section id="tools-wptrunner-wptrunner-executors-protocol-py">
 <h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/protocol.py">tools/wptrunner/wptrunner/executors/protocol.py</a><a class="headerlink" href="#tools-wptrunner-wptrunner-executors-protocol-py" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SetWindowRectProtocolPart</span><span class="p">(</span><span class="n">ProtocolPart</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Protocol part for resizing and changing location of window&quot;&quot;&quot;</span>
@@ -142,8 +143,8 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 </pre></div>
 </div>
 <p>Next we create a representation of our new action.</p>
-</div>
-<div class="section" id="tools-wptrunner-wptrunner-executors-actions-py">
+</section>
+<section id="tools-wptrunner-wptrunner-executors-actions-py">
 <h3><a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/actions.py">tools/wptrunner/wptrunner/executors/actions.py</a><a class="headerlink" href="#tools-wptrunner-wptrunner-executors-actions-py" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SetWindowRectAction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
@@ -160,8 +161,8 @@ Add testdriver.js support for the [<span class="nt">Set Window Rect command</spa
 <p>Then add your new class to the <code class="docutils literal notranslate"><span class="pre">actions</span> <span class="pre">=</span> <span class="pre">[...]</span></code> list at the end of the file.</p>
 <p>Don’t forget to write docs in <code class="docutils literal notranslate"><span class="pre">testdriver.md</span></code>.
 Now we write the browser specific implementations.</p>
-</div>
-<div class="section" id="chrome">
+</section>
+<section id="chrome">
 <h3>Chrome<a class="headerlink" href="#chrome" title="Permalink to this headline">¶</a></h3>
 <p>We will modify <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executorwebdriver.py">executorwebdriver.py</a> and use the WebDriver API.</p>
 <p>There isn’t too much work to do here, we just need to define a subclass of the protocol part we defined earlier.</p>
@@ -198,8 +199,8 @@ Now we write the browser specific implementations.</p>
                   <span class="n">WebDriverTestDriverProtocolPart</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="firefox">
+</section>
+<section id="firefox">
 <h3>Firefox<a class="headerlink" href="#firefox" title="Permalink to this headline">¶</a></h3>
 <p>We use the <a class="reference external" href="https://firefox-source-docs.mozilla.org/python/marionette_driver.html#marionette_driver.marionette.Marionette.set_window_rect">set window rect</a> Marionette command.</p>
 <p>We will modify <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/executormarionette.py">executormarionette.py</a> and use the Marionette Python API.</p>
@@ -239,12 +240,12 @@ Now we write the browser specific implementations.</p>
                   <span class="n">MarionetteTestDriverProtocolPart</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="other-browsers">
+</section>
+<section id="other-browsers">
 <h3>Other Browsers<a class="headerlink" href="#other-browsers" title="Permalink to this headline">¶</a></h3>
 <p>Other browsers (such as safari) may use executorselenium, or a completely new executor (such as servo). For these, you must change the executor in the same way as we did with chrome and firefox.</p>
-</div>
-<div class="section" id="write-an-infra-test">
+</section>
+<section id="write-an-infra-test">
 <h3>Write an infra test<a class="headerlink" href="#write-an-infra-test" title="Permalink to this headline">¶</a></h3>
 <p>Make sure to add a test to <code class="docutils literal notranslate"><span class="pre">infrastructure/testdriver</span></code> :)</p>
 <p>Here is some template code!</p>
@@ -264,13 +265,13 @@ Now we write the browser specific implementations.</p>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="what-about-testdriver-vendor-js">
+</section>
+<section id="what-about-testdriver-vendor-js">
 <h3>What about testdriver-vendor.js?<a class="headerlink" href="#what-about-testdriver-vendor-js" title="Permalink to this headline">¶</a></h3>
 <p>The file <a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver-vendor.js">testdriver-vendor.js</a> is the equivalent to testdriver-extra.js above, except it is
 run instead of testdriver-extra.js in browser-specific test environments. For example, in <a class="reference external" href="https://cs.chromium.org/chromium/src/third_party/blink/web_tests/">Chromium web_tests</a>.</p>
-</div>
-<div class="section" id="what-if-i-need-to-return-a-value-from-my-testdriver-api">
+</section>
+<section id="what-if-i-need-to-return-a-value-from-my-testdriver-api">
 <h3>What if I need to return a value from my testdriver API?<a class="headerlink" href="#what-if-i-need-to-return-a-value-from-my-testdriver-api" title="Permalink to this headline">¶</a></h3>
 <p>You can return values from testdriver by just making your Action and Protocol classes use return statements. The data being returned will be serialized into JSON and passed
 back to the test on the resolving promise. The test can then deserialize the JSON to access the return values. Here is an example of a theoretical GetWindowRect API:</p>
@@ -300,9 +301,9 @@ back to the test on the resolving promise. The test can then deserialize the JSO
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>

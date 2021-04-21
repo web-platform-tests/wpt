@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>wptrunner Design &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="wptrunner-design">
+  <section id="wptrunner-design">
 <h1>wptrunner Design<a class="headerlink" href="#wptrunner-design" title="Permalink to this headline">¶</a></h1>
 <p>The design of wptrunner is intended to meet the following
 requirements:</p>
@@ -54,7 +55,7 @@ performance.</p></li>
 <li><p>Test output must be in a machine readable form.</p></li>
 </ul>
 </div></blockquote>
-<div class="section" id="architecture">
+<section id="architecture">
 <h2>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h2>
 <p>In order to meet the above requirements, wptrunner is designed to
 push as much of the test scheduling as possible into the harness. This
@@ -120,8 +121,8 @@ the <a class="reference internal" href="internals.html#wptrunner.executors.base.
 browser instance that it is testing so that it knows e.g. which port
 to connect to to send commands to the browser. These details are
 encapsulated in the <a class="reference internal" href="internals.html#wptrunner.browsers.base.ExecutorBrowser" title="wptrunner.browsers.base.ExecutorBrowser"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutorBrowser</span></code></a> class.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

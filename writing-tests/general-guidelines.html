@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>General Test Guidelines &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,9 +33,9 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="general-test-guidelines">
+  <section id="general-test-guidelines">
 <h1>General Test Guidelines<a class="headerlink" href="#general-test-guidelines" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="file-paths-and-names">
+<section id="file-paths-and-names">
 <h2>File Paths and Names<a class="headerlink" href="#file-paths-and-names" title="Permalink to this headline">¶</a></h2>
 <p>When choosing where in the directory structure to put any new tests,
 try to follow the structure of existing tests for that specification;
@@ -57,27 +58,27 @@ or server-side substitution. See the documentation on <a class="reference intern
 for more details.</p>
 <p>In the css directory, the file names should be unique within the whole
 css/ directory, regardless of where they are in the directory structure.</p>
-</div>
-<div class="section" id="https">
+</section>
+<section id="https">
 <h2>HTTPS<a class="headerlink" href="#https" title="Permalink to this headline">¶</a></h2>
 <p>By default, tests are served over plain HTTP. If a test requires HTTPS
 it must be given a filename containing <code class="docutils literal notranslate"><span class="pre">.https.</span></code> e.g.,
 <code class="docutils literal notranslate"><span class="pre">test-secure.https.html</span></code>, or be the generated service worker test of a
 <code class="docutils literal notranslate"><span class="pre">.https</span></code>-less <code class="docutils literal notranslate"><span class="pre">.any</span></code> test. For more details see the documentation on
 <a class="reference internal" href="file-names.html"><span class="doc">file names</span></a>.</p>
-</div>
-<div class="section" id="http2">
+</section>
+<section id="http2">
 <h2>HTTP2<a class="headerlink" href="#http2" title="Permalink to this headline">¶</a></h2>
 <p>If a test must be served from an HTTP/2 server, it must be given a
 filename containing <code class="docutils literal notranslate"><span class="pre">.h2</span></code>.</p>
-<div class="section" id="support-files">
+<section id="support-files">
 <h3>Support Files<a class="headerlink" href="#support-files" title="Permalink to this headline">¶</a></h3>
 <p>Various support files are available in in the directories named <code class="docutils literal notranslate"><span class="pre">/common/</span></code>,
 <code class="docutils literal notranslate"><span class="pre">/media/</span></code>, and <code class="docutils literal notranslate"><span class="pre">/css/support/</span></code>. Reusing existing resources is encouraged where
 possible, as is adding generally-useful files to these common areas rather than
 to specific test suites.</p>
-</div>
-<div class="section" id="tools">
+</section>
+<section id="tools">
 <h3>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h3>
 <p>Sometimes you may want to add a script to the repository that’s meant
 to be used from the command line, not from a browser (e.g., a script
@@ -89,9 +90,9 @@ subdirectory at the appropriate level—the server will then return a
 <p>For example, if you wanted to add a script for use with tests in the
 <code class="docutils literal notranslate"><span class="pre">notifications</span></code> directory, create the <code class="docutils literal notranslate"><span class="pre">notifications/tools</span></code>
 subdirectory and put your script there.</p>
-</div>
-</div>
-<div class="section" id="file-formats">
+</section>
+</section>
+<section id="file-formats">
 <h2>File Formats<a class="headerlink" href="#file-formats" title="Permalink to this headline">¶</a></h2>
 <p>Tests are generally formatted as HTML (including XHTML) or XML (including SVG).
 Some test types support other formats:</p>
@@ -103,22 +104,22 @@ Some test types support other formats:</p>
 <p>The best way to determine how to format a new test is to look at how similar
 tests have been formatted. You can also ask for advice in <a class="reference external" href="irc://irc.w3.org:6667/testing">the project’s IRC
 room</a>.</p>
-</div>
-<div class="section" id="character-encoding">
+</section>
+<section id="character-encoding">
 <h2>Character Encoding<a class="headerlink" href="#character-encoding" title="Permalink to this headline">¶</a></h2>
 <p>Except when specifically testing encoding, files must be encoded in
 UTF-8. In file formats where UTF-8 is not the default encoding, they
 must contain metadata to mark them as such (e.g., <code class="docutils literal notranslate"><span class="pre">&lt;meta</span> <span class="pre">charset=utf-8&gt;</span></code> in HTML files) or be pure ASCII.</p>
-</div>
-<div class="section" id="server-side-support">
+</section>
+<section id="server-side-support">
 <h2>Server Side Support<a class="headerlink" href="#server-side-support" title="Permalink to this headline">¶</a></h2>
 <p>The custom web server
 supports <a class="reference internal" href="server-features.html"><span class="doc">a variety of features</span></a> useful for testing
 browsers, including (but not limited to!) support for writing out
 appropriate domains and custom (per-file and per-directory) HTTP
 headers.</p>
-</div>
-<div class="section" id="be-short">
+</section>
+<section id="be-short">
 <h2>Be Short<a class="headerlink" href="#be-short" title="Permalink to this headline">¶</a></h2>
 <p>Tests should be as short as possible. For reftests in particular
 scrollbars at 800×600px window size must be avoided unless scrolling
@@ -126,8 +127,8 @@ behavior is specifically being tested. For all tests extraneous
 elements on the page should be avoided so it is clear what is part of
 the test (for a typical testharness test, the only content on the page
 will be rendered by the harness itself).</p>
-</div>
-<div class="section" id="be-conservative">
+</section>
+<section id="be-conservative">
 <h2>Be Conservative<a class="headerlink" href="#be-conservative" title="Permalink to this headline">¶</a></h2>
 <p>Tests should generally avoid depending on edge case behavior of
 features that they don’t explicitly intend on testing. For example,
@@ -156,8 +157,8 @@ maintaining older JavaScript runtimes.</p>
 <p>Patches to make tests run on older versions or other browsers will be accepted
 provided they are relatively simple and do not add undue complexity to the
 test.</p>
-</div>
-<div class="section" id="be-cross-platform">
+</section>
+<section id="be-cross-platform">
 <h2>Be Cross-Platform<a class="headerlink" href="#be-cross-platform" title="Permalink to this headline">¶</a></h2>
 <p>Tests should be as cross-platform as reasonably possible, working
 across different devices, screen resolutions, paper sizes, etc. The
@@ -168,8 +169,8 @@ their assumptions.</p>
 metrics. As such, in most cases when a known font is needed, <a class="reference internal" href="ahem.html"><span class="doc">Ahem</span></a>
 should be used and loaded as a web font. In other cases, <code class="docutils literal notranslate"><span class="pre">&#64;font-face</span></code>
 should be used.</p>
-</div>
-<div class="section" id="be-self-contained">
+</section>
+<section id="be-self-contained">
 <h2>Be Self-Contained<a class="headerlink" href="#be-self-contained" title="Permalink to this headline">¶</a></h2>
 <p>Tests must not depend on external network resources, including
 w3c-test.org. When these tests are run on CI systems they are
@@ -177,14 +178,14 @@ typically configured with access to external resources disabled, so
 tests that try to access them will fail. Where tests want to use
 multiple hosts this is possible through a known set of subdomains and
 the <a class="reference internal" href="server-features.html"><span class="doc">text substitution features of wptserve</span></a>.</p>
-</div>
-<div class="section" id="be-self-describing">
+</section>
+<section id="be-self-describing">
 <h2>Be Self-Describing<a class="headerlink" href="#be-self-describing" title="Permalink to this headline">¶</a></h2>
 <p>Tests should make it obvious when they pass and when they fail. It
 shouldn’t be necessary to consult the specification to figure out
 whether a test has passed of failed.</p>
-</div>
-<div class="section" id="style-rules">
+</section>
+<section id="style-rules">
 <h2>Style Rules<a class="headerlink" href="#style-rules" title="Permalink to this headline">¶</a></h2>
 <p>A number of style rules should be applied to the test file. These are
 not uniformly enforced throughout the existing tests, but will be for
@@ -210,8 +211,8 @@ test or that for other exceptional reasons shouldn’t prevent a merge of a
 test, update and commit the <code class="docutils literal notranslate"><span class="pre">lint.ignore</span></code> file in the web-platform-tests
 root directory to suppress the error reports. For details on doing that,
 see the <a class="reference internal" href="lint-tool.html"><span class="doc">lint-tool documentation</span></a>.</p>
-</div>
-<div class="section" id="css-specific-requirements">
+</section>
+<section id="css-specific-requirements">
 <h2>CSS-Specific Requirements<a class="headerlink" href="#css-specific-requirements" title="Permalink to this headline">¶</a></h2>
 <p>In order to be included in an official specification test suite, tests
 for CSS have some additional requirements for:</p>
@@ -219,8 +220,8 @@ for CSS have some additional requirements for:</p>
 <li><p><a class="reference internal" href="css-metadata.html"><span class="doc">Metadata</span></a>, and</p></li>
 <li><p><a class="reference internal" href="css-user-styles.html"><span class="doc">User style sheets</span></a>.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Python Handlers &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="python-handlers">
+  <section id="python-handlers">
 <h1>Python Handlers<a class="headerlink" href="#python-handlers" title="Permalink to this headline">¶</a></h1>
 <p>Python file handlers are Python files which the server executes in response to
 requests made to the corresponding URL. This is hooked up to a route like
@@ -70,7 +71,7 @@ direct access to the underlying socket. If used, the return value of the
 <li class="toctree-l1"><a class="reference internal" href="../../tools/wptserve/docs/stash.html">Stash</a></li>
 </ul>
 </div>
-<div class="section" id="importing-local-helper-scripts">
+<section id="importing-local-helper-scripts">
 <h2>Importing local helper scripts<a class="headerlink" href="#importing-local-helper-scripts" title="Permalink to this headline">¶</a></h2>
 <p>Python file handlers may import local helper scripts, e.g. to share logic
 across multiple handlers. To avoid module name collision, however, imports must
@@ -90,8 +91,8 @@ your helper script includes a hyphen (<code class="docutils literal notranslate"
 <span class="n">myhelper</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;common.security-features.myhelper&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="example-dynamic-http-headers">
+</section>
+<section id="example-dynamic-http-headers">
 <h2>Example: Dynamic HTTP headers<a class="headerlink" href="#example-dynamic-http-headers" title="Permalink to this headline">¶</a></h2>
 <p>The following code defines a Python handler that allows the requester to
 control the value of the <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> HTTP response header:</p>
@@ -123,8 +124,8 @@ that code.</p>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>testdriver.js Automation &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="testdriver-js-automation">
+  <section id="testdriver-js-automation">
 <h1>testdriver.js Automation<a class="headerlink" href="#testdriver-js-automation" title="Permalink to this headline">¶</a></h1>
 <p>testdriver.js provides a means to automate tests that cannot be
 written purely using web platform APIs. Outside of automation
@@ -40,11 +41,11 @@ contexts, it allows human operators to provide expected input
 manually (for operations which may be described in simple terms).</p>
 <p>It is currently supported only for <a class="reference internal" href="testharness.html"><span class="doc">testharness.js</span></a>
 tests.</p>
-<div class="section" id="api">
+<section id="api">
 <h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 <p>testdriver.js exposes its API through the <code class="docutils literal notranslate"><span class="pre">test_driver</span></code> variable in
 the global scope.</p>
-<div class="section" id="actions">
+<section id="actions">
 <h3>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h3>
 <p>Usage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">actions</span> <span class="o">=</span> <span class="n">new</span> <span class="n">test_driver</span><span class="o">.</span><span class="n">Actions</span><span class="p">()</span>
@@ -99,8 +100,8 @@ above. Here is a list of helper functions in the <code class="docutils literal n
 <p>This works with elements in other frames/windows as long as they are
 same-origin with the test, and the test does not depend on the
 window.name property remaining unset on the target window.</p>
-</div>
-<div class="section" id="bless">
+</section>
+<section id="bless">
 <h3>bless<a class="headerlink" href="#bless" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.bless(intent,</span> <span class="pre">action)</span></code></p>
 <ul class="simple">
@@ -125,8 +126,8 @@ promise is resolved with the value <code class="docutils literal notranslate"><s
 <span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="click">
+</section>
+<section id="click">
 <h3>click<a class="headerlink" href="#click" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.click(element)</span></code></p>
 <ul class="simple">
@@ -143,9 +144,9 @@ window.name property remaining unset on the target window.</p>
 <p>Note that if the element to be clicked does not have a unique ID, the
 document must not have any DOM mutations made between the function
 being called and the promise settling.</p>
-</div>
-</div>
-<div class="section" id="delete-all-cookies">
+</section>
+</section>
+<section id="delete-all-cookies">
 <h2>delete_all_cookies<a class="headerlink" href="#delete-all-cookies" title="Permalink to this headline">¶</a></h2>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.delete_all_cookies(context=null)</span></code></p>
 <ul class="simple">
@@ -153,7 +154,7 @@ being called and the promise settling.</p>
 perform the call.</p></li>
 </ul>
 <p>This function deletes all cookies for the current browsing context.</p>
-<div class="section" id="send-keys">
+<section id="send-keys">
 <h3>send_keys<a class="headerlink" href="#send-keys" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.send_keys(element,</span> <span class="pre">keys)</span></code></p>
 <ul class="simple">
@@ -173,8 +174,8 @@ a unique ID, the document must not have any DOM mutations made
 between the function being called and the promise settling.</p>
 <p>To send special keys, one must send the respective key’s codepoint. Since this uses the WebDriver protocol, you can find a <a class="reference external" href="https://w3c.github.io/webdriver/#keyboard-actions">list for code points to special keys in the spec</a>.
 For example, to send the tab key you would send “\uE004”.</p>
-</div>
-<div class="section" id="set-permission">
+</section>
+<section id="set-permission">
 <h3>set_permission<a class="headerlink" href="#set-permission" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.set_permission(descriptor,</span> <span class="pre">state,</span> <span class="pre">one_realm=false,</span> <span class="pre">context=null)</span></code></p>
 <ul class="simple">
@@ -197,9 +198,9 @@ been set to be overridden with <em>state</em>.</p>
 <span class="k">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;push&quot;</span><span class="p">,</span> <span class="nx">userVisibleOnly</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span> <span class="s2">&quot;granted&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="using-testdriver-in-other-browsing-contexts">
+</section>
+</section>
+<section id="using-testdriver-in-other-browsing-contexts">
 <h2>Using testdriver in Other Browsing Contexts<a class="headerlink" href="#using-testdriver-in-other-browsing-contexts" title="Permalink to this headline">¶</a></h2>
 <p>Testdriver can be used in browsing contexts (i.e. windows or frames)
 from which it’s possible to get a reference to the top-level test
@@ -248,8 +249,8 @@ in an auxillary browsing context:</p>
 <p>The requirement to have a handle to the test window does mean it’s
 currently not possible to write tests where such handles can’t be
 obtained e.g. in the case of <code class="docutils literal notranslate"><span class="pre">rel=noopener</span></code>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

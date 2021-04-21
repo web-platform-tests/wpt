@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Running Tests from the Local System &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,16 +33,16 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="running-tests-from-the-local-system">
+  <section id="running-tests-from-the-local-system">
 <h1>Running Tests from the Local System<a class="headerlink" href="#running-tests-from-the-local-system" title="Permalink to this headline">¶</a></h1>
 <p>The tests are designed to be run from your local computer.</p>
-<div class="section" id="system-setup">
+<section id="system-setup">
 <h2>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this headline">¶</a></h2>
 <p>Running the tests requires <code class="docutils literal notranslate"><span class="pre">python</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>, as well as updating
 the system <code class="docutils literal notranslate"><span class="pre">hosts</span></code> file.</p>
 <p>WPT requires Python 3.6 or higher.</p>
 <p>The required setup is different depending on your operating system.</p>
-<div class="section" id="linux-setup">
+<section id="linux-setup">
 <h3>Linux Setup<a class="headerlink" href="#linux-setup" title="Permalink to this headline">¶</a></h3>
 <p>If not already present, use the system package manager to install <code class="docutils literal notranslate"><span class="pre">python</span></code>,
 <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>.</p>
@@ -52,8 +53,8 @@ the system <code class="docutils literal notranslate"><span class="pre">hosts</s
 <p>It is important to have a package that provides a <code class="docutils literal notranslate"><span class="pre">python</span></code> binary. On Fedora,
 for example, that means installing the <code class="docutils literal notranslate"><span class="pre">python-unversioned-command</span></code> package. On
 Ubuntu Focal and later, the package is called <code class="docutils literal notranslate"><span class="pre">python-is-python3</span></code>.</p>
-</div>
-<div class="section" id="macos-setup">
+</section>
+<section id="macos-setup">
 <h3>macOS Setup<a class="headerlink" href="#macos-setup" title="Permalink to this headline">¶</a></h3>
 <p>The system-provided Python can be used, while <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> can be
 installed for the user only:</p>
@@ -65,8 +66,8 @@ pip install --user virtualenv
 <p>To make the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> change persistent, add it to your <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> file or
 wherever you currently set your PATH.</p>
 <p>See also <a class="reference internal" href="safari.html"><span class="doc">additional setup required to run Safari</span></a>.</p>
-</div>
-<div class="section" id="windows-setup">
+</section>
+<section id="windows-setup">
 <h3>Windows Setup<a class="headerlink" href="#windows-setup" title="Permalink to this headline">¶</a></h3>
 <p>Download and install <a class="reference external" href="https://www.python.org/downloads">Python 3</a>. The
 installer includes <code class="docutils literal notranslate"><span class="pre">pip</span></code> by default.</p>
@@ -82,7 +83,7 @@ started using:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python wpt serve
 </pre></div>
 </div>
-<div class="section" id="windows-subsystem-for-linux">
+<section id="windows-subsystem-for-linux">
 <h4>Windows Subsystem for Linux<a class="headerlink" href="#windows-subsystem-for-linux" title="Permalink to this headline">¶</a></h4>
 <p>Optionally on Windows you can use the <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/about">Windows Subsystem for
 Linux</a> (WSL). If doing so,
@@ -90,9 +91,9 @@ installation and usage are similar to the Linux instructions. Be aware that WSL
 may attempt to override <code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code> each time it is launched, which would then
 require you to re-run <a class="reference external" href="#hosts-file-setup"><code class="docutils literal notranslate"><span class="pre">hosts</span></code> File Setup</a>. This behavior
 <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/wsl-config#network">can be configured</a>.</p>
-</div>
-</div>
-<div class="section" id="hosts-file-setup">
+</section>
+</section>
+<section id="hosts-file-setup">
 <h3><code class="docutils literal notranslate"><span class="pre">hosts</span></code> File Setup<a class="headerlink" href="#hosts-file-setup" title="Permalink to this headline">¶</a></h3>
 <p>To get the tests running, you need to set up the test domains in your
 <a class="reference external" href="http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system"><code class="docutils literal notranslate"><span class="pre">hosts</span></code> file</a>.</p>
@@ -106,9 +107,9 @@ require you to re-run <a class="reference external" href="#hosts-file-setup"><co
 </div>
 <p>If you are behind a proxy, you also need to make sure the domains above are
 excluded from your proxy lookups.</p>
-</div>
-</div>
-<div class="section" id="via-the-browser">
+</section>
+</section>
+<section id="via-the-browser">
 <h2>Via the browser<a class="headerlink" href="#via-the-browser" title="Permalink to this headline">¶</a></h2>
 <p>The test environment can then be started using</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">serve</span>
@@ -137,8 +138,8 @@ https://web-platform.test:8443/tools/runner/index.html *</p>
 <p>This server has all the capabilities of the publicly-deployed version–see
 <a class="reference internal" href="from-web.html"><span class="doc">Running the Tests from the Web</span></a>.</p>
 <p>*<em>See <a class="reference internal" href="../tools/certs/README.html"><span class="doc">Trusting Root CA</span></a></em></p>
-</div>
-<div class="section" id="via-the-command-line">
+</section>
+<section id="via-the-command-line">
 <h2>Via the command line<a class="headerlink" href="#via-the-command-line" title="Permalink to this headline">¶</a></h2>
 <p>Many tests can be automatically executed in a new browser instance using</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="p">[</span><span class="n">browsername</span><span class="p">]</span> <span class="p">[</span><span class="n">tests</span><span class="p">]</span>
@@ -185,8 +186,8 @@ tracking is required, the command-line interface supports storing and loading
 the expected result of each test in a test run. See <a class="reference internal" href="../tools/wptrunner/docs/expectation.html"><span class="doc">Expectations
 Data</span></a> for more information on creating
 and maintaining these files.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Working with Pull Requests as a reviewer &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="working-with-pull-requests-as-a-reviewer">
+  <section id="working-with-pull-requests-as-a-reviewer">
 <h1>Working with Pull Requests as a reviewer<a class="headerlink" href="#working-with-pull-requests-as-a-reviewer" title="Permalink to this headline">¶</a></h1>
 <p>In order to do a thorough review,
 it is sometimes desirable to have a local copy of the tests one wishes to review.</p>
@@ -42,7 +43,7 @@ However, sometimes the original author does not respond to the requests,
 or the changes are so trivial (e.g. fixing a typo)
 that bothering the original author seems like a waste of time.</p>
 <p>Here is how to do all that.</p>
-<div class="section" id="trivial-cases">
+<section id="trivial-cases">
 <h2>Trivial cases<a class="headerlink" href="#trivial-cases" title="Permalink to this headline">¶</a></h2>
 <p>If it is possible to review the tests without a local copy,
 but the reviewer still wants to make some simple tweaks to the tests before merging,
@@ -61,8 +62,8 @@ and your only option would be to commit to a new branch, creating a new PR.</em>
 </li>
 <li><p>Click the <img alt="Commit Changes" src="../_images/commitbtn.png" /> button.</p></li>
 </ol>
-</div>
-<div class="section" id="the-normal-way">
+</section>
+<section id="the-normal-way">
 <h2>The Normal Way<a class="headerlink" href="#the-normal-way" title="Permalink to this headline">¶</a></h2>
 <p>This is how to import the Pull Request’s branch into your existing local
 checkout of the repository. If you don’t have one, go <a class="reference external" href="../writing-tests/github-intro.html#fork-the-test-repository">fork</a>,
@@ -108,8 +109,8 @@ you can delete the branch: <code class="docutils literal notranslate"><span clas
 <p>If you do not expect work with more PRs from the same author,
 you may also discard your connection to their repo:
 <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">remote</span> <span class="pre">remove</span> <span class="pre">&lt;author-id&gt;</span></code></p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

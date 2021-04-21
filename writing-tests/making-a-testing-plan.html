@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Making a Testing Plan &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="making-a-testing-plan">
+  <section id="making-a-testing-plan">
 <h1>Making a Testing Plan<a class="headerlink" href="#making-a-testing-plan" title="Permalink to this headline">¶</a></h1>
 <p>When contributing to a project as large and open-ended as WPT, it’s easy to get
 lost in the details. It can be helpful to start by making a rough list of tests
@@ -67,14 +68,14 @@ areas</a>,
 to <a class="reference external" href="https://rwaldron.github.io/webrtc-pc/">an annotated version of the specification under
 test</a>, the appropriate fidelity depends
 on your needs, so you can be as precise as you feel is helpful.</p>
-<div class="section" id="understanding-the-testing-surface">
+<section id="understanding-the-testing-surface">
 <h2>Understanding the “testing surface”<a class="headerlink" href="#understanding-the-testing-surface" title="Permalink to this headline">¶</a></h2>
 <p>Web platform specifications are instructions about how a feature should work.
 They’re critical for implementers to “build the right thing,” but they are also
 important for anyone writing tests. We can use the same instructions to infer
 what kinds of tests would be likely to detect mistakes. Here are a few common
 patterns in specification text and the kind of tests they suggest.</p>
-<div class="section" id="input-sources">
+<section id="input-sources">
 <h3>Input sources<a class="headerlink" href="#input-sources" title="Permalink to this headline">¶</a></h3>
 <p>Algorithms may accept input from many sources. Modifying the input is the most
 direct way we can influence the browser’s behavior and verify that it matches
@@ -128,8 +129,8 @@ given <em>title</em> and <em>options</em>. Rethrow any exceptions.</p></li>
 of many different values of the <em>title</em> parameter and the <em>options</em> parameter.
 Choosing those values can be a challenge unto itself–see <a class="reference external" href="#avoid-excessive-breadth">Avoid Excessive
 Breadth</a> for advice.</p>
-</div>
-<div class="section" id="browser-state">
+</section>
+<section id="browser-state">
 <h3>Browser state<a class="headerlink" href="#browser-state" title="Permalink to this headline">¶</a></h3>
 <p>The state of the browser may also influence algorithm behavior. Examples
 include the current document, the dimensions of the viewport, and the entries
@@ -149,8 +150,8 @@ available.</p>
 above</a>, the type of “the
 current global object” is also a form of input. The test suite should include
 tests which execute with different types of global objects.</p>
-</div>
-<div class="section" id="branches">
+</section>
+<section id="branches">
 <h3>Branches<a class="headerlink" href="#branches" title="Permalink to this headline">¶</a></h3>
 <p>When an algorithm branches based on some condition, that’s an indication of an
 interesting behavior that might be missed. Your testing plan should have at
@@ -169,8 +170,8 @@ exists at the provided key. To test this thoroughly, we would write two tests:
 one test would verify that <code class="docutils literal notranslate"><span class="pre">null</span></code> is returned when there is no item at the
 provided key, and the other test would verify that an item we previously stored
 was correctly retrieved when we called the method with its name.</p>
-</div>
-<div class="section" id="sequence">
+</section>
+<section id="sequence">
 <h3>Sequence<a class="headerlink" href="#sequence" title="Permalink to this headline">¶</a></h3>
 <p>Even without branching, the interplay between sequential algorithm steps can
 suggest interesting test cases. If two steps have observable side-effects, then
@@ -234,8 +235,8 @@ for the sequence of these events, then this confusion would have been avoided.</
 <p>When making your testing plan, be sure to look carefully for event dispatch and
 the other patterns listed above. They won’t always be as clear as the “drag”
 example!</p>
-</div>
-<div class="section" id="optional-behavior">
+</section>
+<section id="optional-behavior">
 <h3>Optional behavior<a class="headerlink" href="#optional-behavior" title="Permalink to this headline">¶</a></h3>
 <p>Specifications occasionally allow browsers discretion in how they implement
 certain features. These are described using <a class="reference external" href="https://tools.ietf.org/html/rfc2119">RFC
@@ -263,13 +264,13 @@ should be designated accordingly.</p>
 optional behavior is never allowed if the document’s type has changed. That
 makes for a mandatory test, one that verifies browsers don’t return the same
 result when the document’s type changes.</p>
-</div>
-</div>
-<div class="section" id="exercising-restraint">
+</section>
+</section>
+<section id="exercising-restraint">
 <h2>Exercising Restraint<a class="headerlink" href="#exercising-restraint" title="Permalink to this headline">¶</a></h2>
 <p>When writing conformance tests, choosing what <em>not</em> to test is sometimes just
 as hard as finding what needs testing.</p>
-<div class="section" id="don-t-dive-too-deep">
+<section id="don-t-dive-too-deep">
 <h3>Don’t dive too deep<a class="headerlink" href="#don-t-dive-too-deep" title="Permalink to this headline">¶</a></h3>
 <p>Algorithms are composed of many other algorithms which themselves are defined
 in terms of still more algorithms. It can be intimidating to consider
@@ -313,8 +314,8 @@ What about <code class="docutils literal notranslate"><span class="pre">document
 <p>The answers depend on the current state of the test suite: whether or not tests
 for selector parsing exist and where they are located. That’s why it’s best to
 confer with the people who are maintaining the tests.</p>
-</div>
-<div class="section" id="avoid-excessive-breadth">
+</section>
+<section id="avoid-excessive-breadth">
 <h3>Avoid excessive breadth<a class="headerlink" href="#avoid-excessive-breadth" title="Permalink to this headline">¶</a></h3>
 <p>When the set of input values is finite, it can be tempting to test them all
 exhaustively. When the set is very large, test authors can reduce repetition by
@@ -341,7 +342,7 @@ standard</a></p>
 <div><p>The <code class="docutils literal notranslate"><span class="pre">Response</span></code>(<em>body</em>, <em>init</em>) constructor, when invoked, must run these
 steps:</p>
 <ol class="simple">
-<li><p>If <em>init</em>[“<code class="docutils literal notranslate"><span class="pre">status</span></code>”] is not in the range <code class="docutils literal notranslate"><span class="pre">200</span></code> to <code class="docutils literal notranslate"><span class="pre">599</span></code>, inclusive, then
+<li><p>If <em>init</em>[”<code class="docutils literal notranslate"><span class="pre">status</span></code>”] is not in the range <code class="docutils literal notranslate"><span class="pre">200</span></code> to <code class="docutils literal notranslate"><span class="pre">599</span></code>, inclusive, then
 <a class="reference external" href="https://heycam.github.io/webidl/#dfn-throw">throw</a> a <code class="docutils literal notranslate"><span class="pre">RangeError</span></code>.</p></li>
 </ol>
 <p>[…]</p>
@@ -359,9 +360,9 @@ boundaries is a good idea. <code class="docutils literal notranslate"><span clas
 the feature to choose additional values. In this case, HTTP response status
 codes are classified by the “hundred” order of magnitude, so we might also want
 to test a “3xx” value and a “4xx” value.</p>
-</div>
-</div>
-<div class="section" id="assessing-coverage">
+</section>
+</section>
+<section id="assessing-coverage">
 <h2>Assessing coverage<a class="headerlink" href="#assessing-coverage" title="Permalink to this headline">¶</a></h2>
 <p>It’s very likely that WPT already has some tests for the feature (or at least
 the specification) that you’re interesting in testing. In that case, you’ll
@@ -371,7 +372,7 @@ effort, and it will also help you integrate your work more logically.</p>
 <p>Even if the feature you’re testing does <em>not</em> have any tests, you should still
 keep these guidelines in mind. Sooner or later, someone else will want to
 extend your work, so you ought to give them a good starting point!</p>
-<div class="section" id="file-names">
+<section id="file-names">
 <h3>File names<a class="headerlink" href="#file-names" title="Permalink to this headline">¶</a></h3>
 <p>The names of existing files and folders in the repository can help you find
 tests that are relevant to your work. <a class="reference internal" href="../test-suite-design.html"><span class="doc">This page on the design of
@@ -443,8 +444,8 @@ response-init-002.html
 <code class="docutils literal notranslate"><span class="pre">response-static-error.html</span></code>. We can open that to decide if the behavior is
 already covered. If not, then we know where to <a class="reference external" href="https://github.com/web-platform-tests/wpt/pull/19601">write the
 test</a>!</p>
-</div>
-<div class="section" id="failures-on-wpt-fyi">
+</section>
+<section id="failures-on-wpt-fyi">
 <h3>Failures on wpt.fyi<a class="headerlink" href="#failures-on-wpt-fyi" title="Permalink to this headline">¶</a></h3>
 <p>There are many behaviors that are difficult to describe in a succinct file
 name. That’s commonly the case with low-level rendering details of CSS
@@ -483,8 +484,8 @@ The results show only three such tests exist:</p>
 <p>These may not describe the behavior you’re interested in testing; the only way
 to know for sure is to review their contents. However, this is a much more
 manageable set to work with!</p>
-</div>
-<div class="section" id="querying-file-contents">
+</section>
+<section id="querying-file-contents">
 <h3>Querying file contents<a class="headerlink" href="#querying-file-contents" title="Permalink to this headline">¶</a></h3>
 <p>Some web platform features are enabled with a predictable pattern. For example,
 HTML attributes follow a fairly consistent format. If you’re interested in
@@ -566,17 +567,17 @@ html/webappapis/dynamic-markup-insertion/opening-the-input-stream/document-open-
 <p>You will still have to review the contents to know which are relevant for your
 purposes (if any), but compared to the 5,000 files in the <code class="docutils literal notranslate"><span class="pre">html/</span></code> directory,
 this list is far more approachable!</p>
-</div>
-</div>
-<div class="section" id="writing-the-tests">
+</section>
+</section>
+<section id="writing-the-tests">
 <h2>Writing the Tests<a class="headerlink" href="#writing-the-tests" title="Permalink to this headline">¶</a></h2>
 <p>With a complete testing plan in hand, you now have a good idea of the scope of
 your work. It’s finally time to write the tests! There’s a lot to say about how
 this is done technically. To learn more, check out <a class="reference internal" href="reftest-tutorial.html"><span class="doc">the WPT “reftest”
 tutorial</span></a> and <a class="reference internal" href="testharness-tutorial.html"><span class="doc">the testharness.js
 tutorial</span></a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

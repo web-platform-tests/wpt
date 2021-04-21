@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Rendering Test Guidelines &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,13 +33,13 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="rendering-test-guidelines">
+  <section id="rendering-test-guidelines">
 <h1>Rendering Test Guidelines<a class="headerlink" href="#rendering-test-guidelines" title="Permalink to this headline">¶</a></h1>
 <p>There are a number of techniques typically used when writing rendering tests;
 these are especially using for <a class="reference internal" href="visual.html"><span class="doc">visual</span></a> tests which need to be manually
 judged and following common patterns makes it easier to correctly tell if a
 given test passed or not.</p>
-<div class="section" id="indicating-success">
+<section id="indicating-success">
 <h2>Indicating success<a class="headerlink" href="#indicating-success" title="Permalink to this headline">¶</a></h2>
 <p>Success is largely indicated by the color green; typically in one of
 two ways:</p>
@@ -64,8 +65,8 @@ descriptive paragraph to have a neutral color (e.g., white).</p>
 any red is obvious. To ensure the stylesheet has loaded, it is
 recommended to make the pass condition paragraph green and require
 that in addition to there being no red on the page.</p>
-</div>
-<div class="section" id="indicating-failure">
+</section>
+<section id="indicating-failure">
 <h2>Indicating failure<a class="headerlink" href="#indicating-failure" title="Permalink to this headline">¶</a></h2>
 <p>In addition to having clearly defined characteristics when
 they pass, well designed tests should have some clear signs when
@@ -86,8 +87,8 @@ the text overlapping.</p></li>
 case of something going wrong, for example <code class="docutils literal notranslate"><span class="pre">quotes</span></code> and
 <code class="docutils literal notranslate"><span class="pre">content</span></code>.</p></li>
 </ul>
-</div>
-<div class="section" id="other-colors">
+</section>
+<section id="other-colors">
 <h2>Other Colors<a class="headerlink" href="#other-colors" title="Permalink to this headline">¶</a></h2>
 <p>Aside from green and red, other colors are generally used in specific
 ways:</p>
@@ -104,8 +105,8 @@ filler text.</p></li>
 <p>None of these rules are absolute because testing
 color-related functionality will necessitate using some of these
 colors!</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

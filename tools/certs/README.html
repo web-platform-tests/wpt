@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>WPT Test Certificates &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -32,11 +33,11 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="wpt-test-certificates">
+  <section id="wpt-test-certificates">
 <h1>WPT Test Certificates<a class="headerlink" href="#wpt-test-certificates" title="Permalink to this headline">¶</a></h1>
 <p>The web-platform-tests project maintains a set of SSL certificates to allow
 contributors to execute tests requiring HTTPS locally.</p>
-<div class="section" id="trusting-root-ca">
+<section id="trusting-root-ca">
 <h2>Trusting Root CA<a class="headerlink" href="#trusting-root-ca" title="Permalink to this headline">¶</a></h2>
 <p>To prevent browser SSL warnings when running HTTPS tests locally, the
 web-platform-tests Root CA file <code class="docutils literal notranslate"><span class="pre">cacert.pem</span></code> in the <code class="docutils literal notranslate"><span class="pre">tools/certs/</span></code> directory
@@ -52,8 +53,8 @@ should therefore not be run manually outside a dedicated OS instance
 (e.g. a VM). To avoid this problem when running tests in Chrome or
 Firefox, use <code class="docutils literal notranslate"><span class="pre">wpt</span> <span class="pre">run</span></code>, which disables certificate checks and therefore
 doesn’t require the root CA to be trusted.</p>
-</div>
-<div class="section" id="regenerating-certificates">
+</section>
+<section id="regenerating-certificates">
 <h2>Regenerating certificates<a class="headerlink" href="#regenerating-certificates" title="Permalink to this headline">¶</a></h2>
 <p>If you wish to generate new certificates for any reason, it’s possible to use
 OpenSSL when starting the server, or starting a test run, by providing the
@@ -97,13 +98,13 @@ the path to the OpenSSL config file (typically this will be
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="section" id="regenerating-the-pregenerated-certificates">
+<section id="regenerating-the-pregenerated-certificates">
 <h3>Regenerating the pregenerated certificates<a class="headerlink" href="#regenerating-the-pregenerated-certificates" title="Permalink to this headline">¶</a></h3>
 <p>From the root, run <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">serve</span> <span class="pre">--config</span> <span class="pre">tools/certs/config.json</span></code> and terminate
 it after it has started up.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>

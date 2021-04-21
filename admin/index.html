@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Project Administration &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -32,11 +33,11 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="project-administration">
+  <section id="project-administration">
 <h1>Project Administration<a class="headerlink" href="#project-administration" title="Permalink to this headline">¶</a></h1>
 <p>This section documents all the information necessary to administer the
 infrastructure which makes the project possible.</p>
-<div class="section" id="tooling">
+<section id="tooling">
 <h2>Tooling<a class="headerlink" href="#tooling" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
@@ -64,22 +65,22 @@ infrastructure which makes the project possible.</p>
 </div>
 <div class="toctree-wrapper compound">
 </div>
-<div class="section" id="indices-and-tables">
+<section id="indices-and-tables">
 <h3>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="../py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="../genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="../search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="secrets">
+</section>
+</section>
+<section id="secrets">
 <h2>Secrets<a class="headerlink" href="#secrets" title="Permalink to this headline">¶</a></h2>
 <p>SSL certificates for all HTTPS-enabled domains are retrieved via <a class="reference external" href="https://letsencrypt.org/">Let’s
 Encrypt</a>, so that data does not represent an
 explicitly-managed secret.</p>
-</div>
-<div class="section" id="third-party-account-owners">
+</section>
+<section id="third-party-account-owners">
 <h2>Third-party account owners<a class="headerlink" href="#third-party-account-owners" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>(unknown registrar): https://web-platform-tests.org</p>
@@ -162,10 +163,10 @@ explicitly-managed secret.</p>
 </ul>
 </li>
 </ul>
-</div>
-<div class="section" id="emergency-playbook">
+</section>
+<section id="emergency-playbook">
 <h2>Emergency playbook<a class="headerlink" href="#emergency-playbook" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="lock-down-write-access-to-the-repo">
+<section id="lock-down-write-access-to-the-repo">
 <h3>Lock down write access to the repo<a class="headerlink" href="#lock-down-write-access-to-the-repo" title="Permalink to this headline">¶</a></h3>
 <p><strong>Recommended but not yet verified approach:</strong> Create a <a class="reference external" href="https://github.com/web-platform-tests/wpt/settings/branch_protection_rules/new">new branch protection
 rule</a>
@@ -179,9 +180,9 @@ to <em>any</em> branch. To lift the limit, delete this branch protection rule.</
 and change the permission of “reviewers” to “Read”. To lift the limit, change
 it back to “Write”. This has the known downside of <em>resubscribing all reviewers
 to repo notifications</em>.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>

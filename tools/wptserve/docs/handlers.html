@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Handlers &#8212; web-platform-tests  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="handlers">
+  <section id="handlers">
 <h1>Handlers<a class="headerlink" href="#handlers" title="Permalink to this headline">¶</a></h1>
 <p>Handlers are functions that have the general signature:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">handler</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
@@ -46,7 +47,7 @@ the request. If a handler writes to the output stream then the
 server will not attempt additional writes, i.e. the choice to write
 directly in the handler or not is all-or-nothing.</p>
 <p>A number of general-purpose handler functions are provided by default:</p>
-<div class="section" id="python-handlers">
+<section id="python-handlers">
 <span id="handlers-python"></span><h2>Python Handlers<a class="headerlink" href="#python-handlers" title="Permalink to this headline">¶</a></h2>
 <p>Python handlers are functions which provide a higher-level API over
 manually updating the response object, by causing the return value of
@@ -78,8 +79,8 @@ to use the provided <cite>wptserve.handlers.handler</cite> decorator:</p>
 <span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="json-handlers">
+</section>
+<section id="json-handlers">
 <h2>JSON Handlers<a class="headerlink" href="#json-handlers" title="Permalink to this headline">¶</a></h2>
 <p>This is a specialisation of the python handler type specifically
 designed to facilitate providing JSON responses. The API is largely
@@ -94,8 +95,8 @@ decorator:</p>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;PASS&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="python-file-handlers">
+</section>
+<section id="python-file-handlers">
 <h2>Python File Handlers<a class="headerlink" href="#python-file-handlers" title="Permalink to this headline">¶</a></h2>
 <p>Python file handlers are Python files which the server executes in response to
 requests made to the corresponding URL. This is hooked up to a route like
@@ -108,14 +109,14 @@ handlers, particularly when running the server in a web-exposed setting).</p>
 </div>
 <p>This function then behaves just like those described in
 <a class="reference internal" href="#handlers-python"><span class="std std-ref">Python Handlers</span></a> above.</p>
-</div>
-<div class="section" id="asis-handlers">
+</section>
+<section id="asis-handlers">
 <h2>asis Handlers<a class="headerlink" href="#asis-handlers" title="Permalink to this headline">¶</a></h2>
 <p>These are used to serve files as literal byte streams including the
 HTTP status line, headers and body. In the default configuration this
 handler is invoked for all files with a .asis extension.</p>
-</div>
-<div class="section" id="file-handlers">
+</section>
+<section id="file-handlers">
 <h2>File Handlers<a class="headerlink" href="#file-handlers" title="Permalink to this headline">¶</a></h2>
 <p>File handlers are used to serve static files. By default the content
 type of these files is set by examining the file extension. However
@@ -129,8 +130,8 @@ each line containing:</p>
 </div>
 <p>In addition headers can be set for a whole directory of files (but not
 subdirectories), using a file called <cite>__dir__.headers</cite>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

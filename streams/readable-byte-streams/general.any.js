@@ -1589,7 +1589,7 @@ promise_test(() => {
     }
 
     for (let i = 0; i < 3; ++i) {
-      assert_equals(viewInfosAfterRespond[i].bufferByteLength, 4, 'view.buffer should not be transferred after partially fill');
+      assert_equals(viewInfosAfterRespond[i].bufferByteLength, 4, 'view.buffer should not be transferred after partial fill');
     }
     assert_equals(viewInfosAfterRespond[3].bufferByteLength, 0, 'view.buffer should be transferred after complete fill');
   });
@@ -1645,7 +1645,7 @@ promise_test(() => {
     }
 
     for (let i = 0; i < 3; ++i) {
-      assert_equals(viewInfosAfterRespond[i].bufferByteLength, 4, 'view.buffer should not be transferred after partially fill');
+      assert_equals(viewInfosAfterRespond[i].bufferByteLength, 4, 'view.buffer should not be transferred after partial fill');
     }
     assert_equals(viewInfosAfterRespond[3].bufferByteLength, 0, 'view.buffer should be transferred after complete fill');
   });

@@ -49,7 +49,7 @@ def test_server_start_config(product):
                                          env_extras):
             start.assert_called_once()
             args = start.call_args
-            config = args[0][0]
+            config = args[0][1]
             if "server_host" in env_options:
                 assert config["server_host"] == env_options["server_host"]
             else:

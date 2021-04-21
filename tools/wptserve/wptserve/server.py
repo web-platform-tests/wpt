@@ -193,7 +193,8 @@ class WebTestServer(ThreadingMixIn, http.server.HTTPServer):
             Server.config = config
         else:
             self.logger.debug("Using default configuration")
-            with ConfigBuilder(browser_host=server_address[0],
+            with ConfigBuilder(self.logger,
+                               browser_host=server_address[0],
                                ports={"http": [self.server_address[1]]}) as config:
                 assert config["ssl_config"] is None
                 Server.config = config

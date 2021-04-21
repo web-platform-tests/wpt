@@ -1599,6 +1599,63 @@ promise_test(() => {
   let pullCount = 0;
 
   let controller;
+  const viewInfos = [];
+  const viewInfosAfterRespond = [];
+
+  const stream = new ReadableStream({
+    start(c) {
+      controller = c;
+    },
+    pull() {
+      if (controller.byobRequest === null) {
+        return;
+      }
+
+      for (let i = 0; i < 4; ++i) {
+        const view = controller.byobRequest.view;
+        viewInfos.push(extractViewInfo(view));
+
+        view[0] = 0x01;
+        controller.byobRequest.respond(1);
+        viewInfosAfterRespond.push(extractViewInfo(view));
+      }
+
+      ++pullCount;
+    },
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+
+  return reader.read(new Uint32Array(1)).then(result => {
+    assert_equals(result.done, false);
+
+    const view = result.value;
+    assert_equals(view.byteOffset, 0);
+    assert_equals(view.byteLength, 4);
+    assert_equals(view[0], 0x01010101);
+
+    assert_equals(pullCount, 1, 'pull() should only be called once');
+
+    for (let i = 0; i < 4; ++i) {
+      assert_equals(viewInfos[i].constructor, Uint8Array, 'view.constructor should be Uint8Array');
+      assert_equals(viewInfos[i].bufferByteLength, 4, 'view.buffer.byteLength should be 4');
+
+      assert_equals(viewInfos[i].byteOffset, i, 'view.byteOffset should be i');
+      assert_equals(viewInfos[i].byteLength, 4 - i, 'view.byteLength should be 4 - i');
+    }
+
+    for (let i = 0; i < 3; ++i) {
+      assert_equals(viewInfosAfterRespond[i].bufferByteLength, 4, 'view.buffer should not be transferred after partially fill');
+    }
+    assert_equals(viewInfosAfterRespond[3].bufferByteLength, 0, 'view.buffer should be transferred after complete fill');
+  });
+}, 'ReadableStream with byte source: read(view) with Uint32Array, then fill it by multiple respond() calls');
+
+promise_test(() => {
+  let pullCount = 0;
+
+  let controller;
   let byobRequest;
 
   const stream = new ReadableStream({

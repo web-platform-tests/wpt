@@ -31,7 +31,6 @@ function test_computed_style(width, height, expected) {
   test_computed_style_aspect_ratio("input", {type: "submit", width: width, height: height}, "auto");
 }
 
-// ======The computed style test cluster======
 test_computed_style("10", "20", "auto 10 / 20");
 // These are invalid per spec, but see
 // https://github.com/whatwg/html/issues/4961
@@ -48,7 +47,6 @@ test_computed_style(null, "20", "auto");
 test_computed_style("xx", "20", "auto");
 test_computed_style("10%", "20", "auto");
 
-// ======The Create, append and test immediately test cluster======
 // Create and append a new image and immediately check the ratio.
 // This is not racy because the spec requires the user agent to queue a task:
 // https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data
@@ -81,7 +79,6 @@ test(function () {
 }, "Create, append and test immediately: <img> with attributes width=50% height=25%");
 
 
-// ======The loaded images test cluster======
 onload = function() {
   let images = document.querySelectorAll("img");
   // Tests for images finished loading.

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<link rel="help" href="https://drafts.csswg.org/css-backgrounds-3/#background-color">
+<link rel="match" href="background-color-animation-repaint-composited-to-not-composited-ref.html">
+<style>
+.container {
+  width: 100px;
+  height: 100px;
+}
+@keyframes bgcolor1 {
+  0% { background-color: rgb(200, 0, 0); }
+  100% { background-color: rgb(0, 200, 0); }
+}
+@keyframes bgcolor2 {
+  0% { background-color: rgb(0, 0, 0); }
+  100% { background-color: rgb(0, 0, 200); }
+}
+</style>
+<script src="/common/reftest-wait.js"></script>
+<body>
+<div class="container" id="target"></div>
+
+<script>
+var target = document.getElementById('target');
+target.style.animation = "bgcolor1 1000000s cubic-bezier(0,1,1,0) -500000s";
+requestAnimationFrame(() => {
+requestAnimationFrame(() => {
+  target.style.animation = "bgcolor1 1000000s cubic-bezier(0,1,1,0) -500000s, bgcolor2 1000000s cubic-bezier(0,1,1,0) -500000s";
+  requestAnimationFrame(() => {
+    takeScreenshot();
+  });
+});
+});
+</script>
+</body>
+</html>

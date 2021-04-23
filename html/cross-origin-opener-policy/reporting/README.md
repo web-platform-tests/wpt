@@ -103,7 +103,8 @@
 
 
 - access-reporting
-  - Test all members of Window with testAccessProperty? https://html.spec.whatwg.org/#the-window-object ...or are these enough? https://whatpr.org/html/5518/895fd80...c8265a7/browsers.html#crossoriginproperties-(-o-)
+  - Test properties that are handled by CrossOriginPropertyFallback ( P ) in the spec, should not send reports.
+    tests: https://github.com/web-platform-tests/wpt/pull/28653
 - navigation-reporting
   - report-only-same-origin-with-coep.https.html is identical to report-only-same-origin-with-coep-report-only.https.html (but different .headers) -- could have clearer titles.
 

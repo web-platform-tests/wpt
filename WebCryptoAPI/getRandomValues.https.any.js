@@ -46,3 +46,9 @@ test(function() {
         assert_true(self.crypto.getRandomValues(new arrays[array](0)).length == 0)
     }
 }, "Null arrays")
+
+test(function() {
+    assert_throws_js(TypeError, function() {
+      self.crypto.getRandomValues(new SharedArrayBuffer(100));
+    });
+}, "getRandomValues in SharedArrayBuffer throws")

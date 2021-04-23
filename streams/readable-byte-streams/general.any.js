@@ -1597,7 +1597,7 @@ promise_test(() => {
 
   let controller;
   const viewInfos = [];
-  const viewInfosAfterRespond = [];
+  const viewInfosAfterEnqueue = [];
 
   const stream = new ReadableStream({
     start(c) {
@@ -1613,7 +1613,7 @@ promise_test(() => {
         viewInfos.push(extractViewInfo(view));
 
         controller.enqueue(new Uint8Array([0x01]));
-        viewInfosAfterRespond.push(extractViewInfo(view));
+        viewInfosAfterEnqueue.push(extractViewInfo(view));
       }
 
       ++pullCount;
@@ -1640,7 +1640,7 @@ promise_test(() => {
       assert_equals(viewInfos[i].byteOffset, i, 'view.byteOffset should be i');
       assert_equals(viewInfos[i].byteLength, 4 - i, 'view.byteLength should be 4 - i');
 
-      assert_equals(viewInfosAfterRespond[i].bufferByteLength, 0, 'view.buffer should be transferred after enqueue()');
+      assert_equals(viewInfosAfterEnqueue[i].bufferByteLength, 0, 'view.buffer should be transferred after enqueue()');
     }
   });
 }, 'ReadableStream with byte source: read(view) with Uint32Array, then fill it by multiple enqueue() calls');

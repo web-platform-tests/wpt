@@ -35,6 +35,7 @@ function test_computed_style(width, height, expected) {
 // This is not racy because the spec requires the user agent to queue a task:
 // https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data
 test(function() {
+  // This img will be tested again after loaded. In order to locate it correctly, this case should be the first case.
   var img = new Image();
   img.width = 250;
   img.height = 100;

@@ -1586,12 +1586,9 @@ promise_test(() => {
 
       assert_equals(viewInfos[i].byteOffset, i, 'view.byteOffset should be i');
       assert_equals(viewInfos[i].byteLength, 4 - i, 'view.byteLength should be 4 - i');
-    }
 
-    for (let i = 0; i < 3; ++i) {
-      assert_equals(viewInfosAfterRespond[i].bufferByteLength, 4, 'view.buffer should not be transferred after partial fill');
+      assert_equals(viewInfosAfterRespond[i].bufferByteLength, 0, 'view.buffer should be transferred after respond()');
     }
-    assert_equals(viewInfosAfterRespond[3].bufferByteLength, 0, 'view.buffer should be transferred after complete fill');
   });
 }, 'ReadableStream with byte source: read(view) with Uint32Array, then fill it by multiple respond() calls');
 
@@ -1642,12 +1639,9 @@ promise_test(() => {
 
       assert_equals(viewInfos[i].byteOffset, i, 'view.byteOffset should be i');
       assert_equals(viewInfos[i].byteLength, 4 - i, 'view.byteLength should be 4 - i');
-    }
 
-    for (let i = 0; i < 3; ++i) {
-      assert_equals(viewInfosAfterRespond[i].bufferByteLength, 4, 'view.buffer should not be transferred after partial fill');
+      assert_equals(viewInfosAfterRespond[i].bufferByteLength, 0, 'view.buffer should be transferred after enqueue()');
     }
-    assert_equals(viewInfosAfterRespond[3].bufferByteLength, 0, 'view.buffer should be transferred after complete fill');
   });
 }, 'ReadableStream with byte source: read(view) with Uint32Array, then fill it by multiple enqueue() calls');
 

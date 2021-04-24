@@ -3243,18 +3243,6 @@ IdlNamespace.prototype.test_member_attribute = function (member)
 
 IdlNamespace.prototype.test_self = function ()
 {
-    /**
-     * TODO(lukebjerring): Assert:
-     * - "Note that unlike interfaces or dictionaries, namespaces do not create types."
-     */
-
-    subsetTestByKey(this.name, test, () => {
-        assert_true(this.extAttrs.every(o => o.name === "Exposed" || o.name === "SecureContext"),
-            "Only the [Exposed] and [SecureContext] extended attributes are applicable to namespaces");
-        assert_true(this.has_extended_attribute("Exposed"),
-            "Namespaces must be annotated with the [Exposed] extended attribute");
-    }, `${this.name} namespace: extended attributes`);
-
     const namespaceObject = self[this.name];
 
     subsetTestByKey(this.name, test, () => {
@@ -3348,25 +3336,12 @@ function idl_test(srcs, deps, idl_setup_func) {
     return promise_test(function (t) {
         var idl_array = new IdlArray();
         var setup_error = null;
-        const validationIgnored = [
-            "constructor-member",
-            "dict-arg-default",
-            "require-exposed"
-        ];
         return Promise.all(
             srcs.concat(deps).map(fetch_spec))
             .then(function(results) {
                 const astArray = results.map(result =>
                     WebIDL2.parse(result.idl, { sourceName: result.spec })
                 );
-                test(() => {
-                    const validations = WebIDL2.validate(astArray)
-                        .filter(v => !validationIgnored.includes(v.ruleName));
-                    if (validations.length) {
-                        const message = validations.map(v => v.message).join("\n\n");
-                        throw new Error(message);
-                    }
-                }, "idl_test validation");
                 for (var i = 0; i < srcs.length; i++) {
                     idl_array.internal_add_idls(astArray[i]);
                 }

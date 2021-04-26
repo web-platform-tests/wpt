@@ -6,7 +6,12 @@ from mozprocess import ProcessHandler
 
 from tools.serve.serve import make_hosts_file
 
-from .base import Browser, require_arg, get_free_port, browser_command, ExecutorBrowser
+from .base import (Browser,
+                   ExecutorBrowser,
+                   OutputHandler,
+                   require_arg,
+                   get_free_port,
+                   browser_command)
 from .base import get_timeout_multiplier   # noqa: F401
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorservodriver import (ServoWebDriverTestharnessExecutor,  # noqa: F401
@@ -128,12 +133,16 @@ class ServoWebDriverBrowser(Browser):
 
         self.command = debug_args + self.command
 
+        self.output_handler = None
         if not self.debug_info or not self.debug_info.interactive:
+            self.output_handler = OutputHandler(self.logger, self.command)
             self.proc = ProcessHandler(self.command,
                                        processOutputLine=[self.on_output],
                                        env=cast_env(env),
                                        storeOutput=False)
             self.proc.run()
+            self.output_handler.after_process_start(self.proc.pid)
+            self.output_handler.start()
         else:
             self.proc = subprocess.Popen(self.command, env=cast_env(env))
 
@@ -147,6 +156,8 @@ class ServoWebDriverBrowser(Browser):
             except OSError:
                 # This can happen on Windows if the process is already dead
                 pass
+        if self.output_handler is not None:
+            self.output_handler.after_process_stop()
 
     def pid(self):
         if self.proc is None:
@@ -156,12 +167,6 @@ class ServoWebDriverBrowser(Browser):
             return self.proc.pid
         except AttributeError:
             return None
-
-    def on_output(self, line):
-        """Write a line of output from the process to the log"""
-        self.logger.process_output(self.pid(),
-                                   line.decode("utf8", "replace"),
-                                   command=" ".join(self.command))
 
     def is_alive(self):
         return self.proc.poll() is None

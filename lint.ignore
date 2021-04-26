@@ -329,6 +329,7 @@ SET TIMEOUT: resources/test/tests/functional/step_wait.html
 SET TIMEOUT: resources/test/tests/functional/step_wait_func.html
 SET TIMEOUT: resources/test/tests/functional/worker.js
 SET TIMEOUT: resources/test/tests/functional/worker-uncaught-allow.js
+SET TIMEOUT: resources/test/tests/unit/async_promise_test.html
 SET TIMEOUT: resources/test/tests/unit/exceptional-cases.html
 SET TIMEOUT: resources/test/tests/unit/exceptional-cases-timeouts.html
 SET TIMEOUT: resources/test/tests/unit/promise_setup.html

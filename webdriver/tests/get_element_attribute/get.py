@@ -119,3 +119,11 @@ def test_anchor_href(session, inline, url, is_relative):
 
     response = get_element_attribute(session, element.id, "href")
     assert_success(response, href)
+
+
+def test_strings_not_coerced_into_integers(session, inline):
+    session.url = inline("<li  value=\"4b273a33fbbd29013nN93dy4F1A~\" class=\"cur\"></li>")
+    element = session.find.css("li", all=False)
+    result = get_element_attribute(session, element.id, "value")
+    assert_success(result, "4b273a33fbbd29013nN93dy4F1A~")
+

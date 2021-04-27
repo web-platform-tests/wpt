@@ -135,7 +135,7 @@ def test_verify_payload():
       'tools/ integration tests (Python 3.6)',
       'tools/ integration tests (Python 3.9)',
       'resources/ tests (Python 3.6)',
-      'resources/ tests (Python 3.8)',
+      'resources/ tests (Python 3.9)',
       'download-firefox-nightly',
       'infrastructure/ tests',
       'sink-task']),

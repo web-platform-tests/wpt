@@ -6,26 +6,20 @@
 <script src="/resources/testharnessreport.js"></script>
 <video></video>
 <script>
-  async_test(function(t) {
-    t.step(function() {
-      fetch(getVideoURI('/media/movie_5'))
-        .then(function(response) {
-          return response.blob();
-        })
-        .then(function(blob) {
-          let video = document.querySelector("video");
-          video.srcObject = blob;
-          video.addEventListener('ended', function() {
-            t.done();
-          });
-          video.play().catch(function(error) {
-            assert(false, error);
-          });
-        })
-        .catch(function(error) {
-          assert(false, error);
-        });
+  let video = document.querySelector("video");
+  promise_test(async t => {
+    const blob = await fetch(getVideoURI('/media/movie_5'))
+          .then(r => r.blob());
+    try {
+      video.srcObject = blob;
+    } catch (error) {
+      assert_unreached(error);
+      return t.done();
+    }
+    video.addEventListener('ended', function() {
+      t.done();
     });
+    video.play();
   });
 </script>
 

@@ -6,7 +6,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <video></video>
 <script>
-  let video = document.querySelector("video");
+  const video = document.querySelector("video");
   promise_test(async () => {
     const blob = await fetch(getVideoURI('/media/movie_5'))
           .then(r => r.blob());

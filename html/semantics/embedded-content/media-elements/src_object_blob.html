@@ -14,12 +14,10 @@
       video.srcObject = blob;
     } catch (error) {
       assert_unreached(error);
-      return t.done();
     }
-    video.addEventListener('ended', function() {
-      t.done();
-    });
+    const done = new Promise(res => video.addEventListener('ended', res))
     video.play();
+    return done;
   });
 </script>
 

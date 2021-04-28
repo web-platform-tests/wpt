@@ -15,9 +15,8 @@
     } catch (error) {
       assert_unreached(error);
     }
-    const done = new Promise(res => video.addEventListener('ended', res))
+    const done = new Promise(res => video.addEventListener('ended', res));
     video.play();
     return done;
   });
 </script>
-

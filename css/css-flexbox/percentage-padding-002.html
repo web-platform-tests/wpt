@@ -10,13 +10,12 @@ div {
 }
 span {
     display: inline-flex;
-    padding: 100%; /* A big padding was making the content size negative in WebKit. */
     border: 5px solid black;
 }
 </style>
-<p>Test passes if there is an almost centered small white box inside another white box.</p>
+<p>Test passes if there is a white square inside a 10x30 white box.</p>
 <div>
     <span>
-	    <span></span>
+	    <span style="padding: 100%;"></span>
     </span>
 <div>

@@ -139,6 +139,7 @@ class ConfigBuilder(object):
     _default = {
         "browser_host": "localhost",
         "alternate_hosts": {},
+        "alternate_ip_addresses": {},
         "doc_root": os.path.dirname("__file__"),
         "server_host": None,
         "ports": {"http": [8000]},
@@ -172,10 +173,12 @@ class ConfigBuilder(object):
     computed_properties = ["log_level",
                            "paths",
                            "server_host",
+                           "all_server_hosts",
                            "ports",
                            "domains",
                            "not_domains",
                            "all_domains",
+                           "domains_ip_addresses",
                            "domains_set",
                            "not_domains_set",
                            "all_domains_set",
@@ -280,8 +283,21 @@ class ConfigBuilder(object):
     def _get_paths(self, data):
         return {"doc_root": data["doc_root"]}
 
+    # Returns the main hostname servers should bind to.
     def _get_server_host(self, data):
         return data["server_host"] if data.get("server_host") is not None else data["browser_host"]
+
+    # Returns the list of different hostnames servers should bind to.
+    def _get_all_server_hosts(self, data):
+        if data["alternate_ip_addresses"]:
+            assert data["bind_address"], (
+                "`bind_address` must be set to `true` in the configuration " +
+                "when using alternate IP addresses.", data["alternate_ip_addresses"])
+
+        rv = [data["server_host"]]
+        for name in data["alternate_ip_addresses"].keys():
+            rv.append(data["alternate_hosts"][name])
+        return rv
 
     def _get_ports(self, data):
         new_ports = defaultdict(list)
@@ -293,6 +309,36 @@ class ConfigBuilder(object):
                 new_ports[scheme].append(real_port)
         return new_ports
 
+    # Returns a two-level dict: host_key -> subdomain -> full_domain_name
+    #
+    # Where:
+    #
+    #  - `host_key` is either "" for `server_host` or one of the keys in
+    #    `alternate_hosts`
+    #  - `subdomain_key` is one of the values in `subdomains`, or "".
+    #
+    # For example, given:
+    #
+    #   server_host = "foo.example"
+    #   alternate_hosts = {"bar": "bar.example"}
+    #   subdomains = ["hello", "你好"]
+    #
+    # This returns:
+    #
+    #   {
+    #     "": {
+    #       ""     : "foo.example",
+    #       "hello": "hello.foo.example",
+    #       "你好" : "xn--6qq79v.foo.example",
+    #     },
+    #     "bar": {
+    #       ""     : "bar.example",
+    #       "hello": "hello.bar.example",
+    #       "你好" : "xn--6qq79v.bar.example",
+    #     },
+    #   }
+    #
+    # Note: the leaves of this tree are all the subdomains in `domains_set`.
     def _get_domains(self, data):
         hosts = data["alternate_hosts"].copy()
         assert "" not in hosts
@@ -323,10 +369,19 @@ class ConfigBuilder(object):
             rv[host].update(nd[host])
         return rv
 
+    # Returns a dict mapping each domain to the IP address it should be served
+    # on. Domains that should use the default IP address map to `None`.
+    def _get_domains_ip_addresses(self, data):
+        rv = {}
+        for host, subdomains in data["domains"].items():
+            ip_address = data["alternate_ip_addresses"].get(host, None)
+            for subdomain in subdomains.values():
+                rv[subdomain] = ip_address
+        return rv
+
+    # The set of all domains / leaves of the `domains` tree.
     def _get_domains_set(self, data):
-        return {domain
-                for per_host_domains in data["domains"].values()
-                for domain in per_host_domains.values()}
+        return {domain for domain in data["domains_ip_addresses"].keys()}
 
     def _get_not_domains_set(self, data):
         return {domain

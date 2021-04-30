@@ -38,4 +38,11 @@ promise_test(async t => {
        'resources/scope1/module-worker-importing-redirect-to-scope2.js',
        'resources/scope1/');
   }, 'static imports redirecting to outside path restriction should be allowed');
+
+promise_test(async t => {
+    await runTest(t,
+        'resources/scope1/module-worker-importing-url.js',
+        'resources/scope1/');
+  }, 'static imports to any url should be allowed');
+
 </script>

@@ -14,6 +14,7 @@ import sys
 import tempfile
 
 from collections import defaultdict
+from typing import cast
 from urllib.parse import urlsplit, urljoin
 
 from . import fnmatch
@@ -844,7 +845,9 @@ def check_file_contents(repo_root, path, f=None):
     :param f: a file-like object with the file contents
     :returns: a list of errors found in ``f``
     """
-    with io.open(os.path.join(repo_root, path), 'rb') if f is None else nullcontext(f) as real_f:
+    file_ctx = (io.open(os.path.join(repo_root, path), 'rb') if f is None
+                else cast(io.BufferedReader, nullcontext(f)))
+    with file_ctx as real_f:
         assert real_f is not None  # Py2: prod mypy -2 into accepting this isn't None
         errors = []
         for file_fn in file_lints:

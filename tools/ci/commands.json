@@ -3,65 +3,42 @@
     "path": "jobs.py",
     "script": "run",
     "parser": "create_parser",
-    "help": "List test jobs that should run for a set of commits",
-    "virtualenv": false
+    "help": "List test jobs that should run for a set of commits"
   },
   "make-hosts-file": {
     "path": "make_hosts_file.py",
     "script": "run",
     "parser": "create_parser",
-    "help": "Output a hosts file to stdout",
-    "virtualenv": false
+    "help": "Output a hosts file to stdout"
   },
   "regen-certs": {
     "path": "regen_certs.py",
     "script": "run",
     "parser": "get_parser",
-    "help": "Regenerate the WPT certificates",
-    "virtualenv": false
+    "help": "Regenerate the WPT certificates"
   },
   "tc-download": {
     "path": "tc/download.py",
     "script": "run",
     "parser": "get_parser",
     "parse_known": true,
-    "help": "Download logs from taskcluster",
-    "virtualenv": true,
-    "install": [
-      "requests",
-      "pygithub"
-    ]
+    "help": "Download logs from taskcluster"
   },
   "tc-taskgraph": {
     "path": "tc/taskgraph.py",
     "script": "run",
-    "help": "Build the taskgraph",
-    "virtualenv": true,
-    "install": [
-      "requests",
-      "pyyaml"
-    ]
+    "help": "Build the taskgraph"
   },
   "tc-decision": {
     "path": "tc/decision.py",
     "parser": "get_parser",
     "script": "run",
-    "help": "Run the decision task",
-    "virtualenv": true,
-    "install": [
-        "requests",
-        "pyyaml",
-        "taskcluster"
-    ]
+    "help": "Run the decision task"
   },
   "tc-sink-task": {
     "path": "tc/sink_task.py",
     "parser": "get_parser",
     "script": "run",
-    "help": "Run the sink task",
-    "virtualenv": true,
-    "install": [
-        "taskcluster"
-    ]
+    "help": "Run the sink task"
   }
 }

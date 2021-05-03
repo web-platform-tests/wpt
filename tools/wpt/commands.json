@@ -3,14 +3,7 @@
     "path": "run.py",
     "script": "run",
     "parser": "create_parser",
-    "help": "Run tests in a browser",
-    "virtualenv": true,
-    "install": [
-      "zstandard"
-    ],
-    "requirements": [
-      "../wptrunner/requirements.txt"
-    ]
+    "help": "Run tests in a browser"
   },
   "create": {
     "path": "create.py",
@@ -22,68 +15,47 @@
     "path": "update.py",
     "script": "update_expectations",
     "parser": "create_parser_update",
-    "help": "Update expectations files from raw logs.",
-    "virtualenv": true,
-    "requirements": [
-      "../wptrunner/requirements.txt"
-    ]
+    "help": "Update expectations files from raw logs."
   },
   "files-changed": {
     "path": "testfiles.py",
     "script": "run_changed_files",
     "parser": "get_parser",
-    "help": "Get a list of files that have changed",
-    "virtualenv": false
+    "help": "Get a list of files that have changed"
   },
   "tests-affected": {
     "path": "testfiles.py",
     "script": "run_tests_affected",
     "parser": "get_parser_affected",
-    "help": "Get a list of tests affected by changes",
-    "virtualenv": false
+    "help": "Get a list of tests affected by changes"
   },
   "install": {
     "path": "install.py",
     "script": "run",
     "parser": "get_parser",
-    "help": "Install browser components",
-    "virtualenv": true,
-    "install": [
-      "mozinstall"
-    ]
+    "help": "Install browser components"
   },
   "branch-point": {
     "path": "testfiles.py",
     "script": "display_branch_point",
     "parser": null,
-    "help": "Print branch point from master",
-    "virtualenv": false
+    "help": "Print branch point from master"
   },
   "rev-list": {
     "path": "revlist.py",
     "script": "run_rev_list",
     "parser": "get_parser",
-    "help": "List tagged revisions at regular intervals",
-    "virtualenv": false
+    "help": "List tagged revisions at regular intervals"
   },
   "install-android-emulator": {
     "path": "android.py",
     "script": "run_install",
     "parser": "get_parser_install",
-    "help": "Setup the x86 android emulator",
-    "virtualenv": true,
-    "install": [
-      "requests"
-    ]
   },
   "start-android-emulator": {
     "path": "android.py",
     "script": "run_start",
     "parser": "get_parser_start",
-    "help": "Start the x86 android emulator",
-    "virtualenv": true,
-    "install": [
-      "requests"
-    ]
+    "help": "Start the x86 android emulator"
   }
 }

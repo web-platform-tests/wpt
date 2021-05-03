@@ -13,7 +13,6 @@ test((t) => {
   assert_equals(textarea.value, "a\nb\nc\nd\n\ne");
 
   const formData = new FormData(form);
-  console.log(formData);
   assert_equals(
     formData.get("linebreakTest"),
     "a\nb\nc\nd\n\ne",

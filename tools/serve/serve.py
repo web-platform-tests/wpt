@@ -507,7 +507,7 @@ class ServerProc(object):
         self.proc = self.mp_context.Process(target=self.create_daemon,
                                             args=(init_func, host, port, paths, routes, bind_address,
                                                   config),
-                                            name='%s on port %s' % (self.scheme, port),
+                                            name='%s on %s:%s' % (self.scheme, host, port),
                                             kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
@@ -588,24 +588,30 @@ def check_subdomains(config, routes, mp_context):
                         "on {}. {}".format(url, EDIT_HOSTS_HELP))
         sys.exit(1)
 
-    for domain in config.domains_set:
-        if domain == host:
+    for host_key, subdomains in config.domains.items():
+        if host_key in config.alternate_ip_addresses:
+            # These domains are served on a different IP than `host`.
             continue
 
-        try:
-            urllib.request.urlopen("http://%s:%d/" % (domain, port))
-        except Exception:
-            logger.critical("Failed probing domain {}. {}".format(domain, EDIT_HOSTS_HELP))
-            sys.exit(1)
+        for subdomain, domain in subdomains.items():
+            if domain == host:
+                # Already tested above.
+                continue
+
+            try:
+                urllib.request.urlopen("http://%s:%d/" % (domain, port))
+            except Exception:
+                logger.critical("Failed probing domain {}. {}".format(domain, EDIT_HOSTS_HELP))
+                sys.exit(1)
 
     wrapper.wait()
 
 
-def make_hosts_file(config, host):
+def make_hosts_file(config, default_ip_address):
     rv = []
 
-    for domain in config.domains_set:
-        rv.append("%s\t%s\n" % (host, domain))
+    for domain, ip_address in config.domains_ip_addresses.items():
+        rv.append("%s\t%s\n" % (ip_address or default_ip_address, domain))
 
     # Windows interpets the IP address 0.0.0.0 as non-existent, making it an
     # appropriate alias for non-existent hosts. However, UNIX-like systems
@@ -621,32 +627,35 @@ def make_hosts_file(config, host):
     return "".join(rv)
 
 
-def start_servers(host, ports, paths, routes, bind_address, config,
-                  mp_context, **kwargs):
+def start(config, routes, mp_context, **kwargs):
     servers = defaultdict(list)
-    for scheme, ports in ports.items():
-        assert len(ports) == {"http": 2, "https": 2}.get(scheme, 1)
 
-        # If trying to start HTTP/2.0 server, check compatibility
-        if scheme == 'h2' and not http2_compatible():
-            logger.error('Cannot start HTTP/2.0 server as the environment is not compatible. ' +
-                         'Requires Python 2.7.10+ or 3.6+ and OpenSSL 1.0.2+')
-            continue
+    logger.debug("Using ports: %r" % config.ports)
 
-        for port in ports:
-            if port is None:
+    for host in config.all_server_hosts:
+        for scheme, ports in config.ports.items():
+            assert len(ports) == {"http": 2, "https": 2}.get(scheme, 1)
+
+            # If trying to start HTTP/2.0 server, check compatibility
+            if scheme == 'h2' and not http2_compatible():
+                logger.error('Cannot start HTTP/2.0 server as the environment is not compatible. ' +
+                             'Requires Python 2.7.10+ or 3.6+ and OpenSSL 1.0.2+')
                 continue
-            init_func = {"http": start_http_server,
-                         "https": start_https_server,
-                         "h2": start_http2_server,
-                         "ws": start_ws_server,
-                         "wss": start_wss_server,
-                         "quic-transport": start_quic_transport_server}[scheme]
 
-            server_proc = ServerProc(mp_context, scheme=scheme)
-            server_proc.start(init_func, host, port, paths, routes, bind_address,
-                              config, **kwargs)
-            servers[scheme].append((port, server_proc))
+            for port in ports:
+                if port is None:
+                    continue
+                init_func = {"http": start_http_server,
+                             "https": start_https_server,
+                             "h2": start_http2_server,
+                             "ws": start_ws_server,
+                             "wss": start_wss_server,
+                             "quic-transport": start_quic_transport_server}[scheme]
+
+                server_proc = ServerProc(mp_context, scheme=scheme)
+                server_proc.start(init_func, host, port, config.paths, routes, config.bind_address,
+                                  config, **kwargs)
+                servers[scheme].append((port, server_proc))
 
     return servers
 
@@ -738,8 +747,8 @@ class WebSocketDaemon(object):
         if not ports:
             # TODO: Fix the logging configuration in WebSockets processes
             # see https://github.com/web-platform-tests/wpt/issues/22719
-            print("Failed to start websocket server on port %s, "
-                  "is something already using that port?" % port, file=sys.stderr)
+            print("Failed to start websocket server on %s:%s, "
+                  "is something already using that port?" % (host, port), file=sys.stderr)
             raise OSError()
         assert all(item == ports[0] for item in ports)
         self.port = ports[0]
@@ -873,19 +882,6 @@ def start_quic_transport_server(host, port, paths, routes, bind_address, config,
         startup_failed(log=False)
 
 
-def start(config, routes, mp_context, **kwargs):
-    host = config["server_host"]
-    ports = config.ports
-    paths = config.paths
-    bind_address = config["bind_address"]
-
-    logger.debug("Using ports: %r" % ports)
-
-    servers = start_servers(host, ports, paths, routes, bind_address, config, mp_context, **kwargs)
-
-    return servers
-
-
 def iter_procs(servers):
     for servers in servers.values():
         for port, server in servers:
@@ -927,7 +923,15 @@ class ConfigBuilder(config.ConfigBuilder):
     _default = {
         "browser_host": "web-platform.test",
         "alternate_hosts": {
-            "alt": "not-web-platform.test"
+            "alt": "not-web-platform.test",
+            "private": "private-web-platform.test",
+            "public": "public-web-platform.test",
+        },
+        "alternate_ip_addresses": {
+            # Missing hosts use the default IP address passed to
+            # `make_hosts_file()`.
+            "private": "127.1.0.1",
+            "public": "127.2.0.1",
         },
         "doc_root": repo_root,
         "ws_doc_root": os.path.join(repo_root, "websockets", "handlers"),

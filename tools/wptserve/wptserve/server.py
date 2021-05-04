@@ -822,8 +822,8 @@ class WebTestHttpd(object):
 
             _host, self.port = self.httpd.socket.getsockname()
         except Exception:
-            self.logger.critical("Failed to start HTTP server on port %s; "
-                                 "is something already using that port?" % port)
+            self.logger.critical("Failed to start HTTP server on %s:%s; "
+                                 "is something already using that port?" % (host, port))
             raise
 
     def start(self, block=False):

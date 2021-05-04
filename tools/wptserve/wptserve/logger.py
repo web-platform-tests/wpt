@@ -1,23 +1,23 @@
 class NoOpLogger(object):
-    def critical(self, msg):
+    def critical(self, msg: str) -> None:
         pass
 
-    def error(self, msg):
+    def error(self, msg: str) -> None:
         pass
 
-    def info(self, msg):
+    def info(self, msg: str) -> None:
         pass
 
-    def warning(self, msg):
+    def warning(self, msg: str) -> None:
         pass
 
-    def debug(self, msg):
+    def debug(self, msg: str) -> None:
         pass
 
-logger = NoOpLogger()
+logger: object = NoOpLogger()
 _set_logger = False
 
-def set_logger(new_logger):
+def set_logger(new_logger: object) -> None:
     global _set_logger
     if _set_logger:
         raise Exception("Logger must be set at most once")
@@ -25,5 +25,5 @@ def set_logger(new_logger):
     logger = new_logger
     _set_logger = True
 
-def get_logger():
+def get_logger() -> object:
     return logger

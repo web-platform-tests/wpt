@@ -13,10 +13,11 @@ const HCI_CONNECTION_TIMEOUT = 0x0008;
 /**
  * GATT Error codes.
  * Used for GATT operations responses. BT 4.2 Vol 3 Part F 3.4.1.1 Error
- * Response
+ * Response (p. 481)
  */
 const GATT_SUCCESS = 0x0000;
 const GATT_INVALID_HANDLE = 0x0001;
+const GATT_INSUFFICIENT_AUTHENTICATION = 0x0005;
 
 /* Bluetooth UUID Constants */
 
@@ -242,7 +243,8 @@ async function initializeFakeCentral({state = 'powered-on'}) {
 /**
  * A dictionary for specifying fake Bluetooth device setup options.
  * @typedef {{address: !string, name: !string,
- *            knownServiceUUIDs: !Array<string>, connectable: !boolean,
+ *            knownServiceUUIDs: !Array<string>,
+ *            security: bluetooth.mojom.DeviceSecurity, connectable: !boolean,
  *            serviceDiscoveryComplete: !boolean}}
  */
 let FakeDeviceOptions;
@@ -261,6 +263,7 @@ const fakeDeviceOptionsDefault = {
   address: '00:00:00:00:00:00',
   name: 'LE Device',
   knownServiceUUIDs: [],
+  security: 'none',
   connectable: false,
   serviceDiscoveryComplete: false,
 };
@@ -328,6 +331,7 @@ async function setUpPreconnectedFakeDevice(setupOptionsOverride) {
         address: setupOptions.fakeDeviceOptions.address,
         name: setupOptions.fakeDeviceOptions.name,
         knownServiceUUIDs: setupOptions.fakeDeviceOptions.knownServiceUUIDs,
+        security: setupOptions.fakeDeviceOptions.security,
       });
 
   if (setupOptions.fakeDeviceOptions.connectable) {
@@ -376,13 +380,15 @@ async function setUpPreconnectedFakeDevice(setupOptionsOverride) {
 async function setUpPreconnectedDevice({
   address = '00:00:00:00:00:00',
   name = 'LE Device',
-  knownServiceUUIDs = []
+  knownServiceUUIDs = [],
+  security = 'none'
 }) {
   await initializeFakeCentral({state: 'powered-on'});
   return await fake_central.simulatePreconnectedPeripheral({
     address: address,
     name: name,
     knownServiceUUIDs: knownServiceUUIDs,
+    security: security,
   });
 }
 
@@ -393,6 +399,7 @@ const blocklistFakeDeviceOptionsDefault = {
   address: '11:11:11:11:11:11',
   name: 'Blocklist Device',
   knownServiceUUIDs: ['generic_access', blocklist_test_service_uuid],
+  security: 'none',
   connectable: true,
   serviceDiscoveryComplete: true
 };
@@ -451,11 +458,13 @@ async function getBlocklistDevice(setupOptionsOverride = {}) {
       await fake_blocklist_test_service.addFakeCharacteristic({
         uuid: blocklist_exclude_reads_characteristic_uuid,
         properties: ['read', 'write'],
+        security: 'none',
       });
   let fake_blocklist_exclude_writes_characteristic =
       await fake_blocklist_test_service.addFakeCharacteristic({
         uuid: 'gap.peripheral_privacy_flag',
         properties: ['read', 'write'],
+        security: 'none',
       });
 
   let fake_blocklist_descriptor =
@@ -677,6 +686,7 @@ async function getConnectedHIDDevice(
   await dev_info.addFakeCharacteristic({
     uuid: 'serial_number_string',
     properties: ['read'],
+    security: 'none',
   });
   return fakeDevice;
 }
@@ -706,14 +716,16 @@ async function getHIDDevice(options) {
  * Returns a FakePeripheral that corresponds to a simulated pre-connected device
  * called 'Health Thermometer'. The device has two known serviceUUIDs:
  * 'generic_access' and 'health_thermometer'.
+ * @param security The simulated device security (see fake_bluetooth.mojom).
  * @returns {Promise<FakePeripheral>} The device fake initialized as a Health
  *     Thermometer device.
  */
-function setUpHealthThermometerDevice() {
+function setUpHealthThermometerDevice(security = 'none') {
   return setUpPreconnectedDevice({
     address: '09:09:09:09:09:09',
     name: 'Health Thermometer',
     knownServiceUUIDs: ['generic_access', 'health_thermometer'],
+    security: security,
   });
 }
 
@@ -758,6 +770,7 @@ async function populateHealthThermometerFakes(fake_peripheral) {
       await fake_health_thermometer.addFakeCharacteristic({
         uuid: 'measurement_interval',
         properties: ['read', 'write', 'indicate'],
+        security: 'none',
       });
   let fake_user_description =
       await fake_measurement_interval.addFakeDescriptor({
@@ -770,11 +783,13 @@ async function populateHealthThermometerFakes(fake_peripheral) {
       await fake_health_thermometer.addFakeCharacteristic({
         uuid: 'temperature_measurement',
         properties: ['indicate'],
+        security: 'none',
       });
   let fake_temperature_type =
       await fake_health_thermometer.addFakeCharacteristic({
         uuid: 'temperature_type',
         properties: ['read'],
+        security: 'none',
       });
   return {
     fake_peripheral,
@@ -856,10 +871,12 @@ async function getHealthThermometerDeviceWithServicesDiscovered(options) {
  * @returns {device: BluetoothDevice, fake_peripheral: FakePeripheral} An object
  *     containing a requested BluetoothDevice and its fake counter part.
  */
-async function getDiscoveredHealthThermometerDevice(options = {
-  filters: [{services: ['health_thermometer']}]
-}) {
-  let fake_peripheral = await setUpHealthThermometerDevice();
+async function getDiscoveredHealthThermometerDevice(
+    options = {
+      filters: [{services: ['health_thermometer']}]
+    },
+    security = 'none') {
+  let fake_peripheral = await setUpHealthThermometerDevice(security);
   let device = await requestDeviceWithTrustedClick(options);
   return {device: device, fake_peripheral: fake_peripheral};
 }
@@ -925,8 +942,8 @@ async function getEmptyHealthThermometerService(options) {
  *         containing a requested BluetoothDevice and all of the GATT fake
  *         objects.
  */
-async function getConnectedHealthThermometerDevice(options) {
-  let result = await getDiscoveredHealthThermometerDevice(options);
+async function getConnectedHealthThermometerDevice(options, security = 'none') {
+  let result = await getDiscoveredHealthThermometerDevice(options, security);
   await result.fake_peripheral.setNextGATTConnectionResponse({
     code: HCI_SUCCESS,
   });
@@ -964,8 +981,8 @@ async function getConnectedHealthThermometerDevice(options) {
  *         containing a requested BluetoothDevice and all of the GATT fake
  *         objects.
  */
-async function getHealthThermometerDevice(options) {
-  let result = await getConnectedHealthThermometerDevice(options);
+async function getHealthThermometerDevice(options = undefined, security = 'none') {
+  let result = await getConnectedHealthThermometerDevice(options, security);
   await result.fake_peripheral.setNextGATTDiscoveryResponse({
     code: HCI_SUCCESS,
   });
@@ -1015,8 +1032,9 @@ async function getTwoHealthThermometerServicesDevice(options) {
  *         containing a requested BluetoothDevice and all of the GATT fake
  *         objects.
  */
-async function getHealthThermometerService() {
-  let result = await getHealthThermometerDevice();
+async function getHealthThermometerService(deviceSecurity = 'none') {
+  let result =
+      await getHealthThermometerDevice(/*options=*/ undefined, deviceSecurity);
   let service =
       await result.device.gatt.getPrimaryService('health_thermometer');
   return Object.assign(result, {
@@ -1045,8 +1063,8 @@ async function getHealthThermometerService() {
  *         containing a requested BluetoothDevice and all of the GATT fake
  *         objects.
  */
-async function getMeasurementIntervalCharacteristic() {
-  let result = await getHealthThermometerService();
+async function getMeasurementIntervalCharacteristic(deviceSecurity = 'none') {
+  let result = await getHealthThermometerService(deviceSecurity);
   let characteristic =
       await result.service.getCharacteristic('measurement_interval');
   return Object.assign(result, {
@@ -1113,21 +1131,24 @@ async function getHeartRateDevice(setupOptionsOverride) {
 /**
  * Returns an array containing two FakePeripherals corresponding
  * to the simulated devices.
+ * @param security The simulated device security (see fake_bluetooth.mojom).
  * @returns {Promise<Array<FakePeripheral>>} The device fakes initialized as
  *     Health Thermometer and Heart Rate devices.
  */
-async function setUpHealthThermometerAndHeartRateDevices() {
+async function setUpHealthThermometerAndHeartRateDevices(security = 'none') {
   await initializeFakeCentral({state: 'powered-on'});
   return Promise.all([
     fake_central.simulatePreconnectedPeripheral({
       address: '09:09:09:09:09:09',
       name: 'Health Thermometer',
       knownServiceUUIDs: ['generic_access', 'health_thermometer'],
+      security: security,
     }),
     fake_central.simulatePreconnectedPeripheral({
       address: '08:08:08:08:08:08',
       name: 'Heart Rate',
       knownServiceUUIDs: ['generic_access', 'heart_rate'],
+      security: security,
     })
   ]);
 }

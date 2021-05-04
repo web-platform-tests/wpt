@@ -17,6 +17,43 @@ function toMojoCentralState(state) {
   }
 }
 
+function toMojoDeviceSecurity(security) {
+  switch (security) {
+    case 'none':
+      return bluetooth.mojom.DeviceSecurity.NONE;
+    case 'passkey':
+      return bluetooth.mojom.DeviceSecurity.PASSKEY;
+    default:
+      throw `Unsupported value "${security}" for device security.`;
+  }
+}
+
+function toMojoDeviceAuthStatus(authStatus) {
+  switch (authStatus) {
+    case 'valid':
+      return bluetooth.mojom.DeviceAuthStatus.VALID;
+    case 'invalid':
+      return bluetooth.mojom.DeviceAuthStatus.INVALID;
+    default:
+      throw `Unsupported value "${authStatus}" for device auth status.`;
+  }
+}
+
+function toMojoCharactersticSecurity(security) {
+  switch (security) {
+    case 'none':
+      return bluetooth.mojom.CharactersticSecurity.NONE;
+    case 'paired-to-read':
+      return bluetooth.mojom.CharactersticSecurity.PAIRED_TO_READ;
+    case 'paired-to-write':
+      return bluetooth.mojom.CharactersticSecurity.PAIRED_TO_WRITE;
+    case 'paired-to-read-or-write':
+      return bluetooth.mojom.CharactersticSecurity.PAIRED_TO_READ_OR_WRITE;
+    default:
+      throw `Unsupported value "${security}" for characteristic security.`;
+  }
+}
+
 // Converts bluetooth.mojom.WriteType to a string. If |writeType| is
 // invalid, this method will throw.
 function writeTypeToString(writeType) {
@@ -129,10 +166,10 @@ class FakeCentral {
     this.peripherals_ = new Map();
   }
 
-  // Simulates a peripheral with |address|, |name| and |known_service_uuids|
-  // that has already been connected to the system. If the peripheral existed
-  // already it updates its name and known UUIDs. |known_service_uuids| should
-  // be an array of BluetoothServiceUUIDs
+  // Simulates a peripheral with |address|, |name|. |known_service_uuids|, and
+  // |security| that has already been connected to the system. If the peripheral
+  // existed already it updates its name and known UUIDs. |known_service_uuids|
+  // should be an array of BluetoothServiceUUIDs
   // https://webbluetoothcg.github.io/web-bluetooth/#typedefdef-bluetoothserviceuuid
   //
   // Platforms offer methods to retrieve devices that have already been
@@ -140,10 +177,11 @@ class FakeCentral {
   // connected a peripheral through the system's settings. This method is
   // intended to simulate peripherals that those methods would return.
   async simulatePreconnectedPeripheral({
-    address, name, knownServiceUUIDs = []}) {
+    address, name, knownServiceUUIDs = [], security = 'none'}) {
 
     await this.fake_central_ptr_.simulatePreconnectedPeripheral(
-      address, name, canonicalizeAndConvertToMojoUUID(knownServiceUUIDs));
+      address, name, canonicalizeAndConvertToMojoUUID(knownServiceUUIDs),
+      toMojoDeviceSecurity(security));
 
     return this.fetchOrCreatePeripheral_(address);
   }
@@ -310,15 +348,16 @@ class FakeRemoteGATTService {
     this.fake_central_ptr_ = fake_central_ptr;
   }
 
-  // Adds a fake GATT Characteristic with |uuid| and |properties|
+  // Adds a fake GATT Characteristic with |uuid|, |properties|, and |security|
   // to this fake service. The characteristic will be found when discovering
   // the peripheral's GATT Attributes. Returns a FakeRemoteGATTCharacteristic
   // corresponding to the added characteristic.
-  async addFakeCharacteristic({uuid, properties}) {
+  async addFakeCharacteristic({uuid, properties, security}) {
     let {characteristicId: characteristic_id} =
         await this.fake_central_ptr_.addFakeCharacteristic(
             {uuid: BluetoothUUID.getCharacteristic(uuid)},
             ArrayToMojoCharacteristicProperties(properties),
+            toMojoCharactersticSecurity(security),
             this.service_id_,
             this.peripheral_address_);
 
@@ -367,13 +406,15 @@ class FakeRemoteGATTCharacteristic {
     return fake_descriptor;
   }
 
-  // Sets the next read response for characteristic to |code| and |value|.
+  // Sets the next read response for characteristic to |code| and |value|, and
+  // if necessary will use the optional |auth_status| if needed to simulate
+  // the pairing result with the peripheral.
   // |code| could be a GATT Error Response from
   // BT 4.2 Vol 3 Part F 3.4.1.1 Error Response or a number outside that range
   // returned by specific platforms e.g. Android returns 0x101 to signal a GATT
   // failure.
   // https://developer.android.com/reference/android/bluetooth/BluetoothGatt.html#GATT_FAILURE
-  async setNextReadResponse(gatt_code, value=null) {
+  async setNextReadResponse(gatt_code, value=null, auth_status='valid') {
     if (gatt_code === 0 && value === null) {
       throw '|value| can\'t be null if read should success.';
     }
@@ -383,7 +424,7 @@ class FakeRemoteGATTCharacteristic {
 
     let {success} =
       await this.fake_central_ptr_.setNextReadCharacteristicResponse(
-        gatt_code, value, ...this.ids_);
+        gatt_code, value, toMojoDeviceAuthStatus(auth_status), ...this.ids_);
 
     if (!success) throw 'setNextReadCharacteristicResponse failed';
   }
@@ -475,13 +516,15 @@ class FakeRemoteGATTDescriptor {
     this.fake_central_ptr_ = fake_central_ptr;
   }
 
-  // Sets the next read response for descriptor to |code| and |value|.
-  // |code| could be a GATT Error Response from
+  // Sets the next read response for descriptor to |code|, |value|, and
+  // |auth_status|. |code| could be a GATT Error Response from
   // BT 4.2 Vol 3 Part F 3.4.1.1 Error Response or a number outside that range
   // returned by specific platforms e.g. Android returns 0x101 to signal a GATT
   // failure.
   // https://developer.android.com/reference/android/bluetooth/BluetoothGatt.html#GATT_FAILURE
-  async setNextReadResponse(gatt_code, value=null) {
+  // |auth_status| will be used (if needed) to simulate the pairing result with
+  // the peripheral.
+  async setNextReadResponse(gatt_code, value=null, auth_status='invalid') {
     if (gatt_code === 0 && value === null) {
       throw '|value| cannot be null if read should succeed.';
     }
@@ -491,7 +534,7 @@ class FakeRemoteGATTDescriptor {
 
     let {success} =
       await this.fake_central_ptr_.setNextReadDescriptorResponse(
-        gatt_code, value, ...this.ids_);
+        gatt_code, value, toMojoDeviceAuthStatus(auth_status), ...this.ids_);
 
     if (!success) throw 'setNextReadDescriptorResponse failed';
   }

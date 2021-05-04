@@ -17,9 +17,11 @@ bluetooth_test(() => getConnectedHealthThermometerDevice({
     .then(() => fake_peripheral.addFakeService({uuid: 'health_thermometer'}))
     .then(fake_service => Promise.all([
       fake_service.addFakeCharacteristic({
-        uuid: 'temperature_measurement', properties: ['indicate']}),
+        uuid: 'temperature_measurement', properties: ['indicate'],
+        security: 'none'}),
       fake_service.addFakeCharacteristic({
-        uuid: 'temperature_measurement', properties: ['indicate']})
+        uuid: 'temperature_measurement', properties: ['indicate'],
+        security: 'none'})
     ]))
     .then(() => fake_peripheral.setNextGATTDiscoveryResponse({code:HCI_SUCCESS}))
     .then(() => device.gatt.getPrimaryServices('health_thermometer'))

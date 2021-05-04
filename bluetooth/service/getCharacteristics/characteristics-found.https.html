@@ -20,13 +20,16 @@ bluetooth_test(() => getDiscoveredHealthThermometerDevice()
     .then(fake_health_thermometer => Promise.all([
         fake_health_thermometer.addFakeCharacteristic({
           uuid: 'measurement_interval',
-          properties: ['read', 'write', 'indicate']}),
+          properties: ['read', 'write', 'indicate'],
+          security: 'none'}),
         fake_health_thermometer.addFakeCharacteristic({
           uuid: 'measurement_interval',
-          properties: ['read', 'write', 'indicate']}),
+          properties: ['read', 'write', 'indicate'],
+          security: 'none'}),
         fake_health_thermometer.addFakeCharacteristic({
           uuid: 'temperature_measurement',
-          properties: ['indicate']})
+          properties: ['indicate'],
+          security: 'none'})
     ]))
     .then(() =>
       fake_peripheral.setNextGATTDiscoveryResponse({code: HCI_SUCCESS}))

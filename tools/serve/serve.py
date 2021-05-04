@@ -747,8 +747,8 @@ class WebSocketDaemon(object):
         if not ports:
             # TODO: Fix the logging configuration in WebSockets processes
             # see https://github.com/web-platform-tests/wpt/issues/22719
-            print("Failed to start websocket server on port %s, "
-                  "is something already using that port?" % port, file=sys.stderr)
+            print("Failed to start websocket server on %s:%s, "
+                  "is something already using that port?" % (host, port), file=sys.stderr)
             raise OSError()
         assert all(item == ports[0] for item in ports)
         self.port = ports[0]

@@ -17,7 +17,7 @@ test((t) => {
     formData.get("linebreakTest"),
     "a\nb\nc\nd\n\ne",
   );
-}, "Newlines in textarea elements should be normalized to LF.");
+}, "Textarea wrapping transformation: Newlines should be normalized to LF.");
 
 test((t) => {
   const form = document.createElement("form");
@@ -55,4 +55,4 @@ test((t) => {
     formDataValue.includes("\n"),
     "The value must be wrapped.",
   );
-}, "Testing the textarea wrapping transformation.");
+}, "Textarea wrapping transformation: Wrapping happens with LF newlines.");

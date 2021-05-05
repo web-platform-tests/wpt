@@ -160,11 +160,12 @@ customising the test run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
-<p><a class="reference internal" href="command-line-arguments.html"><span class="doc">A complete listing of the command-line arguments is available
-here</span></a>.</p>
+<p><a class="reference external" href="command-line-arguments.html#run">A complete listing of the command-line arguments is available
+here</a>.</p>
 <div class="toctree-wrapper compound">
 </div>
-<p>Additional browser-specific documentation:</p>
+<section id="browser-specific-instructions">
+<h3>Browser-specific instructions<a class="headerlink" href="#browser-specific-instructions" title="Permalink to this headline">¶</a></h3>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="chrome.html">Chrome</a></li>
@@ -181,11 +182,42 @@ here</span></a>.</p>
 <li class="toctree-l1"><a class="reference internal" href="webkitgtk_minibrowser.html">WebKitGTK MiniBrowser</a></li>
 </ul>
 </div>
+</section>
+<section id="running-in-parallel">
+<h3>Running in parallel<a class="headerlink" href="#running-in-parallel" title="Permalink to this headline">¶</a></h3>
+<p>To speed up the testing process, use the <code class="docutils literal notranslate"><span class="pre">--processes</span></code> option to run multiple
+browser instances in parallel. For example, to run the tests in dom/ with six
+Firefox instances in parallel:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">processes</span><span class="o">=</span><span class="mi">6</span> <span class="n">firefox</span> <span class="n">dom</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>But note that behaviour in this mode is necessarily less deterministic than with
+a single process (the default), so there may be more noise in the test results.</p>
+</section>
+<section id="output-formats">
+<h3>Output formats<a class="headerlink" href="#output-formats" title="Permalink to this headline">¶</a></h3>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code> outputs test results and a summary in a human readable
+format. For debugging, <code class="docutils literal notranslate"><span class="pre">--log-mach</span></code> can give more verbose output. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">=-</span> <span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">mach</span><span class="o">-</span><span class="n">level</span><span class="o">=</span><span class="n">info</span> <span class="n">firefox</span> <span class="n">dom</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>A machine readable JSON report can be produced using <code class="docutils literal notranslate"><span class="pre">--log-wptreport</span></code>. This
+together with <code class="docutils literal notranslate"><span class="pre">--log-wptscreenshot</span></code> is what is used to produce results for
+<a class="reference external" href="https://wpt.fyi">wpt.fyi</a>. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">wpt</span> <span class="n">run</span> <span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">wptreport</span><span class="o">=</span><span class="n">report</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">wptscreenshot</span><span class="o">=</span><span class="n">screenshots</span><span class="o">.</span><span class="n">txt</span> <span class="n">firefox</span> <span class="n">css</span><span class="o">/</span><span class="n">css</span><span class="o">-</span><span class="n">grid</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(See <a class="reference external" href="https://github.com/web-platform-tests/wpt.fyi/blob/main/api/README.md#results-creation">wpt.fyi documentation</a>
+for how results are uploaded.)</p>
+</section>
+<section id="expectation-data">
+<h3>Expectation data<a class="headerlink" href="#expectation-data" title="Permalink to this headline">¶</a></h3>
 <p>For use in continuous integration systems, and other scenarios where regression
 tracking is required, the command-line interface supports storing and loading
 the expected result of each test in a test run. See <a class="reference internal" href="../tools/wptrunner/docs/expectation.html"><span class="doc">Expectations
 Data</span></a> for more information on creating
 and maintaining these files.</p>
+</section>
 </section>
 </section>
 

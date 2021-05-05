@@ -152,7 +152,7 @@ customising the test run:
     ./wpt run --help
 
 [A complete listing of the command-line arguments is available
-here](command-line-arguments.md#run).
+here](command-line-arguments.html#run).
 
 ```eval_rst
 .. toctree::

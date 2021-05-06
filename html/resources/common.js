@@ -9,11 +9,11 @@ var HTML5_ELEMENTS = [ 'a', 'abbr', 'address', 'area', 'article', 'aside',
         'hgroup', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd',
         'keygen', 'label', 'legend', 'li', 'link', 'map', 'mark', 'menu',
         'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup',
-        'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt',
-        'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source',
-        'span', 'strong', 'style', 'sub', 'table', 'tbody', 'td', 'textarea',
-        'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul',
-        'var', 'video', 'wbr' ];
+        'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rb', 'rp',
+        'rt', 'rtc', 'ruby', 's', 'samp', 'script', 'section', 'select',
+        'small', 'source', 'span', 'strong', 'style', 'sub', 'table', 'tbody',
+        'td', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr',
+        'track', 'u', 'ul', 'var', 'video', 'wbr' ];
 
 // only void (without end tag) HTML5 elements
 var HTML5_VOID_ELEMENTS = [ 'area', 'base', 'br', 'col', 'command', 'embed',

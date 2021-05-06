@@ -374,6 +374,11 @@ testText("<div><rp style='visibility:hidden'>abc</rp>", "", "visibility:hidden <
 testText("<div><rp style='display:block'>abc</rp>def", "abc\ndef", "display:block <rp>");
 testText("<div><rp style='display:block'> abc </rp>def", "abc\ndef", "display:block <rp> with whitespace");
 testText("<div><select class='poke-rp'></select>", "", "<rp> in a <select>");
+testText("<div><ruby><rb>abc</rb><rt>def</rt></ruby>", "abcdef", "<rb> and <rt> and no <rp>");
+testText("<div><ruby>abc<rtc>def</rtc></ruby>", "abcdef", "<rtc> and no <rp>");
+testText("<div><ruby><rb>abc</rb><rtc>def</rtc></ruby>", "abcdef", "<rb> and <rtc> and no <rp>");
+testText("<div><ruby><rb>abc</rb><rtc><rt>def</rt></rtc></ruby>", "abcdef", "<rb> and <rtc> and <rt> and no <rp>");
+testText("<div><ruby><rb>abc</rb><rp(</rp><rtc><rt>def</rt></rtc></rp>)</rp></ruby>", "abcdef", "all ruby related elements");
 
 /**** Shadow DOM ****/
 

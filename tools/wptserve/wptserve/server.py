@@ -829,7 +829,7 @@ class WebTestHttpd(object):
                                  "is something already using that port?" % port)
             raise
 
-    def start(self, block=False):
+    def start(self):
         """Start the server.
 
         :param block: True to run the server on the current thread, blocking,
@@ -837,12 +837,9 @@ class WebTestHttpd(object):
         http_type = "http2" if self.http2 else "https" if self.use_ssl else "http"
         self.logger.info("Starting %s server on %s:%s" % (http_type, self.host, self.port))
         self.started = True
-        if block:
-            self.httpd.serve_forever()
-        else:
-            self.server_thread = threading.Thread(target=self.httpd.serve_forever)
-            self.server_thread.setDaemon(True)  # don't hang on exit
-            self.server_thread.start()
+        self.server_thread = threading.Thread(target=self.httpd.serve_forever)
+        self.server_thread.setDaemon(True)  # don't hang on exit
+        self.server_thread.start()
 
     def stop(self):
         """

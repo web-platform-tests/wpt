@@ -141,7 +141,7 @@ class TestEnvironment(object):
 
         for scheme, servers in self.servers.items():
             for port, server in servers:
-                server.kill()
+                server.stop()
         for cm in self.env_extras_cms:
             cm.__exit__(exc_type, exc_val, exc_tb)
 

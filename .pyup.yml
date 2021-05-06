@@ -8,6 +8,7 @@ search: False
 # allowed: list
 requirements:
  - docs/requirements.txt
+ - tools/requirements_tests.txt
  - tools/requirements_flake8.txt
  - tools/requirements_mypy.txt
  - tools/requirements_pytest.txt
@@ -27,6 +28,7 @@ requirements:
  - tools/wptrunner/requirements_sauce.txt
  - tools/wptrunner/requirements_servo.txt
  - tools/wptrunner/requirements_webkit.txt
+ - resources/test/requirements.txt
 
  # try and avoid bogus PRs where these get updated (has happened occasionally)
  - annotation-protocol/requirements.txt:

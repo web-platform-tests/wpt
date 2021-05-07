@@ -38,18 +38,7 @@ const check_sandbox_script = `
 
 const sandbox_policy = "sandbox allow-scripts allow-same-origin";
 
-// Test using the modern async/await primitives are easier to read/write.
-// However they run sequentially, contrary to async_test. This is the parallel
-// version, to avoid timing out.
-let promise_test_parallel = (promise, description) => {
-  async_test(test => {
-    promise(test)
-    .then(() => {test.done();})
-    .catch(test.step_func(error => { throw error; }));
-  }, description);
-};
-
-promise_test_parallel(async test => {
+async_promise_test(async test => {
   const iframe = document.createElement("iframe");
   iframe.csp = sandbox_policy;
 
@@ -67,7 +56,7 @@ promise_test_parallel(async test => {
   assert_equals(result.data, "document-domain-is-disallowed");
 }, "initial empty document");
 
-promise_test_parallel(async test => {
+async_promise_test(async test => {
   const iframe = document.createElement("iframe");
   iframe.src = "data:text/html,dummy";
 
@@ -87,7 +76,7 @@ promise_test_parallel(async test => {
   assert_equals(result.data, "document-domain-is-disallowed");
 }, "about:blank");
 
-promise_test_parallel(async test => {
+async_promise_test(async test => {
   const iframe = document.createElement("iframe");
   iframe.csp = sandbox_policy;
   iframe.src =
@@ -100,7 +89,7 @@ promise_test_parallel(async test => {
   assert_equals(result.data, "document-domain-is-disallowed");
 }, "data-url");
 
-promise_test_parallel(async test => {
+async_promise_test(async test => {
   const iframe = document.createElement("iframe");
   iframe.csp = sandbox_policy;
   iframe.srcdoc = check_sandbox_script;
@@ -112,7 +101,7 @@ promise_test_parallel(async test => {
   assert_equals(result.data, "document-domain-is-disallowed");
 }, "srcdoc");
 
-promise_test_parallel(async test => {
+async_promise_test(async test => {
   const iframe = document.createElement("iframe");
   iframe.csp = sandbox_policy;
 
@@ -127,7 +116,7 @@ promise_test_parallel(async test => {
   assert_equals(result.data, "document-domain-is-disallowed");
 }, "blob URL");
 
-promise_test_parallel(async test => {
+async_promise_test(async test => {
   const iframe = document.createElement("iframe");
   iframe.csp = sandbox_policy;
   iframe.src = same_origin + check_sandbox_url + allow_csp_from_star;
@@ -139,7 +128,7 @@ promise_test_parallel(async test => {
   assert_equals(result.data, "document-domain-is-disallowed");
 }, "same-origin");
 
-promise_test_parallel(async test => {
+async_promise_test(async test => {
   const iframe = document.createElement("iframe");
   iframe.csp = sandbox_policy;
   iframe.src = cross_origin + check_sandbox_url + allow_csp_from_star;

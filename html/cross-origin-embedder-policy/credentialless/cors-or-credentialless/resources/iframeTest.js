@@ -41,7 +41,7 @@ const iframeTest = function(
   child_headers,
   expectation
 ) {
-  promise_test_parallel(async test => {
+  async_promise_test(async test => {
     const test_token = token();
 
     const child_token = token();

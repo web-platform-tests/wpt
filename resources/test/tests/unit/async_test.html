@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="/resources/testharness.js"></script>
+  <script src="../../nested-testharness.js"></script>
+  <title>async_test</title>
+</head>
+<body>
+<script>
+'use strict';
+
+async_test(test => {
+  var expected_sequence = ['a','b','c','d'];
+  var actual_sequence = window.actual_sequence_1 = [];
+
+  makeTest(() => {
+    var unlock_1;
+    var lock_1 = new Promise(resolve => unlock_1 = resolve);
+
+    var unlock_2;
+    var lock_2 = new Promise(resolve => unlock_2 = resolve);
+
+    async_test(test => {
+      parent.actual_sequence_1.push('a');
+      lock_1.then(test.step_func_done(() => {
+        parent.actual_sequence_1.push('c');
+        unlock_2();
+      }));
+    }, 'track1');
+
+    async_test(test => {
+      parent.actual_sequence_1.push('b');
+      unlock_1()
+      lock_2.then(test.step_func_done(() => {
+        parent.actual_sequence_1.push('d');
+      }));
+    }, 'track2');
+  }).then(test.step_func_done(({harness, tests}) => {
+    assert_equals(harness, 'OK');
+    assert_equals(tests.track1, 'PASS');
+    assert_equals(tests.track2, 'PASS');
+    assert_array_equals(actual_sequence, expected_sequence);
+  }));
+}, 'async_test are run in parallel');
+
+async_test(test => {
+  makeTest(() => {
+    async_test(test => {
+      throw new Error('this error is expected');
+      test.done();
+    }, 'track1');
+
+    async_test(test => {
+      test.done();
+    }, 'track2');
+  }).then(test.step_func_done(({harness, tests}) => {
+    assert_equals(harness, 'OK');
+    assert_equals(tests.track1, 'FAIL');
+    assert_equals(tests.track2, 'PASS');
+  }));
+}, 'async_test [FAIL, PASS]');
+
+async_test(test => {
+  makeTest(() => {
+    async_test(test => {
+      test.done();
+    }, 'track1');
+
+    async_test(test => {
+      throw new Error('this error is expected');
+      test.done();
+    }, 'track2');
+  }).then(test.step_func_done(({harness, tests}) => {
+    assert_equals(harness, 'OK');
+    assert_equals(tests.track1, 'PASS');
+    assert_equals(tests.track2, 'FAIL');
+  }));
+}, 'async_test [PASS, FAIL]');
+
+async_test(test => {
+  var expected_sequence = [
+    'setup start',
+    'setup end',
+    'async_test',
+  ];
+  var actual_sequence = window.actual_sequence_2 = [];
+
+  makeTest(() => {
+    promise_setup(async () => {
+      parent.actual_sequence_2.push('setup start');
+      await new Promise(resolve => step_timeout(resolve, 100));
+      parent.actual_sequence_2.push('setup end');
+    }, "setup_1");
+
+    async_test(test => {
+      parent.actual_sequence_2.push('async_test');
+      test.done();
+    }, 'async_test_1');
+  }).then(test.step_func_done(({harness, tests}) => {
+    assert_equals(harness, 'OK');
+    assert_array_equals(actual_sequence, expected_sequence);
+  }));
+}, 'async_test waits for previously defined promise_setup');
+
+// async_test() are guaranteed to execute after any previously defined
+// promise_setup().
+// Note: the opposite isn't guaranteed. A promise_setup is not guaranteed to
+// execute after previously defined async_test. Test authors are
+// encouraged not to interleave promise_setup() and async_test()
+async_test(test => {
+  var expected_sequence = [
+    'setup_1 start',
+    'setup_1 end',
+    'async_test_1',
+    'setup_2 start',
+    'setup_2 end',
+    'async_test_2',
+  ];
+  var actual_sequence = window.actual_sequence_3 = [];
+
+  makeTest(() => {
+    promise_setup(async () => {
+      parent.actual_sequence_3.push('setup_1 start');
+      await new Promise(resolve => step_timeout(resolve, 100));
+      parent.actual_sequence_3.push('setup_1 end');
+    }, "setup_1");
+
+    async_test(test => {
+      parent.actual_sequence_3.push('async_test_1');
+      test.done();
+    }, 'async_test_1');
+
+    promise_setup(async () => {
+      parent.actual_sequence_3.push('setup_2 start');
+      await new Promise(resolve => step_timeout(resolve, 100));
+      parent.actual_sequence_3.push('setup_2 end');
+    }, "setup_2");
+
+    async_test(test => {
+      parent.actual_sequence_3.push('async_test_2');
+      test.done();
+    }, 'async_test_2');
+  }).then(test.step_func_done(({harness, tests}) => {
+    assert_equals(harness, 'OK');
+    assert_array_equals(actual_sequence, expected_sequence);
+  }));
+}, 'Interleaving several promise_setup and async_test');
+
+</script>
+</body>
+</html>

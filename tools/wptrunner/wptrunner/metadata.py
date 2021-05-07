@@ -4,7 +4,6 @@ import os
 from collections import defaultdict, namedtuple
 
 from mozlog import structuredlog
-from six import ensure_str, ensure_text
 from sys import intern
 
 from . import manifestupdate
@@ -439,7 +438,7 @@ class ExpectedUpdater(object):
         self.run_info = run_info_intern.store(RunInfo(data["run_info"]))
 
     def test_start(self, data):
-        test_id = intern(ensure_str(data["test"]))
+        test_id = intern(ensure_str(data["test"])) # TODO
         try:
             self.id_test_map[test_id]
         except KeyError:
@@ -665,10 +664,10 @@ class TestFileData(object):
         rv = []
 
         for test_id, subtests in self.data.items():
-            test = expected.get_test(ensure_text(test_id))
+            test = expected.get_test(test_id)
             if not test:
                 continue
-            seen_subtests = set(ensure_text(item) for item in subtests.keys() if item is not None)
+            seen_subtests = set(item for item in subtests.keys() if item is not None)
             missing_subtests = set(test.subtests.keys()) - seen_subtests
             for item in missing_subtests:
                 expected_subtest = test.get_subtest(item)
@@ -755,7 +754,6 @@ class TestFileData(object):
                     if subtest_id is None:
                         item_expected = test_expected
                     else:
-                        subtest_id = ensure_text(subtest_id)
                         item_expected = test_expected.get_subtest(subtest_id)
 
                     if prop == "status":

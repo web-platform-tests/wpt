@@ -1,10 +1,10 @@
 import array
 import os
+import sys
 from collections import defaultdict, namedtuple
 from typing import Dict, List, Tuple
 
 from mozlog import structuredlog
-from six import ensure_str, ensure_text
 from sys import intern
 
 from . import manifestupdate
@@ -336,6 +336,17 @@ def write_new_expected(metadata_path, expected):
             os.unlink(path)
         except OSError:
             pass
+
+
+def ensure_str(s):
+    if type(s) is str:
+        return s
+    print(f'ensure_str in metadata.py was called with type {type(s)}')
+    sys.exit(1)
+
+
+def ensure_text(s):
+    return ensure_str(s)
 
 
 class ExpectedUpdater:

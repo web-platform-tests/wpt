@@ -1,4 +1,4 @@
-from six import ensure_text
+import sys
 
 from .node import NodeVisitor, ValueNode, ListNode, BinaryExpressionNode
 from .parser import atoms, precedence
@@ -6,6 +6,18 @@ from .parser import atoms, precedence
 atom_names = {v: "@%s" % k for (k,v) in atoms.items()}
 
 named_escapes = {"\a", "\b", "\f", "\n", "\r", "\t", "\v"}
+
+
+def ensure_str(s):
+    if type(s) is str:
+        return s
+    print(f'ensure_str in serializer.py was called with type {type(s)}')
+    sys.exit(1)
+
+
+def ensure_text(s):
+    return ensure_str(s)
+
 
 def escape(string, extras=""):
     # Assumes input bytes are either UTF8 bytes or unicode.

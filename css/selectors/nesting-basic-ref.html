@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>@nest | basic</title>
+<link rel="author" title="Adam Argyle" href="mailto:argyle@google.com">
+<link rel="help" href="https://drafts.csswg.org/css-nesting-1/">
+<style>
+  section {
+    background-color: red;
+  }
+  section > p {
+    background-color: green;
+  }
+</style>
+<body>
+  <p>Test passes if the <strong>block is green</strong></p>
+  <section>
+    <p>test</p>
+  </section>
+</body>

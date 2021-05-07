@@ -1,4 +1,4 @@
-<!doctype html>
+<!-- quirks mode -->
 <meta charset=utf-8>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -14,7 +14,7 @@ async_test(t => {
   }));
   const frame = document.createElement("iframe");
   t.add_cleanup(() => frame.remove());
-  frame.src = `data:text/html,<!doctype html><meta charset=utf-8><script>${encodeURIComponent(createScript("null", window.origin))}<\/script>`;
+  frame.src = `data:text/html,<!-- quirks mode --><meta charset=utf-8><script>${encodeURIComponent(createScript("null", window.origin))}<\/script>`;
   document.body.append(frame);
-}, "Cross-Origin-Embedder-Policy and data: URLs");
+}, "Cross-Origin-Embedder-Policy and data: URLs in quirks mode");
 </script>

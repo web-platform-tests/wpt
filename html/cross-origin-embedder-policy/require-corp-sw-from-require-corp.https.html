@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<meta charset=utf-8>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -90,4 +90,3 @@ promise_test(async (t) => {
   await fetch(URL, {mode: 'cors', headers: {'hoge': 'fuga'}});
 }, 'making a cross-origin request with CORS-preflight');
 </script>
-</html>

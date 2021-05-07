@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-from six import ensure_text
 
 from .node import NodeVisitor, ValueNode, ListNode, BinaryExpressionNode
 from .parser import atoms, precedence
@@ -9,6 +8,7 @@ atom_names = {v: "@%s" % k for (k,v) in atoms.items()}
 named_escapes = {"\a", "\b", "\f", "\n", "\r", "\t", "\v"}
 
 def escape(string, extras=""):
+    # type: (str, str) -> str
     # Assumes input bytes are either UTF8 bytes or unicode.
     rv = ""
     for c in string:
@@ -22,7 +22,7 @@ def escape(string, extras=""):
             rv += "\\" + c
         else:
             rv += c
-    return ensure_text(rv)
+    return rv
 
 
 class ManifestSerializer(NodeVisitor):
@@ -74,7 +74,8 @@ class ManifestSerializer(NodeVisitor):
         return ["".join(rv)]
 
     def visit_ValueNode(self, node):
-        data = ensure_text(node.data)
+        # type: (ValueNode) -> List[str]
+        data = node.data # type: str
         if ("#" in data or
             data.startswith("if ") or
             (isinstance(node.parent, ListNode) and
@@ -100,7 +101,9 @@ class ManifestSerializer(NodeVisitor):
         return rv
 
     def visit_NumberNode(self, node):
-        return [ensure_text(node.data)]
+        # type: (NumberNode) -> List[str]
+        raise Exception("is this dead code?")
+        return [str(node.data)]
 
     def visit_VariableNode(self, node):
         rv = escape(node.data)
@@ -134,10 +137,14 @@ class ManifestSerializer(NodeVisitor):
         return [" ".join(children)]
 
     def visit_UnaryOperatorNode(self, node):
-        return [ensure_text(node.data)]
+        # type: (UnaryOperatorNode) -> List[str]
+        raise Exception("is this dead code?")
+        return [str(node.data)]
 
     def visit_BinaryOperatorNode(self, node):
-        return [ensure_text(node.data)]
+        # type: (BinaryOperatorNode) -> List[str]
+        raise Exception("is this dead code?")
+        return [str(node.data)]
 
 
 def serialize(tree, *args, **kwargs):

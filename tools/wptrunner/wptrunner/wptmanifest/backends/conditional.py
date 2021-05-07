@@ -1,5 +1,4 @@
 import operator
-from six import ensure_text
 
 from ..node import NodeVisitor, DataNode, ConditionalNode, KeyValueNode, ListNode, ValueNode, BinaryExpressionNode, VariableNode
 from ..parser import parse
@@ -43,7 +42,7 @@ class ConditionalValue(object):
         return self.condition_func(run_info)
 
     def set_value(self, value):
-        self.value = ensure_text(value)
+        self.value = value
 
     def value_as(self, type_func):
         """Get value and convert to a given type.

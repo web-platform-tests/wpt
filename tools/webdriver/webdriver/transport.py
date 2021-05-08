@@ -1,8 +1,8 @@
 import json
 import select
 
-from collections.abc import Mapping
 from http.client import HTTPConnection
+from typing import AnyStr, Mapping
 from urllib import parse as urlparse
 
 from . import error
@@ -13,7 +13,7 @@ from . import error
 missing = object()
 
 
-class ResponseHeaders(Mapping):
+class ResponseHeaders(Mapping[AnyStr, str]):
     """Read-only dictionary-like API for accessing response headers.
 
     This class:
@@ -23,7 +23,7 @@ class ResponseHeaders(Mapping):
       * Always returns all header values that have the same name, separated by
         commas.
 
-    It does not ensure header types (e.g. binary vs string).
+    It does not ensure header types (e.g. binary vs string). TODO: really?
     """
     def __init__(self, items):
         self.headers_dict = {}

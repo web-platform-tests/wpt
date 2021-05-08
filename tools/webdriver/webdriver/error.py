@@ -1,10 +1,12 @@
 import collections
 import json
 
+from typing import DefaultDict, Optional, Type
+
 
 class WebDriverException(Exception):
-    http_status = None
-    status_code = None
+    http_status: Optional[int] = None
+    status_code: Optional[str] = None
 
     def __init__(self, http_status=None, status_code=None, message=None, stacktrace=None):
         super(WebDriverException, self)
@@ -217,7 +219,7 @@ def get(error_code):
     return _errors.get(error_code, WebDriverException)
 
 
-_errors = collections.defaultdict()
+_errors: DefaultDict[str, Type[WebDriverException]] = collections.defaultdict()
 for item in list(locals().values()):
     if type(item) == type and issubclass(item, WebDriverException):
         _errors[item.status_code] = item

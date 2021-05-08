@@ -1,5 +1,6 @@
 import copy
-import websockets
+
+import websockets  # type: ignore
 
 from . import client
 

@@ -136,6 +136,29 @@ def install_certificates():
     run(["sudo", "update-ca-certificates"])
 
 
+def install_chrome(channel):
+    deb_prefix = "https://dl.google.com/linux/direct/"
+    if channel in ("experimental", "dev"):
+        # Pinned since 92.0.4484.7 began crashing on startup.
+        # See https://github.com/web-platform-tests/wpt/issues/28209.
+        deb_archive = "google-chrome-unstable_91.0.4472.19-1_amd64.deb"
+        deb_prefix = "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-unstable/"
+    elif channel == "beta":
+        deb_archive = "google-chrome-beta_current_amd64.deb"
+    elif channel == "stable":
+        deb_archive = "google-chrome-stable_current_amd64.deb"
+    else:
+        raise ValueError("Unrecognized release channel: %s" % channel)
+
+    dest = os.path.join("/tmp", deb_archive)
+    deb_url = deb_prefix + deb_archive
+    with open(dest, "wb") as f:
+        get_download_to_descriptor(f, deb_url)
+
+    run(["sudo", "apt-get", "-qqy", "update"])
+    run(["sudo", "gdebi", "-qn", "/tmp/%s" % deb_archive])
+
+
 def start_xvfb():
     start(["sudo", "Xvfb", os.environ["DISPLAY"], "-screen", "0",
            "%sx%sx%s" % (os.environ["SCREEN_WIDTH"],
@@ -230,6 +253,13 @@ def setup_environment(args):
 
     if args.install_certificates:
         install_certificates()
+
+    if "chrome" in args.browser:
+        assert args.channel is not None
+        # Chrome Nightly will be installed via `wpt run --install-browser`
+        # later in taskcluster-run.py.
+        if args.channel != "nightly":
+            install_chrome(args.channel)
 
     if args.xvfb:
         start_xvfb()

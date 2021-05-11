@@ -535,6 +535,8 @@ class Chrome(Browser):
         self._last_change = None
 
     def download(self, dest=None, channel=None, rename=None):
+        if channel != "nightly":
+            raise NotImplementedError("We can only download Chrome Nightly (Chromium ToT) for you.")
         if dest is None:
             dest = self._get_dest(None, channel)
 
@@ -744,7 +746,14 @@ class Chrome(Browser):
         return binary_path
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
-        return self.install_webdriver_by_version(None, dest)
+        if channel == "nightly":
+            # The "nightly" channel is not an official channel, so we simply download ToT.
+            return self.install_webdriver_by_version(None, dest)
+
+        if browser_binary is None:
+            browser_binary = self.find_binary(channel)
+        return self.install_webdriver_by_version(
+            self.version(browser_binary), dest)
 
     def version(self, binary=None, webdriver_binary=None):
         if not binary:

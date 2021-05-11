@@ -617,7 +617,8 @@ class Chrome(Browser):
     def _latest_chromium_snapshot_url(self):
         # Make sure we use the same revision in an invocation.
         architecture = self._chromium_platform_string()
-        revision = '870763'
+        # good: r870763
+        revision = '874512'
         return "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/" % (architecture, revision)
 
     def find_nightly_binary(self, dest):

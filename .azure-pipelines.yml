@@ -35,7 +35,7 @@ jobs:
 # more affected tests: https://github.com/web-platform-tests/wpt/issues/13936.
 - job: affected_safari_preview
   displayName: 'affected tests: Safari Technology Preview'
-  condition: eq(variables['Build.Reason'], 'PullRequest')
+  condition: False
   pool:
     vmImage: 'macOS-10.15'
   steps:
@@ -52,7 +52,7 @@ jobs:
 
 - job: affected_without_changes_safari_preview
   displayName: 'affected tests without changes: Safari Technology Preview'
-  condition: eq(variables['Build.Reason'], 'PullRequest')
+  condition: False
   pool:
     vmImage: 'macOS-10.15'
   steps:
@@ -73,7 +73,7 @@ jobs:
 # and all following jobs wait for it to finish and depend on its output.
 - job: decision
   displayName: './wpt test-jobs'
-  condition: eq(variables['Build.Reason'], 'PullRequest')
+  condition: False
   pool:
     vmImage: 'ubuntu-20.04'
   steps:

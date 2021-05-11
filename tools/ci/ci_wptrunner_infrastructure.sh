@@ -14,9 +14,9 @@ main() {
     ./wpt manifest --rebuild -p ~/meta/MANIFEST.json
     for PRODUCT in "${PRODUCTS[@]}"; do
         if [[ "$PRODUCT" == "chrome" ]]; then
-            test_infrastructure "--binary=$(which google-chrome-unstable) --channel dev" "$1"
+            test_infrastructure "--install-browser" "$1"
         else
-            test_infrastructure "--binary=~/build/firefox/firefox" "$1"
+            echo "Skipping Firefox"
         fi
     done
 }

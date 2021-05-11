@@ -71,7 +71,7 @@ def get_run_jobs(event):
     logger.info("Looking for changes in range %s" % revish)
     paths = jobs.get_paths(revish=revish)
     logger.info("Found changes in paths:%s" % "\n".join(paths))
-    path_jobs = jobs.get_jobs(paths)
+    path_jobs = {"wptrunner_infrastructure"}
     all_jobs = path_jobs | get_extra_jobs(event)
     logger.info("Including jobs:\n * %s" % "\n * ".join(all_jobs))
     return all_jobs

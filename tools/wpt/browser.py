@@ -619,10 +619,10 @@ class Chrome(Browser):
     def _latest_chromium_snapshot_url(self):
         # Make sure we use the same revision in an invocation.
         architecture = self._chromium_platform_string()
-        if self._last_change is None:
-            revision_url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/LAST_CHANGE" % architecture
-            self._last_change = get(revision_url).text.strip()
-        return "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/" % (architecture, self._last_change)
+        # good: 870763
+        # also good? 874512 + 881632
+        revision = '880807'
+        return "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/" % (architecture, revision)
 
     def find_nightly_binary(self, dest):
         if uname[0] == "Darwin":
@@ -709,27 +709,8 @@ class Chrome(Browser):
         return "https://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (
             latest, self._chromedriver_platform_string())
 
-    def _chromium_chromedriver_url(self, chrome_version):
-        if chrome_version:
-            try:
-                # Try to find the Chromium build with the same revision.
-                omaha = get("https://omahaproxy.appspot.com/deps.json?version=" + chrome_version).json()
-                revision = omaha['chromium_base_position']
-                url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/chromedriver_%s.zip" % (
-                    self._chromium_platform_string(), revision, self._chromedriver_platform_string())
-                # Check the status without downloading the content (this is a streaming request).
-                get(url)
-                return url
-            except requests.RequestException:
-                pass
-        # Fall back to the tip-of-tree Chromium build.
+    def _chromium_chromedriver_url(self):
         return "%schromedriver_%s.zip" % (self._latest_chromium_snapshot_url(), self._chromedriver_platform_string())
-
-    def _latest_chromedriver_url(self, chrome_version):
-        # Remove channel suffixes (e.g. " dev").
-        chrome_version = chrome_version.split(' ')[0]
-        return (self._official_chromedriver_url(chrome_version) or
-                self._chromium_chromedriver_url(chrome_version))
 
     def install_webdriver_by_version(self, version, dest=None):
         if dest is None:
@@ -745,8 +726,7 @@ class Chrome(Browser):
             os.chmod(existing_binary_path, stat.S_IWUSR)
             os.remove(existing_binary_path)
 
-        url = self._latest_chromedriver_url(version) if version \
-            else self._chromium_chromedriver_url(None)
+        url = self._chromium_chromedriver_url()
         self.logger.info("Downloading ChromeDriver from %s" % url)
         unzip(get(url).raw, dest)
 

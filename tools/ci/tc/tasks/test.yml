@@ -522,7 +522,6 @@ tasks:
       use:
         - wpt-base
         - trigger-pr
-        - browser-firefox
       command: ./tools/ci/ci_wptrunner_infrastructure.sh
       install:
         - python3-pip

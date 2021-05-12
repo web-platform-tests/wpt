@@ -31,12 +31,12 @@ let finalizationRegistry = new FinalizationRegistry(function() {
 
 setup({ allow_uncaught_exception: true });
 
-assert_implements(
-  typeof FinalizationRegistry.prototype.register === 'function',
-  'FinalizationRegistry.prototype.register is not implemented.'
-);
-
 promise_test((test) => {
+  assert_implements(
+    typeof FinalizationRegistry.prototype.register === 'function',
+    'FinalizationRegistry.prototype.register is not implemented.'
+  );
+
   return (async () => {
 
     let resolve;

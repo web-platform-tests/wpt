@@ -15,13 +15,12 @@ def get_browser_args(product, channel):
         if os.path.exists(local_binary):
             return ["--binary=%s" % local_binary]
         print("WARNING: Local firefox binary not found")
-        return ["--install-browser", "--install-webdriver"]
+        return ["--no-headless", "--install-browser", "--install-webdriver"]
     if product == "servo":
         return ["--install-browser", "--processes=12"]
     if product == "chrome":
-        # Taskcluster machines do not have proper GPUs, so we need to use
-        # software rendering for webgl: https://crbug.com/1130585
-        args = ["--binary-arg=--use-gl=swiftshader-webgl"]
+        # Taskcluster machines do not have proper GPUs, so we run headless.
+        args = ["--headless"]
         if channel == "nightly":
             args.extend(["--install-browser", "--install-webdriver"])
         return args
@@ -79,7 +78,6 @@ def main(product, channel, commit_range, wpt_args):
         "--no-pause",
         "--no-restart-on-unexpected",
         "--install-fonts",
-        "--no-headless",
         "--verify-log-full"
     ]
     wpt_args += get_browser_args(product, channel)

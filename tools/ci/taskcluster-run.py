@@ -81,7 +81,7 @@ def main(product, channel, commit_range, wpt_args):
         "--no-pause",
         "--no-restart-on-unexpected",
         "--install-fonts",
-        "--no-headless",
+        "--headless",
         "--verify-log-full"
     ]
     wpt_args += get_browser_args(product, channel)

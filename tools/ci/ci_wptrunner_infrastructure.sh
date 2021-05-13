@@ -14,7 +14,7 @@ main() {
     ./wpt manifest --rebuild -p ~/meta/MANIFEST.json
     for PRODUCT in "${PRODUCTS[@]}"; do
         if [[ "$PRODUCT" == "chrome" ]]; then
-            test_infrastructure "--binary=$(which google-chrome-unstable) --binary-arg=--use-gl=angle --binary-arg=--use-angle=swiftshader-webgl --channel dev" "$1"
+            test_infrastructure "--binary=$(which google-chrome-unstable) --headless --channel dev" "$1"
         else
             echo "Skipping Firefox"
         fi

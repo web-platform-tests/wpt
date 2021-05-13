@@ -1,0 +1,21 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>FontFaceArial vs Local Arial</title>
+<link rel="author" title="Adam Argyle" href="mailto:argyle@google.com">
+<link rel="help" href="https://drafts.csswg.org/css-fonts-4/">
+<style>
+  @font-face {
+    font-family: "Local Arial";
+    src: local(Arial);
+  }
+
+  h1 {
+    font-family: Arial; 
+  }
+
+  h1.adjusted {
+    font-family: "Local Arial";
+  }
+</style>
+<h1><p>Tests pass if these render identical</p></h1>
+<h1 class="adjusted"><p>Tests pass if these render identical</p></h1>

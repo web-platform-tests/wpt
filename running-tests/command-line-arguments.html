@@ -548,7 +548,7 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">reftest</span><span class="p">,</span><span class="n">testharness</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">manifest</span> <span class="n">INCLUDE_MANIFEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span> <span class="n">TEST_GROUPS_FILE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span>
@@ -747,9 +747,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#Test Selection" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: print-reftest, reftest, wdspec, crashtest, testharness</p>
+<dd><p>Possible choices: reftest, testharness, print-reftest, crashtest, wdspec</p>
 <p>Test types to run</p>
-<p>Default: {‘print-reftest’, ‘reftest’, ‘wdspec’, ‘crashtest’, ‘testharness’}</p>
+<p>Default: {‘reftest’, ‘testharness’, ‘print-reftest’, ‘crashtest’, ‘wdspec’}</p>
 </dd>
 <dt><kbd>--include</kbd></dt>
 <dd><p>URL prefix to include</p>
@@ -1559,7 +1559,7 @@ channel.) This flag overrides –browser-channel.</p>
 <section id="rev-list">
 <h3>rev-list<a class="headerlink" href="#rev-list" title="Permalink to this headline">¶</a></h3>
 <p>List tagged revisions at regular intervals</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">rev</span><span class="o">-</span><span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">epoch</span> <span class="n">EPOCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">count</span> <span class="n">MAX_COUNT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">rev</span><span class="o">-</span><span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">epoch</span> <span class="n">EPOCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">count</span> <span class="n">MAX_COUNT</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments_repeat20">
@@ -1572,10 +1572,6 @@ channel.) This flag overrides –browser-channel.</p>
 <dt><kbd>--max-count</kbd></dt>
 <dd><p>maximum number of revisions to be returned by the command</p>
 <p>Default: 1</p>
-</dd>
-<dt><kbd>--verbose</kbd></dt>
-<dd><p>debug logging</p>
-<p>Default: False</p>
 </dd>
 </dl>
 </section>

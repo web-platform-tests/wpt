@@ -1,0 +1,36 @@
+<!doctype html>
+<title>CSS Selectors @nest parsing</title>
+<link rel="author" title="Adam Argyle" href="mailto:argyle@google.com">
+<link rel="help" href="https://drafts.csswg.org/css-nesting-1/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style id="test-sheet"></style>
+<script type="module">
+  let [ss] = document.styleSheets
+
+  const beforeEach = () => {
+    while (ss.rules.length)
+      ss.removeRule(0)
+  }
+
+  const testRules = [
+    `html { color: red; }`,
+    `foo {
+      & bar {}
+    }`,
+  ]
+
+  testRules.forEach(testRule => {
+    test(function() {
+      beforeEach()
+
+      ss.insertRule(testRule)
+
+      assert_equals(
+        ss.rules[0].cssText,
+        testRule
+      )
+    }, `${testRule}`)
+  })
+</script>

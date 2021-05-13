@@ -455,6 +455,16 @@
             const blocked = state === "blocked";
             return window.test_driver_internal.set_storage_access(origin, embedding_origin, blocked, context);
         },
+
+        /**
+         * Executes the "Take a Sample" algorithm of the JS Self-Profiling API,
+         * for the purpose of reducing test flakiness.
+         *
+         * {@link https://wicg.github.io/js-self-profiling/#dfn-take-a-sample}
+         */
+        force_sample: function() {
+          window.test_driver_internal.force_sample();
+        },
     };
 
     window.test_driver_internal = {
@@ -558,6 +568,10 @@
         },
 
         set_storage_access: function(origin, embedding_origin, blocked, context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        force_sample: function() {
             return Promise.reject(new Error("unimplemented"));
         },
     };

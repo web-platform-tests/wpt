@@ -2,7 +2,8 @@
 <meta charset="utf-8">
 <title>FontFaceArial vs Local Arial</title>
 <link rel="author" title="Adam Argyle" href="mailto:argyle@google.com">
-<link rel="help" href="https://drafts.csswg.org/css-fonts-4/">
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-face-rule">
+<link rel="match" href=FontFaceRulevsLocal-ref.html>
 <style>
   @font-face {
     font-family: "Local Arial";
@@ -13,9 +14,9 @@
     font-family: Arial; 
   }
 
-  h1.adjusted {
+  .local-arial {
     font-family: "Local Arial";
   }
 </style>
-<h1><p>Tests pass if these render identical</p></h1>
-<h1 class="adjusted"><p>Tests pass if these render identical</p></h1>
+<h1>Tests pass if these render identical</h1>
+<h1 class="local-arial">Tests pass if these render identical</h1>

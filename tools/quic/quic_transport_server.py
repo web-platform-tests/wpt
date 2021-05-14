@@ -27,7 +27,7 @@ class EventHandler:
 
     def handle_client_indication(
             self,
-            origin: Optional[str],
+            origin: str,
             query: Dict[str, str]) -> None:
         name = 'handle_client_indication'
         if name in self.global_dict:
@@ -117,8 +117,10 @@ class QuicTransportProtocol(QuicConnectionProtocol):  # type: ignore
         logger.info('origin = %s, path = %s', origin_string, path_string)
         if origin is None:
             raise Exception('No origin is given')
+        assert origin_string is not None
         if path is None:
             raise Exception('No path is given')
+        assert path_string is not None
         if origin.scheme != 'https' and origin.scheme != 'http':
             raise Exception('Invalid origin: %s' % origin_string)
         if origin.netloc == '':

@@ -881,11 +881,11 @@ promise_test(() => {
     assert_equals(result.value.byteLength, 1, 'result.value.byteLength');
     assert_equals(result.value[0], 0x01, 'result.value[0]');
     assert_equals(pullCount, 1, 'pull() should be called only once');
-    assert_true(byobRequestDefined[0], 'byobRequest must not be null before respond()');
-    assert_false(byobRequestDefined[1], 'byobRequest must be null after respond()');
-    assert_false(byobRequestViewDefined, 'view of initial byobRequest must be null after respond()');
+    assert_true(byobRequestDefined[0], 'byobRequest must not be null before respondWithNewView()');
+    assert_false(byobRequestDefined[1], 'byobRequest must be null after respondWithNewView()');
+    assert_false(byobRequestViewDefined, 'view of initial byobRequest must be null after respondWithNewView()');
   });
-}, 'ReadableStream with byte source: read(view), then respond() with a transferred ArrayBuffer');
+}, 'ReadableStream with byte source: read(view), then respondWithNewView() with a transferred ArrayBuffer');
 
 promise_test(() => {
   let controller;

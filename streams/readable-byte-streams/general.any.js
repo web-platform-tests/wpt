@@ -812,6 +812,7 @@ promise_test(() => {
 
   let pullCount = 0;
   const byobRequestDefined = [];
+  let byobRequestViewDefined;
 
   const stream = new ReadableStream({
     start(c) {
@@ -819,12 +820,14 @@ promise_test(() => {
     },
     pull() {
       byobRequestDefined.push(controller.byobRequest !== null);
+      const initialByobRequest = controller.byobRequest;
 
       const view = controller.byobRequest.view;
       view[0] = 0x01;
       controller.byobRequest.respond(1);
 
       byobRequestDefined.push(controller.byobRequest !== null);
+      byobRequestViewDefined = initialByobRequest.view !== null;
 
       ++pullCount;
     },
@@ -840,6 +843,7 @@ promise_test(() => {
     assert_equals(pullCount, 1, 'pull() should be called only once');
     assert_true(byobRequestDefined[0], 'byobRequest must not be null before respond()');
     assert_false(byobRequestDefined[1], 'byobRequest must be null after respond()');
+    assert_false(byobRequestViewDefined, 'view of initial byobRequest must be null after respond()');
   });
 }, 'ReadableStream with byte source: read(view), then respond()');
 
@@ -848,6 +852,7 @@ promise_test(() => {
 
   let pullCount = 0;
   const byobRequestDefined = [];
+  let byobRequestViewDefined;
 
   const stream = new ReadableStream({
     start(c) {
@@ -855,12 +860,14 @@ promise_test(() => {
     },
     async pull() {
       byobRequestDefined.push(controller.byobRequest !== null);
+      const initialByobRequest = controller.byobRequest;
 
       const transferredView = await transferArrayBufferView(controller.byobRequest.view);
       transferredView[0] = 0x01;
       controller.byobRequest.respondWithNewView(transferredView);
 
       byobRequestDefined.push(controller.byobRequest !== null);
+      byobRequestViewDefined = initialByobRequest.view !== null;
 
       ++pullCount;
     },
@@ -876,6 +883,7 @@ promise_test(() => {
     assert_equals(pullCount, 1, 'pull() should be called only once');
     assert_true(byobRequestDefined[0], 'byobRequest must not be null before respond()');
     assert_false(byobRequestDefined[1], 'byobRequest must be null after respond()');
+    assert_false(byobRequestViewDefined, 'view of initial byobRequest must be null after respond()');
   });
 }, 'ReadableStream with byte source: read(view), then respond() with a transferred ArrayBuffer');
 

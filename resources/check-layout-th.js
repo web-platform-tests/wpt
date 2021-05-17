@@ -195,8 +195,8 @@ function checkExpectedValues(t, node, prefix)
 }
 
 var testNumber = 0;
-var highlightError = false; // displays outline around failed test element.
-var printDomOnError = true; // prints dom when test fails.
+var highlightError = true; // displays outline around failed test element.
+var printDomOnError = window.testRunner != undefined;
 
 window.checkLayout = function(selectorList, callDone = true)
 {

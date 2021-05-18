@@ -6,7 +6,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <body>
 <script>
-function looseModeSet(base, key, value) { base[key] = value; }
+function sloppyModeSet(base, key, value) { base[key] = value; }
 </script>
 <script>
 "use strict";
@@ -270,7 +270,7 @@ function assert_define_own_property_fails(object, key, desc, testInfo) {
 }
 
 function assert_set_fails(object, key, value, testInfo) {
-    looseModeSet(object, key, value);
+    sloppyModeSet(object, key, value);
     assert_throws_js(TypeError, () => { object[key] = value; }, testInfo);
     assert_false(Reflect.set(object, key, value), testInfo);
 }

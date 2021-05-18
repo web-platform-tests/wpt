@@ -21,7 +21,7 @@ const nonExistingSymbol = "non-existing symbol property name";
 test(t => {
     const { w, wp } = createWindowProperties(t);
 
-    Object.setPrototypeOf(wp, w.EventTarget.prototype);
+    Object.setPrototypeOf(wp, w.EventTarget.prototype); // Setting current [[Prototype]] value shouldn't throw
 
     assert_throws_js(TypeError, () => { Object.setPrototypeOf(wp, {}); });
     assert_throws_js(w.TypeError, () => { wp.__proto__ = null; });

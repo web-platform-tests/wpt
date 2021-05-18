@@ -52,6 +52,7 @@ test(() => {
 test(() => {
     const fn = () => {};
 
+    // origin is [Replaceable]
     getGlobalPropertyDescriptor("origin").set.call(null, "foo");
     assert_equals(origin, "foo");
     getGlobalPropertyDescriptor("onerror").set.call(undefined, fn);

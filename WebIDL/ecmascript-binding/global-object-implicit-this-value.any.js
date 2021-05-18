@@ -41,6 +41,7 @@ if (typeof document !== "undefined") {
     }, "Global object's operation throws when called on incompatible object (document.all)");
 }
 
+// An engine might have different code path for calling a function from outer scope to implement step 1.b.iii of https://tc39.es/ecma262/#sec-evaluatecall
 const locationGetter = getGlobalPropertyDescriptor("location").get;
 test(() => {
     assert_equals(getGlobalPropertyDescriptor("self").get.call(null), self);
@@ -65,6 +66,7 @@ test(() => {
     assert_equals(ononline, fn);
 }, "Global object's setter works when called on null / undefined");
 
+// An engine might have different code path for calling a function from outer scope to implement step 1.b.iii of https://tc39.es/ecma262/#sec-evaluatecall
 const __addEventListener = addEventListener;
 test(() => {
     assert_equals(atob.call(null, ""), "");

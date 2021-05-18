@@ -37,7 +37,7 @@ if (typeof document !== "undefined") {
     }, "Global object's setter throws when called on incompatible object (document.all)");
 
     test(() => {
-        assert_throws_js(TypeError, () => { alert.call(document.all); });
+        assert_throws_js(TypeError, () => { focus.call(document.all); });
     }, "Global object's operation throws when called on incompatible object (document.all)");
 }
 

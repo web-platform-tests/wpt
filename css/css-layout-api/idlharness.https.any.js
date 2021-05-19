@@ -1,6 +1,7 @@
 // META: global=window,worker
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: help=https://drafts.css-houdini.org/css-layout-api/
 
 'use strict';
 

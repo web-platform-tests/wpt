@@ -1,0 +1,27 @@
+<!doctype html>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#submit-get-action">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#plan-to-navigate">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#planned-navigation">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe name="test"></iframe>
+<form target="test" action="click.html"></form>
+<a target="test" onclick="document.forms[0].submit()" href="href.html">Test</a>
+<script>
+async_test(function(test) {
+
+  window.onmessage = test.step_func_done(function(e) {
+    // Navigating the iframe to the anchor's `href` will abort the
+    // not-yet-mature iframe navigation. If the semantics are implemented correctly,
+    // ONLY the message "href" from "href.html" will be received.
+    assert_equals(e.data, "href");
+  });
+
+  document.querySelector("a").click();
+
+}, "A form submit navigation invoked via link onclick is cancelled by default href navigation.");
+</script>

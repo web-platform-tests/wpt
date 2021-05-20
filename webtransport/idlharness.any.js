@@ -1,7 +1,6 @@
 // META: global=window,worker
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
-// META: quic=true
 
 'use strict';
 
@@ -16,6 +15,6 @@ idl_test(
       // SendStream
       // ReceiveStream
     });
-    webTransport = new WebTransport("quic-transport://example.com/");
+    self.webTransport = new WebTransport("quic-transport://example.com/");
   }
 );

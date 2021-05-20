@@ -175,6 +175,13 @@ per test)</p>
 </dd></dl>
 
 <span class="target" id="module-wptrunner.environment"></span><dl class="class">
+<dt id="wptrunner.environment.ProxyLoggingContext">
+<em class="property">class </em><code class="sig-prename descclassname">wptrunner.environment.</code><code class="sig-name descname">ProxyLoggingContext</code><span class="sig-paren">(</span><em class="sig-param">logger</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.environment.ProxyLoggingContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager object that handles setup and teardown of a log queue
+for handling logging messages from wptserve.</p>
+</dd></dl>
+
+<dl class="class">
 <dt id="wptrunner.environment.TestEnvironment">
 <em class="property">class </em><code class="sig-prename descclassname">wptrunner.environment.</code><code class="sig-name descname">TestEnvironment</code><span class="sig-paren">(</span><em class="sig-param">test_paths</em>, <em class="sig-param">testharness_timeout_multipler</em>, <em class="sig-param">pause_after_test</em>, <em class="sig-param">debug_test</em>, <em class="sig-param">debug_info</em>, <em class="sig-param">options</em>, <em class="sig-param">ssl_config</em>, <em class="sig-param">env_extras</em>, <em class="sig-param">enable_quic=False</em>, <em class="sig-param">mojojs_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.environment.TestEnvironment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Context manager that owns the test environment i.e. the http and

@@ -1579,12 +1579,12 @@ promise_test(() => {
   const reader = stream.getReader({ mode: 'byob' });
 
   return reader.read(new Uint32Array(1)).then(result => {
-    assert_equals(result.done, false);
+    assert_equals(result.done, false, 'result.done');
 
     const view = result.value;
-    assert_equals(view.byteOffset, 0);
-    assert_equals(view.byteLength, 4);
-    assert_equals(view[0], 0x01010101);
+    assert_equals(view.byteOffset, 0, 'result.value.byteOffset');
+    assert_equals(view.byteLength, 4, 'result.value.byteLength');
+    assert_equals(view[0], 0x01010101, 'result.value[0]');
 
     assert_equals(pullCount, 1, 'pull() should only be called once');
 
@@ -1632,12 +1632,12 @@ promise_test(() => {
   const reader = stream.getReader({ mode: 'byob' });
 
   return reader.read(new Uint32Array(1)).then(result => {
-    assert_equals(result.done, false);
+    assert_equals(result.done, false, 'result.done');
 
     const view = result.value;
-    assert_equals(view.byteOffset, 0);
-    assert_equals(view.byteLength, 4);
-    assert_equals(view[0], 0x01010101);
+    assert_equals(view.byteOffset, 0, 'result.value.byteOffset');
+    assert_equals(view.byteLength, 4, 'result.value.byteLength');
+    assert_equals(view[0], 0x01010101, 'result.value[0]');
 
     assert_equals(pullCount, 1, 'pull() should only be called once');
 
@@ -2185,14 +2185,14 @@ promise_test(async t => {
   const reader = stream.getReader({ mode: 'byob' });
 
   const result = await reader.read(new Uint8Array([4, 5, 6]));
-  assert_equals(result.done, false);
+  assert_equals(result.done, false, 'result.done');
 
   const view = result.value;
-  assert_equals(view.byteOffset, 0);
-  assert_equals(view.byteLength, 1);
-  assert_equals(view[0], 1);
-  assert_equals(view.buffer.byteLength, 3);
-  assert_array_equals([...new Uint8Array(view.buffer)], [1, 5, 6]);
+  assert_equals(view.byteOffset, 0, 'result.value.byteOffset');
+  assert_equals(view.byteLength, 1, 'result.value.byteLength');
+  assert_equals(view[0], 1, 'result.value[0]');
+  assert_equals(view.buffer.byteLength, 3, 'result.value.buffer.byteLength');
+  assert_array_equals([...new Uint8Array(view.buffer)], [1, 5, 6], 'result.value.buffer');
 }, 'ReadableStream with byte source: respondWithNewView() with a smaller view');
 
 promise_test(async t => {
@@ -2209,13 +2209,13 @@ promise_test(async t => {
   const reader = stream.getReader({ mode: 'byob' });
 
   const result = await reader.read(new Uint8Array([4, 5, 6]));
-  assert_equals(result.done, true);
+  assert_equals(result.done, true, 'result.done');
 
   const view = result.value;
-  assert_equals(view.byteOffset, 0);
-  assert_equals(view.byteLength, 0);
-  assert_equals(view.buffer.byteLength, 3);
-  assert_array_equals([...new Uint8Array(view.buffer)], [4, 5, 6]);
+  assert_equals(view.byteOffset, 0, 'result.value.byteOffset');
+  assert_equals(view.byteLength, 0, 'result.value.byteLength');
+  assert_equals(view.buffer.byteLength, 3, 'result.value.buffer.byteLength');
+  assert_array_equals([...new Uint8Array(view.buffer)], [4, 5, 6], 'result.value.buffer');
 }, 'ReadableStream with byte source: respondWithNewView() with a zero-length view (in the closed state)');
 
 promise_test(async t => {
@@ -2246,14 +2246,14 @@ promise_test(async t => {
   controller.byobRequest.respondWithNewView(newView);
 
   const result = await readPromise;
-  assert_equals(result.done, false);
+  assert_equals(result.done, false, 'result.done');
 
   const view = result.value;
-  assert_equals(view.byteOffset, 0);
-  assert_equals(view.byteLength, 1);
-  assert_equals(view[0], 42);
-  assert_equals(view.buffer.byteLength, 3);
-  assert_array_equals([...new Uint8Array(view.buffer)], [42, 5, 6]);
+  assert_equals(view.byteOffset, 0, 'result.value.byteOffset');
+  assert_equals(view.byteLength, 1, 'result.value.byteLength');
+  assert_equals(view[0], 42, 'result.value[0]');
+  assert_equals(view.buffer.byteLength, 3, 'result.value.buffer.byteLength');
+  assert_array_equals([...new Uint8Array(view.buffer)], [42, 5, 6], 'result.value.buffer');
 
 }, 'ReadableStream with byte source: respondWithNewView() with a transferred non-zero-length view ' +
    '(in the readable state)');
@@ -2286,13 +2286,13 @@ promise_test(async t => {
   controller.byobRequest.respondWithNewView(newView);
 
   const result = await readPromise;
-  assert_equals(result.done, true);
+  assert_equals(result.done, true, 'result.done');
 
   const view = result.value;
-  assert_equals(view.byteOffset, 0);
-  assert_equals(view.byteLength, 0);
-  assert_equals(view.buffer.byteLength, 3);
-  assert_array_equals([...new Uint8Array(view.buffer)], [4, 5, 6]);
+  assert_equals(view.byteOffset, 0, 'result.value.byteOffset');
+  assert_equals(view.byteLength, 0, 'result.value.byteLength');
+  assert_equals(view.buffer.byteLength, 3, 'result.value[0]');
+  assert_array_equals([...new Uint8Array(view.buffer)], [4, 5, 6], 'result.value.buffer');
 
 }, 'ReadableStream with byte source: respondWithNewView() with a transferred zero-length view ' +
    '(in the closed state)');

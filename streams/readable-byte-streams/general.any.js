@@ -2291,7 +2291,7 @@ promise_test(async t => {
   const view = result.value;
   assert_equals(view.byteOffset, 0, 'result.value.byteOffset');
   assert_equals(view.byteLength, 0, 'result.value.byteLength');
-  assert_equals(view.buffer.byteLength, 3, 'result.value[0]');
+  assert_equals(view.buffer.byteLength, 3, 'result.value.buffer.byteLength');
   assert_array_equals([...new Uint8Array(view.buffer)], [4, 5, 6], 'result.value.buffer');
 
 }, 'ReadableStream with byte source: respondWithNewView() with a transferred zero-length view ' +

@@ -1,4 +1,4 @@
-// META: global=window,worker 
+// META: global=window,worker
 
 // https://heycam.github.io/webidl/#dfn-attribute-getter (step 1.1.2.1)
 // https://heycam.github.io/webidl/#dfn-attribute-setter (step 4.5.1)
@@ -21,7 +21,7 @@ test(() => {
 }, "Global object's setter throws when called on incompatible object");
 
 test(() => {
-    assert_throws_js(TypeError, () => { Object.create(globalThis).setTimeout(() => {}, 100); });
+    assert_throws_js(TypeError, () => { Object.create(globalThis).setInterval(() => {}, 100); });
     assert_throws_js(TypeError, () => { clearTimeout.call(notGlobalObject, () => {}); });
     assert_throws_js(TypeError, () => { Reflect.apply(btoa, notGlobalObject, [""]); });
     assert_throws_js(TypeError, () => { new Proxy(globalThis, {}).removeEventListener("foo", () => {}); });

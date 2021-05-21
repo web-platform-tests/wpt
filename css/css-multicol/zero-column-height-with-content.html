@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Multi-column Layout Test: Height of div inside zero height column.</title>
+<link rel="help" href="https://drafts.csswg.org/css-multicol/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+
+<div id="multicol" style="columns:2; height:0px;">
+  <div id="target" style="height: 10px; width:0px;" data-expected-bounding-client-rect-height="1"></div>
+</div>
+
+<script>
+  checkLayout('#target');
+</script>

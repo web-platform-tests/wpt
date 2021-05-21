@@ -41,7 +41,7 @@ here = os.path.dirname(__file__)
 __wptrunner__ = {"product": "firefox",
                  "check_args": "check_args",
                  "browser": {None: "FirefoxBrowser",
-                             "wdspec": "NullBrowser"},
+                             "wdspec": "FirefoxWdSpecBrowser"},
                  "executor": {"crashtest": "MarionetteCrashtestExecutor",
                               "testharness": "MarionetteTestharnessExecutor",
                               "reftest": "MarionetteRefTestExecutor",

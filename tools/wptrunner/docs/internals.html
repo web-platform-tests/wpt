@@ -162,6 +162,48 @@ per test)</p>
 
 </dd></dl>
 
+<dl class="class">
+<dt id="wptrunner.browsers.base.OutputHandler">
+<em class="property">class </em><code class="sig-prename descclassname">wptrunner.browsers.base.</code><code class="sig-name descname">OutputHandler</code><span class="sig-paren">(</span><em class="sig-param">logger</em>, <em class="sig-param">command</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.OutputHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for handling output from a browser process.</p>
+<p>This class is responsible for consuming the logging from a browser process
+and passing it into the relevant logger. A class instance is designed to
+be passed as the processOutputLine argument to mozprocess.ProcessHandler.</p>
+<p>The setup of this class is complex for various reasons:</p>
+<ul class="simple">
+<li><p>We need to create an instance of the class before starting the process</p></li>
+<li><p>We want access to data about the running process e.g. the pid</p></li>
+<li><p>We want to launch the process and later setup additional log handling
+which is restrospectively applied to any existing output (this supports
+prelaunching browsers for performance, but having log output depend on the
+tests that are run e.g. for leak suppression).</p></li>
+</ul>
+<p>Therefore the lifecycle is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_handler</span> <span class="o">=</span> <span class="n">OutputHandler</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="o">**</span><span class="n">output_handler_kwargs</span><span class="p">)</span>
+<span class="n">proc</span> <span class="o">=</span> <span class="n">ProcessHandler</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">processOutputLine</span><span class="o">=</span><span class="n">output_handler</span><span class="p">)</span>
+<span class="n">output_handler</span><span class="o">.</span><span class="n">after_process_start</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+<span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="c1"># All logging to this point was buffered in-memory, but after start()</span>
+<span class="c1"># it&#39;s actually sent to the logger.</span>
+<span class="n">output_handler</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="o">**</span><span class="n">output_logger_start_kwargs</span><span class="p">)</span>
+<span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+<span class="n">output_handler</span><span class="o">.</span><span class="n">after_process_stop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Since the process lifetime and the output handler lifetime are coupled (it doesn’t
+work to reuse an output handler for multiple processes), it might make sense to have
+a single class that owns the process and the output processing for the process.
+This is complicated by the fact that we don’t always run the process directly,
+but sometimes use a wrapper e.g. mozrunner.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wptrunner.browsers.base.OutputHandlerState">
+<em class="property">class </em><code class="sig-prename descclassname">wptrunner.browsers.base.</code><code class="sig-name descname">OutputHandlerState</code><a class="headerlink" href="#wptrunner.browsers.base.OutputHandlerState" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enumeration.</p>
+</dd></dl>
+
 <dl class="function">
 <dt id="wptrunner.browsers.base.certificate_domain_list">
 <code class="sig-prename descclassname">wptrunner.browsers.base.</code><code class="sig-name descname">certificate_domain_list</code><span class="sig-paren">(</span><em class="sig-param">list_of_domains</em>, <em class="sig-param">certificate_file</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.browsers.base.certificate_domain_list" title="Permalink to this definition">¶</a></dt>
@@ -394,6 +436,18 @@ specific test.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>test</strong> – The test to run.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="wptrunner.executors.base.WdspecExecutor.setup">
+<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param">runner</em><span class="sig-paren">)</span><a class="headerlink" href="#wptrunner.executors.base.WdspecExecutor.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run steps needed before tests can be started e.g. connecting to
+browser instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>runner</strong> – TestRunner instance that is going to run the tests</p>
 </dd>
 </dl>
 </dd></dl>

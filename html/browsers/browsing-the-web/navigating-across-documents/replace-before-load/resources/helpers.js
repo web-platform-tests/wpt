@@ -50,6 +50,9 @@ window.insertIframe = (t, url) => {
   const iframe = document.createElement("iframe");
   iframe.src = url;
   document.body.append(iframe);
-  t.add_cleanup(() => iframe.remove());
+
+  // Intentionally not including the following:
+  //  t.add_cleanup(() => iframe.remove());
+  // Doing so breaks some of the testdriver.js tests with "cannot find window" errors.
   return iframe;
 };

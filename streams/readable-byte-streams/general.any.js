@@ -1090,12 +1090,13 @@ promise_test(t => {
   const reader = stream.getReader({ mode: 'byob' });
 
   const readPromise = reader.read(new Uint8Array(1)).then(result => {
-    assert_true(result.done);
+    assert_true(result.done, 'result.done');
+    assert_equals(result.value, undefined, 'result.value');
   });
 
   const cancelPromise = reader.cancel(passedReason).then(result => {
-    assert_equals(result, undefined);
-    assert_equals(cancelCount, 1);
+    assert_equals(result, undefined, 'cancel() return value should be fulfilled with undefined');
+    assert_equals(cancelCount, 1, 'cancel() should be called only once');
     assert_equals(reason, passedReason, 'reason should equal the passed reason');
   });
 
@@ -1132,7 +1133,7 @@ promise_test(() => {
 
     const promise = reader.read(new Uint16Array(1)).then(result => {
       assert_true(result.done, 'result.done');
-      assert_equals(result.value.constructor, Uint16Array, 'result.value');
+      assert_equals(result.value, undefined, 'result.value');
     });
 
     assert_equals(pullCount, 1, '1 pull() should have been made in response to partial fill by enqueue()');

@@ -47,8 +47,6 @@ def test_server_start_config(product):
             start.assert_called_once()
             args = start.call_args
             config = args[0][1]
-            if "server_host" in env_options:
-                assert config["server_host"] == env_options["server_host"]
             if "server_host" in product_data.env_options:
                 assert config["server_host"] == product_data.env_options["server_host"]
             else:

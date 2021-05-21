@@ -1078,7 +1078,6 @@ promise_test(t => {
     cancel(r) {
       if (cancelCount === 0) {
         reason = r;
-        controller.byobRequest.respond(0);
       }
 
       ++cancelCount;
@@ -1141,11 +1140,7 @@ promise_test(() => {
     assert_equals(viewInfos[0].byteLength, 2, 'byteLength before enqueue() shouild be 2');
     assert_equals(viewInfos[1].byteLength, 1, 'byteLength after enqueue() should be 1');
 
-
     reader.cancel();
-
-    // Tell that the buffer given via pull() is returned.
-    controller.byobRequest.respond(0);
 
     assert_equals(pullCount, 1, 'pull() should only be called once');
     return promise;
@@ -2066,7 +2061,6 @@ promise_test(() => {
   return pullCalledPromise.then(() => {
     const cancelPromise = reader.cancel('meh');
     resolvePull();
-    byobRequest.respond(0);
     return Promise.all([readPromise, cancelPromise]).then(() => {
       assert_throws_js(TypeError, () => byobRequest.respond(0), 'respond() should throw');
     });

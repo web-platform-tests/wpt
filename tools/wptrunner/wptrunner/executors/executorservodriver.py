@@ -4,13 +4,13 @@ import socket
 import traceback
 
 from .base import (Protocol,
-                   BaseProtocolPart,
                    RefTestExecutor,
                    RefTestImplementation,
                    TestharnessExecutor,
                    TimedRunner,
                    strip_server)
-from ..webdriver_server import wait_for_service
+from .protocol import BaseProtocolPart
+from ..environment import wait_for_service
 
 webdriver = None
 ServoCommandExtensions = None

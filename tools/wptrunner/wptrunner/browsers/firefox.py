@@ -20,7 +20,7 @@ from mozcrash import mozcrash
 
 from .base import (Browser,
                    ExecutorBrowser,
-                   NullBrowser,
+                   WebDriverBrowser,
                    OutputHandler,
                    OutputHandlerState,
                    browser_command,
@@ -33,10 +33,8 @@ from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # no
                                             MarionettePrintRefTestExecutor,  # noqa: F401
                                             MarionetteWdspecExecutor,  # noqa: F401
                                             MarionetteCrashtestExecutor)  # noqa: F401
-from ..webdriver_server import WebDriverServer
 
 
-here = os.path.dirname(__file__)
 
 __wptrunner__ = {"product": "firefox",
                  "check_args": "check_args",
@@ -85,6 +83,8 @@ def check_args(**kwargs):
 
 def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
     return {"binary": kwargs["binary"],
+            "webdriver_binary": kwargs["webdriver_binary"],
+            "webdriver_args": kwargs["webdriver_args"],
             "prefs_root": kwargs["prefs_root"],
             "extra_prefs": kwargs["extra_prefs"],
             "test_type": test_type,
@@ -145,6 +145,11 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         if kwargs["binary_args"]:
             options["args"] = kwargs["binary_args"]
 
+        if not kwargs["binary"] and kwargs["headless"] and "--headless" not in options["args"]:
+            options["args"].append("--headless")
+
+        # For wdspec we need to create the profile here so that we can pass the path down
+        # in the capabilities
         profile_creator = ProfileCreator(logger,
                                          kwargs["prefs_root"],
                                          test_environment.config,
@@ -156,6 +161,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
                                          kwargs["binary"],
                                          kwargs["certutil_binary"],
                                          test_environment.config.ssl_config["ca_cert_path"])
+
         if kwargs["processes"] > 1:
             # With multiple processes, we would need a profile directory per process, but we
             # don't have an easy way to do that, so include the profile in the capabilties
@@ -195,6 +201,8 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         executor_kwargs["stackfix_dir"] = kwargs["stackfix_dir"],
         executor_kwargs["leak_report_file"] = leak_report_file
         executor_kwargs["asan"] = run_info_data.get("asan")
+
+        executor_kwargs["profile"] = profile
 
     if kwargs["certutil_binary"] is None:
         capabilities["acceptInsecureCerts"] = True
@@ -608,7 +616,8 @@ class FirefoxOutputHandler(OutputHandler):
 
 class ProfileCreator:
     def __init__(self, logger, prefs_root, config, test_type, extra_prefs, e10s,
-                 enable_fission, browser_channel, binary, certutil_binary, ca_certificate_path):
+                 enable_fission, browser_channel, binary, certutil_binary,
+                 ca_certificate_path):
         self.logger = logger
         self.prefs_root = prefs_root
         self.config = config
@@ -881,10 +890,52 @@ class FirefoxBrowser(Browser):
             return False
 
 
-class FirefoxWdSpecBrowser(NullBrowser):
-    def __init__(self, logger, leak_check=False, **kwargs):
-        super().__init__(logger, **kwargs)
+class FirefoxWdSpecBrowser(WebDriverBrowser):
+    def __init__(self, logger, binary, webdriver_binary, webdriver_args, debug_info=None,
+                 symbols_path=None, stackwalk_binary=None, stackfix_dir=None,
+                 leak_check=False, asan=False, profile=None,
+                 stylo_threads=1, headless=False, enable_webrender=False, chaos_mode_flags=None,
+                 **kwargs):
+
+        super().__init__(logger, binary, webdriver_binary, webdriver_args)
+        self.binary = binary
+        self.webdriver_binary = webdriver_binary
+        self.profile = profile
+
+        self.stackfix_dir = stackfix_dir
+        self.symbols_path = symbols_path
+        self.stackwalk_binary = stackwalk_binary
+
+        self.asan = asan
         self.leak_check = leak_check
+        self.leak_report_file = None
+
+        self.env = get_environ(self.logger,
+                               binary,
+                               debug_info,
+                               stylo_threads,
+                               headless,
+                               enable_webrender,
+                               chaos_mode_flags)
+        self.env["RUST_BACKTRACE"] = "1"
+        # This doesn't work with wdspec tests
+        # In particular tests can create a session without passing in the capabilites
+        # and in those cases we get the default geckodriver profile which doesn't
+        # guarantee zero network access
+        del self.env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"]
+
+    def create_output_handler(self, cmd):
+        return FirefoxOutputHandler(self.logger,
+                                    cmd,
+                                    stackfix_dir=self.stackfix_dir,
+                                    symbols_path=self.symbols_path,
+                                    asan=self.asan,
+                                    leak_report_file=self.leak_report_file)
+
+    def start(self, group_metadata, **kwargs):
+        self.leak_report_file = setup_leak_report(self.leak_check, self.profile, self.env)
+        self.marionette_port = get_free_port()
+        super().start(group_metadata, **kwargs)
 
     def settings(self, test):
         return {"check_leaks": self.leak_check and not test.leaks,
@@ -894,24 +945,13 @@ class FirefoxWdSpecBrowser(NullBrowser):
                 "mozleak_allowed": self.leak_check and test.mozleak_allowed,
                 "mozleak_thresholds": self.leak_check and test.mozleak_threshold}
 
-
-class GeckoDriverServer(WebDriverServer):
-    output_handler_cls = FirefoxOutputHandler
-
-    def __init__(self, logger, marionette_port=2828, binary="geckodriver",
-                 host="127.0.0.1", port=None, env=None, args=None):
-        if env is None:
-            env = os.environ.copy()
-        env["RUST_BACKTRACE"] = "1"
-        WebDriverServer.__init__(self, logger, binary,
-                                 host=host,
-                                 port=port,
-                                 env=env,
-                                 args=args)
-        self.marionette_port = marionette_port
-
     def make_command(self):
-        return [self.binary,
+        return [self.webdriver_binary,
                 "--marionette-port", str(self.marionette_port),
                 "--host", self.host,
                 "--port", str(self.port)] + self._args
+
+    def executor_browser(self):
+        cls, args = super().executor_browser()
+        args["marionette_port"] = self.marionette_port
+        return cls, args

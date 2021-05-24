@@ -39,5 +39,5 @@ promise_test(async t => {
 
   await checkSentinelIframe(t, sentinelIframe);
   assert_equals(history.length, startingHistoryLength, "history.length must not change after checking the sentinel iframe");
-}, "Replace before load, triggered by formElement.requestSubmit()");
+}, "Replace before load, triggered by submitButton.click()");
 </script>

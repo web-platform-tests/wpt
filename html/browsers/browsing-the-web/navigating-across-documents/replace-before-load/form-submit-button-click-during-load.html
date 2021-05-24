@@ -25,7 +25,7 @@ promise_test(async t => {
       button.type = "submit";
       form.append(button);
 
-      document.currentScript.before(form);
+      document.body.append(form);
       button.click();
     };
   `;
@@ -36,10 +36,10 @@ promise_test(async t => {
 
   assert_equals(history.length, startingHistoryLength, "Inserting the under-test iframe must not change history.length");
 
-  await waitForLoad(t, iframe, afterReplacementURL);
+  await waitForLoadAllowingIntermediateLoads(t, iframe, afterReplacementURL);
   assert_equals(history.length, startingHistoryLength, "history.length must not change after waiting for the replacement");
 
   await checkSentinelIframe(t, sentinelIframe);
   assert_equals(history.length, startingHistoryLength, "history.length must not change after checking the sentinel iframe");
-}, "Replace before load, triggered by formElement.requestSubmit()");
+}, "Replace during load, triggered by submitButton.click()");
 </script>

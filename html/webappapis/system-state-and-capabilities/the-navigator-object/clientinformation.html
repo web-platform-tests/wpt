@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+test(() => {
+  assert_equals(window.clientInformation, window.navigator);
+}, "window.clientInformation exists and equals window.navigator");
+</script>

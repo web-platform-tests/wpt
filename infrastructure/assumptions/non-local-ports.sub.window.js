@@ -8,26 +8,45 @@
 //
 // More tests can be found in `fetch/private-network-access/`.
 
+function newRelativeUrl(url, { protocol, port }) {
+  result = new URL(url, window.location);
+  if (port) {
+    result.port = port;
+  }
+  if (protocol) {
+    result.protocol = protocol;
+  }
+  return result;
+}
+
 promise_test(() => {
-  return fetch("https://{{host}}:{{ports[https-private][0]}}", {
-    mode: "no-cors",
+  const url = newRelativeUrl("resources/exists.txt", {
+    protocol: "https:",
+    port: "{{ports[https-private][0]}}"
   });
+  return fetch(url, { mode: "no-cors" });
 }, "Fetch from https-private port works.");
 
 promise_test(() => {
-  return fetch("http://{{host}}:{{ports[http-private][0]}}", {
-    mode: "no-cors",
+  const url = newRelativeUrl("resources/exists.txt", {
+    protocol: "http:",
+    port: "{{ports[http-private][0]}}"
   });
+  return fetch(url, { mode: "no-cors" });
 }, "Fetch from http-private port works.");
 
 promise_test(() => {
-  return fetch("https://{{host}}:{{ports[https-public][0]}}", {
-    mode: "no-cors",
+  const url = newRelativeUrl("resources/exists.txt", {
+    protocol: "https:",
+    port: "{{ports[https-public][0]}}"
   });
+  return fetch(url, { mode: "no-cors" });
 }, "Fetch from https-public port works.");
 
 promise_test(() => {
-  return fetch("http://{{host}}:{{ports[http-public][0]}}", {
-    mode: "no-cors",
+  const url = newRelativeUrl("resources/exists.txt", {
+    protocol: "http:",
+    port: "{{ports[http-public][0]}}"
   });
+  return fetch(url, { mode: "no-cors" });
 }, "Fetch from http-public port works.");

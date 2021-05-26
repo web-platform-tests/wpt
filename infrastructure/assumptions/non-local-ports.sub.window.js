@@ -8,6 +8,11 @@
 //
 // More tests can be found in `fetch/private-network-access/`.
 
+// Returns a new URL relative to the current location.
+//
+// `url` specifies the relative URL, e.g. "foo.html" or "http://foo.example".
+// `protocol` and `port`, if specified, override the respective properties of
+// the returned URL object.
 function newRelativeUrl(url, { protocol, port }) {
   result = new URL(url, window.location);
   if (port) {

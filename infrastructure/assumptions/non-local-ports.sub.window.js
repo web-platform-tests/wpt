@@ -8,24 +8,30 @@
 //
 // More tests can be found in `fetch/private-network-access/`.
 
-// Returns a new URL relative to the current location.
+// Resolves a URL relative to the current location, returning an absolute URL.
 //
 // `url` specifies the relative URL, e.g. "foo.html" or "http://foo.example".
-// `protocol` and `port`, if specified, override the respective properties of
-// the returned URL object.
-function newRelativeUrl(url, { protocol, port }) {
-  result = new URL(url, window.location);
-  if (port) {
+// `options.protocol` and `options.port`, if defined, override the respective
+// properties of the returned URL object.
+function resolveUrl(url, options) {
+  const result = new URL(url, window.location);
+  if (options === undefined) {
+    return result;
+  }
+
+  const { port, protocol } = options;
+  if (port !== undefined) {
     result.port = port;
   }
-  if (protocol) {
+  if (protocol !== undefined) {
     result.protocol = protocol;
   }
+
   return result;
 }
 
 promise_test(() => {
-  const url = newRelativeUrl("resources/exists.txt", {
+  const url = resolveUrl("resources/exists.txt", {
     protocol: "https:",
     port: "{{ports[https-private][0]}}"
   });
@@ -33,7 +39,7 @@ promise_test(() => {
 }, "Fetch from https-private port works.");
 
 promise_test(() => {
-  const url = newRelativeUrl("resources/exists.txt", {
+  const url = resolveUrl("resources/exists.txt", {
     protocol: "http:",
     port: "{{ports[http-private][0]}}"
   });
@@ -41,7 +47,7 @@ promise_test(() => {
 }, "Fetch from http-private port works.");
 
 promise_test(() => {
-  const url = newRelativeUrl("resources/exists.txt", {
+  const url = resolveUrl("resources/exists.txt", {
     protocol: "https:",
     port: "{{ports[https-public][0]}}"
   });
@@ -49,7 +55,7 @@ promise_test(() => {
 }, "Fetch from https-public port works.");
 
 promise_test(() => {
-  const url = newRelativeUrl("resources/exists.txt", {
+  const url = resolveUrl("resources/exists.txt", {
     protocol: "http:",
     port: "{{ports[http-public][0]}}"
   });

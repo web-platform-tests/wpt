@@ -2041,6 +2041,7 @@ promise_test(() => {
 }, 'calling respondWithNewView() twice on the same byobRequest should throw');
 
 promise_test(() => {
+  let controller;
   let byobRequest;
   let resolvePullCalledPromise;
   const pullCalledPromise = new Promise(resolve => {
@@ -2048,8 +2049,11 @@ promise_test(() => {
   });
   let resolvePull;
   const rs = new ReadableStream({
-    pull(controller) {
-      byobRequest = controller.byobRequest;
+    start(c) {
+      controller = c;
+    },
+    pull(c) {
+      byobRequest = c.byobRequest;
       resolvePullCalledPromise();
       return new Promise(resolve => {
         resolvePull = resolve;
@@ -2060,9 +2064,10 @@ promise_test(() => {
   const reader = rs.getReader({ mode: 'byob' });
   const readPromise = reader.read(new Uint8Array(16));
   return pullCalledPromise.then(() => {
-    const cancelPromise = reader.cancel('meh');
+    controller.close();
+    byobRequest.respond(0);
     resolvePull();
-    return Promise.all([readPromise, cancelPromise]).then(() => {
+    return readPromise.then(() => {
       assert_throws_js(TypeError, () => byobRequest.respond(0), 'respond() should throw');
     });
   });

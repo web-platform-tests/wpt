@@ -2074,6 +2074,37 @@ promise_test(() => {
 }, 'calling respond(0) twice on the same byobRequest should throw even when closed');
 
 promise_test(() => {
+  let controller;
+  let byobRequest;
+  let resolvePullCalledPromise;
+  const pullCalledPromise = new Promise(resolve => {
+    resolvePullCalledPromise = resolve;
+  });
+  let resolvePull;
+  const rs = new ReadableStream({
+    start(c) {
+      controller = c;
+    },
+    pull(c) {
+      byobRequest = c.byobRequest;
+      resolvePullCalledPromise();
+      return new Promise(resolve => {
+        resolvePull = resolve;
+      });
+    },
+    type: 'bytes'
+  });
+  const reader = rs.getReader({ mode: 'byob' });
+  const readPromise = reader.read(new Uint8Array(16));
+  return pullCalledPromise.then(() => {
+    const cancelPromise = reader.cancel('meh');
+    assert_throws_js(TypeError, () => byobRequest.respond(0), 'respond() should throw');
+    resolvePull();
+    return Promise.all([readPromise, cancelPromise]);
+  });
+}, 'calling respond() should throw when canceled');
+
+promise_test(() => {
   let resolvePullCalledPromise;
   const pullCalledPromise = new Promise(resolve => {
     resolvePullCalledPromise = resolve;

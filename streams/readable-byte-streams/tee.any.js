@@ -608,3 +608,99 @@ promise_test(async t => {
   ]);
 
 }, 'ReadableStream teeing with byte source: failing to cancel when canceling both branches in sequence with delay');
+
+promise_test(async () => {
+
+  let cancelResolve;
+  const cancelCalled = new Promise((resolve) => {
+    cancelResolve = resolve;
+  });
+  const rs = recordingReadableStream({
+    type: 'bytes',
+    cancel() {
+      cancelResolve();
+    }
+  });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+
+  const read1 = reader1.read(new Uint8Array([0x11]));
+  await flushAsyncEvents();
+  const read2 = reader2.read(new Uint8Array([0x22]));
+  await flushAsyncEvents();
+
+  // We are reading into branch1's buffer.
+  const byobRequest1 = rs.controller.byobRequest;
+  assert_not_equals(byobRequest1, null);
+  assert_equals(byobRequest1.view.byteLength, 1);
+  assert_equals(byobRequest1.view[0], 0x11);
+
+  // Cancelling branch1 should not affect the BYOB request.
+  const cancel1 = reader1.cancel();
+  const result1 = await read1;
+  assert_equals(result1.done, true);
+  assert_equals(result1.value, undefined);
+  await flushAsyncEvents();
+  const byobRequest2 = rs.controller.byobRequest;
+  assert_equals(byobRequest2.view[0], 0x11);
+
+  // Cancelling branch1 should invalidate the BYOB request.
+  const cancel2 = reader2.cancel();
+  await cancelCalled;
+  const byobRequest3 = rs.controller.byobRequest;
+  assert_equals(byobRequest3, null);
+  const result2 = await read2;
+  assert_equals(result2.done, true);
+  assert_equals(result2.value, undefined);
+
+  await Promise.all([cancel1, cancel2]);
+
+}, 'ReadableStream teeing with byte source: read from branch1 and branch2, cancel branch1, cancel branch2');
+
+promise_test(async () => {
+
+  let cancelResolve;
+  const cancelCalled = new Promise((resolve) => {
+    cancelResolve = resolve;
+  });
+  const rs = recordingReadableStream({
+    type: 'bytes',
+    cancel() {
+      cancelResolve();
+    }
+  });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+
+  const read1 = reader1.read(new Uint8Array([0x11]));
+  await flushAsyncEvents();
+  const read2 = reader2.read(new Uint8Array([0x22]));
+  await flushAsyncEvents();
+
+  // We are reading into branch1's buffer.
+  const byobRequest1 = rs.controller.byobRequest;
+  assert_not_equals(byobRequest1, null);
+  assert_equals(byobRequest1.view.byteLength, 1);
+  assert_equals(byobRequest1.view[0], 0x11);
+
+  // Cancelling branch2 should not affect the BYOB request.
+  const cancel2 = reader2.cancel();
+  const result2 = await read2;
+  assert_equals(result2.done, true);
+  assert_equals(result2.value, undefined);
+  await flushAsyncEvents();
+  const byobRequest2 = rs.controller.byobRequest;
+  assert_equals(byobRequest2.view[0], 0x11);
+
+  // Cancelling branch1 should invalidate the BYOB request.
+  const cancel1 = reader1.cancel();
+  await cancelCalled;
+  const byobRequest3 = rs.controller.byobRequest;
+  assert_equals(byobRequest3, null);
+  const result1 = await read1;
+  assert_equals(result1.done, true);
+  assert_equals(result1.value, undefined);
+
+  await Promise.all([cancel1, cancel2]);
+
+}, 'ReadableStream teeing with byte source: read from branch1 and branch2, cancel branch2, cancel branch1');

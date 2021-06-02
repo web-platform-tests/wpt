@@ -704,3 +704,73 @@ promise_test(async () => {
   await Promise.all([cancel1, cancel2]);
 
 }, 'ReadableStream teeing with byte source: read from branch1 and branch2, cancel branch2, cancel branch1');
+
+promise_test(async () => {
+
+  const rs = recordingReadableStream({ type: 'bytes' });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+
+  const read1 = reader1.read(new Uint8Array([0x11]));
+  await flushAsyncEvents();
+  const read2 = reader2.read(new Uint8Array([0x22]));
+  await flushAsyncEvents();
+
+  // We are reading into branch1's buffer.
+  assert_equals(rs.controller.byobRequest.view[0], 0x11);
+
+  // Cancelling branch2 should not affect the BYOB request.
+  reader2.cancel();
+  const result2 = await read2;
+  assert_equals(result2.done, true);
+  assert_equals(result2.value, undefined);
+  await flushAsyncEvents();
+  assert_equals(rs.controller.byobRequest.view[0], 0x11);
+
+  // Respond to the BYOB request.
+  rs.controller.byobRequest.view[0] = 0x33;
+  rs.controller.byobRequest.respond(1);
+
+  // branch1 should receive the read chunk.
+  const result1 = await read1;
+  assert_equals(result1.done, false);
+  assert_equals(result1.value.byteLength, 1);
+  assert_equals(result1.value.buffer.byteLength, 1);
+  assert_equals(result1.value[0], 0x33);
+
+}, 'ReadableStream teeing with byte source: read from branch1 and branch2, cancel branch2, enqueue to branch1');
+
+promise_test(async () => {
+
+  const rs = recordingReadableStream({ type: 'bytes' });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+
+  const read1 = reader1.read(new Uint8Array([0x11]));
+  await flushAsyncEvents();
+  const read2 = reader2.read(new Uint8Array([0x22]));
+  await flushAsyncEvents();
+
+  // We are reading into branch1's buffer.
+  assert_equals(rs.controller.byobRequest.view[0], 0x11);
+
+  // Cancelling branch1 should not affect the BYOB request.
+  reader1.cancel();
+  const result1 = await read1;
+  assert_equals(result1.done, true);
+  assert_equals(result1.value, undefined);
+  await flushAsyncEvents();
+  assert_equals(rs.controller.byobRequest.view[0], 0x11);
+
+  // Respond to the BYOB request.
+  rs.controller.byobRequest.view[0] = 0x33;
+  rs.controller.byobRequest.respond(1);
+
+  // branch2 should receive the read chunk.
+  const result2 = await read2;
+  assert_equals(result2.done, false);
+  assert_equals(result2.value.byteLength, 1);
+  assert_equals(result2.value.buffer.byteLength, 1);
+  assert_equals(result2.value[0], 0x33);
+
+}, 'ReadableStream teeing with byte source: read from branch1 and branch2, cancel branch1, respond to branch2');

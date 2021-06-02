@@ -844,8 +844,10 @@ def create_parser():
                         help="Output markdown")
     parser.add_argument("--repo-root", help="The WPT directory. Use this"
                         "option if the lint script exists outside the repository")
+    parser.add_argument("--ignore-glob", help="Additional file glob to ignore.")
     parser.add_argument("--all", action="store_true", help="If no paths are passed, try to lint the whole "
                         "working directory, not just files that changed")
+    parser.add_argument("--fix", action="store_true", help="Automatically fix some lint errors")
     return parser
 
 
@@ -867,22 +869,37 @@ def main(**kwargs):
 
     paths = lint_paths(kwargs, repo_root)
 
-    return lint(repo_root, paths, output_format)
+    ignore_glob = kwargs.get(str("ignore_glob")) or str()
+
+    auto_fix = kwargs.get(str("fix"))
+
+    return lint(repo_root, paths, output_format, str(ignore_glob), auto_fix)
 
 
-def lint(repo_root, paths, output_format):
-    # type: (str, List[str], str) -> int
+def lint(repo_root, paths, output_format, ignore_glob=str(), auto_fix=False):
+    # type: (str, List[str], str, str) -> int
     error_count = defaultdict(int)  # type: Dict[Text, int]
     last = None
 
     with open(os.path.join(repo_root, "lint.whitelist")) as f:
         whitelist, ignored_files = parse_whitelist(f)
 
+    if ignore_glob:
+        ignored_files.add(ignore_glob)
+
     output_errors = {"json": output_errors_json,
                      "markdown": output_errors_markdown,
                      "normal": output_errors_text}[output_format]
 
-    def process_errors(errors):
+    def auto_fix_errors(repo_root, errors):
+        """ TODO """
+        print("Autofixing %s lint error in %s (TODO actually implement the fixing)" % errors)
+        #  with open(os.path.join(repo_root, errors[1]), 'rb+') as f:
+        #      read the file into memory
+        #      do the fixups
+        #      write to file
+
+    def process_errors(errors, auto_fix=False):
         # type: (List[rules.Error]) -> Optional[Tuple[Text, Text]]
         """
         Filters and prints the errors, and updates the ``error_count`` object.
@@ -920,6 +937,8 @@ def lint(repo_root, paths, output_format):
             with open(abs_path, 'rb') as f:
                 errors = check_file_contents(repo_root, path, f)
                 last = process_errors(errors) or last
+            if last and auto_fix:
+                auto_fix_errors(repo_root, last)
 
     errors = check_all_paths(repo_root, paths)
     last = process_errors(errors) or last

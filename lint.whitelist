@@ -201,6 +201,7 @@ SET TIMEOUT: shadow-dom/slotchange-event.html
 SET TIMEOUT: trusted-types/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.tentative.html
 SET TIMEOUT: trusted-types/DOMWindowTimers-setTimeout-setInterval.tentative.html
 SET TIMEOUT: user-timing/*
+SET TIMEOUT: web-animations/timing-model/animations/*
 SET TIMEOUT: webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/mediaElementAudioSourceToScriptProcessorTest.html
 SET TIMEOUT: webauthn/*timeout.https.html
 SET TIMEOUT: webdriver/*
@@ -282,6 +283,7 @@ GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/w
 GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/window-named-properties-003.html
 
 # Intentional use of setTimeout
+SET TIMEOUT: common/security-features/resources/common.sub.js
 SET TIMEOUT: css/css-fonts/font-display/font-display.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-change.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-change-ref.html
@@ -675,6 +677,7 @@ MISSING-LINK: css/filter-effects/*.any.js
 # Tests that use WebKit/Blink testing APIs
 LAYOUTTESTS APIS: css/css-regions/interactivity/*
 LAYOUTTESTS APIS: import-maps/resources/jest-test-helper.js
+LAYOUTTESTS APIS: import-maps/common/resources/common-test-helper.js
 LAYOUTTESTS APIS: resources/chromium/generic_sensor_mocks.js
 LAYOUTTESTS APIS: resources/chromium/nfc-mock.js
 LAYOUTTESTS APIS: resources/chromium/webxr-test.js

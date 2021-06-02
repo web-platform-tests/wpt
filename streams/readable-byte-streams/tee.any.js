@@ -555,3 +555,56 @@ promise_test(async t => {
   assert_array_equals(rs.events, ['pull'], 'pull should be called once');
 
 }, 'ReadableStream teeing with byte source: stops pulling when original stream errors while both branches are reading');
+
+promise_test(async () => {
+
+  const rs = recordingReadableStream({ type: 'bytes' });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+
+  const read1 = reader1.read(new Uint8Array([0x11]));
+  const read2 = reader2.read(new Uint8Array([0x22]));
+
+  const cancel1 = reader1.cancel();
+  await flushAsyncEvents();
+  const cancel2 = reader2.cancel();
+
+  const result1 = await read1;
+  assert_object_equals(result1, { value: undefined, done: true });
+  const result2 = await read2;
+  assert_object_equals(result2, { value: undefined, done: true });
+
+  await Promise.all([cancel1, cancel2]);
+
+}, 'ReadableStream teeing with byte source: canceling both branches in sequence with delay');
+
+promise_test(async t => {
+
+  const theError = { name: 'boo!' };
+  const rs = new ReadableStream({
+    type: 'bytes',
+    cancel() {
+      throw theError;
+    }
+  });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+
+  const read1 = reader1.read(new Uint8Array([0x11]));
+  const read2 = reader2.read(new Uint8Array([0x22]));
+
+  const cancel1 = reader1.cancel();
+  await flushAsyncEvents();
+  const cancel2 = reader2.cancel();
+
+  const result1 = await read1;
+  assert_object_equals(result1, { value: undefined, done: true });
+  const result2 = await read2;
+  assert_object_equals(result2, { value: undefined, done: true });
+
+  await Promise.all([
+    promise_rejects_exactly(t, theError, cancel1),
+    promise_rejects_exactly(t, theError, cancel2)
+  ]);
+
+}, 'ReadableStream teeing with byte source: failing to cancel when canceling both branches in sequence with delay');

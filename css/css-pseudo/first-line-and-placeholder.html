@@ -7,13 +7,13 @@
 <meta name="assert" content="Tests ::placeholder interaction with ::first-line pseudo element">
 <style>
 input::first-line {
-    background-color: initial;
+    color: red;
 }
 
 input::placeholder {
-    color: red;
+    color: green;
 }
 </style>
 <form>
-  <input placeholder="this text should be red">
+  <input placeholder="this text should be green">
 </form>

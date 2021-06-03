@@ -10,7 +10,7 @@ idl_test(
   ['cssom'],
   idl_array => {
     idl_array.add_objects({
-      Highlight: ['new Highlight(foo, [])'],
+      Highlight: ['new Highlight(new Range())'],
       HighlightRegistry: ['CSS.highlights'],
     });
   }

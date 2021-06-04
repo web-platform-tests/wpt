@@ -17,6 +17,8 @@ promise_test(async t => {
     const registration =
         await service_worker_unregister_and_register(t, worker, scope);
     await wait_for_state(t, registration.installing, 'activated');
+
+    // This will happen after all other tests
     promise_test(t => {
         return registration.unregister();
       }, 'restore global state');
@@ -145,6 +147,17 @@ promise_test(t => {
             'Service Worker should respond with an empty resulting client id for subresource requests');
         });
   }, 'Service Worker responds to fetch event with the correct resulting client id');
+
+promise_test(async t => {
+  const page_url = 'resources/simple.html?targetClientId';
+  const frame = await with_iframe(page_url);
+  t.add_cleanup(() => frame.remove());
+  assert_equals(
+    frame.contentDocument.body.textContent,
+    'not-present',
+    `targetClientId should not be on FetchEvent - it's been renamed replacesClientId`
+  );
+}, `targetClientId should not be on FetchEvent`);
 
 promise_test(t => {
     const page_url = 'resources/simple.html?ignore';

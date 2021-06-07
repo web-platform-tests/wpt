@@ -148,17 +148,6 @@ promise_test(t => {
         });
   }, 'Service Worker responds to fetch event with the correct resulting client id');
 
-promise_test(async t => {
-  const page_url = 'resources/simple.html?targetClientId';
-  const frame = await with_iframe(page_url);
-  t.add_cleanup(() => frame.remove());
-  assert_equals(
-    frame.contentDocument.body.textContent,
-    'not-present',
-    `targetClientId should not be on FetchEvent - it's been renamed replacesClientId`
-  );
-}, `targetClientId should not be on FetchEvent`);
-
 promise_test(t => {
     const page_url = 'resources/simple.html?ignore';
     return with_iframe(page_url)

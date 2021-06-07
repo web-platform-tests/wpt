@@ -47,12 +47,6 @@ function handleResultingClientId(event) {
   event.respondWith(new Response(body));
 }
 
-function handleTargetClientId(event) {
-  event.respondWith(new Response(
-    ('targetClientId' in event) ? 'present' : 'not-present'
-  ));
-}
-
 function handleNullBody(event) {
   event.respondWith(new Response());
 }
@@ -195,7 +189,6 @@ self.addEventListener('fetch', function(event) {
       { pattern: '?referrer', fn: handleReferrer },
       { pattern: '?clientId', fn: handleClientId },
       { pattern: '?resultingClientId', fn: handleResultingClientId },
-      { pattern: '?targetClientId', fn: handleTargetClientId },
       { pattern: '?ignore', fn: function() {} },
       { pattern: '?null', fn: handleNullBody },
       { pattern: '?fetch', fn: handleFetch },

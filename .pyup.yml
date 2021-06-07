@@ -31,8 +31,6 @@ requirements:
  - tools/wptrunner/requirements_webkit.txt
 
  # try and avoid bogus PRs where these get updated (has happened occasionally)
- - annotation-protocol/requirements.txt:
-     update: False
  - css/requirements.txt:
      update: False
  - tools/third_party/html5lib/requirements-optional.txt:

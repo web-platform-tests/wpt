@@ -1,6 +1,8 @@
+// META: title=WebCryptoAPI: wrapKey() and unwrapKey()
+// META: timeout=long
+
 // Tests for wrapKey and unwrapKey round tripping
 
-function run_test() {
     var subtle = self.crypto.subtle;
 
     var wrappers = [];  // Things we wrap (and upwrap) keys with
@@ -513,5 +515,3 @@ function run_test() {
     function str2ab(str)        { return Uint8Array.from( str.split(''), function(s){return s.charCodeAt(0)} ); }
     function ab2str(ab)         { return String.fromCharCode.apply(null, new Uint8Array(ab)); }
 
-
-}

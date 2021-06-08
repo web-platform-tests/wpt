@@ -272,7 +272,7 @@ function run_test() {
             .then(function() {done();})
             .catch(function() {done();})
     }, "setup");
-    
+
     // A test vector has all needed fields for encryption, EXCEPT that the
     // key field may be null. This function replaces that null with the Correct
     // CryptoKey object.

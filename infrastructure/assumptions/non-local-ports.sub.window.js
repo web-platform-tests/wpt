@@ -30,34 +30,38 @@ function resolveUrl(url, options) {
   return result;
 }
 
-promise_test(() => {
+promise_test(async () => {
   const url = resolveUrl("resources/exists.txt", {
     protocol: "https:",
     port: "{{ports[https-private][0]}}"
   });
-  return fetch(url, { mode: "no-cors" });
+  const response = await fetch(url);
+  assert_true(response.ok);
 }, "Fetch from https-private port works.");
 
-promise_test(() => {
+promise_test(async () => {
   const url = resolveUrl("resources/exists.txt", {
     protocol: "http:",
     port: "{{ports[http-private][0]}}"
   });
-  return fetch(url, { mode: "no-cors" });
+  const response = await fetch(url);
+  assert_true(response.ok);
 }, "Fetch from http-private port works.");
 
-promise_test(() => {
+promise_test(async () => {
   const url = resolveUrl("resources/exists.txt", {
     protocol: "https:",
     port: "{{ports[https-public][0]}}"
   });
-  return fetch(url, { mode: "no-cors" });
+  const response = await fetch(url);
+  assert_true(response.ok);
 }, "Fetch from https-public port works.");
 
-promise_test(() => {
+promise_test(async () => {
   const url = resolveUrl("resources/exists.txt", {
     protocol: "http:",
     port: "{{ports[http-public][0]}}"
   });
-  return fetch(url, { mode: "no-cors" });
+  const response = await fetch(url);
+  assert_true(response.ok);
 }, "Fetch from http-public port works.");

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>Page load processing model for plugins</title>
+<link rel="author" href="masonf@chromium.org">
+<link rel="help" href="https://html.spec.whatwg.org/#read-plugin">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+
+<object type="application/pdf" data="support/sandbox.pdf"></object>
+
+<script>
+const t = async_test("Checking document metadata for PDF file");
+const obj = document.querySelector('object');
+obj.onload = () => {
+  t.step(function() {
+    const doc = obj.contentDocument;
+    if (doc === null) {
+      // Some UA's render PDF as "inline content that doesn't have a DOM", which is ok
+      t.done();
+    } else {
+      assert_equals(doc.compatMode, "CSS1Compat");
+      assert_equals(doc.contentType, "application/pdf");
+      t.done();
+    }
+  });
+};
+</script>

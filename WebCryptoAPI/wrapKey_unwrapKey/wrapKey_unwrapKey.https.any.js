@@ -11,7 +11,8 @@
 
     // Generate all the keys needed, then iterate over all combinations
     // to test wrapping and unwrapping.
-    Promise.all([generateWrappingKeys(), generateKeysToWrap(), generateEcdhPeerKey()])
+    promise_test(function() {
+    return Promise.all([generateWrappingKeys(), generateKeysToWrap(), generateEcdhPeerKey()])
     .then(function(results) {
         var promises = [];
         wrappers.forEach(function(wrapper) {
@@ -32,7 +33,7 @@
             assert_unreached("A test failed to run: " + err.name + ": " + err.message)
         }, "Could not run all tests")
     });
-
+    }, "setup");
 
     function generateWrappingKeys() {
         // There are five algorithms that can be used for wrapKey/unwrapKey.

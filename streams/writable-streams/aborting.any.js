@@ -1376,3 +1376,99 @@ promise_test(t => {
   return promise_rejects_js(t, TypeError, ws.abort(), 'abort should reject')
     .then(() => writer.ready);
 }, 'abort on a locked stream should reject');
+
+test(t => {
+  let ctrl;
+  const ws = new WritableStream({start(c) { ctrl = c; }});
+
+  assert_true(ctrl.signal instanceof AbortSignal);
+  assert_false(ctrl.signal.aborted);
+  ws.abort();
+  assert_true(ctrl.signal.aborted);
+}, 'WritableStreamDefaultController.signal');
+
+promise_test(async t => {
+  let ctrl;
+  let resolve;
+  const called = new Promise(r => resolve = r);
+
+  const ws = new WritableStream({
+    start(c) { ctrl = c; },
+    write() { resolve(); return new Promise(() => {}); }
+  });
+
+  writer.write(99);
+  await called;
+
+  assert_false(ctrl.signal.aborted);
+  ws.abort();
+  assert_true(ctrl.signal.aborted);
+}, 'the abort signal is signalled synchronously - write');
+
+promise_test(async t => {
+  let ctrl;
+  let resolve;
+  const called = new Promise(r => resolve = r);
+
+  const ws = new WritableStream({
+    start(c) { ctrl = c; },
+    close() { resolve(); return new Promise(() => {}); }
+  });
+
+  writer.close(99);
+  await called;
+
+  assert_false(ctrl.signal.aborted);
+  ws.abort();
+  assert_true(ctrl.signal.aborted);
+}, 'the abort signal is signalled synchronously - close');
+
+promise_test(async t => {
+  let ctrl;
+  const ws = new WritableStream({start(c) { ctrl = c; }});
+  const writer = ws.getWriter();
+
+  ctrl.error(TypeError());
+  await promise_rejects_js(t, TypeError, writer.closed);
+  assert_false(ctrl.signal.aborted);
+}, 'the abort signal is not signalled on error');
+
+promise_test(async t => {
+  let ctrl;
+  const ws = new WritableStream({
+    start(c) { ctrl = c; },
+    async write() { throw TypeError(); }
+  });
+  const writer = ws.getWriter();
+
+  await promise_rejects_js(t, TypeError, writer.write('hello'), 'write result');
+  await promise_rejects_js(t, TypeError, writer.closed, 'closed');
+  assert_false(ctrl.signal.aborted);
+}, 'the abort signal is not signalled on write failure');
+
+promise_test(async t => {
+  let ctrl;
+  const ws = new WritableStream({
+    start(c) { ctrl = c; },
+    async close() { throw TypeError(); }
+  });
+  const writer = ws.getWriter();
+
+  await promise_rejects_js(t, TypeError, writer.close(), 'close result');
+  await promise_rejects_js(t, TypeError, writer.closed, 'closed');
+  assert_false(ctrl.signal.aborted);
+}, 'the abort signal is not signalled on close failure');
+
+promise_test(async t => {
+  let ctrl;
+  const ws = new WritableStream({
+    start(c) { ctrl = c; },
+  });
+
+  ctrl.signal.addEventListener('abort', () => writer.abort(TypeError()));
+  const writer = ws.getWriter();
+  writer.abort(SyntaxError());
+  assert_true(ctrl.signal.aborted);
+
+  await promise_rejects_js(t, SyntaxError, writer.closed, 'closed');
+}, 'recursive abort() call');

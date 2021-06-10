@@ -761,7 +761,7 @@ def test_xhtml_with_entity(ext):
 
 
 def test_no_parse():
-    s = create("foo/bar.xml", "\uFFFF".encode())
+    s = create("foo/bar.xml", "\uFFFF".encode("utf-8"))
 
     assert not s.name_is_non_test
     assert not s.name_is_manual

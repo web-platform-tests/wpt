@@ -124,7 +124,7 @@ class TestRequest(TestUsingServer):
         self.server.router.register(*route)
 
         # Try some non-ASCII characters and the server shouldn't crash.
-        encoded_text = "你好".encode()
+        encoded_text = "你好".encode("utf-8")
         resp = self.request(route[1], headers={"foo": encoded_text})
         self.assertEqual(encoded_text, resp.read())
 

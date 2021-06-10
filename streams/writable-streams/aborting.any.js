@@ -1428,47 +1428,52 @@ promise_test(async t => {
   const ws = new WritableStream({start(c) { ctrl = c; }});
   const writer = ws.getWriter();
 
-  ctrl.error(TypeError());
-  await promise_rejects_js(t, TypeError, writer.closed);
+  const e = TypeError();
+  ctrl.error(e);
+  await promise_rejects_exactly(t, e, writer.closed);
   assert_false(ctrl.signal.aborted);
 }, 'the abort signal is not signalled on error');
 
 promise_test(async t => {
   let ctrl;
+  const e = TypeError();
   const ws = new WritableStream({
     start(c) { ctrl = c; },
-    async write() { throw TypeError(); }
+    async write() { throw e; }
   });
   const writer = ws.getWriter();
 
-  await promise_rejects_js(t, TypeError, writer.write('hello'), 'write result');
-  await promise_rejects_js(t, TypeError, writer.closed, 'closed');
+  await promise_rejects_exactly(t, e, writer.write('hello'), 'write result');
+  await promise_rejects_exactly(t, e, writer.closed, 'closed');
   assert_false(ctrl.signal.aborted);
 }, 'the abort signal is not signalled on write failure');
 
 promise_test(async t => {
   let ctrl;
+  const e = TypeError();
   const ws = new WritableStream({
     start(c) { ctrl = c; },
-    async close() { throw TypeError(); }
+    async close() { throw e; }
   });
   const writer = ws.getWriter();
 
-  await promise_rejects_js(t, TypeError, writer.close(), 'close result');
-  await promise_rejects_js(t, TypeError, writer.closed, 'closed');
+  await promise_rejects_exactly(t, e, writer.close(), 'close result');
+  await promise_rejects_exactly(t, e, writer.closed, 'closed');
   assert_false(ctrl.signal.aborted);
 }, 'the abort signal is not signalled on close failure');
 
 promise_test(async t => {
   let ctrl;
+  const e1 = SyntaxError();
+  const e2 = TypeError();
   const ws = new WritableStream({
     start(c) { ctrl = c; },
   });
 
-  ctrl.signal.addEventListener('abort', () => writer.abort(TypeError()));
+  ctrl.signal.addEventListener('abort', () => writer.abort(e2));
   const writer = ws.getWriter();
-  writer.abort(SyntaxError());
+  writer.abort(e1);
   assert_true(ctrl.signal.aborted);
 
-  await promise_rejects_js(t, SyntaxError, writer.closed, 'closed');
+  await promise_rejects_exactly(t, e1, writer.closed, 'closed');
 }, 'recursive abort() call');

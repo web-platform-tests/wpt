@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML: window.open `features`: condition for is popup</title>
+<meta name=timeout content=long>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/window-object.html#window-open-steps">
+
+<!-- user agents are not required to support open features other than `noopener`
+     and on some platforms position and size features don't make sense -->
+<meta name="flags" content="may" />
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/PrefixedPostMessage.js"></script>
+<script>
+var windowURL = 'resources/is-popup-barprop.html';
+
+[
+  [undefined, true],
+
+  ["locationbar", true],
+  ["locationbar=yes", true],
+  ["locationbar=no", true],
+
+  ["menubar", true],
+  ["menubar=yes", true],
+  ["menubar=no", true],
+
+  ["resizable", true],
+  ["resizable=yes", true],
+  ["resizable=no", true],
+
+  ["scrollbars", true],
+  ["scrollbars=yes", true],
+  ["scrollbars=no", true],
+
+  ["status", true],
+  ["status=yes", true],
+  ["status=no", true],
+
+  ["titlebar", true],
+  ["titlebar=yes", true],
+  ["titlebar=no", true],
+
+  ["toolbar", true],
+  ["toolbar=yes", true],
+  ["toolbar=no", true],
+
+  ["close", true],
+  ["close=yes", true],
+  ["close=no", true],
+
+  ["minimizable", true],
+  ["minimizable=yes", true],
+  ["minimizable=no", true],
+
+  ["personalbar", true],
+  ["personalbar=yes", true],
+  ["personalbar=no", true],
+
+  ["left=500", true],
+  ["screenX=500", true],
+
+  ["top=500", true],
+  ["screenY=500", true],
+
+  ["width=500", false],
+  ["innerWidth=500", false],
+
+  ["outerWidth=500", true],
+
+  ["height=500", true],
+  ["innerHeight=500", true],
+
+  ["outerHeight=500", true],
+].forEach(([features, visible]) => {
+  async_test(t => {
+    var prefixedMessage = new PrefixedMessageTest();
+    prefixedMessage.onMessage(t.step_func_done((data, e) => {
+      e.source.close();
+      assert_equals(data.locationbar, visible, `window.locationbar.visible`);
+      assert_equals(data.menubar, visible, `window.menubar.visible`);
+      assert_equals(data.personalbar, visible, `window.personalbar.visible`);
+      assert_equals(data.scrollbars, visible, `window.scrollbars.visible`);
+      assert_equals(data.statusbar, visible, `window.statusbar.visible`);
+      assert_equals(data.toolbar, visible, `window.toolbar.visible`);
+    }));
+    var win = window.open(prefixedMessage.url(windowURL), '', features);
+  }, `${format_value(features)} should set BarProp visibility to ${visible}`);
+});
+
+</script>

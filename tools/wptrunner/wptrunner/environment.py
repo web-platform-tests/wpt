@@ -242,42 +242,9 @@ class TestEnvironment(object):
         return route_builder.get_routes()
 
     def ensure_started(self):
-        # Pause for a while to ensure that the server has a chance to start
-        total_sleep_secs = 30
-        each_sleep_secs = 0.5
-        end_time = time.time() + total_sleep_secs
-        while time.time() < end_time:
-            failed, pending = self.test_servers()
-            if failed:
-                break
-            if not pending:
-                return
-            time.sleep(each_sleep_secs)
-        raise EnvironmentError("Servers failed to start: %s" %
-                               ", ".join("%s:%s" % item for item in failed))
-
-    def test_servers(self):
-        failed = []
-        pending = []
-        host = self.config["server_host"]
-        for scheme, servers in self.servers.items():
-            for port, server in servers:
-                if not server.is_alive():
-                    failed.append((scheme, port))
-
-        if not failed and self.test_server_port:
-            for scheme, servers in self.servers.items():
-                # TODO(Hexcles): Find a way to test QUIC's UDP port.
-                if scheme == "quic-transport":
-                    continue
-                for port, server in servers:
-                    s = socket.socket()
-                    s.settimeout(0.1)
-                    try:
-                        s.connect((host, port))
-                    except socket.error:
-                        pending.append((host, port))
-                    finally:
-                        s.close()
-
-        return failed, pending
+        try:
+            serve.ensure_started(self.config,
+                                 self.servers,
+                                 ensure_connect=self.test_server_port)
+        except Exception as e:
+            raise TestEnvironmentError from e

@@ -63,7 +63,6 @@ def pytest_configure(config):
     config.add_cleanup(config.driver.end)
 
     config.server = WPTServer(WPT_ROOT)
-    config.server.start()
     # Although the name of the `_create_unverified_context` method suggests
     # that it is not intended for external consumption, the standard library's
     # documentation explicitly endorses its use:

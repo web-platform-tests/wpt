@@ -21,17 +21,6 @@
             })
         });
         return Promise.all(promises);
-    }, function(err) {
-        promise_test(function(test) {
-            assert_unreached("A key failed to generate: " + err.name + ": " + err.message)
-        }, "Could not run all tests")
-    })
-    .then(function() {
-        done();
-    }, function(err) {
-        promise_test(function(test) {
-            assert_unreached("A test failed to run: " + err.name + ": " + err.message)
-        }, "Could not run all tests")
     });
     }, "setup");
 

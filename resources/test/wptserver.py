@@ -1,57 +1,43 @@
 import logging
+import multiprocessing
 import os
-import subprocess
-import time
 import sys
-import urllib
 
 
 class WPTServer(object):
     def __init__(self, wpt_root):
-        self.logger = logging.getLogger()
+        logger = logging.getLogger()
         self.wpt_root = wpt_root
 
-        # This is a terrible hack to get the default config of wptserve.
+        # Ensure we can import serve
         sys.path.insert(0, os.path.join(wpt_root, "tools"))
-        from serve.serve import build_config
-        with build_config(self.logger) as config:
-            self.host = config["browser_host"]
-            self.http_port = config["ports"]["http"][0]
-            self.https_port = config["ports"]["https"][0]
+        from serve import serve
+
+        self.config_ctx = serve.build_config(logger)
+        config = self.config_ctx.__enter__()
+
+        self.host = config["browser_host"]
+        self.http_port = config["ports"]["http"][0]
+        self.https_port = config["ports"]["https"][0]
 
         self.base_url = 'http://%s:%s' % (self.host, self.http_port)
         self.https_base_url = 'https://%s:%s' % (self.host, self.https_port)
 
-    def start(self):
-        self.devnull = open(os.devnull, 'w')
-        wptserve_cmd = [os.path.join(self.wpt_root, 'wpt'), 'serve']
-        if sys.executable:
-            wptserve_cmd[0:0] = [sys.executable]
-        self.logger.info('Executing %s' % ' '.join(wptserve_cmd))
-        self.proc = subprocess.Popen(
-            wptserve_cmd,
-            stderr=self.devnull,
-            cwd=self.wpt_root)
+        routes = serve.get_route_builder(logger, config.aliases, config).get_routes()
 
-        for retry in range(5):
-            # Exponential backoff.
-            time.sleep(2 ** retry)
-            exit_code = self.proc.poll()
-            if exit_code != None:
-                logging.warn('Command "%s" exited with %s', ' '.join(wptserve_cmd), exit_code)
-                break
-            try:
-                urllib.request.urlopen(self.base_url, timeout=1)
-                return
-            except urllib.error.URLError:
-                pass
-
-        raise Exception('Could not start wptserve on %s' % self.base_url)
+        self.servers = serve.start(logger,
+                                   config,
+                                   routes,
+                                   mp_context=multiprocessing.get_context("spawn"),
+                                   log_handlers=None)
+        serve.ensure_started(config, self.servers)
 
     def stop(self):
-        self.proc.terminate()
-        self.proc.wait()
-        self.devnull.close()
+        for servers in self.servers.values():
+            for _, server in servers:
+                server.stop()
+        self.servers = None
+        self.config_ctx.__exit__()
 
     def url(self, abs_path):
         return self.https_base_url + '/' + os.path.relpath(abs_path, self.wpt_root)

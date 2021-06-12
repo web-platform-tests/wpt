@@ -19,6 +19,7 @@ import urllib
 import uuid
 from collections import defaultdict, OrderedDict
 from itertools import chain, product
+from typing import List, Mapping, Tuple
 
 from localpaths import repo_root
 
@@ -53,6 +54,10 @@ def domains_are_distinct(a, b):
     slice_index = -1 * min_length
 
     return a_parts[slice_index:] != b_parts[slice_index:]
+
+
+class ServeError(Exception):
+    pass
 
 
 class WrapperHandler(object):
@@ -1132,6 +1137,61 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
                                    subproc.name, subproc.exitcode)
                     failed_subproc += 1
             return failed_subproc
+
+
+def ensure_started(config: config.Config,
+                   servers: Mapping[List[Tuple[int, ServerProc]]],
+                   max_wait: int = 30,
+                   ensure_connect: bool = True) -> None:
+    """Function that blocks until all the servers have started.
+
+    :param config: A Config object representing the server configuration
+    :param servers: A map {scheme: [(port, server_process)]}, as returned from
+                    start_servers.
+    :param max_wait: Time in seconds to wait for all processes to start
+    :param ensure_connect: Verify that the server can be reached using a socket
+                           connection.
+    """
+    each_sleep_secs = 0.5
+    end_time = time.time() + max_wait
+    while time.time() < end_time:
+        failed, pending = test_servers(config, servers, ensure_connect)
+        if failed:
+            break
+        if not pending:
+            return
+        time.sleep(each_sleep_secs)
+    raise ServeError("Servers failed to start: %s" %
+                     ", ".join("%s:%s" % item for item in failed))
+
+
+def test_servers(config: config.Config,
+                 servers: Mapping[List[Tuple[int, ServerProc]]],
+                 ensure_connect: bool) -> Tuple[List[Tuple[str, int]], List[Tuple[str, int]]]:
+    failed = []
+    pending = []
+    host = config["server_host"]
+    for scheme, scheme_servers in servers.items():
+        for port, server_proc in scheme_servers:
+            if not server_proc.is_alive():
+                failed.append((scheme, port))
+
+    if not failed and ensure_connect:
+        for scheme, scheme_servers in servers.items():
+            # TODO(Hexcles): Find a way to test QUIC's UDP port.
+            if scheme == "quic-transport":
+                continue
+            for port, server_proc in scheme_servers:
+                s = socket.socket()
+                s.settimeout(0.1)
+                try:
+                    s.connect((host, port))
+                except socket.error:
+                    pending.append((host, port))
+                finally:
+                    s.close()
+
+    return failed, pending
 
 
 def main():

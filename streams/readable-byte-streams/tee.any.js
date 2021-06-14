@@ -755,3 +755,90 @@ promise_test(async () => {
   assert_typed_array_equals(result2.value, new Uint8Array([0x1]), 'second read');
 
 }, 'ReadableStream teeing with byte source: read from branch2, then read from branch1');
+
+promise_test(async () => {
+
+  const rs = recordingReadableStream({ type: 'bytes' });
+  const [branch1, branch2] = rs.tee();
+  const reader1 = branch1.getReader();
+  const reader2 = branch2.getReader({ mode: 'byob' });
+  await flushAsyncEvents();
+
+  const read1 = reader1.read();
+  const read2 = reader2.read(new Uint8Array([0x22]));
+  await flushAsyncEvents();
+
+  // There should be no BYOB request.
+  assert_equals(rs.controller.byobRequest, null, 'first BYOB request');
+
+  // Close the stream.
+  rs.controller.close();
+
+  const result1 = await read1;
+  assert_equals(result1.done, true, 'read from branch1 should be done');
+  assert_equals(result1.value, undefined, 'read from branch1');
+
+  // branch2 should get its buffer back.
+  const result2 = await read2;
+  assert_equals(result2.done, true, 'read from branch2 should be done');
+  assert_typed_array_equals(result2.value, new Uint8Array([0x22]).subarray(0, 0), 'read from branch2');
+
+}, 'ReadableStream teeing with byte source: read from branch1 with default reader, then close while branch2 has pending BYOB read');
+
+promise_test(async () => {
+
+  const rs = recordingReadableStream({ type: 'bytes' });
+  const [branch1, branch2] = rs.tee();
+  const reader1 = branch1.getReader({ mode: 'byob' });
+  const reader2 = branch2.getReader();
+  await flushAsyncEvents();
+
+  const read2 = reader2.read();
+  const read1 = reader1.read(new Uint8Array([0x11]));
+  await flushAsyncEvents();
+
+  // There should be no BYOB request.
+  assert_equals(rs.controller.byobRequest, null, 'first BYOB request');
+
+  // Close the stream.
+  rs.controller.close();
+
+  const result2 = await read2;
+  assert_equals(result2.done, true, 'read from branch2 should be done');
+  assert_equals(result2.value, undefined, 'read from branch2');
+
+  // branch1 should get its buffer back.
+  const result1 = await read1;
+  assert_equals(result1.done, true, 'read from branch1 should be done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0x11]).subarray(0, 0), 'read from branch1');
+
+}, 'ReadableStream teeing with byte source: read from branch2 with default reader, then close while branch1 has pending BYOB read');
+
+promise_test(async () => {
+
+  const rs = recordingReadableStream({ type: 'bytes' });
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+  await flushAsyncEvents();
+
+  const read1 = reader1.read(new Uint8Array([0x11]));
+  const read2 = reader2.read(new Uint8Array([0x22]));
+  await flushAsyncEvents();
+
+  // branch1 should provide the BYOB request.
+  const byobRequest = rs.controller.byobRequest;
+  assert_typed_array_equals(byobRequest.view, new Uint8Array([0x11]), 'first BYOB request');
+
+  // Close the stream.
+  rs.controller.close();
+  byobRequest.respond(0);
+
+  // Both branches should get their buffers back.
+  const result1 = await read1;
+  assert_equals(result1.done, true, 'first read should be done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0x11]).subarray(0, 0), 'first read');
+
+  const result2 = await read2;
+  assert_equals(result2.done, true, 'second read should be done');
+  assert_typed_array_equals(result2.value, new Uint8Array([0x22]).subarray(0, 0), 'second read');
+
+}, 'ReadableStream teeing with byte source: close when both branches have pending BYOB reads');

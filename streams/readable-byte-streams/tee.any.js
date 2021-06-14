@@ -75,12 +75,13 @@ promise_test(async t => {
 promise_test(async () => {
 
   let pullCount = 0;
+  const enqueuedChunk = new Uint8Array([0x01]);
   const rs = new ReadableStream({
     type: 'bytes',
     pull(c) {
       ++pullCount;
       if (pullCount === 1) {
-        c.enqueue(new Uint8Array([0x01]));
+        c.enqueue(enqueuedChunk);
       }
     }
   });
@@ -99,6 +100,8 @@ promise_test(async () => {
   assert_typed_array_equals(view2, new Uint8Array([0x01]), 'reader2 value');
 
   assert_not_equals(view1.buffer, view2.buffer, 'chunks should have different buffers');
+  assert_not_equals(enqueuedChunk.buffer, view1.buffer, 'enqueued chunk and branch1\'s chunk should have different buffers');
+  assert_not_equals(enqueuedChunk.buffer, view2.buffer, 'enqueued chunk and branch2\'s chunk should have different buffers');
 
 }, 'ReadableStream teeing with byte source: chunks should be cloned for each branch');
 

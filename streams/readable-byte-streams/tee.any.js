@@ -279,6 +279,56 @@ promise_test(async t => {
 
 }, 'ReadableStream teeing with byte source: erroring the original should immediately error the branches');
 
+promise_test(async t => {
+
+  let controller;
+  const rs = new ReadableStream({
+    type: 'bytes',
+    start(c) {
+      controller = c;
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  const reader1 = branch1.getReader();
+  const reader2 = branch2.getReader();
+
+  const theError = { name: 'boo!' };
+  const promise = Promise.all([
+    promise_rejects_exactly(t, theError, reader1.read()),
+    promise_rejects_exactly(t, theError, reader2.read())
+  ]);
+
+  controller.error(theError);
+  await promise;
+
+}, 'ReadableStream teeing with byte source: erroring the original should error pending reads from default reader');
+
+promise_test(async t => {
+
+  let controller;
+  const rs = new ReadableStream({
+    type: 'bytes',
+    start(c) {
+      controller = c;
+    }
+  });
+
+  const [branch1, branch2] = rs.tee();
+  const reader1 = branch1.getReader({ mode: 'byob' });
+  const reader2 = branch2.getReader({ mode: 'byob' });
+
+  const theError = { name: 'boo!' };
+  const promise = Promise.all([
+    promise_rejects_exactly(t, theError, reader1.read(new Uint8Array(1))),
+    promise_rejects_exactly(t, theError, reader2.read(new Uint8Array(1)))
+  ]);
+
+  controller.error(theError);
+  await promise;
+
+}, 'ReadableStream teeing with byte source: erroring the original should error pending reads from BYOB reader');
+
 promise_test(async () => {
 
   let controller;

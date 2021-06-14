@@ -4,6 +4,17 @@
 // META: script=../resources/recording-streams.js
 'use strict';
 
+function assert_typed_array_equals(actual, expected, message) {
+  const prefix = message === undefined ? '' : `${message} `;
+  assert_equals(typeof actual, 'object', `${prefix}type is object`);
+  assert_equals(actual.constructor, expected.constructor, `${prefix}constructor`);
+  assert_equals(actual.byteOffset, expected.byteOffset, `${prefix}byteOffset`);
+  assert_equals(actual.byteLength, expected.byteLength, `${prefix}byteLength`);
+  assert_equals(actual.buffer.byteLength, expected.buffer.byteLength, `${prefix}buffer.byteLength`);
+  assert_array_equals([...actual], [...expected], `${prefix}contents`);
+  assert_array_equals([...new Uint8Array(actual.buffer)], [...new Uint8Array(expected.buffer)], `${prefix}buffer contents`);
+}
+
 test(() => {
 
   const rs = new ReadableStream({ type: 'bytes' });
@@ -36,48 +47,25 @@ promise_test(async t => {
   {
     const result = await reader1.read(new Uint8Array(1));
     assert_equals(result.done, false, 'done');
-
-    const view = result.value;
-    assert_equals(view.constructor, Uint8Array, 'value.constructor');
-    assert_equals(view.buffer.byteLength, 1, 'value.buffer.byteLength');
-    assert_equals(view.byteOffset, 0, 'value.byteOffset');
-    assert_equals(view.byteLength, 1, 'value.byteLength');
-    assert_equals(view[0], 0x01);
+    assert_typed_array_equals(result.value, new Uint8Array([0x01]), 'value');
   }
 
   {
     const result = await reader1.read(new Uint8Array(1));
     assert_equals(result.done, false, 'done');
-
-    const view = result.value;
-    assert_equals(view.constructor, Uint8Array, 'value.constructor');
-    assert_equals(view.buffer.byteLength, 1, 'value.buffer.byteLength');
-    assert_equals(view.byteOffset, 0, 'value.byteOffset');
-    assert_equals(view.byteLength, 1, 'value.byteLength');
-    assert_equals(view[0], 0x02);
+    assert_typed_array_equals(result.value, new Uint8Array([0x02]), 'value');
   }
 
   {
     const result = await reader1.read(new Uint8Array(1));
     assert_equals(result.done, true, 'done');
-
-    const view = result.value;
-    assert_equals(view.constructor, Uint8Array, 'value.constructor');
-    assert_equals(view.buffer.byteLength, 1, 'value.buffer.byteLength');
-    assert_equals(view.byteOffset, 0, 'value.byteOffset');
-    assert_equals(view.byteLength, 0, 'value.byteLength');
+    assert_typed_array_equals(result.value, new Uint8Array([0]).subarray(0, 0), 'value');
   }
 
   {
     const result = await reader2.read(new Uint8Array(1));
     assert_equals(result.done, false, 'done');
-
-    const view = result.value;
-    assert_equals(view.constructor, Uint8Array, 'value.constructor');
-    assert_equals(view.buffer.byteLength, 1, 'value.buffer.byteLength');
-    assert_equals(view.byteOffset, 0, 'value.byteOffset');
-    assert_equals(view.byteLength, 1, 'value.byteLength');
-    assert_equals(view[0], 0x01);
+    assert_typed_array_equals(result.value, new Uint8Array([0x01]), 'value');
   }
 
   await reader1.closed;
@@ -107,12 +95,8 @@ promise_test(async () => {
 
   const view1 = result1.value;
   const view2 = result2.value;
-  assert_equals(view1.constructor, Uint8Array, 'reader1 value.constructor');
-  assert_equals(view2.constructor, Uint8Array, 'reader2 value.constructor');
-  assert_equals(view1.buffer.byteLength, 1, 'reader1 value.buffer.byteLength');
-  assert_equals(view1.buffer.byteLength, 1, 'reader2 value.buffer.byteLength');
-  assert_array_equals([...view1], [0x01], `reader1 value`);
-  assert_array_equals([...view2], [0x01], `reader2 value`);
+  assert_typed_array_equals(view1, new Uint8Array([0x01]), 'reader1 value');
+  assert_typed_array_equals(view2, new Uint8Array([0x01]), 'reader2 value');
 
   assert_not_equals(view1.buffer, view2.buffer, 'chunks should have different buffers');
 
@@ -140,25 +124,13 @@ promise_test(async () => {
   {
     const result = await reader1.read(new Uint8Array(buffer, 0, 1));
     assert_equals(result.done, false, 'done');
-
-    const view = result.value;
-    assert_equals(view.constructor, Uint8Array, 'value.constructor');
-    assert_equals(view.buffer.byteLength, 3, 'value.buffer.byteLength');
-    assert_array_equals([...new Uint8Array(view.buffer)], [0x01, 42, 42], `value.buffer`);
-    assert_equals(view.byteOffset, 0, 'value.byteOffset');
-    assert_equals(view.byteLength, 1, 'value.byteLength');
+    assert_typed_array_equals(result.value, new Uint8Array([0x01, 42, 42]).subarray(0, 1), 'value');
   }
 
   {
     const result = await reader2.read();
     assert_equals(result.done, false, 'done');
-
-    const view = result.value;
-    assert_equals(view.constructor, Uint8Array, 'value.constructor');
-    assert_equals(view.buffer.byteLength, 1, 'value.buffer.byteLength');
-    assert_array_equals([...new Uint8Array(view.buffer)], [0x01], `value.buffer`);
-    assert_equals(view.byteOffset, 0, 'value.byteOffset');
-    assert_equals(view.byteLength, 1, 'value.byteLength');
+    assert_typed_array_equals(result.value, new Uint8Array([0x01]), 'value');
   }
 
 }, 'ReadableStream teeing with byte source: chunks for BYOB requests from branch 1 should be cloned to branch 2');
@@ -184,13 +156,13 @@ promise_test(async t => {
   {
     const result = await reader1.read(new Uint8Array(1));
     assert_equals(result.done, false, 'first read from branch1 should not be done');
-    assert_array_equals([...result.value], [0x01], 'first read from branch1 should be correct');
+    assert_typed_array_equals(result.value, new Uint8Array([0x01]), 'first read from branch1');
   }
 
   {
     const result = await reader1.read(new Uint8Array(1));
     assert_equals(result.done, false, 'second read from branch1 should not be done');
-    assert_array_equals([...result.value], [0x02], 'second read from branch1 should be correct');
+    assert_typed_array_equals(result.value, new Uint8Array([0x02]), 'second read from branch1');
   }
 
   await promise_rejects_exactly(t, theError, reader1.read(new Uint8Array(1)));
@@ -220,8 +192,8 @@ promise_test(async () => {
   const [chunks1, chunks2] = await Promise.all([readableStreamToArray(branch1), readableStreamToArray(branch2)]);
   assert_array_equals(chunks1, [], 'branch1 should have no chunks');
   assert_equals(chunks2.length, 2, 'branch2 should have two chunks');
-  assert_array_equals([...chunks2[0]], [0x01], 'first chunk from branch2 should be correct');
-  assert_array_equals([...chunks2[1]], [0x02], 'second chunk from branch2 should be correct');
+  assert_typed_array_equals(chunks2[0], new Uint8Array([0x01]), 'first chunk from branch2');
+  assert_typed_array_equals(chunks2[1], new Uint8Array([0x02]), 'second chunk from branch2');
 
 }, 'ReadableStream teeing with byte source: canceling branch1 should not impact branch2');
 
@@ -241,8 +213,8 @@ promise_test(async () => {
 
   const [chunks1, chunks2] = await Promise.all([readableStreamToArray(branch1), readableStreamToArray(branch2)]);
   assert_equals(chunks1.length, 2, 'branch1 should have two chunks');
-  assert_array_equals([...chunks1[0]], [0x01], 'first chunk from branch1 should be correct');
-  assert_array_equals([...chunks1[1]], [0x02], 'second chunk from branch1 should be correct');
+  assert_typed_array_equals(chunks1[0], new Uint8Array([0x01]), 'first chunk from branch1');
+  assert_typed_array_equals(chunks1[1], new Uint8Array([0x02]), 'second chunk from branch1');
   assert_array_equals(chunks2, [], 'branch2 should have no chunks');
 
 }, 'ReadableStream teeing with byte source: canceling branch2 should not impact branch1');
@@ -407,7 +379,7 @@ promise_test(async () => {
 
   const read1 = await reader1.read(new Uint8Array(1));
   assert_equals(read1.done, false, 'first read() from branch1 should not be done');
-  assert_array_equals([...read1.value], [0x01], 'first read() from branch1 should fulfill with the chunk');
+  assert_typed_array_equals(read1.value, new Uint8Array([0x01]), 'first read() from branch1');
 
   controller.close();
 
@@ -632,8 +604,7 @@ promise_test(async () => {
   // We are reading into branch1's buffer.
   const byobRequest1 = rs.controller.byobRequest;
   assert_not_equals(byobRequest1, null);
-  assert_equals(byobRequest1.view.byteLength, 1);
-  assert_equals(byobRequest1.view[0], 0x11);
+  assert_typed_array_equals(byobRequest1.view, new Uint8Array([0x11]), 'byobRequest1.view');
 
   // Cancelling branch1 should not affect the BYOB request.
   const cancel1 = reader1.cancel();
@@ -642,7 +613,7 @@ promise_test(async () => {
   assert_equals(result1.value, undefined);
   await flushAsyncEvents();
   const byobRequest2 = rs.controller.byobRequest;
-  assert_equals(byobRequest2.view[0], 0x11);
+  assert_typed_array_equals(byobRequest2.view, new Uint8Array([0x11]), 'byobRequest2.view');
 
   // Cancelling branch1 should invalidate the BYOB request.
   const cancel2 = reader2.cancel();
@@ -680,8 +651,7 @@ promise_test(async () => {
   // We are reading into branch1's buffer.
   const byobRequest1 = rs.controller.byobRequest;
   assert_not_equals(byobRequest1, null);
-  assert_equals(byobRequest1.view.byteLength, 1);
-  assert_equals(byobRequest1.view[0], 0x11);
+  assert_typed_array_equals(byobRequest1.view, new Uint8Array([0x11]), 'byobRequest1.view');
 
   // Cancelling branch2 should not affect the BYOB request.
   const cancel2 = reader2.cancel();
@@ -690,7 +660,7 @@ promise_test(async () => {
   assert_equals(result2.value, undefined);
   await flushAsyncEvents();
   const byobRequest2 = rs.controller.byobRequest;
-  assert_equals(byobRequest2.view[0], 0x11);
+  assert_typed_array_equals(byobRequest2.view, new Uint8Array([0x11]), 'byobRequest2.view');
 
   // Cancelling branch1 should invalidate the BYOB request.
   const cancel1 = reader1.cancel();
@@ -717,7 +687,7 @@ promise_test(async () => {
   await flushAsyncEvents();
 
   // We are reading into branch1's buffer.
-  assert_equals(rs.controller.byobRequest.view[0], 0x11);
+  assert_typed_array_equals(rs.controller.byobRequest.view, new Uint8Array([0x11]), 'first byobRequest.view');
 
   // Cancelling branch2 should not affect the BYOB request.
   reader2.cancel();
@@ -725,7 +695,7 @@ promise_test(async () => {
   assert_equals(result2.done, true);
   assert_equals(result2.value, undefined);
   await flushAsyncEvents();
-  assert_equals(rs.controller.byobRequest.view[0], 0x11);
+  assert_typed_array_equals(rs.controller.byobRequest.view, new Uint8Array([0x11]), 'second byobRequest.view');
 
   // Respond to the BYOB request.
   rs.controller.byobRequest.view[0] = 0x33;
@@ -734,9 +704,7 @@ promise_test(async () => {
   // branch1 should receive the read chunk.
   const result1 = await read1;
   assert_equals(result1.done, false);
-  assert_equals(result1.value.byteLength, 1);
-  assert_equals(result1.value.buffer.byteLength, 1);
-  assert_equals(result1.value[0], 0x33);
+  assert_typed_array_equals(result1.value, new Uint8Array([0x33]), 'first read() from branch1');
 
 }, 'ReadableStream teeing with byte source: read from branch1 and branch2, cancel branch2, enqueue to branch1');
 
@@ -752,7 +720,7 @@ promise_test(async () => {
   await flushAsyncEvents();
 
   // We are reading into branch1's buffer.
-  assert_equals(rs.controller.byobRequest.view[0], 0x11);
+  assert_typed_array_equals(rs.controller.byobRequest.view, new Uint8Array([0x11]), 'first byobRequest.view');
 
   // Cancelling branch1 should not affect the BYOB request.
   reader1.cancel();
@@ -760,7 +728,7 @@ promise_test(async () => {
   assert_equals(result1.done, true);
   assert_equals(result1.value, undefined);
   await flushAsyncEvents();
-  assert_equals(rs.controller.byobRequest.view[0], 0x11);
+  assert_typed_array_equals(rs.controller.byobRequest.view, new Uint8Array([0x11]), 'second byobRequest.view');
 
   // Respond to the BYOB request.
   rs.controller.byobRequest.view[0] = 0x33;
@@ -769,8 +737,6 @@ promise_test(async () => {
   // branch2 should receive the read chunk.
   const result2 = await read2;
   assert_equals(result2.done, false);
-  assert_equals(result2.value.byteLength, 1);
-  assert_equals(result2.value.buffer.byteLength, 1);
-  assert_equals(result2.value[0], 0x33);
+  assert_typed_array_equals(result2.value, new Uint8Array([0x33]), 'first read() from branch2');
 
 }, 'ReadableStream teeing with byte source: read from branch1 and branch2, cancel branch1, respond to branch2');

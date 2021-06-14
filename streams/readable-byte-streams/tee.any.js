@@ -659,3 +659,69 @@ promise_test(async () => {
   assert_typed_array_equals(result2.value, new Uint8Array([0x33]), 'first read() from branch2');
 
 }, 'ReadableStream teeing with byte source: read from branch1 and branch2, cancel branch1, respond to branch2');
+
+promise_test(async () => {
+
+  let pullCount = 0;
+  const byobRequestDefined = [];
+  const rs = new ReadableStream({
+    type: 'bytes',
+    pull(c) {
+      ++pullCount;
+      byobRequestDefined.push(c.byobRequest !== null);
+      c.enqueue(new Uint8Array([pullCount]));
+    }
+  });
+
+  const [branch1, _] = rs.tee();
+  const reader1 = branch1.getReader({ mode: 'byob' });
+
+  const result1 = await reader1.read(new Uint8Array([0x11]));
+  assert_equals(result1.done, false, 'first read should not be done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0x1]), 'first read');
+  assert_equals(pullCount, 1, 'pull() should be called once');
+  assert_equals(byobRequestDefined[0], true, 'should have created a BYOB request for first read');
+
+  reader1.releaseLock();
+  const reader2 = branch1.getReader();
+
+  const result2 = await reader2.read();
+  assert_equals(result2.done, false, 'second read should not be done');
+  assert_typed_array_equals(result2.value, new Uint8Array([0x2]), 'second read');
+  assert_equals(pullCount, 2, 'pull() should be called twice');
+  assert_equals(byobRequestDefined[1], false, 'should not have created a BYOB request for second read');
+
+}, 'ReadableStream teeing with byte source: pull with BYOB reader, then pull with default reader');
+
+promise_test(async () => {
+
+  let pullCount = 0;
+  const byobRequestDefined = [];
+  const rs = new ReadableStream({
+    type: 'bytes',
+    pull(c) {
+      ++pullCount;
+      byobRequestDefined.push(c.byobRequest !== null);
+      c.enqueue(new Uint8Array([pullCount]));
+    }
+  });
+
+  const [branch1, _] = rs.tee();
+  const reader1 = branch1.getReader();
+
+  const result1 = await reader1.read();
+  assert_equals(result1.done, false, 'first read should not be done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0x1]), 'first read');
+  assert_equals(pullCount, 1, 'pull() should be called once');
+  assert_equals(byobRequestDefined[0], false, 'should not have created a BYOB request for first read');
+
+  reader1.releaseLock();
+  const reader2 = branch1.getReader({ mode: 'byob' });
+
+  const result2 = await reader2.read(new Uint8Array([0x22]));
+  assert_equals(result2.done, false, 'second read should not be done');
+  assert_typed_array_equals(result2.value, new Uint8Array([0x2]), 'second read');
+  assert_equals(pullCount, 2, 'pull() should be called twice');
+  assert_equals(byobRequestDefined[1], true, 'should have created a BYOB request for second read');
+
+}, 'ReadableStream teeing with byte source: pull with default reader, then pull with BYOB reader');

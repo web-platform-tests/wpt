@@ -2,6 +2,7 @@
 // META: script=../resources/rs-utils.js
 // META: script=../resources/test-utils.js
 // META: script=../resources/recording-streams.js
+// META: script=../resources/rs-test-templates.js
 'use strict';
 
 function assert_typed_array_equals(actual, expected, message) {
@@ -222,94 +223,9 @@ promise_test(async () => {
 
 }, 'ReadableStream teeing with byte source: canceling branch2 should not impact branch1');
 
-promise_test(async () => {
-
-  const reason1 = new Error('We\'re wanted men.');
-  const reason2 = new Error('I have the death sentence on twelve systems.');
-
-  let resolve;
-  const promise = new Promise(r => resolve = r);
-  const rs = new ReadableStream({
-    type: 'bytes',
-    cancel(reason) {
-      assert_array_equals(reason, [reason1, reason2],
-        'the cancel reason should be an array containing those from the branches');
-      resolve();
-    }
-  });
-
-  const [branch1, branch2] = rs.tee();
-  await Promise.all([
-    branch1.cancel(reason1),
-    branch2.cancel(reason2),
-    promise
-  ]);
-
-}, 'ReadableStream teeing with byte source: canceling both branches should aggregate the cancel reasons into an array');
-
-promise_test(async () => {
-
-  const reason1 = new Error('This little one\'s not worth the effort.');
-  const reason2 = new Error('Come, let me get you something.');
-
-  let resolve;
-  const promise = new Promise(r => resolve = r);
-  const rs = new ReadableStream({
-    type: 'bytes',
-    cancel(reason) {
-      assert_array_equals(reason, [reason1, reason2],
-        'the cancel reason should be an array containing those from the branches');
-      resolve();
-    }
-  });
-
-  const [branch1, branch2] = rs.tee();
-  await Promise.all([
-    branch2.cancel(reason2),
-    branch1.cancel(reason1),
-    promise
-  ]);
-
-}, 'ReadableStream teeing with byte source: canceling both branches in reverse order should aggregate the cancel reasons into an array');
-
-promise_test(async t => {
-
-  const theError = { name: 'I\'ll be careful.' };
-  const rs = new ReadableStream({
-    type: 'bytes',
-    cancel() {
-      throw theError;
-    }
-  });
-
-  const [branch1, branch2] = rs.tee();
-  await Promise.all([
-    promise_rejects_exactly(t, theError, branch1.cancel()),
-    promise_rejects_exactly(t, theError, branch2.cancel())
-  ]);
-
-}, 'ReadableStream teeing with byte source: failing to cancel the original stream should cause cancel() to reject on branches');
-
-promise_test(async t => {
-
-  const theError = { name: 'You just watch yourself!' };
-  let controller;
-  const stream = new ReadableStream({
-    type: 'bytes',
-    start(c) {
-      controller = c;
-    }
-  });
-
-  const [branch1, branch2] = stream.tee();
-  controller.error(theError);
-
-  await Promise.all([
-    promise_rejects_exactly(t, theError, branch1.cancel()),
-    promise_rejects_exactly(t, theError, branch2.cancel())
-  ]);
-
-}, 'ReadableStream teeing with byte source: erroring a teed stream should properly handle canceled branches');
+templatedRSTeeCancel('ReadableStream teeing with byte source', (extras) => {
+  return new ReadableStream({ type: 'bytes', ...extras });
+});
 
 promise_test(async () => {
 

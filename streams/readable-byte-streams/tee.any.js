@@ -725,3 +725,33 @@ promise_test(async () => {
   assert_equals(byobRequestDefined[1], true, 'should have created a BYOB request for second read');
 
 }, 'ReadableStream teeing with byte source: pull with default reader, then pull with BYOB reader');
+
+promise_test(async () => {
+
+  const rs = recordingReadableStream({
+    type: 'bytes'
+  });
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+
+  // Wait for each branch's start() promise to resolve.
+  await flushAsyncEvents();
+
+  const read2 = reader2.read(new Uint8Array([0x22]));
+  const read1 = reader1.read(new Uint8Array([0x11]));
+  await flushAsyncEvents();
+
+  // branch2 should provide the BYOB request.
+  const byobRequest = rs.controller.byobRequest;
+  assert_typed_array_equals(byobRequest.view, new Uint8Array([0x22]), 'first BYOB request');
+  byobRequest.view[0] = 0x01;
+  byobRequest.respond(1);
+
+  const result1 = await read1;
+  assert_equals(result1.done, false, 'first read should not be done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0x1]), 'first read');
+
+  const result2 = await read2;
+  assert_equals(result2.done, false, 'second read should not be done');
+  assert_typed_array_equals(result2.value, new Uint8Array([0x1]), 'second read');
+
+}, 'ReadableStream teeing with byte source: read from branch2, then read from branch1');

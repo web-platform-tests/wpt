@@ -383,13 +383,14 @@ class TestDriverProtocolPart(ProtocolPart):
             initial_window = self.parent.base.current_window
 
         stack = [str(item) for item in self.parent.base.window_handles()]
+        first = True
         while stack:
             item = stack.pop()
             if item is None:
                 self._switch_to_parent_frame()
                 continue
             elif isinstance(item, str):
-                if item != initial_window:
+                if not first or item != initial_window:
                     self.parent.base.set_window(item)
             else:
                 self._switch_to_frame(item)
@@ -405,6 +406,7 @@ class TestDriverProtocolPart(ProtocolPart):
             stack.append(None)
             if frame_count:
                 stack.extend(reversed(range(0, frame_count)))
+            first = False
 
         raise Exception("Window with id %s not found" % wptrunner_id)
 

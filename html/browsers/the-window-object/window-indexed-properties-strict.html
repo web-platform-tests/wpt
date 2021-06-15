@@ -72,4 +72,13 @@ test(function() {
     assert_false(idx in proto, idx + " in proto");
   });
 });
+test(t => {
+  "use strict";
+  Object.defineProperty(Window.prototype, 2, { set: t.unreached_func("Window.prototype[2] setter should be unreachable!") });
+  assert_throws_js(TypeError, () => { window[2] = 2; });
+  Object.defineProperty(EventTarget.prototype, 42, { set: t.unreached_func("EventTarget.prototype[42] setter should be unreachable!") });
+  assert_throws_js(TypeError, () => { window[42] = "foo"; });
+  Object.defineProperty(Object.prototype, 4294967294, { set: t.unreached_func("Object.prototype[2 ** 32 - 2] setter should be unreachable!") });
+  assert_throws_js(TypeError, () => { window[4294967294] = {}; });
+}, "WindowProxy's [[Set]] doesn't traverse prototype chain for out-of-bound indices (strict mode)");
 </script>

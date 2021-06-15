@@ -402,10 +402,11 @@ class TestDriverProtocolPart(ProtocolPart):
             except Exception:
                 pass
             frame_count = self.parent.base.execute_script("return window.length")
-            # None here makes us switch back to the parent after we've processed all the subframes
-            stack.append(None)
             if frame_count:
-                stack.extend(reversed(range(0, frame_count)))
+                for frame_id in reversed(range(0, frame_count)):
+                    # None here makes us switch back to the parent after we've processed the frame
+                    stack.append(None)
+                    stack.append(frame_id)
             first = False
 
         raise Exception("Window with id %s not found" % wptrunner_id)

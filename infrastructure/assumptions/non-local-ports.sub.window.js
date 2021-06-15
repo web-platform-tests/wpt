@@ -31,7 +31,7 @@ function resolveUrl(url, options) {
 }
 
 promise_test(async () => {
-  const url = resolveUrl("resources/exists.txt", {
+  const url = resolveUrl("/common/blank-with-cors.html", {
     protocol: "https:",
     port: "{{ports[https-private][0]}}"
   });
@@ -40,7 +40,7 @@ promise_test(async () => {
 }, "Fetch from https-private port works.");
 
 promise_test(async () => {
-  const url = resolveUrl("resources/exists.txt", {
+  const url = resolveUrl("/common/blank-with-cors.html", {
     protocol: "http:",
     port: "{{ports[http-private][0]}}"
   });
@@ -49,7 +49,7 @@ promise_test(async () => {
 }, "Fetch from http-private port works.");
 
 promise_test(async () => {
-  const url = resolveUrl("resources/exists.txt", {
+  const url = resolveUrl("/common/blank-with-cors.html", {
     protocol: "https:",
     port: "{{ports[https-public][0]}}"
   });
@@ -58,7 +58,7 @@ promise_test(async () => {
 }, "Fetch from https-public port works.");
 
 promise_test(async () => {
-  const url = resolveUrl("resources/exists.txt", {
+  const url = resolveUrl("/common/blank-with-cors.html", {
     protocol: "http:",
     port: "{{ports[http-public][0]}}"
   });

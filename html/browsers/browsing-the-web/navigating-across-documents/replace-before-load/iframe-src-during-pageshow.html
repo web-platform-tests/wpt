@@ -12,7 +12,7 @@ promise_test(async t => {
   const startingHistoryLength = history.length;
 
   const code = `
-    window.onload = () => {
+    window.onpageshow = () => {
       parent.document.querySelectorAll("iframe")[1].src = "/common/blank.html?thereplacement";
     };
   `;
@@ -27,5 +27,5 @@ promise_test(async t => {
 
   await checkSentinelIframe(t, sentinelIframe);
   assert_equals(history.length, startingHistoryLength, "history.length must not change after checking the sentinel iframe");
-}, "Replace during the load event, triggered by setting iframeElement.src");
+}, "Replace during the pageshow event, triggered by setting iframeElement.src");
 </script>

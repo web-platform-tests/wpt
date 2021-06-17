@@ -12,10 +12,11 @@ promise_test(async t => {
   const startingHistoryLength = history.length;
 
   const code = `
-    window.onload = () => {
-      parent.document.querySelectorAll("iframe")[1].src = "/common/blank.html?thereplacement";
+    window.onpageshow = () => {
+      window.open("/common/blank.html?thereplacement", "_self");
     };
   `;
+
   const startURL = "resources/code-injector.html?pipe=sub(none)&code=" + encodeURIComponent(code);
   const afterReplacementURL = "/common/blank.html?thereplacement";
   const iframe = insertIframe(t, startURL);
@@ -23,9 +24,6 @@ promise_test(async t => {
   assert_equals(history.length, startingHistoryLength, "Inserting the under-test iframe must not change history.length");
 
   await waitForLoadAllowingIntermediateLoads(t, iframe, afterReplacementURL);
-  assert_equals(history.length, startingHistoryLength, "history.length must not change after waiting for the replacement");
-
-  await checkSentinelIframe(t, sentinelIframe);
-  assert_equals(history.length, startingHistoryLength, "history.length must not change after checking the sentinel iframe");
-}, "Replace during the load event, triggered by setting iframeElement.src");
+  assert_equals(history.length, startingHistoryLength + 1, "history.length must increase");
+}, "No replace during pageshow, triggered by window.open(_self) on an iframe");
 </script>

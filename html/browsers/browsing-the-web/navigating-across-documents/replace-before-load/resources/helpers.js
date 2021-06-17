@@ -25,6 +25,15 @@ window.waitForLoadAllowingIntermediateLoads = (t, iframe, urlRelativeToThisDocum
   });
 };
 
+window.waitForMessage = (t, expected) => {
+  return new Promise(resolve => {
+    window.addEventListener("message", t.step_func(e => {
+      assert_equals(e.data, expected);
+      resolve();
+    }), { once: true });
+  });
+};
+
 window.setupSentinelIframe = async (t) => {
   // If this iframe gets navigated by history.back(), then the iframe under test did not, so we did a replace.
   const sentinelIframe = document.createElement("iframe");

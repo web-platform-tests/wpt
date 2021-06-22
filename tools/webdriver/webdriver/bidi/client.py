@@ -77,7 +77,7 @@ class BidiSession:
         # To be user friendly, handle the case where the class was created with either a
         # full URL including the path, and also the case where just a server url is passed in.
         parsed_url = urlparse(websocket_url)
-        if parsed_url.path == "/":
+        if parsed_url.path == "" or parsed_url.path == "/":
             if session_id is None:
                 websocket_url = urljoin(websocket_url, "session")
             else:

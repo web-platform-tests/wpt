@@ -25,7 +25,12 @@ Object.defineProperty(window.Foo, "prototype", {
     writable: false,
     value: window.Foo.prototype
   });
-Foo.prototype[Symbol.toStringTag] = "Foo";
+Object.defineProperty(Foo.prototype, Symbol.toStringTag, {
+    writable: false,
+    enumerable: false,
+    configurable: true,
+    value: "Foo"
+  });
 
 var idlArray = new IdlArray();
 idlArray.add_untested_idls("interface EventTarget {};");

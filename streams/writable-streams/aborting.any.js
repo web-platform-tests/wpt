@@ -1380,7 +1380,7 @@ promise_test(t => {
 test(t => {
   let ctrl;
   const ws = new WritableStream({start(c) { ctrl = c; }});
-  const e = new Error('hello');
+  const e = Error('hello');
 
   assert_true(ctrl.signal instanceof AbortSignal);
   assert_false(ctrl.signal.aborted);

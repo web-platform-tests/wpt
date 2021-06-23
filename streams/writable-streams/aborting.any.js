@@ -1475,8 +1475,8 @@ promise_test(async t => {
     start(c) { ctrl = c; },
   });
 
-  ctrl.signal.addEventListener('abort', () => writer.abort(e2));
   const writer = ws.getWriter();
+  ctrl.signal.addEventListener('abort', () => writer.abort(e2));
   writer.abort(e1);
   assert_true(ctrl.signal.aborted);
 

@@ -1380,11 +1380,14 @@ promise_test(t => {
 test(t => {
   let ctrl;
   const ws = new WritableStream({start(c) { ctrl = c; }});
+  const e = new Error('hello');
 
   assert_true(ctrl.signal instanceof AbortSignal);
   assert_false(ctrl.signal.aborted);
-  ws.abort();
+  assert_equals(ctrl.abortReason, undefined);
+  ws.abort(e);
   assert_true(ctrl.signal.aborted);
+  assert_equals(ctrl.abortReason, e);
 }, 'WritableStreamDefaultController.signal');
 
 promise_test(async t => {
@@ -1401,8 +1404,10 @@ promise_test(async t => {
   await called;
 
   assert_false(ctrl.signal.aborted);
+  assert_equals(ctrl.abortReason, undefined);
   ws.abort();
   assert_true(ctrl.signal.aborted);
+  assert_equals(ctrl.abortReason, undefined);
 }, 'the abort signal is signalled synchronously - write');
 
 promise_test(async t => {

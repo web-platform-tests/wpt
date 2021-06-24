@@ -1138,7 +1138,7 @@ promise_test(() => {
 
     assert_equals(pullCount, 1, '1 pull() should have been made in response to partial fill by enqueue()');
     assert_not_equals(byobRequest, null, 'byobRequest should not be null');
-    assert_equals(viewInfos[0].byteLength, 2, 'byteLength before enqueue() shouild be 2');
+    assert_equals(viewInfos[0].byteLength, 2, 'byteLength before enqueue() should be 2');
     assert_equals(viewInfos[1].byteLength, 1, 'byteLength after enqueue() should be 1');
 
     reader.cancel();

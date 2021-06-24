@@ -1399,13 +1399,14 @@ promise_test(async t => {
     start(c) { ctrl = c; },
     write() { resolve(); return new Promise(() => {}); }
   });
+  const writer = ws.getWriter();
 
   writer.write(99);
   await called;
 
   assert_false(ctrl.signal.aborted);
   assert_equals(ctrl.abortReason, undefined);
-  ws.abort();
+  writer.abort();
   assert_true(ctrl.signal.aborted);
   assert_equals(ctrl.abortReason, undefined);
 }, 'the abort signal is signalled synchronously - write');
@@ -1419,12 +1420,13 @@ promise_test(async t => {
     start(c) { ctrl = c; },
     close() { resolve(); return new Promise(() => {}); }
   });
+  const writer = ws.getWriter();
 
   writer.close(99);
   await called;
 
   assert_false(ctrl.signal.aborted);
-  ws.abort();
+  writer.abort();
   assert_true(ctrl.signal.aborted);
 }, 'the abort signal is signalled synchronously - close');
 
@@ -1480,5 +1482,5 @@ promise_test(async t => {
   writer.abort(e1);
   assert_true(ctrl.signal.aborted);
 
-  await promise_rejects_exactly(t, e1, writer.closed, 'closed');
+  await promise_rejects_exactly(t, e2, writer.closed, 'closed');
 }, 'recursive abort() call');

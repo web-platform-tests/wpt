@@ -957,8 +957,8 @@ promise_test(() => {
     assert_equals(view.byteOffset, 0, 'byteOffset');
     assert_equals(view.byteLength, 2, 'byteLength');
 
-    const data_view = new DataView(view.buffer, view.byteOffset, view.byteLength);
-    assert_equals(data_view.getUint16(0), 0x0102);
+    const dataView = new DataView(view.buffer, view.byteOffset, view.byteLength);
+    assert_equals(dataView.getUint16(0), 0x0102);
 
     return reader.read(new Uint8Array(1));
   }).then(result => {
@@ -1328,8 +1328,8 @@ promise_test(() => {
     assert_equals(view.byteOffset, 0);
     assert_equals(view.byteLength, 2);
 
-    const data_view = new DataView(view.buffer, view.byteOffset, view.byteLength);
-    assert_equals(data_view.getUint16(0), 0xffaa);
+    const dataView = new DataView(view.buffer, view.byteOffset, view.byteLength);
+    assert_equals(dataView.getUint16(0), 0xffaa);
 
     assert_equals(viewInfo.constructor, Uint8Array, 'view.constructor should be Uint8Array');
     assert_equals(viewInfo.bufferByteLength, 2, 'view.buffer.byteLength should be 2');
@@ -1385,8 +1385,8 @@ promise_test(() => {
       assert_equals(view.byteOffset, 0, 'byteOffset');
       assert_equals(view.byteLength, 2, 'byteLength');
 
-      const data_view = new DataView(view.buffer, view.byteOffset, view.byteLength);
-      assert_equals(data_view.getUint16(0), 0x0100, 'contents are set');
+      const dataView = new DataView(view.buffer, view.byteOffset, view.byteLength);
+      assert_equals(dataView.getUint16(0), 0x0100, 'contents are set');
 
       const p = reader.read(new Uint16Array(1));
 
@@ -1401,8 +1401,8 @@ promise_test(() => {
       assert_equals(view.byteOffset, 0, 'byteOffset');
       assert_equals(view.byteLength, 2, 'byteLength');
 
-      const data_view = new DataView(view.buffer, view.byteOffset, view.byteLength);
-      assert_equals(data_view.getUint16(0), 0x0203, 'contents are set');
+      const dataView = new DataView(view.buffer, view.byteOffset, view.byteLength);
+      assert_equals(dataView.getUint16(0), 0x0203, 'contents are set');
 
       assert_not_equals(byobRequest, null, 'byobRequest must not be null');
       assert_equals(viewInfo.constructor, Uint8Array, 'view.constructor should be Uint8Array');

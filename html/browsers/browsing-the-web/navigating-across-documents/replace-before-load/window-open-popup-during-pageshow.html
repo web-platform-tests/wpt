@@ -41,7 +41,13 @@ promise_test(async t => {
   assert_equals(w.onloadFired, undefined, "onload must not yet have fired");
   assert_equals(w.history.length, 1, "history.length for the opened window must start at 1");
 
-  await new Promise(r => { window.onmessage = r; });
+  await new Promise(r => {
+    window.addEventListener("message", t.step_func(e => {
+      if (e.data === "ready") {
+        resolve();
+      }
+    }));
+  });
 
   assert_equals(w.history.length, 2, "history.length must increase");
   assert_equals(w.location.href, absoluteAfterReplacementURL);

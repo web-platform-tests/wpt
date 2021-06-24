@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Ruby Annotation Layout Test: absolutely positioned ruby base unit boxes and absolutely positioned ruby text unit boxes</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-ruby-1/#formatting-context">
+  <link rel="match" href="reference/ruby-floats-001-ref.html">
+
+  <meta content="" name="flags">
+  <meta content="This test checks that the containing block for internal ruby boxes (ruby base units and ruby text units) is the containing block of its own ruby container. This is true for absolutely positioned ruby base unit boxes and absolutely positioned for ruby text unit boxes.">
+
+  <style>
+  div
+    {
+      font-size: 32px;
+      line-height: 3;
+    }
+
+  rb#first-subtest, rt#second-subtest
+    {
+      position: absolute;
+      right: 8px;
+    }
+
+  rb#third-subtest, rt#fourth-subtest
+    {
+      position: absolute;
+      left: 8px;
+    }
+
+  div#third, div#fourth
+    {
+      text-align: right;
+    }
+  </style>
+
+  <div>a<ruby><rb id="first-subtest">Far Right<rt>b</ruby>c</div>
+
+  <div>d<ruby><rb>e<rt id="second-subtest">Far Right</ruby>f</div>
+
+  <div id="third">g<ruby><rb id="third-subtest">Far Left<rt>h</ruby>i</div>
+
+  <div id="fourth">j<ruby><rb>k<rt id="fourth-subtest">Far Left</ruby>m</div>

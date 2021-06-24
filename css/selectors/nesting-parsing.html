@@ -15,10 +15,19 @@
   }
 
   const testRules = [
-    `html { color: red; }`,
-    `foo {
-      & bar {}
-    }`,
+    `.foo .bar { color: green; }`,
+    `.foo { & { color: green; } }`, // 🐰
+    `.foo { &.bar { color: green; } }`,
+    `.foo { & .bar { color: green; } }`,
+    `.foo { & > .bar { color: green; } }`,
+    `.foo { &:is(.bar, &.baz) { color: green; } }`,
+    `.foo { @nest .bar& { color: green; } }`,
+    `.foo { @nest .bar & { color: green; } }`,
+    `.foo { @nest .bar > & { color: green; } }`,
+    `.foo, .bar { & + .baz, &.qux { color: green; } }`,
+    `.foo { & .bar & .baz & .qux { color: green; } }`,
+    `.foo { @media (min-width: 50px) { & { color: green; } } }`,
+    `main { & > section, & > article { & > header { color: green; } } }`,
   ]
 
   testRules.forEach(testRule => {

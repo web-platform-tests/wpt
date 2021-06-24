@@ -46,8 +46,7 @@ promise_test(async t => {
 
   w.history.back();
 
-  t.step_timeout(() => {
-    asssert_equals(w.location.href, absoluteStartURL, "1 second after attempting to go back, it indeed went back");
-  }, 1000);
+  await new Promise(r => t.step_timeout(r, 1000));
+  assert_equals(w.location.href, absoluteStartURL, "1 second after attempting to go back, it indeed went back");
 }, "No replace before pageshow, triggered by window.open() on a non-_self window");
 </script>

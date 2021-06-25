@@ -42,7 +42,7 @@ function runTests(testData) {
       }, "sendBeacon(): " + name)
 
       self.test(() => {
-        assert_throws_js(self[0].TypeError, () => self[0].location = test.input)
+        assert_throws_js(TypeError, () => self[0].location = test.input)
       }, "Location's href: " + name)
 
       self.test(() => {

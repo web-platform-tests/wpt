@@ -32,7 +32,7 @@ correctly. But we look at all of them, and take everything that we can.
 
 Hop on to the [mailing list][public-test-infra] or [matrix
 channel][matrix] if you have an issue.  There is no need to announce
-your review request, as soon as you make a Pull Request GitHub will
+your review request; as soon as you make a Pull Request, GitHub will
 inform interested parties.
 
 ## Previews

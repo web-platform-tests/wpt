@@ -60,7 +60,7 @@ than others.
 This Code of Conduct applies within all community spaces, and also
 applies when an individual is officially representing the community in
 public spaces.  Examples of representing our community include
-official Matrix channel (wpt:matrix.org); GitHub repositories under
+the official Matrix channel (wpt:matrix.org); GitHub repositories under
 the web-platform-tests organization; and the public-test-infra@w3.org
 mailing list.
 

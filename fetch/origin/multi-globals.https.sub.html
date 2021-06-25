@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Multi-globals: which one is the initiator?</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+"use strict";
+document.domain = "{{hosts[][]}}";
+
+promise_test(async t => {
+  const iframe = await insertIframe(t);
+
+  // https://github.com/whatwg/html/issues/6514
+  // What gets set as the request's origin? The "incumbent" (this page)
+  // or the page containing the <form> (on the www subdomain)?
+  //
+  // The spec currently fails to pass a source browsing context for form navigation
+  // (https://html.spec.whatwg.org/#plan-to-navigate step 4.2), and the navigate + Fetch spec ultimately
+  // derive the request's origin from the source browsing context. So who knows.
+
+  iframe.contentDocument.querySelector("form").submit();
+
+  const data = await waitForMessage();
+  assert_equals(data, "https://{{hosts[][]}}:{{ports[https][0]}}");
+}, "Using form submission");
+
+function insertIframe(t) {
+  return new Promise((resolve, reject) => {
+    const iframe = document.createElement("iframe");
+    iframe.src = "https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/origin/resources/multi-globals-subframe-1.sub.html";
+    iframe.onload = () => resolve(iframe);
+    iframe.onerror = () => reject(new Error("Failed to load iframe"));
+
+    t.add_cleanup(() => iframe.remove());
+
+    document.body.append(iframe);
+  });
+}
+
+function waitForMessage() {
+  return new Promise(resolve => {
+    window.addEventListener("message", e => {
+      resolve(e.data);
+    }, { once: true });
+  });
+}
+</script>

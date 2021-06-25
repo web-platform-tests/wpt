@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Multi-globals test outer subframe</title>
+
+<script>
+"use strict";
+document.domain = "{{hosts[][]}}";
+</script>
+
+<form target="frame" method="POST" action="multi-globals-post-origin-header.py"></form>
+
+<iframe name="frame" src="https://{{hosts[alt][]}}:{{ports[https][0]}}/common/blank.html"></iframe>

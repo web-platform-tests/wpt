@@ -1630,12 +1630,30 @@
             }
         },
         {
+            "comment": "Non-special URLs with an empty host can have their paths erased",
+            "href": "foo:///some/path",
+            "new_value": "",
+            "expected": {
+                "href": "foo://",
+                "pathname": ""
+            }
+        },
+        {
             "comment": "Path-only URLs cannot have their paths erased",
             "href": "foo:/some/path",
             "new_value": "",
             "expected": {
                 "href": "foo:/",
                 "pathname": "/"
+            }
+        },
+        {
+            "comment": "Path-only URLs always have an initial slash",
+            "href": "foo:/some/path",
+            "new_value": "test",
+            "expected": {
+                "href": "foo:/test",
+                "pathname": "/test"
             }
         },
         {

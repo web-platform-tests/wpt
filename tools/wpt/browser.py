@@ -1047,6 +1047,8 @@ class EdgeChromium(Browser):
         raise NotImplementedError
 
     def find_binary(self, venv_path=None, channel=None):
+        self.logger.info('Finding Edge binary for channel %s' % channel)
+
         if self.platform == "linux":
             name = "microsoft-edge"
             if channel == "stable":
@@ -1153,8 +1155,13 @@ class EdgeChromium(Browser):
         return find_executable(self.edgedriver_name, dest)
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
+        self.logger.info("Installing MSEdgeDriver for channel %s" % channel)
+
         if browser_binary is None:
-            browser_binary = self.find_binary(channel)
+            browser_binary = self.find_binary(channel=channel)
+        else:
+            self.logger.info("Installing matching MSEdgeDriver for Edge binary at %s" % browser_binary)
+
         return self.install_webdriver_by_version(
             self.version(browser_binary), dest)
 

@@ -1115,13 +1115,14 @@ class EdgeChromium(Browser):
         if dest is None:
             dest = os.pwd
 
-        if self.platform == "linux":
-            version_url = "https://msedgedriver.azureedge.net/LATEST_DEV_LINUX"
-        elif self.platform == "macos":
-            version_url = "https://msedgedriver.azureedge.net/LATEST_DEV_MACOS"
-        else:
-            version_url = "https://msedgedriver.azureedge.net/LATEST_DEV_WINDOWS"
-        version = get(version_url).text.strip()
+        if version is None:
+            if self.platform == "linux":
+                version_url = "https://msedgedriver.azureedge.net/LATEST_DEV_LINUX"
+            elif self.platform == "macos":
+                version_url = "https://msedgedriver.azureedge.net/LATEST_DEV_MACOS"
+            else:
+                version_url = "https://msedgedriver.azureedge.net/LATEST_DEV_WINDOWS"
+            version = get(version_url).text.strip()
 
         if self.platform == "linux":
             bits = "linux64"

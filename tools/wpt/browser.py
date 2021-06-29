@@ -1132,7 +1132,7 @@ class EdgeChromium(Browser):
             edgedriver_path = os.path.join(dest, self.edgedriver_name)
         else:
             bits = "win64" if uname[4] == "x86_64" else "win32"
-            edgedriver_path = os.path.join(dest, f"self.edgedriver_name.exe")
+            edgedriver_path = os.path.join(dest, f"{self.edgedriver_name}.exe")
         url = f"https://msedgedriver.azureedge.net/{version}/edgedriver_{bits}.zip"
 
         # cleanup existing Edge driver files to avoid access_denied errors when unzipping

@@ -1115,15 +1115,6 @@ class EdgeChromium(Browser):
         if dest is None:
             dest = os.pwd
 
-        if version is None:
-            if self.platform == "linux":
-                version_url = "https://msedgedriver.azureedge.net/LATEST_DEV_LINUX"
-            elif self.platform == "macos":
-                version_url = "https://msedgedriver.azureedge.net/LATEST_DEV_MACOS"
-            else:
-                version_url = "https://msedgedriver.azureedge.net/LATEST_DEV_WINDOWS"
-            version = get(version_url).text.strip()
-
         if self.platform == "linux":
             bits = "linux64"
             edgedriver_path = os.path.join(dest, self.edgedriver_name)
@@ -1160,8 +1151,24 @@ class EdgeChromium(Browser):
         else:
             self.logger.info(f"Installing matching MSEdgeDriver for Edge binary at {browser_binary}")
 
-        return self.install_webdriver_by_version(
-            self.version(browser_binary), dest)
+        version = self.version(browser_binary)
+
+        # If an exact version can't be found, use a suitable fallback based on
+        # the browser channel, if available.
+        if version is None:
+            platforms = {
+                "linux": "LINUX",
+                "macos": "MACOS",
+                "win": "WINDOWS"
+            }
+            if channel is None:
+                channel = "dev"
+            platform = platforms[self.platform]
+            suffix = f"{channel.upper()}_{platform}"
+            version_url = f"https://msedgedriver.azureedge.net/LATEST_{suffix}"
+            version = get(version_url).text.strip()
+
+        return self.install_webdriver_by_version(version, dest)
 
     def version(self, binary=None, webdriver_binary=None):
         if not binary:

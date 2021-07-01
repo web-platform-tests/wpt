@@ -80,12 +80,17 @@ for (const QueuingStrategy of [CountQueuingStrategy, ByteLengthQueuingStrategy])
     const size = new QueuingStrategy({ highWaterMark: 5 }).size;
     assert_false('prototype' in size);
   }, `${QueuingStrategy.name}: size should not have a prototype property`);
-
-  test(() => {
-    const size = new QueuingStrategy({ highWaterMark: 5 }).size;
-    assert_throws_js(TypeError, () => new size());
-  }, `${QueuingStrategy.name}: size should not be a constructor`);
 }
+
+test(() => {
+  const size = new CountQueuingStrategy({ highWaterMark: 5 }).size;
+  assert_throws_js(TypeError, () => new size());
+}, `CountQueuingStrategy: size should not be a constructor`);
+
+test(() => {
+  const size = new ByteLengthQueuingStrategy({ highWaterMark: 5 }).size;
+  assert_throws_js(TypeError, () => new size({ byteLength: 1024 }));
+}, `ByteLengthQueuingStrategy: size should not be a constructor`);
 
 test(() => {
   const size = (new CountQueuingStrategy({ highWaterMark: 5 })).size;

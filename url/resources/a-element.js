@@ -5,6 +5,8 @@ function setBase(base) {
 }
 
 function bURL(url, base) {
+  base = base || "about:blank"
+  setBase(base)
   var a = document.createElement("a")
   a.setAttribute("href", url)
   return a
@@ -15,7 +17,7 @@ function runURLTests(urltests) {
     var expected = urltests[i]
     if (typeof expected === "string") continue // skip comments
     // skip without base because you cannot unset the baseURL of a document
-    if (!expected.base) continue
+    if (expected.base === null) continue;
 
     test(function() {
       var url = bURL(expected.input, expected.base)

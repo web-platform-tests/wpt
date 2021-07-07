@@ -8020,10 +8020,12 @@
   "Empty query and fragment with blank should throw an error",
   {
     "input": "#",
+    "base": null,
     "failure": true
   },
   {
     "input": "?",
+    "base": null,
     "failure": true
   }
 ]

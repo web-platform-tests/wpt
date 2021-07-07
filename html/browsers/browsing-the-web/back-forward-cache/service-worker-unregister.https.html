@@ -1,0 +1,36 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/html/cross-origin-embedder-policy/credentialless/resources/dispatcher.js"></script>
+<script src="resources/helper.sub.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+
+promise_test(async t => {
+  const workerUrl = 'resources/clients-matchall-service-worker.js?pipe=header(Service-Worker-Allowed,../)';
+  const registration = await service_worker_unregister_and_register(t, workerUrl, './');
+  t.add_cleanup(_ => registration.unregister());
+  await wait_for_state(t, registration.installing, 'activated');
+
+  const idA = token();
+  const idB = token();
+
+  const url_a = new URL(executorPath + idA, location).href;
+
+  window.open(url_a, '_blank', 'noopener');
+
+  await send(idA, `
+      prepareNavigation();
+      location.href = '${originCrossSite + executorPath + idB}';
+  `);
+
+  assert_equals(await evalOn(idB, `'Navigated'`), 'Navigated');
+
+  await registration.unregister();
+
+  await send(idB, `history.back();`);
+
+  await assert_bfcached(idA);
+}, 'Unregister service worker while a controlled page is in BFCache');
+</script>

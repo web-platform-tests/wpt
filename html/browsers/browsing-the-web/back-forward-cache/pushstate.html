@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/html/cross-origin-embedder-policy/credentialless/resources/dispatcher.js"></script>
+<script src="resources/helper.sub.js"></script>
+<script>
+// https://github.com/whatwg/html/issues/6207
+for (const shouldBeBFCached of [true, false]) {
+promise_test(async t => {
+  const idA = token();
+  const urlA = location.origin + executorPath + idA + (shouldBeBFCached ? '' : '&pipe=header(Cache-Control,no-store)');
+  const urlPushState = urlA + '&pushState=yes';
+
+  window.open(urlA, '_blank', 'noopener');
+
+  await send(idA, `history.pushState('blue', '', '${urlPushState}');`);
+
+  await send(idA, `
+      prepareNavigation();
+      location.href = '${originCrossSite + backPath}';
+  `);
+
+  if (shouldBeBFCached) {
+    await assert_bfcached(idA);
+  } else {
+    await assert_not_bfcached(idA);
+  }
+
+  assert_equals(await evalOn(idA, 'location.href'), urlPushState, 'url 1');
+  assert_equals(await evalOn(idA, 'history.state'), 'blue', 'history.state 1');
+
+  await send(idA, `
+    window.onpopstate = () => send('${idThis}', 'popstate');
+    history.back();
+  `);
+  assert_equals(await receive(idThis), 'popstate');
+
+  assert_equals(await evalOn(idA, 'location.href'), urlA, 'url 2');
+  // Failing on Safari?
+  assert_equals(await evalOn(idA, 'history.state'), null, 'history.state 2');
+}, 'back navigation to pushState()d page (' + (shouldBeBFCached ? '' : 'not ') + 'in BFCache)');
+}
+</script>

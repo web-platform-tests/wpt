@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/html/cross-origin-embedder-policy/credentialless/resources/dispatcher.js"></script>
+<script src="resources/helper.sub.js"></script>
+<script>
+// https://github.com/whatwg/storage/issues/119#issuecomment-785771108
+promise_test(async t => {
+  const idA = token();
+  const idB = token();
+  const idC = token();
+  // localStorage key set while the page is inactive (in BFCache).
+  const key = token();
+
+  const scriptStorageEvent = `
+    window.addEventListener('storage', e => {
+      if (e.key === '${key}') {
+        recordEvent('storage');
+      }
+    });
+  `;
+
+  window.open(
+    executorPath + idA + '&events=pagehide,pageshow,load',
+    '_blank', 'noopener');
+  await send(idA, scriptStorageEvent);
+
+  // Window C is used to check that failures are BFCache-related, not
+  // underlying issues around storage events.
+  window.open(
+    executorPath + idC + '&events=pagehide,pageshow,load',
+    '_blank');
+  await send(idC, scriptStorageEvent);
+
+  await send(idA, `
+      prepareNavigation();
+      location.href = '${originCrossSite + executorPath + idB}';
+  `);
+  assert_equals(await evalOn(idB, `'Navigated'`), 'Navigated');
+
+  localStorage.setItem(key, 'value');
+
+  await send(idB, 'history.back()');
+
+  await assert_bfcached(idA);
+
+  // After the pages become active, send a storage event.
+
+  const keyC = token();
+  await send(idC, `
+    window.addEventListener('storage', e => {
+      if (e.key === '${keyC}') {
+        send('${idThis}', JSON.stringify(getRecordedEvents()));
+      }
+    });
+    send('${idThis}', 'Evaluated');
+  `);
+  assert_equals(await receive(idThis), 'Evaluated');
+  localStorage.setItem(keyC, 'value');
+  assert_array_equals(
+    JSON.parse(await receive(idThis)),
+    [
+      'window.load',
+      'window.pageshow',
+      'storage',
+    ]);
+
+  const keyA = token();
+  await send(idA, `
+    window.addEventListener('storage', e => {
+      if (e.key === '${keyA}') {
+        send('${idThis}', JSON.stringify(getRecordedEvents()));
+      }
+    });
+    send('${idThis}', 'Evaluated');
+  `);
+  assert_equals(await receive(idThis), 'Evaluated');
+  localStorage.setItem(keyA, 'value');
+  assert_array_equals(
+    JSON.parse(await receive(idThis)),
+    [
+      'window.load',
+      'window.pageshow',
+      'window.pagehide.persisted',
+      'window.pageshow.persisted',
+      'storage',
+    ]);
+}, 'Storage events should be fired for BFCached pages after becoming active');
+</script>

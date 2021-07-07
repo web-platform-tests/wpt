@@ -105,6 +105,10 @@ callback EncodedVideoChunkOutputCallback =
 
 dictionary EncodedVideoChunkMetadata {
   VideoDecoderConfig decoderConfig;
+  SvcOutputMetadata svc;
+};
+
+dictionary SvcOutputMetadata {
   unsigned long temporalLayerId;
 };
 
@@ -161,6 +165,7 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
   DOMString scalabilityMode;
+  BitrateMode bitrateMode = "variable";
 };
 
 enum HardwareAcceleration {

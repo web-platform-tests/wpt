@@ -27,9 +27,15 @@ interface GPUSupportedLimits {
     readonly attribute unsigned long maxUniformBuffersPerShaderStage;
     readonly attribute unsigned long maxUniformBufferBindingSize;
     readonly attribute unsigned long maxStorageBufferBindingSize;
+    readonly attribute unsigned long minUniformBufferOffsetAlignment;
+    readonly attribute unsigned long minStorageBufferOffsetAlignment;
     readonly attribute unsigned long maxVertexBuffers;
     readonly attribute unsigned long maxVertexAttributes;
     readonly attribute unsigned long maxVertexBufferArrayStride;
+    readonly attribute unsigned long maxInterStageShaderComponents;
+    readonly attribute unsigned long maxComputeWorkgroupStorageSize;
+    readonly attribute unsigned long maxComputeWorkgroupInvocations;
+    readonly attribute unsigned long maxComputePerDimensionDispatchSize;
 };
 
 [Exposed=Window]
@@ -73,8 +79,8 @@ interface GPUAdapter {
 };
 
 dictionary GPUDeviceDescriptor : GPUObjectDescriptorBase {
-    sequence<GPUFeatureName> nonGuaranteedFeatures = [];
-    record<DOMString, GPUSize32> nonGuaranteedLimits = {};
+    sequence<GPUFeatureName> requiredFeatures = [];
+    record<DOMString, GPUSize32> requiredLimits = {};
 };
 
 enum GPUFeatureName {
@@ -791,6 +797,11 @@ dictionary GPUImageCopyTexture {
     GPUTextureAspect aspect = "all";
 };
 
+dictionary GPUImageCopyTextureTagged : GPUImageCopyTexture {
+    GPUPredefinedColorSpace colorSpace = "srgb";
+    boolean premultipliedAlpha = false;
+};
+
 dictionary GPUImageCopyExternalImage {
     required (ImageBitmap or HTMLCanvasElement or OffscreenCanvas) source;
     GPUOrigin2D origin = {};
@@ -832,8 +843,8 @@ dictionary GPUComputePassDescriptor : GPUObjectDescriptorBase {
 interface mixin GPURenderEncoderBase {
     undefined setPipeline(GPURenderPipeline pipeline);
 
-    undefined setIndexBuffer(GPUBuffer buffer, GPUIndexFormat indexFormat, optional GPUSize64 offset = 0, optional GPUSize64 size = 0);
-    undefined setVertexBuffer(GPUIndex32 slot, GPUBuffer buffer, optional GPUSize64 offset = 0, optional GPUSize64 size = 0);
+    undefined setIndexBuffer(GPUBuffer buffer, GPUIndexFormat indexFormat, optional GPUSize64 offset = 0, optional GPUSize64 size);
+    undefined setVertexBuffer(GPUIndex32 slot, GPUBuffer buffer, optional GPUSize64 offset = 0, optional GPUSize64 size);
 
     undefined draw(GPUSize32 vertexCount, optional GPUSize32 instanceCount = 1,
               optional GPUSize32 firstVertex = 0, optional GPUSize32 firstInstance = 0);
@@ -951,7 +962,7 @@ interface GPUQueue {
 
     undefined copyExternalImageToTexture(
         GPUImageCopyExternalImage source,
-        GPUImageCopyTexture destination,
+        GPUImageCopyTextureTagged destination,
         GPUExtent3D copySize);
 };
 GPUQueue includes GPUObjectBase;
@@ -983,10 +994,12 @@ enum GPUPipelineStatisticName {
 };
 
 [Exposed=Window]
-interface GPUCanvasContext {
-    GPUSwapChain configureSwapChain(GPUSwapChainDescriptor descriptor);
+interface GPUPresentationContext {
+    undefined configure(GPUPresentationConfiguration configuration);
+    undefined unconfigure();
 
-    GPUTextureFormat getSwapChainPreferredFormat(GPUAdapter adapter);
+    GPUTextureFormat getPreferredFormat(GPUAdapter adapter);
+    GPUTexture getCurrentTexture();
 };
 
 enum GPUCanvasCompositingAlphaMode {
@@ -994,19 +1007,14 @@ enum GPUCanvasCompositingAlphaMode {
     "premultiplied",
 };
 
-dictionary GPUSwapChainDescriptor : GPUObjectDescriptorBase {
+dictionary GPUPresentationConfiguration {
     required GPUDevice device;
     required GPUTextureFormat format;
     GPUTextureUsageFlags usage = 0x10;  // GPUTextureUsage.RENDER_ATTACHMENT
+    GPUPredefinedColorSpace colorSpace = "srgb";
     GPUCanvasCompositingAlphaMode compositingAlphaMode = "opaque";
     GPUExtent3D size;
 };
-
-[Exposed=Window]
-interface GPUSwapChain {
-    GPUTexture getCurrentTexture();
-};
-GPUSwapChain includes GPUObjectBase;
 
 enum GPUDeviceLostReason {
     "destroyed",

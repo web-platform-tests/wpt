@@ -692,3 +692,39 @@ partial interface SVGAElement {
 interface SVGViewElement : SVGElement {};
 
 SVGViewElement includes SVGFitToViewBox;
+
+
+////////////////////////////////////////////////////////////////////////////////
+// SVG 1.1 interfaces that do not exist in SVG 2 and that are still implemented.
+//
+// Note this is best effort at defining these interfaces with current Web IDL,
+// as the actual definitions in SVG 1.1 use outdated (and invalid) IDL.
+////////////////////////////////////////////////////////////////////////////////
+[Exposed=Window]
+interface SVGAltGlyphElement : SVGTextPositioningElement {
+  attribute DOMString glyphRef;
+  attribute DOMString format;
+};
+SVGAltGlyphElement includes SVGURIReference;
+
+[Exposed=Window]
+interface SVGGlyphRefElement : SVGElement {
+  attribute DOMString glyphRef;
+  attribute DOMString format;
+  attribute float x;
+  attribute float y;
+  attribute float dx;
+  attribute float dy;
+};
+SVGGlyphRefElement includes SVGURIReference;
+
+[Exposed=Window]
+interface SVGCursorElement : SVGElement {
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+};
+SVGCursorElement includes SVGURIReference;
+SVGCursorElement includes SVGTests;
+
+[Exposed=Window]
+interface SVGFontElement : SVGElement {};

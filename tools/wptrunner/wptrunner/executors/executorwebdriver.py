@@ -236,8 +236,12 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
             obj["message"] = str(message)
         self.webdriver.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
 
-    def _switch_to_frame(self, frame_number):
-        self.webdriver.switch_frame(frame_number)
+    def _switch_to_frame(self, index_or_elem):
+        try:
+            self.webdriver.switch_frame(index_or_elem)
+        except (error.StaleElementReferenceException,
+                error.NoSuchFrameException) as e:
+            raise ValueError from e
 
     def _switch_to_parent_frame(self):
         self.webdriver.switch_frame("parent")

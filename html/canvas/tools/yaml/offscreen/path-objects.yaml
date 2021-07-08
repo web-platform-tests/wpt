@@ -695,7 +695,7 @@
   testing:
   - 2d.path.arcTo.negative
   code: |
-    @assert throws INDEX_SIZE_ERR ctx.arcTo(0, 0, 0, 0, -1);
+    assert_throws_js(RangeError, () => {ctx.arcTo(0, 0, 0, 0, -1)});
     t.done();
 
 - name: 2d.path.arcTo.zero.1
@@ -1194,11 +1194,11 @@
     t.done();
 
 - name: 2d.path.arc.negative
-  desc: arc() with negative radius throws INDEX_SIZE_ERR
+  desc: arc() with negative radius throws RANGE_ERROR
   testing:
   - 2d.path.arc.negative
   code: |
-    @assert throws INDEX_SIZE_ERR ctx.arc(0, 0, -1, 0, 0, true);
+    assert_throws_js(RangeError, () => {ctx.arc(0, 0, -1, 0, 0, true)});
     t.done();
 
 - name: 2d.path.arc.zeroradius
@@ -2181,22 +2181,22 @@
     t.done();
 
 - name: 2d.path.roundrect.radius.none
-  desc: Check that roundRect throws an IndexSizeError if radii is an empty array.
+  desc: Check that roundRect throws an RangeError if radii is an empty array.
   code: |
-    @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 100, 50, []);
+    assert_throws_js(RangeError, () => {ctx.roundRect(0, 0, 100, 50, [])});
     t.done();
 
 - name: 2d.path.roundrect.radius.toomany
-  desc: Check that roundRect throws an IndeSizeError if radii has more than four items.
+  desc: Check that roundRect throws an RangeError if radii has more than four items.
   code: |
-    @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 100, 50, [0, 0, 0, 0, 0]);
+    assert_throws_js(RangeError, () => {ctx.roundRect(0, 0, 100, 50, [0, 0, 0, 0, 0])});
     t.done();
 
 - name: 2d.path.roundrect.radius.negative
   desc: roundRect() with negative radius throws an exception
   code: |
-    @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 0, 0, [-1]);
-    @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 0, 0, [1, -1]);
+    assert_throws_js(RangeError, () => {ctx.roundRect(0, 0, 0, 0, [-1])});
+    assert_throws_js(RangeError, () => {ctx.roundRect(0, 0, 0, 0, [1, -1])});
     t.done();
 
 - name: 2d.path.fill.overlap

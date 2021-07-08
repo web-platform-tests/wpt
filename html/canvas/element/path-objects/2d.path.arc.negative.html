@@ -8,7 +8,7 @@
 <body class="show_output">
 
 <h1>2d.path.arc.negative</h1>
-<p class="desc">arc() with negative radius throws INDEX_SIZE_ERR</p>
+<p class="desc">arc() with negative radius throws RANGE_ERR</p>
 
 
 <p class="output">Actual output:</p>
@@ -16,12 +16,12 @@
 
 <ul id="d"></ul>
 <script>
-var t = async_test("arc() with negative radius throws INDEX_SIZE_ERR");
+var t = async_test("arc() with negative radius throws RANGE_ERR");
 _addTest(function(canvas, ctx) {
 
-assert_throws_dom("INDEX_SIZE_ERR", function() { ctx.arc(0, 0, -1, 0, 0, true); });
+assert_throws_js(RangeError, () => { ctx.arc(0, 0, -1, 0, 0, true)});
 var path = new Path2D();
-assert_throws_dom("INDEX_SIZE_ERR", function() { path.arc(10, 10, -5, 0, 1, false); });
+assert_throws_js(RangeError, () => { path.arc(10, 10, -5, 0, 1, false)});
 
 
 });

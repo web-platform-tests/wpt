@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bug test page 2</title>
+</head>
+<body>
+<h1>Bug test page 2</h1>
+<script>
+var img = document.createElement('img');
+img.src = "missing3.png";
+// Appending this image will cause a third CSP violation. The report generated
+// here must not be batched with the reports from the previous page, regardless
+// of whether they have been sent or not.
+document.body.appendChild(img);
+// Give the report handler enough time to finish handling the any reports from
+// the previous page (Reports there are delayed with the trickle pipe) and then
+// inform the parent that reports may be checked.
+setTimeout(()=>{
+  parent.postMessage("ready", "*");
+},1000);
+</script>
+</body>
+</html>

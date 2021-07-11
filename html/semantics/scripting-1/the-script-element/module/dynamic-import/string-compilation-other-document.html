@@ -23,6 +23,9 @@ function startTest() {
   const evaluators = {
     eval: otherWindow.eval,
     setTimeout: otherWindow.setTimeout,
+    "setTimeout + eval"(x) {
+      otherWindow.setTimeout(otherWIndow.eval, 0, x);
+    },
     "the Function constructor"(x) {
       otherWindow.Function(x)();
     },

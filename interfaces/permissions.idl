@@ -41,9 +41,9 @@ enum PermissionName {
   "background-sync",
   "bluetooth",
   "camera",
-  "clipboard-write",
   "device-info",
   "display-capture",
+  "gamepad",
   "geolocation",
   "gyroscope",
   "magnetometer",
@@ -53,6 +53,7 @@ enum PermissionName {
   "notifications",
   "persistent-storage",
   "push",
+  "screen-wake-lock",
   "speaker-selection",
 };
 

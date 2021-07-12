@@ -210,6 +210,7 @@ interface HTMLMetaElement : HTMLElement {
   [CEReactions] attribute DOMString name;
   [CEReactions] attribute DOMString httpEquiv;
   [CEReactions] attribute DOMString content;
+  [CEReactions] attribute DOMString media;
 
   // also has obsolete members
 };
@@ -972,7 +973,7 @@ interface HTMLSelectElement : HTMLElement {
 
   [SameObject] readonly attribute HTMLOptionsCollection options;
   [CEReactions] attribute unsigned long length;
-  getter Element? item(unsigned long index);
+  getter HTMLOptionElement? item(unsigned long index);
   HTMLOptionElement? namedItem(DOMString name);
   [CEReactions] undefined add((HTMLOptionElement or HTMLOptGroupElement) element, optional (HTMLElement or long)? before = null);
   [CEReactions] undefined remove(); // ChildNode overload
@@ -1274,6 +1275,7 @@ dictionary CanvasRenderingContext2DSettings {
   boolean alpha = true;
   boolean desynchronized = false;
   PredefinedColorSpace colorSpace = "srgb";
+  boolean willReadFrequently = false;
 };
 
 enum ImageSmoothingQuality { "low", "medium", "high" };
@@ -1724,6 +1726,7 @@ interface Window : EventTarget {
 
   // the user agent
   readonly attribute Navigator navigator;
+  readonly attribute Navigator clientInformation; // legacy alias of .navigator
   readonly attribute boolean originAgentCluster;
 
   // user prompts

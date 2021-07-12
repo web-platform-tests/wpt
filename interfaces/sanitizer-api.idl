@@ -7,7 +7,7 @@
   Exposed=(Window),
   SecureContext
 ] interface Sanitizer {
-  constructor(optional SanitizerConfig config = {});
+  constructor(optional SanitizerConfig aConfig = {});
 
   DocumentFragment sanitize(SanitizerInput input);
   DOMString sanitizeToString(SanitizerInput input);

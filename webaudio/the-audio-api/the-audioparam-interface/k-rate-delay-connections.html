@@ -124,25 +124,26 @@
             should(actual, `Actual k-rate delayTime AudioParam with input`)
                 .notBeConstantValueOf(0);
 
+            const renderSize = renderQuantumFrames(context);
             // Quick sanity check.  The amount of delay after one render is
             // endValue * 128 / sampleRate.  But after 1 render, time has
             // advanced 128/sampleRate.  Hence, the delay exceeds the time by
             // (endValue - 1)*128/sampleRate sec or (endValue - 1)*128 frames.
             // This means the output must be EXACTLY zero for this many frames
             // in the second render.
-            let zeroFrames = (endValue - 1) * RENDER_QUANTUM_FRAMES;
+            let zeroFrames = (endValue - 1) * renderSize;
             should(
                 actual.slice(
-                    RENDER_QUANTUM_FRAMES, RENDER_QUANTUM_FRAMES + zeroFrames),
-                `output[${RENDER_QUANTUM_FRAMES}, ${
-                    RENDER_QUANTUM_FRAMES + zeroFrames - 1}]`)
+                    renderSize, renderSize + zeroFrames),
+                `output[${renderSize}, ${
+                    renderSize + zeroFrames - 1}]`)
                 .beConstantValueOf(0);
             should(
                 actual.slice(
-                    RENDER_QUANTUM_FRAMES + zeroFrames,
-                    2 * RENDER_QUANTUM_FRAMES),
-                `output[${RENDER_QUANTUM_FRAMES + zeroFrames}, ${
-                    2 * RENDER_QUANTUM_FRAMES - 1}]`)
+                    renderSize + zeroFrames,
+                    2 * renderSize),
+                `output[${renderSize + zeroFrames}, ${
+                    2 * renderSize - 1}]`)
                 .notBeConstantValueOf(0);
 
             // The expected and actual results must be EXACTLY the same.

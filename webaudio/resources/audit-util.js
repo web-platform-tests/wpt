@@ -8,8 +8,15 @@
  *                test.
  */
 
+// How many frames in a WebAudio render quantum.  This is deprecated, and
+// |renderQuantumFrames()| should be used.
+//let RENDER_QUANTUM_FRAMES = 128;
+
 // How many frames in a WebAudio render quantum.
-let RENDER_QUANTUM_FRAMES = 128;
+function renderQuantumFrames(context) {
+  // Default to 128 if we can't get the renderSize from the context (if given).
+  return (context && context.renderSize) || 128;
+}
 
 // Compare two arrays (commonly extracted from buffer.getChannelData()) with
 // constraints:

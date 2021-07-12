@@ -26,7 +26,7 @@
             let g = new GainNode(context, {gain: 1});
             src.connect(g).connect(context.destination);
 
-            context.suspend(RENDER_QUANTUM_FRAMES / context.sampleRate)
+            context.suspend(renderQuantumFrames(context) / context.sampleRate)
                 .then(() => {
                   g.gain.value = .5;
                 })
@@ -90,7 +90,7 @@
         }
 
         // Change the gains. Must do the change on a render boundary!
-        let changeTime = 3 * RENDER_QUANTUM_FRAMES / context.sampleRate;
+        let changeTime = 3 * renderQuantumFrames(context) / context.sampleRate;
         let newGain = .3;
 
         gainRef.gain.setValueAtTime(newGain, changeTime);

@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<script>
+const results = [];
+
+results.push(document.visibilityState);
+
+document.addEventListener('DOMContentLoaded', () => {
+  results.push(document.visibilityState);
+});
+
+window.addEventListener('load', () => {
+  results.push(document.visibilityState);
+  localStorage.setItem('visibilityResult', JSON.stringify(results));
+  window.close();
+});
+</script>

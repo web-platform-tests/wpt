@@ -51,7 +51,7 @@
 
       // Arbitrary duration that doesn't need to be too long to verify k-rate
       // automations.  Probably should be at least a few render quanta.
-      const testDuration = 8 * RENDER_QUANTUM_FRAMES / sampleRate8k;
+      const testDuration = 8 * 1024 / sampleRate8k;
 
       // Basic test that k-rate ConstantSourceNode.offset is k-rate.  This is
       // the basis for all of the following tests, so make sure it's right.
@@ -97,16 +97,17 @@
                 .then(buffer => {
                   let actual = buffer.getChannelData(0);
                   let expected = buffer.getChannelData(1);
+                  let renderSize = renderQuantumFrames(context);
 
                   for (let k = 0; k < actual.length;
-                       k += RENDER_QUANTUM_FRAMES) {
+                       k += renderSize) {
                     // Verify that the k-rate output is constant over the render
                     // and that it matches the value of the a-rate value at the
                     // beginning of the render.
                     should(
-                        actual.slice(k, k + RENDER_QUANTUM_FRAMES),
+                        actual.slice(k, k + renderSize),
                         `k-rate ConstantSource.offset:  output[${k}:${
-                            k + RENDER_QUANTUM_FRAMES}]`)
+                            k + renderSize}]`)
                         .beConstantValueOf(expected[k]);
                   }
                 })
@@ -157,13 +158,14 @@
                 .then(buffer => {
                   let actual = buffer.getChannelData(0);
                   let expected = buffer.getChannelData(1);
+                  let renderSize = renderQuantumFrames(context);
 
                   for (let k = 0; k < context.length;
-                       k += RENDER_QUANTUM_FRAMES) {
+                       k += renderSize) {
                     should(
-                        actual.slice(k, k + RENDER_QUANTUM_FRAMES),
+                        actual.slice(k, k + renderSize),
                         `ConstantSource.offset k-rate input: output[${k}:${
-                            k + RENDER_QUANTUM_FRAMES}]`)
+                            k + renderSize}]`)
                         .beConstantValueOf(expected[k]);
                   }
                 })

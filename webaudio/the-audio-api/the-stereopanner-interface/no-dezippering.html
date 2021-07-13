@@ -216,7 +216,7 @@
         src.connect(pannerRef);
         src.connect(pannerTest);
 
-        let changeTime = 3 * RENDER_QUANTUM_FRAMES / context.sampleRate;
+        let changeTime = 3 * renderQuantumFrames(context) / context.sampleRate;
         // An arbitrary position, different from the default pan value.
         let newPanPosition = .71;
 

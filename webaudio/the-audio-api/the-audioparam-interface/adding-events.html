@@ -66,18 +66,20 @@
         let src = new ConstantSourceNode(context, {offset: initialValue});
         src.connect(merger, 0, 0);
 
+        let renderSize = renderQuantumFrames(context);
+
         // Set initial event to occur at this time.  Keep it in the first
         // render quantum.
-        const initialEventTime = 64 / context.sampleRate;
+        const initialEventTime = (renderSize / 2) / context.sampleRate;
         should(
             () => src.offset.setValueAtTime(initialValue, initialEventTime),
             `${prefix}: setValueAtTime(${initialValue}, ${initialEventTime})`)
             .notThrow();
 
         // Let time pass and then add a new event with time in the future.
-        let insertAtFrame = 512;
+        let insertAtFrame = 5 * renderSize;
         let insertTime = insertAtFrame / context.sampleRate;
-        let automationEndFrame = 1024 + 64;
+        let automationEndFrame = 10 * renderSize + renderSize / 2;
         let automationEndTime = automationEndFrame / context.sampleRate;
         context.suspend(insertTime)
             .then(() => {

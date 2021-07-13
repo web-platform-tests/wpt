@@ -17,7 +17,7 @@
 
       // Arbitrary duration that doesn't need to be too long to verify k-rate
       // automations.  Probably should be at least a few render quanta.
-      const testDuration = 8 * RENDER_QUANTUM_FRAMES / sampleRate;
+      const testDuration = 8 * 1024 / sampleRate;
 
       // Test k-rate GainNode.gain is k-rate
       audit.define(
@@ -42,12 +42,13 @@
                 .then(buffer => {
                   let actual = buffer.getChannelData(0);
                   let expected = buffer.getChannelData(1);
+                  let renderSize = renderQuantumFrames(context);
 
                   for (let k = 0; k < actual.length;
-                       k += RENDER_QUANTUM_FRAMES) {
+                       k += renderSize) {
                     should(
-                        actual.slice(k, k + RENDER_QUANTUM_FRAMES),
-                        `gain[${k}:${k + RENDER_QUANTUM_FRAMES}]`)
+                        actual.slice(k, k + renderSize),
+                        `gain[${k}:${k + renderSize}]`)
                         .beConstantValueOf(expected[k]);
                   }
                 })

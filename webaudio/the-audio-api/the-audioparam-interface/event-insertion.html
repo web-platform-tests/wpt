@@ -24,6 +24,8 @@
             let context = new OfflineAudioContext(
                 {length: 16384, sampleRate: sampleRate});
 
+            let renderSize = renderQuantumFrames(context);
+
             // The source node to use.  Automations will be scheduled here.
             let src = new ConstantSourceNode(context, {offset: 0});
             src.connect(context.destination);
@@ -35,38 +37,38 @@
             let testCases = [
               {
                 event: 'setValueAtTime',
-                frame: RENDER_QUANTUM_FRAMES,
+                frame: renderSize,
                 values: [99, 1],
-                outputTestFrame: RENDER_QUANTUM_FRAMES,
+                outputTestFrame: renderSize,
                 expectedOutputValue: 1
               },
               {
                 event: 'linearRampToValueAtTime',
-                frame: 2 * RENDER_QUANTUM_FRAMES,
+                frame: 2 * renderSize,
                 values: [99, 2],
-                outputTestFrame: 2 * RENDER_QUANTUM_FRAMES,
+                outputTestFrame: 2 * renderSize,
                 expectedOutputValue: 2
               },
               {
                 event: 'exponentialRampToValueAtTime',
-                frame: 3 * RENDER_QUANTUM_FRAMES,
+                frame: 3 * renderSize,
                 values: [99, 3],
-                outputTestFrame: 3 * RENDER_QUANTUM_FRAMES,
+                outputTestFrame: 3 * renderSize,
                 expectedOutputValue: 3
               },
               {
                 event: 'setValueCurveAtTime',
-                frame: 3 * RENDER_QUANTUM_FRAMES,
+                frame: 3 * renderSize,
                 values: [[3, 4]],
-                extraArgs: RENDER_QUANTUM_FRAMES / context.sampleRate,
-                outputTestFrame: 4 * RENDER_QUANTUM_FRAMES,
+                extraArgs: renderSize / context.sampleRate,
+                outputTestFrame: 4 * renderSize,
                 expectedOutputValue: 4
               },
               {
                 event: 'setValueAtTime',
-                frame: 5 * RENDER_QUANTUM_FRAMES - 1,
+                frame: 5 * renderSize - 1,
                 values: [99, 1, 5],
-                outputTestFrame: 5 * RENDER_QUANTUM_FRAMES,
+                outputTestFrame: 5 * renderSize,
                 expectedOutputValue: 5
               }
             ];
@@ -117,11 +119,15 @@
               {event: 'setValueAtTime', value: 99},
               {event: 'exponentialRampToValueAtTime', value: 3},
             ];
-            let eventFrame = 2 * RENDER_QUANTUM_FRAMES;
+            let eventFrameFactor = 2;
             let prefix = 'Linear+Expo: ';
 
-            testEventInsertion(prefix, should, eventFrame, testCase)
-                .then(expectConstant(prefix, should, eventFrame, testCase))
+            let context =
+                testEventInsertion(prefix, should, eventFrameFactor, testCase);
+            context.startRendering()
+                .then(expectConstant(
+                    prefix, should,
+                    eventFrameFactor * renderQuantumFrames(context), testCase))
                 .then(() => task.done());
           });
 
@@ -142,11 +148,15 @@
               {event: 'setValueAtTime', value: 99},
               {event: 'linearRampToValueAtTime', value: 2},
             ];
-            let eventFrame = 2 * RENDER_QUANTUM_FRAMES;
+            let eventFrameFactor = 2;
             let prefix = 'Expo+Linear: ';
 
-            testEventInsertion(prefix, should, eventFrame, testCase)
-                .then(expectConstant(prefix, should, eventFrame, testCase))
+            let context =
+                testEventInsertion(prefix, should, eventFrameFactor, testCase);
+            context.startRendering()
+                .then(expectConstant(
+                    prefix, should,
+                    eventFrameFactor * renderQuantumFrames(context), testCase))
                 .then(() => task.done());
           });
 
@@ -163,13 +173,17 @@
               {event: 'setValueAtTime', value: 100},
               {event: 'setTargetAtTime', value: 0, extraArgs: 0.1},
             ];
-            let eventFrame = 2 * RENDER_QUANTUM_FRAMES;
+            let eventFrameFactor = 2;
             let prefix = 'Linear+SetTarget: ';
 
-            testEventInsertion(prefix, should, eventFrame, testCase)
+            let context =
+                testEventInsertion(prefix, should, eventFrameFactor, testCase);
+            context.startRendering()
                 .then(audioBuffer => {
                   let audio = audioBuffer.getChannelData(0);
                   let prefix = 'Linear+SetTarget: ';
+                  let eventFrame =
+                      eventFrameFactor * renderQuantumFrames(context);
                   let eventTime = eventFrame / sampleRate;
                   let expectedValue = methodMap[testCase[0].event](
                       (eventFrame - 1) / sampleRate, 1, 0, testCase[0].value,
@@ -177,9 +191,8 @@
                   should(
                       audio[eventFrame - 1],
                       prefix +
-                          `At time ${
-                                     (eventFrame - 1) / sampleRate
-                                   } (frame ${eventFrame - 1}) output`)
+                          `At time ${(eventFrame - 1) / sampleRate} (frame ${
+                              eventFrame - 1}) output`)
                       .beCloseTo(
                           expectedValue,
                           {threshold: testCase[0].relError || 0});
@@ -204,9 +217,8 @@
                       actual,
                       prefix +
                           `At time ${eventTime} (frame ${
-                                                         eventFrame
-                                                       }) and later`)
-                      .beCloseToArray(expected, {relativeThreshold: 2.6694e-7});
+                              eventFrame}) and later`)
+                      .beCloseToArray(expected, {relativeThreshold: 3.6022e-7});
                 })
                 .then(() => task.done());
           });
@@ -248,10 +260,16 @@
       //   value     - the value for the event,
       //   extraArgs - extra arguments if the event needs more than the value
       //               and time (such as setTargetAtTime).
-      function testEventInsertion(prefix, should, eventFrame, testCases) {
-        let context = new OfflineAudioContext(
-            {length: 4 * RENDER_QUANTUM_FRAMES, sampleRate: sampleRate});
+      function testEventInsertion(prefix, should, eventFrameFactor, testCases) {
+        // The context length should be 4 times the context renderSize, but
+        // since we don't know what that is until it's constructed
+        // (but defaults to 128), just hardwire this.
+        let renderLength = 4 * 256;
+        let context =
+            new OfflineAudioContext({length: 4 * 256, sampleRate: sampleRate});
 
+        let renderSize = renderQuantumFrames(context);
+        let eventFrame = eventFrameFactor * renderSize;
         // The source node to use.  Automations will be scheduled here.
         let src = new ConstantSourceNode(context, {offset: 0});
         src.connect(context.destination);
@@ -285,7 +303,7 @@
 
         src.start();
 
-        return context.startRendering();
+        return context;
       }
 
       // Verify output of test where the final value of the automation is
@@ -305,9 +323,8 @@
           should(
               audio[eventFrame - 1],
               prefix +
-                  `At time ${
-                             (eventFrame - 1) / sampleRate
-                           } (frame ${eventFrame - 1}) output`)
+                  `At time ${(eventFrame - 1) / sampleRate} (frame ${
+                      eventFrame - 1}) output`)
               .beCloseTo(expectedValue, {threshold: testCases[0].relError});
 
           // The last event scheduled is expected to set the value for all
@@ -316,8 +333,7 @@
               audio.slice(eventFrame),
               prefix +
                   `At time ${eventTime} (frame ${
-                                                 eventFrame
-                                               }) and later, output`)
+                      eventFrame}) and later, output`)
               .beConstantValueOf(testCases[testCases.length - 1].value);
         };
       }

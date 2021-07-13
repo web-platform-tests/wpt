@@ -107,5 +107,5 @@ promise_test(async (t) => {
     resolveUrl("/common/blank-with-cors.html").toString(), "*");
 
   const evt = await futureMessage;
-  assert_equals(evt.data, "TypeError: Failed to fetch");
+  assert_equals(evt.data, "failure: error = TypeError");
 }, "Fetch from http-public to local http fails.");

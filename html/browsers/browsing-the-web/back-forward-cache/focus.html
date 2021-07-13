@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/html/cross-origin-embedder-policy/credentialless/resources/dispatcher.js"></script>
+<script src="resources/helper.sub.js"></script>
+<script>
+// https://github.com/whatwg/html/issues/5878
+promise_test(async t => {
+  const idA = token();
+
+  window.open(
+    executorPath + idA + '&events=pagehide,pageshow,load',
+    '_blank', 'noopener');
+
+  await send(idA, `
+    const form = document.createElement('form');
+    form.setAttribute('action', '${originCrossSite + backPath}');
+
+    const textInput = document.createElement('input');
+    textInput.setAttribute('type', 'text');
+    textInput.onfocus = () => {
+      recordEvent('input.focus');
+    };
+    textInput.onblur = () => {
+      recordEvent('input.blur');
+    };
+
+    form.appendChild(textInput);
+    document.body.appendChild(form);
+
+    textInput.focus();
+
+    prepareNavigation();
+    form.submit();
+  `);
+
+  await assert_bfcached(idA);
+
+  assert_true(
+    await evalOn(idA, `document.activeElement === document.querySelector("input")`),
+    'Should be focused');
+
+  assert_array_equals(
+    await evalOn(idA, `getRecordedEvents()`),
+    [
+      'input.focus',
+      'window.load',
+      'window.pageshow',
+      'window.pagehide.persisted',
+      'window.pageshow.persisted'
+    ]);
+}, 'Focus restored on BFCached navigation');
+</script>

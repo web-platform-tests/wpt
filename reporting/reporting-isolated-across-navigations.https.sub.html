@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Bug test page 1</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/report-helper.js"></script>
+<script>
+promise_test(async t => {
+  await new Promise(resolve => {
+    window.addEventListener("message", resolve);
+  });
+  // At this point, the reporting endpoint should have received all three
+  // reports. Ensure that reports from the first page are not batched with
+  // those from the second, or sent to its endpoint.
+  await wait(3000);
+  const csp1_uuid = "112868aa-4b59-57c7-a388-db909ef24295";
+  const csp2_uuid = "612bf2ee-b9b8-5f8d-a239-0981c6ff057e";
+  const reports1 = await pollReports('/reporting/resources/report.py', csp1_uuid);
+  const reports2 = await pollReports('/reporting/resources/report.py', csp2_uuid);
+  assert_equals(reports1.length, 2);
+  assert_equals(reports2.length, 1);
+}, "Reports should be sent to the correct endpoints");
+</script>
+<body>
+<h1>Bug test main frame</h1>
+<iframe id="frame" src="resources/first-csp-report.https.sub.html"></iframe>
+</body>

@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/html/cross-origin-embedder-policy/credentialless/resources/dispatcher.js"></script>
+<script src="resources/helper.sub.js"></script>
+<script>
+for (const originType of ['SameOrigin', 'SameSite', 'CrossSite']) {
+  promise_test(async t => {
+    const idA = token();
+
+    window.open(
+      executorPath + idA + '&events=pagehide,pageshow,load',
+      '_blank', 'noopener');
+
+    // Navigate to a page that immediately triggers back navigation.
+    const backUrl = eval(`origin${originType}`) + backPath;
+    await send(idA, `
+        prepareNavigation();
+        location.href = '${backUrl}';
+    `);
+
+    await assert_bfcached(idA);
+
+    assert_array_equals(
+      await evalOn(idA, `getRecordedEvents()`),
+      [
+        'window.load',
+        'window.pageshow',
+        'window.pagehide.persisted',
+        'window.pageshow.persisted'
+      ]);
+  }, `Events fired (window.open + noopener, ${originType})`);
+}
+</script>

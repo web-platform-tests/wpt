@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Focus fixup rule one (no &lt;dialog>s involved)</title>
+<meta name="timeout" content="long">
+<title>Focus fixup rule (no &lt;dialog&gt;s involved)</title>
 <link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#focus-fixup-rule-one">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#focus-fixup-rule">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/forms.html#attr-fieldset-disabled">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -13,97 +14,111 @@
   <button id="button3">Button 3</button>
   <fieldset id="fieldset1"><button id="button4">Button 4</button></fieldset>
   <fieldset id="fieldset2" disabled><legend><button id="button5">Button 5</button></legend></fieldset>
-  <div id="div" tabindex="0">Div</div>
-  <div id="editable" contenteditable=true>editor</div>
+  <div id="div1" tabindex="0">Div 1</div>
+  <div id="editable1" contenteditable=true>Editor 1</div>
+  <button id="button6">Button 6</button>
+  <button id="button7">Button 7</button>
+  <button id="button8">Button 8</button>
+  <fieldset id="fieldset3"><button id="button9">Button 9</button></fieldset>
+  <fieldset id="fieldset4" disabled><legend><button id="button10">Button 10</button></legend></fieldset>
+  <div id="div2" tabindex="0">Div 2</div>
+  <div id="editable2" contenteditable=true>Editor 2</div>
 </div>
 
 <script>
 "use strict";
 
-test(() => {
+const runTestSync = function (t, el, test) {
+  const tag = el.tagName.toLowerCase();
+  el.focus();
+  assert_equals(document.activeElement, el, `Sanity check: the ${tag} must start focused`);
+  test();
+  assert_not_equals(document.activeElement, el, `Immediately after test, the ${tag} must synchronously no longer be focused`);
+  assert_equals(document.activeElement, document.body, "Immediately after test, the body must synchronously be focused");
+}
+
+const runTestAsync = function (t, el, test) {
+  const tag = el.tagName.toLowerCase();
+  el.focus();
+  assert_equals(document.activeElement, el, `Sanity check: the ${tag} must start focused`);
+  test();
+  return t.step_wait(() => document.activeElement !== el, `After test, the ${tag} must no longer be focused`)
+    .then(() => assert_equals(document.activeElement, document.body, "After test, the body must be focused"));
+}
+
+test(t => {
   const button = document.querySelector("#button1");
-  button.focus();
+  runTestSync(t, button, () => button.disabled = true);
+}, "Disabling the active element (making it expressly inert) [sync]");
 
-  assert_equals(document.activeElement, button, "Sanity check: the button must start focused");
-
-  button.disabled = true;
-
-  assert_not_equals(document.activeElement, button, "After disabling, the button must no longer be focused");
-  assert_equals(document.activeElement, document.body, "After disabling, the body must be focused");
-
+promise_test(async t => {
+  const button = document.querySelector("#button6");
+  return await runTestAsync(t, button, () => button.disabled = true);
 }, "Disabling the active element (making it expressly inert)");
 
-test(() => {
+test(t => {
   const button = document.querySelector("#button2");
-  button.focus();
+  runTestSync(t, button, () => button.hidden = true);
+}, "Hiding the active element [sync]");
 
-  assert_equals(document.activeElement, button, "Sanity check: the button must start focused");
-
-  button.hidden = true;
-
-  assert_not_equals(document.activeElement, button, "After hiding, the button must no longer be focused");
-  assert_equals(document.activeElement, document.body, "After hiding, the body must be focused");
-
+promise_test(async t => {
+  const button = document.querySelector("#button7");
+  return await runTestAsync(t, button, () => button.hidden = true);
 }, "Hiding the active element");
 
-test(() => {
+test(t => {
   const button = document.querySelector("#button3");
-  button.focus();
+  runTestSync(t, button, () => button.remove());
+}, "Removing the active element from the DOM [sync]");
 
-  assert_equals(document.activeElement, button, "Sanity check: the button must start focused");
-
-  button.remove();
-
-  assert_not_equals(document.activeElement, button, "After removing, the button must no longer be focused");
-  assert_equals(document.activeElement, document.body, "After removing, the body must be focused");
-
+promise_test(async t => {
+  const button = document.querySelector("#button8");
+  return await runTestAsync(t, button, () => button.remove());
 }, "Removing the active element from the DOM");
 
-test(() => {
+test(t => {
   const fieldset = document.querySelector("#fieldset1");
   const button = document.querySelector("#button4");
-  button.focus();
-  assert_equals(document.activeElement, button, "Sanity check: the button must start focused");
+  runTestSync(t, button, () => fieldset.disabled = true);
+}, "Disabling <fieldset> affects its descendants [sync]");
 
-  fieldset.disabled = true;
-
-  assert_not_equals(document.activeElement, button, "After disabling ancestor fieldset, the button must no longer be focused");
-  assert_equals(document.activeElement, document.body, "After disabling ancestor fieldset, the body must be focused");
+promise_test(async t => {
+  const fieldset = document.querySelector("#fieldset3");
+  const button = document.querySelector("#button9");
+  return await runTestAsync(t, button, () => fieldset.disabled = true);
 }, "Disabling <fieldset> affects its descendants");
 
-test(() => {
+test(t => {
   const fieldset = document.querySelector("#fieldset2");
   const button = document.querySelector("#button5");
-  button.focus();
-  assert_equals(document.activeElement, button, "Sanity check: the button must start focused");
+  const fn = () => fieldset.insertBefore(document.createElement("legend"), fieldset.firstChild);
+  runTestSync(t, button, fn)
+}, "Changing the first legend element in disabled <fieldset> [sync]");
 
-  fieldset.insertBefore(document.createElement("legend"), fieldset.firstChild);
-
-  assert_not_equals(document.activeElement, button, "After changing a legend element, the button must no longer be focused");
-  assert_equals(document.activeElement, document.body, "After changing a legend element, the body must be focused");
+promise_test(async t => {
+  const fieldset = document.querySelector("#fieldset4");
+  const button = document.querySelector("#button10");
+  const fn = () => fieldset.insertBefore(document.createElement("legend"), fieldset.firstChild);
+  return await runTestAsync(t, button, fn)
 }, "Changing the first legend element in disabled <fieldset>");
 
-test(() => {
-  const div = document.querySelector("#div");
-  div.focus();
+test(t => {
+  const div = document.querySelector("#div1");
+  runTestSync(t, div, () => div.removeAttribute("tabindex"));
+}, "Removing the tabindex attribute from a div [sync]");
 
-  assert_equals(document.activeElement, div, "Sanity check: the div must start focused");
-
-  div.removeAttribute("tabindex");
-
-  assert_not_equals(document.activeElement, div, "After removing tabindex, the div must no longer be focused");
-  assert_equals(document.activeElement, document.body, "After removing tabindex, the body must be focused");
-
+promise_test(async t => {
+  const div = document.querySelector("#div2");
+  return await runTestAsync(t, div, () => div.removeAttribute("tabindex"));
 }, "Removing the tabindex attribute from a div");
 
-test(() => {
-  const div = document.querySelector("#editable");
-  div.focus();
-  assert_equals(document.activeElement, div, "Sanity check: the div must start focused");
+test(t => {
+  const div = document.querySelector("#editable1");
+  runTestSync(t, div, () => div.contentEditable = false);
+}, "Disabling contenteditable [sync]");
 
-  div.contentEditable = false;
-
-  assert_not_equals(document.activeElement, div, "After disabling contentEditable, the div must no longer be focused");
-  assert_equals(document.activeElement, document.body, "After disabling contentEditable, the body must be focused");
+promise_test(async t => {
+  const div = document.querySelector("#editable2");
+  return await runTestAsync(t, div, () => div.contentEditable = false);
 }, "Disabling contenteditable");
 </script>

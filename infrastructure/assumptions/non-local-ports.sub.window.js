@@ -8,7 +8,7 @@
 //
 // More tests can be found in `fetch/private-network-access/`.
 
-const kPorts = {
+const alternatePorts = {
   httpPrivate:  "{{ports[http-private][0]}}",
   httpsPrivate: "{{ports[https-private][0]}}",
   httpPublic:   "{{ports[http-public][0]}}",
@@ -37,45 +37,49 @@ function resolveUrl(url, options) {
   return result;
 }
 
-const kOptions = {
+const alternateOrigins = {
   httpPrivate: {
     protocol: "http:",
-    port: kPorts.httpPrivate,
+    port: alternatePorts.httpPrivate,
   },
   httpsPrivate: {
     protocol: "https:",
-    port: kPorts.httpsPrivate,
+    port: alternatePorts.httpsPrivate,
   },
   httpPublic: {
     protocol: "http:",
-    port: kPorts.httpPublic,
+    port: alternatePorts.httpPublic,
   },
   httpsPublic: {
     protocol: "https:",
-    port: kPorts.httpsPublic,
+    port: alternatePorts.httpsPublic,
   },
 };
 
 promise_test(async () => {
-  const url = resolveUrl("/common/blank-with-cors.html", kOptions.httpsPrivate);
+  const url =
+    resolveUrl("/common/blank-with-cors.html", alternateOrigins.httpsPrivate);
   const response = await fetch(url);
   assert_true(response.ok);
 }, "Fetch from https-private port works.");
 
 promise_test(async () => {
-  const url = resolveUrl("/common/blank-with-cors.html", kOptions.httpPrivate);
+  const url =
+    resolveUrl("/common/blank-with-cors.html", alternateOrigins.httpPrivate);
   const response = await fetch(url);
   assert_true(response.ok);
 }, "Fetch from http-private port works.");
 
 promise_test(async () => {
-  const url = resolveUrl("/common/blank-with-cors.html", kOptions.httpsPublic);
+  const url =
+    resolveUrl("/common/blank-with-cors.html", alternateOrigins.httpsPublic);
   const response = await fetch(url);
   assert_true(response.ok);
 }, "Fetch from https-public port works.");
 
 promise_test(async () => {
-  const url = resolveUrl("/common/blank-with-cors.html", kOptions.httpPublic);
+  const url =
+    resolveUrl("/common/blank-with-cors.html", alternateOrigins.httpPublic);
   const response = await fetch(url);
   assert_true(response.ok);
 }, "Fetch from http-public port works.");
@@ -87,8 +91,8 @@ promise_test(async (t) => {
 
   const iframe = await new Promise((resolve, reject) => {
     const iframe = document.createElement("iframe");
-    iframe.src =
-      resolveUrl("resources/fetch-and-post-result.html", kOptions.httpPublic);
+    iframe.src = resolveUrl("resources/fetch-and-post-result.html",
+                            alternateOrigins.httpPublic);
 
     iframe.onload = () => { resolve(iframe); };
     iframe.onerror = reject;

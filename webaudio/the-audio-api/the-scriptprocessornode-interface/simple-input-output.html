@@ -56,7 +56,7 @@
 
             // Start and stop the source.  The stop time is fairly arbitrary,
             // but use a render quantum boundary for simplicity.
-            const stopFrame = RENDER_QUANTUM_FRAMES;
+            const stopFrame = renderQuantumFrames(context);
             src.start(0);
             src.stop(stopFrame / context.sampleRate);
 

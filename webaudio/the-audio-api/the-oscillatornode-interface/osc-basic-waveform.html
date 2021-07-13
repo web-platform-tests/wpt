@@ -17,8 +17,10 @@
       // are general and apply to any browser.
       const sampleRate = 44100;
 
-      // Only need a few samples for testing, so just use two renders.
-      const durationFrames = 2 * RENDER_QUANTUM_FRAMES;
+      // Only need a few samples for testing.  Note: change the
+      // duration here will very likely change the thresholds for the
+      // tests.
+      const durationFrames = 2 * 1024;
 
       let audit = Audit.createTaskRunner();
 
@@ -50,8 +52,8 @@
               a1: 0,
               b1: 1,
               prefix: 'Sine',
-              threshold: 1.8045e-6,
-              snrThreshold: 118.91
+              threshold: 3.1107e-6,
+              snrThreshold: 117.62
             });
             task.done();
           });
@@ -76,8 +78,8 @@
               a1: 0,
               b1: 1,
               prefix: 'Sine',
-              threshold: 4.7684e-7,
-              snrThreshold: 130.95
+              threshold: 6.5566e-7,
+              snrThreshold: 128.96
             });
             task.done();
           });
@@ -158,8 +160,8 @@
               a1: 1,
               b1: 1,
               prefix: 'Custom',
-              threshold: 1.8478e-6,
-              snrThreshold: 122.43
+              threshold: 4.8280e-6,
+              snrThreshold: 117.72
             });
             task.done();
           });

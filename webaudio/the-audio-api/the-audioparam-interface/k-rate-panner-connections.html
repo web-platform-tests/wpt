@@ -62,7 +62,7 @@
       async function testPannerParams(should, options) {
         // Arbitrary sample rate and duration.
         const sampleRate = 8000;
-        const testFrames = 5 * RENDER_QUANTUM_FRAMES;
+        const testFrames = 8000;
         let testDuration = testFrames / sampleRate;
         // Four channels needed because the first two are for the output of
         // the reference panner, and the next two are for the test panner.
@@ -144,19 +144,20 @@
         // Verify output is a stair step because positionX is k-rate,
         // and no other AudioParam is changing.
 
-        for (let k = 0; k < testFrames; k += RENDER_QUANTUM_FRAMES) {
+        const renderSize = renderQuantumFrames(context);
+        for (let k = 0; k < testFrames; k += renderSize) {
           should(
-              actual0.slice(k, k + RENDER_QUANTUM_FRAMES),
+              actual0.slice(k, k + renderSize),
               `Panner: ${options.param}: Channel 0 output[${k}, ${
-                  k + RENDER_QUANTUM_FRAMES - 1}]`)
+                  k + renderSize - 1}]`)
               .beConstantValueOf(actual0[k]);
         }
 
-        for (let k = 0; k < testFrames; k += RENDER_QUANTUM_FRAMES) {
+        for (let k = 0; k < testFrames; k += renderSize) {
           should(
-              actual1.slice(k, k + RENDER_QUANTUM_FRAMES),
+              actual1.slice(k, k + renderSize),
               `Panner: ${options.param}: Channel 1 output[${k}, ${
-                  k + RENDER_QUANTUM_FRAMES - 1}]`)
+                  k + renderSize - 1}]`)
               .beConstantValueOf(actual1[k]);
         }
 
@@ -169,7 +170,7 @@
       async function testListenerParams(should, options) {
         // Arbitrary sample rate and duration.
         const sampleRate = 8000;
-        const testFrames = 5 * RENDER_QUANTUM_FRAMES;
+        const testFrames = 8000;
         let testDuration = testFrames / sampleRate;
         // Four channels needed because the first two are for the output of
         // the reference panner, and the next two are for the test panner.
@@ -214,22 +215,24 @@
         let c0 = buffer.getChannelData(0);
         let c1 = buffer.getChannelData(1);
 
+        const renderSize = renderQuantumFrames(context);
+
         // Verify output is a stair step because positionX is k-rate,
         // and no other AudioParam is changing.
 
-        for (let k = 0; k < testFrames; k += RENDER_QUANTUM_FRAMES) {
+        for (let k = 0; k < testFrames; k += renderSize) {
           should(
-              c0.slice(k, k + RENDER_QUANTUM_FRAMES),
+              c0.slice(k, k + renderSize),
               `Listener: ${options.param}: Channel 0 output[${k}, ${
-                  k + RENDER_QUANTUM_FRAMES - 1}]`)
+                  k + renderSize - 1}]`)
               .beConstantValueOf(c0[k]);
         }
 
-        for (let k = 0; k < testFrames; k += RENDER_QUANTUM_FRAMES) {
+        for (let k = 0; k < testFrames; k += renderSize) {
           should(
-              c1.slice(k, k + RENDER_QUANTUM_FRAMES),
+              c1.slice(k, k + renderSize),
               `Listener: ${options.param}: Channel 1 output[${k}, ${
-                  k + RENDER_QUANTUM_FRAMES - 1}]`)
+                  k + renderSize - 1}]`)
               .beConstantValueOf(c1[k]);
         }
       }

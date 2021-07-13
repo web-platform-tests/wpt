@@ -106,7 +106,7 @@
 
             // Apply the filter change at frame |changeFrame| with a new
             // frequency value of |newValue|.
-            let changeFrame = 2 * RENDER_QUANTUM_FRAMES;
+            let changeFrame = 2 * renderQuantumFrames(context);
             let newValue = 750;
 
             context.suspend(changeFrame / context.sampleRate)
@@ -234,7 +234,7 @@
         // Schedule all of the desired changes from |changeList|.
         options.changeList.forEach(change => {
           let changeTime =
-              change.quantum * RENDER_QUANTUM_FRAMES / context.sampleRate;
+              change.quantum * renderQuantumFrames(context) / context.sampleRate;
           let value = change.newValue;
 
           // Just output a message to show what we're doing.

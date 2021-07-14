@@ -76,15 +76,15 @@ function checkResult(scenario, expectation, result) {
     // external <iframe>.
     referrerSource = location.toString();
   }
-  const expectedReferrerUrl =
+  const possibleReferrerUrls =
     referrerUrlResolver[expectation](referrerSource);
 
   // Check the reported URL.
   assert_in_array(result.referrer,
-                  expectedReferrerUrl,
+                  possibleReferrerUrls,
                   "document.referrer");
   assert_in_array(result.headers.referer,
-                  expectedReferrerUrl,
+                  possibleReferrerUrls,
                   "HTTP Referer header");
 }
 

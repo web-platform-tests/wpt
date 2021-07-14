@@ -5165,7 +5165,7 @@
     "input": "http://1.2.3.4./",
     "base": "http://other.com/",
     "href": "http://1.2.3.4/",
-    "origin": "http://1.2.3.4/",
+    "origin": "http://1.2.3.4",
     "protocol": "http:",
     "username": "",
     "password": "",

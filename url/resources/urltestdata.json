@@ -3896,21 +3896,6 @@
     "search": "",
     "hash": ""
   },
-  {
-    "input": "http://0..0x300/",
-    "base": "about:blank",
-    "href": "http://0..0x300/",
-    "origin": "http://0..0x300",
-    "protocol": "http:",
-    "username": "",
-    "password": "",
-    "host": "0..0x300",
-    "hostname": "0..0x300",
-    "port": "",
-    "pathname": "/",
-    "search": "",
-    "hash": ""
-  },
   "Broken IPv6",
   {
     "input": "http://[www.google.com]/",
@@ -5301,31 +5286,6 @@
     "password": "",
     "host": "255.255.255.255",
     "hostname": "255.255.255.255",
-    "port": "",
-    "pathname": "/",
-    "search": "",
-    "hash": ""
-  },
-  {
-    "input": "http://0xffffffff1",
-    "base": "http://other.com/",
-    "failure": true
-  },
-  {
-    "input": "http://256.256.256.256",
-    "base": "http://other.com/",
-    "failure": true
-  },
-  {
-    "input": "http://256.256.256.256.256",
-    "base": "http://other.com/",
-    "href": "http://256.256.256.256.256/",
-    "origin": "http://256.256.256.256.256",
-    "protocol": "http:",
-    "username": "",
-    "password": "",
-    "host": "256.256.256.256.256",
-    "hostname": "256.256.256.256.256",
     "port": "",
     "pathname": "/",
     "search": "",
@@ -7299,20 +7259,6 @@
   },
   "Invalid IPv4 radix digits",
   {
-    "input": "http://0177.0.0.0189",
-    "base": "about:blank",
-    "href": "http://0177.0.0.0189/",
-    "protocol": "http:",
-    "username": "",
-    "password": "",
-    "host": "0177.0.0.0189",
-    "hostname": "0177.0.0.0189",
-    "port": "",
-    "pathname": "/",
-    "search": "",
-    "hash": ""
-  },
-  {
     "input": "http://0x7f.0.0.0x7g",
     "base": "about:blank",
     "href": "http://0x7f.0.0.0x7g/",
@@ -8030,6 +7976,42 @@
   {
     "input": "?",
     "base": null,
+    "failure": true
+  },
+  "Last component looks like a number, but not valid IPv4",
+  {
+    "input": "http://1.2.3.4.5",
+    "base": "http://other.com/",
+    "failure": true
+  },
+  {
+    "input": "http://1.2.3.4.5.",
+    "base": "http://other.com/",
+    "failure": true
+  },
+  {
+    "input": "http://0..0x300/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "http://0xffffffff1",
+    "base": "http://other.com/",
+    "failure": true
+  },
+  {
+    "input": "http://256.256.256.256",
+    "base": "http://other.com/",
+    "failure": true
+  },
+  {
+    "input": "http://256.256.256.256.256",
+    "base": "http://other.com/",
+    "failure": true
+  },
+  {
+    "input": "http://0177.0.0.0189",
+    "base": "about:blank",
     "failure": true
   }
 ]

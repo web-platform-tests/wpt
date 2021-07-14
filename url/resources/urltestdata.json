@@ -5292,6 +5292,16 @@
     "hash": ""
   },
   {
+    "input": "http://0xffffffff1",
+    "base": "http://other.com/",
+    "failure": true
+  },
+  {
+    "input": "http://256.256.256.256",
+    "base": "http://other.com/",
+    "failure": true
+  },
+  {
     "input": "https://0x.0x.0",
     "base": "about:blank",
     "href": "https://0.0.0.0/",
@@ -7992,16 +8002,6 @@
   {
     "input": "http://0..0x300/",
     "base": "about:blank",
-    "failure": true
-  },
-  {
-    "input": "http://0xffffffff1",
-    "base": "http://other.com/",
-    "failure": true
-  },
-  {
-    "input": "http://256.256.256.256",
-    "base": "http://other.com/",
     "failure": true
   },
   {

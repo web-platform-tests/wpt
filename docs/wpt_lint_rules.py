@@ -31,7 +31,7 @@ class WPTLintRules(Directive):
                 """wpt-lint-rules: unable to resolve the module at "{}".""".format(self.module_specifier)
             )
 
-        for binding_name, value in module.__dict__.iteritems():
+        for binding_name, value in module.__dict__.items():
             if hasattr(value, "__abstractmethods__") and len(value.__abstractmethods__):
                 continue
 

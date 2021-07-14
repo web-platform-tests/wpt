@@ -1,9 +1,9 @@
 import os
 import subprocess
 import sys
-from six.moves.urllib.parse import urljoin
 from collections import defaultdict
-from six import iteritems, string_types
+from typing import Any, ClassVar, Dict, Type
+from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
 
@@ -83,7 +83,7 @@ def get_run_info(metadata_root, product, **kwargs):
     return RunInfo(metadata_root, product, **kwargs)
 
 
-class RunInfo(dict):
+class RunInfo(Dict[str, Any]):
     def __init__(self, metadata_root, product, debug,
                  browser_version=None,
                  browser_channel=None,
@@ -150,9 +150,9 @@ def server_protocol(manifest_item):
 
 class Test(object):
 
-    result_cls = None
-    subtest_result_cls = None
-    test_type = None
+    result_cls = None  # type: ClassVar[Type[Result]]
+    subtest_result_cls = None  # type: ClassVar[Type[SubtestResult]]
+    test_type = None  # type: ClassVar[str]
 
     default_timeout = 10  # seconds
     long_timeout = 60  # seconds
@@ -307,7 +307,7 @@ class Test(object):
         rv = {}
         for meta in self.itermeta(None):
             threshold = meta.leak_threshold
-            for key, value in iteritems(threshold):
+            for key, value in threshold.items():
                 if key not in rv:
                     rv[key] = value
         return rv
@@ -349,7 +349,7 @@ class Test(object):
 
         try:
             expected = metadata.get("expected")
-            if isinstance(expected, string_types):
+            if isinstance(expected, str):
                 return expected
             elif isinstance(expected, list):
                 return expected[0]

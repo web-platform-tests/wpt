@@ -43,19 +43,28 @@ The wptserver implements a number of Python APIs for controlling traffic.
    /tools/wptserve/docs/stash
 ```
 
-### Python3 compatibility
+### Importing local helper scripts
 
-Even though Python3 is not fully supported at this point, some work is being
-done to add compatibility for it. This is why you can see in multiple places
-the use of the `six` python module which is meant to provide a set of simple
-utilities that work for both generation of python (see
-[docs](https://six.readthedocs.io/)). The module is vendored in
-tools/third_party/six/six.py.
+Python file handlers may import local helper scripts, e.g. to share logic
+across multiple handlers. To avoid module name collision, however, imports must
+be relative to the root of WPT. For example, in an imaginary
+`cookies/resources/myhandler.py`:
 
-When an handler is added, it should be at least syntax-compatible with Python3.
-You can check that by running:
+```python
+# DON'T DO THIS
+import myhelper
+
+# DO THIS
+from cookies.resources import myhelper
 ```
-python3 -m py_compile <path/to/handler.py>
+
+Only absolute imports are allowed; do not use relative imports. If the path to
+your helper script includes a hyphen (`-`), you can use `import_module` from
+`importlib` to import it. For example:
+
+```python
+import importlib
+myhelper = importlib.import_module('common.security-features.myhelper')
 ```
 
 ## Example: Dynamic HTTP headers

@@ -7,11 +7,11 @@
 <script src=/resources/testharnessreport.js></script>
 <script src=/common/get-host-info.sub.js></script>
 <script src="/common/utils.js"></script>
-<script src="../resources/dispatcher.js"></script>
-<script src="../resources/try-access.js"></script>
+<script src="/html/cross-origin-opener-policy/resources/dispatcher.js"></script>
+<script src="/html/cross-origin-opener-policy/reporting/resources/try-access.js"></script>
 <script>
 
-const directory = "/html/cross-origin-opener-policy/reporting";
+const directory = "/html/cross-origin-opener-policy";
 const executor_path = directory + "/resources/executor.html?pipe=";
 const redirect_path = directory + "/resources/redirect.py?";
 const same_origin = get_host_info().HTTPS_ORIGIN;
@@ -23,7 +23,7 @@ let runTest = (openee_redirect, name) => promise_test(async t => {
   const openee_token = token();
   const opener_token = token(); // The current test window.
 
-  const opener_url = location.href;
+  const opener_origin = location.origin + '/';
 
   const reportTo = reportToHeaders(report_token);
   const openee_url = cross_origin + executor_path +
@@ -59,7 +59,7 @@ let runTest = (openee_redirect, name) => promise_test(async t => {
   assert_equals(report.body.openerURL, "");
   assert_equals(report.body.openeeURL, undefined);
   assert_equals(report.body.otherDocumentURL, undefined);
-  assert_equals(report.body.referrer, opener_url);
+  assert_equals(report.body.referrer, opener_origin);
   assert_equals(report.body.initialPopupURL, undefined);
 }, name);
 

@@ -1,5 +1,5 @@
 
-const directory = "/html/cross-origin-opener-policy/reporting/resources";
+const directory = "/html/cross-origin-opener-policy/resources";
 const executor_path = directory + "/executor.html?pipe=";
 const coep_header = '|header(Cross-Origin-Embedder-Policy,require-corp)';
 
@@ -27,7 +27,7 @@ function isCoopOpenerBreakageReport(report) {
 
 async function pollReports(endpoint) {
   const res = await fetch(
-    `${directory}/report.py?endpoint=${endpoint.name}`,
+    `/reporting/resources/report.py?endpoint=${endpoint.name}`,
       {cache: 'no-store'});
   if (res.status !== 200) {
     return;
@@ -143,7 +143,7 @@ function getReportEndpoints(host) {
         'group': `${reportEndpoint.name}`,
         'max_age': 3600,
         'endpoints': [
-          {'url': `${host}/html/cross-origin-opener-policy/reporting/resources/report.py?endpoint=${reportEndpoint.name}`
+          {'url': `${host}/reporting/resources/report.py?endpoint=${reportEndpoint.name}`
           },
         ]
       };
@@ -171,7 +171,8 @@ function navigationReportingTest(testName, host, coop, coep, coopRo, coepRo,
       `|header(Cross-Origin-Embedder-Policy-Report-Only,${encodeURIComponent(coepRo)})`+
       `&uuid=${executorToken}`;
       const openee = window.open(openee_url);
-      t.add_cleanup(() => send(5, "window.close()"));
+      const uuid = token();
+      t.add_cleanup(() => send(uuid, "window.close()"));
 
       // 1. Make sure the new document is loaded.
       send(executorToken, `

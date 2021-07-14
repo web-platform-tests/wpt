@@ -14,144 +14,242 @@ const MAC_FONTS = [
     postscriptName: 'Monaco',
     fullName: 'Monaco',
     family: 'Monaco',
+    style: 'Regular',
     label: TEST_SIZE_CATEGORY.small,
     expectedTables: [
       // Tables related to TrueType.
-      'cvt ', 'glyf', 'loca', 'prep', 'gasp',
+      'cvt ',
+      'glyf',
+      'loca',
+      'prep',
+      'gasp',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 400,
   },
   {
     postscriptName: 'Menlo-Regular',
     fullName: 'Menlo Regular',
     family: 'Menlo',
+    style: 'Regular',
     label: TEST_SIZE_CATEGORY.medium,
     expectedTables: [
-      'cvt ', 'glyf', 'loca', 'prep',
+      'cvt ',
+      'glyf',
+      'loca',
+      'prep',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 400,
   },
   {
     postscriptName: 'Menlo-Bold',
     fullName: 'Menlo Bold',
     family: 'Menlo',
+    style: 'Bold',
     label: TEST_SIZE_CATEGORY.medium,
     expectedTables: [
-      'cvt ', 'glyf', 'loca', 'prep',
+      'cvt ',
+      'glyf',
+      'loca',
+      'prep',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 700,
   },
   {
     postscriptName: 'Menlo-BoldItalic',
     fullName: 'Menlo Bold Italic',
     family: 'Menlo',
+    style: 'Bold Italic',
     label: TEST_SIZE_CATEGORY.medium,
     expectedTables: [
-      'cvt ', 'glyf', 'loca', 'prep',
+      'cvt ',
+      'glyf',
+      'loca',
+      'prep',
     ],
+    italic: true,
+    stretch: 1,
+    weight: 700,
   },
   // Indic.
   {
     postscriptName: 'GujaratiMT',
     fullName: 'Gujarati MT',
     family: 'Gujarati MT',
+    style: 'Regular',
     label: TEST_SIZE_CATEGORY.small,
     expectedTables: [
-      'cvt ', 'glyf', 'loca', 'prep',
+      'cvt ',
+      'glyf',
+      'loca',
+      'prep',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 400,
   },
   {
     postscriptName: 'GujaratiMT-Bold',
     fullName: 'Gujarati MT Bold',
     family: 'Gujarati MT',
+    style: 'Bold',
     label: TEST_SIZE_CATEGORY.small,
     expectedTables: [
-      'cvt ', 'glyf', 'loca', 'prep',
+      'cvt ',
+      'glyf',
+      'loca',
+      'prep',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 700,
   },
   {
     postscriptName: 'DevanagariMT',
     fullName: 'Devanagari MT',
     family: 'Devanagari MT',
+    style: 'Regular',
     label: TEST_SIZE_CATEGORY.small,
     expectedTables: [
-      'cvt ', 'glyf', 'loca', 'prep',
+      'cvt ',
+      'glyf',
+      'loca',
+      'prep',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 400,
   },
   {
     postscriptName: 'DevanagariMT-Bold',
     fullName: 'Devanagari MT Bold',
     family: 'Devanagari MT',
+    style: 'Bold',
     label: TEST_SIZE_CATEGORY.small,
     expectedTables: [
-      'cvt ', 'glyf', 'loca', 'prep',
+      'cvt ',
+      'glyf',
+      'loca',
+      'prep',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 700,
   },
   // Japanese.
   {
     postscriptName: 'HiraMinProN-W3',
     fullName: 'Hiragino Mincho ProN W3',
     family: 'Hiragino Mincho ProN',
+    style: 'W3',
     label: TEST_SIZE_CATEGORY.medium,
     expectedTables: [
-      'CFF ', 'VORG',
+      'CFF ',
+      'VORG',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 400,
   },
   {
     postscriptName: 'HiraMinProN-W6',
     fullName: 'Hiragino Mincho ProN W6',
     family: 'Hiragino Mincho ProN',
+    style: 'W6',
     label: TEST_SIZE_CATEGORY.medium,
     expectedTables: [
-      'CFF ', 'VORG',
+      'CFF ',
+      'VORG',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 700,
   },
   // Korean.
   {
     postscriptName: 'AppleGothic',
     fullName: 'AppleGothic Regular',
     family: 'AppleGothic',
+    style: 'Regular',
     label: TEST_SIZE_CATEGORY.medium,
     expectedTables: [
-      'cvt ', 'glyf', 'loca',
+      'cvt ',
+      'glyf',
+      'loca',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 300,
   },
   {
     postscriptName: 'AppleMyungjo',
     fullName: 'AppleMyungjo Regular',
     family: 'AppleMyungjo',
+    style: 'Regular',
     label: TEST_SIZE_CATEGORY.medium,
     expectedTables: [
-      'cvt ', 'glyf', 'loca',
+      'cvt ',
+      'glyf',
+      'loca',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 400,
   },
   // Chinese.
   {
     postscriptName: 'STHeitiTC-Light',
     fullName: 'Heiti TC Light',
     family: 'Heiti TC',
+    style: 'Light',
     label: TEST_SIZE_CATEGORY.large,
     expectedTables: [
-      'cvt ', 'glyf', 'loca', 'prep',
+      'cvt ',
+      'glyf',
+      'loca',
+      'prep',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 400,
   },
   {
-   postscriptName: 'STHeitiTC-Medium',
+    postscriptName: 'STHeitiTC-Medium',
     fullName: 'Heiti TC Medium',
     family: 'Heiti TC',
+    style: 'Medium',
     label: TEST_SIZE_CATEGORY.large,
     expectedTables: [
-      'cvt ', 'glyf', 'loca', 'prep',
+      'cvt ',
+      'glyf',
+      'loca',
+      'prep',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 700,
   },
   // Bitmap.
   {
     postscriptName: 'AppleColorEmoji',
     fullName: 'Apple Color Emoji',
     family: 'Apple Color Emoji',
+    style: 'Regular',
     label: TEST_SIZE_CATEGORY.large,
     expectedTables: [
-      'glyf', 'loca',
+      'glyf',
+      'loca',
       // Tables related to Bitmap Glyphs.
       'sbix',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 400,
   },
 ];
 
@@ -160,6 +258,7 @@ const WIN_FONTS = [
     postscriptName: 'Verdana',
     fullName: 'Verdana',
     family: 'Verdana',
+    style: 'Regular',
     label: TEST_SIZE_CATEGORY.small,
     expectedTables: [
       // Tables related to TrueType.
@@ -169,11 +268,15 @@ const WIN_FONTS = [
       'prep',
       'gasp',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 400,
   },
   {
     postscriptName: 'Verdana-Bold',
     fullName: 'Verdana Bold',
     family: 'Verdana',
+    style: 'Bold',
     label: TEST_SIZE_CATEGORY.small,
     expectedTables: [
       // Tables related to TrueType.
@@ -183,11 +286,15 @@ const WIN_FONTS = [
       'prep',
       'gasp',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 700,
   },
   {
     postscriptName: 'Verdana-Italic',
     fullName: 'Verdana Italic',
     family: 'Verdana',
+    style: 'Italic',
     label: TEST_SIZE_CATEGORY.small,
     expectedTables: [
       // Tables related to TrueType.
@@ -197,12 +304,16 @@ const WIN_FONTS = [
       'prep',
       'gasp',
     ],
+    italic: true,
+    stretch: 1,
+    weight: 400,
   },
   // Korean.
   {
     postscriptName: 'MalgunGothicBold',
     fullName: 'Malgun Gothic Bold',
     family: 'Malgun Gothic',
+    style: 'Bold',
     label: TEST_SIZE_CATEGORY.medium,
     expectedTables: [
       // Tables related to TrueType.
@@ -212,19 +323,30 @@ const WIN_FONTS = [
       'prep',
       'gasp',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 700,
   },
   // Chinese.
   {
     postscriptName: 'MicrosoftYaHei',
     fullName: 'Microsoft YaHei',
     family: 'Microsoft YaHei',
+    style: 'Regular',
     label: TEST_SIZE_CATEGORY.medium,
+    italic: false,
+    stretch: 1,
+    weight: 400,
   },
   {
     postscriptName: 'MicrosoftYaHei-Bold',
     fullName: 'Microsoft YaHei Bold',
     family: 'Microsoft YaHei',
+    style: 'Bold',
     label: TEST_SIZE_CATEGORY.medium,
+    italic: false,
+    stretch: 1,
+    weight: 700,
   },
 ];
 
@@ -233,6 +355,7 @@ const LINUX_FONTS = [
     postscriptName: 'Ahem',
     fullName: 'Ahem',
     family: 'Ahem',
+    style: 'Regular',
     label: TEST_SIZE_CATEGORY.small,
     expectedTables: [
       // Tables related to TrueType.
@@ -242,6 +365,9 @@ const LINUX_FONTS = [
       'prep',
       'gasp',
     ],
+    italic: false,
+    stretch: 1,
+    weight: 400,
   },
 ];
 
@@ -306,14 +432,14 @@ function getMoreExpectedTables(expectations) {
   return output;
 }
 
-async function filterEnumeration(iterator, expectedFonts) {
+async function filterEnumeration(fonts, expectedFonts) {
   const nameSet = new Set();
   for (const e of expectedFonts) {
     nameSet.add(e.postscriptName);
   }
 
   const output = [];
-  for await (const f of iterator) {
+  for (const f of fonts) {
     if (nameSet.has(f.postscriptName)) {
       output.push(f);
     }
@@ -330,17 +456,20 @@ function assert_fonts_exist(availableFonts, expectedFonts) {
   const postscriptNameSet = new Set();
   const fullNameSet = new Set();
   const familySet = new Set();
+  const styleSet = new Set();
 
   for (const f of expectedFonts) {
     postscriptNameSet.add(f.postscriptName);
     fullNameSet.add(f.fullName);
     familySet.add(f.family);
+    styleSet.add(f.style);
   }
 
   for (const f of availableFonts) {
     postscriptNameSet.delete(f.postscriptName);
     fullNameSet.delete(f.fullName);
     familySet.delete(f.family);
+    styleSet.delete(f.style);
   }
 
   assert_equals(postscriptNameSet.size, 0,
@@ -349,6 +478,25 @@ function assert_fonts_exist(availableFonts, expectedFonts) {
               `Missing Full names: ${setToString(fullNameSet)}.`);
   assert_equals(familySet.size, 0,
               `Missing Families: ${setToString(familySet)}.`);
+  assert_equals(styleSet.size, 0, `Missing Styles: ${setToString(styleSet)}.`);
+}
+
+function assert_postscript_name_exists(
+    availableFonts, postscriptNameSelection) {
+  const postscriptNameSet = new Set(postscriptNameSelection);
+
+  const foundFonts = [];
+  for (const f of availableFonts) {
+    if (postscriptNameSet.has(f.postscriptName)) {
+      foundFonts.push(f.postscriptName);
+    }
+  }
+
+  assert_equals(
+      foundFonts.length, postscriptNameSelection.length,
+      `Expected to only find selected fonts ${
+          JSON.stringify(postscriptNameSelection)}. Instead found: ${
+          JSON.stringify(foundFonts)}`);
 }
 
 function assert_font_has_tables(name, tables, expectedTables) {
@@ -474,6 +622,11 @@ async function simulateUserActivation() {
 
 function font_access_test(test_function, name, properties) {
   return promise_test(async (t) => {
+    if (!isPlatformSupported()) {
+      await promise_rejects_dom(
+          t, 'NotSupportedError', navigator.fonts.query());
+      return;
+    }
     await test_driver.set_permission({name: 'font-access'}, 'granted');
     await simulateUserActivation();
     await test_function(t, name, properties);

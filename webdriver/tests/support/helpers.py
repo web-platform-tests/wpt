@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import collections
 import math
 import sys
 
@@ -104,6 +105,20 @@ def _windows(session, exclude=None):
 def clear_all_cookies(session):
     """Removes all cookies associated with the current active document"""
     session.transport.send("DELETE", "session/%s/cookie" % session.session_id)
+
+
+def deep_update(source, overrides):
+    """
+    Update a nested dictionary or similar mapping.
+    Modify ``source`` in place.
+    """
+    for key, value in overrides.items():
+        if isinstance(value, collections.Mapping) and value:
+            returned = deep_update(source.get(key, {}), value)
+            source[key] = returned
+        else:
+            source[key] = overrides[key]
+    return source
 
 
 def document_dimensions(session):
@@ -221,3 +236,11 @@ def available_screen_size(session):
             screen.availHeight - screen.availTop,
         ];
         """))
+
+def filter_dict(source, d):
+    """Filter `source` dict to only contain same keys as `d` dict.
+
+    :param source: dictionary to filter.
+    :param d: dictionary whose keys determine the filtering.
+    """
+    return {k: source[k] for k in d.keys()}

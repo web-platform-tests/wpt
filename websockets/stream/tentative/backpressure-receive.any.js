@@ -1,10 +1,13 @@
-// META: script=../../websocket.sub.js
+// META: script=../../constants.sub.js
 // META: script=resources/url-constants.js
 // META: global=window,worker
 // META: timeout=long
+// META: variant=?wss
+// META: variant=?wpt_flags=h2
 
 // Allow for this much timer jitter.
 const JITTER_ALLOWANCE_MS = 200;
+const LARGE_MESSAGE_COUNT = 16;
 
 // This test works by using a server WebSocket handler which sends a large
 // message, and then sends a second message with the time it measured the first
@@ -22,8 +25,10 @@ promise_test(async t => {
   // Skip the empty message used to fill the readable queue.
   await reader.read();
 
-  // Skip the large message.
-  await reader.read();
+  // Skip the large messages.
+  for (let i = 0; i < LARGE_MESSAGE_COUNT; ++i) {
+    await reader.read();
+  }
 
   // Read the time it took.
   const { value, done } = await reader.read();

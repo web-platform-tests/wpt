@@ -24,6 +24,9 @@ const evaluators = {
   "the Function constructor"(x) {
     Function(x)();
   },
+  "setTimeout + eval"(x) {
+    setTimeout(eval, 0, x);
+  },
   "reflected inline event handlers"(x) {
     dummyDiv.setAttribute("onclick", x);
     dummyDiv.onclick();

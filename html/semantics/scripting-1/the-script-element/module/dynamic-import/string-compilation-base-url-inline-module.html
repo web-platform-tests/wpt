@@ -23,6 +23,9 @@ const dummyDiv = document.querySelector("#dummy");
 const evaluators = {
   setTimeout,
   eval,
+  "setTimeout + eval"(x) {
+    setTimeout(eval, 0, x);
+  },
   "the Function constructor"(x) {
     Function(x)();
   },

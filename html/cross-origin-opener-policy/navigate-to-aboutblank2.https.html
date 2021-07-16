@@ -120,40 +120,37 @@ COOP: ${opener_COOP_header}, iframe origin: ${iframe_origin}, \
 openee COOP: ${openee_COOP_header}, openee origin: ${openee_origin}.`);
 };
 
-// iframe same-origin with its top-level embedder:
-// initial empty document and about:blank navigations initiated from the
-// same-origin iframe will inherit the COOP from the iframe's top-level embedder.
-
-// Since all navigations of openee are within same-origin pages with the
-// same COOP value, there are no browsing context group switches.
+// The first openee navigation, from initial empty document to
+// cross-origin will not switch the browsing context group, thanks to the
+// same-origin-allow-popups behavior.
+// The second openee navigation, to about:blank, will inherit from the
+// iniatiator's, the iframe, top. Navigating from a COOP: unsafe-none page to
+// a COOP: same-origin-allow-popups page causes a browsing context group
+// switch.
 navigateToAboutBlankTest(
-  coop_same_origin_header,
+  coop_same_origin_allow_popups_header,
   same_origin,
-  coop_same_origin_header,
-  same_origin,
+  coop_unsafe_none_header,
+  cross_origin,
   "",
-  false
+  true
 );
 
-// Since all navigations of openee are within same-origin pages with the
-// same COOP value, there are no browsing context group switches.
-// Test with both COOP and COEP.
-navigateToAboutBlankTest(
-  coop_same_origin_plus_coep_header,
-  same_origin,
-  coop_same_origin_plus_coep_header,
-  same_origin,
-  coep_require_corp_header,
-  false
-);
+// iframe cross-origin with its top-level embedder:
+// initial empty document and about:blank navigations initiated from the
+// cross-origin iframe will default COOP to unsafe-none.
 
-// Since all navigations of openee are within same-origin pages with the
-// same COOP value, there are no browsing context group switches.
+// The navigation from the initial empty document and the cross_origin url
+// does not cause a browsing context group switch
+// (both have COOP: unsafe-none).
+// The navigation from the cross-origin url to about:blank does not cause a
+// browsing context group swich, about:blank defaulted its COOP value to
+// unsafe-none.
 navigateToAboutBlankTest(
   coop_same_origin_allow_popups_header,
-  same_origin,
-  coop_same_origin_allow_popups_header,
-  same_origin,
+  cross_origin,
+  coop_unsafe_none_header,
+  cross_origin,
   "",
   false
 );

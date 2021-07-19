@@ -5,4 +5,5 @@ tools/lint/
 tools/manifest/
 tools/quic/
 tools/serve/
+tools/webtransport/
 tools/wpt/

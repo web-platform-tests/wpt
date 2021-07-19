@@ -1,12 +1,5 @@
 'use strict';
 
-self.methodRejects = (t, obj, methodName, target, args) => {
-  const method = obj[methodName];
-
-  return promise_rejects_js(t, TypeError, method.apply(target, args),
-                         methodName + ' should reject with a TypeError');
-};
-
 self.delay = ms => new Promise(resolve => step_timeout(resolve, ms));
 
 // For tests which verify that the implementation doesn't do something it shouldn't, it's better not to use a

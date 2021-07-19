@@ -72,7 +72,7 @@ def main(product, channel, commit_range, wpt_args):
         logger.info("Running all tests")
 
     wpt_args += [
-        "--log-mach-level=info",
+        "--log-mach-level=debug",
         "--log-mach=-",
         "-y",
         "--no-pause",

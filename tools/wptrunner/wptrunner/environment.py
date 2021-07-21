@@ -274,8 +274,8 @@ class TestEnvironment(object):
 
         if not failed and self.test_server_port:
             for scheme, servers in self.servers.items():
-                # TODO(Hexcles): Find a way to test QUIC's UDP port.
-                if scheme == "quic-transport":
+                # TODO(bashi): Find a way to test QUIC's UDP port.
+                if scheme == "quic-transport" or scheme == "webtransport-h3":
                     continue
                 for port, server in servers:
                     s = socket.socket()

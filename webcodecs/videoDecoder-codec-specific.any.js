@@ -11,7 +11,7 @@ const AV1_DATA = {
     codec: 'av01.0.04M.08',
     codedWidth: 320,
     codedHeight: 240,
-    visibleRegion: {left: 0, top: 0, width: 320, height: 240},
+    visibleRect: {x: 0, y: 0, width: 320, height: 240},
     displayWidth: 320,
     displayHeight: 240,
   },
@@ -30,7 +30,7 @@ const VP8_DATA = {
     codec: 'vp8',
     codedWidth: 320,
     codedHeight: 240,
-    visibleRegion: {left: 0, top: 0, width: 320, height: 240},
+    visibleRect: {x: 0, y: 0, width: 320, height: 240},
     displayWidth: 320,
     displayHeight: 240,
   },
@@ -146,14 +146,17 @@ promise_setup(async () => {
   }[location.search];
 
   // Don't run any tests if the codec is not supported.
+  let supported = false;
   try {
     // TODO(sandersd): To properly support H.264 in AVC format, this should
     // include the `description`. For now this test assumes that H.264 Annex B
     // support is the same as H.264 AVC support.
-    await VideoDecoder.isConfigSupported({codec: data.config.codec});
+    const support =
+        await VideoDecoder.isConfigSupported({codec: data.config.codec});
+    supported = support.supported;
   } catch (e) {
-    assert_implements_optional(false, data.config.codec + ' unsupported');
   }
+  assert_implements_optional(supported, data.config.codec + ' unsupported');
 
   // Fetch the media data and prepare buffers.
   const response = await fetch(data.src);
@@ -196,6 +199,7 @@ promise_test(async t => {
   // which is not yet recognized by the User Agent.
   const config = {
     ...CONFIG,
+    colorSpace: {primaries: 'bt709'},
     futureConfigFeature: 'foo',
   };
 
@@ -208,6 +212,10 @@ promise_test(async t => {
   assert_equals(support.config.codedHeight, config.codedHeight, 'codedHeight');
   assert_equals(support.config.displayAspectWidth, config.displayAspectWidth, 'displayAspectWidth');
   assert_equals(support.config.displayAspectHeight, config.displayAspectHeight, 'displayAspectHeight');
+  assert_equals(support.config.colorSpace.primaries, config.colorSpace.primaries, 'color primaries');
+  assert_equals(support.config.colorSpace.transfer, undefined, 'color transfer');
+  assert_equals(support.config.colorSpace.matrix, undefined, 'color matrix');
+  assert_equals(support.config.colorSpace.fullRange, undefined, 'color range');
   assert_false(support.config.hasOwnProperty('futureConfigFeature'), 'futureConfigFeature');
 
   if (config.description) {
@@ -266,10 +274,8 @@ promise_test(async t => {
   decoder.configure(CONFIG);
 
   // Ensure type value is verified.
-  let chunk = new EncodedVideoChunk(
-      {type: 'key', timestamp: 1, duration: 1, data: CHUNKS[1].data});
-
-  assert_throws_dom('DataError', () => decoder.decode(chunk, 'decode'));
+  assert_equals(CHUNKS[1].type, 'delta');
+  assert_throws_dom('DataError', () => decoder.decode(CHUNKS[1], 'decode'));
 }, 'Decode a non key frame first fails');
 
 promise_test(async t => {
@@ -350,8 +356,7 @@ promise_test(async t => {
   decoder.decode(new EncodedVideoChunk(
       {type: 'key', timestamp: 1, data: new ArrayBuffer(0)}));
 
-  // TODO(sandersd): The promise should be rejected with an exception value.
-  await promise_rejects_exactly(t, undefined, decoder.flush());
+  await promise_rejects_dom(t, 'AbortError', decoder.flush());
 
   assert_equals(errors, 1, 'errors');
   assert_equals(decoder.state, 'closed', 'state');
@@ -375,8 +380,7 @@ promise_test(async t => {
   decoder.decode(CHUNKS[0]);  // Decode keyframe first.
   decoder.decode(createCorruptChunk(2));
 
-  // TODO(sandersd): The promise should be rejected with an exception value.
-  await promise_rejects_exactly(t, undefined, decoder.flush());
+  await promise_rejects_dom(t, 'AbortError', decoder.flush());
 
   assert_less_than_equal(outputs, 1);
   assert_equals(errors, 1, 'errors');
@@ -395,8 +399,7 @@ promise_test(async t => {
 
   // Flush should have been synchronously rejected, with no output() or error()
   // callbacks.
-  // TODO(sandersd): The promise should be rejected with AbortError.
-  await promise_rejects_exactly(t, undefined, flushDone);
+  await promise_rejects_dom(t, 'AbortError', flushDone);
 }, 'Close while decoding corrupt frame');
 
 promise_test(async t => {
@@ -461,8 +464,7 @@ promise_test(async t => {
   });
 
   // Flush should have been synchronously rejected.
-  // TODO(sandersd): The promise should be rejected with AbortError.
-  await promise_rejects_exactly(t, undefined, flushDone);
+  await promise_rejects_dom(t, 'AbortError', flushDone);
 
   assert_equals(outputs, 1, 'outputs');
 }, 'Test reset during flush');

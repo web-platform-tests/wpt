@@ -1,4 +1,5 @@
 // META: script=resources/support.js
+// META: script=resources/ports.sub.js
 //
 // Spec: https://wicg.github.io/private-network-access/#integration-fetch
 //
@@ -10,22 +11,90 @@ setup(() => {
   assert_true(window.isSecureContext);
 });
 
-promise_test(async t => {
-  return fetch("/common/blank.html")
-      .catch(reason => {unreached_func(reason)});
-}, "Local secure page fetches local page.");
+// These tests verify that secure contexts can fetch subresources from all
+// address spaces.
 
-// For the following tests, we go through an iframe, because it is not possible
-// to directly import the test harness from a secured public page.
-promise_test(async t => {
-  let iframe = await appendIframe(t, document,
-      "resources/treat-as-public-address.https.html");
-  let reply = futureMessage();
-  iframe.contentWindow.postMessage("/common/blank.html", "*");
-  assert_equals(await reply, "success");
-}, "Public secure page fetches local page.");
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpsLocal },
+  target: { port: kPorts.httpsLocal },
+  expected: kFetchTestResult.success,
+}), "Local secure context can fetch local subresource.");
 
-// TODO(https://github.com/web-platform-tests/wpt/issues/26166):
-// Add tests for public variations when we are able to fetch resources using a
-// mechanism compatible with WPT guidelines regarding being self-contained.
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpsLocal },
+  target: { port: kPorts.httpsPrivate },
+  expected: kFetchTestResult.success,
+}), "Local secure context can fetch private subresource.");
 
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpsLocal },
+  target: { port: kPorts.httpsPublic },
+  expected: kFetchTestResult.success,
+}), "Local secure context can fetch public subresource.");
+
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpsPrivate },
+  target: { port: kPorts.httpsLocal },
+  expected: kFetchTestResult.success,
+}), "Private secure context can fetch local subresource.");
+
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpsPrivate },
+  target: { port: kPorts.httpsPrivate },
+  expected: kFetchTestResult.success,
+}), "Private secure context can fetch private subresource.");
+
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpsPrivate },
+  target: { port: kPorts.httpsPublic },
+  expected: kFetchTestResult.success,
+}), "Private secure context can fetch public subresource.");
+
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpsPublic },
+  target: { port: kPorts.httpsLocal },
+  expected: kFetchTestResult.success,
+}), "Public secure context can fetch local subresource.");
+
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpsPublic },
+  target: { port: kPorts.httpsPrivate },
+  expected: kFetchTestResult.success,
+}), "Public secure context can fetch private subresource.");
+
+promise_test(t => fetchTest(t, {
+  source: { port: kPorts.httpsPublic },
+  target: { port: kPorts.httpsPublic },
+  expected: kFetchTestResult.success,
+}), "Public secure context can fetch public subresource.");
+
+// These tests verify that documents fetched from the `local` address space yet
+// carrying the `treat-as-public-address` CSP directive are treated as if they
+// had been fetched from the `public` address space.
+
+promise_test(t => fetchTest(t, {
+  source: {
+    port: kPorts.httpsLocal,
+    treatAsPublicAddress: true,
+  },
+  target: { port: kPorts.httpsLocal },
+  expected: kFetchTestResult.success,
+}), "Treat-as-public-address secure context can fetch local subresource.");
+
+promise_test(t => fetchTest(t, {
+  source: {
+    port: kPorts.httpsLocal,
+    treatAsPublicAddress: true,
+  },
+  target: { port: kPorts.httpsPrivate },
+  expected: kFetchTestResult.success,
+}), "Treat-as-public-address secure context can fetch private subresource.");
+
+promise_test(t => fetchTest(t, {
+  source: {
+    port: kPorts.httpsLocal,
+    treatAsPublicAddress: true,
+  },
+  target: { port: kPorts.httpsPublic },
+  expected: kFetchTestResult.success,
+}), "Treat-as-public-address secure context can fetch public subresource.");

@@ -18,6 +18,7 @@ TRAILING WHITESPACE: html/syntax/xmldecl/support/no-version-or-space-or-trailing
 
 ## File types that should never be checked ##
 
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.adts
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.pdf
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.jpg
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.png
@@ -334,6 +335,8 @@ SET TIMEOUT: resources/test/tests/unit/exceptional-cases.html
 SET TIMEOUT: resources/test/tests/unit/exceptional-cases-timeouts.html
 SET TIMEOUT: resources/test/tests/unit/promise_setup.html
 SET TIMEOUT: resources/testharness.js
+SET TIMEOUT: scheduler/tentative/current-task-signal-async-abort.any.js
+SET TIMEOUT: scheduler/tentative/current-task-signal-async-priority.any.js
 
 # setTimeout use in reftests
 SET TIMEOUT: acid/acid3/test.html
@@ -814,3 +817,5 @@ DUPLICATE-BASENAME-PATH: dom/nodes/ParentNode-querySelector-All-content.html
 DUPLICATE-BASENAME-PATH: dom/nodes/ParentNode-querySelector-All-content.xht
 DUPLICATE-BASENAME-PATH: svg/struct/reftests/reference/green-100x100.html
 DUPLICATE-BASENAME-PATH: svg/struct/reftests/reference/green-100x100.svg
+
+SET TIMEOUT: mediacapture-insertable-streams/MediaStreamTrackProcessor-video.https.html

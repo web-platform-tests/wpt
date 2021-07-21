@@ -884,6 +884,11 @@ class WebTransportH3Daemon(object):
         if self.proc.poll():
             sys.exit(1)
 
+    def stop(self):
+        if self.proc:
+            self.proc.terminate()
+        self.proc = None
+
 
 def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
     try:

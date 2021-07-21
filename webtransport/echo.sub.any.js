@@ -1,6 +1,5 @@
+// META: global=window,worker
 // META: script=/common/get-host-info.sub.js
-
-// TODO(bashi): Run this test on workers as well.
 
 promise_test(async t => {
     const encoder = new TextEncoder();

@@ -1,8 +1,7 @@
 // META: global=window,worker
 // META: script=../resources/utils.js
 
-function streamBody(reader, test) {
-  let count = 0;
+function streamBody(reader, test, count = 0) {
   return reader.read().then(function(data) {
     if (!data.done && count < 2) {
       count += 1;

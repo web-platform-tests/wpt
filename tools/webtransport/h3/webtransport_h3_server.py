@@ -4,6 +4,7 @@ import asyncio
 import logging
 import os
 import traceback
+from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional, Tuple, Set
 
 from aioquic.asyncio import QuicConnectionProtocol, serve
@@ -101,8 +102,8 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         self._handler.session_established()
 
     def _create_event_handler(self, session_id: int, path: bytes, request_headers: Dict[bytes, bytes]) -> EventHandler:
-        path = path.decode()
-        file_path = os.path.join(handlers_path, path[1:])
+        parsed = urlparse(path.decode())
+        file_path = os.path.join(handlers_path, parsed.path.lstrip('/'))
         callbacks = {"__file__": file_path}
         with open(file_path) as f:
             exec(compile(f.read(), path, "exec"), callbacks)

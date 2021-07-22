@@ -472,3 +472,20 @@ promise_test(async () => {
   assert_equals(view2.byteLength, 8);
   assert_equals(view2[7], 0x02);
 }, 'ReadableStream with byte source: enqueue(), then readFully() with smaller views');
+
+promise_test(async t => {
+  const stream = new ReadableStream({
+    start(c) {
+      c.enqueue(new Uint8Array([0xaa, 0xbb, 0xcc]));
+      c.close();
+    },
+    pull: t.unreached_func('pull() should not be called'),
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+
+  await promise_rejects_js(t, TypeError, reader.readFully(new Uint16Array(2)), 'readFully() must fail');
+  await promise_rejects_js(t, TypeError, reader.closed, 'reader.closed should reject');
+}, 'ReadableStream with byte source: readFully() with 2-element Uint16Array on close()-d stream ' +
+   'with 3 byte enqueue()-d must fail');

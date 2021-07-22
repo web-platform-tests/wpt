@@ -93,12 +93,6 @@ function popupCoopBySwTest(test_name,
 
     // From the opener point of view: the openee must appear closed shortly
     // after the popup navigation commit.
-    const openee_closed = new Promise(resolve => {
-      setInterval(() => {
-        if (openee.closed)
-          resolve();
-      }, 100);
-    });
-    await openee_closed;
+    await t.step_wait(() => openee.closed === true);
   }, test_name);
 }

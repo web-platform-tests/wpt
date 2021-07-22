@@ -5,14 +5,14 @@ import signal
 import sys
 import traceback
 from urllib.parse import urlparse
-from typing import Any, Dict, List, Optional, Tuple, Set
+from typing import Any, Dict, List, Optional, Tuple
 
 from aioquic.asyncio import QuicConnectionProtocol, serve
 from aioquic.h3.connection import H3_ALPN, H3Connection
 from aioquic.h3.events import H3Event, HeadersReceived, WebTransportStreamDataReceived, DatagramReceived
 from aioquic.quic.configuration import QuicConfiguration
 from aioquic.quic.connection import stream_is_unidirectional
-from aioquic.quic.events import QuicEvent, ProtocolNegotiated, StreamDataReceived
+from aioquic.quic.events import QuicEvent, ProtocolNegotiated
 from aioquic.tls import SessionTicket
 from aioquic.quic.packet import QuicErrorCode
 
@@ -28,8 +28,6 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         self._handler: Optional[EventHandler] = None
         self._http: Optional[H3Connection] = None
 
-        self._bidirectional_streams: Set[int] = set()
-
         def handle_signal(*_):
             self.close()
             sys.exit(0)
@@ -39,12 +37,6 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
     def quic_event_received(self, event: QuicEvent) -> None:
         if isinstance(event, ProtocolNegotiated):
             self._http = H3Connection(self._quic, enable_webtransport=True)
-
-        # TODO(bashi): Remove this once aioquic fixes a bug.
-        if isinstance(event, StreamDataReceived):
-            if event.stream_id in self._bidirectional_streams:
-                self._handler.stream_data_received(
-                    stream_id=event.stream_id, data=event.data, stream_ended=event.end_stream)
 
         if self._http is not None:
             for http_event in self._http.handle_event(event):
@@ -154,7 +146,6 @@ class WebTransportSession(object):
         """
         stream_id = self._http.create_webtransport_stream(
             session_id=self.session_id, is_unidirectional=False)
-        self._protocol._bidirectional_streams.add(stream_id)
         return stream_id
 
     def send_stream_data(self, stream_id: int, data: bytes, end_stream: bool = False) -> None:

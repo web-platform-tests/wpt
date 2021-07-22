@@ -6,7 +6,7 @@ const PORT = '{{ports[webtransport-h3][0]}}';
 const BASE = `https://${HOST}:${PORT}`;
 
 // TODO(bashi): Figure out why connections sometimes lost.
-async function create_webtransport() {
+async function create_webtransport(t) {
     const RETRY_COUNT = 3;
     const RETRY_DELAY_MS = 500;
     for (let i = 0; i < RETRY_COUNT; i++) {
@@ -17,7 +17,7 @@ async function create_webtransport() {
         }
         // `closed` is also rejected.
         wt.closed.catch(_ => { });
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+        await new Promise(resolve => t.step_timeout(resolve, RETRY_DELAY_MS));
     }
     return Promise.reject("Failed to create WebTransport connection");
 }
@@ -26,7 +26,7 @@ promise_test(async t => {
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
 
-    const wt = await create_webtransport();
+    const wt = await create_webtransport(t);
 
     const stream = await wt.createBidirectionalStream();
 

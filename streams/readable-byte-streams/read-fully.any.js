@@ -189,6 +189,81 @@ promise_test(async t => {
 }, 'ReadableStream with byte source: readFully(), then multiple enqueue()');
 
 promise_test(async t => {
+  const stream = new ReadableStream({
+    start(c) {
+      const view = new Uint8Array(16);
+      view[0] = 0x01;
+      view[8] = 0x02;
+      c.enqueue(view);
+    },
+    pull: t.unreached_func('pull() should not be called'),
+    type: 'bytes'
+  });
+
+  const byobReader = stream.getReader({ mode: 'byob' });
+  const result1 = await byobReader.readFully(new Uint8Array(8));
+  assert_false(result1.done, 'done');
+
+  const view1 = result1.value;
+  assert_equals(view1.constructor, Uint8Array, 'value.constructor');
+  assert_equals(view1.buffer.byteLength, 8, 'value.buffer.byteLength');
+  assert_equals(view1.byteOffset, 0, 'value.byteOffset');
+  assert_equals(view1.byteLength, 8, 'value.byteLength');
+  assert_equals(view1[0], 0x01);
+
+  byobReader.releaseLock();
+
+  const reader = stream.getReader();
+  const result2 = await reader.read();
+  assert_false(result2.done, 'done');
+
+  const view2 = result2.value;
+  assert_equals(view2.constructor, Uint8Array, 'value.constructor');
+  assert_equals(view2.buffer.byteLength, 16, 'value.buffer.byteLength');
+  assert_equals(view2.byteOffset, 8, 'value.byteOffset');
+  assert_equals(view2.byteLength, 8, 'value.byteLength');
+  assert_equals(view2[0], 0x02);
+}, 'ReadableStream with byte source: enqueue(), readFully() partially, then read()');
+
+promise_test(async () => {
+  let controller;
+
+  let pullCount = 0;
+  const byobRequestDefined = [];
+  let byobRequestViewDefined;
+
+  const stream = new ReadableStream({
+    start(c) {
+      controller = c;
+    },
+    async pull() {
+      byobRequestDefined.push(controller.byobRequest !== null);
+      const initialByobRequest = controller.byobRequest;
+
+      const transferredView = await transferArrayBufferView(controller.byobRequest.view);
+      transferredView[0] = 0x01;
+      controller.byobRequest.respondWithNewView(transferredView);
+
+      byobRequestDefined.push(controller.byobRequest !== null);
+      byobRequestViewDefined = initialByobRequest.view !== null;
+
+      ++pullCount;
+    },
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+  const result = await reader.readFully(new Uint8Array(1));
+  assert_false(result.done, 'result.done');
+  assert_equals(result.value.byteLength, 1, 'result.value.byteLength');
+  assert_equals(result.value[0], 0x01, 'result.value[0]');
+  assert_equals(pullCount, 1, 'pull() should be called only once');
+  assert_true(byobRequestDefined[0], 'byobRequest must not be null before respondWithNewView()');
+  assert_false(byobRequestDefined[1], 'byobRequest must be null after respondWithNewView()');
+  assert_false(byobRequestViewDefined, 'view of initial byobRequest must be null after respondWithNewView()');
+}, 'ReadableStream with byte source: readFully(), then respondWithNewView() with a transferred ArrayBuffer');
+
+promise_test(async t => {
   let pullCount = 0;
   const rs = new ReadableStream({
     type: 'bytes',
@@ -282,6 +357,47 @@ promise_test(async t => {
   ]);
 }, 'ReadableStream with byte source: readFully(), then error()');
 
+promise_test(t => {
+  let cancelCount = 0;
+  let reason;
+
+  const passedReason = new TypeError('foo');
+
+  let controller;
+
+  const stream = new ReadableStream({
+    start(c) {
+      controller = c;
+    },
+    pull: t.unreached_func('pull() should not be called'),
+    cancel(r) {
+      if (cancelCount === 0) {
+        reason = r;
+      }
+
+      ++cancelCount;
+
+      return 'bar';
+    },
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+
+  const readPromise = reader.readFully(new Uint8Array(1)).then(result => {
+    assert_true(result.done, 'result.done');
+    assert_equals(result.value, undefined, 'result.value');
+  });
+
+  const cancelPromise = reader.cancel(passedReason).then(result => {
+    assert_equals(result, undefined, 'cancel() return value should be fulfilled with undefined');
+    assert_equals(cancelCount, 1, 'cancel() should be called only once');
+    assert_equals(reason, passedReason, 'reason should equal the passed reason');
+  });
+
+  return Promise.all([readPromise, cancelPromise]);
+}, 'ReadableStream with byte source: getReader(), readFully(), then cancel()');
+
 promise_test(async t => {
   let pullCount = 0;
   let byobRequest;
@@ -320,3 +436,39 @@ promise_test(async t => {
 
   await reader.closed;
 }, 'ReadableStream with byte source: cancel() with partially filled pending readFully() request');
+
+promise_test(async () => {
+  let pullCalled = false;
+
+  const stream = new ReadableStream({
+    start(c) {
+      const view = new Uint8Array(16);
+      view[7] = 0x01;
+      view[15] = 0x02;
+      c.enqueue(view);
+    },
+    pull() {
+      pullCalled = true;
+    },
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+
+  const result1 = await reader.readFully(new Uint8Array(8));
+  assert_false(result1.done, 'done');
+
+  const view1 = result1.value;
+  assert_equals(view1.byteOffset, 0);
+  assert_equals(view1.byteLength, 8);
+  assert_equals(view1[7], 0x01);
+
+  const result2 = await reader.readFully(new Uint8Array(8));
+  assert_false(pullCalled, 'pull() must not have been called');
+  assert_false(result2.done, 'done');
+
+  const view2 = result2.value;
+  assert_equals(view2.byteOffset, 0);
+  assert_equals(view2.byteLength, 8);
+  assert_equals(view2[7], 0x02);
+}, 'ReadableStream with byte source: enqueue(), then readFully() with smaller views');

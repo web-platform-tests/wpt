@@ -1,8 +1,8 @@
-from __future__ import annotations
-
 import asyncio
 import logging
 import os
+import signal
+import sys
 import traceback
 from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional, Tuple, Set
@@ -12,7 +12,7 @@ from aioquic.h3.connection import H3_ALPN, H3Connection
 from aioquic.h3.events import H3Event, HeadersReceived, WebTransportStreamDataReceived, DatagramReceived
 from aioquic.quic.configuration import QuicConfiguration
 from aioquic.quic.connection import stream_is_unidirectional
-from aioquic.quic.events import QuicEvent, ProtocolNegotiated, StreamDataReceived
+from aioquic.quic.events import QuicEvent, ProtocolNegotiated, StreamDataReceived, StreamReset
 from aioquic.tls import SessionTicket
 from aioquic.quic.packet import QuicErrorCode
 
@@ -29,6 +29,12 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         self._http: Optional[H3Connection] = None
 
         self._bidirectional_streams: Set[int] = set()
+
+        def handle_signal(*_):
+            self.close()
+            sys.exit(0)
+        signal.signal(signal.SIGTERM, handle_signal)
+        signal.signal(signal.SIGINT, handle_signal)
 
     def quic_event_received(self, event: QuicEvent) -> None:
         if isinstance(event, ProtocolNegotiated):
@@ -101,7 +107,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
 
         self._handler.session_established()
 
-    def _create_event_handler(self, session_id: int, path: bytes, request_headers: Dict[bytes, bytes]) -> EventHandler:
+    def _create_event_handler(self, session_id: int, path: bytes, request_headers: Dict[bytes, bytes]):
         parsed = urlparse(path.decode())
         file_path = os.path.join(handlers_path, parsed.path.lstrip('/'))
         callbacks = {"__file__": file_path}

@@ -19,3 +19,7 @@ setup({ allow_uncaught_exception:true });
     assert_true(happened);
   }, `self.reportError(${throwable})`);
 });
+
+test(() => {
+  assert_throws_js(TypeError, () => self.reportError());
+}, `self.reportError() (without arguments) throws`);

@@ -78,7 +78,7 @@ promise_test(async t => {
     const other = await createRealm(t);
     const otherFocus = other.focus;
     const otherDispatchEvent = other.dispatchEvent;
-    
+
     assert_equals(document.activeElement, document.body);
     // An engine might have different code path for calling a function from outer scope to implement step 1.b.iii of https://tc39.es/ecma262/#sec-evaluatecall
     (() => { otherFocus(); })();

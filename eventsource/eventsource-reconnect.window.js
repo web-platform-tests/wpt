@@ -1,4 +1,5 @@
 // META: title=EventSource: reconnection
+
       function doReconn(url, title) {
         var test = async_test(document.title + " " + title)
         test.step(function() {

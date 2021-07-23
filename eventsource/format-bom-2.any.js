@@ -1,4 +1,5 @@
 // META: title=EventSource: Double BOM
+
       var test = async_test(),
           hasbeenone = false,
           hasbeentwo = false

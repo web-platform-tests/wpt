@@ -1,4 +1,5 @@
 // META: title=EventSource message events are trusted
+
 "use strict";
 
 async_test(t => {

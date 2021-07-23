@@ -1,4 +1,5 @@
 // META: title=EventSource: comment fest
+
       var test = async_test()
       test.step(function() {
         var longstring = (new Array(2*1024+1)).join("x"), // cannot make the string too long; causes timeout

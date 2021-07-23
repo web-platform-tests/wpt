@@ -1,4 +1,5 @@
 // META: title=EventSource: url
+
       test(function() {
         var url = "resources/message.py",
             source = new EventSource(url)

@@ -1,4 +1,5 @@
 // META: title=EventSource: request cancellation
+
       var t = async_test();
       onload = t.step_func(function() {
         var url = "resources/message.py?sleep=1000&message=" + encodeURIComponent("retry:1000\ndata:abc\n\n");

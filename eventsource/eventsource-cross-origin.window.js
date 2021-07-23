@@ -1,4 +1,5 @@
 // META: title=EventSource: cross-origin
+
       const crossdomain = location.href.replace('://', '://élève.').replace(/\/[^\/]*$/, '/'),
             origin = location.origin.replace('://', '://xn--lve-6lad.');
 

@@ -1,4 +1,5 @@
 // META: title=EventSource: lines and data parsing
+
       var test = async_test();
       test.step(function() {
         var source = new EventSource("resources/message2.py"),

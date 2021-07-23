@@ -1,4 +1,5 @@
 // META: title=EventSource: document.domain
+
       var test = async_test()
       test.step(function() {
         document.domain = document.domain

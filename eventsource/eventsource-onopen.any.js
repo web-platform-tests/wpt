@@ -1,4 +1,5 @@
-// META: url=EventSource: onopen (announcing the connection)<
+// META: title=EventSource: onopen (announcing the connection)
+
       var test = async_test()
       test.step(function() {
         source = new EventSource("resources/message.py")

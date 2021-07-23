@@ -1,4 +1,5 @@
 // META: title=EventSource: constructor (act as if there is a network error)
+
       function fetchFail(url) {
         var test = async_test(document.title + " (" + url + ")")
         test.step(function() {

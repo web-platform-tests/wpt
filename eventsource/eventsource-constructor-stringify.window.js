@@ -1,4 +1,5 @@
 // META: title=EventSource: stringify argument
+
       async_test(function (test) {
         test.step(function() {
           var source = new EventSource({toString:function(){return "resources/message.py";}})

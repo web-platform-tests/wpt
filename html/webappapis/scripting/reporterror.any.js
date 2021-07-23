@@ -14,7 +14,7 @@ setup({ allow_uncaught_exception:true });
       assert_greater_than(e.colno, 0);
       assert_equals(e.error, throwable);
       happened = true;
-    }));
+    }), { once:true });
     self.reportError(throwable);
     assert_true(happened);
   }, `self.reportError(${throwable})`);

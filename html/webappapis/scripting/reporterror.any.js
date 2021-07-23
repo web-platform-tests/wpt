@@ -1,22 +1,21 @@
 setup({ allow_uncaught_exception:true });
 
-test(t => {
-  let happened = false;
-  self.addEventListener("error", t.step_func(e => {
-    assert_equals(e.error, 1);
-    happened = true;
-  }));
-  self.reportError(1);
-  assert_true(happened);
-}, "self.reportError(1)");
-
-test(t => {
-  const throwable = new TypeError();
-  let happened = false;
-  self.addEventListener("error", t.step_func(e => {
-    assert_equals(e.error, throwable);
-    happened = true;
-  }));
-  self.reportError(throwable);
-  assert_true(happened);
-}, "self.reportError(obj)");
+[
+  1,
+  new TypeError(),
+  undefined
+].forEach(throwable => {
+  test(t => {
+    let happened = false;
+    self.addEventListener("error", t.step_func(e => {
+      assert_true(e.message !== "");
+      assert_equals(e.filename, new URL("reporterror.any.js", location.href).href);
+      assert_greater_than(e.lineno, 0);
+      assert_greater_than(e.colno, 0);
+      assert_equals(e.error, throwable);
+      happened = true;
+    }));
+    self.reportError(throwable);
+    assert_true(happened);
+  }, `self.reportError(${throwable})`);
+});

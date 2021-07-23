@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: Cache-Control</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: Cache-Control
       var crossdomain = location.href
                     .replace('://', '://www2.')
                     .replace(/\/[^\/]*$/, '/')
@@ -31,7 +22,4 @@
 
       cacheTest(true, "resources/cache-control.event_stream?pipe=sub")
       cacheTest(true, crossdomain + "resources/cors.py?run=cache-control")
-    </script>
-  </body>
-</html>
 

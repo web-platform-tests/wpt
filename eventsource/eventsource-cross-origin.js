@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset=utf-8>
-    <title>EventSource: cross-origin</title>
-    <meta name=author title="Odin Hørthe Omdal" href="mailto:odiho@opera.com">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: cross-origin
       const crossdomain = location.href.replace('://', '://élève.').replace(/\/[^\/]*$/, '/'),
             origin = location.origin.replace('://', '://xn--lve-6lad.');
 
@@ -58,7 +47,4 @@
         "allow-origin:'' should fail")
       failCORS(crossdomain + "resources/message.py",
         "No allow-origin should fail")
-    </script>
-  </body>
-</html>
 

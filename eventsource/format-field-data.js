@@ -1,13 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <title>EventSource: data field parsing</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: data field parsing
       var test = async_test()
       test.step(function() {
         var source = new EventSource("resources/message.py?message=data%3A%0A%0Adata%0Adata%0A%0Adata%3Atest"),
@@ -29,6 +20,3 @@
           })
         }
       })
-    </script>
-  </body>
-</html>

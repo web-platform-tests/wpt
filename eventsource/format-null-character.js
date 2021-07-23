@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset=utf-8>
-    <title>EventSource: null character in response</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: null character in response
       var test = async_test()
       test.step(function() {
         var source = new EventSource("resources/message.py?message=data%3A%00%0A%0A")
@@ -24,7 +14,4 @@
           test.done()
         }
       })
-    </script>
-  </body>
-</html>
 

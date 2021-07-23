@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: credentials</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: credentials
       var crossdomain = location.href
                     .replace('://', '://www2.')
                     .replace(/\/[^\/]*$/, '/')
@@ -43,7 +34,4 @@
       testCookie('disabled', false, { withCredentials: false }, '2_' + new Date().getTime())
       testCookie('default',  false, { },                        '3_' + new Date().getTime())
 
-    </script>
-  </body>
-</html>
 

@@ -1,13 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <title>EventSource: field parsing</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: field parsing
       var test = async_test()
       test.step(function() {
         var message = encodeURI("data:\0\ndata:  2\rData:1\ndata\0:2\ndata:1\r\0data:4\nda-ta:3\rdata_5\ndata:3\rdata:\r\n data:32\ndata:4\n"),
@@ -20,7 +11,4 @@
           test.done()
         }
       })
-    </script>
-  </body>
-</html>
 

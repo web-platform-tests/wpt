@@ -1,13 +1,4 @@
-<!DoCtYpE hTMl>
-<html>
-  <heAd>
-    <title>EventSource: prototype et al</tiTle>
-    <scrIpt src="/resources/testharness.js"></scripT>
-    <scriPt src="/resources/testharnessreport.js"></Script>
-  </heaD>
-  <boDy>
-    <diV iD="log"></Div>
-    <sCript>
+// META: title=EventSource: prototype et al
       test(function() {
         EventSource.prototype.ReturnTrue = function() { return true }
         var source = new EventSource("resources/message.py")
@@ -15,7 +6,4 @@
         assert_own_property(window, "EventSource")
         source.close()
       })
-    </scrIpt>
-  </bOdy>
-</htMl>
 

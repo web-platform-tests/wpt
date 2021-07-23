@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: constructor (act as if there is a network error)</title>
-    <meta name=timeout content=long>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <script>
+// META: title=EventSource: constructor (act as if there is a network error)
       function fetchFail(url) {
         var test = async_test(document.title + " (" + url + ")")
         test.step(function() {
@@ -25,8 +16,5 @@
       fetchFail("about:blank")
       fetchFail("mailto:whatwg@awesome.example")
       fetchFail("javascript:alert('FAIL')")
-    </script>
-    <!-- This tests "fails the connection" as well as making sure a simple
-         event is dispatched and not a MessageEvent -->
-  </body>
-</html>
+    // This tests "fails the connection" as well as making sure a simple
+    //      event is dispatched and not a MessageEvent

@@ -1,13 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <title>EventSource: empty retry field</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: empty retry field
       var test = async_test()
       test.step(function() {
         var source = new EventSource("resources/message.py?message=retry%0Adata%3Atest")
@@ -19,7 +10,4 @@
           test.done()
         }
       })
-    </script>
-  </body>
-</html>
 

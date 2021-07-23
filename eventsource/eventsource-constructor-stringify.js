@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: stringify argument</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: stringify argument
       async_test(function (test) {
         test.step(function() {
           var source = new EventSource({toString:function(){return "resources/message.py";}})
@@ -33,7 +24,4 @@
         var source = new EventSource(undefined);
         assert_regexp_match(source.url, /\/undefined$/);
       }, document.title + ', undefined');
-    </script>
-  </body>
-</html>
 

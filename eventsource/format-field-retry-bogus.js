@@ -1,14 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <title>EventSource: "retry" field (bogus)</title>
-    <meta name="timeout" content="long">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: "retry" field (bogus)
       var test = async_test()
       test.step(function() {
         var timeoutms = 3000,
@@ -27,6 +17,3 @@
           }, this)
         }
       })
-    </script>
-  </body>
-</html>

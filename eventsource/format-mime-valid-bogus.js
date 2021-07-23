@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: incorrect valid MIME type</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: incorrect valid MIME type
       var test = async_test()
       test.step(function() {
         var source = new EventSource("resources/message.py?mime=text/x-bogus")
@@ -28,9 +19,6 @@
           test.done()
         }
       })
-    </script>
-    <!-- This tests "fails the connection" as well as making sure a simple
-         event is dispatched and not a MessageEvent -->
-  </body>
-</html>
+      // This tests "fails the connection" as well as making sure a simple
+      //   event is dispatched and not a MessageEvent
 

@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: BOM</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: BOM
       var test = async_test(),
           hasbeenone = false,
           hasbeentwo = false
@@ -29,7 +20,4 @@
           }
         }, this)
       }
-    </script>
-  </body>
-</html>
 

@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: document.domain</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: document.domain
       var test = async_test()
       test.step(function() {
         document.domain = document.domain
@@ -23,7 +14,4 @@
           test.done()
         }
       })
-    </script>
-    <!-- Apart from document.domain equivalent to the onopen test. -->
-  </body>
-</html>
+    // Apart from document.domain equivalent to the onopen test.

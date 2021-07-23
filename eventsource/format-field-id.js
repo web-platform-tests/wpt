@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>EventSource: Last-Event-ID</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: Last-Event-ID
       var test = async_test()
       test.step(function() {
         var source = new EventSource("resources/last-event-id.py"),
@@ -28,7 +18,4 @@
           })
         }
       })
-    </script>
-  </body>
-</html>
 

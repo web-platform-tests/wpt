@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: redirect</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: redirect
       function redirectTest(status) {
         var test = async_test(document.title + " (" + status +")")
         test.step(function() {
@@ -30,7 +21,4 @@
       redirectTest("302")
       redirectTest("303")
       redirectTest("307")
-    </script>
-  </body>
-</html>
 

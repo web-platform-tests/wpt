@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: reconnection</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: reconnection
       function doReconn(url, title) {
         var test = async_test(document.title + " " + title)
         test.step(function() {
@@ -52,7 +43,4 @@
         });
       });
 
-    </script>
-  </body>
-</html>
 

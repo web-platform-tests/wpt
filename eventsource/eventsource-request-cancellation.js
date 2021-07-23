@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: request cancellation</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: request cancellation
       var t = async_test();
       onload = t.step_func(function() {
         var url = "resources/message.py?sleep=1000&message=" + encodeURIComponent("retry:1000\ndata:abc\n\n");
@@ -27,6 +18,3 @@
           es.onmessage = t.unreached_func("Got message after closing source");
         }), 0);
       });
-    </script>
-  </body>
-</html>

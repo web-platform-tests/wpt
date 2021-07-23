@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: onopen (announcing the connection)</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: url=EventSource: onopen (announcing the connection)<
       var test = async_test()
       test.step(function() {
         source = new EventSource("resources/message.py")
@@ -22,7 +13,4 @@
           test.done()
         }
       })
-    </script>
-  </body>
-</html>
 

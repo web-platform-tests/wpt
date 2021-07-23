@@ -1,13 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <title>EventSource: comment fest</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: comment fest
       var test = async_test()
       test.step(function() {
         var longstring = (new Array(2*1024+1)).join("x"), // cannot make the string too long; causes timeout
@@ -21,7 +12,4 @@
           test.done()
         }
       })
-    </script>
-  </body>
-</html>
 

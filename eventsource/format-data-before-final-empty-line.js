@@ -1,13 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <title>EventSource: a data before final empty line</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: a data before final empty line
       var test = async_test()
       test.step(function() {
         var source = new EventSource("resources/message.py?newline=none&message=" + encodeURIComponent("retry:1000\ndata:test1\n\nid:test\ndata:test2"))
@@ -23,7 +14,3 @@
           }
         }
       })
-    </script>
-  </body>
-</html>
-

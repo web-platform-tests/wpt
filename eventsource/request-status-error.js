@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>EventSource: incorrect HTTP status code</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+// META: title=EventSource: incorrect HTTP status code
       function statusTest(status) {
         var test = async_test(document.title + " (" + status +")")
         test.step(function() {
@@ -33,7 +24,4 @@
       statusTest("404")
       statusTest("410")
       statusTest("503")
-    </script>
-  </body>
-</html>
 

@@ -15,6 +15,12 @@ test(function() {
 }, "Only supports index 0");
 
 test(() => {
+  sel.removeAllRanges();
+  assert_throws_dom("INDEX_SIZE_ERR", function() { sel.getRangeAt(0); })
+}, "Throws when with no range");
+
+test(() => {
+  sel.addRange(document.createRange());
   assert_equals(sel.getRangeAt(0), sel.getRangeAt(0));
 }, "Returns the same range object when with no selection change");
 

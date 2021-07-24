@@ -16,7 +16,7 @@ test(function() {
 
 test(() => {
   sel.removeAllRanges();
-  assert_throws_dom("INDEX_SIZE_ERR", function() { sel.getRangeAt(0); })
+  assert_throws_dom("INDEX_SIZE_ERR", () => sel.getRangeAt(0))
 }, "Throws when with no range");
 
 test(() => {

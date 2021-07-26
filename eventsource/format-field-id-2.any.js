@@ -1,4 +1,5 @@
-// META: title=EventSource: Last-Event-ID (2)var test = async_test()
+// META: title=EventSource: Last-Event-ID (2)
+    var test = async_test()
       test.step(function() {
         var source = new EventSource("resources/last-event-id.py"),
             counter = 0

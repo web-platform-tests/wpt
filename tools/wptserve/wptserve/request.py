@@ -244,6 +244,13 @@ class Request(object):
     .. attribute:: server
 
     Server object containing information about the server environment.
+
+    .. attribute:: template_variables
+
+    A dictionary used for storing template variables used by
+    pipes.template, so that all files served during one request share
+    the same template variables.
+
     """
 
     def __init__(self, request_handler):
@@ -290,6 +297,8 @@ class Request(object):
         self._POST = None
         self._cookies = None
         self._auth = None
+
+        self.template_variables = {}
 
         self.server = Server(self)
 

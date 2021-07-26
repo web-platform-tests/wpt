@@ -447,8 +447,6 @@ def template(request, content, escape_type="html"):
     #TODO: There basically isn't any error handling here
     tokenizer = ReplacementTokenizer()
 
-    variables = {}
-
     def config_replacement(match):
         content, = match.groups()
 
@@ -468,8 +466,8 @@ def template(request, content, escape_type="html"):
         if token_type != "ident":
             raise Exception("unexpected token type %s (token '%r'), expected ident" % (token_type, field))
 
-        if field in variables:
-            value = variables[field]
+        if field in request.template_variables:
+            value = request.template_variables[field]
         elif hasattr(SubFunctions, field):
             value = getattr(SubFunctions, field)
         elif field == "headers":
@@ -515,7 +513,7 @@ def template(request, content, escape_type="html"):
         assert isinstance(value, (int, (bytes, str))), tokens
 
         if variable is not None:
-            variables[variable] = value
+            request.template_variables[variable] = value
 
         escape_func = {"html": lambda x:escape(x, quote=True),
                        "none": lambda x:x}[escape_type]

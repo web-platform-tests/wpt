@@ -61,7 +61,7 @@ async function checkCorpReportExistence(endpoint, blockedUrl, contextUrl, destin
     }
     await wait(retryDelay);
   }
-  assert_unreached(`A report whose blockedURL is ${blockedUrl} and url is ${contextUrl} is not found.`);
+  assert_unreached(`A report whose blockedURL is ${blockedUrl.split("?")[0]} and url is ${contextUrl} is not found.`);
 }
 
 async function checkNavigationReportExistence(endpoint, blockedUrl, contextUrl, disposition) {
@@ -83,7 +83,7 @@ async function checkNavigationReportExistence(endpoint, blockedUrl, contextUrl, 
     }
     await wait(retryDelay);
   }
-  assert_unreached(`A report whose blockedURL is ${blockedUrl} and url is ${contextUrl} is not found.`);
+  assert_unreached(`A report whose blockedURL is ${blockedUrl.split("?")[0]} and url is ${contextUrl} is not found.`);
 }
 
 promise_test(async t => {

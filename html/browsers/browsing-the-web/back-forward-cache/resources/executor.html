@@ -1,9 +1,10 @@
-<!DOCTYPE HTML>
-<script src="/common/dispatcher/dispatcher.js"></script>
+<!doctype html>
+<script src="/resources/channel.sub.js"></script>
 <script src="event-recorder.js" type="module"></script>
 <script type="module">
-const params = new URLSearchParams(window.location.search);
-const uuid = params.get('uuid');
+const params = new URLSearchParams(window.location.search)
+const uuid = params.get("uuid");
+let ctxChannel = null;
 
 // Executor and BFCache detection
 
@@ -30,23 +31,31 @@ const uuid = params.get('uuid');
 
 window.isPageshowFired = false;
 window.isPageshowPersisted = null;
+
 window.loadCount = parseInt(localStorage.getItem(uuid + '.loadCount') || '0') + 1;
 localStorage.setItem(uuid + '.loadCount', loadCount);
 
 window.pageShowPromise = new Promise(resolve =>
-  window.addEventListener('pageshow', resolve, {once: true}));
+  window.addEventListener('pageshow',
+                          async () => {
+                            if (!ctxChannel) {
+                              ctxChannel = await start_global_channel();
+                            }
+                            resolve();
+                          }, {once: true}));
 
-const executor = new Executor(uuid);
-
-window.prepareNavigation = function(callback) {
-  window.addEventListener(
+window.prepareNavigation = async function(callback) {
+ window.addEventListener(
     'pageshow',
-    (event) => {
+    async event => {
       window.isPageshowFired = true;
       window.isPageshowPersisted = event.persisted;
-      executor.resume();
+      await ctxChannel.connect();
     },
     {once: true});
-  executor.suspend(callback);
+  setTimeout(async () => {
+      await close_all_channel_sockets();
+      callback()
+  }, 0);
 }
 </script>

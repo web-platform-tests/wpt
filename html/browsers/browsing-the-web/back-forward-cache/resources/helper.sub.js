@@ -1,5 +1,5 @@
 // Helpers called on the main test HTMLs.
-// Functions in `RemoteContext.execute_script()`'s 1st argument are evaluated
+// Functions in `RemoteContext.call()`'s 1st argument are evaluated
 // on the executors (`executor.html`), and helpers available on the executors
 // are defined in `executor.html`.
 
@@ -39,7 +39,7 @@ async function assert_not_bfcached(target) {
 
 async function getBFCachedStatus(target) {
   const [loadCount, isPageshowFired, isPageshowPersisted] =
-    await target.execute_script(() => [
+    await target.call(() => [
         window.loadCount, window.isPageshowFired, window.isPageshowPersisted]);
 
   if (loadCount === 1 && isPageshowFired === true &&
@@ -60,7 +60,7 @@ async function getBFCachedStatus(target) {
   }
 }
 
-// Always call `await remoteContext.execute_script(waitForPageShow);` after
+// Always call `await remoteGlobal.call(waitForPageShow);` after
 // triggering to navigation to the page, to wait for pageshow event on the
 // remote context.
 const waitForPageShow = () => window.pageShowPromise;
@@ -92,12 +92,14 @@ function runEventTest(params, description) {
       'window.pagehide.persisted',
       'window.pageshow.persisted'
     ],
+
     async funcAfterAssertion(pageA) {
       assert_array_equals(
-        await pageA.execute_script(() => getRecordedEvents()),
+        await pageA.call(() => getRecordedEvents()),
         this.expectedEvents);
     }
   }
+
   // Apply defaults.
   params = { ...defaultParams, ...params };
 
@@ -105,7 +107,7 @@ function runEventTest(params, description) {
 }
 
 async function navigateAndThenBack(pageA, pageB, urlB) {
-  await pageA.execute_script(
+  await pageA.call(
     (url) => {
       prepareNavigation(() => {
         location.href = url;
@@ -114,14 +116,14 @@ async function navigateAndThenBack(pageA, pageB, urlB) {
     [urlB]
   );
 
-  await pageB.execute_script(waitForPageShow);
-  await pageB.execute_script(
+  await pageB.call(waitForPageShow);
+  await pageB.call(
     () => {
       prepareNavigation(() => { history.back(); });
     }
   );
 
-  await pageA.execute_script(waitForPageShow);
+  await pageA.call(waitForPageShow);
 }
 
 function runBfcacheTest(params, description) {
@@ -132,23 +134,27 @@ function runBfcacheTest(params, description) {
     targetOrigin: originCrossSite,
     shouldBeCached: true,
     funcAfterAssertion: () => {},
-  }
+  };
   // Apply defaults.
   params = {...defaultParams, ...params };
 
   promise_test(async t => {
-    const pageA = new RemoteContext(token());
-    const pageB = new RemoteContext(token());
+    const pageA = new RemoteGlobal();
+    const pageB = new RemoteGlobal();
 
-    const urlA = executorPath + pageA.context_id;
-    const urlB = params.targetOrigin + executorPath + pageB.context_id;
+    t.add_cleanup(() => {
+        return Promise.all([pageA.close(), pageB.close()]);
+    });
+
+    const urlA = executorPath + pageA.uuid;
+    const urlB = params.targetOrigin + executorPath + pageB.uuid;
 
     params.openFunc(urlA);
 
-    await pageA.execute_script(waitForPageShow);
+    await pageA.call(waitForPageShow);
 
     for (const src of params.scripts) {
-      await pageA.execute_script((src) => {
+      await pageA.call((src) => {
         const script = document.createElement("script");
         script.src = src;
         document.head.append(script);
@@ -156,7 +162,7 @@ function runBfcacheTest(params, description) {
       }, [src]);
     }
 
-    await pageA.execute_script(params.funcBeforeNavigation);
+    await pageA.call(params.funcBeforeNavigation);
     await navigateAndThenBack(pageA, pageB, urlB);
 
     if (params.shouldBeCached) {

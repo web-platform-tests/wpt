@@ -38,7 +38,7 @@
               assert_equals(source.readyState, source.CLOSED, "closed readyState");
 
               // give some time for errors to hit us
-              this.step_timeout(function() { this.done(); }, 100);
+              test2.step_timeout(function() { this.done(); }, 100);
               break;
 
             default:

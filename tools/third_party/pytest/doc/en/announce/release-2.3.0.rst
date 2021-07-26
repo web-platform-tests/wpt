@@ -1,24 +1,24 @@
 pytest-2.3: improved fixtures / better unittest integration
 =============================================================================
 
-pytest-2.3 comes with many major improvements for fixture/funcarg management 
+pytest-2.3 comes with many major improvements for fixture/funcarg management
 and parametrized testing in Python.  It is now easier, more efficient and
-more predicatable to re-run the same tests with different fixture
+more predictable to re-run the same tests with different fixture
 instances.  Also, you can directly declare the caching "scope" of
 fixtures so that dependent tests throughout your whole test suite can
 re-use database or other expensive fixture objects with ease.  Lastly,
 it's possible for fixture functions (formerly known as funcarg
 factories) to use other fixtures, allowing for a completely modular and
-re-useable fixture design. 
+re-usable fixture design.
 
 For detailed info and tutorial-style examples, see:
 
-    http://pytest.org/latest/fixture.html
+    http://pytest.org/en/stable/fixture.html
 
 Moreover, there is now support for using pytest fixtures/funcargs with
 unittest-style suites, see here for examples:
 
-    http://pytest.org/latest/unittest.html
+    http://pytest.org/en/stable/unittest.html
 
 Besides, more unittest-test suites are now expected to "simply work"
 with pytest.
@@ -27,13 +27,13 @@ All changes are backward compatible and you should be able to continue
 to run your test suites and 3rd party plugins that worked with
 pytest-2.2.4.
 
-If you are interested in the precise reasoning (including examples) of the 
+If you are interested in the precise reasoning (including examples) of the
 pytest-2.3 fixture evolution, please consult
-http://pytest.org/latest/funcarg_compare.html
+http://pytest.org/en/stable/funcarg_compare.html
 
 For general info on installation and getting started:
 
-    http://pytest.org/latest/getting-started.html
+    http://pytest.org/en/stable/getting-started.html
 
 Docs and PDF access as usual at:
 
@@ -43,7 +43,7 @@ and more details for those already in the knowing of pytest can be found
 in the CHANGELOG below.
 
 Particular thanks for this release go to Floris Bruynooghe, Alex Okrushko
-Carl Meyer, Ronny Pfannschmidt, Benjamin Peterson and Alex Gaynor for helping 
+Carl Meyer, Ronny Pfannschmidt, Benjamin Peterson and Alex Gaynor for helping
 to get the new features right and well integrated.  Ronny and Floris
 also helped to fix a number of bugs and yet more people helped by
 providing bug reports.
@@ -94,7 +94,7 @@ Changes between 2.2.4 and 2.3.0
 - pluginmanager.register(...) now raises ValueError if the
   plugin has been already registered or the name is taken
 
-- fix issue159: improve http://pytest.org/latest/faq.html 
+- fix issue159: improve https://docs.pytest.org/en/6.0.1/faq.html
   especially with respect to the "magic" history, also mention
   pytest-django, trial and unittest integration.
 
@@ -125,10 +125,9 @@ Changes between 2.2.4 and 2.3.0
     you can use startdir.bestrelpath(yourpath) to show
     nice relative path
 
-  - allow plugins to implement both pytest_report_header and 
+  - allow plugins to implement both pytest_report_header and
     pytest_sessionstart (sessionstart is invoked first).
 
   - don't show deselected reason line if there is none
 
   - py.test -vv will show all of assert comparisons instead of truncating
-

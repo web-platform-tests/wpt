@@ -19,12 +19,22 @@ runListValuedPropertyTests('animation-timing-function', [
   { syntax: 'ease-in' },
   { syntax: 'ease-out' },
   { syntax: 'ease-in-out' },
-  { syntax: 'step-start' },
-  { syntax: 'step-end' },
+  {
+    syntax: 'step-start',
+    computed: (_, result) => {
+      assert_equals(result.toString(), 'steps(1, start)');
+    }
+  },
+  {
+    syntax: 'step-end',
+    computed: (_, result) => {
+      assert_equals(result.toString(), 'steps(1)');
+    }
+  },
 ]);
 
 runUnsupportedPropertyTests('animation-timing-function', [
-  'cubic-bezier(0.1, 0.7, 1.0, 0.1)', 'steps(4, end)', 'frames(10)'
+  'cubic-bezier(0.1, 0.7, 1.0, 0.1)', 'steps(4, end)'
 ]);
 
 </script>

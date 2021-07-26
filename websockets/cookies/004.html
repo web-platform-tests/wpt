@@ -2,9 +2,9 @@
 <title>WebSockets: setting HttpOnly cookies in ws response, checking document.cookie</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../constants.js?pipe=sub></script>
+<script src=../constants.sub.js></script>
 <meta name="variant" content="">
-<meta name="variant" content="?wss">
+<meta name="variant" content="?wss&wpt_flags=https">
 <div id=log></div>
 <script>
 setup({explicit_done:true})
@@ -27,5 +27,5 @@ var t = async_test(function(t) {
   });
   ws.onerror = ws.onclose = t.step_func(function(e) {assert_unreached(e.type)});
   document.body.appendChild(iframe);
-}, null, {timeout:9900})
+});
 </script>

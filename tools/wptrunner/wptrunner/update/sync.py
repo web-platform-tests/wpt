@@ -5,43 +5,10 @@ import shutil
 import sys
 import uuid
 
-from .. import testloader
+from .base import Step, StepRunner
+from .tree import Commit
 
-from base import Step, StepRunner
-from tree import Commit
-
-here = os.path.abspath(os.path.split(__file__)[0])
-
-bsd_license = """W3C 3-clause BSD License
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-* Redistributions of works must retain the original copyright notice, this
-  list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the original copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-* Neither the name of the W3C nor the names of its contributors may be
-  used to endorse or promote products derived from this work without
-  specific prior written permission.
-
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
-IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-"""
+here = os.path.abspath(os.path.dirname(__file__))
 
 
 def copy_wpt_tree(tree, dest, excludes=None, includes=None):
@@ -74,7 +41,7 @@ def copy_wpt_tree(tree, dest, excludes=None, includes=None):
         source_path = os.path.join(tree.root, tree_path)
         dest_path = os.path.join(dest, tree_path)
 
-        dest_dir = os.path.split(dest_path)[0]
+        dest_dir = os.path.dirname(dest_path)
         if not os.path.isdir(source_path):
             if not os.path.exists(dest_dir):
                 os.makedirs(dest_dir)
@@ -83,18 +50,8 @@ def copy_wpt_tree(tree, dest, excludes=None, includes=None):
     for source, destination in [("testharness_runner.html", ""),
                                 ("testdriver-vendor.js", "resources/")]:
         source_path = os.path.join(here, os.pardir, source)
-        dest_path = os.path.join(dest, destination, os.path.split(source)[1])
+        dest_path = os.path.join(dest, destination, os.path.basename(source))
         shutil.copy2(source_path, dest_path)
-
-    add_license(dest)
-
-
-def add_license(dest):
-    """Write the bsd license string to a LICENSE file.
-
-    :param dest: Directory in which to place the LICENSE file."""
-    with open(os.path.join(dest, "LICENSE"), "w") as f:
-        f.write(bsd_license)
 
 
 class UpdateCheckout(Step):
@@ -110,7 +67,7 @@ class UpdateCheckout(Step):
                          state.local_branch)
         sync_path = os.path.abspath(sync_tree.root)
         if sync_path not in sys.path:
-            from update import setup_paths
+            from .update import setup_paths
             setup_paths(sync_path)
 
     def restore(self, state):
@@ -135,24 +92,18 @@ class GetSyncTargetCommit(Step):
         self.logger.debug("New base commit is %s" % state.sync_commit.sha1)
 
 
-class LoadManifest(Step):
-    """Load the test manifest"""
+class UpdateManifest(Step):
+    """Update the manifest to match the tests in the sync tree checkout"""
 
     provides = ["manifest_path", "test_manifest"]
 
     def create(self, state):
-        from manifest import manifest
+        from manifest import manifest  # type: ignore
         state.manifest_path = os.path.join(state.metadata_path, "MANIFEST.json")
-        state.test_manifest = manifest.Manifest("/")
-
-
-class UpdateManifest(Step):
-    """Update the manifest to match the tests in the sync tree checkout"""
-
-    def create(self, state):
-        from manifest import manifest, update
-        update.update(state.sync["path"], state.test_manifest)
-        manifest.write(state.test_manifest, state.manifest_path)
+        state.test_manifest = manifest.load_and_update(state.sync["path"],
+                                                       state.manifest_path,
+                                                       "/",
+                                                       write_manifest=True)
 
 
 class CopyWorkTree(Step):
@@ -177,8 +128,9 @@ class CreateSyncPatch(Step):
 
         local_tree.create_patch("web-platform-tests_update_%s" % sync_tree.rev,
                                 "Update %s to revision %s" % (state.suite_name, sync_tree.rev))
-        local_tree.add_new(os.path.relpath(state.tests_path,
-                                           local_tree.root))
+        test_prefix = os.path.relpath(state.tests_path, local_tree.root)
+        local_tree.add_new(test_prefix)
+        local_tree.add_ignored(sync_tree, test_prefix)
         updated = local_tree.update_patch(include=[state.tests_path,
                                                    state.metadata_path])
         local_tree.commit_patch()
@@ -191,7 +143,6 @@ class SyncFromUpstreamRunner(StepRunner):
     """(Sub)Runner for doing an upstream sync"""
     steps = [UpdateCheckout,
              GetSyncTargetCommit,
-             LoadManifest,
              UpdateManifest,
              CopyWorkTree,
              CreateSyncPatch]

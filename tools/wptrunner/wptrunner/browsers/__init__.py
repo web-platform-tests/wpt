@@ -6,7 +6,7 @@ a dictionary with the fields
 "browser": String indicating the Browser implementation used to launch that
            product.
 "executor": Dictionary with keys as supported test types and values as the name
-            of the Executor implemantation that will be used to run that test
+            of the Executor implementation that will be used to run that test
             type.
 "browser_kwargs": String naming function that takes product, binary,
                   prefs_root and the wptrunner.run_tests kwargs dict as arguments
@@ -15,21 +15,29 @@ a dictionary with the fields
 "executor_kwargs": String naming a function that takes http server url and
                    timeout multiplier and returns kwargs to use when creating
                    the executor class.
-"env_options": String naming a funtion of no arguments that returns the
+"env_options": String naming a function of no arguments that returns the
                arguments passed to the TestEnvironment.
 
 All classes and functions named in the above dict must be imported into the
 module global scope.
 """
 
-product_list = ["chrome",
+product_list = ["android_weblayer",
+                "android_webview",
+                "chrome",
                 "chrome_android",
+                "chrome_ios",
+                "edgechromium",
                 "edge",
+                "edge_webdriver",
                 "firefox",
+                "firefox_android",
                 "ie",
                 "safari",
                 "sauce",
                 "servo",
                 "servodriver",
                 "opera",
-                "webkit"]
+                "webkit",
+                "webkitgtk_minibrowser",
+                "epiphany"]

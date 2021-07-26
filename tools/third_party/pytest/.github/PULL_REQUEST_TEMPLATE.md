@@ -1,15 +1,26 @@
+<!--
 Thanks for submitting a PR, your contribution is really appreciated!
 
-Here's a quick checklist that should be present in PRs:
+Here is a quick checklist that should be present in PRs.
 
-- [ ] Add a new news fragment into the changelog folder
-  * name it `$issue_id.$type` for example (588.bug)
-  * if you don't have an issue_id change it to the pr id after creating the pr
-  * ensure type is one of `removal`, `feature`, `bugfix`, `vendor`, `doc` or `trivial`
-  * Make sure to use full sentences with correct case and punctuation, for example: "Fix issue with non-ascii contents in doctest text files."
-- [ ] Target: for `bugfix`, `vendor`, `doc` or `trivial` fixes, target `master`; for removals or features target `features`;
-- [ ] Make sure to include reasonable tests for your change if necessary
+- [ ] Include documentation when adding new features.
+- [ ] Include new tests or update existing tests when applicable.
+- [X] Allow maintainers to push and squash when merging my commits. Please uncheck this if you prefer to squash the commits yourself.
 
-Unless your change is a trivial or a documentation fix (e.g.,  a typo or reword of a small section) please:
+If this change fixes an issue, please:
 
-- [ ] Add yourself to `AUTHORS`, in alphabetical order;
+- [ ] Add text like ``closes #XYZW`` to the PR description and/or commits (where ``XYZW`` is the issue number). See the [github docs](https://help.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword) for more information.
+
+Unless your change is trivial or a small documentation fix (e.g., a typo or reword of a small section) please:
+
+- [ ] Create a new changelog file in the `changelog` folder, with a name like `<ISSUE NUMBER>.<TYPE>.rst`. See [changelog/README.rst](https://github.com/pytest-dev/pytest/blob/master/changelog/README.rst) for details.
+
+  Write sentences in the **past or present tense**, examples:
+
+  * *Improved verbose diff output with sequences.*
+  * *Terminal summary statistics now use multiple colors.*
+
+  Also make sure to end the sentence with a `.`.
+
+- [ ] Add yourself to `AUTHORS` in alphabetical order.
+-->

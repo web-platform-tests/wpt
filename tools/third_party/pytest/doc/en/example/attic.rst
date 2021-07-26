@@ -9,22 +9,25 @@ example: specifying and selecting acceptance tests
     # ./conftest.py
     def pytest_option(parser):
         group = parser.getgroup("myproject")
-        group.addoption("-A", dest="acceptance", action="store_true",
-            help="run (slow) acceptance tests")
+        group.addoption(
+            "-A", dest="acceptance", action="store_true", help="run (slow) acceptance tests"
+        )
+
 
     def pytest_funcarg__accept(request):
         return AcceptFixture(request)
 
-    class AcceptFixture(object):
+
+    class AcceptFixture:
         def __init__(self, request):
-            if not request.config.getoption('acceptance'):
+            if not request.config.getoption("acceptance"):
                 pytest.skip("specify -A to run acceptance tests")
             self.tmpdir = request.config.mktemp(request.function.__name__, numbered=True)
 
-        def run(self, cmd):
+        def run(self, *cmd):
             """ called by test code to execute an acceptance test. """
             self.tmpdir.chdir()
-            return py.process.cmdexec(cmd)
+            return subprocess.check_output(cmd).decode()
 
 
 and the actual test function example:
@@ -33,7 +36,7 @@ and the actual test function example:
 
     def test_some_acceptance_aspect(accept):
         accept.tmpdir.mkdir("somesub")
-        result = accept.run("ls -la")
+        result = accept.run("ls", "-la")
         assert "somesub" in result
 
 If you run this test without specifying a command line option
@@ -61,7 +64,8 @@ extend the `accept example`_ by putting this in our test module:
         arg.tmpdir.mkdir("special")
         return arg
 
-    class TestSpecialAcceptance(object):
+
+    class TestSpecialAcceptance:
         def test_sometest(self, accept):
             assert accept.tmpdir.join("special").check()
 

@@ -93,109 +93,60 @@ function isSimilarSessionDescription(sessionDesc1, sessionDesc2) {
   }
 }
 
-function assert_session_desc_equals(sessionDesc1, sessionDesc2) {
+function assert_session_desc_similar(sessionDesc1, sessionDesc2) {
   assert_true(isSimilarSessionDescription(sessionDesc1, sessionDesc2),
     'Expect both session descriptions to have the same count of media lines');
 }
 
-function assert_session_desc_not_equals(sessionDesc1, sessionDesc2) {
+function assert_session_desc_not_similar(sessionDesc1, sessionDesc2) {
   assert_false(isSimilarSessionDescription(sessionDesc1, sessionDesc2),
     'Expect both session descriptions to have different count of media lines');
 }
 
-// Helper function to generate offer using a freshly created RTCPeerConnection
-// object with any audio, video, data media lines present
-function generateOffer(options={}) {
-  const {
-    audio = false,
-    video = false,
-    data = false,
-    pc,
-  } = options;
+async function generateDataChannelOffer(pc) {
+  pc.createDataChannel('test');
+  const offer = await pc.createOffer();
+  assert_equals(countApplicationLine(offer.sdp), 1, 'Expect m=application line to be present in generated SDP');
+  return offer;
+}
 
-  if (data) {
-    pc.createDataChannel('test');
-  }
-
-  const setup = {};
-
-  if (audio) {
-    setup.offerToReceiveAudio = true;
-  }
-
-  if (video) {
-    setup.offerToReceiveVideo = true;
-  }
-
-  return pc.createOffer(setup).then(offer => {
-    // Guard here to ensure that the generated offer really
-    // contain the number of media lines we want
-    const { sdp } = offer;
-
-    if(audio) {
-      assert_equals(countAudioLine(sdp), 1,
-        'Expect m=audio line to be present in generated SDP');
-    } else {
-      assert_equals(countAudioLine(sdp), 0,
-        'Expect m=audio line to be present in generated SDP');
+async function generateAudioReceiveOnlyOffer(pc)
+{
+    try {
+        pc.addTransceiver('audio', { direction: 'recvonly' });
+        return pc.createOffer();
+    } catch(e) {
+        return pc.createOffer({ offerToReceiveAudio: true });
     }
+}
 
-    if(video) {
-      assert_equals(countVideoLine(sdp), 1,
-        'Expect m=video line to be present in generated SDP');
-    } else {
-      assert_equals(countVideoLine(sdp), 0,
-        'Expect m=video line to not present in generated SDP');
+async function generateVideoReceiveOnlyOffer(pc)
+{
+    try {
+        pc.addTransceiver('video', { direction: 'recvonly' });
+        return pc.createOffer();
+    } catch(e) {
+        return pc.createOffer({ offerToReceiveVideo: true });
     }
-
-    if(data) {
-      assert_equals(countApplicationLine(sdp), 1,
-        'Expect m=application line to be present in generated SDP');
-    } else {
-      assert_equals(countApplicationLine(sdp), 0,
-        'Expect m=application line to not present in generated SDP');
-    }
-
-    return offer;
-  });
 }
 
 // Helper function to generate answer based on given offer using a freshly
 // created RTCPeerConnection object
-function generateAnswer(offer) {
+async function generateAnswer(offer) {
   const pc = new RTCPeerConnection();
-  return pc.setRemoteDescription(offer)
-  .then(() => pc.createAnswer());
+  await pc.setRemoteDescription(offer);
+  const answer = await pc.createAnswer();
+  pc.close();
+  return answer;
 }
 
-// Wait for peer connection to fire onsignalingstatechange
-// event, compare and make sure the new state is the same
-// as expected state. It accepts an RTCPeerConnection object
-// and an array of expected state changes. The test passes
-// if all expected state change events have been fired, and
-// fail if the new state is different from the expected state.
-//
-// Note that the promise is never resolved if no change
-// event is fired. To avoid confusion with the main test
-// getting timed out, this is done in parallel as a separate
-// test
-function test_state_change_event(parentTest, pc, expectedStates) {
-  return async_test(t => {
-    pc.onsignalingstatechange = t.step_func(() => {
-      if(expectedStates.length === 0) {
-        return;
-      }
-
-      const newState = pc.signalingState;
-      const expectedState = expectedStates.shift();
-
-      assert_equals(newState, expectedState, 'New signaling state is different from expected.');
-
-      if(expectedStates.length === 0) {
-        t.done();
-      }
-    });
-  }, `Test onsignalingstatechange event for ${parentTest.name}`);
+// Helper function to generate offer using a freshly
+// created RTCPeerConnection object
+async function generateOffer() {
+  const pc = new RTCPeerConnection();
+  const offer = await pc.createOffer();
+  pc.close();
+  return offer;
 }
 
 // Run a test function that return a promise that should
@@ -225,11 +176,9 @@ function exchangeIceCandidates(pc1, pc2) {
     localPc.addEventListener('icecandidate', event => {
       const { candidate } = event;
 
-      // candidate may be null to indicate end of candidate gathering.
-      // There is ongoing discussion on w3c/webrtc-pc#1213
-      // that there should be an empty candidate string event
-      // for end of candidate for each m= section.
-      if(candidate) {
+      // Guard against already closed peerconnection to
+      // avoid unrelated exceptions.
+      if (remotePc.signalingState !== 'closed') {
         remotePc.addIceCandidate(candidate);
       }
     });
@@ -239,158 +188,320 @@ function exchangeIceCandidates(pc1, pc2) {
   doExchange(pc2, pc1);
 }
 
-// Helper function for doing one round of offer/answer exchange
-// betweeen two local peer connections
-function doSignalingHandshake(localPc, remotePc) {
-  return localPc.createOffer()
-  .then(offer => Promise.all([
-    localPc.setLocalDescription(offer),
-    remotePc.setRemoteDescription(offer)]))
-  .then(() => remotePc.createAnswer())
-  .then(answer => Promise.all([
-    remotePc.setLocalDescription(answer),
-    localPc.setRemoteDescription(answer)]))
+// Returns a promise that resolves when a |name| event is fired.
+function waitUntilEvent(obj, name) {
+  return new Promise(r => obj.addEventListener(name, r, {once: true}));
 }
 
-// Helper function to create a pair of connected data channel.
+// Returns a promise that resolves when the |transport.state| is |state|
+// This should work for RTCSctpTransport, RTCDtlsTransport and RTCIceTransport.
+async function waitForState(transport, state) {
+  while (transport.state != state) {
+    await waitUntilEvent(transport, 'statechange');
+  }
+}
+
+// Returns a promise that resolves when |pc.iceConnectionState| is 'connected'
+// or 'completed'.
+async function listenToIceConnected(pc) {
+  await waitForIceStateChange(pc, ['connected', 'completed']);
+}
+
+// Returns a promise that resolves when |pc.iceConnectionState| is in one of the
+// wanted states.
+async function waitForIceStateChange(pc, wantedStates) {
+  while (!wantedStates.includes(pc.iceConnectionState)) {
+    await waitUntilEvent(pc, 'iceconnectionstatechange');
+  }
+}
+
+// Returns a promise that resolves when |pc.connectionState| is 'connected'.
+async function listenToConnected(pc) {
+  while (pc.connectionState != 'connected') {
+    await waitUntilEvent(pc, 'connectionstatechange');
+  }
+}
+
+// Returns a promise that resolves when |pc.connectionState| is in one of the
+// wanted states.
+async function waitForConnectionStateChange(pc, wantedStates) {
+  while (!wantedStates.includes(pc.connectionState)) {
+    await waitUntilEvent(pc, 'connectionstatechange');
+  }
+}
+
+async function waitForIceGatheringState(pc, wantedStates) {
+  while (!wantedStates.includes(pc.iceGatheringState)) {
+    await waitUntilEvent(pc, 'icegatheringstatechange');
+  }
+}
+
+// Resolves when RTP packets have been received.
+async function listenForSSRCs(t, receiver) {
+  while (true) {
+    const ssrcs = receiver.getSynchronizationSources();
+    if (Array.isArray(ssrcs) && ssrcs.length > 0) {
+      return ssrcs;
+    }
+    await new Promise(r => t.step_timeout(r, 0));
+  }
+}
+
+// Helper function to create a pair of connected data channels.
 // On success the promise resolves to an array with two data channels.
 // It does the heavy lifting of performing signaling handshake,
 // ICE candidate exchange, and waiting for data channel at two
-// end points to open.
-function createDataChannelPair(
-  pc1=new RTCPeerConnection(),
-  pc2=new RTCPeerConnection())
-{
-  const channel1 = pc1.createDataChannel('');
-
-  exchangeIceCandidates(pc1, pc2);
-
-  return new Promise((resolve, reject) => {
-    let channel2;
-    let opened1 = false;
-    let opened2 = false;
-
-    function onBothOpened() {
-      resolve([channel1, channel2]);
+// end points to open. Can do both negotiated and non-negotiated setup.
+async function createDataChannelPair(t, options,
+                                     pc1 = createPeerConnectionWithCleanup(t),
+                                     pc2 = createPeerConnectionWithCleanup(t)) {
+  let pair = [], bothOpen;
+  try {
+    if (options.negotiated) {
+      pair = [pc1, pc2].map(pc => pc.createDataChannel('', options));
+      bothOpen = Promise.all(pair.map(dc => new Promise((r, e) => {
+        dc.onopen = r;
+        dc.onerror = ({error}) => e(error);
+      })));
+    } else {
+      pair = [pc1.createDataChannel('', options)];
+      bothOpen = Promise.all([
+        new Promise((r, e) => {
+          pair[0].onopen = r;
+          pair[0].onerror = ({error}) => e(error);
+        }),
+        new Promise((r, e) => pc2.ondatachannel = ({channel}) => {
+          pair[1] = channel;
+          channel.onopen = r;
+          channel.onerror = ({error}) => e(error);
+        })
+      ]);
     }
-
-    function onOpen1() {
-      opened1 = true;
-      if(opened2) onBothOpened();
+    exchangeIceCandidates(pc1, pc2);
+    await exchangeOfferAnswer(pc1, pc2);
+    await bothOpen;
+    return pair;
+  } finally {
+    for (const dc of pair) {
+       dc.onopen = dc.onerror = null;
     }
+  }
+}
 
-    function onOpen2() {
-      opened2 = true;
-      if(opened1) onBothOpened();
+// Wait for RTP and RTCP stats to arrive
+async function waitForRtpAndRtcpStats(pc) {
+  // If remote stats are never reported, return after 5 seconds.
+  const startTime = performance.now();
+  while (true) {
+    const report = await pc.getStats();
+    const stats = [...report.values()].filter(({type}) => type.endsWith("bound-rtp"));
+    // Each RTP and RTCP stat has a reference
+    // to the matching stat in the other direction
+    if (stats.length && stats.every(({localId, remoteId}) => localId || remoteId)) {
+      break;
     }
-
-    function onDataChannel(event) {
-      channel2 = event.channel;
-      channel2.addEventListener('error', reject);
-      const { readyState } = channel2;
-
-      if(readyState === 'open') {
-        onOpen2();
-      } else if(readyState === 'connecting') {
-        channel2.addEventListener('open', onOpen2);
-      } else {
-        reject(new Error(`Unexpected ready state ${readyState}`));
-      }
+    if (performance.now() > startTime + 5000) {
+      break;
     }
-
-    channel1.addEventListener('open', onOpen1);
-    channel1.addEventListener('error', reject);
-
-    pc2.addEventListener('datachannel', onDataChannel);
-
-    doSignalingHandshake(pc1, pc2);
-  });
+  }
 }
 
 // Wait for a single message event and return
 // a promise that resolve when the event fires
 function awaitMessage(channel) {
+  const once = true;
   return new Promise((resolve, reject) => {
-    channel.addEventListener('message',
-      event => resolve(event.data),
-      { once: true });
-
-    channel.addEventListener('error', reject, { once: true });
+    channel.addEventListener('message', ({data}) => resolve(data), {once});
+    channel.addEventListener('error', reject, {once});
   });
 }
 
 // Helper to convert a blob to array buffer so that
 // we can read the content
-function blobToArrayBuffer(blob) {
+async function blobToArrayBuffer(blob) {
+  const reader = new FileReader();
+  reader.readAsArrayBuffer(blob);
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.addEventListener('load', () => {
-      resolve(reader.result);
-    });
-
-    reader.addEventListener('error', reject);
-
-    reader.readAsArrayBuffer(blob);
+    reader.addEventListener('load', () => resolve(reader.result), {once: true});
+    reader.addEventListener('error', () => reject(reader.error), {once: true});
   });
 }
 
-// Assert that two ArrayBuffer objects have the same byte values
-function assert_equals_array_buffer(buffer1, buffer2) {
-  assert_true(buffer1 instanceof ArrayBuffer,
-    'Expect buffer to be instance of ArrayBuffer');
+// Assert that two TypedArray or ArrayBuffer objects have the same byte values
+function assert_equals_typed_array(array1, array2) {
+  const [view1, view2] = [array1, array2].map((array) => {
+    if (array instanceof ArrayBuffer) {
+      return new DataView(array);
+    } else {
+      assert_true(array.buffer instanceof ArrayBuffer,
+        'Expect buffer to be instance of ArrayBuffer');
+      return new DataView(array.buffer, array.byteOffset, array.byteLength);
+    }
+  });
 
-  assert_true(buffer2 instanceof ArrayBuffer,
-    'Expect buffer to be instance of ArrayBuffer');
+  assert_equals(view1.byteLength, view2.byteLength,
+    'Expect both arrays to be of the same byte length');
 
-  assert_equals(buffer1.byteLength, buffer2.byteLength,
-    'Expect both array buffers to be of the same byte length');
+  const byteLength = view1.byteLength;
 
-  const byteLength = buffer1.byteLength;
-  const byteArray1 = new Uint8Array(buffer1);
-  const byteArray2 = new Uint8Array(buffer2);
-
-  for(let i=0; i<byteLength; i++) {
-    assert_equals(byteArray1[i], byteArray2[i],
+  for (let i = 0; i < byteLength; ++i) {
+    assert_equals(view1.getUint8(i), view2.getUint8(i),
       `Expect byte at buffer position ${i} to be equal`);
   }
 }
 
-// Generate a MediaStreamTrack for testing use.
-// We generate it by creating an anonymous RTCPeerConnection,
-// call addTransceiver(), and use the remote track
-// from RTCRtpReceiver. This track is supposed to
-// receive media from a remote peer and be played locally.
-// We use this approach instead of getUserMedia()
-// to bypass the permission dialog and fake media devices,
-// as well as being able to generate many unique tracks.
-function generateMediaStreamTrack(kind) {
-  const pc = new RTCPeerConnection();
+// These media tracks will be continually updated with deterministic "noise" in
+// order to ensure UAs do not cease transmission in response to apparent
+// silence.
+//
+// > Many codecs and systems are capable of detecting "silence" and changing
+// > their behavior in this case by doing things such as not transmitting any
+// > media.
+//
+// Source: https://w3c.github.io/webrtc-pc/#offer-answer-options
+const trackFactories = {
+  // Share a single context between tests to avoid exceeding resource limits
+  // without requiring explicit destruction.
+  audioContext: null,
 
-  assert_idl_attribute(pc, 'addTransceiver',
-    'Expect pc to have addTransceiver() method');
+  /**
+   * Given a set of requested media types, determine if the user agent is
+   * capable of procedurally generating a suitable media stream.
+   *
+   * @param {object} requested
+   * @param {boolean} [requested.audio] - flag indicating whether the desired
+   *                                      stream should include an audio track
+   * @param {boolean} [requested.video] - flag indicating whether the desired
+   *                                      stream should include a video track
+   *
+   * @returns {boolean}
+   */
+  canCreate(requested) {
+    const supported = {
+      audio: !!window.AudioContext && !!window.MediaStreamAudioDestinationNode,
+      video: !!HTMLCanvasElement.prototype.captureStream
+    };
 
-  const transceiver = pc.addTransceiver(kind);
-  const { receiver } = transceiver;
-  const { track } = receiver;
+    return (!requested.audio || supported.audio) &&
+      (!requested.video || supported.video);
+  },
 
-  assert_true(track instanceof MediaStreamTrack,
-    'Expect receiver track to be instance of MediaStreamTrack');
+  audio() {
+    const ctx = trackFactories.audioContext = trackFactories.audioContext ||
+      new AudioContext();
+    const oscillator = ctx.createOscillator();
+    const dst = oscillator.connect(ctx.createMediaStreamDestination());
+    oscillator.start();
+    return dst.stream.getAudioTracks()[0];
+  },
 
-  return track;
+  video({width = 640, height = 480, signal} = {}) {
+    const canvas = Object.assign(
+      document.createElement("canvas"), {width, height}
+    );
+    const ctx = canvas.getContext('2d');
+    const stream = canvas.captureStream();
+
+    let count = 0;
+    const interval = setInterval(() => {
+      ctx.fillStyle = `rgb(${count%255}, ${count*count%255}, ${count%255})`;
+      count += 1;
+      ctx.fillRect(0, 0, width, height);
+      // If signal is set (0-255), add a constant-color box of that luminance to
+      // the video frame at coordinates 20 to 60 in both X and Y direction.
+      // (big enough to avoid color bleed from surrounding video in some codecs,
+      // for more stable tests).
+      if (signal != undefined) {
+        ctx.fillStyle = `rgb(${signal}, ${signal}, ${signal})`;
+        ctx.fillRect(20, 20, 40, 40);
+      }
+    }, 100);
+
+    if (document.body) {
+      document.body.appendChild(canvas);
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.appendChild(canvas);
+      }, {once: true});
+    }
+
+    // Implement track.stop() for performance in some tests on some platforms
+    const track = stream.getVideoTracks()[0];
+    const nativeStop = track.stop;
+    track.stop = function stop() {
+      clearInterval(interval);
+      nativeStop.apply(this);
+      if (document.body && canvas.parentElement == document.body) {
+        document.body.removeChild(canvas);
+      }
+    };
+    return track;
+  }
+};
+
+// Get the signal from a video element inserted by createNoiseStream
+function getVideoSignal(v) {
+  if (v.videoWidth < 60 || v.videoHeight < 60) {
+    throw new Error('getVideoSignal: video too small for test');
+  }
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 60;
+  const context = canvas.getContext('2d');
+  context.drawImage(v, 0, 0);
+  // Extract pixel value at position 40, 40
+  const pixel = context.getImageData(40, 40, 1, 1);
+  // Use luma reconstruction to get back original value according to
+  // ITU-R rec BT.709
+  return (pixel.data[0] * 0.21 + pixel.data[1] * 0.72 + pixel.data[2] * 0.07);
 }
 
-// Obtain a MediaStreamTrack of kind using getUserMedia.
+async function detectSignal(t, v, value) {
+  while (true) {
+    const signal = getVideoSignal(v).toFixed();
+    // allow off-by-two pixel error (observed in some implementations)
+    if (value - 2 <= signal && signal <= value + 2) {
+      return;
+    }
+    // We would like to wait for each new frame instead here,
+    // but there seems to be no such callback.
+    await new Promise(r => t.step_timeout(r, 100));
+  }
+}
+
+// Generate a MediaStream bearing the specified tracks.
+//
+// @param {object} [caps]
+// @param {boolean} [caps.audio] - flag indicating whether the generated stream
+//                                 should include an audio track
+// @param {boolean} [caps.video] - flag indicating whether the generated stream
+//                                 should include a video track, or parameters for video
+async function getNoiseStream(caps = {}) {
+  if (!trackFactories.canCreate(caps)) {
+    return navigator.mediaDevices.getUserMedia(caps);
+  }
+  const tracks = [];
+
+  if (caps.audio) {
+    tracks.push(trackFactories.audio());
+  }
+
+  if (caps.video) {
+    tracks.push(trackFactories.video(caps.video));
+  }
+
+  return new MediaStream(tracks);
+}
+
+// Obtain a MediaStreamTrack of kind using procedurally-generated streams (and
+// falling back to `getUserMedia` when the user agent cannot generate the
+// requested streams).
 // Return Promise of pair of track and associated mediaStream.
 // Assumes that there is at least one available device
 // to generate the track.
 function getTrackFromUserMedia(kind) {
-  return navigator.mediaDevices.getUserMedia({ [kind]: true })
+  return getNoiseStream({ [kind]: true })
   .then(mediaStream => {
-    const tracks = mediaStream.getTracks();
-    assert_greater_than(tracks.length, 0,
-      `Expect getUserMedia to return at least one track of kind ${kind}`);
-    const [ track ] = tracks;
+    const [track] = mediaStream.getTracks();
     return [track, mediaStream];
   });
 }
@@ -418,30 +529,178 @@ function getUserMediaTracksAndStreams(count, type = 'audio') {
   });
 }
 
-// Creates an offer for the caller, set it as the caller's local description and
-// then sets the callee's remote description to the offer. Returns the Promise
-// of the setRemoteDescription call.
-function performOffer(caller, callee) {
-  let sessionDescription;
-  return caller.createOffer()
-  .then(offer => {
-    sessionDescription = offer;
-    return caller.setLocalDescription(offer);
-  }).then(() => callee.setRemoteDescription(sessionDescription));
+// Performs an offer exchange caller -> callee.
+async function exchangeOffer(caller, callee) {
+  await caller.setLocalDescription(await caller.createOffer());
+  await callee.setRemoteDescription(caller.localDescription);
+}
+// Performs an answer exchange caller -> callee.
+async function exchangeAnswer(caller, callee) {
+  // Note that caller's remote description must be set first; if not,
+  // there's a chance that candidates from callee arrive at caller before
+  // it has a remote description to apply them to.
+  const answer = await callee.createAnswer();
+  await caller.setRemoteDescription(answer);
+  await callee.setLocalDescription(answer);
+}
+async function exchangeOfferAnswer(caller, callee) {
+  await exchangeOffer(caller, callee);
+  await exchangeAnswer(caller, callee);
 }
 
+// The returned promise is resolved with caller's ontrack event.
+async function exchangeAnswerAndListenToOntrack(t, caller, callee) {
+  const ontrackPromise = addEventListenerPromise(t, caller, 'track');
+  await exchangeAnswer(caller, callee);
+  return ontrackPromise;
+}
+// The returned promise is resolved with callee's ontrack event.
+async function exchangeOfferAndListenToOntrack(t, caller, callee) {
+  const ontrackPromise = addEventListenerPromise(t, callee, 'track');
+  await exchangeOffer(caller, callee);
+  return ontrackPromise;
+}
 
-// The resolver has a |promise| that can be resolved or rejected using |resolve|
+// The resolver extends a |promise| that can be resolved or rejected using |resolve|
 // or |reject|.
-class Resolver {
-  constructor() {
-    let promiseResolve;
-    let promiseReject;
-    this.promise = new Promise(function(resolve, reject) {
-      promiseResolve = resolve;
-      promiseReject = reject;
+class Resolver extends Promise {
+  constructor(executor) {
+    let resolve, reject;
+    super((resolve_, reject_) => {
+      resolve = resolve_;
+      reject = reject_;
+      if (executor) {
+        return executor(resolve_, reject_);
+      }
     });
-    this.resolve = promiseResolve;
-    this.reject = promiseReject;
+
+    this._done = false;
+    this._resolve = resolve;
+    this._reject = reject;
+  }
+
+  /**
+   * Return whether the promise is done (resolved or rejected).
+   */
+  get done() {
+    return this._done;
+  }
+
+  /**
+   * Resolve the promise.
+   */
+  resolve(...args) {
+    this._done = true;
+    return this._resolve(...args);
+  }
+
+  /**
+   * Reject the promise.
+   */
+  reject(...args) {
+    this._done = true;
+    return this._reject(...args);
   }
 }
+
+function addEventListenerPromise(t, obj, type, listener) {
+  if (!listener) {
+    return waitUntilEvent(obj, type);
+  }
+  return new Promise(r => obj.addEventListener(type,
+                                               t.step_func(e => r(listener(e))),
+                                               {once: true}));
+}
+
+function createPeerConnectionWithCleanup(t) {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+  return pc;
+}
+
+async function createTrackAndStreamWithCleanup(t, kind = 'audio') {
+  let constraints = {};
+  constraints[kind] = true;
+  const stream = await getNoiseStream(constraints);
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+  return [track, stream];
+}
+
+function findTransceiverForSender(pc, sender) {
+  const transceivers = pc.getTransceivers();
+  for (let i = 0; i < transceivers.length; ++i) {
+    if (transceivers[i].sender == sender)
+      return transceivers[i];
+  }
+  return null;
+}
+
+function preferCodec(transceiver, mimeType, sdpFmtpLine) {
+  const {codecs} = RTCRtpSender.getCapabilities(transceiver.receiver.track.kind);
+  // sdpFmtpLine is optional, pick the first partial match if not given.
+  const selectedCodecIndex = codecs.findIndex(c => {
+    return c.mimeType === mimeType && (c.sdpFmtpLine === sdpFmtpLine || !sdpFmtpLine);
+  });
+  const selectedCodec = codecs[selectedCodecIndex];
+  codecs.slice(selectedCodecIndex, 1);
+  codecs.unshift(selectedCodec);
+  return transceiver.setCodecPreferences(codecs);
+}
+
+// Contains a set of values and will yell at you if you try to add a value twice.
+class UniqueSet extends Set {
+  constructor(items) {
+    super();
+    if (items !== undefined) {
+      for (const item of items) {
+        this.add(item);
+      }
+    }
+  }
+
+  add(value, message) {
+    if (message === undefined) {
+      message = `Value '${value}' needs to be unique but it is already in the set`;
+    }
+    assert_true(!this.has(value), message);
+    super.add(value);
+  }
+}
+
+const iceGatheringStateTransitions = async (pc, ...states) => {
+  for (const state of states) {
+    await new Promise((resolve, reject) => {
+      pc.addEventListener('icegatheringstatechange', () => {
+        if (pc.iceGatheringState == state) {
+          resolve();
+        } else {
+          reject(`Unexpected gathering state: ${pc.iceGatheringState}, was expecting ${state}`);
+        }
+      }, {once: true});
+    });
+  }
+};
+
+const initialOfferAnswerWithIceGatheringStateTransitions =
+    async (pc1, pc2, offerOptions) => {
+      await pc1.setLocalDescription(
+        await pc1.createOffer(offerOptions));
+      const pc1Transitions =
+          iceGatheringStateTransitions(pc1, 'gathering', 'complete');
+      await pc2.setRemoteDescription(pc1.localDescription);
+      await pc2.setLocalDescription(await pc2.createAnswer());
+      const pc2Transitions =
+          iceGatheringStateTransitions(pc2, 'gathering', 'complete');
+      await pc1.setRemoteDescription(pc2.localDescription);
+      await pc1Transitions;
+      await pc2Transitions;
+    };
+
+const expectNoMoreGatheringStateChanges = async (t, pc) => {
+  pc.onicegatheringstatechange =
+      t.step_func(() => {
+        assert_unreached(
+            'Should not get an icegatheringstatechange right now!');
+      });
+};

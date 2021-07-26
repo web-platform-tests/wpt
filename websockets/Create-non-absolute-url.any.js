@@ -1,8 +1,11 @@
-// META: script=websocket.sub.js
+// META: script=constants.sub.js
+// META: variant=
+// META: variant=?wss
+// META: variant=?wpt_flags=h2
 
 test(function() {
   var wsocket;
-  assert_throws("SYNTAX_ERR", function() {
+  assert_throws_dom("SYNTAX_ERR", function() {
     wsocket = CreateWebSocketNonAbsolute()
   });
-}, "W3C WebSocket API - Create WebSocket - Pass a non absolute URL - SYNTAX_ERR is thrown")
+}, "Create WebSocket - Pass a non absolute URL - SYNTAX_ERR is thrown")

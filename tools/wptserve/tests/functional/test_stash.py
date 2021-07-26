@@ -18,10 +18,10 @@ class TestResponseSetCookie(TestUsingServer):
         @wptserve.handlers.handler
         def handler(request, response):
             if request.method == "POST":
-                request.server.stash.put(request.POST.first("id"), request.POST.first("data"))
+                request.server.stash.put(request.POST.first(b"id"), request.POST.first(b"data"))
                 data = "OK"
             elif request.method == "GET":
-                data = request.server.stash.take(request.GET.first("id"))
+                data = request.server.stash.take(request.GET.first(b"id"))
                 if data is None:
                     return "NOT FOUND"
             return data
@@ -31,13 +31,13 @@ class TestResponseSetCookie(TestUsingServer):
         self.server.router.register(*route)
 
         resp = self.request(route[1], method="POST", body={"id": id, "data": "Sample data"})
-        self.assertEqual(resp.read(), "OK")
+        self.assertEqual(resp.read(), b"OK")
 
         resp = self.request(route[1], query="id=" + id)
-        self.assertEqual(resp.read(), "Sample data")
+        self.assertEqual(resp.read(), b"Sample data")
 
         resp = self.request(route[1], query="id=" + id)
-        self.assertEqual(resp.read(), "NOT FOUND")
+        self.assertEqual(resp.read(), b"NOT FOUND")
 
 
 if __name__ == '__main__':

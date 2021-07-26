@@ -1,48 +1,63 @@
 <!DOCTYPE html>
-<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1" />
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#scroll-snap-type" />
+<meta name="viewport" content="user-scalable=no">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-body {
+html {
   margin: 0px;
   overflow: scroll;
   scroll-snap-type: both mandatory;
+}
+div {
+  position: absolute;
 }
 .scroller {
   overflow: scroll;
   scroll-snap-type: both mandatory;
 }
-#div-scroller {
+#inner-scroller {
+  top: 3000px;
   width: 800px;
   height: 800px;
 }
-.content {
-  width: 2100px;
-  height: 2100px;
+.space {
+  left: 0px;
+  top: 0px;
+  width: 4000px;
+  height: 4000px;
 }
 .target {
-  width: 1000px;
-  height: 1000px;
+  width: 600px;
+  height: 600px;
   scroll-snap-align: start;
-  float: left;
+}
+
+.left {
+  left: 0px;
+}
+.right {
+  left: 1000px;
+}
+.top {
+  top: 0px;
+}
+.bottom {
+  top: 1000px;
 }
 </style>
-
 <body class="scroller">
-  <div class="content" id="content">
-    <div class="target"></div>
-    <div class="target"></div>
-    <div class="target"></div>
-    <div class="target"></div>
-  </div>
-
-  <div class="scroller" id="div-scroller">
-    <div class="content">
-      <div class="target"></div>
-      <div class="target"></div>
-      <div class="target"></div>
-      <div class="target"></div>
-    </div>
+  <div class="space"></div>
+  <div class="target left top"></div>
+  <div class="target right top"></div>
+  <div class="target left bottom"></div>
+  <div class="target right bottom"></div>
+  <div class="scroller" id="inner-scroller">
+    <div class="space"></div>
+    <div class="target left top"></div>
+    <div class="target right top"></div>
+    <div class="target left bottom"></div>
+    <div class="target right bottom"></div>
   </div>
 </body>
 
@@ -55,12 +70,14 @@ function format_dict(dict) {
   return `{${props.join(', ')}}`;
 }
 
-var divScroller = document.getElementById("div-scroller");
+var divScroller = document.getElementById("inner-scroller");
 var viewport = document.scrollingElement;
 [
   [{left: 800}, 1000, 0],
-  [{top: 1200}, 0, 1000],
-  [{left: 1200, top: 800}, 1000, 1000]
+  [{top: 900}, 0, 1000],
+  [{left: 900, top: 800}, 1000, 1000],
+  [{left: 800, top: -100}, 1000, 0], /* outside bounds on y axis */
+  [{left: 10000, top: -100}, 1000, 0] /* outside bounds on both axes */
 ].forEach(([input, expectedX, expectedY]) => {
   test(() => {
     divScroller.scrollTo(0, 0);
@@ -135,11 +152,9 @@ var viewport = document.scrollingElement;
     window.scrollTo(0, 0);
     assert_equals(window.scrollX, 0);
     assert_equals(window.scrollY, 0);
-    window.scrollTo(input);
+    window.scrollBy(input);
     assert_equals(window.scrollX, expectedX);
     assert_equals(window.scrollY, expectedY);
   }, `scrollBy(${format_dict(input)}) on window lands on (${expectedX}, ${expectedY})`);
 });
-
-document.body.removeChild(document.getElementById("content"));
 </script>

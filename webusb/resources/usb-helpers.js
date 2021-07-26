@@ -8,40 +8,24 @@
 // these tests the browser must be run with these options:
 //
 //   --enable-blink-features=MojoJS,MojoJSTest
-let loadChromiumResources = Promise.resolve().then(() => {
-  if (!MojoInterfaceInterceptor) {
-    // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
-    // not present in the global namespace.
-    return;
+
+(() => {
+  // Load scripts needed by the test API on context creation.
+  if (isChromiumBased) {
+    loadScript('/resources/chromium/webusb-child-test.js');
   }
-
-  let chain = Promise.resolve();
-  [
-    '/resources/chromium/mojo_bindings.js',
-    '/resources/chromium/string16.mojom.js',
-    '/resources/chromium/device.mojom.js',
-    '/resources/chromium/device_manager.mojom.js',
-    '/resources/chromium/chooser_service.mojom.js',
-    '/resources/chromium/webusb-test.js',
-  ].forEach(path => {
-    let script = document.createElement('script');
-    script.src = path;
-    script.async = false;
-    chain = chain.then(() => new Promise(resolve => {
-      script.onload = () => resolve();
-    }));
-    document.head.appendChild(script);
-  });
-
-  return chain;
-});
+})();
 
 function usb_test(func, name, properties) {
   promise_test(async () => {
+    assert_implements(navigator.usb, 'missing navigator.usb');
     if (navigator.usb.test === undefined) {
       // Try loading a polyfill for the WebUSB Testing API.
-      await loadChromiumResources;
+      if (isChromiumBased) {
+        await loadScript('/resources/chromium/webusb-test.js');
+      }
     }
+    assert_implements(navigator.usb.test, 'missing navigator.usb.test after initialization');
 
     await navigator.usb.test.initialize();
     try {

@@ -8,10 +8,12 @@
 <meta name="assert" content="gradient positions support only the '<position>' grammar.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/parsing-testcommon.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
 </head>
 <body>
 <script>
+test_invalid_value("background-image", "radial-gradient(at top 0px, red, blue)");
+
 // The following were supported in an earlier version of the spec.
 // https://github.com/w3c/csswg-drafts/issues/2140
 // Deprecated in Blink with support to be removed in M68, around July 2018.

@@ -1,5 +1,4 @@
-from tests.support.asserts import assert_error, assert_same_element
-from tests.support.inline import inline
+from tests.support.asserts import assert_error, assert_is_active_element, assert_success
 
 
 def read_global(session, name):
@@ -11,45 +10,17 @@ def get_active_element(session):
         "GET", "session/{session_id}/element/active".format(**vars(session)))
 
 
-def assert_is_active_element(session, response):
-    """Ensure that the provided object is a successful WebDriver
-    response describing an element reference and that the referenced
-    element matches the element returned by the `activeElement`
-    attribute of the current browsing context's active document.
-
-    """
-    assert response.status == 200
-    assert "value" in response.body
-
-    from_js = session.execute_script("return document.activeElement")
-
-    if response.body["value"] is None:
-        assert from_js is None
-    else:
-        assert_same_element(session, response.body["value"], from_js)
-
-
-def test_closed_context(session, create_window):
-    """
-    > 1. If the current browsing context is no longer open, return error with
-    >    error code no such window.
-    """
-    new_window = create_window()
-    session.window_handle = new_window
-    session.close()
-
+def test_no_top_browsing_context(session, closed_window):
     response = get_active_element(session)
     assert_error(response, "no such window")
 
 
-def test_success_document(session):
-    """
-    > [...]
-    > 3. Let active element be the active element of the current browsing
-    >    context's document element.
-    > 4. Let active web element be the JSON Serialization of active element.
-    > 5. Return success with data active web element.
-    """
+def test_no_browsing_context(session, closed_frame):
+    response = get_active_element(session)
+    assert_error(response, "no such window")
+
+
+def test_success_document(session, inline):
     session.url = inline("""
         <body>
             <h1>Heading</h1>
@@ -58,11 +29,13 @@ def test_success_document(session):
             <input style="opacity: 0" />
             <p>Another element</p>
         </body>""")
+
     response = get_active_element(session)
-    assert_is_active_element(session, response)
+    element = assert_success(response)
+    assert_is_active_element(session, element)
 
 
-def test_sucess_input(session):
+def test_sucess_input(session, inline):
     session.url = inline("""
         <body>
             <h1>Heading</h1>
@@ -70,11 +43,13 @@ def test_sucess_input(session):
             <input style="opacity: 0" />
             <p>Another element</p>
         </body>""")
+
     response = get_active_element(session)
-    assert_is_active_element(session, response)
+    element = assert_success(response)
+    assert_is_active_element(session, element)
 
 
-def test_sucess_input_non_interactable(session):
+def test_sucess_input_non_interactable(session, inline):
     session.url = inline("""
         <body>
             <h1>Heading</h1>
@@ -82,11 +57,13 @@ def test_sucess_input_non_interactable(session):
             <input style="opacity: 0" autofocus />
             <p>Another element</p>
         </body>""")
+
     response = get_active_element(session)
-    assert_is_active_element(session, response)
+    element = assert_success(response)
+    assert_is_active_element(session, element)
 
 
-def test_success_explicit_focus(session):
+def test_success_explicit_focus(session, inline):
     session.url = inline("""
         <body>
             <h1>Heading</h1>
@@ -96,15 +73,18 @@ def test_success_explicit_focus(session):
 
     session.execute_script("document.body.getElementsByTagName('h1')[0].focus()")
     response = get_active_element(session)
-    assert_is_active_element(session, response)
+    element = assert_success(response)
+    assert_is_active_element(session, element)
 
     session.execute_script("document.body.getElementsByTagName('input')[0].focus()")
     response = get_active_element(session)
-    assert_is_active_element(session, response)
+    element = assert_success(response)
+    assert_is_active_element(session, element)
 
     session.execute_script("document.body.getElementsByTagName('iframe')[0].focus()")
     response = get_active_element(session)
-    assert_is_active_element(session, response)
+    element = assert_success(response)
+    assert_is_active_element(session, element)
 
     session.execute_script("document.body.getElementsByTagName('iframe')[0].focus();")
     session.execute_script("""
@@ -115,14 +95,16 @@ def test_success_explicit_focus(session):
           iframe.removeNode(true);
         }""")
     response = get_active_element(session)
-    assert_is_active_element(session, response)
+    element = assert_success(response)
+    assert_is_active_element(session, element)
 
     session.execute_script("document.body.appendChild(document.createElement('textarea'))")
     response = get_active_element(session)
-    assert_is_active_element(session, response)
+    element = assert_success(response)
+    assert_is_active_element(session, element)
 
 
-def test_success_iframe_content(session):
+def test_success_iframe_content(session, inline):
     session.url = inline("<body></body>")
     session.execute_script("""
         let iframe = document.createElement('iframe');
@@ -133,10 +115,11 @@ def test_success_iframe_content(session):
         """)
 
     response = get_active_element(session)
-    assert_is_active_element(session, response)
+    element = assert_success(response)
+    assert_is_active_element(session, element)
 
 
-def test_missing_document_element(session):
+def test_missing_document_element(session, inline):
     session.url = inline("<body></body>")
     session.execute_script("""
         if (document.body.remove) {

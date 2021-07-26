@@ -1,37 +1,17 @@
+import errno
 import logging
 import os
+import shutil
+import stat
 import subprocess
-import sys
 import tarfile
+import time
 import zipfile
 from io import BytesIO
+from socket import error as SocketError  # NOQA: N812
+from urllib.request import urlopen
 
 logger = logging.getLogger(__name__)
-
-
-class Kwargs(dict):
-    def set_if_none(self,
-                    name,            # type: str
-                    value,           # type: Any
-                    err_fn=None,     # type: (Kwargs, str) -> Any
-                    desc=None,       # type: str
-                    extra_cond=None  # type: (Kwargs) -> bool
-                    ):
-        if desc is None:
-            desc = name
-
-        if name not in self or self[name] is None:
-            if extra_cond is not None and not extra_cond(self):
-                return
-            if callable(value):
-                value = value()
-            if not value:
-                if err_fn is not None:
-                    return err_fn(self, "Failed to find %s" % desc)
-                else:
-                    return
-            self[name] = value
-            logger.info("Set %s to %s" % (desc, value))
 
 
 def call(*args):
@@ -39,28 +19,14 @@ def call(*args):
 
     Returns a bytestring of the subprocess output if no error.
     """
-    logger.debug("%s" % " ".join(args))
+    logger.debug(" ".join(args))
     try:
-        return subprocess.check_output(args)
+        return subprocess.check_output(args).decode('utf8')
     except subprocess.CalledProcessError as e:
         logger.critical("%s exited with return code %i" %
                         (e.cmd, e.returncode))
         logger.critical(e.output)
         raise
-
-
-def get_git_cmd(repo_path):
-    """Create a function for invoking git commands as a subprocess."""
-    def git(cmd, *args):
-        full_cmd = ["git", cmd] + list(args)
-        try:
-            logger.debug(" ".join(full_cmd))
-            return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT).strip()
-        except subprocess.CalledProcessError as e:
-            logger.error("Git command exited with status %i" % e.returncode)
-            logger.error(e.output)
-            sys.exit(1)
-    return git
 
 
 def seekable(fileobj):
@@ -94,21 +60,6 @@ def unzip(fileobj, dest=None, limit=None):
             os.chmod(os.path.join(dest, info.filename), perm)
 
 
-class pwd(object):
-    """Create context for temporarily changing present working directory."""
-    def __init__(self, dir):
-        self.dir = dir
-        self.old_dir = None
-
-    def __enter__(self):
-        self.old_dir = os.path.abspath(os.curdir)
-        os.chdir(self.dir)
-
-    def __exit__(self, *args, **kwargs):
-        os.chdir(self.old_dir)
-        self.old_dir = None
-
-
 def get(url):
     """Issue GET request to a given URL and return the response."""
     import requests
@@ -117,3 +68,64 @@ def get(url):
     resp = requests.get(url, stream=True)
     resp.raise_for_status()
     return resp
+
+
+def get_download_to_descriptor(fd, url, max_retries=5):
+    """Download an URL in chunks and saves it to a file descriptor (truncating it)
+    It doesn't close the descriptor, but flushes it on success.
+    It retries the download in case of ECONNRESET up to max_retries.
+    This function is meant to download big files directly to the disk without
+    caching the whole file in memory.
+    """
+    if max_retries < 1:
+        max_retries = 1
+    wait = 2
+    for current_retry in range(1, max_retries+1):
+        try:
+            logger.info("Downloading %s Try %d/%d" % (url, current_retry, max_retries))
+            resp = urlopen(url)
+            # We may come here in a retry, ensure to truncate fd before start writing.
+            fd.seek(0)
+            fd.truncate(0)
+            while True:
+                chunk = resp.read(16*1024)
+                if not chunk:
+                    break  # Download finished
+                fd.write(chunk)
+            fd.flush()
+            # Success
+            return
+        except SocketError as e:
+            if current_retry < max_retries and e.errno == errno.ECONNRESET:
+                # Retry
+                logger.error("Connection reset by peer. Retrying after %ds..." % wait)
+                time.sleep(wait)
+                wait *= 2
+            else:
+                # Maximum retries or unknown error
+                raise
+
+def rmtree(path):
+    # This works around two issues:
+    # 1. Cannot delete read-only files owned by us (e.g. files extracted from tarballs)
+    # 2. On Windows, we sometimes just need to retry in case the file handler
+    #    hasn't been fully released (a common issue).
+    def handle_remove_readonly(func, path, exc):
+        excvalue = exc[1]
+        if func in (os.rmdir, os.remove, os.unlink) and excvalue.errno == errno.EACCES:
+            os.chmod(path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
+            func(path)
+        else:
+            raise
+
+    return shutil.rmtree(path, onerror=handle_remove_readonly)
+
+
+def sha256sum(file_path):
+    """Computes the SHA256 hash sum of a file"""
+    from hashlib import sha256
+    hash = sha256()
+    with open(file_path, 'rb') as f:
+        for chunk in iter(lambda: f.read(4096), b''):
+            hash.update(chunk)
+    return hash.hexdigest()

@@ -58,7 +58,7 @@
     assert_true(dtlsTransport instanceof RTCDtlsTransport,
       'Expect sctp.transport to be an RTCDtlsTransport');
 
-    const iceTransport = dtlsTransport.transport;
+    const iceTransport = dtlsTransport.iceTransport;
     assert_true(iceTransport instanceof RTCIceTransport,
       'Expect dtlsTransport.transport to be an RTCIceTransport');
 
@@ -81,7 +81,6 @@
 
     assert_equals(typeof param.usernameFragment, 'string',
       'Expect param.usernameFragment to be set with string value');
-
     assert_equals(typeof param.password, 'string',
       'Expect param.password to be set with string value');
   }
@@ -90,7 +89,7 @@
     const { state, gatheringState, role, component } = iceTransport;
 
     assert_true(role === 'controlling' || role === 'controlled',
-      'Expect RTCIceRole to be either controlling or controlled');
+      'Expect RTCIceRole to be either controlling or controlled, found ' + role);
 
     assert_true(component === 'rtp' || component === 'rtcp',
       'Expect RTCIceComponent to be either rtp or rtcp');
@@ -120,9 +119,11 @@
 
   promise_test(t => {
     const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
 
-    return createDataChannelPair(pc1, pc2)
+    return createDataChannelPair(t, {}, pc1, pc2)
     .then(([channel1, channel2]) => {
       // Send a ping message and wait for it just to make sure
       // that the connection is fully working before testing
@@ -165,7 +166,9 @@
 
   promise_test(t => {
     const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
     pc1.createDataChannel('');
 
     // setRemoteDescription(answer) without the other peer

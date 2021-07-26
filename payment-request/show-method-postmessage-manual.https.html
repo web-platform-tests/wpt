@@ -12,34 +12,6 @@ setup({
   allow_uncaught_exception: true,
 });
 
-const defaultMethods = Object.freeze([
-  { supportedMethods: "basic-card" },
-  { supportedMethods: "https://apple.com/apple-pay" },
-]);
-
-const defaultDetails = Object.freeze({
-  id: "fail",
-  total: {
-    label: "Total",
-    amount: {
-      currency: "USD",
-      value: "1.00",
-    },
-  },
-});
-
-test(() => {
-  assert_throws(
-    "SecurityError",
-    () => {
-      const request = new PaymentRequest(defaultMethods, defaultDetails);
-      request.show(); // <--- should throw here
-      request.abort();
-    },
-    "throws a SecurityError if not triggered by user activation"
-  );
-});
-
 async function runUserActivation(button) {
   button.disabled = true;
   const { contentWindow: iframeWindow } = document.getElementById("iframe");
@@ -72,10 +44,10 @@ async function runUserActivation(button) {
     </button>
   </li>
 </ol>
-<iframe width="100%" id="iframe" src="show-method-postmessage-iframe.html" allowpaymentrequest></iframe>
+<iframe width="100%" id="iframe" src="show-method-postmessage-iframe.html" allow="payment"></iframe>
 <p>
   <small>
-    If you find a buggy test, please <a href="https://github.com/w3c/web-platform-tests/issues">file a bug</a>
-    and tag one of the <a href="https://github.com/w3c/web-platform-tests/blob/master/payment-request/OWNERS">owners</a>.
+    If you find a buggy test, please <a href="https://github.com/web-platform-tests/wpt/issues">file a bug</a>
+    and tag one of the <a href="https://github.com/web-platform-tests/wpt/blob/master/payment-request/META.yml">suggested reviewers</a>.
   </small>
 </p>

@@ -1,15 +1,12 @@
-import json
 import pytest
-import types
 
-from tests.support.inline import inline
+from tests.support import platform_name
 from tests.support.asserts import assert_error, assert_success
-from tests.support.wait import wait
 
-alert_doc = inline("<script>window.alert()</script>")
-frame_doc = inline("<p>frame")
-one_frame_doc = inline("<iframe src='%s'></iframe>" % frame_doc)
-two_frames_doc = inline("<iframe src='%s'></iframe>" % one_frame_doc)
+
+@pytest.fixture
+def doc(inline):
+    return inline("<p>frame")
 
 
 def get_current_url(session):
@@ -17,84 +14,77 @@ def get_current_url(session):
         "GET", "session/{session_id}/url".format(**vars(session)))
 
 
-# TODO(ato): 7.1 Get
+def test_no_top_browsing_context(session, closed_window):
+    response = get_current_url(session)
+    assert_error(response, "no such window")
 
 
-def test_get_current_url_no_browsing_context(session, create_window):
-    # 7.2 step 1
-    session.window_handle = create_window()
-    session.close()
+def test_no_browsing_context(session, closed_frame, doc):
+    session.url = doc
 
-    result = get_current_url(session)
-    assert_error(result, "no such window")
+    response = get_current_url(session)
+    assert_success(response, doc)
 
-def test_get_current_url_matches_location(session):
-    # 7.2 step 3
-    url = session.execute_script("return window.location.href")
 
-    result = get_current_url(session)
-    assert_success(result, url)
+def test_get_current_url_matches_location(session, doc):
+    session.url = doc
+
+    response = get_current_url(session)
+    assert_success(response, doc)
+
 
 def test_get_current_url_payload(session):
-    # 7.2 step 4-5
     session.start()
 
-    result = get_current_url(session)
-    assert result.status == 200
-    assert isinstance(result.body["value"], basestring)
+    response = get_current_url(session)
+    value = assert_success(response)
+    assert isinstance(value, str)
+
 
 def test_get_current_url_special_pages(session):
     session.url = "about:blank"
 
-    result = get_current_url(session)
-    assert_success(result, "about:blank")
+    response = get_current_url(session)
+    assert_success(response, "about:blank")
 
-# TODO(ato): This test requires modification to pass on Windows
-def test_get_current_url_file_protocol(session):
+
+def test_get_current_url_file_protocol(session, server_config):
     # tests that the browsing context remains the same
     # when navigated privileged documents
-    session.url = "file:///"
+    path = server_config["doc_root"]
+    if platform_name == "windows":
+        # Convert the path into the format eg. /c:/foo/bar
+        path = "/{}".format(path.replace("\\", "/"))
+    url = u"file://{}".format(path)
+    session.url = url
 
-    result = get_current_url(session)
-    assert_success(result, "file:///")
+    response = get_current_url(session)
+    if response.status == 200 and response.body['value'].endswith('/'):
+        url += '/'
+    assert_success(response, url)
+
 
 # TODO(ato): Test for http:// and https:// protocols.
 # We need to expose a fixture for accessing
 # documents served by wptserve in order to test this.
 
+
 def test_set_malformed_url(session):
-    result = session.transport.send("POST",
-                                    "session/%s/url" % session.session_id,
-                                    {"url": "foo"})
+    response = session.transport.send(
+        "POST",
+        "session/%s/url" % session.session_id, {"url": "foo"})
 
-    assert_error(result, "invalid argument")
+    assert_error(response, "invalid argument")
 
-def test_get_current_url_after_modified_location(session):
-    start = get_current_url(session)
-    session.execute_script("window.location.href = 'about:blank#wd_test_modification'")
-    wait(session,
-         lambda _: get_current_url(session).body["value"] != start.body["value"],
-         "URL did not change")
 
-    result = get_current_url(session)
-    assert_success(result, "about:blank#wd_test_modification")
+def test_get_current_url_after_modified_location(session, doc):
+    session.url = doc
 
-def test_get_current_url_nested_browsing_context(session, create_frame):
-    session.url = "about:blank#wd_from_within_frame"
-    session.switch_frame(create_frame())
+    response = get_current_url(session)
+    assert_success(response, doc)
 
-    result = get_current_url(session)
-    assert_success(result, "about:blank#wd_from_within_frame")
+    hash_doc = "{}#foo".format(doc)
+    session.url = hash_doc
 
-def test_get_current_url_nested_browsing_contexts(session):
-    session.url = two_frames_doc
-    top_level_url = session.url
-
-    outer_frame = session.find.css("iframe", all=False)
-    session.switch_frame(outer_frame)
-
-    inner_frame = session.find.css("iframe", all=False)
-    session.switch_frame(inner_frame)
-
-    result = get_current_url(session)
-    assert_success(result, top_level_url)
+    response = get_current_url(session)
+    assert_success(response, hash_doc)

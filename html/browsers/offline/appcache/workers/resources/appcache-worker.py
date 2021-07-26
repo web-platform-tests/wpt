@@ -1,4 +1,4 @@
-script = '''
+script = b'''
 var initPromise = Promise.resolve();
 
 if ('SharedWorkerGlobalScope' in self &&
@@ -30,7 +30,7 @@ function importCachedScriptTest() {
   });
 }
 
-function importNotInCacheSciptTest() {
+function importNotInCacheScriptTest() {
   return new Promise((resolve, reject) => {
     try {
       importScripts('appcache-worker-import.py?type=not-in-cache');
@@ -41,7 +41,7 @@ function importNotInCacheSciptTest() {
   });
 }
 
-function importFallbackSciptTest() {
+function importFallbackScriptTest() {
   return new Promise((resolve, reject) => {
     info = '';
     try {
@@ -87,16 +87,17 @@ function fetchFallbackFileTest() {
 
 initPromise
   .then(importCachedScriptTest)
-  .then(importNotInCacheSciptTest)
-  .then(importFallbackSciptTest)
+  .then(importNotInCacheScriptTest)
+  .then(importFallbackScriptTest)
   .then(fetchCachedFileTest)
   .then(fetchNotInCacheFileTest)
+  .then(fetchFallbackFileTest)
   .then(_ => postMessage('Done: %s'),
         error => postMessage(error.toString()));
 '''
 
 def main(request, response):
-    type = request.GET['type']
-    if request.GET['type'] == 'fallingback':
-        return 404, [('Content-Type', 'text/plain')], "Page not found"
-    return [('Content-Type', 'text/javascript')], script % type
+    type = request.GET[b'type']
+    if request.GET[b'type'] == b'fallingback':
+        return 404, [(b'Content-Type', b'text/plain')], u"Page not found"
+    return [(b'Content-Type', b'text/javascript')], script % type

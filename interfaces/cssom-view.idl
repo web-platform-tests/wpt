@@ -1,4 +1,9 @@
-enum ScrollBehavior { "auto", "instant", "smooth" };
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: CSSOM View Module (https://drafts.csswg.org/cssom-view/)
+
+enum ScrollBehavior { "auto", "smooth" };
 
 dictionary ScrollOptions {
     ScrollBehavior behavior = "auto";
@@ -13,10 +18,10 @@ partial interface Window {
     [SameObject, Replaceable] readonly attribute Screen screen;
 
     // browsing context
-    void moveTo(long x, long y);
-    void moveBy(long x, long y);
-    void resizeTo(long x, long y);
-    void resizeBy(long x, long y);
+    undefined moveTo(long x, long y);
+    undefined moveBy(long x, long y);
+    undefined resizeTo(long width, long height);
+    undefined resizeBy(long x, long y);
 
     // viewport
     [Replaceable] readonly attribute long innerWidth;
@@ -27,16 +32,18 @@ partial interface Window {
     [Replaceable] readonly attribute double pageXOffset;
     [Replaceable] readonly attribute double scrollY;
     [Replaceable] readonly attribute double pageYOffset;
-    void scroll(optional ScrollToOptions options);
-    void scroll(unrestricted double x, unrestricted double y);
-    void scrollTo(optional ScrollToOptions options);
-    void scrollTo(unrestricted double x, unrestricted double y);
-    void scrollBy(optional ScrollToOptions options);
-    void scrollBy(unrestricted double x, unrestricted double y);
+    undefined scroll(optional ScrollToOptions options = {});
+    undefined scroll(unrestricted double x, unrestricted double y);
+    undefined scrollTo(optional ScrollToOptions options = {});
+    undefined scrollTo(unrestricted double x, unrestricted double y);
+    undefined scrollBy(optional ScrollToOptions options = {});
+    undefined scrollBy(unrestricted double x, unrestricted double y);
 
     // client
     [Replaceable] readonly attribute long screenX;
+    [Replaceable] readonly attribute long screenLeft;
     [Replaceable] readonly attribute long screenY;
+    [Replaceable] readonly attribute long screenTop;
     [Replaceable] readonly attribute long outerWidth;
     [Replaceable] readonly attribute long outerHeight;
     [Replaceable] readonly attribute double devicePixelRatio;
@@ -46,14 +53,14 @@ partial interface Window {
 interface MediaQueryList : EventTarget {
   readonly attribute CSSOMString media;
   readonly attribute boolean matches;
-  void addListener(EventListener? listener);
-  void removeListener(EventListener? listener);
+  undefined addListener(EventListener? callback);
+  undefined removeListener(EventListener? callback);
            attribute EventHandler onchange;
 };
 
-[Exposed=Window,
- Constructor(CSSOMString type, optional MediaQueryListEventInit eventInitDict)]
+[Exposed=Window]
 interface MediaQueryListEvent : Event {
+  constructor(CSSOMString type, optional MediaQueryListEventInit eventInitDict = {});
   readonly attribute CSSOMString media;
   readonly attribute boolean matches;
 };
@@ -96,13 +103,13 @@ dictionary ScrollIntoViewOptions : ScrollOptions {
 partial interface Element {
   DOMRectList getClientRects();
   [NewObject] DOMRect getBoundingClientRect();
-  void scrollIntoView(optional (boolean or ScrollIntoViewOptions) arg);
-  void scroll(optional ScrollToOptions options);
-  void scroll(unrestricted double x, unrestricted double y);
-  void scrollTo(optional ScrollToOptions options);
-  void scrollTo(unrestricted double x, unrestricted double y);
-  void scrollBy(optional ScrollToOptions options);
-  void scrollBy(unrestricted double x, unrestricted double y);
+  undefined scrollIntoView(optional (boolean or ScrollIntoViewOptions) arg = {});
+  undefined scroll(optional ScrollToOptions options = {});
+  undefined scroll(unrestricted double x, unrestricted double y);
+  undefined scrollTo(optional ScrollToOptions options = {});
+  undefined scrollTo(unrestricted double x, unrestricted double y);
+  undefined scrollBy(optional ScrollToOptions options = {});
+  undefined scrollBy(unrestricted double x, unrestricted double y);
   attribute unrestricted double scrollTop;
   attribute unrestricted double scrollLeft;
   readonly attribute long scrollWidth;
@@ -131,27 +138,14 @@ partial interface Range {
   [NewObject] DOMRect getBoundingClientRect();
 };
 
-/* TODO This is commented out because: "Partial interface MouseEvent with no original interface"
 partial interface MouseEvent {
-  readonly attribute double screenX;
-  readonly attribute double screenY;
   readonly attribute double pageX;
   readonly attribute double pageY;
-  readonly attribute double clientX;
-  readonly attribute double clientY;
   readonly attribute double x;
   readonly attribute double y;
   readonly attribute double offsetX;
   readonly attribute double offsetY;
 };
-
-partial dictionary MouseEventInit {
-  double screenX = 0.0;
-  double screenY = 0.0;
-  double clientX = 0.0;
-  double clientY = 0.0;
-};
-*/
 
 enum CSSBoxType { "margin", "border", "padding", "content" };
 dictionary BoxQuadOptions {
@@ -164,20 +158,16 @@ dictionary ConvertCoordinateOptions {
   CSSBoxType toBox = "border";
 };
 
-[Exposed=Window,
- NoInterfaceObject]
-interface GeometryUtils {
-  sequence<DOMQuad> getBoxQuads(optional BoxQuadOptions options);
-  DOMQuad convertQuadFromNode(DOMQuadInit quad, GeometryNode from, optional ConvertCoordinateOptions options);
-  DOMQuad convertRectFromNode(DOMRectReadOnly rect, GeometryNode from, optional ConvertCoordinateOptions options);
-  DOMPoint convertPointFromNode(DOMPointInit point, GeometryNode from, optional ConvertCoordinateOptions options); // XXX z,w turns into 0
+interface mixin GeometryUtils {
+  sequence<DOMQuad> getBoxQuads(optional BoxQuadOptions options = {});
+  DOMQuad convertQuadFromNode(DOMQuadInit quad, GeometryNode from, optional ConvertCoordinateOptions options = {});
+  DOMQuad convertRectFromNode(DOMRectReadOnly rect, GeometryNode from, optional ConvertCoordinateOptions options = {});
+  DOMPoint convertPointFromNode(DOMPointInit point, GeometryNode from, optional ConvertCoordinateOptions options = {}); // XXX z,w turns into 0
 };
 
-Text implements GeometryUtils; // like Range
-Element implements GeometryUtils;
-/* TODO Commented out because: "CSSPseudoElement implements GeometryUtils, but CSSPseudoElement is undefined."
-CSSPseudoElement implements GeometryUtils;
-*/
-Document implements GeometryUtils;
+Text includes GeometryUtils; // like Range
+Element includes GeometryUtils;
+CSSPseudoElement includes GeometryUtils;
+Document includes GeometryUtils;
 
 typedef (Text or Element or CSSPseudoElement or Document) GeometryNode;

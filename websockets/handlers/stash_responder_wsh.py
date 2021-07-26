@@ -1,7 +1,7 @@
 #!/usr/bin/python
-import urlparse, json
-from mod_pywebsocket import common, msgutil, util
-from mod_pywebsocket.handshake import hybi
+import json
+import urllib
+from mod_pywebsocket import msgutil
 from wptserve import stash
 
 address, authkey = stash.load_env_config()
@@ -15,7 +15,7 @@ def web_socket_transfer_data(request):
         line = request.ws_stream.receive_message()
         if line == "echo":
             query = request.unparsed_uri.split('?')[1]
-            GET = dict(urlparse.parse_qsl(query))
+            GET = dict(urllib.parse.parse_qsl(query))
 
             # TODO(kristijanburnik): This code should be reused from
             # /mixed-content/generic/expect.py or implemented more generally

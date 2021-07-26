@@ -7,6 +7,7 @@
 <body>
 <script>
   async_test(function (t) {
+    assert_implements(window.PerformanceLongTaskTiming, 'Longtasks are not supported.');
     const observer = new PerformanceObserver(
       t.step_func(function (entryList) {
         const entries = entryList.getEntries();
@@ -62,9 +63,11 @@
     );
     observer.observe({entryTypes: ['longtask']});
 
-    // Trigger a long task.
-    const begin = window.performance.now();
-    while (window.performance.now() < begin + 51);
+    window.onload = () => {
+        // Trigger a long task.
+        const begin = window.performance.now();
+        while (window.performance.now() < begin + 60);
+    };
   }, 'Test toJSON() in PerformanceLongTaskTiming and TaskAttributionTiming');
 </script>
 </body>

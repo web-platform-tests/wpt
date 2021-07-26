@@ -1,38 +1,87 @@
 import hashlib
 import json
 import os
-import urlparse
+from urllib.parse import urlsplit
 from abc import ABCMeta, abstractmethod
-from Queue import Empty
-from collections import defaultdict, OrderedDict, deque
-from multiprocessing import Queue
+from queue import Empty
+from collections import defaultdict, deque
 
-import manifestinclude
-import manifestexpected
-import wpttest
+from . import manifestinclude
+from . import manifestexpected
+from . import mpcontext
+from . import wpttest
 from mozlog import structured
 
 manifest = None
 manifest_update = None
 download_from_github = None
-manifest_log = None
+
 
 def do_delayed_imports():
     # This relies on an already loaded module having set the sys.path correctly :(
-    global manifest, manifest_update, download_from_github, manifest_log
-    from manifest import manifest
+    global manifest, manifest_update, download_from_github
+    from manifest import manifest  # type: ignore
     from manifest import update as manifest_update
-    from manifest.download import download_from_github
-    from manifest import log as manifest_log
+    from manifest.download import download_from_github  # type: ignore
+
+
+class TestGroupsFile(object):
+    """
+    Mapping object representing {group name: [test ids]}
+    """
+
+    def __init__(self, logger, path):
+        try:
+            with open(path) as f:
+                self._data = json.load(f)
+        except ValueError:
+            logger.critical("test groups file %s not valid json" % path)
+            raise
+
+        self.group_by_test = {}
+        for group, test_ids in self._data.items():
+            for test_id in test_ids:
+                self.group_by_test[test_id] = group
+
+    def __contains__(self, key):
+        return key in self._data
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+def read_include_from_file(file):
+    new_include = []
+    with open(file) as f:
+        for line in f:
+            line = line.strip()
+            # Allow whole-line comments;
+            # fragments mean we can't have partial line #-based comments
+            if len(line) > 0 and not line.startswith("#"):
+                new_include.append(line)
+    return new_include
+
+def update_include_for_groups(test_groups, include):
+    if include is None:
+        # We're just running everything
+        return
+
+    new_include = []
+    for item in include:
+        if item in test_groups:
+            new_include.extend(test_groups[item])
+        else:
+            new_include.append(item)
+    return new_include
 
 
 class TestChunker(object):
-    def __init__(self, total_chunks, chunk_number):
+    def __init__(self, total_chunks, chunk_number, **kwargs):
         self.total_chunks = total_chunks
         self.chunk_number = chunk_number
         assert self.chunk_number <= self.total_chunks
         self.logger = structured.get_default_logger()
         assert self.logger
+        self.kwargs = kwargs
 
     def __call__(self, manifest):
         raise NotImplementedError
@@ -43,7 +92,7 @@ class Unchunked(TestChunker):
         TestChunker.__init__(self, *args, **kwargs)
         assert self.total_chunks == 1
 
-    def __call__(self, manifest):
+    def __call__(self, manifest, **kwargs):
         for item in manifest:
             yield item
 
@@ -52,7 +101,7 @@ class HashChunker(TestChunker):
     def __call__(self, manifest):
         chunk_index = self.chunk_number - 1
         for test_type, test_path, tests in manifest:
-            h = int(hashlib.md5(test_path).hexdigest(), 16)
+            h = int(hashlib.md5(test_path.encode()).hexdigest(), 16)
             if h % self.total_chunks == chunk_index:
                 yield test_type, test_path, tests
 
@@ -65,291 +114,31 @@ class DirectoryHashChunker(TestChunker):
     """
     def __call__(self, manifest):
         chunk_index = self.chunk_number - 1
+        depth = self.kwargs.get("depth")
         for test_type, test_path, tests in manifest:
-            h = int(hashlib.md5(os.path.dirname(test_path)).hexdigest(), 16)
+            if depth:
+                hash_path = os.path.sep.join(os.path.dirname(test_path).split(os.path.sep, depth)[:depth])
+            else:
+                hash_path = os.path.dirname(test_path)
+            h = int(hashlib.md5(hash_path.encode()).hexdigest(), 16)
             if h % self.total_chunks == chunk_index:
                 yield test_type, test_path, tests
 
 
-class EqualTimeChunker(TestChunker):
-    def _group_by_directory(self, manifest_items):
-        """Split the list of manifest items into a ordered dict that groups tests in
-        so that anything in the same subdirectory beyond a depth of 3 is in the same
-        group. So all tests in a/b/c, a/b/c/d and a/b/c/e will be grouped together
-        and separate to tests in a/b/f
-
-        Returns: tuple (ordered dict of {test_dir: PathData}, total estimated runtime)
-        """
-
-        class PathData(object):
-            def __init__(self, path):
-                self.path = path
-                self.time = 0
-                self.tests = []
-
-        by_dir = OrderedDict()
-        total_time = 0
-
-        for i, (test_type, test_path, tests) in enumerate(manifest_items):
-            test_dir = tuple(os.path.split(test_path)[0].split(os.path.sep)[:3])
-
-            if test_dir not in by_dir:
-                by_dir[test_dir] = PathData(test_dir)
-
-            data = by_dir[test_dir]
-            time = sum(test.default_timeout if test.timeout !=
-                       "long" else test.long_timeout for test in tests)
-            data.time += time
-            total_time += time
-            data.tests.append((test_type, test_path, tests))
-
-        return by_dir, total_time
-
-    def _maybe_remove(self, chunks, i, direction):
-        """Trial removing a chunk from one chunk to an adjacent one.
-
-        :param chunks: - the list of all chunks
-        :param i: - the chunk index in the list of chunks to try removing from
-        :param direction: either "next" if we are going to move from the end to
-                          the subsequent chunk, or "prev" if we are going to move
-                          from the start into the previous chunk.
-
-        :returns bool: Did a chunk get moved?"""
-        source_chunk = chunks[i]
-        if direction == "next":
-            target_chunk = chunks[i+1]
-            path_index = -1
-            move_func = lambda: target_chunk.appendleft(source_chunk.pop())
-        elif direction == "prev":
-            target_chunk = chunks[i-1]
-            path_index = 0
-            move_func = lambda: target_chunk.append(source_chunk.popleft())
-        else:
-            raise ValueError("Unexpected move direction %s" % direction)
-
-        return self._maybe_move(source_chunk, target_chunk, path_index, move_func)
-
-    def _maybe_add(self, chunks, i, direction):
-        """Trial adding a chunk from one chunk to an adjacent one.
-
-        :param chunks: - the list of all chunks
-        :param i: - the chunk index in the list of chunks to try adding to
-        :param direction: either "next" if we are going to remove from the
-                          the subsequent chunk, or "prev" if we are going to remove
-                          from the the previous chunk.
-
-        :returns bool: Did a chunk get moved?"""
-        target_chunk = chunks[i]
-        if direction == "next":
-            source_chunk = chunks[i+1]
-            path_index = 0
-            move_func = lambda: target_chunk.append(source_chunk.popleft())
-        elif direction == "prev":
-            source_chunk = chunks[i-1]
-            path_index = -1
-            move_func = lambda: target_chunk.appendleft(source_chunk.pop())
-        else:
-            raise ValueError("Unexpected move direction %s" % direction)
-
-        return self._maybe_move(source_chunk, target_chunk, path_index, move_func)
-
-    def _maybe_move(self, source_chunk, target_chunk, path_index, move_func):
-        """Move from one chunk to another, assess the change in badness,
-        and keep the move iff it decreases the badness score.
-
-        :param source_chunk: chunk to move from
-        :param target_chunk: chunk to move to
-        :param path_index: 0 if we are moving from the start or -1 if we are moving from the
-                           end
-        :param move_func: Function that actually moves between chunks"""
-        if len(source_chunk.paths) <= 1:
-            return False
-
-        move_time = source_chunk.paths[path_index].time
-
-        new_source_badness = self._badness(source_chunk.time - move_time)
-        new_target_badness = self._badness(target_chunk.time + move_time)
-
-        delta_badness = ((new_source_badness + new_target_badness) -
-                         (source_chunk.badness + target_chunk.badness))
-        if delta_badness < 0:
-            move_func()
-            return True
-
-        return False
-
-    def _badness(self, time):
-        """Metric of badness for a specific chunk
-
-        :param time: the time for a specific chunk"""
-        return (time - self.expected_time)**2
-
-    def _get_chunk(self, manifest_items):
-        by_dir, total_time = self._group_by_directory(manifest_items)
-
-        if len(by_dir) < self.total_chunks:
-            raise ValueError("Tried to split into %i chunks, but only %i subdirectories included" % (
-                self.total_chunks, len(by_dir)))
-
-        self.expected_time = float(total_time) / self.total_chunks
-
-        chunks = self._create_initial_chunks(by_dir)
-
-        while True:
-            # Move a test from one chunk to the next until doing so no longer
-            # reduces the badness
-            got_improvement = self._update_chunks(chunks)
-            if not got_improvement:
-                break
-
-        self.logger.debug(self.expected_time)
-        for i, chunk in chunks.iteritems():
-            self.logger.debug("%i: %i, %i" % (i + 1, chunk.time, chunk.badness))
-
-        assert self._all_tests(by_dir) == self._chunked_tests(chunks)
-
-        return self._get_tests(chunks)
-
-    @staticmethod
-    def _all_tests(by_dir):
-        """Return a set of all tests in the manifest from a grouping by directory"""
-        return set(x[0] for item in by_dir.itervalues()
-                   for x in item.tests)
-
-    @staticmethod
-    def _chunked_tests(chunks):
-        """Return a set of all tests in the manifest from the chunk list"""
-        return set(x[0] for chunk in chunks.itervalues()
-                   for path in chunk.paths
-                   for x in path.tests)
-
-
-    def _create_initial_chunks(self, by_dir):
-        """Create an initial unbalanced list of chunks.
-
-        :param by_dir: All tests in the manifest grouped by subdirectory
-        :returns list: A list of Chunk objects"""
-
-        class Chunk(object):
-            def __init__(self, paths, index):
-                """List of PathData objects that together form a single chunk of
-                tests"""
-                self.paths = deque(paths)
-                self.time = sum(item.time for item in paths)
-                self.index = index
-
-            def appendleft(self, path):
-                """Add a PathData object to the start of the chunk"""
-                self.paths.appendleft(path)
-                self.time += path.time
-
-            def append(self, path):
-                """Add a PathData object to the end of the chunk"""
-                self.paths.append(path)
-                self.time += path.time
-
-            def pop(self):
-                """Remove PathData object from the end of the chunk"""
-                assert len(self.paths) > 1
-                self.time -= self.paths[-1].time
-                return self.paths.pop()
-
-            def popleft(self):
-                """Remove PathData object from the start of the chunk"""
-                assert len(self.paths) > 1
-                self.time -= self.paths[0].time
-                return self.paths.popleft()
-
-            @property
-            def badness(self_):  # noqa: N805
-                """Badness metric for this chunk"""
-                return self._badness(self_.time)
-
-        initial_size = len(by_dir) / self.total_chunks
-        chunk_boundaries = [initial_size * i
-                            for i in xrange(self.total_chunks)] + [len(by_dir)]
-
-        chunks = OrderedDict()
-        for i, lower in enumerate(chunk_boundaries[:-1]):
-            upper = chunk_boundaries[i + 1]
-            paths = by_dir.values()[lower:upper]
-            chunks[i] = Chunk(paths, i)
-
-        assert self._all_tests(by_dir) == self._chunked_tests(chunks)
-
-        return chunks
-
-    def _update_chunks(self, chunks):
-        """Run a single iteration of the chunk update algorithm.
-
-        :param chunks: - List of chunks
-        """
-        #TODO: consider replacing this with a heap
-        sorted_chunks = sorted(chunks.values(), key=lambda x:-x.badness)
-        got_improvement = False
-        for chunk in sorted_chunks:
-            if chunk.time < self.expected_time:
-                f = self._maybe_add
-            else:
-                f = self._maybe_remove
-
-            if chunk.index == 0:
-                order = ["next"]
-            elif chunk.index == self.total_chunks - 1:
-                order = ["prev"]
-            else:
-                if chunk.time < self.expected_time:
-                    # First try to add a test from the neighboring chunk with the
-                    # greatest total time
-                    if chunks[chunk.index + 1].time > chunks[chunk.index - 1].time:
-                        order = ["next", "prev"]
-                    else:
-                        order = ["prev", "next"]
-                else:
-                    # First try to remove a test and add to the neighboring chunk with the
-                    # lowest total time
-                    if chunks[chunk.index + 1].time > chunks[chunk.index - 1].time:
-                        order = ["prev", "next"]
-                    else:
-                        order = ["next", "prev"]
-
-            for direction in order:
-                if f(chunks, chunk.index, direction):
-                    got_improvement = True
-                    break
-
-            if got_improvement:
-                break
-
-        return got_improvement
-
-    def _get_tests(self, chunks):
-        """Return the list of tests corresponding to the chunk number we are running.
-
-        :param chunks: List of chunks"""
-        tests = []
-        for path in chunks[self.chunk_number - 1].paths:
-            tests.extend(path.tests)
-
-        return tests
-
-    def __call__(self, manifest_iter):
-        manifest = list(manifest_iter)
-        tests = self._get_chunk(manifest)
-        for item in tests:
-            yield item
-
-
 class TestFilter(object):
-    def __init__(self, test_manifests, include=None, exclude=None, manifest_path=None):
-        if manifest_path is not None and include is None:
-            self.manifest = manifestinclude.get_manifest(manifest_path)
-        else:
+    """Callable that restricts the set of tests in a given manifest according
+    to initial criteria"""
+    def __init__(self, test_manifests, include=None, exclude=None, manifest_path=None, explicit=False):
+        if manifest_path is None or include or explicit:
             self.manifest = manifestinclude.IncludeManifest.create()
             self.manifest.set_defaults()
+        else:
+            self.manifest = manifestinclude.get_manifest(manifest_path)
+
+        if include or explicit:
+            self.manifest.set("skip", "true")
 
         if include:
-            self.manifest.set("skip", "true")
             for item in include:
                 self.manifest.add_include(test_manifests, item)
 
@@ -367,6 +156,7 @@ class TestFilter(object):
             if include_tests:
                 yield test_type, test_path, include_tests
 
+
 class TagFilter(object):
     def __init__(self, tags):
         self.tags = set(tags)
@@ -378,18 +168,20 @@ class TagFilter(object):
 
 
 class ManifestLoader(object):
-    def __init__(self, test_paths, force_manifest_update=False, manifest_download=False):
+    def __init__(self, test_paths, force_manifest_update=False, manifest_download=False,
+                 types=None):
         do_delayed_imports()
         self.test_paths = test_paths
         self.force_manifest_update = force_manifest_update
         self.manifest_download = manifest_download
+        self.types = types
         self.logger = structured.get_default_logger()
         if self.logger is None:
             self.logger = structured.structuredlog.StructuredLogger("ManifestLoader")
 
     def load(self):
         rv = {}
-        for url_base, paths in self.test_paths.iteritems():
+        for url_base, paths in self.test_paths.items():
             manifest_file = self.load_manifest(url_base=url_base,
                                                **paths)
             path_data = {"url_base": url_base}
@@ -397,54 +189,13 @@ class ManifestLoader(object):
             rv[manifest_file] = path_data
         return rv
 
-    def create_manifest(self, manifest_path, tests_path, url_base="/"):
-        self.update_manifest(manifest_path, tests_path, url_base, recreate=True,
-                             download=self.manifest_download)
-
-    def update_manifest(self, manifest_path, tests_path, url_base="/",
-                        recreate=False, download=False):
-        self.logger.info("Updating test manifest %s" % manifest_path)
-        manifest_log.setup()
-
-        json_data = None
-        if download:
-            # TODO: make this not github-specific
+    def load_manifest(self, tests_path, manifest_path, metadata_path, url_base="/", **kwargs):
+        cache_root = os.path.join(metadata_path, ".cache")
+        if self.manifest_download:
             download_from_github(manifest_path, tests_path)
-
-        if not recreate:
-            try:
-                with open(manifest_path) as f:
-                    json_data = json.load(f)
-            except IOError:
-                self.logger.info("Unable to find test manifest")
-            except ValueError:
-                self.logger.info("Unable to parse test manifest")
-
-        if not json_data:
-            self.logger.info("Creating test manifest")
-            manifest_file = manifest.Manifest(url_base)
-        else:
-            try:
-                manifest_file = manifest.Manifest.from_json(tests_path, json_data)
-            except manifest.ManifestVersionMismatch:
-                manifest_file = manifest.Manifest(url_base)
-
-        manifest_update.update(tests_path, manifest_file, True)
-
-        manifest.write(manifest_file, manifest_path)
-
-    def load_manifest(self, tests_path, manifest_path, url_base="/", **kwargs):
-        if (not os.path.exists(manifest_path) or
-            self.force_manifest_update):
-            self.update_manifest(manifest_path, tests_path, url_base, download=self.manifest_download)
-        manifest_file = manifest.load(tests_path, manifest_path)
-        if manifest_file.url_base != url_base:
-            self.logger.info("Updating url_base in manifest from %s to %s" % (manifest_file.url_base,
-                                                                              url_base))
-            manifest_file.url_base = url_base
-            manifest.write(manifest_file, manifest_path)
-
-        return manifest_file
+        return manifest.load_and_update(tests_path, manifest_path, url_base,
+                                        cache_root=cache_root, update=self.force_manifest_update,
+                                        types=self.types)
 
 
 def iterfilter(filters, iter):
@@ -453,40 +204,49 @@ def iterfilter(filters, iter):
     for item in iter:
         yield item
 
+
 class TestLoader(object):
+    """Loads tests according to a WPT manifest and any associated expectation files"""
     def __init__(self,
                  test_manifests,
                  test_types,
                  run_info,
                  manifest_filters=None,
-                 meta_filters=None,
                  chunk_type="none",
                  total_chunks=1,
                  chunk_number=1,
                  include_https=True,
-                 skip_timeout=False):
+                 include_h2=True,
+                 include_quic=False,
+                 skip_timeout=False,
+                 skip_implementation_status=None,
+                 chunker_kwargs=None):
 
         self.test_types = test_types
         self.run_info = run_info
 
         self.manifest_filters = manifest_filters if manifest_filters is not None else []
-        self.meta_filters = meta_filters if meta_filters is not None else []
 
         self.manifests = test_manifests
         self.tests = None
         self.disabled_tests = None
         self.include_https = include_https
+        self.include_h2 = include_h2
+        self.include_quic = include_quic
         self.skip_timeout = skip_timeout
+        self.skip_implementation_status = skip_implementation_status
 
         self.chunk_type = chunk_type
         self.total_chunks = total_chunks
         self.chunk_number = chunk_number
 
+        if chunker_kwargs is None:
+            chunker_kwargs = {}
         self.chunker = {"none": Unchunked,
                         "hash": HashChunker,
-                        "dir_hash": DirectoryHashChunker,
-                        "equal_time": EqualTimeChunker}[chunk_type](total_chunks,
-                                                                    chunk_number)
+                        "dir_hash": DirectoryHashChunker}[chunk_type](total_chunks,
+                                                                      chunk_number,
+                                                                      **chunker_kwargs)
 
         self._test_ids = None
 
@@ -503,17 +263,17 @@ class TestLoader(object):
                     self._test_ids += [item.id for item in test_dict[test_type]]
         return self._test_ids
 
-    def get_test(self, manifest_test, inherit_metadata, test_metadata):
+    def get_test(self, manifest_file, manifest_test, inherit_metadata, test_metadata):
         if test_metadata is not None:
             inherit_metadata.append(test_metadata)
             test_metadata = test_metadata.get_test(manifest_test.id)
 
-        return wpttest.from_manifest(manifest_test, inherit_metadata, test_metadata)
+        return wpttest.from_manifest(manifest_file, manifest_test, inherit_metadata, test_metadata)
 
     def load_dir_metadata(self, test_manifest, metadata_path, test_path):
         rv = []
         path_parts = os.path.dirname(test_path).split(os.path.sep)
-        for i in xrange(1,len(path_parts) + 1):
+        for i in range(len(path_parts) + 1):
             path = os.path.join(metadata_path, os.path.sep.join(path_parts[:i]), "__dir__.ini")
             if path not in self.directory_manifests:
                 self.directory_manifests[path] = manifestexpected.get_dir_manifest(path,
@@ -531,27 +291,24 @@ class TestLoader(object):
 
     def iter_tests(self):
         manifest_items = []
+        manifests_by_url_base = {}
 
         for manifest in sorted(self.manifests.keys(), key=lambda x:x.url_base):
             manifest_iter = iterfilter(self.manifest_filters,
                                        manifest.itertypes(*self.test_types))
             manifest_items.extend(manifest_iter)
+            manifests_by_url_base[manifest.url_base] = manifest
 
         if self.chunker is not None:
             manifest_items = self.chunker(manifest_items)
 
         for test_type, test_path, tests in manifest_items:
-            manifest_file = iter(tests).next().manifest
+            manifest_file = manifests_by_url_base[next(iter(tests)).url_base]
             metadata_path = self.manifests[manifest_file]["metadata_path"]
+
             inherit_metadata, test_metadata = self.load_metadata(manifest_file, metadata_path, test_path)
-
-            for test in iterfilter(self.meta_filters,
-                                   self.iter_wpttest(inherit_metadata, test_metadata, tests)):
-                yield test_path, test_type, test
-
-    def iter_wpttest(self, inherit_metadata, test_metadata, tests):
-        for manifest_test in tests:
-            yield self.get_test(manifest_test, inherit_metadata, test_metadata)
+            for test in tests:
+                yield test_path, test_type, self.get_test(manifest_file, test, inherit_metadata, test_metadata)
 
     def _load_tests(self):
         """Read in the tests from the manifest file and add them to a queue"""
@@ -562,7 +319,13 @@ class TestLoader(object):
             enabled = not test.disabled()
             if not self.include_https and test.environment["protocol"] == "https":
                 enabled = False
+            if not self.include_h2 and test.environment["protocol"] == "h2":
+                enabled = False
+            if not self.include_quic and test.environment["quic"]:
+                enabled = False
             if self.skip_timeout and test.expected() == "TIMEOUT":
+                enabled = False
+            if self.skip_implementation_status and test.implementation_status() in self.skip_implementation_status:
                 enabled = False
             key = "enabled" if enabled else "disabled"
             tests[key][test_type].append(test)
@@ -581,6 +344,23 @@ class TestLoader(object):
         return groups
 
 
+def get_test_src(**kwargs):
+    test_source_kwargs = {"processes": kwargs["processes"],
+                          "logger": kwargs["logger"]}
+    chunker_kwargs = {}
+    if kwargs["run_by_dir"] is not False:
+        # A value of None indicates infinite depth
+        test_source_cls = PathGroupedSource
+        test_source_kwargs["depth"] = kwargs["run_by_dir"]
+        chunker_kwargs["depth"] = kwargs["run_by_dir"]
+    elif kwargs["test_groups"]:
+        test_source_cls = GroupFileTestSource
+        test_source_kwargs["test_groups"] = kwargs["test_groups"]
+    else:
+        test_source_cls = SingleTestSource
+    return test_source_cls, test_source_kwargs, chunker_kwargs
+
+
 class TestSource(object):
     __metaclass__ = ABCMeta
 
@@ -590,10 +370,17 @@ class TestSource(object):
         self.current_metadata = None
 
     @abstractmethod
-    # noqa: N805
-    #@classmethod (doesn't compose with @abstractmethod)
-    def make_queue(cls, tests, **kwargs):
+    #@classmethod (doesn't compose with @abstractmethod in < 3.3)
+    def make_queue(cls, tests, **kwargs):  # noqa: N805
         pass
+
+    @abstractmethod
+    def tests_by_group(cls, tests, **kwargs):  # noqa: N805
+        pass
+
+    @classmethod
+    def group_metadata(cls, state):
+        return {"scope": "/"}
 
     def group(self):
         if not self.current_group or len(self.current_group) == 0:
@@ -611,14 +398,16 @@ class GroupedSource(TestSource):
 
     @classmethod
     def make_queue(cls, tests, **kwargs):
-        test_queue = Queue()
+        mp = mpcontext.get_context()
+        test_queue = mp.Queue()
         groups = []
 
         state = {}
 
         for test in tests:
             if cls.new_group(state, test, **kwargs):
-                groups.append((deque(), {}))
+                group_metadata = cls.group_metadata(state)
+                groups.append((deque(), group_metadata))
 
             group, metadata = groups[-1]
             group.append(test)
@@ -628,14 +417,26 @@ class GroupedSource(TestSource):
             test_queue.put(item)
         return test_queue
 
+    @classmethod
+    def tests_by_group(cls, tests, **kwargs):
+        groups = defaultdict(list)
+        state = {}
+        current = None
+        for test in tests:
+            if cls.new_group(state, test, **kwargs):
+                current = cls.group_metadata(state)['scope']
+            groups[current].append(test.id)
+        return groups
+
 
 class SingleTestSource(TestSource):
     @classmethod
     def make_queue(cls, tests, **kwargs):
-        test_queue = Queue()
+        mp = mpcontext.get_context()
+        test_queue = mp.Queue()
         processes = kwargs["processes"]
-        queues = [deque([]) for _ in xrange(processes)]
-        metadatas = [{} for _ in xrange(processes)]
+        queues = [deque([]) for _ in range(processes)]
+        metadatas = [cls.group_metadata(None) for _ in range(processes)]
         for test in tests:
             idx = hash(test.id) % processes
             group = queues[idx]
@@ -648,14 +449,62 @@ class SingleTestSource(TestSource):
 
         return test_queue
 
+    @classmethod
+    def tests_by_group(cls, tests, **kwargs):
+        return {cls.group_metadata(None)['scope']: [t.id for t in tests]}
+
 
 class PathGroupedSource(GroupedSource):
     @classmethod
     def new_group(cls, state, test, **kwargs):
         depth = kwargs.get("depth")
-        if depth is True:
+        if depth is True or depth == 0:
             depth = None
-        path = urlparse.urlsplit(test.url).path.split("/")[1:-1][:depth]
+        path = urlsplit(test.url).path.split("/")[1:-1][:depth]
         rv = path != state.get("prev_path")
         state["prev_path"] = path
         return rv
+
+    @classmethod
+    def group_metadata(cls, state):
+        return {"scope": "/%s" % "/".join(state["prev_path"])}
+
+
+class GroupFileTestSource(TestSource):
+    @classmethod
+    def make_queue(cls, tests, **kwargs):
+        tests_by_group = cls.tests_by_group(tests, **kwargs)
+
+        ids_to_tests = {test.id: test for test in tests}
+
+        mp = mpcontext.get_context()
+        test_queue = mp.Queue()
+
+        for group_name, test_ids in tests_by_group.items():
+            group_metadata = {"scope": group_name}
+            group = deque()
+
+            for test_id in test_ids:
+                test = ids_to_tests[test_id]
+                group.append(test)
+                test.update_metadata(group_metadata)
+
+            test_queue.put((group, group_metadata))
+
+        return test_queue
+
+    @classmethod
+    def tests_by_group(cls, tests, **kwargs):
+        logger = kwargs["logger"]
+        test_groups = kwargs["test_groups"]
+
+        tests_by_group = defaultdict(list)
+        for test in tests:
+            try:
+                group = test_groups.group_by_test[test.id]
+            except KeyError:
+                logger.error("%s is missing from test groups file" % test.id)
+                raise
+            tests_by_group[group].append(test.id)
+
+        return tests_by_group

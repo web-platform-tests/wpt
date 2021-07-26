@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the Screen Orientation API spec.
-// See https://w3c.github.io/screen-orientation/
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: The Screen Orientation API (https://w3c.github.io/screen-orientation/)
 
 partial interface Screen {
   [SameObject] readonly attribute ScreenOrientation orientation;
@@ -8,18 +9,11 @@ partial interface Screen {
 
 [Exposed=Window]
 interface ScreenOrientation : EventTarget {
-  Promise<void> lock(OrientationLockType orientation);
-  void unlock();
+  Promise<undefined> lock(OrientationLockType orientation);
+  undefined unlock();
   readonly attribute OrientationType type;
   readonly attribute unsigned short angle;
   attribute EventHandler onchange;
-};
-
-enum OrientationType {
-  "portrait-primary",
-  "portrait-secondary",
-  "landscape-primary",
-  "landscape-secondary"
 };
 
 enum OrientationLockType {
@@ -27,6 +21,13 @@ enum OrientationLockType {
   "natural",
   "landscape",
   "portrait",
+  "portrait-primary",
+  "portrait-secondary",
+  "landscape-primary",
+  "landscape-secondary"
+};
+
+enum OrientationType {
   "portrait-primary",
   "portrait-secondary",
   "landscape-primary",

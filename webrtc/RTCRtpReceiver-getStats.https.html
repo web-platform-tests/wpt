@@ -14,7 +14,7 @@
   // https://w3c.github.io/webrtc-stats/archives/20170614/webrtc-stats.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  //   doSignalingHandshake
+  //   exchangeOfferAnswer
 
   // The following helper function is called from RTCStats-helper.js
   //   validateStatsReport
@@ -46,10 +46,18 @@
 
   promise_test(async t => {
     const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
     const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({audio:true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    callee.addTrack(track, stream);
+
     const { receiver } = caller.addTransceiver('audio');
 
-    await doSignalingHandshake(caller, callee);
+    await exchangeOfferAnswer(caller, callee);
     const statsReport = await receiver.getStats();
     validateStatsReport(statsReport);
     assert_stats_report_has_stats(statsReport, ['inbound-rtp']);
@@ -57,12 +65,15 @@
 
   promise_test(async t => {
     const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
     const callee = new RTCPeerConnection();
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    t.add_cleanup(() => callee.close());
+    const stream = await getNoiseStream({audio:true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
     const [track] = stream.getTracks();
     caller.addTrack(track, stream);
 
-    await doSignalingHandshake(caller, callee);
+    await exchangeOfferAnswer(caller, callee);
     const receiver = callee.getReceivers()[0];
     const statsReport = await receiver.getStats();
     validateStatsReport(statsReport);

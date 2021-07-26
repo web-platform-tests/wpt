@@ -1,5 +1,7 @@
 import traceback
+
 from abc import ABCMeta, abstractmethod
+from typing import ClassVar, List, Type
 
 
 class Protocol(object):
@@ -15,7 +17,7 @@ class Protocol(object):
     :param Browser browser: The Browser using this protocol"""
     __metaclass__ = ABCMeta
 
-    implements = []
+    implements = []  # type: ClassVar[List[Type[ProtocolPart]]]
 
     def __init__(self, executor, browser):
         self.executor = executor
@@ -31,7 +33,6 @@ class Protocol(object):
         """:returns: Current logger"""
         return self.executor.logger
 
-    @property
     def is_alive(self):
         """Is the browser connection still active
 
@@ -56,11 +57,8 @@ class Protocol(object):
         except Exception:
             if msg is not None:
                 self.logger.warning(msg)
-            self.logger.error(traceback.format_exc())
-            self.executor.runner.send_message("init_failed")
-            return
-        else:
-            self.executor.runner.send_message("init_succeeded")
+            self.logger.warning(traceback.format_exc())
+            raise
 
     @abstractmethod
     def connect(self):
@@ -85,7 +83,7 @@ class ProtocolPart(object):
     :param Protocol parent: The parent protocol"""
     __metaclass__ = ABCMeta
 
-    name = None
+    name = None  # type: ClassVar[str]
 
     def __init__(self, parent):
         self.parent = parent
@@ -111,11 +109,11 @@ class BaseProtocolPart(ProtocolPart):
     name = "base"
 
     @abstractmethod
-    def execute_script(self, script, async=False):
+    def execute_script(self, script, asynchronous=False):
         """Execute javascript in the current Window.
 
         :param str script: The js source to execute. This is implicitly wrapped in a function.
-        :param bool async: Whether the script is asynchronous in the webdriver
+        :param bool asynchronous: Whether the script is asynchronous in the webdriver
                            sense i.e. whether the return value is the result of
                            the initial function call or if it waits for some callback.
         :returns: The result of the script execution.
@@ -147,6 +145,18 @@ class BaseProtocolPart(ProtocolPart):
 
         :param handle: A protocol-specific handle identifying a top level browsing
                        context."""
+        pass
+
+    @abstractmethod
+    def window_handles(self):
+        """Get a list of handles to top-level browsing contexts"""
+        pass
+
+    @abstractmethod
+    def load(self, url):
+        """Load a url in the current browsing context
+
+        :param url: The url to load"""
         pass
 
 
@@ -185,6 +195,10 @@ class TestharnessProtocolPart(ProtocolPart):
         :returns: A protocol-specific window handle.
         """
         pass
+
+    @abstractmethod
+    def test_window_loaded(self):
+        """Wait until the newly opened test window has been loaded."""
 
 
 class PrefsProtocolPart(ProtocolPart):
@@ -237,6 +251,14 @@ class SelectorProtocolPart(ProtocolPart):
 
     name = "select"
 
+    def element_by_selector(self, element_selector):
+        elements = self.elements_by_selector(element_selector)
+        if len(elements) == 0:
+            raise ValueError("Selector '%s' matches no elements" % (element_selector,))
+        elif len(elements) > 1:
+            raise ValueError("Selector '%s' matches multiple elements" % (element_selector,))
+        return elements[0]
+
     @abstractmethod
     def elements_by_selector(self, selector):
         """Select elements matching a CSS selector
@@ -259,6 +281,19 @@ class ClickProtocolPart(ProtocolPart):
         :param element: A protocol-specific handle to an element."""
         pass
 
+
+class CookiesProtocolPart(ProtocolPart):
+    """Protocol part for managing cookies"""
+    __metaclass__ = ABCMeta
+
+    name = "cookies"
+
+    @abstractmethod
+    def delete_all_cookies(self):
+        """Delete all cookies."""
+        pass
+
+
 class SendKeysProtocolPart(ProtocolPart):
     """Protocol part for performing trusted clicks"""
     __metaclass__ = ABCMeta
@@ -274,6 +309,50 @@ class SendKeysProtocolPart(ProtocolPart):
         pass
 
 
+class GenerateTestReportProtocolPart(ProtocolPart):
+    """Protocol part for generating test reports"""
+    __metaclass__ = ABCMeta
+
+    name = "generate_test_report"
+
+    @abstractmethod
+    def generate_test_report(self, message):
+        """Generate a test report.
+
+        :param message: The message to be contained in the report."""
+        pass
+
+
+class SetPermissionProtocolPart(ProtocolPart):
+    """Protocol part for setting permissions"""
+    __metaclass__ = ABCMeta
+
+    name = "set_permission"
+
+    @abstractmethod
+    def set_permission(self, descriptor, state, one_realm=False):
+        """Set permission state.
+
+        :param descriptor: A PermissionDescriptor object.
+        :param state: The state to set the permission to.
+        :param one_realm: Whether to set the permission for only one realm."""
+        pass
+
+
+class ActionSequenceProtocolPart(ProtocolPart):
+    """Protocol part for performing trusted clicks"""
+    __metaclass__ = ABCMeta
+
+    name = "action_sequence"
+
+    @abstractmethod
+    def send_actions(self, actions):
+        """Send a sequence of actions to the window.
+
+        :param actions: A protocol-specific handle to an array of actions."""
+        pass
+
+
 class TestDriverProtocolPart(ProtocolPart):
     """Protocol part that implements the basic functionality required for
     all testdriver-based tests."""
@@ -282,11 +361,195 @@ class TestDriverProtocolPart(ProtocolPart):
     name = "testdriver"
 
     @abstractmethod
-    def send_message(self, message_type, status, message=None):
+    def send_message(self, cmd_id, message_type, status, message=None):
         """Send a testdriver message to the browser.
 
+        :param int cmd_id: The id of the command to which we're responding
         :param str message_type: The kind of the message.
         :param str status: Either "failure" or "success" depending on whether the
                            previous command succeeded.
         :param str message: Additional data to add to the message."""
         pass
+
+    def switch_to_window(self, wptrunner_id, initial_window=None):
+        """Switch to a window given a wptrunner window id
+
+        :param str wptrunner_id: Testdriver-specific id for the target window
+        :param str initial_window: WebDriver window id for the test window"""
+        if wptrunner_id is None:
+            return
+
+        if initial_window is None:
+            initial_window = self.parent.base.current_window
+
+        stack = [str(item) for item in self.parent.base.window_handles()]
+        first = True
+        while stack:
+            item = stack.pop()
+            if item is None:
+                self._switch_to_parent_frame()
+                continue
+            elif isinstance(item, str):
+                if not first or item != initial_window:
+                    self.parent.base.set_window(item)
+            else:
+                self._switch_to_frame(item)
+
+            try:
+                handle_window_id = self.parent.base.execute_script("return window.__wptrunner_id")
+                if str(handle_window_id) == wptrunner_id:
+                    return
+            except Exception:
+                pass
+            frame_count = self.parent.base.execute_script("return window.length")
+            if frame_count:
+                for frame_id in reversed(range(0, frame_count)):
+                    # None here makes us switch back to the parent after we've processed the frame
+                    stack.append(None)
+                    stack.append(frame_id)
+            first = False
+
+        raise Exception("Window with id %s not found" % wptrunner_id)
+
+    @abstractmethod
+    def _switch_to_frame(self, index):
+        """Switch to a frame in the current window
+
+        :param int index: Frame id"""
+        pass
+
+    @abstractmethod
+    def _switch_to_parent_frame(self):
+        """Switch to the parent of the current frame"""
+        pass
+
+
+class AssertsProtocolPart(ProtocolPart):
+    """ProtocolPart that implements the functionality required to get a count of non-fatal
+    assertions triggered"""
+    __metaclass__ = ABCMeta
+
+    name = "asserts"
+
+    @abstractmethod
+    def get(self):
+        """Get a count of assertions since the last browser start"""
+        pass
+
+
+class CoverageProtocolPart(ProtocolPart):
+    """Protocol part for collecting per-test coverage data."""
+    __metaclass__ = ABCMeta
+
+    name = "coverage"
+
+    @abstractmethod
+    def reset(self):
+        """Reset coverage counters"""
+        pass
+
+    @abstractmethod
+    def dump(self):
+        """Dump coverage counters"""
+        pass
+
+
+class VirtualAuthenticatorProtocolPart(ProtocolPart):
+    """Protocol part for creating and manipulating virtual authenticators"""
+    __metaclass__ = ABCMeta
+
+    name = "virtual_authenticator"
+
+    @abstractmethod
+    def add_virtual_authenticator(self, config):
+        """Add a virtual authenticator
+
+        :param config: The Authenticator Configuration"""
+        pass
+
+    @abstractmethod
+    def remove_virtual_authenticator(self, authenticator_id):
+        """Remove a virtual authenticator
+
+        :param str authenticator_id: The ID of the authenticator to remove"""
+        pass
+
+    @abstractmethod
+    def add_credential(self, authenticator_id, credential):
+        """Inject a credential onto an authenticator
+
+        :param str authenticator_id: The ID of the authenticator to add the credential to
+        :param credential: The credential to inject"""
+        pass
+
+    @abstractmethod
+    def get_credentials(self, authenticator_id):
+        """Get the credentials stored in an authenticator
+
+        :param str authenticator_id: The ID of the authenticator
+        :returns: An array with the credentials stored on the authenticator"""
+        pass
+
+    @abstractmethod
+    def remove_credential(self, authenticator_id, credential_id):
+        """Remove a credential stored in an authenticator
+
+        :param str authenticator_id: The ID of the authenticator
+        :param str credential_id: The ID of the credential"""
+        pass
+
+    @abstractmethod
+    def remove_all_credentials(self, authenticator_id):
+        """Remove all the credentials stored in an authenticator
+
+        :param str authenticator_id: The ID of the authenticator"""
+        pass
+
+    @abstractmethod
+    def set_user_verified(self, authenticator_id, uv):
+        """Sets the user verified flag on an authenticator
+
+        :param str authenticator_id: The ID of the authenticator
+        :param bool uv: the user verified flag"""
+        pass
+
+
+class PrintProtocolPart(ProtocolPart):
+    """Protocol part for rendering to a PDF."""
+    __metaclass__ = ABCMeta
+
+    name = "pdf_print"
+
+    @abstractmethod
+    def render_as_pdf(self, width, height):
+        """Output document as PDF"""
+        pass
+
+
+class DebugProtocolPart(ProtocolPart):
+    """Protocol part for debugging test failures."""
+    __metaclass__ = ABCMeta
+
+    name = "debug"
+
+    @abstractmethod
+    def load_devtools(self):
+        """Load devtools in the current window"""
+        pass
+
+    def load_reftest_analyzer(self, test, result):
+        import io
+        import mozlog
+        from urllib.parse import quote, urljoin
+
+        debug_test_logger = mozlog.structuredlog.StructuredLogger("debug_test")
+        output = io.StringIO()
+        debug_test_logger.suite_start([])
+        debug_test_logger.add_handler(mozlog.handlers.StreamHandler(output, formatter=mozlog.formatters.TbplFormatter()))
+        debug_test_logger.test_start(test.id)
+        # Always use PASS as the expected value so we get output even for expected failures
+        debug_test_logger.test_end(test.id, result["status"], "PASS", extra=result.get("extra"))
+
+        self.parent.base.load(urljoin(self.parent.executor.server_url("https"),
+                              "/common/third_party/reftest-analyzer.xhtml#log=%s" %
+                               quote(output.getvalue())))

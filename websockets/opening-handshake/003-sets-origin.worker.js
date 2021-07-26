@@ -1,6 +1,5 @@
 importScripts("/resources/testharness.js");
-importScripts('../constants.js?pipe=sub');
-importScripts('../websocket.sub.js');
+importScripts('../constants.sub.js');
 
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/origin');
@@ -14,4 +13,5 @@ async_test(function(t) {
     ws.close();
   })
   ws.onerror = ws.onclose = t.unreached_func();
-}, "W3C WebSocket API - origin set in a Worker");
+}, "origin set in a Worker");
+done();

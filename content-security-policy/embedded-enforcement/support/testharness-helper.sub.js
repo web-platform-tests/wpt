@@ -17,7 +17,7 @@ const IframeLoad = {
 
 function getOrigin() {
   var url = new URL("http://{{host}}:{{ports[http][0]}}/");
-  return url.toString();
+  return url.origin;
 }
 
 function getCrossOrigin() {
@@ -91,6 +91,10 @@ function assert_required_csp(t, url, csp, expected) {
       assert_unreached('Child iframes have unexpected csp:"' + e.data['required_csp'] + '"');
 
     expected.splice(expected.indexOf(e.data['required_csp']), 1);
+
+    if (e.data['test_header_injection'] != null)
+      assert_unreached('HTTP header injection was successful');
+
     if (expected.length == 0)
       t.done();
   }));
@@ -115,17 +119,17 @@ function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
 
   if (shouldBlock) {
     // Assert iframe does not load and is inaccessible.
-    window.onmessage = function (e) {
+    window.onmessage = t.step_func(function(e) {
       if (e.source != i.contentWindow)
           return;
-      t.assert_unreached('No message should be sent from the frame.');
-    }
+      assert_unreached('No message should be sent from the frame.');
+    });
     i.onload = t.step_func(function () {
       // Delay the check until after the postMessage has a chance to execute.
       setTimeout(t.step_func_done(function () {
         assert_equals(loaded[urlId], undefined);
-      }), 1);
-      assert_throws("SecurityError", () => {
+      }), 500);
+      assert_throws_dom("SecurityError", () => {
         var x = i.contentWindow.location.href;
       });
     });
@@ -134,16 +138,26 @@ function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
     window.addEventListener('message', t.step_func(e => {
       if (e.source != i.contentWindow)
         return;
+      if (!e.data.securitypolicyviolation)
+        return;
       assert_equals(e.data["blockedURI"], blockedURI);
       t.done();
     }));
   } else {
-    // Assert iframe loads.  Wait for both the load event and the postMessage.
+    // Assert iframe loads.  Wait for the load event, the postMessage from the
+    // script and the img load event.
+    let postMessage_received = false;
+    let img_loaded = false;
     window.addEventListener('message', t.step_func(e => {
       if (e.source != i.contentWindow)
         return;
-      assert_true(loaded[urlId]);
-      if (i.onloadReceived)
+      if (e.data.loaded) {
+        assert_true(loaded[urlId]);
+        postMessage_received = true;
+      } else if (e.data === "img.loaded")
+        img_loaded = true;
+
+      if (i.onloadReceived && postMessage_received && img_loaded)
         t.done();
     }));
     i.onload = t.step_func(function () {

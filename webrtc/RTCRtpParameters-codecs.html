@@ -12,6 +12,7 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCRtpParameters-helper.js:
+  //   doOfferAnswerExchange
   //   validateSenderRtpParameters
 
   /*
@@ -27,7 +28,6 @@
         sequence<RTCRtpHeaderExtensionParameters> headerExtensions;
         RTCRtcpParameters                         rtcp;
         sequence<RTCRtpCodecParameters>           codecs;
-        RTCDegradationPreference                  degradationPreference;
       };
 
       dictionary RTCRtpCodecParameters {
@@ -80,9 +80,13 @@
           with a newly created InvalidModificationError. Note that this also applies
           to transactionId.
    */
-  promise_test(t => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const { sender } = pc.addTransceiver('audio');
+    await doOfferAnswerExchange(t, pc);
+
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
@@ -94,14 +98,15 @@
       codec.payloadType += 1;
     }
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_dom(t, 'InvalidModificationError',
       sender.setParameters(param));
-
   }, 'setParameters() with codec.payloadType modified should reject with InvalidModificationError');
 
-  promise_test(t => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
+    await doOfferAnswerExchange(t, pc);
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
@@ -113,14 +118,15 @@
       codec.mimeType = `${codec.mimeType}-modified`;
     }
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_dom(t, 'InvalidModificationError',
       sender.setParameters(param));
-
   }, 'setParameters() with codec.mimeType modified should reject with InvalidModificationError');
 
-  promise_test(t => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
+    await doOfferAnswerExchange(t, pc);
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
@@ -132,14 +138,15 @@
       codec.clockRate += 1;
     }
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_dom(t, 'InvalidModificationError',
       sender.setParameters(param));
-
   }, 'setParameters() with codec.clockRate modified should reject with InvalidModificationError');
 
-  promise_test(t => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
+    await doOfferAnswerExchange(t, pc);
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
@@ -151,15 +158,15 @@
       codec.channels += 1;
     }
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_dom(t, 'InvalidModificationError',
       sender.setParameters(param));
-
   }, 'setParameters() with codec.channels modified should reject with InvalidModificationError');
 
-
-  promise_test(t => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
+    await doOfferAnswerExchange(t, pc);
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
@@ -171,15 +178,15 @@
       codec.sdpFmtpLine = `${codec.sdpFmtpLine};foo=1`;
     }
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_dom(t, 'InvalidModificationError',
       sender.setParameters(param));
-
   }, 'setParameters() with codec.sdpFmtpLine modified should reject with InvalidModificationError');
 
-
-  promise_test(t => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
+    await doOfferAnswerExchange(t, pc);
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
@@ -192,42 +199,8 @@
       channels: 2
     });
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_dom(t, 'InvalidModificationError',
       sender.setParameters(param));
-
   }, 'setParameters() with new codecs inserted should reject with InvalidModificationError');
-
-  promise_test(t => {
-    const pc = new RTCPeerConnection();
-    const { sender } = pc.addTransceiver('audio');
-    const param = sender.getParameters();
-    validateSenderRtpParameters(param);
-
-    const { codecs } = param;
-
-    // skip and pass test if there is less than 2 codecs
-    if(codecs.length >= 2) {
-      const tmp = codecs[0];
-      codecs[0] = codecs[1];
-      codecs[1] = tmp;
-    }
-
-    return sender.setParameters(param);
-
-  }, 'setParameters with reordered codecs should succeed');
-
-  promise_test(t => {
-    const pc = new RTCPeerConnection();
-    const { sender } = pc.addTransceiver('audio');
-    const param = sender.getParameters();
-    validateSenderRtpParameters(param);
-
-    const { codecs } = param;
-
-    param.codecs = codecs.slice(1);
-
-    return sender.setParameters(param);
-
-  }, 'setParameters with dropped codec should succeed');
 
 </script>

@@ -2,7 +2,11 @@
 
 import pytest
 
+from webdriver.transport import Response
+
 from tests.support.asserts import assert_error, assert_success
+from tests.support.helpers import (available_screen_size, document_hidden,
+                                   is_fullscreen, screen_size)
 
 
 def set_window_rect(session, rect):
@@ -11,25 +15,22 @@ def set_window_rect(session, rect):
         rect)
 
 
-def is_fullscreen(session):
-    # At the time of writing, WebKit does not conform to the Fullscreen API specification.
-    # Remove the prefixed fallback when https://bugs.webkit.org/show_bug.cgi?id=158125 is fixed.
-    return session.execute_script("return !!(window.fullScreen || document.webkitIsFullScreen)")
+def test_null_parameter_value(session, http):
+    path = "/session/{session_id}/window/rect".format(**vars(session))
+    with http.post(path, None) as response:
+        assert_error(Response.from_http(response), "invalid argument")
 
 
-# 10.7.2 Set Window Rect
-
-
-def test_current_top_level_browsing_context_no_longer_open(session, create_window):
-    """
-    1. If the current top-level browsing context is no longer open,
-    return error with error code no such window.
-
-    """
-    session.window_handle = create_window()
-    session.close()
+def test_no_top_browsing_context(session, closed_window):
     response = set_window_rect(session, {})
     assert_error(response, "no such window")
+
+
+def test_no_browsing_context(session, closed_frame):
+    response = set_window_rect(session, {"width": 750, "height": 700})
+    value = assert_success(response)
+    assert value["width"] == 750
+    assert value["height"] == 700
 
 
 @pytest.mark.parametrize("rect", [
@@ -66,13 +67,6 @@ def test_current_top_level_browsing_context_no_longer_open(session, create_windo
     {"width": {}, "height": {}, "x": {}, "y": {}},
 ])
 def test_invalid_types(session, rect):
-    """
-    8. If width or height is neither null nor a Number from 0 to 2^31 -
-    1, return error with error code invalid argument.
-
-    9. If x or y is neither null nor a Number from -(2^31) to 2^31 - 1,
-    return error with error code invalid argument.
-    """
     response = set_window_rect(session, rect)
     assert_error(response, "invalid argument")
 
@@ -83,40 +77,23 @@ def test_invalid_types(session, rect):
     {"width": -1, "height": -2},
 ])
 def test_out_of_bounds(session, rect):
-    """
-    8. If width or height is neither null nor a Number from 0 to 2^31 -
-    1, return error with error code invalid argument.
-
-    9. If x or y is neither null nor a Number from -(2^31) to 2^31 - 1,
-    return error with error code invalid argument.
-    """
     response = set_window_rect(session, rect)
     assert_error(response, "invalid argument")
 
 
 def test_width_height_floats(session):
-    """
-    8. If width or height is neither null nor a Number from 0 to 2^31 -
-    1, return error with error code invalid argument.
-    """
-
-    response = set_window_rect(session, {"width": 500.5, "height": 420})
+    response = set_window_rect(session, {"width": 750.5, "height": 700})
     value = assert_success(response)
-    assert value["width"] == 500
-    assert value["height"] == 420
+    assert value["width"] == 750
+    assert value["height"] == 700
 
-    response = set_window_rect(session, {"width": 500, "height": 450.5})
+    response = set_window_rect(session, {"width": 750, "height": 700.5})
     value = assert_success(response)
-    assert value["width"] == 500
-    assert value["height"] == 450
+    assert value["width"] == 750
+    assert value["height"] == 700
 
 
 def test_x_y_floats(session):
-    """
-    9. If x or y is neither null nor a Number from -(2^31) to 2^31 - 1,
-    return error with error code invalid argument.
-    """
-
     response = set_window_rect(session, {"x": 0.5, "y": 420})
     value = assert_success(response)
     assert value["x"] == 0
@@ -156,172 +133,155 @@ def test_x_y_floats(session):
     {"height": 200, "y": 200},
 ])
 def test_no_change(session, rect):
-    """
-    13. If width and height are not null:
-
-    [...]
-
-    14. If x and y are not null:
-
-    [...]
-
-    15. Return success with the JSON serialization of the current
-    top-level browsing context's window rect.
-    """
-
     original = session.window.rect
     response = set_window_rect(session, rect)
     assert_success(response, original)
 
 
 def test_fully_exit_fullscreen(session):
-    """
-    10. Fully exit fullscreen.
-
-    [...]
-
-    To fully exit fullscreen a document document, run these steps:
-
-      1. If document's fullscreen element is null, terminate these steps.
-
-      2. Unfullscreen elements whose fullscreen flag is set, within
-      document's top layer, except for document's fullscreen element.
-
-      3. Exit fullscreen document.
-    """
     session.window.fullscreen()
-    assert is_fullscreen(session) is True
+    assert is_fullscreen(session)
 
-    response = set_window_rect(session, {"width": 400, "height": 400})
+    response = set_window_rect(session, {"width": 600, "height": 400})
     value = assert_success(response)
-    assert value["width"] == 400
+    assert value["width"] == 600
     assert value["height"] == 400
 
-    assert is_fullscreen(session) is False
+    assert not is_fullscreen(session)
 
 
 def test_restore_from_minimized(session):
-    """
-    12. If the visibility state of the top-level browsing context's
-    active document is hidden, restore the window.
-
-    [...]
-
-    To restore the window, given an operating system level window with
-    an associated top-level browsing context, run implementation-specific
-    steps to restore or unhide the window to the visible screen. Do not
-    return from this operation until the visibility state of the top-level
-    browsing context's active document has reached the visible state,
-    or until the operation times out.
-    """
-
     session.window.minimize()
-    assert session.execute_script("return document.hidden") is True
+    assert document_hidden(session)
 
-    response = set_window_rect(session, {"width": 450, "height": 450})
+    response = set_window_rect(session, {"width": 750, "height": 700})
     value = assert_success(response)
-    assert value["width"] == 450
-    assert value["height"] == 450
+    assert value["width"] == 750
+    assert value["height"] == 700
 
-    assert session.execute_script("return document.hidden") is False
+    assert not document_hidden(session)
 
 
 def test_restore_from_maximized(session):
-    """
-    12. If the visibility state of the top-level browsing context's
-    active document is hidden, restore the window.
-
-    [...]
-
-    To restore the window, given an operating system level window with
-    an associated top-level browsing context, run implementation-specific
-    steps to restore or unhide the window to the visible screen. Do not
-    return from this operation until the visibility state of the top-level
-    browsing context's active document has reached the visible state,
-    or until the operation times out.
-    """
-
     original_size = session.window.size
     session.window.maximize()
     assert session.window.size != original_size
 
-    response = set_window_rect(session, {"width": 400, "height": 400})
+    response = set_window_rect(session, {"width": 750, "height": 700})
     value = assert_success(response)
-    assert value["width"] == 400
-    assert value["height"] == 400
+    assert value["width"] == 750
+    assert value["height"] == 700
 
 
 def test_height_width(session):
+    # The window position might be auto-adjusted by the browser
+    # if it exceeds the lower right corner. As such ensure that
+    # there is enough space left so no window move will occur.
+    session.window.position = (50, 50)
+
     original = session.window.rect
-    max = session.execute_script("""
-        return {
-          width: window.screen.availWidth,
-          height: window.screen.availHeight,
-        }""")
+    screen_width, screen_height = screen_size(session)
 
-    # step 12
-    response = set_window_rect(session, {"width": max["width"] - 100,
-                                         "height": max["height"] - 100})
+    response = set_window_rect(session, {
+        "width": screen_width - 100,
+        "height": screen_height - 100
+    })
+    assert_success(response, {
+        "x": original["x"],
+        "y": original["y"],
+        "width": screen_width - 100,
+        "height": screen_height - 100,
+    })
 
-    # step 14
-    assert_success(response, {"x": original["x"],
-                              "y": original["y"],
-                              "width": max["width"] - 100,
-                              "height": max["height"] - 100})
+
+def test_height_width_smaller_than_minimum_browser_size(session):
+    original = session.window.rect
+
+    response = set_window_rect(session, {"width": 10, "height": 10})
+    rect = assert_success(response)
+    assert rect["width"] < original["width"]
+    assert rect["width"] > 10
+    assert rect["height"] < original["height"]
+    assert rect["height"] > 10
 
 
 def test_height_width_larger_than_max(session):
-    max = session.execute_script("""
-        return {
-          width: window.screen.availWidth,
-          height: window.screen.availHeight,
-        }""")
+    screen_width, screen_height = screen_size(session)
+    avail_width, avail_height = available_screen_size(session)
 
-    # step 12
-    response = set_window_rect(session, {"width": max["width"] + 100,
-                                         "height": max["height"] + 100})
-
-    # step 14
+    response = set_window_rect(session, {
+        "width": screen_width + 100,
+        "height": screen_height + 100
+    })
     rect = assert_success(response)
-    assert rect["width"] >= max["width"]
-    assert rect["height"] >= max["height"]
+    assert rect["width"] >= avail_width
+    assert rect["height"] >= avail_height
 
 
 def test_height_width_as_current(session):
     original = session.window.rect
 
-    # step 12
-    response = set_window_rect(session, {"width": original["width"],
-                                         "height": original["height"]})
+    response = set_window_rect(session, {
+        "width": original["width"],
+        "height": original["height"]
+    })
+    assert_success(response, {
+        "x": original["x"],
+        "y": original["y"],
+        "width": original["width"],
+        "height": original["height"]
+    })
 
-    # step 14
-    assert_success(response, {"x": original["x"],
-                              "y": original["y"],
-                              "width": original["width"],
-                              "height": original["height"]})
+
+def test_height_as_current(session):
+    original = session.window.rect
+
+    response = set_window_rect(session, {
+        "width": original["width"] + 10,
+        "height": original["height"]
+    })
+    assert_success(response, {
+        "x": original["x"],
+        "y": original["y"],
+        "width": original["width"] + 10,
+        "height": original["height"]
+    })
+
+
+def test_width_as_current(session):
+    original = session.window.rect
+
+    response = set_window_rect(session, {
+        "width": original["width"],
+        "height": original["height"] + 10
+    })
+    assert_success(response, {
+        "x": original["x"],
+        "y": original["y"],
+        "width": original["width"],
+        "height": original["height"] + 10
+    })
 
 
 def test_x_y(session):
     original = session.window.rect
-
-    # step 13
-    response = set_window_rect(session, {"x": original["x"] + 10,
-                                         "y": original["y"] + 10})
-
-    # step 14
-    assert_success(response, {"x": original["x"] + 10,
-                              "y": original["y"] + 10,
-                              "width": original["width"],
-                              "height": original["height"]})
+    response = set_window_rect(session, {
+        "x": original["x"] + 10,
+        "y": original["y"] + 10
+    })
+    assert_success(response, {
+        "x": original["x"] + 10,
+        "y": original["y"] + 10,
+        "width": original["width"],
+        "height": original["height"]
+    })
 
 
 def test_negative_x_y(session):
     original = session.window.rect
 
-    # step 13
     response = set_window_rect(session, {"x": - 8, "y": - 8})
 
-    # step 14
     os = session.capabilities["platformName"]
     # certain WMs prohibit windows from being moved off-screen
     if os == "linux":
@@ -334,55 +294,70 @@ def test_negative_x_y(session):
     # On macOS, windows can only be moved off the screen on the
     # horizontal axis.  The system menu bar also blocks windows from
     # being moved to (0,0).
-    elif os == "darwin":
-        assert_success(response, {"x": -8,
-                                  "y": 23,
-                                  "width": original["width"],
-                                  "height": original["height"]})
+    elif os == "mac":
+        value = assert_success(response)
+
+        # `screen.availTop` is not standardized but all browsers we care
+        # about on MacOS implement the CSSOM View mode `Screen` interface.
+        avail_top = session.execute_script("return window.screen.availTop;")
+
+        assert value == {"x": -8,
+                         "y": avail_top,
+                         "width": original["width"],
+                         "height": original["height"]}
 
     # It turns out that Windows is the only platform on which the
     # window can be reliably positioned off-screen.
-    elif os == "windows_nt":
+    elif os == "windows":
         assert_success(response, {"x": -8,
                                   "y": -8,
                                   "width": original["width"],
                                   "height": original["height"]})
 
 
-def test_move_to_same_position(session):
-    original_position = session.window.position
-    position = session.window.position = original_position
-    assert position == original_position
+def test_x_y_as_current(session):
+    original = session.window.rect
+
+    response = set_window_rect(session, {
+        "x": original["x"],
+        "y": original["y"]
+    })
+    assert_success(response, {
+        "x": original["x"],
+        "y": original["y"],
+        "width": original["width"],
+        "height": original["height"]
+    })
 
 
-def test_move_to_same_x(session):
-    original_x = session.window.position[0]
-    position = session.window.position = (original_x, 345)
-    assert position == (original_x, 345)
+def test_x_as_current(session):
+    original = session.window.rect
+
+    response = set_window_rect(session, {
+        "x": original["x"],
+        "y": original["y"] + 10
+    })
+    assert_success(response, {
+        "x": original["x"],
+        "y": original["y"] + 10,
+        "width": original["width"],
+        "height": original["height"]
+    })
 
 
-def test_move_to_same_y(session):
-    original_y = session.window.position[1]
-    position = session.window.position = (456, original_y)
-    assert position == (456, original_y)
+def test_y_as_current(session):
+    original = session.window.rect
 
-
-def test_resize_to_same_size(session):
-    original_size = session.window.size
-    size = session.window.size = original_size
-    assert size == original_size
-
-
-def test_resize_to_same_width(session):
-    original_width = session.window.size[0]
-    size = session.window.size = (original_width, 345)
-    assert size == (original_width, 345)
-
-
-def test_resize_to_same_height(session):
-    original_height = session.window.size[1]
-    size = session.window.size = (456, original_height)
-    assert size == (456, original_height)
+    response = set_window_rect(session, {
+        "x": original["x"] + 10,
+        "y": original["y"]
+    })
+    assert_success(response, {
+        "x": original["x"] + 10,
+        "y": original["y"],
+        "width": original["width"],
+        "height": original["height"]
+    })
 
 
 """
@@ -413,7 +388,6 @@ def test_resize_by_script(session):
 
 
 def test_payload(session):
-    # step 14
     response = set_window_rect(session, {"x": 400, "y": 400})
 
     assert response.status == 200

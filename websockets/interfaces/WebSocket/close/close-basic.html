@@ -2,7 +2,7 @@
 <title>WebSockets: close()</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../../../constants.js?pipe=sub></script>
+<script src=../../../constants.sub.js></script>
 <meta name="variant" content="">
 <meta name="variant" content="?wss">
 <div id=log></div>
@@ -22,5 +22,5 @@ async_test(function(t) {
   });
   ws.close();
   assert_equals(ws.readyState, ws.CLOSING);
-}, undefined, {timeout:9900});
+});
 </script>

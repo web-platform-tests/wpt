@@ -1,8 +1,8 @@
-import os
 import importlib
 import imp
 
 from .browsers import product_list
+
 
 def products_enabled(config):
     names = config.get("products", {}).keys()
@@ -11,10 +11,8 @@ def products_enabled(config):
     else:
         return names
 
-def product_module(config, product):
-    here = os.path.join(os.path.split(__file__)[0])
-    product_dir = os.path.join(here, "browsers")
 
+def product_module(config, product):
     if product not in products_enabled(config):
         raise ValueError("Unknown product %s" % product)
 
@@ -30,28 +28,34 @@ def product_module(config, product):
     return module
 
 
-def load_product(config, product):
-    module = product_module(config, product)
-    data = module.__wptrunner__
+class Product(object):
+    def __init__(self, config, product):
+        module = product_module(config, product)
+        data = module.__wptrunner__
+        self.name = product
+        if isinstance(data["browser"], str):
+            self._browser_cls = {None: getattr(module, data["browser"])}
+        else:
+            self._browser_cls = {key: getattr(module, value)
+                                 for key, value in data["browser"].items()}
+        self.check_args = getattr(module, data["check_args"])
+        self.get_browser_kwargs = getattr(module, data["browser_kwargs"])
+        self.get_executor_kwargs = getattr(module, data["executor_kwargs"])
+        self.env_options = getattr(module, data["env_options"])()
+        self.get_env_extras = getattr(module, data["env_extras"])
+        self.run_info_extras = (getattr(module, data["run_info_extras"])
+                                if "run_info_extras" in data else lambda **kwargs:{})
+        self.get_timeout_multiplier = getattr(module, data["timeout_multiplier"])
 
-    check_args = getattr(module, data["check_args"])
-    browser_cls = getattr(module, data["browser"])
-    browser_kwargs = getattr(module, data["browser_kwargs"])
-    executor_kwargs = getattr(module, data["executor_kwargs"])
-    env_options = getattr(module, data["env_options"])()
-    env_extras = getattr(module, data["env_extras"])
-    run_info_extras = (getattr(module, data["run_info_extras"])
-                       if "run_info_extras" in data else lambda **kwargs:{})
+        self.executor_classes = {}
+        for test_type, cls_name in data["executor"].items():
+            cls = getattr(module, cls_name)
+            self.executor_classes[test_type] = cls
 
-    executor_classes = {}
-    for test_type, cls_name in data["executor"].iteritems():
-        cls = getattr(module, cls_name)
-        executor_classes[test_type] = cls
-
-    return (check_args,
-            browser_cls, browser_kwargs,
-            executor_classes, executor_kwargs,
-            env_options, env_extras, run_info_extras)
+    def get_browser_cls(self, test_type):
+        if test_type in self._browser_cls:
+            return self._browser_cls[test_type]
+        return self._browser_cls[None]
 
 
 def load_product_update(config, product):
@@ -64,6 +68,6 @@ def load_product_update(config, product):
     data = module.__wptrunner__
 
     update_properties = (getattr(module, data["update_properties"])()
-                         if "update_properties" in data else (None, None))
+                         if "update_properties" in data else {})
 
     return update_properties

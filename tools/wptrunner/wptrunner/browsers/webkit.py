@@ -1,21 +1,27 @@
 from .base import Browser, ExecutorBrowser, require_arg
+from .base import NullBrowser, get_timeout_multiplier, certificate_domain_list  # noqa: F401
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorselenium import (SeleniumTestharnessExecutor,
-                                          SeleniumRefTestExecutor)
-from ..executors.executorwebkit import WebKitDriverWdspecExecutor
+from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
+                                           WebDriverRefTestExecutor,  # noqa: F401
+                                           WebDriverCrashtestExecutor)  # noqa: F401
+from ..executors.executorwebkit import WebKitDriverWdspecExecutor  # noqa: F401
 from ..webdriver_server import WebKitDriverServer
 
 
 __wptrunner__ = {"product": "webkit",
                  "check_args": "check_args",
-                 "browser": "WebKitBrowser",
+                 "browser": {None: "WebKitBrowser",
+                             "wdspec": "NullBrowser"},
                  "browser_kwargs": "browser_kwargs",
-                 "executor": {"testharness": "SeleniumTestharnessExecutor",
-                              "reftest": "SeleniumRefTestExecutor",
-                              "wdspec": "WebKitDriverWdspecExecutor"},
+                 "executor": {"testharness": "WebDriverTestharnessExecutor",
+                              "reftest": "WebDriverRefTestExecutor",
+                              "wdspec": "WebKitDriverWdspecExecutor",
+                              "crashtest": "WebDriverCrashtestExecutor"},
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
-                 "env_options": "env_options"}
+                 "env_options": "env_options",
+                 "run_info_extras": "run_info_extras",
+                 "timeout_multiplier": "get_timeout_multiplier"}
 
 
 def check_args(**kwargs):
@@ -24,35 +30,37 @@ def check_args(**kwargs):
     require_arg(kwargs, "webkit_port")
 
 
-def browser_kwargs(test_type, run_info_data, **kwargs):
+def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
     return {"binary": kwargs["binary"],
             "webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs.get("webdriver_args")}
 
 
-def capabilities_for_port(webkit_port, binary, binary_args):
-    from selenium.webdriver import DesiredCapabilities
+def capabilities_for_port(server_config, **kwargs):
+    port_name = kwargs["webkit_port"]
+    if port_name in ["gtk", "wpe"]:
+        port_key_map = {"gtk": "webkitgtk"}
+        browser_options_port = port_key_map.get(port_name, port_name)
+        browser_options_key = "%s:browserOptions" % browser_options_port
 
-    if webkit_port == "gtk":
-        capabilities = dict(DesiredCapabilities.WEBKITGTK.copy())
-        capabilities["webkitgtk:browserOptions"] = {
-            "binary": binary,
-            "args": binary_args
-        }
-        return capabilities
+        return {
+            "browserName": "MiniBrowser",
+            "browserVersion": "2.20",
+            "platformName": "ANY",
+            browser_options_key: {
+                "binary": kwargs["binary"],
+                "args": kwargs.get("binary_args", []),
+                "certificates": certificate_domain_list(server_config.domains_set, kwargs["host_cert_path"])}}
 
     return {}
 
 
-def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
+def executor_kwargs(logger, test_type, test_environment, run_info_data,
                     **kwargs):
-    executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, **kwargs)
+    executor_kwargs = base_executor_kwargs(test_type, test_environment, run_info_data, **kwargs)
     executor_kwargs["close_after_done"] = True
-    capabilities = capabilities_for_port(kwargs["webkit_port"],
-                                         kwargs["binary"],
-                                         kwargs.get("binary_args", []))
-    executor_kwargs["capabilities"] = capabilities
+    executor_kwargs["capabilities"] = capabilities_for_port(test_environment.config,
+                                                            **kwargs)
     return executor_kwargs
 
 
@@ -64,13 +72,17 @@ def env_options():
     return {}
 
 
+def run_info_extras(**kwargs):
+    return {"webkit_port": kwargs["webkit_port"]}
+
+
 class WebKitBrowser(Browser):
     """Generic WebKit browser is backed by WebKit's WebDriver implementation,
     which is supplied through ``wptrunner.webdriver.WebKitDriverServer``.
     """
 
     def __init__(self, logger, binary, webdriver_binary=None,
-                 webdriver_args=None):
+                 webdriver_args=None, **kwargs):
         Browser.__init__(self, logger)
         self.binary = binary
         self.server = WebKitDriverServer(self.logger, binary=webdriver_binary,

@@ -1,105 +1,193 @@
-'use strict';
+import {ReportingMode, Sensor, SensorClientRemote, SensorReceiver, SensorRemote, SensorType} from '/gen/services/device/public/mojom/sensor.mojom.m.js';
+import {SensorCreationResult, SensorInitParams_READ_BUFFER_SIZE_FOR_TESTS, SensorProvider, SensorProviderReceiver} from '/gen/services/device/public/mojom/sensor_provider.mojom.m.js';
 
-var GenericSensorTest = (() => {
+// A "sliding window" that iterates over |data| and returns one item at a
+// time, advancing and wrapping around as needed. |data| must be an array of
+// arrays.
+self.RingBuffer = class {
+  constructor(data) {
+    this.bufferPosition_ = 0;
+    // Validate |data|'s format and deep-copy every element.
+    this.data_ = Array.from(data, element => {
+      if (!Array.isArray(element)) {
+        throw new TypeError('Every |data| element must be an array.');
+      }
+      return Array.from(element);
+    })
+  }
+
+  next() {
+    const value = this.data_[this.bufferPosition_];
+    this.bufferPosition_ = (this.bufferPosition_ + 1) % this.data_.length;
+    return { done: false, value: value };
+  }
+
+  value() {
+    return this.data_[this.bufferPosition_];
+  }
+
+  [Symbol.iterator]() {
+    return this;
+  }
+};
+
+self.GenericSensorTest = (() => {
+  // Default sensor frequency in default configurations.
+  const DEFAULT_FREQUENCY = 5;
+
   // Class that mocks Sensor interface defined in
   // https://cs.chromium.org/chromium/src/services/device/public/mojom/sensor.mojom
   class MockSensor {
     constructor(sensorRequest, handle, offset, size, reportingMode) {
       this.client_ = null;
+      this.startShouldFail_ = false;
+      this.notifyOnReadingChange_ = true;
       this.reportingMode_ = reportingMode;
       this.sensorReadingTimerId_ = null;
+      this.readingData_ = null;
       this.requestedFrequencies_ = [];
+      // The Blink implementation (third_party/blink/renderer/modules/sensor/sensor.cc)
+      // sets a timestamp by creating a DOMHighResTimeStamp from a given platform timestamp.
+      // In this mock implementation we use a starting value
+      // and an increment step value that resemble a platform timestamp reasonably enough.
+      this.timestamp_ = window.performance.timeOrigin;
       let rv = handle.mapBuffer(offset, size);
-      assert_equals(rv.result, Mojo.RESULT_OK, "Failed to map shared buffer");
+      if (rv.result != Mojo.RESULT_OK) {
+        throw new Error("MockSensor(): Failed to map shared buffer");
+      }
       this.buffer_ = new Float64Array(rv.buffer);
       this.buffer_.fill(0);
-      this.binding_ = new mojo.Binding(device.mojom.Sensor, this,
-                                       sensorRequest);
-      this.binding_.setConnectionErrorHandler(() => {
-        this.reset();
-      });
+      this.receiver_ = new SensorReceiver(this);
+      this.receiver_.$.bindHandle(sensorRequest.handle);
     }
 
-    getDefaultConfiguration() {
-      return Promise.resolve({frequency: 5});
+    // Returns default configuration.
+    async getDefaultConfiguration() {
+      return { frequency: DEFAULT_FREQUENCY };
     }
 
-    addConfiguration(configuration) {
-      assert_not_equals(configuration, null, "Invalid sensor configuration.");
-
+    // Adds configuration for the sensor and starts reporting fake data
+    // through setSensorReading function.
+    async addConfiguration(configuration) {
       this.requestedFrequencies_.push(configuration.frequency);
       // Sort using descending order.
       this.requestedFrequencies_.sort(
           (first, second) => { return second - first });
 
-      this.startReading();
+      if (!this.startShouldFail_ )
+        this.startReading();
 
-      return Promise.resolve({success: true});
+      return { success: !this.startShouldFail_ };
     }
 
+    // Removes sensor configuration from the list of active configurations and
+    // stops notification about sensor reading changes if
+    // requestedFrequencies_ is empty.
     removeConfiguration(configuration) {
-      let index = this.requestedFrequencies_.indexOf(configuration.frequency);
+      const index = this.requestedFrequencies_.indexOf(configuration.frequency);
       if (index == -1)
         return;
 
       this.requestedFrequencies_.splice(index, 1);
-
-      if (this.isReading) {
+      if (this.requestedFrequencies_.length === 0)
         this.stopReading();
-        if (this.requestedFrequencies_.length !== 0)
-          this.startReading();
-      }
     }
 
-    suspend() {
-      this.stopReading();
+    // ConfigureReadingChangeNotifications(bool enabled)
+    // Configures whether to report a reading change when in ON_CHANGE
+    // reporting mode.
+    configureReadingChangeNotifications(notifyOnReadingChange) {
+      this.notifyOnReadingChange_ = notifyOnReadingChange;
     }
 
     resume() {
       this.startReading();
     }
 
+    suspend() {
+      this.stopReading();
+    }
+
+    // Mock functions
+
+    // Resets mock Sensor state.
     reset() {
       this.stopReading();
+      this.startShouldFail_ = false;
       this.requestedFrequencies_ = [];
+      this.notifyOnReadingChange_ = true;
+      this.readingData_ = null;
       this.buffer_.fill(0);
-      this.binding_.close();
+      this.receiver_.$.close();
+    }
+
+    // Sets fake data that is used to deliver sensor reading updates.
+    async setSensorReading(readingData) {
+      this.readingData_ = new RingBuffer(readingData);
+      return this;
+    }
+
+    // This is a workaround to accommodate Blink's Device Orientation
+    // implementation. In general, all tests should use setSensorReading()
+    // instead.
+    setSensorReadingImmediately(readingData) {
+      this.setSensorReading(readingData);
+
+      const reading = this.readingData_.value();
+      this.buffer_.set(reading, 2);
+      this.buffer_[1] = this.timestamp_++;
+    }
+
+    // Sets flag that forces sensor to fail when addConfiguration is invoked.
+    setStartShouldFail(shouldFail) {
+      this.startShouldFail_ = shouldFail;
     }
 
     startReading() {
-      if (this.isReading) {
-        console.warn("Sensor reading is already started.");
-        return;
+      if (this.readingData_ != null) {
+        this.stopReading();
       }
-
-      if (this.requestedFrequencies_.length == 0) {
-        console.warn("Sensor reading cannot be started as" +
-                     "there are no configurations added.");
-        return;
-      }
-
-      const maxFrequencyHz = this.requestedFrequencies_[0];
-      const timeoutMs = (1 / maxFrequencyHz) * 1000;
+      let maxFrequencyUsed = this.requestedFrequencies_[0];
+      let timeout = (1 / maxFrequencyUsed) * 1000;
       this.sensorReadingTimerId_ = window.setInterval(() => {
+        if (this.readingData_) {
+          // |buffer_| is a TypedArray, so we need to make sure pass an
+          // array to set().
+          const reading = this.readingData_.next().value;
+          if (!Array.isArray(reading)) {
+            throw new TypeError("startReading(): The readings passed to " +
+              "setSensorReading() must be arrays");
+          }
+          this.buffer_.set(reading, 2);
+        }
         // For all tests sensor reading should have monotonically
-        // increasing timestamp in seconds.
-        this.buffer_[1] = window.performance.now() * 0.001;
-        if (this.reportingMode_ === device.mojom.ReportingMode.ON_CHANGE) {
+        // increasing timestamp.
+        this.buffer_[1] = this.timestamp_++;
+
+        if (this.reportingMode_ === ReportingMode.ON_CHANGE &&
+            this.notifyOnReadingChange_) {
           this.client_.sensorReadingChanged();
         }
-      }, timeoutMs);
+      }, timeout);
     }
 
     stopReading() {
-      if (this.isReading) {
+      if (this.sensorReadingTimerId_ != null) {
         window.clearInterval(this.sensorReadingTimerId_);
         this.sensorReadingTimerId_ = null;
       }
     }
 
-     get isReading() {
-       this.sensorReadingTimerId_ !== null;
-     }
+    getSamplingFrequency() {
+      if (this.requestedFrequencies_.length == 0) {
+        throw new Error("getSamplingFrequency(): No configured frequency");
+      }
+       return this.requestedFrequencies_[0];
+    }
+
+    isReadingData() {
+      return this.sensorReadingTimerId_ != null;
+    }
   }
 
   // Class that mocks SensorProvider interface defined in
@@ -107,83 +195,178 @@ var GenericSensorTest = (() => {
   class MockSensorProvider {
     constructor() {
       this.readingSizeInBytes_ =
-          device.mojom.SensorInitParams.kReadBufferSizeForTests;
-      this.sharedBufferSizeInBytes_ = this.readingSizeInBytes_ *
-              device.mojom.SensorType.LAST;
-      let rv = Mojo.createSharedBuffer(this.sharedBufferSizeInBytes_);
-      assert_equals(rv.result, Mojo.RESULT_OK, "Failed to create buffer");
+          Number(SensorInitParams_READ_BUFFER_SIZE_FOR_TESTS);
+      this.sharedBufferSizeInBytes_ =
+          this.readingSizeInBytes_ * (SensorType.MAX_VALUE + 1);
+      const rv = Mojo.createSharedBuffer(this.sharedBufferSizeInBytes_);
+      if (rv.result != Mojo.RESULT_OK) {
+        throw new Error("MockSensorProvider: Failed to map shared buffer");
+      }
       this.sharedBufferHandle_ = rv.handle;
-      this.activeSensor_ = null;
-      this.isContinuous_ = false;
-      this.binding_ = new mojo.Binding(device.mojom.SensorProvider, this);
+      this.activeSensors_ = new Map();
+      this.resolveFuncs_ = new Map();
+      this.getSensorShouldFail_ = new Map();
+      this.permissionsDenied_ = new Map();
+      this.maxFrequency_ = 60;
+      this.minFrequency_ = 1;
+      this.mojomSensorType_ = new Map([
+        ['Accelerometer', SensorType.ACCELEROMETER],
+        ['LinearAccelerationSensor', SensorType.LINEAR_ACCELERATION],
+        ['GravitySensor', SensorType.GRAVITY],
+        ['AmbientLightSensor', SensorType.AMBIENT_LIGHT],
+        ['Gyroscope', SensorType.GYROSCOPE],
+        ['Magnetometer', SensorType.MAGNETOMETER],
+        ['AbsoluteOrientationSensor',
+            SensorType.ABSOLUTE_ORIENTATION_QUATERNION],
+        ['AbsoluteOrientationEulerAngles',
+            SensorType.ABSOLUTE_ORIENTATION_EULER_ANGLES],
+        ['RelativeOrientationSensor',
+            SensorType.RELATIVE_ORIENTATION_QUATERNION],
+        ['RelativeOrientationEulerAngles',
+            SensorType.RELATIVE_ORIENTATION_EULER_ANGLES],
+        ['ProximitySensor', SensorType.PROXIMITY]
+      ]);
+      this.receiver_ = new SensorProviderReceiver(this);
 
-      this.interceptor_ = new MojoInterfaceInterceptor(
-          device.mojom.SensorProvider.name);
+      this.interceptor_ =
+          new MojoInterfaceInterceptor(SensorProvider.$interfaceName);
       this.interceptor_.oninterfacerequest = e => {
-        this.binding_.bind(e.handle);
-        this.binding_.setConnectionErrorHandler(() => {
-          console.error("Mojo connection error");
-          this.reset();
-        });
+        this.bindToPipe(e.handle);
       };
       this.interceptor_.start();
     }
 
+    // Returns initialized Sensor proxy to the client.
     async getSensor(type) {
-      const offset = (device.mojom.SensorType.LAST - type) *
-                      this.readingSizeInBytes_;
-      const reportingMode = device.mojom.ReportingMode.ON_CHANGE;
-
-      let sensorPtr = new device.mojom.SensorPtr();
-      if (this.activeSensor_ == null) {
-        let mockSensor = new MockSensor(
-            mojo.makeRequest(sensorPtr), this.sharedBufferHandle_, offset,
-            this.readingSizeInBytes_, reportingMode);
-        this.activeSensor_ = mockSensor;
-        this.activeSensor_.client_ = new device.mojom.SensorClientPtr();
+      if (this.getSensorShouldFail_.get(type)) {
+        return {result: SensorCreationResult.ERROR_NOT_AVAILABLE,
+                initParams: null};
+      }
+      if (this.permissionsDenied_.get(type)) {
+        return {result: SensorCreationResult.ERROR_NOT_ALLOWED,
+                initParams: null};
       }
 
-      let rv = this.sharedBufferHandle_.duplicateBufferHandle();
+      const offset = type * this.readingSizeInBytes_;
+      const reportingMode = ReportingMode.ON_CHANGE;
 
-      assert_equals(rv.result, Mojo.RESULT_OK);
-      let maxAllowedFrequencyHz = 60;
-      if (type == device.mojom.SensorType.AMBIENT_LIGHT ||
-          type == device.mojom.SensorType.MAGNETOMETER) {
-        maxAllowedFrequencyHz = 10;
+      const sensor = new SensorRemote();
+      if (!this.activeSensors_.has(type)) {
+        const mockSensor = new MockSensor(
+            sensor.$.bindNewPipeAndPassReceiver(), this.sharedBufferHandle_,
+            offset, this.readingSizeInBytes_, reportingMode);
+        this.activeSensors_.set(type, mockSensor);
+        this.activeSensors_.get(type).client_ = new SensorClientRemote();
       }
 
-      let initParams = new device.mojom.SensorInitParams({
-        sensor: sensorPtr,
-        clientRequest: mojo.makeRequest(this.activeSensor_.client_),
+      const rv = this.sharedBufferHandle_.duplicateBufferHandle();
+      if (rv.result != Mojo.RESULT_OK) {
+        throw new Error("getSensor(): failed to duplicate Mojo buffer handler");
+      }
+
+      const defaultConfig = { frequency: DEFAULT_FREQUENCY };
+      // Consider sensor traits to meet assertions in C++ code (see
+      // services/device/public/cpp/generic_sensor/sensor_traits.h)
+      if (type == SensorType.AMBIENT_LIGHT || type == SensorType.MAGNETOMETER) {
+        this.maxFrequency_ = Math.min(10, this.maxFrequency_);
+      }
+
+      // Chromium applies some rounding and other privacy-related measures that
+      // can cause ALS not to report a reading when it has not changed beyond a
+      // certain threshold compared to the previous illuminance value. Make
+      // each reading return a different value that is significantly different
+      // from the previous one when setSensorReading() is not called by client
+      // code (e.g. run_generic_sensor_iframe_tests()).
+      if (type == SensorType.AMBIENT_LIGHT) {
+        this.activeSensors_.get(type).setSensorReading([
+          [window.performance.now() * 100],
+          [(window.performance.now() + 50) * 100]
+        ]);
+      }
+
+      const client = this.activeSensors_.get(type).client_;
+      const initParams = {
+        sensor,
+        clientReceiver: client.$.bindNewPipeAndPassReceiver(),
         memory: rv.handle,
-        bufferOffset: offset,
+        bufferOffset: BigInt(offset),
         mode: reportingMode,
-        defaultConfiguration: {frequency: 5},
-        minimumFrequency: 1,
-        maximumFrequency: maxAllowedFrequencyHz
-      });
+        defaultConfiguration: defaultConfig,
+        minimumFrequency: this.minFrequency_,
+        maximumFrequency: this.maxFrequency_
+      };
 
-      return {result: device.mojom.SensorCreationResult.SUCCESS,
-              initParams: initParams};
+      if (this.resolveFuncs_.has(type)) {
+        for (let resolveFunc of this.resolveFuncs_.get(type)) {
+          resolveFunc(this.activeSensors_.get(type));
+        }
+        this.resolveFuncs_.delete(type);
+      }
+
+      return {result: SensorCreationResult.SUCCESS, initParams};
     }
 
-    async reset() {
-      if (this.activeSensor_ !== null) {
-        this.activeSensor_.reset();
-        this.activeSensor_ = null;
+    // Binds object to mojo message pipe
+    bindToPipe(pipe) {
+      this.receiver_.$.bindHandle(pipe);
+    }
+
+    // Mock functions
+
+    // Resets state of mock SensorProvider between test runs.
+    reset() {
+      for (const sensor of this.activeSensors_.values()) {
+        sensor.reset();
       }
-      // Wait for an event loop iteration to let
-      // the pending mojo commands pass.
-      function schedule(func) {
-        return new Promise(resolve => {
-          setTimeout(() => {
-            func();
-            resolve();
-          }, 0);
-        });
+      this.activeSensors_.clear();
+      this.resolveFuncs_.clear();
+      this.getSensorShouldFail_.clear();
+      this.permissionsDenied_.clear();
+      this.maxFrequency_ = 60;
+      this.minFrequency_ = 1;
+      this.receiver_.$.close();
+      this.interceptor_.stop();
+    }
+
+    // Sets flag that forces mock SensorProvider to fail when getSensor() is
+    // invoked.
+    setGetSensorShouldFail(sensorType, shouldFail) {
+      this.getSensorShouldFail_.set(this.mojomSensorType_.get(sensorType),
+          shouldFail);
+    }
+
+    setPermissionsDenied(sensorType, permissionsDenied) {
+      this.permissionsDenied_.set(this.mojomSensorType_.get(sensorType),
+          permissionsDenied);
+    }
+
+    // Returns mock sensor that was created in getSensor to the layout test.
+    getCreatedSensor(sensorType) {
+      const type = this.mojomSensorType_.get(sensorType);
+      if (typeof type != "number") {
+        throw new TypeError(`getCreatedSensor(): Invalid sensor type ${sensorType}`);
       }
-      await schedule(this.binding_.close.bind(this.binding_));
-      await schedule(this.interceptor_.stop.bind(this.interceptor_));
+
+      if (this.activeSensors_.has(type)) {
+        return Promise.resolve(this.activeSensors_.get(type));
+      }
+
+      return new Promise(resolve => {
+        if (!this.resolveFuncs_.has(type)) {
+          this.resolveFuncs_.set(type, []);
+        }
+        this.resolveFuncs_.get(type).push(resolve);
+      });
+    }
+
+    // Sets the maximum frequency for a concrete sensor.
+    setMaximumSupportedFrequency(frequency) {
+      this.maxFrequency_ = frequency;
+    }
+
+    // Sets the minimum frequency for a concrete sensor.
+    setMinimumSupportedFrequency(frequency) {
+      this.minFrequency_ = frequency;
     }
   }
 
@@ -197,16 +380,19 @@ var GenericSensorTest = (() => {
       Object.freeze(this); // Make it immutable.
     }
 
-    initialize() {
+    async initialize() {
       if (testInternal.initialized)
         throw new Error('Call reset() before initialize().');
 
-      if (testRunner) { // Grant sensor permissions for Chromium testrunner.
-        ['accelerometer', 'gyroscope',
-         'magnetometer', 'ambient-light-sensor'].forEach((entry) => {
-          testRunner.setPermission(entry, 'granted',
-                                   location.origin, location.origin);
-        });
+      // Grant sensor permissions for Chromium testdriver.
+      // testdriver.js only works in the top-level browsing context, so do
+      // nothing if we're in e.g. an iframe.
+      if (window.parent === window) {
+        for (const entry
+                 of ['accelerometer', 'gyroscope', 'magnetometer',
+                     'ambient-light-sensor']) {
+          await test_driver.set_permission({name: entry}, 'granted', false);
+        }
       }
 
       testInternal.sensorProvider = new MockSensorProvider;
@@ -216,9 +402,17 @@ var GenericSensorTest = (() => {
     async reset() {
       if (!testInternal.initialized)
         throw new Error('Call initialize() before reset().');
-      await testInternal.sensorProvider.reset();
+      testInternal.sensorProvider.reset();
       testInternal.sensorProvider = null;
       testInternal.initialized = false;
+
+      // Wait for an event loop iteration to let any pending mojo commands in
+      // the sensor provider finish.
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+
+    getSensorProvider() {
+      return testInternal.sensorProvider;
     }
   }
 

@@ -1,7 +1,7 @@
 pytest-2.9.1
 ============
 
-pytest is a mature Python testing tool with more than a 1100 tests
+pytest is a mature Python testing tool with more than 1100 tests
 against itself, passing on many different interpreters and platforms.
 
 See below for the changes and see docs at:
@@ -14,17 +14,17 @@ As usual, you can upgrade from pypi via::
 
 Thanks to all who contributed to this release, among them:
 
-    Bruno Oliveira                                                                                                                                                                                                                            
-    Daniel Hahler                                                                                                                                                                                                                             
-    Dmitry Malinovsky                                                                                                                                                                                                                         
-    Florian Bruhin                                                                                                                                                                                                                            
-    Floris Bruynooghe                                                                                                                                                                                                                         
-    Matt Bachmann                                                                                                                                                                                                                             
-    Ronny Pfannschmidt                                                                                                                                                                                                                        
-    TomV                                                                                                                                                                                                                                      
-    Vladimir Bolshakov                                                                                                                                                                                                                        
-    Zearin                                                                                                                                                                                                                                     
-    palaviv   
+    Bruno Oliveira
+    Daniel Hahler
+    Dmitry Malinovsky
+    Florian Bruhin
+    Floris Bruynooghe
+    Matt Bachmann
+    Ronny Pfannschmidt
+    TomV
+    Vladimir Bolshakov
+    Zearin
+    palaviv
 
 
 Happy testing,

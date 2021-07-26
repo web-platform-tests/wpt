@@ -1,10 +1,11 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the Storage spec.
-// See https://storage.spec.whatwg.org/
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Storage Standard (https://storage.spec.whatwg.org/)
 
 [SecureContext]
 interface mixin NavigatorStorage {
-  readonly attribute StorageManager storage;
+  [SameObject] readonly attribute StorageManager storage;
 };
 Navigator includes NavigatorStorage;
 WorkerNavigator includes NavigatorStorage;

@@ -1,14 +1,19 @@
 import os
-import urlparse
-from collections import namedtuple, defaultdict
+from urllib.parse import urljoin, urlsplit
+from collections import namedtuple, defaultdict, deque
+from math import ceil
+from typing import Any, Callable, ClassVar, Dict, List
 
-from wptmanifest.node import (DataNode, ConditionalNode, BinaryExpressionNode,
-                              BinaryOperatorNode, VariableNode, StringNode, NumberNode,
-                              UnaryExpressionNode, UnaryOperatorNode, KeyValueNode)
-from wptmanifest.backends import conditional
-from wptmanifest.backends.conditional import ManifestItem
+from .wptmanifest import serialize
+from .wptmanifest.node import (DataNode, ConditionalNode, BinaryExpressionNode,
+                              BinaryOperatorNode, NumberNode, StringNode, VariableNode,
+                              ValueNode, UnaryExpressionNode, UnaryOperatorNode,
+                              ListNode)
+from .wptmanifest.backends import conditional
+from .wptmanifest.backends.conditional import ManifestItem
 
-import expected
+from . import expected
+from . import expectedtree
 
 """Manifest structure used to update the expected results of a test
 
@@ -24,7 +29,7 @@ at runtime.
 When a result for a test is to be updated set_result on the
 [Sub]TestNode is called to store the new result, alongside the
 existing conditional that result's run info matched, if any. Once all
-new results are known, coalesce_expected is called to compute the new
+new results are known, update is called to compute the new
 set of results and conditionals. The AST of the underlying parsed manifest
 is updated with the changes, and the result is serialised to a file.
 """
@@ -35,7 +40,11 @@ class ConditionError(Exception):
         self.cond = cond
 
 
-Result = namedtuple("Result", ["run_info", "status"])
+class UpdateError(Exception):
+    pass
+
+
+Value = namedtuple("Value", ["run_info", "value"])
 
 
 def data_cls_getter(output_node, visited_node):
@@ -50,19 +59,50 @@ def data_cls_getter(output_node, visited_node):
         raise ValueError
 
 
+class UpdateProperties(object):
+    def __init__(self, manifest, **kwargs):
+        self._manifest = manifest
+        self._classes = kwargs
+
+    def __getattr__(self, name):
+        if name in self._classes:
+            rv = self._classes[name](self._manifest)
+            setattr(self, name, rv)
+            return rv
+        raise AttributeError
+
+    def __contains__(self, name):
+        return name in self._classes
+
+    def __iter__(self):
+        for name in self._classes.keys():
+            yield getattr(self, name)
+
+
 class ExpectedManifest(ManifestItem):
-    def __init__(self, node, test_path=None, url_base=None, property_order=None,
-                 boolean_properties=None):
+    def __init__(self, node, test_path, url_base, run_info_properties,
+                 update_intermittent=False, remove_intermittent=False):
         """Object representing all the tests in a particular manifest
 
         :param node: AST Node associated with this object. If this is None,
                      a new AST is created to associate with this manifest.
         :param test_path: Path of the test file associated with this manifest.
         :param url_base: Base url for serving the tests in this manifest.
-        :param property_order: List of properties to use in expectation metadata
-                               from most to least significant.
-        :param boolean_properties: Set of properties in property_order that should
-                                   be treated as boolean.
+        :param run_info_properties: Tuple of ([property name],
+                                              {property_name: [dependent property]})
+                                    The first part lists run_info properties
+                                    that are always used in the update, the second
+                                    maps property names to additional properties that
+                                    can be considered if we already have a condition on
+                                    the key property e.g. {"foo": ["bar"]} means that
+                                    we consider making conditions on bar only after we
+                                    already made one on foo.
+        :param update_intermittent: When True, intermittent statuses will be recorded
+                                    as `expected` in the test metadata.
+        :param: remove_intermittent: When True, old intermittent statuses will be removed
+                                    if no longer intermittent. This is only relevant if
+                                    `update_intermittent` is also True, because if False,
+                                    the metadata will simply update one `expected`status.
         """
         if node is None:
             node = DataNode(None)
@@ -71,14 +111,30 @@ class ExpectedManifest(ManifestItem):
         self.test_path = test_path
         self.url_base = url_base
         assert self.url_base is not None
-        self.modified = False
-        self.boolean_properties = boolean_properties
-        self.property_order = property_order
+        self._modified = False
+        self.run_info_properties = run_info_properties
+        self.update_intermittent = update_intermittent
+        self.remove_intermittent = remove_intermittent
+        self.update_properties = UpdateProperties(self, **{
+            "lsan": LsanUpdate,
+            "leak_object": LeakObjectUpdate,
+            "leak_threshold": LeakThresholdUpdate,
+        })
+
+    @property
+    def modified(self):
+        if self._modified:
+            return True
+        return any(item.modified for item in self.children)
+
+    @modified.setter
+    def modified(self, value):
+        self._modified = value
 
     def append(self, child):
         ManifestItem.append(self, child)
         if child.id in self.child_map:
-            print "Warning: Duplicate heading %s" % child.id
+            print("Warning: Duplicate heading %s" % child.id)
         self.child_map[child.id] = child
 
     def _remove_child(self, child):
@@ -90,7 +146,7 @@ class ExpectedManifest(ManifestItem):
 
         :param test_id: The id of the test to look up"""
 
-        return self.child_map[test_id]
+        return self.child_map.get(test_id)
 
     def has_test(self, test_id):
         """Boolean indicating whether the current test has a known child test
@@ -102,8 +158,37 @@ class ExpectedManifest(ManifestItem):
 
     @property
     def url(self):
-        return urlparse.urljoin(self.url_base,
-                                "/".join(self.test_path.split(os.path.sep)))
+        return urljoin(self.url_base,
+                       "/".join(self.test_path.split(os.path.sep)))
+
+    def set_lsan(self, run_info, result):
+        """Set the result of the test in a particular run
+
+        :param run_info: Dictionary of run_info parameters corresponding
+                         to this run
+        :param result: Lsan violations detected"""
+        self.update_properties.lsan.set(run_info, result)
+
+    def set_leak_object(self, run_info, result):
+        """Set the result of the test in a particular run
+
+        :param run_info: Dictionary of run_info parameters corresponding
+                         to this run
+        :param result: Leaked objects deletec"""
+        self.update_properties.leak_object.set(run_info, result)
+
+    def set_leak_threshold(self, run_info, result):
+        """Set the result of the test in a particular run
+
+        :param run_info: Dictionary of run_info parameters corresponding
+                         to this run
+        :param result: Total number of bytes leaked"""
+        self.update_properties.leak_threshold.set(run_info, result)
+
+    def update(self, full_update, disable_intermittent):
+        for prop_update in self.update_properties:
+            prop_update.update(full_update,
+                               disable_intermittent)
 
 
 class TestNode(ManifestItem):
@@ -113,12 +198,17 @@ class TestNode(ManifestItem):
         :param node: AST node associated with the test"""
 
         ManifestItem.__init__(self, node)
-        self.updated_expected = []
-        self.new_expected = []
-        self.new_disabled = False
         self.subtests = {}
-        self.default_status = None
         self._from_file = True
+        self.new_disabled = False
+        self.has_result = False
+        self.modified = False
+        self.update_properties = UpdateProperties(
+            self,
+            expected=ExpectedUpdate,
+            max_asserts=MaxAssertsUpdate,
+            min_asserts=MinAssertsUpdate
+        )
 
     @classmethod
     def create(cls, test_id):
@@ -126,9 +216,7 @@ class TestNode(ManifestItem):
 
         :param test_type: The type of the test
         :param test_id: The id of the test"""
-
-        url = test_id
-        name = url.split("/")[-1]
+        name = test_id[len(urlsplit(test_id).path.rsplit("/", 1)[0]) + 1:]
         node = DataNode(name)
         self = cls(node)
 
@@ -137,7 +225,7 @@ class TestNode(ManifestItem):
 
     @property
     def is_empty(self):
-        ignore_keys = set(["type"])
+        ignore_keys = {"type"}
         if set(self._data.keys()) - ignore_keys:
             return False
         return all(child.is_empty for child in self.children)
@@ -145,13 +233,12 @@ class TestNode(ManifestItem):
     @property
     def test_type(self):
         """The type of the test represented by this TestNode"""
-
         return self.get("type", None)
 
     @property
     def id(self):
         """The id of the test represented by this TestNode"""
-        return urlparse.urljoin(self.parent.url, self.name)
+        return urljoin(self.parent.url, self.name)
 
     def disabled(self, run_info):
         """Boolean indicating whether this test is disabled when run in an
@@ -167,131 +254,14 @@ class TestNode(ManifestItem):
         :param run_info: Dictionary of run_info parameters corresponding
                          to this run
         :param result: Status of the test in this run"""
+        self.update_properties.expected.set(run_info, result)
 
-        if self.default_status is not None:
-            assert self.default_status == result.default_expected
-        else:
-            self.default_status = result.default_expected
+    def set_asserts(self, run_info, count):
+        """Set the assert count of a test
 
-        # Add this result to the list of results satisfying
-        # any condition in the list of updated results it matches
-        for (cond, values) in self.updated_expected:
-            if cond(run_info):
-                values.append(Result(run_info, result.status))
-                if result.status != cond.value:
-                    self.root.modified = True
-                break
-        else:
-            # We didn't find a previous value for this
-            self.new_expected.append(Result(run_info, result.status))
-            self.root.modified = True
-
-    def coalesce_expected(self, stability=None):
-        """Update the underlying manifest AST for this test based on all the
-        added results.
-
-        This will update existing conditionals if they got the same result in
-        all matching runs in the updated results, will delete existing conditionals
-        that get more than one different result in the updated run, and add new
-        conditionals for anything that doesn't match an existing conditional.
-
-        Conditionals not matched by any added result are not changed.
-
-        When `stability` is not None, disable any test that shows multiple
-        unexpected results for the same set of parameters.
         """
-
-        try:
-            unconditional_status = self.get("expected")
-        except KeyError:
-            unconditional_status = self.default_status
-
-        for conditional_value, results in self.updated_expected:
-            if not results:
-                # The conditional didn't match anything in these runs so leave it alone
-                pass
-            elif all(results[0].status == result.status for result in results):
-                # All the new values for this conditional matched, so update the node
-                result = results[0]
-                if (result.status == unconditional_status and
-                    conditional_value.condition_node is not None):
-                    if "expected" in self:
-                        self.remove_value("expected", conditional_value)
-                else:
-                    conditional_value.value = result.status
-            elif conditional_value.condition_node is not None:
-                # Blow away the existing condition and rebuild from scratch
-                # This isn't sure to work if we have a conditional later that matches
-                # these values too, but we can hope, verify that we get the results
-                # we expect, and if not let a human sort it out
-                self.remove_value("expected", conditional_value)
-                self.new_expected.extend(results)
-            elif conditional_value.condition_node is None:
-                self.new_expected.extend(result for result in results
-                                         if result.status != unconditional_status)
-
-        # It is an invariant that nothing in new_expected matches an existing
-        # condition except for the default condition
-
-        if self.new_expected:
-            if all(self.new_expected[0].status == result.status
-                   for result in self.new_expected) and not self.updated_expected:
-                status = self.new_expected[0].status
-                if status != self.default_status:
-                    self.set("expected", status, condition=None)
-            else:
-                try:
-                    conditionals = group_conditionals(
-                        self.new_expected,
-                        property_order=self.root.property_order,
-                        boolean_properties=self.root.boolean_properties)
-                except ConditionError as e:
-                    if stability is not None:
-                        self.set("disabled", stability or "unstable", e.cond.children[0])
-                        self.new_disabled = True
-                    else:
-                        print "Conflicting test results for %s, cannot update" % self.root.test_path
-                    return
-                for conditional_node, status in conditionals:
-                    if status != unconditional_status:
-                        self.set("expected", status, condition=conditional_node.children[0])
-
-        if ("expected" in self._data and
-            len(self._data["expected"]) > 0 and
-            self._data["expected"][-1].condition_node is None and
-            self._data["expected"][-1].value == self.default_status):
-
-            self.remove_value("expected", self._data["expected"][-1])
-
-        if ("expected" in self._data and
-            len(self._data["expected"]) == 0):
-            for child in self.node.children:
-                if (isinstance(child, KeyValueNode) and
-                    child.data == "expected"):
-                    child.remove()
-                    break
-
-    def _add_key_value(self, node, values):
-        ManifestItem._add_key_value(self, node, values)
-        if node.data == "expected":
-            self.updated_expected = []
-            for value in values:
-                self.updated_expected.append((value, []))
-
-    def clear_expected(self):
-        """Clear all the expected data for this test and all of its subtests"""
-
-        self.updated_expected = []
-        if "expected" in self._data:
-            for child in self.node.children:
-                if (isinstance(child, KeyValueNode) and
-                    child.data == "expected"):
-                    child.remove()
-                    del self._data["expected"]
-                    break
-
-        for subtest in self.subtests.itervalues():
-            subtest.clear_expected()
+        self.update_properties.min_asserts.set(run_info, count)
+        self.update_properties.max_asserts.set(run_info, count)
 
     def append(self, node):
         child = ManifestItem.append(self, node)
@@ -310,6 +280,11 @@ class TestNode(ManifestItem):
             subtest = SubtestNode.create(name)
             self.append(subtest)
             return subtest
+
+    def update(self, full_update, disable_intermittent):
+        for prop_update in self.update_properties:
+            prop_update.update(full_update,
+                               disable_intermittent)
 
 
 class SubtestNode(TestNode):
@@ -330,71 +305,563 @@ class SubtestNode(TestNode):
         return True
 
 
-def group_conditionals(values, property_order=None, boolean_properties=None):
-    """Given a list of Result objects, return a list of
-    (conditional_node, status) pairs representing the conditional
-    expressions that are required to match each status
+def build_conditional_tree(_, run_info_properties, results):
+    properties, dependent_props = run_info_properties
+    return expectedtree.build_tree(properties, dependent_props, results)
 
-    :param values: List of Results
-    :param property_order: List of properties to use in expectation metadata
-                           from most to least significant.
-    :param boolean_properties: Set of properties in property_order that should
-                               be treated as boolean."""
 
-    by_property = defaultdict(set)
-    for run_info, status in values:
-        for prop_name, prop_value in run_info.iteritems():
-            by_property[(prop_name, prop_value)].add(status)
+def build_unconditional_tree(_, run_info_properties, results):
+    root = expectedtree.Node(None, None)
+    for run_info, values in results.items():
+        for value, count in values.items():
+            root.result_values[value] += count
+        root.run_info.add(run_info)
+    return root
 
-    if property_order is None:
-        property_order = ["debug", "os", "version", "processor", "bits"]
 
-    if boolean_properties is None:
-        boolean_properties = set(["debug"])
-    else:
-        boolean_properties = set(boolean_properties)
+class PropertyUpdate(object):
+    property_name = None  # type: ClassVar[str]
+    cls_default_value = None  # type: ClassVar[Any]
+    value_type = None  # type: ClassVar[type]
+    # property_builder is a class variable set to either build_conditional_tree
+    # or build_unconditional_tree. TODO: Make this type stricter when those
+    # methods are annotated.
+    property_builder = None  # type: ClassVar[Callable[..., Any]]
 
-    # If we have more than one value, remove any properties that are common
-    # for all the values
-    if len(values) > 1:
-        for key, statuses in by_property.copy().iteritems():
-            if len(statuses) == len(values):
-                del by_property[key]
-        if not by_property:
+    def __init__(self, node):
+        self.node = node
+        self.default_value = self.cls_default_value
+        self.has_result = False
+        self.results = defaultdict(lambda: defaultdict(int))
+        self.update_intermittent = self.node.root.update_intermittent
+        self.remove_intermittent = self.node.root.remove_intermittent
+
+    def run_info_by_condition(self, run_info_index, conditions):
+        run_info_by_condition = defaultdict(list)
+        # A condition might match 0 or more run_info values
+        run_infos = run_info_index.keys()
+        for cond in conditions:
+            for run_info in run_infos:
+                if cond(run_info):
+                    run_info_by_condition[cond].append(run_info)
+
+        return run_info_by_condition
+
+    def set(self, run_info, value):
+        self.has_result = True
+        self.node.has_result = True
+        self.check_default(value)
+        value = self.from_result_value(value)
+        self.results[run_info][value] += 1
+
+    def check_default(self, result):
+        return
+
+    def from_result_value(self, value):
+        """Convert a value from a test result into the internal format"""
+        return value
+
+    def from_ini_value(self, value):
+        """Convert a value from an ini file into the internal format"""
+        if self.value_type:
+            return self.value_type(value)
+        return value
+
+    def to_ini_value(self, value):
+        """Convert a value from the internal format to the ini file format"""
+        return str(value)
+
+    def updated_value(self, current, new):
+        """Given a single current value and a set of observed new values,
+        compute an updated value for the property"""
+        return new
+
+    @property
+    def unconditional_value(self):
+        try:
+            unconditional_value = self.from_ini_value(
+                self.node.get(self.property_name))
+        except KeyError:
+            unconditional_value = self.default_value
+        return unconditional_value
+
+    def update(self,
+               full_update=False,
+               disable_intermittent=None):
+        """Update the underlying manifest AST for this test based on all the
+        added results.
+
+        This will update existing conditionals if they got the same result in
+        all matching runs in the updated results, will delete existing conditionals
+        that get more than one different result in the updated run, and add new
+        conditionals for anything that doesn't match an existing conditional.
+
+        Conditionals not matched by any added result are not changed.
+
+        When `disable_intermittent` is not None, disable any test that shows multiple
+        unexpected results for the same set of parameters.
+        """
+        if not self.has_result:
+            return
+
+        property_tree = self.property_builder(self.node.root.run_info_properties,
+                                              self.results)
+
+        conditions, errors = self.update_conditions(property_tree,
+                                                    full_update)
+
+        for e in errors:
+            if disable_intermittent:
+                condition = e.cond.children[0] if e.cond else None
+                msg = disable_intermittent if isinstance(disable_intermittent, str) else "unstable"
+                self.node.set("disabled", msg, condition)
+                self.node.new_disabled = True
+            else:
+                msg = "Conflicting metadata values for %s" % (
+                    self.node.root.test_path)
+                if e.cond:
+                    msg += ": %s" % serialize(e.cond).strip()
+                print(msg)
+
+        # If all the values match remove all conditionals
+        # This handles the case where we update a number of existing conditions and they
+        # all end up looking like the post-update default.
+        new_default = self.default_value
+        if conditions and conditions[-1][0] is None:
+            new_default = conditions[-1][1]
+        if all(condition[1] == new_default for condition in conditions):
+            conditions = [(None, new_default)]
+
+        # Don't set the default to the class default
+        if (conditions and
+            conditions[-1][0] is None and
+            conditions[-1][1] == self.default_value):
+            self.node.modified = True
+            conditions = conditions[:-1]
+
+        if self.node.modified:
+            self.node.clear(self.property_name)
+
+            for condition, value in conditions:
+                self.node.set(self.property_name,
+                              self.to_ini_value(value),
+                              condition)
+
+    def update_conditions(self,
+                          property_tree,
+                          full_update):
+        # This is complicated because the expected behaviour is complex
+        # The complexity arises from the fact that there are two ways of running
+        # the tool, with a full set of runs (full_update=True) or with partial metadata
+        # (full_update=False). In the case of a full update things are relatively simple:
+        # * All existing conditionals are ignored, with the exception of conditionals that
+        #   depend on variables not used by the updater, which are retained as-is
+        # * All created conditionals are independent of each other (i.e. order isn't
+        #   important in the created conditionals)
+        # In the case where we don't have a full set of runs, the expected behaviour
+        # is much less clear. This is of course the common case for when a developer
+        # runs the test on their own machine. In this case the assumptions above are untrue
+        # * The existing conditions may be required to handle other platforms
+        # * The order of the conditions may be important, since we don't know if they overlap
+        #   e.g. `if os == linux and version == 18.04` overlaps with `if (os != win)`.
+        # So in the case we have a full set of runs, the process is pretty simple:
+        # * Generate the conditionals for the property_tree
+        # * Pick the most common value as the default and add only those conditions
+        #   not matching the default
+        # In the case where we have a partial set of runs, things are more complex
+        # and more best-effort
+        # * For each existing conditional, see if it matches any of the run info we
+        #   have. In cases where it does match, record the new results
+        # * Where all the new results match, update the right hand side of that
+        #   conditional, otherwise remove it
+        # * If this leaves nothing existing, then proceed as with the full update
+        # * Otherwise add conditionals for the run_info that doesn't match any
+        #   remaining conditions
+        prev_default = None
+
+        current_conditions = self.node.get_conditions(self.property_name)
+
+        # Ignore the current default value
+        if current_conditions and current_conditions[-1].condition_node is None:
+            self.node.modified = True
+            prev_default = current_conditions[-1].value
+            current_conditions = current_conditions[:-1]
+
+        # If there aren't any current conditions, or there is just a default
+        # value for all run_info, proceed as for a full update
+        if not current_conditions:
+            return self._update_conditions_full(property_tree,
+                                                prev_default=prev_default)
+
+        conditions = []
+        errors = []
+
+        run_info_index = {run_info: node
+                          for node in property_tree
+                          for run_info in node.run_info}
+
+        node_by_run_info = {run_info: node
+                            for (run_info, node) in run_info_index.items()
+                            if node.result_values}
+
+        run_info_by_condition = self.run_info_by_condition(run_info_index,
+                                                           current_conditions)
+
+        run_info_with_condition = set()
+
+        if full_update:
+            # Even for a full update we need to keep hand-written conditions not
+            # using the properties we've specified and not matching any run_info
+            top_level_props, dependent_props = self.node.root.run_info_properties
+            update_properties = set(top_level_props)
+            for item in dependent_props.values():
+                update_properties |= set(item)
+            for condition in current_conditions:
+                if ((not condition.variables.issubset(update_properties) and
+                     not run_info_by_condition[condition])):
+                    conditions.append((condition.condition_node,
+                                       self.from_ini_value(condition.value)))
+
+            new_conditions, errors = self._update_conditions_full(property_tree,
+                                                                  prev_default=prev_default)
+            conditions.extend(new_conditions)
+            return conditions, errors
+
+        # Retain existing conditions if they match the updated values
+        for condition in current_conditions:
+            # All run_info that isn't handled by some previous condition
+            all_run_infos_condition = run_info_by_condition[condition]
+            run_infos = {item for item in all_run_infos_condition
+                         if item not in run_info_with_condition}
+
+            if not run_infos:
+                # Retain existing conditions that don't match anything in the update
+                conditions.append((condition.condition_node,
+                                   self.from_ini_value(condition.value)))
+                continue
+
+            # Set of nodes in the updated tree that match the same run_info values as the
+            # current existing node
+            nodes = [node_by_run_info[run_info] for run_info in run_infos
+                     if run_info in node_by_run_info]
+            # If all the values are the same, update the value
+            if nodes and all(set(node.result_values.keys()) == set(nodes[0].result_values.keys()) for node in nodes):
+                current_value = self.from_ini_value(condition.value)
+                try:
+                    new_value = self.updated_value(current_value,
+                                                   nodes[0].result_values)
+                except ConditionError as e:
+                    errors.append(e)
+                    continue
+                if new_value != current_value:
+                    self.node.modified = True
+                conditions.append((condition.condition_node, new_value))
+                run_info_with_condition |= set(run_infos)
+            else:
+                # Don't append this condition
+                self.node.modified = True
+
+        new_conditions, new_errors = self.build_tree_conditions(property_tree,
+                                                                run_info_with_condition,
+                                                                prev_default)
+        if new_conditions:
+            self.node.modified = True
+
+        conditions.extend(new_conditions)
+        errors.extend(new_errors)
+
+        return conditions, errors
+
+    def _update_conditions_full(self,
+                                property_tree,
+                                prev_default=None):
+        self.node.modified = True
+        conditions, errors = self.build_tree_conditions(property_tree,
+                                                        set(),
+                                                        prev_default)
+
+        return conditions, errors
+
+    def build_tree_conditions(self,
+                              property_tree,
+                              run_info_with_condition,
+                              prev_default=None):
+        conditions = []
+        errors = []
+
+        value_count = defaultdict(int)
+
+        def to_count_value(v):
+            if v is None:
+                return v
+            # Need to count the values in a hashable type
+            count_value = self.to_ini_value(v)
+            if isinstance(count_value, list):
+                count_value = tuple(count_value)
+            return count_value
+
+
+        queue = deque([(property_tree, [])])
+        while queue:
+            node, parents = queue.popleft()
+            parents_and_self = parents + [node]
+            if node.result_values and any(run_info not in run_info_with_condition
+                                          for run_info in node.run_info):
+                prop_set = [(item.prop, item.value) for item in parents_and_self if item.prop]
+                value = node.result_values
+                error = None
+                if parents:
+                    try:
+                        value = self.updated_value(None, value)
+                    except ConditionError:
+                        expr = make_expr(prop_set, value)
+                        error = ConditionError(expr)
+                    else:
+                        expr = make_expr(prop_set, value)
+                else:
+                    # The root node needs special handling
+                    expr = None
+                    try:
+                        value = self.updated_value(self.unconditional_value,
+                                                   value)
+                    except ConditionError:
+                        error = ConditionError(expr)
+                        # If we got an error for the root node, re-add the previous
+                        # default value
+                        if prev_default:
+                            conditions.append((None, prev_default))
+                if error is None:
+                    count_value = to_count_value(value)
+                    value_count[count_value] += len(node.run_info)
+
+                if error is None:
+                    conditions.append((expr, value))
+                else:
+                    errors.append(error)
+
+            for child in node.children:
+                queue.append((child, parents_and_self))
+
+        conditions = conditions[::-1]
+
+        # If we haven't set a default condition, add one and remove all the conditions
+        # with the same value
+        if value_count and (not conditions or conditions[-1][0] is not None):
+            # Sort in order of occurence, prioritising values that match the class default
+            # or the previous default
+            cls_default = to_count_value(self.default_value)
+            prev_default = to_count_value(prev_default)
+            commonest_value = max(value_count, key=lambda x:(value_count.get(x),
+                                                             x == cls_default,
+                                                             x == prev_default))
+            if isinstance(commonest_value, tuple):
+                commonest_value = list(commonest_value)
+            commonest_value = self.from_ini_value(commonest_value)
+            conditions = [item for item in conditions if item[1] != commonest_value]
+            conditions.append((None, commonest_value))
+
+        return conditions, errors
+
+
+class ExpectedUpdate(PropertyUpdate):
+    property_name = "expected"
+    property_builder = build_conditional_tree
+
+    def check_default(self, result):
+        if self.default_value is not None:
+            assert self.default_value == result.default_expected
+        else:
+            self.default_value = result.default_expected
+
+    def from_result_value(self, result):
+        # When we are updating intermittents, we need to keep a record of any existing
+        # intermittents to pass on when building the property tree and matching statuses and
+        # intermittents to the correct run info -  this is so we can add them back into the
+        # metadata aligned with the right conditions, unless specified not to with
+        # self.remove_intermittent.
+        # The (status, known_intermittent) tuple is counted when the property tree is built, but
+        # the count value only applies to the first item in the tuple, the status from that run,
+        # when passed to `updated_value`.
+        if (not self.update_intermittent or
+            self.remove_intermittent or
+            not result.known_intermittent):
+            return result.status
+        return result.status + result.known_intermittent
+
+    def to_ini_value(self, value):
+        if isinstance(value, (list, tuple)):
+            return [str(item) for item in value]
+        return str(value)
+
+    def updated_value(self, current, new):
+        if len(new) > 1 and not self.update_intermittent and not isinstance(current, list):
             raise ConditionError
 
-    properties = set(item[0] for item in by_property.iterkeys())
-    include_props = []
+        counts = {}
+        for status, count in new.items():
+            if isinstance(status, tuple):
+                counts[status[0]] = count
+                counts.update({intermittent: 0 for intermittent in status[1:] if intermittent not in counts})
+            else:
+                counts[status] = count
 
-    for prop in property_order:
-        if prop in properties:
-            include_props.append(prop)
+        if not (self.update_intermittent or isinstance(current, list)):
+            return list(counts)[0]
 
-    conditions = {}
+        # Reorder statuses first based on counts, then based on status priority if there are ties.
+        # Counts with 0 are considered intermittent.
+        statuses = ["OK", "PASS", "FAIL", "ERROR", "TIMEOUT", "CRASH"]
+        status_priority = {value: i for i, value in enumerate(statuses)}
+        sorted_new = sorted(counts.items(), key=lambda x:(-1 * x[1],
+                                                        status_priority.get(x[0],
+                                                        len(status_priority))))
+        expected = []
+        for status, count in sorted_new:
+            # If we are not removing existing recorded intermittents, with a count of 0,
+            # add them in to expected.
+            if count > 0 or not self.remove_intermittent:
+                expected.append(status)
 
-    for run_info, status in values:
-        prop_set = tuple((prop, run_info[prop]) for prop in include_props)
-        if prop_set in conditions:
-            if conditions[prop_set][1] != status:
-                # A prop_set contains contradictory results
-                raise ConditionError(make_expr(prop_set, status, boolean_properties))
-            continue
+        # If the new intermittent is a subset of the existing one, just use the existing one
+        # This prevents frequent flip-flopping of results between e.g. [OK, TIMEOUT] and
+        # [TIMEOUT, OK]
+        if current and set(expected).issubset(set(current)):
+            return current
 
-        expr = make_expr(prop_set, status, boolean_properties=boolean_properties)
-        conditions[prop_set] = (expr, status)
+        if self.update_intermittent:
+            if len(expected) == 1:
+                return expected[0]
+            return expected
 
-    return conditions.values()
+        # If we are not updating intermittents, return the status with the highest occurence.
+        return expected[0]
 
 
-def make_expr(prop_set, status, boolean_properties=None):
+class MaxAssertsUpdate(PropertyUpdate):
+    """For asserts we always update the default value and never add new conditionals.
+    The value we set as the default is the maximum the current default or one more than the
+    number of asserts we saw in any configuration."""
+
+    property_name = "max-asserts"
+    cls_default_value = 0
+    value_type = int
+    property_builder = build_unconditional_tree
+
+    def updated_value(self, current, new):
+        if any(item > current for item in new):
+            return max(new) + 1
+        return current
+
+
+class MinAssertsUpdate(PropertyUpdate):
+    property_name = "min-asserts"
+    cls_default_value = 0
+    value_type = int
+    property_builder = build_unconditional_tree
+
+    def updated_value(self, current, new):
+        if any(item < current for item in new):
+            rv = min(new) - 1
+        else:
+            rv = current
+        return max(rv, 0)
+
+
+class AppendOnlyListUpdate(PropertyUpdate):
+    cls_default_value = []  # type: ClassVar[List[str]]
+    property_builder = build_unconditional_tree
+
+    def updated_value(self, current, new):
+        if current is None:
+            rv = set()
+        else:
+            rv = set(current)
+
+        for item in new:
+            if item is None:
+                continue
+            elif isinstance(item, str):
+                rv.add(item)
+            else:
+                rv |= item
+
+        return sorted(rv)
+
+
+class LsanUpdate(AppendOnlyListUpdate):
+    property_name = "lsan-allowed"
+    property_builder = build_unconditional_tree
+
+    def from_result_value(self, result):
+        # If we have an allowed_match that matched, return None
+        # This value is ignored later (because it matches the default)
+        # We do that because then if we allow a failure in foo/__dir__.ini
+        # we don't want to update foo/bar/__dir__.ini with the same rule
+        if result[1]:
+            return None
+        # Otherwise return the topmost stack frame
+        # TODO: there is probably some improvement to be made by looking for a "better" stack frame
+        return result[0][0]
+
+    def to_ini_value(self, value):
+        return value
+
+
+class LeakObjectUpdate(AppendOnlyListUpdate):
+    property_name = "leak-allowed"
+    property_builder = build_unconditional_tree
+
+    def from_result_value(self, result):
+        # If we have an allowed_match that matched, return None
+        if result[1]:
+            return None
+        # Otherwise return the process/object name
+        return result[0]
+
+
+class LeakThresholdUpdate(PropertyUpdate):
+    property_name = "leak-threshold"
+    cls_default_value = {}  # type: ClassVar[Dict[str, int]]
+    property_builder = build_unconditional_tree
+
+    def from_result_value(self, result):
+        return result
+
+    def to_ini_value(self, data):
+        return ["%s:%s" % item for item in sorted(data.items())]
+
+    def from_ini_value(self, data):
+        rv = {}
+        for item in data:
+            key, value = item.split(":", 1)
+            rv[key] = int(float(value))
+        return rv
+
+    def updated_value(self, current, new):
+        if current:
+            rv = current.copy()
+        else:
+            rv = {}
+        for process, leaked_bytes, threshold in new:
+            # If the value is less than the threshold but there isn't
+            # an old value we must have inherited the threshold from
+            # a parent ini file so don't any anything to this one
+            if process not in rv and leaked_bytes < threshold:
+                continue
+            if leaked_bytes > rv.get(process, 0):
+                # Round up to nearest 50 kb
+                boundary = 50 * 1024
+                rv[process] = int(boundary * ceil(float(leaked_bytes) / boundary))
+        return rv
+
+
+def make_expr(prop_set, rhs):
     """Create an AST that returns the value ``status`` given all the
     properties in prop_set match.
 
     :param prop_set: tuple of (property name, value) pairs for each
                      property in this expression and the value it must match
     :param status: Status on RHS when all the given properties match
-    :param boolean_properties: Set of properties in property_order that should
-                               be treated as boolean.
     """
     root = ConditionalNode()
 
@@ -402,17 +869,12 @@ def make_expr(prop_set, status, boolean_properties=None):
 
     expressions = []
     for prop, value in prop_set:
-        number_types = (int, float, long)
-        value_cls = (NumberNode
-                     if type(value) in number_types
-                     else StringNode)
-        if prop not in boolean_properties:
+        if value not in (True, False):
             expressions.append(
                 BinaryExpressionNode(
                     BinaryOperatorNode("=="),
                     VariableNode(prop),
-                    value_cls(unicode(value))
-                ))
+                    make_node(value)))
         else:
             if value:
                 expressions.append(VariableNode(prop))
@@ -434,37 +896,60 @@ def make_expr(prop_set, status, boolean_properties=None):
         node = expressions[0]
 
     root.append(node)
-    root.append(StringNode(status))
+    rhs_node = make_value_node(rhs)
+    root.append(rhs_node)
 
     return root
 
 
-def get_manifest(metadata_root, test_path, url_base, property_order=None,
-                 boolean_properties=None):
+def make_node(value):
+    if isinstance(value, (int, float,)):
+        node = NumberNode(value)
+    elif isinstance(value, str):
+        node = StringNode(str(value))
+    elif hasattr(value, "__iter__"):
+        node = ListNode()
+        for item in value:
+            node.append(make_node(item))
+    return node
+
+
+def make_value_node(value):
+    if isinstance(value, (int, float,)):
+        node = ValueNode(value)
+    elif isinstance(value, str):
+        node = ValueNode(str(value))
+    elif hasattr(value, "__iter__"):
+        node = ListNode()
+        for item in value:
+            node.append(make_value_node(item))
+    else:
+        raise ValueError("Don't know how to convert %s into node" % type(value))
+    return node
+
+
+def get_manifest(metadata_root, test_path, url_base, run_info_properties, update_intermittent, remove_intermittent):
     """Get the ExpectedManifest for a particular test path, or None if there is no
     metadata stored for that test path.
 
     :param metadata_root: Absolute path to the root of the metadata directory
     :param test_path: Path to the test(s) relative to the test root
-    :param url_base: Base url for serving the tests in this manifest
-    :param property_order: List of properties to use in expectation metadata
-                           from most to least significant.
-    :param boolean_properties: Set of properties in property_order that should
-                               be treated as boolean."""
+    :param url_base: Base url for serving the tests in this manifest"""
     manifest_path = expected.expected_path(metadata_root, test_path)
     try:
-        with open(manifest_path) as f:
-            return compile(f, test_path, url_base, property_order=property_order,
-                           boolean_properties=boolean_properties)
+        with open(manifest_path, "rb") as f:
+            rv = compile(f, test_path, url_base,
+                         run_info_properties, update_intermittent, remove_intermittent)
     except IOError:
         return None
+    return rv
 
 
-def compile(manifest_file, test_path, url_base, property_order=None,
-            boolean_properties=None):
+def compile(manifest_file, test_path, url_base, run_info_properties, update_intermittent, remove_intermittent):
     return conditional.compile(manifest_file,
                                data_cls_getter=data_cls_getter,
                                test_path=test_path,
                                url_base=url_base,
-                               property_order=property_order,
-                               boolean_properties=boolean_properties)
+                               run_info_properties=run_info_properties,
+                               update_intermittent=update_intermittent,
+                               remove_intermittent=remove_intermittent)

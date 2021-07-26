@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>Test request Picture-in-Picture</title>
+<script src="/common/media.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -9,41 +10,28 @@
 <script>
 promise_test(async t => {
   const video = await loadVideo();
-  return requestPictureInPictureWithTrustedClick(video);
-}, 'request Picture-in-Picture resolves on user click');
+  return promise_rejects_dom(t, 'NotAllowedError', video.requestPictureInPicture());
+}, 'request Picture-in-Picture requires a user gesture');
 
 promise_test(t => {
   const video = document.createElement('video');
-  return promise_rejects(t, 'InvalidStateError',
+  return promise_rejects_dom(t, 'InvalidStateError',
       requestPictureInPictureWithTrustedClick(video));
 }, 'request Picture-in-Picture requires loaded metadata for the video element');
 
 promise_test(async t => {
   const video = document.createElement('video');
   await new Promise(resolve => {
-    video.src = '/media/sound_5.oga';
+    video.src = getAudioURI('/media/sound_5');
     video.onloadeddata = resolve;
   }).then(() => {
-    return promise_rejects(t, 'InvalidStateError',
+    return promise_rejects_dom(t, 'InvalidStateError',
       requestPictureInPictureWithTrustedClick(video));
   })
 }, 'request Picture-in-Picture requires video track for the video element');
 
 promise_test(async t => {
   const video = await loadVideo();
-  return promise_rejects(t, 'NotAllowedError', video.requestPictureInPicture());
-}, 'request Picture-in-Picture requires a user gesture');
-
-promise_test(async t => {
-  const video1 = await loadVideo();
-  const video2 = await loadVideo();
-  return callWithTrustedClick(() => {
-    const first = video1.requestPictureInPicture();
-    const second = video2.requestPictureInPicture();
-    return Promise.all([
-      first,
-      promise_rejects(t, 'NotAllowedError', second)
-    ]);
-  });
-}, 'request Picture-in-Picture consumes user gesture');
+  return requestPictureInPictureWithTrustedClick(video);
+}, 'request Picture-in-Picture resolves on user click');
 </script>

@@ -136,15 +136,7 @@ function showLoggedEvents() {
     complete_notice.style.display = "block";
 }
 
-function log(msg, el) {
-    if (++count > 10){
-      count = 0;
-      el.innerHTML = ' ';
-    }
-    el.innerHTML = msg + '; ' + el.innerHTML;
-}
-
- function failOnScroll() {
+function failOnScroll() {
     assert_true(false,
     "scroll received while shouldn't");
 }
@@ -259,4 +251,205 @@ function setup_pointerevent_test(testName, supportedPointerTypes) {
 
 function checkPointerEventType(event) {
     assert_equals(event.pointerType, expectedPointerType, "pointerType should be the same as the requested device.");
+}
+
+function touchScrollInTarget(target, direction) {
+    var x_delta = 0;
+    var y_delta = 0;
+    if (direction == "down") {
+        x_delta = 0;
+        y_delta = -10;
+    } else if (direction == "up") {
+        x_delta = 0;
+        y_delta = 10;
+    } else if (direction == "right") {
+        x_delta = -10;
+        y_delta = 0;
+    } else if (direction == "left") {
+        x_delta = 10;
+        y_delta = 0;
+    } else {
+        throw("scroll direction '" + direction + "' is not expected, direction should be 'down', 'up', 'left' or 'right'");
+    }
+    return new test_driver.Actions()
+                   .addPointer("touchPointer1", "touch")
+                   .pointerMove(0, 0, {origin: target})
+                   .pointerDown()
+                   .pointerMove(x_delta, y_delta, {origin: target})
+                   .pointerMove(2 * x_delta, 2 * y_delta, {origin: target})
+                   .pointerMove(3 * x_delta, 3 * y_delta, {origin: target})
+                   .pointerMove(4 * x_delta, 4 * y_delta, {origin: target})
+                   .pointerMove(5 * x_delta, 5 * y_delta, {origin: target})
+                   .pointerMove(6 * x_delta, 6 * y_delta, {origin: target})
+                   .pause(100)
+                   .pointerUp()
+                   .send();
+}
+
+function clickInTarget(pointerType, target) {
+    var pointerId = pointerType + "Pointer1";
+    return new test_driver.Actions()
+                   .addPointer(pointerId, pointerType)
+                   .pointerMove(0, 0, {origin: target})
+                   .pointerDown()
+                   .pointerUp()
+                   .send();
+}
+
+function twoFingerDrag(target) {
+  return new test_driver.Actions()
+      .addPointer("touchPointer1", "touch")
+      .addPointer("touchPointer2", "touch")
+      .pointerMove(0, 0, {origin: target, sourceName: "touchPointer1"})
+      .pointerMove(10, 0, {origin: target, sourceName: "touchPointer2"})
+      .pointerDown({sourceName: "touchPointer1"})
+      .pointerDown({sourceName: "touchPointer2"})
+      .pointerMove(0, 10, {origin: target, sourceName: "touchPointer1"})
+      .pointerMove(10, 10, {origin: target, sourceName: "touchPointer2"})
+      .pointerMove(0, 20, {origin: target, sourceName: "touchPointer1"})
+      .pointerMove(10, 20, {origin: target, sourceName: "touchPointer2"})
+      .pause(100)
+      .pointerUp({sourceName: "touchPointer1"})
+      .pointerUp({sourceName: "touchPointer2"})
+      .send();
+}
+
+function pointerDragInTarget(pointerType, target, direction) {
+    var x_delta = 0;
+    var y_delta = 0;
+    if (direction == "down") {
+        x_delta = 0;
+        y_delta = 10;
+    } else if (direction == "up") {
+        x_delta = 0;
+        y_delta = -10;
+    } else if (direction == "right") {
+        x_delta = 10;
+        y_delta = 0;
+    } else if (direction == "left") {
+        x_delta = -10;
+        y_delta = 0;
+    } else {
+        throw("drag direction '" + direction + "' is not expected, direction should be 'down', 'up', 'left' or 'right'");
+    }
+    var pointerId = pointerType + "Pointer1";
+    return new test_driver.Actions()
+                   .addPointer(pointerId, pointerType)
+                   .pointerMove(0, 0, {origin: target})
+                   .pointerDown()
+                   .pointerMove(x_delta, y_delta, {origin: target})
+                   .pointerMove(2 * x_delta, 2 * y_delta, {origin: target})
+                   .pointerMove(3 * x_delta, 3 * y_delta, {origin: target})
+                   .pointerUp()
+                   .send();
+}
+
+function pointerHoverInTarget(pointerType, target, direction) {
+    var x_delta = 0;
+    var y_delta = 0;
+    if (direction == "down") {
+        x_delta = 0;
+        y_delta = 10;
+    } else if (direction == "up") {
+        x_delta = 0;
+        y_delta = -10;
+    } else if (direction == "right") {
+        x_delta = 10;
+        y_delta = 0;
+    } else if (direction == "left") {
+        x_delta = -10;
+        y_delta = 0;
+    } else {
+        throw("drag direction '" + direction + "' is not expected, direction should be 'down', 'up', 'left' or 'right'");
+    }
+    var pointerId = pointerType + "Pointer1";
+    return new test_driver.Actions()
+                   .addPointer(pointerId, pointerType)
+                   .pointerMove(0, 0, {origin: target})
+                   .pointerMove(x_delta, y_delta, {origin: target})
+                   .pointerMove(2 * x_delta, 2 * y_delta, {origin: target})
+                   .pointerMove(3 * x_delta, 3 * y_delta, {origin: target})
+                   .send();
+}
+
+function moveToDocument(pointerType) {
+    var pointerId = pointerType + "Pointer1";
+    return new test_driver.Actions()
+                   .addPointer(pointerId, pointerType)
+                   .pointerMove(0, 0)
+                   .send();
+}
+
+// Returns a promise that only gets resolved when the condition is met.
+function resolveWhen(condition) {
+  return new Promise((resolve, reject) => {
+    function tick() {
+      if (condition())
+        resolve();
+      else
+        requestAnimationFrame(tick.bind(this));
+    }
+    tick();
+  });
+}
+
+// Returns a promise that only gets resolved after n animation frames
+function waitForAnimationFrames(n){
+  let p = 0;
+  function next(){
+    p++;
+    return p === n;
+  }
+  return resolveWhen(next);
+}
+
+function isPointerEvent(eventName){
+  return All_Pointer_Events.includes(eventName);
+}
+
+function isMouseEvent(eventName){
+  return ["mousedown", "mouseup", "mousemove", "mouseover",
+          "mouseenter", "mouseout", "mouseleave",
+          "click", "contextmenu", "dblclick"
+         ].includes(eventName);
+}
+
+function arePointerAndMouseEventCompatible(pointerEventName, mouseEventName){
+  // e.g. compatible pointer-mouse events: pointerup - mouseup etc
+  return pointerEventName.startsWith("pointer") &&
+         mouseEventName.startsWith("mouse") &&
+         pointerEventName.substring(7) === mouseEventName.substring(5);
+}
+
+// events is a list of events fired at a target
+// checks to see if each pointer event has a corresponding mouse event in the event array
+// and the two events are in the proper order (pointer event is first)
+// see https://www.w3.org/TR/pointerevents3/#mapping-for-devices-that-support-hover
+function arePointerEventsBeforeCompatMouseEvents(events){
+  // checks to see if the pointer event is compatible with the mouse event
+  // and the pointer event happens before the mouse event
+  function arePointerAndMouseEventInProperOrder(pointerEventIndex, mouseEventIndex, events){
+    return (pointerEventIndex < mouseEventIndex && isPointerEvent(events[pointerEventIndex]) && isMouseEvent(events[mouseEventIndex])
+      && arePointerAndMouseEventCompatible(events[pointerEventIndex], events[mouseEventIndex]));
+  }
+
+  let currentPointerEventIndex = events.findIndex((event)=>isPointerEvent(event));
+  let currentMouseEventIndex = events.findIndex((event)=>isMouseEvent(event));
+
+  while(1){
+    if(currentMouseEventIndex < 0 && currentPointerEventIndex < 0)
+      return true;
+    if(currentMouseEventIndex < 0 || currentPointerEventIndex < 0)
+      return false;
+    if(!arePointerAndMouseEventInProperOrder(currentPointerEventIndex, currentMouseEventIndex, events))
+      return false;
+
+    let pointerIdx = events.slice(currentPointerEventIndex+1).findIndex(isPointerEvent);
+    let mouseIdx = events.slice(currentMouseEventIndex+1).findIndex(isMouseEvent);
+
+    currentPointerEventIndex = (pointerIdx < 0)?pointerIdx:(currentPointerEventIndex+1+pointerIdx);
+    currentMouseEventIndex = (mouseIdx < 0)?mouseIdx:(currentMouseEventIndex+1+mouseIdx);
+  }
+
+  return true;
 }

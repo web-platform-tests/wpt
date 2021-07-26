@@ -90,15 +90,6 @@ var values = {
             keyword: ['visible', 'hidden', {discrete: true}]
         };
     },
-    'auto': function(property) {
-        var types = properties[property] || unspecified_properties[property];
-        var val = values[types[0]](property);
-        var key = Object.keys(val).shift();
-        return {
-            to: [val[key][1], 'auto'],
-            from: ['auto', val[key][1]]
-        };
-    },
     // types reqired for non-specified properties
     'border-radius': function() {
         return {
@@ -221,34 +212,12 @@ var properties = {
     'outline-width': ['length'],
 
     'clip': ['rectangle'],
-    // Note: doesn't seem implemented anywhere
-    'crop': ['rectangle'],
 
     'vertical-align': ['length', 'percentage'],
     'opacity': ['number[0,1]'],
     'visibility': ['visibility'],
     'z-index': ['integer']
 };
-
-/*
- * Property to auto-value mapping
- * (lazily taken from http://www.siliconbaytraining.com/pages/csspv.html)
- */
-var properties_auto = [
-    'margin-top',
-    'margin-right',
-    'margin-bottom',
-    'margin-left',
-    'height',
-    'width',
-    'clip',
-    'marker-offset',
-    'top',
-    'right',
-    'left',
-    'bottom',
-    'z-index'
-];
 
 /*
  * Property to Type table
@@ -402,16 +371,6 @@ root.getFontSizeRelativePropertyTests = function() {
         if (properties[key].indexOf('length') > -1) {
             accepted[key] = ['length-em'];
         }
-    }
-
-    return assemble(accepted);
-};
-
-root.getAutoPropertyTests = function() {
-    var accepted = {};
-
-    for (var i = 0, key; key = properties_auto[i]; i++) {
-        accepted[key] = ['auto'];
     }
 
     return assemble(accepted);

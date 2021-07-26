@@ -1,6 +1,13 @@
-[Constructor(optional GeolocationSensorOptions options), SecureContext, Exposed=Window]
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Geolocation Sensor (https://w3c.github.io/geolocation-sensor/)
+
+[SecureContext,
+ Exposed=(DedicatedWorker, Window)]
 interface GeolocationSensor : Sensor {
-  static Promise<GeolocationSensorReading> read(optional ReadOptions readOptions);
+  constructor(optional GeolocationSensorOptions options = {});
+  static Promise<GeolocationSensorReading> read(optional ReadOptions readOptions = {});
   readonly attribute unrestricted double? latitude;
   readonly attribute unrestricted double? longitude;
   readonly attribute unrestricted double? altitude;
@@ -27,4 +34,14 @@ dictionary GeolocationSensorReading {
   double? altitudeAccuracy;
   double? heading;
   double? speed;
+};
+
+dictionary GeolocationReadingValues {
+  required double? latitude;
+  required double? longitude;
+  required double? altitude;
+  required double? accuracy;
+  required double? altitudeAccuracy;
+  required double? heading;
+  required double? speed;
 };

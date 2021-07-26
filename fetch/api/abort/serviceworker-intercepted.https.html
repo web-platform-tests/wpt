@@ -21,7 +21,8 @@
   }
 
   promise_test(async t => {
-    const scope = SCOPE + "?q=aborted-not-intercepted";
+    const suffix = "?q=aborted-not-intercepted";
+    const scope = SCOPE + suffix;
     await setupRegistration(t, scope);
     const iframe = await with_iframe(scope);
     add_completion_callback(_ => iframe.remove());
@@ -33,14 +34,19 @@
 
     const nextData = new Promise(resolve => {
       w.navigator.serviceWorker.addEventListener('message', function once(event) {
-        w.navigator.serviceWorker.removeEventListener('message', once);
-        resolve(event.data);
+        // The message triggered by the iframe's document's fetch
+        // request cannot get dispatched by the time we add the event
+        // listener, so we have to guard against it.
+        if (!event.data.endsWith(suffix)) {
+          w.navigator.serviceWorker.removeEventListener('message', once);
+          resolve(event.data);
+        }
       })
     });
 
     const fetchPromise = w.fetch('data.json', { signal });
 
-    await promise_rejects(t, "AbortError", fetchPromise);
+    await promise_rejects_dom(t, "AbortError", w.DOMException, fetchPromise);
 
     await w.fetch('data.json?no-abort');
 
@@ -70,7 +76,7 @@
         Promise.resolve().then(() => log.push('next-microtask'))
       ]);
 
-      await promise_rejects(t, "AbortError", bodyPromise);
+      await promise_rejects_dom(t, "AbortError", w.DOMException, bodyPromise);
 
       assert_array_equals(log, [`${bodyMethod}-reject`, 'next-microtask']);
     }, `response.${bodyMethod}() rejects if already aborted`);
@@ -91,8 +97,8 @@
 
     controller.abort();
 
-    await promise_rejects(t, "AbortError", reader.read());
-    await promise_rejects(t, "AbortError", reader.closed);
+    await promise_rejects_dom(t, "AbortError", w.DOMException, reader.read());
+    await promise_rejects_dom(t, "AbortError", w.DOMException, reader.closed);
   }, "Stream errors once aborted.");
 </script>
 </body>

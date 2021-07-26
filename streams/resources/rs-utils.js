@@ -106,7 +106,7 @@
 
       this._exec = f => f();
       if (async) {
-        this._exec = f => setTimeout(f, 0);
+        this._exec = f => step_timeout(f, 0);
       }
     }
 
@@ -177,9 +177,21 @@
     return stream;
   }
 
+  function transferArrayBufferView(view) {
+    const noopByteStream = new ReadableStream({
+      type: 'bytes',
+      pull(c) {
+        c.byobRequest.respond(c.byobRequest.view.byteLength);
+        c.close();
+      }
+    });
+    const reader = noopByteStream.getReader({ mode: 'byob' });
+    return reader.read(view).then((result) => result.value);
+  }
 
   self.RandomPushSource = RandomPushSource;
   self.readableStreamToArray = readableStreamToArray;
   self.sequentialReadableStream = sequentialReadableStream;
+  self.transferArrayBufferView = transferArrayBufferView;
 
 }());

@@ -10,14 +10,37 @@
 let internal = {
   intialized: false,
 
-  deviceManager: null,
-  deviceManagerInterceptor: null,
-  deviceManagerCrossFrameProxy: null,
+  webUsbService: null,
+  webUsbServiceInterceptor: null,
 
-  chooser: null,
-  chooserInterceptor: null,
-  chooserCrossFrameProxy: null,
+  messagePort: null,
 };
+
+let mojom = {};
+
+async function loadMojomDefinitions() {
+  const deviceMojom =
+      await import('/gen/services/device/public/mojom/usb_device.mojom.m.js');
+  const serviceMojom = await import(
+      '/gen/third_party/blink/public/mojom/usb/web_usb_service.mojom.m.js');
+  return {
+    ...deviceMojom,
+    ...serviceMojom,
+  };
+}
+
+function getMessagePort(target) {
+  return new Promise(resolve => {
+    target.addEventListener('message', messageEvent => {
+      if (messageEvent.data.type === 'ReadyForAttachment') {
+        if (internal.messagePort === null) {
+          internal.messagePort = messageEvent.data.port;
+        }
+        resolve();
+      }
+    }, {once: true});
+  });
+}
 
 // Converts an ECMAScript String object to an instance of
 // mojo_base.mojom.String16.
@@ -58,7 +81,11 @@ function fakeDeviceInitToDeviceInfo(guid, init) {
     var configInfo = {
       configurationValue: config.configurationValue,
       configurationName: stringToMojoString16(config.configurationName),
-      interfaces: []
+      selfPowered: false,
+      remoteWakeup: false,
+      maximumPower: 0,
+      interfaces: [],
+      extraData: new Uint8Array()
     };
     config.interfaces.forEach(iface => {
       var interfaceInfo = {
@@ -72,31 +99,36 @@ function fakeDeviceInitToDeviceInfo(guid, init) {
           subclassCode: alternate.interfaceSubclass,
           protocolCode: alternate.interfaceProtocol,
           interfaceName: stringToMojoString16(alternate.interfaceName),
-          endpoints: []
+          endpoints: [],
+          extraData: new Uint8Array()
         };
         alternate.endpoints.forEach(endpoint => {
           var endpointInfo = {
             endpointNumber: endpoint.endpointNumber,
             packetSize: endpoint.packetSize,
+            synchronizationType: mojom.UsbSynchronizationType.NONE,
+            usageType: mojom.UsbUsageType.DATA,
+            pollingInterval: 0,
+            extraData: new Uint8Array()
           };
           switch (endpoint.direction) {
-          case "in":
-            endpointInfo.direction = device.mojom.UsbTransferDirection.INBOUND;
-            break;
-          case "out":
-            endpointInfo.direction = device.mojom.UsbTransferDirection.OUTBOUND;
-            break;
+            case "in":
+              endpointInfo.direction = mojom.UsbTransferDirection.INBOUND;
+              break;
+            case "out":
+              endpointInfo.direction = mojom.UsbTransferDirection.OUTBOUND;
+              break;
           }
           switch (endpoint.type) {
-          case "bulk":
-            endpointInfo.type = device.mojom.UsbTransferType.BULK;
-            break;
-          case "interrupt":
-            endpointInfo.type = device.mojom.UsbTransferType.INTERRUPT;
-            break;
-          case "isochronous":
-            endpointInfo.type = device.mojom.UsbTransferType.ISOCHRONOUS;
-            break;
+            case "bulk":
+              endpointInfo.type = mojom.UsbTransferType.BULK;
+              break;
+            case "interrupt":
+              endpointInfo.type = mojom.UsbTransferType.INTERRUPT;
+              break;
+            case "isochronous":
+              endpointInfo.type = mojom.UsbTransferType.ISOCHRONOUS;
+              break;
           }
           alternateInfo.endpoints.push(endpointInfo);
         });
@@ -154,7 +186,7 @@ class FakeDevice {
   open() {
     assert_false(this.opened_);
     this.opened_ = true;
-    return Promise.resolve({ error: device.mojom.UsbOpenDeviceError.OK });
+    return Promise.resolve({error: mojom.UsbOpenDeviceError.OK});
   }
 
   close() {
@@ -174,17 +206,33 @@ class FakeDevice {
     return Promise.resolve({ success: true });
   }
 
-  claimInterface(interfaceNumber) {
+  async claimInterface(interfaceNumber) {
     assert_true(this.opened_);
     assert_false(this.currentConfiguration_ == null, 'device configured');
     assert_false(this.claimedInterfaces_.has(interfaceNumber),
                  'interface already claimed');
 
-    // Blink should never request an invalid interface.
-    assert_true(this.currentConfiguration_.interfaces.some(
-            iface => iface.interfaceNumber == interfaceNumber));
+    const protectedInterfaces = new Set([
+      mojom.USB_AUDIO_CLASS,
+      mojom.USB_HID_CLASS,
+      mojom.USB_MASS_STORAGE_CLASS,
+      mojom.USB_SMART_CARD_CLASS,
+      mojom.USB_VIDEO_CLASS,
+      mojom.USB_AUDIO_VIDEO_CLASS,
+      mojom.USB_WIRELESS_CLASS,
+    ]);
+
+    let iface = this.currentConfiguration_.interfaces.find(
+        iface => iface.interfaceNumber == interfaceNumber);
+    // Blink should never request an invalid interface or alternate.
+    assert_false(iface == undefined);
+    if (iface.alternates.some(
+            alt => protectedInterfaces.has(alt.interfaceClass))) {
+      return {result: mojom.UsbClaimInterfaceResult.kProtectedClass};
+    }
+
     this.claimedInterfaces_.set(interfaceNumber, 0);
-    return Promise.resolve({ success: true });
+    return {result: mojom.UsbClaimInterfaceResult.kSuccess};
   }
 
   releaseInterface(interfaceNumber) {
@@ -222,23 +270,40 @@ class FakeDevice {
     return Promise.resolve({ success: true });
   }
 
-  controlTransferIn(params, length, timeout) {
+  async controlTransferIn(params, length, timeout) {
     assert_true(this.opened_);
-    assert_false(this.currentConfiguration_ == null, 'device configured');
-    return Promise.resolve({
-      status: device.mojom.UsbTransferStatus.OK,
-      data: [length >> 8, length & 0xff, params.request, params.value >> 8,
-             params.value & 0xff, params.index >> 8, params.index & 0xff]
-    });
+
+    if ((params.recipient == mojom.UsbControlTransferRecipient.INTERFACE ||
+         params.recipient == mojom.UsbControlTransferRecipient.ENDPOINT) &&
+        this.currentConfiguration_ == null) {
+      return {
+        status: mojom.UsbTransferStatus.PERMISSION_DENIED,
+      };
+    }
+
+    return {
+      status: mojom.UsbTransferStatus.OK,
+      data: {
+        buffer: [
+          length >> 8, length & 0xff, params.request, params.value >> 8,
+          params.value & 0xff, params.index >> 8, params.index & 0xff
+        ]
+      }
+    };
   }
 
-  controlTransferOut(params, data, timeout) {
+  async controlTransferOut(params, data, timeout) {
     assert_true(this.opened_);
-    assert_false(this.currentConfiguration_ == null, 'device configured');
-    return Promise.resolve({
-      status: device.mojom.UsbTransferStatus.OK,
-      bytesWritten: data.byteLength
-    });
+
+    if ((params.recipient == mojom.UsbControlTransferRecipient.INTERFACE ||
+         params.recipient == mojom.UsbControlTransferRecipient.ENDPOINT) &&
+        this.currentConfiguration_ == null) {
+      return {
+        status: mojom.UsbTransferStatus.PERMISSION_DENIED,
+      };
+    }
+
+    return {status: mojom.UsbTransferStatus.OK, bytesWritten: data.byteLength};
   }
 
   genericTransferIn(endpointNumber, length, timeout) {
@@ -248,20 +313,16 @@ class FakeDevice {
     let data = new Array(length);
     for (let i = 0; i < length; ++i)
       data[i] = i & 0xff;
-    return Promise.resolve({
-      status: device.mojom.UsbTransferStatus.OK,
-      data: data
-    });
+    return Promise.resolve(
+        {status: mojom.UsbTransferStatus.OK, data: {buffer: data}});
   }
 
   genericTransferOut(endpointNumber, data, timeout) {
     assert_true(this.opened_);
     assert_false(this.currentConfiguration_ == null, 'device configured');
     // TODO(reillyg): Assert that endpoint is valid.
-    return Promise.resolve({
-      status: device.mojom.UsbTransferStatus.OK,
-      bytesWritten: data.byteLength
-    });
+    return Promise.resolve(
+        {status: mojom.UsbTransferStatus.OK, bytesWritten: data.byteLength});
   }
 
   isochronousTransferIn(endpointNumber, packetLengths, timeout) {
@@ -277,10 +338,10 @@ class FakeDevice {
       packets[i] = {
         length: packetLengths[i],
         transferredLength: packetLengths[i],
-        status: device.mojom.UsbTransferStatus.OK
+        status: mojom.UsbTransferStatus.OK
       };
     }
-    return Promise.resolve({ data: data, packets: packets });
+    return Promise.resolve({data: {buffer: data}, packets: packets});
   }
 
   isochronousTransferOut(endpointNumber, data, packetLengths, timeout) {
@@ -292,16 +353,16 @@ class FakeDevice {
       packets[i] = {
         length: packetLengths[i],
         transferredLength: packetLengths[i],
-        status: device.mojom.UsbTransferStatus.OK
+        status: mojom.UsbTransferStatus.OK
       };
     }
     return Promise.resolve({ packets: packets });
   }
 }
 
-class FakeDeviceManager {
+class FakeWebUsbService {
   constructor() {
-    this.bindingSet_ = new mojo.BindingSet(device.mojom.UsbDeviceManager);
+    this.receiver_ = new mojom.WebUsbServiceReceiver(this);
     this.devices_ = new Map();
     this.devicesByGuid_ = new Map();
     this.client_ = null;
@@ -309,7 +370,7 @@ class FakeDeviceManager {
   }
 
   addBinding(handle) {
-    this.bindingSet_.addBinding(this, handle);
+    this.receiver_.$.bindHandle(handle);
   }
 
   addDevice(fakeDevice, info) {
@@ -317,7 +378,7 @@ class FakeDeviceManager {
       fakeDevice: fakeDevice,
       guid: (this.nextGuid_++).toString(),
       info: info,
-      bindingArray: []
+      receivers: [],
     };
     this.devices_.set(fakeDevice, device);
     this.devicesByGuid_.set(device.guid, device);
@@ -330,8 +391,8 @@ class FakeDeviceManager {
     if (!device)
       throw new Error('Cannot remove unknown device.');
 
-    for (var binding of device.bindingArray)
-      binding.close();
+    for (const receiver of device.receivers)
+      receiver.$.close();
     this.devices_.delete(device.fakeDevice);
     this.devicesByGuid_.delete(device.guid);
     if (this.client_) {
@@ -342,8 +403,8 @@ class FakeDeviceManager {
 
   removeAllDevices() {
     this.devices_.forEach(device => {
-      for (var binding of device.bindingArray)
-        binding.close();
+      for (const receiver of device.receivers)
+        receiver.$.close();
       this.client_.onDeviceRemoved(
           fakeDeviceInitToDeviceInfo(device.guid, device.info));
     });
@@ -351,7 +412,7 @@ class FakeDeviceManager {
     this.devicesByGuid_.clear();
   }
 
-  getDevices(options) {
+  getDevices() {
     let devices = [];
     this.devices_.forEach(device => {
       devices.push(fakeDeviceInitToDeviceInfo(device.guid, device.info));
@@ -360,18 +421,30 @@ class FakeDeviceManager {
   }
 
   getDevice(guid, request) {
-    let device = this.devicesByGuid_.get(guid);
-    if (device) {
-      let binding = new mojo.Binding(
-          window.device.mojom.UsbDevice, new FakeDevice(device.info), request);
-      binding.setConnectionErrorHandler(() => {
-        if (device.fakeDevice.onclose)
-          device.fakeDevice.onclose();
+    let retrievedDevice = this.devicesByGuid_.get(guid);
+    if (retrievedDevice) {
+      const receiver =
+          new mojom.UsbDeviceReceiver(new FakeDevice(retrievedDevice.info));
+      receiver.$.bindHandle(request.handle);
+      receiver.onConnectionError.addListener(() => {
+        if (retrievedDevice.fakeDevice.onclose)
+          retrievedDevice.fakeDevice.onclose();
       });
-      device.bindingArray.push(binding);
+      retrievedDevice.receivers.push(receiver);
     } else {
-      request.close();
+      request.handle.close();
     }
+  }
+
+  getPermission(deviceFilters) {
+    return new Promise(resolve => {
+      if (navigator.usb.test.onrequestdevice) {
+        navigator.usb.test.onrequestdevice(
+            new USBDeviceRequestEvent(deviceFilters, resolve));
+      } else {
+        resolve({ result: null });
+      }
+    });
   }
 
   setClient(client) {
@@ -389,7 +462,7 @@ class USBDeviceRequestEvent {
     // Wait until |value| resolves (if it is a Promise). This function returns
     // no value.
     Promise.resolve(value).then(fakeDevice => {
-      let device = internal.deviceManager.devices_.get(fakeDevice);
+      let device = internal.webUsbService.devices_.get(fakeDevice);
       let result = null;
       if (device) {
         result = fakeDeviceInitToDeviceInfo(device.guid, device.info);
@@ -401,27 +474,6 @@ class USBDeviceRequestEvent {
   }
 }
 
-class FakeChooserService {
-  constructor() {
-    this.bindingSet_ = new mojo.BindingSet(device.mojom.UsbChooserService);
-  }
-
-  addBinding(handle) {
-    this.bindingSet_.addBinding(this, handle);
-  }
-
-  getPermission(deviceFilters) {
-    return new Promise(resolve => {
-      if (navigator.usb.test.onrequestdevice) {
-        navigator.usb.test.onrequestdevice(
-            new USBDeviceRequestEvent(deviceFilters, resolve));
-      } else {
-        resolve({ result: null });
-      }
-    });
-  }
-}
-
 // Unlike FakeDevice this class is exported to callers of USBTest.addFakeDevice.
 class FakeUSBDevice {
   constructor() {
@@ -429,26 +481,7 @@ class FakeUSBDevice {
   }
 
   disconnect() {
-    setTimeout(() => internal.deviceManager.removeDevice(this), 0);
-  }
-}
-
-// A helper for forwarding MojoHandle instances from one frame to another.
-class CrossFrameHandleProxy {
-  constructor(callback) {
-    let {handle0, handle1} = Mojo.createMessagePipe();
-    this.sender_ = handle0;
-    this.receiver_ = handle1;
-    this.receiver_.watch({readable: true}, () => {
-      let message = this.receiver_.readMessage();
-      assert_equals(message.buffer.byteLength, 0);
-      assert_equals(message.handles.length, 1);
-      callback(message.handles[0]);
-    });
-  }
-
-  forwardHandle(handle) {
-    this.sender_.writeMessage(new ArrayBuffer, [handle]);
+    setTimeout(() => internal.webUsbService.removeDevice(this), 0);
   }
 }
 
@@ -461,23 +494,18 @@ class USBTest {
     if (internal.initialized)
       return;
 
-    internal.deviceManager = new FakeDeviceManager();
-    internal.deviceManagerInterceptor =
-        new MojoInterfaceInterceptor(device.mojom.UsbDeviceManager.name);
-    internal.deviceManagerInterceptor.oninterfacerequest =
-        e => internal.deviceManager.addBinding(e.handle);
-    internal.deviceManagerInterceptor.start();
-    internal.deviceManagerCrossFrameProxy = new CrossFrameHandleProxy(
-        handle => internal.deviceManager.addBinding(handle));
+    // Be ready to handle 'ReadyForAttachment' message from child iframes.
+    if ('window' in self) {
+      getMessagePort(window);
+    }
 
-    internal.chooser = new FakeChooserService();
-    internal.chooserInterceptor =
-        new MojoInterfaceInterceptor(device.mojom.UsbChooserService.name);
-    internal.chooserInterceptor.oninterfacerequest =
-        e => internal.chooser.addBinding(e.handle);
-    internal.chooserInterceptor.start();
-    internal.chooserCrossFrameProxy = new CrossFrameHandleProxy(
-        handle => internal.chooser.addBinding(handle));
+    mojom = await loadMojomDefinitions();
+    internal.webUsbService = new FakeWebUsbService();
+    internal.webUsbServiceInterceptor =
+        new MojoInterfaceInterceptor(mojom.WebUsbService.$interfaceName);
+    internal.webUsbServiceInterceptor.oninterfacerequest =
+        e => internal.webUsbService.addBinding(e.handle);
+    internal.webUsbServiceInterceptor.start();
 
     // Wait for a call to GetDevices() to pass between the renderer and the
     // mock in order to establish that everything is set up.
@@ -485,27 +513,33 @@ class USBTest {
     internal.initialized = true;
   }
 
-  async attachToWindow(otherWindow) {
+  // Returns a promise that is resolved when the implementation of |usb| in the
+  // global scope for |context| is controlled by the current context.
+  attachToContext(context) {
     if (!internal.initialized)
-      throw new Error('Call initialize() before attachToWindow().');
+      throw new Error('Call initialize() before attachToContext()');
 
-    otherWindow.deviceManagerInterceptor =
-        new otherWindow.MojoInterfaceInterceptor(
-            device.mojom.UsbDeviceManager.name);
-    otherWindow.deviceManagerInterceptor.oninterfacerequest =
-        e => internal.deviceManagerCrossFrameProxy.forwardHandle(e.handle);
-    otherWindow.deviceManagerInterceptor.start();
-
-    otherWindow.chooserInterceptor =
-        new otherWindow.MojoInterfaceInterceptor(
-            device.mojom.UsbChooserService.name);
-    otherWindow.chooserInterceptor.oninterfacerequest =
-        e => internal.chooserCrossFrameProxy.forwardHandle(e.handle);
-    otherWindow.chooserInterceptor.start();
-
-    // Wait for a call to GetDevices() to pass between the renderer and the
-    // mock in order to establish that everything is set up.
-    await otherWindow.navigator.usb.getDevices();
+    let target = context.constructor.name === 'Worker' ? context : window;
+    return getMessagePort(target).then(() => {
+      return new Promise(resolve => {
+        internal.messagePort.onmessage = channelEvent => {
+          switch (channelEvent.data.type) {
+            case mojom.WebUsbService.$interfaceName:
+              internal.webUsbService.addBinding(channelEvent.data.handle);
+              break;
+            case 'Complete':
+              resolve();
+              break;
+          }
+        };
+        internal.messagePort.postMessage({
+          type: 'Attach',
+          interfaces: [
+            mojom.WebUsbService.$interfaceName,
+          ]
+        });
+      });
+    });
   }
 
   addFakeDevice(deviceInit) {
@@ -517,7 +551,7 @@ class USBTest {
     // may not be true for all implementations of this test API.
     let fakeDevice = new FakeUSBDevice();
     setTimeout(
-        () => internal.deviceManager.addDevice(fakeDevice, deviceInit), 0);
+        () => internal.webUsbService.addDevice(fakeDevice, deviceInit), 0);
     return fakeDevice;
   }
 
@@ -529,7 +563,10 @@ class USBTest {
     // the fact that this polyfill can do this synchronously.
     return new Promise(resolve => {
       setTimeout(() => {
-        internal.deviceManager.removeAllDevices();
+        if (internal.messagePort !== null)
+          internal.messagePort.close();
+        internal.messagePort = null;
+        internal.webUsbService.removeAllDevices();
         resolve();
       }, 0);
     });

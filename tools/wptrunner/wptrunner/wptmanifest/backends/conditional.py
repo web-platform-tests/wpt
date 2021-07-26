@@ -1,16 +1,19 @@
 import operator
+from six import ensure_text
 
-from ..node import NodeVisitor, DataNode, ConditionalNode, KeyValueNode, ListNode, ValueNode
+from ..node import NodeVisitor, DataNode, ConditionalNode, KeyValueNode, ListNode, ValueNode, BinaryExpressionNode, VariableNode
 from ..parser import parse
 
 
 class ConditionalValue(object):
     def __init__(self, node, condition_func):
         self.node = node
+        assert callable(condition_func)
         self.condition_func = condition_func
         if isinstance(node, ConditionalNode):
             assert len(node.children) == 2
             self.condition_node = self.node.children[0]
+            assert isinstance(node.children[1], (ValueNode, ListNode))
             self.value_node = self.node.children[1]
         else:
             assert isinstance(node, (ValueNode, ListNode))
@@ -26,18 +29,50 @@ class ConditionalValue(object):
 
     @value.setter
     def value(self, value):
-        self.value_node.data = value
+        if isinstance(self.value_node, ValueNode):
+            self.value_node.data = value
+        else:
+            assert(isinstance(self.value_node, ListNode))
+            while self.value_node.children:
+                self.value_node.children[0].remove()
+            assert len(self.value_node.children) == 0
+            for list_value in value:
+                self.value_node.append(ValueNode(list_value))
 
     def __call__(self, run_info):
         return self.condition_func(run_info)
 
     def set_value(self, value):
-        self.value = value
+        self.value = ensure_text(value)
+
+    def value_as(self, type_func):
+        """Get value and convert to a given type.
+
+        This is unfortunate, but we don't currently have a good way to specify that
+        specific properties should have their data returned as specific types"""
+        value = self.value
+        if type_func is not None:
+            value = type_func(value)
+        return value
 
     def remove(self):
         if len(self.node.parent.children) == 1:
             self.node.parent.remove()
         self.node.remove()
+
+    @property
+    def variables(self):
+        rv = set()
+        if self.condition_node is None:
+            return rv
+        stack = [self.condition_node]
+        while stack:
+            node = stack.pop()
+            if isinstance(node, VariableNode):
+                rv.add(node.data)
+            for child in reversed(node.children):
+                stack.append(child)
+        return rv
 
 
 class Compiler(NodeVisitor):
@@ -171,6 +206,7 @@ class Compiler(NodeVisitor):
         return {"not": operator.not_}[node.data]
 
     def visit_BinaryOperatorNode(self, node):
+        assert isinstance(node.parent, BinaryExpressionNode)
         return {"and": operator.and_,
                 "or": operator.or_,
                 "==": operator.eq,
@@ -185,7 +221,7 @@ class ManifestItem(object):
         self._data = {}
 
     def __repr__(self):
-        return "<ManifestItem %s>" % (self.node.data)
+        return "<conditional.ManifestItem %s>" % (self.node.data)
 
     def __str__(self):
         rv = [repr(self)]
@@ -195,6 +231,12 @@ class ManifestItem(object):
 
     def __contains__(self, key):
         return key in self._data
+
+    def __iter__(self):
+        yield self
+        for child in self.children:
+            for node in child:
+                yield node
 
     @property
     def is_empty(self):
@@ -255,11 +297,19 @@ class ManifestItem(object):
             node = KeyValueNode(key)
             self.node.append(node)
 
-        value_node = ValueNode(value)
+        if isinstance(value, list):
+            value_node = ListNode()
+            for item in value:
+                value_node.append(ValueNode(str(item)))
+        else:
+            value_node = ValueNode(str(value))
         if condition is not None:
-            conditional_node = ConditionalNode()
-            conditional_node.append(condition)
-            conditional_node.append(value_node)
+            if not isinstance(condition, ConditionalNode):
+                conditional_node = ConditionalNode()
+                conditional_node.append(condition)
+                conditional_node.append(value_node)
+            else:
+                conditional_node = condition
             node.append(conditional_node)
             cond_value = Compiler().compile_condition(conditional_node)
         else:
@@ -274,6 +324,21 @@ class ManifestItem(object):
             self._data[key].insert(len(self._data[key]) - 1, cond_value)
         else:
             self._data[key].append(cond_value)
+
+    def clear(self, key):
+        """Clear all the expected data for this node"""
+        if key in self._data:
+            for child in self.node.children:
+                if (isinstance(child, KeyValueNode) and
+                    child.data == key):
+                    child.remove()
+                    del self._data[key]
+                    break
+
+    def get_conditions(self, property_name):
+        if property_name in self._data:
+            return self._data[property_name]
+        return []
 
     def _add_key_value(self, node, values):
         """Called during construction to set a key-value node"""
@@ -293,6 +358,7 @@ class ManifestItem(object):
     def _remove_child(self, child):
         self.children.remove(child)
         child.parent = None
+        child.node.remove()
 
     def iterchildren(self, name=None):
         for item in self.children:
@@ -302,21 +368,30 @@ class ManifestItem(object):
     def _flatten(self):
         rv = {}
         for node in [self, self.root]:
-            for name, value in node._data.iteritems():
+            for name, value in node._data.items():
                 if name not in rv:
                     rv[name] = value
         return rv
 
     def iteritems(self):
-        for item in self._flatten().iteritems():
+        for item in self._flatten().items():
             yield item
 
     def iterkeys(self):
-        for item in self._flatten().iterkeys():
+        for item in self._flatten().keys():
             yield item
 
+    def iter_properties(self):
+        for item in self._data:
+            yield item, self._data[item]
+
     def remove_value(self, key, value):
-        self._data[key].remove(value)
+        if key not in self._data:
+            return
+        try:
+            self._data[key].remove(value)
+        except ValueError:
+            return
         if not self._data[key]:
             del self._data[key]
         value.remove()

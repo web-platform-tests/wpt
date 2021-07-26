@@ -27,7 +27,6 @@
         sequence<RTCRtpHeaderExtensionParameters> headerExtensions;
         RTCRtcpParameters                         rtcp;
         sequence<RTCRtpCodecParameters>           codecs;
-        RTCDegradationPreference                  degradationPreference;
       };
 
       dictionary RTCRtpHeaderExtensionParameters {
@@ -57,6 +56,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
@@ -67,9 +67,8 @@
       encrypted: false
     }];
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_dom(t, 'InvalidModificationError',
       sender.setParameters(param));
-
   }, `setParameters() with modified headerExtensions should reject with InvalidModificationError`);
 
 </script>

@@ -42,7 +42,7 @@
         s.document.close();
         [q, a, s].forEach(function(win) {
             ['style', 'test'].forEach(function(id) {
-                win.__proto__.__defineGetter__(id, function() { return win.document.getElementById(id); });
+                Object.getPrototypeOf(win).__defineGetter__(id, function() { return win.document.getElementById(id); });
             });
         });
 
@@ -56,6 +56,10 @@
         {style:'', body:'<img id=test src="{png}" height=100% border=10>', q:184, s:1},
         {style:'', body:'<table id=test height=100%><tr><td></table>', q:184, s:6},
         {style:'#foo { height:100px } #test { height:100% }', body:'<div id=foo><div><div id=test></div></div></div>', q:100, s:0},
+        {style:'#foo { height:100px } #grid { display:grid } #test { height:100% }', body:'<div id=foo><div id=grid><div id=test></div></div></div>', q:0, s:0},
+        {style:'#foo { height:100px } #grid { display:inline-grid } #test { height:100% }', body:'<div id=foo><div id=grid><div id=test></div></div></div>', q:0, s:0},
+        {style:'#foo { height:100px } #flex { display:flex } #test { height:100% }', body:'<div id=foo><div id=flex><div id=test></div></div></div>', q:0, s:0},
+        {style:'#foo { height:100px } #flex { display:inline-flex } #test { height:100% }', body:'<div id=foo><div id=flex><div id=test></div></div></div>', q:0, s:0},
         {style:'#foo { position:absolute } #test { height:100% }', body:'<div id=foo><div><div id=test></div></div></div>', q:0, s:0},
         {style:'#foo { position:relative } #test { height:100% }', body:'<div id=foo><div><div id=test></div></div></div>', q:184, s:0},
         {style:'#foo { height:100px } #test { height:100%; position:absolute }', body:'<div id=foo><div><div id=test></div></div></div>', q:200, s:200},
@@ -64,7 +68,7 @@
         {style:'#foo { height:100px } #test { height:calc(100% + 1px) }', body:'<div id=foo><div id=test></div></div>', q:101, s:101},
         {style:'#foo { height:100px } #test { height:5px; height:calc(100% + 1px) }', body:'<div id=foo><div><div id=test></div></div></div>', q:0, s:0},
         {style:'html { display:inline } #test { height:100% }', body:'<div id=test></div>', q:184, s:0}, // display:inline on root has no effect
-        {style:'html { margin:10px } body { display:inline } #test { height:100% }', body:'<div id=test></div>', q:200, s:0},
+        {style:'html { margin:10px } body { display:inline } #test { height:100% }', body:'<div id=test></div>', q:180, s:0},
         {style:'body { margin:0 } #test { height:100% }', body:'<div id=test></div>', q:200, s:0},
         {style:'body { margin:0; padding:10px } #test { height:100% }', body:'<div id=test></div>', q:180, s:0},
         {style:'body { margin:0; border:10px solid } #test { height:100% }', body:'<div id=test></div>', q:180, s:0},
@@ -118,10 +122,10 @@
         {input:'<html xmlns="{html}"><head><style>#test { height:100% }</style></head><body/><div id="test"/></html>', q:200, s:0},
         {input:'<html xmlns="{html}"><head><style>#test { height:100% }</style></head><span><body><div id="test"/></body></span></html>', q:200, s:0},
         {input:'<html xmlns="{html}"><head><style>#test { height:100% }</style></head><body><body><div id="test"/></body></body></html>', q:200, s:0},
-        {input:'<html><head xmlns="{html}"><style>#test { height:100% }</style></head><body xmlns="{html}"><div id="test"/></body></html>', q:200, s:0},
-        {input:'<div xmlns="{html}"><head><style>#test { height:100% }</style></head><body><div id="test"/></body></div>', q:200, s:0},
+        {input:'<html><head xmlns="{html}"><style>#test { height:100% }</style></head><body xmlns="{html}"><div id="test"/></body></html>', q:184, s:0},
+        {input:'<div xmlns="{html}"><head><style>#test { height:100% }</style></head><body><div id="test"/></body></div>', q:184, s:0},
         {input:'<html xmlns="{html}"><head><style>#test { height:100% }</style></head><body xmlns=""><div xmlns="{html}" id="test"/></body></html>', q:200, s:0},
-        {input:'<HTML xmlns="{html}"><head><style>#test { height:100% }</style></head><body><div id="test"/></body></HTML>', q:200, s:0},
+        {input:'<HTML xmlns="{html}"><head><style>#test { height:100% }</style></head><body><div id="test"/></body></HTML>', q:184, s:0},
         {input:'<html xmlns="{html}"><head><style>#test { height:100% }</style></head><BODY><div id="test"/></BODY></html>', q:200, s:0},
         ];
 

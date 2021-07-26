@@ -12,6 +12,7 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCRtpParameters-helper.js:
+  //   doOfferAnswerExchange
   //   validateSenderRtpParameters
 
   /*
@@ -47,7 +48,6 @@
         sequence<RTCRtpHeaderExtensionParameters> headerExtensions;
         RTCRtcpParameters                         rtcp;
         sequence<RTCRtpCodecParameters>           codecs;
-        RTCDegradationPreference                  degradationPreference;
       };
 
       getParameters
@@ -60,9 +60,11 @@
       - transactionId is set to a new unique identifier, used to match this
         getParameters call to a setParameters call that may occur later.
    */
-  test(() => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
+    await doOfferAnswerExchange(t, pc);
 
     const param1 = sender.getParameters();
     const param2 = sender.getParameters();
@@ -71,7 +73,6 @@
     validateSenderRtpParameters(param2);
 
     assert_not_equals(param1.transactionId, param2.transactionId);
-
   }, `sender.getParameters() should return different transaction IDs for each call`);
 
   /*
@@ -83,9 +84,11 @@
           with a newly created InvalidModificationError. Note that this also applies
           to transactionId.
    */
-  promise_test(t => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
+    await doOfferAnswerExchange(t, pc);
 
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
@@ -93,42 +96,45 @@
     const { transactionId } = param;
     param.transactionId = `${transactionId}-modified`;
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_dom(t, 'InvalidModificationError',
       sender.setParameters(param));
-
   }, `sender.setParameters() with transaction ID different from last getParameters() should reject with InvalidModificationError`);
 
-  promise_test(t => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
+    await doOfferAnswerExchange(t, pc);
 
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
     param.transactionId = undefined;
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_js(t, TypeError,
       sender.setParameters(param));
+  }, `sender.setParameters() with transaction ID unset should reject with TypeError`);
 
-  }, `sender.setParameters() with transaction ID unset should reject with InvalidModificationError`);
-
-  promise_test(t => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
+    await doOfferAnswerExchange(t, pc);
 
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
     return sender.setParameters(param)
     .then(() =>
-      promise_rejects(t, 'InvalidModificationError',
+      promise_rejects_dom(t, 'InvalidStateError',
         sender.setParameters(param)));
+  }, `setParameters() twice with the same parameters should reject with InvalidStateError`);
 
-  }, `setParameters() twice with the same parameters should reject with InvalidModificationError`);
-
-  promise_test(t => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
+    await doOfferAnswerExchange(t, pc);
 
     const param1 = sender.getParameters();
     const param2 = sender.getParameters();
@@ -138,9 +144,8 @@
 
     assert_not_equals(param1.transactionId, param2.transactionId);
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_dom(t, 'InvalidModificationError',
       sender.setParameters(param1));
-
   }, `setParameters() with parameters older than last getParameters() should reject with InvalidModificationError`);
 
 </script>

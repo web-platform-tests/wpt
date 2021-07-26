@@ -12,12 +12,12 @@
 
 # TODO: keep comments in the tree
 
-from __future__ import unicode_literals
+from io import BytesIO
 
-import types
-from cStringIO import StringIO
-
-from node import *
+from .node import (Node, AtomNode, BinaryExpressionNode, BinaryOperatorNode,
+                   ConditionalNode, DataNode, IndexNode, KeyValueNode, ListNode,
+                   NumberNode, StringNode, UnaryExpressionNode,
+                   UnaryOperatorNode, ValueNode, VariableNode)
 
 
 class ParseError(Exception):
@@ -47,7 +47,7 @@ atoms = {"True": True,
          "Reset": object()}
 
 def decode(s):
-    assert isinstance(s, unicode)
+    assert isinstance(s, str)
     return s
 
 
@@ -56,7 +56,7 @@ def precedence(operator_node):
 
 
 class TokenTypes(object):
-    def __init__(self):
+    def __init__(self) -> None:
         for type in ["group_start", "group_end", "paren", "list_start", "list_end", "separator", "ident", "string", "number", "atom", "eof"]:
             setattr(self, type, type)
 
@@ -72,12 +72,13 @@ class Tokenizer(object):
         self.state = self.line_start_state
         self.next_state = self.data_line_state
         self.line_number = 0
+        self.filename = ""
 
     def tokenize(self, stream):
         self.reset()
-        assert not isinstance(stream, unicode)
-        if isinstance(stream, str):
-            stream = StringIO(stream)
+        assert not isinstance(stream, str)
+        if isinstance(stream, bytes):
+            stream = BytesIO(stream)
         if not hasattr(stream, "name"):
             self.filename = ""
         else:
@@ -85,7 +86,7 @@ class Tokenizer(object):
 
         self.next_line_state = self.line_start_state
         for i, line in enumerate(stream):
-            assert isinstance(line, str)
+            assert isinstance(line, bytes)
             self.state = self.next_line_state
             assert self.state is not None
             states = []
@@ -93,7 +94,7 @@ class Tokenizer(object):
             self.line_number = i + 1
             self.index = 0
             self.line = line.decode('utf-8').rstrip()
-            assert isinstance(self.line, unicode)
+            assert isinstance(self.line, str)
             while self.state != self.eol_state:
                 states.append(self.state)
                 tokens = self.state()
@@ -133,9 +134,10 @@ class Tokenizer(object):
             self.indent_levels.append(self.index)
             yield (token_types.group_start, None)
         else:
-            while self.index < self.indent_levels[-1]:
-                self.indent_levels.pop()
-                yield (token_types.group_end, None)
+            if self.index < self.indent_levels[-1]:
+                while self.index < self.indent_levels[-1]:
+                    self.indent_levels.pop()
+                    yield (token_types.group_end, None)
                 # This is terrible; if we were parsing an expression
                 # then the next_state will be expr_or_value but when we deindent
                 # it must always be a heading or key next so we go back to data_line_state
@@ -204,6 +206,20 @@ class Tokenizer(object):
             self.state = self.comment_state
         elif c == eol:
             self.next_state = self.expr_or_value_state
+            self.state = self.eol_state
+        elif c == "[":
+            self.state = self.list_start_state
+        else:
+            self.state = self.value_state
+
+    def after_expr_state(self):
+        self.skip_whitespace()
+        c = self.char()
+        if c == "#":
+            self.next_state = self.after_expr_state
+            self.state = self.comment_state
+        elif c == eol:
+            self.next_state = self.after_expr_state
             self.state = self.eol_state
         elif c == "[":
             self.state = self.list_start_state
@@ -286,7 +302,8 @@ class Tokenizer(object):
 
     def value_state(self):
         self.skip_whitespace()
-        if self.char() in ("'", '"'):
+        c = self.char()
+        if c in ("'", '"'):
             quote_char = self.char()
             self.consume()
             yield (token_types.string, self.consume_string(quote_char))
@@ -294,10 +311,12 @@ class Tokenizer(object):
                 self.state = self.comment_state
             else:
                 self.state = self.line_end_state
-        elif self.char() == "@":
+        elif c == "@":
             self.consume()
             for _, value in self.value_inner_state():
                 yield token_types.atom, value
+        elif c == "[":
+            self.state = self.list_start_state
         else:
             self.state = self.value_inner_state
 
@@ -323,7 +342,14 @@ class Tokenizer(object):
                 spaces = 0
                 rv += c
                 self.consume()
-        yield (token_types.string, decode(rv))
+        rv = decode(rv)
+        if rv.startswith("if "):
+            # Hack to avoid a problem where people write
+            # disabled: if foo
+            # and expect that to disable conditionally
+            raise ParseError(self.filename, self.line_number, "Strings starting 'if ' must be quoted "
+                             "(expressions must start on a newline and be indented)")
+        yield (token_types.string, rv)
 
     def comment_state(self):
         while self.char() is not eol:
@@ -376,7 +402,7 @@ class Tokenizer(object):
         elif c == ":":
             yield (token_types.separator, c)
             self.consume()
-            self.state = self.value_state
+            self.state = self.after_expr_state
         elif c in parens:
             self.consume()
             yield (token_types.paren, c)
@@ -462,7 +488,7 @@ class Tokenizer(object):
         elif c == "U":
             return self.decode_escape(6)
         elif c in ["a", "b", "f", "n", "r", "t", "v"]:
-            return eval("'\%s'" % c)
+            return eval(r"'\%s'" % c)
         elif c is eol:
             raise ParseError(self.filename, self.line_number, "EOL in escape")
         else:
@@ -470,13 +496,13 @@ class Tokenizer(object):
 
     def decode_escape(self, length):
         value = 0
-        for i in xrange(length):
+        for i in range(length):
             c = self.char()
             value *= 16
             value += self.escape_value(c)
             self.consume()
 
-        return unichr(value)
+        return chr(value)
 
     def escape_value(self, c):
         if '0' <= c <= '9':
@@ -504,21 +530,30 @@ class Parser(object):
         self.expr_builders = []
 
     def parse(self, input):
-        self.reset()
-        self.token_generator = self.tokenizer.tokenize(input)
-        self.consume()
-        self.manifest()
-        return self.tree.node
+        try:
+            self.reset()
+            self.token_generator = self.tokenizer.tokenize(input)
+            self.consume()
+            self.manifest()
+            return self.tree.node
+        except Exception as e:
+            if not isinstance(e, ParseError):
+                raise ParseError(self.tokenizer.filename,
+                                 self.tokenizer.line_number,
+                                 str(e))
+            raise
 
     def consume(self):
-        self.token = self.token_generator.next()
+        self.token = next(self.token_generator)
 
     def expect(self, type, value=None):
         if self.token[0] != type:
-            raise ParseError
+            raise ParseError(self.tokenizer.filename, self.tokenizer.line_number,
+                             "Token '{}' doesn't equal expected type '{}'".format(self.token[0], type))
         if value is not None:
             if self.token[1] != value:
-                raise ParseError
+                raise ParseError(self.tokenizer.filename, self.tokenizer.line_number,
+                                 "Token '{}' doesn't equal expected value '{}'".format(self.token[1], value))
 
         self.consume()
 
@@ -537,7 +572,8 @@ class Parser(object):
         while self.token == (token_types.paren, "["):
             self.consume()
             if self.token[0] != token_types.string:
-                raise ParseError
+                raise ParseError(self.tokenizer.filename, self.tokenizer.line_number,
+                                 "Token '{}' is not a string".format(self.token[0]))
             self.tree.append(DataNode(self.token[1]))
             self.consume()
             self.expect(token_types.paren, "]")
@@ -562,11 +598,15 @@ class Parser(object):
             self.expression_values()
             if self.token[0] == token_types.string:
                 self.value()
+            elif self.token[0] == token_types.list_start:
+                self.consume()
+                self.list_value()
             self.eof_or_end_group()
         elif self.token[0] == token_types.atom:
             self.atom()
         else:
-            raise ParseError
+            raise ParseError(self.tokenizer.filename, self.tokenizer.line_number,
+                             "Token '{}' is not a known type".format(self.token[0]))
 
     def list_value(self):
         self.tree.append(ListNode())
@@ -584,10 +624,7 @@ class Parser(object):
             self.tree.append(ConditionalNode())
             self.expr_start()
             self.expect(token_types.separator)
-            if self.token[0] == token_types.string:
-                self.value()
-            else:
-                raise ParseError
+            self.value_block()
             self.tree.pop()
 
     def value(self):
@@ -674,13 +711,16 @@ class Treebuilder(object):
         self.node = root
 
     def append(self, node):
+        assert isinstance(node, Node)
         self.node.append(node)
         self.node = node
+        assert self.node is not None
         return node
 
     def pop(self):
         node = self.node
         self.node = self.node.parent
+        assert self.node is not None
         return node
 
 

@@ -1,7 +1,7 @@
 pytest-2.7.2: bug fixes
 =======================
 
-pytest is a mature Python testing tool with more than a 1100 tests
+pytest is a mature Python testing tool with more than 1100 tests
 against itself, passing on many different interpreters and platforms.
 This release is supposed to be drop-in compatible to 2.7.1.
 
@@ -55,4 +55,3 @@ The py.test Development Team
 
 - fix issue756, fix issue752 (and similar issues): depend on py-1.4.29
   which has a refined algorithm for traceback generation.
-

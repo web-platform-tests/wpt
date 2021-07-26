@@ -1,37 +1,58 @@
 import argparse
 import os
 import re
-from ..wpt.testfiles import branch_point, files_changed, affected_testfiles
+from ..wpt.testfiles import branch_point, files_changed
 
-from tools import localpaths
-from six import iteritems
+from tools import localpaths  # noqa: F401
 
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
+# Common exclusions between affected_tests and stability jobs.
+# Files in these dirs would trigger the execution of too many tests.
+EXCLUDES = [
+    "!tools/",
+    "!docs/",
+    "!conformance-checkers/",
+    "!.*/OWNERS",
+    "!.*/META.yml",
+    "!.*/tools/",
+    "!.*/README",
+    "!css/[^/]*$"
+]
+
 # Rules are just regex on the path, with a leading ! indicating a regex that must not
-# match for the job
+# match for the job. Paths should be kept in sync with update-built-tests.sh.
 job_path_map = {
-    "stability": [".*/.*",
-                  "!tools/",
-                  "!docs/",
-                  "!resources/*",
-                  "!conformance-checkers/",
-                  "!.*/OWNERS",
-                  "!.*/tools/",
-                  "!.*/README",
-                  "!css/[^/]*$"],
+    "affected_tests": [".*/.*", "!resources/(?!idlharness.js)"] + EXCLUDES,
+    "stability": [".*/.*", "!resources/.*"] + EXCLUDES,
     "lint": [".*"],
     "manifest_upload": [".*"],
-    "resources_unittest": ["resources/"],
+    "resources_unittest": ["resources/", "tools/"],
     "tools_unittest": ["tools/"],
-    "wptrunner_unittest": ["tools/wptrunner/*"],
+    "wptrunner_unittest": ["tools/"],
     "build_css": ["css/"],
-    "update_built": ["2dcontext/",
+    "update_built": ["update-built-tests\\.sh",
+                     "conformance-checkers/",
+                     "css/css-ui/",
                      "html/",
-                     "offscreen-canvas/"],
+                     "infrastructure/",
+                     "mimesniff/",
+                     "WebIDL"],
     "wpt_integration": ["tools/"],
-    "wptrunner_infrastructure": ["infrastructure/", "tools/"],
+    "wptrunner_infrastructure": ["infrastructure/",
+                                 "tools/",
+                                 "resources/",
+                                 "webdriver/tests/support"],
 }
+
+
+def _path_norm(path):
+    """normalize a path for both case and slashes (to /)"""
+    path = os.path.normcase(path)
+    if os.path.sep != "/":
+        # this must be after the normcase call as that does slash normalization
+        path = path.replace(os.path.sep, "/")
+    return path
 
 
 class Ruleset(object):
@@ -39,6 +60,7 @@ class Ruleset(object):
         self.include = []
         self.exclude = []
         for rule in rules:
+            rule = _path_norm(rule)
             self.add_rule(rule)
 
     def add_rule(self, rule):
@@ -51,9 +73,7 @@ class Ruleset(object):
         target.append(re.compile("^%s" % rule))
 
     def __call__(self, path):
-        if os.path.sep != "/":
-            path = path.replace(os.path.sep, "/")
-        path = os.path.normcase(path)
+        path = _path_norm(path)
         for item in self.exclude:
             if item.match(path):
                 return False
@@ -75,19 +95,21 @@ def get_paths(**kwargs):
         revish = kwargs["revish"]
 
     changed, _ = files_changed(revish)
-    all_changed = set(os.path.relpath(item, wpt_root)
-                      for item in set(changed))
+    all_changed = {os.path.relpath(item, wpt_root) for item in set(changed)}
     return all_changed
 
 
 def get_jobs(paths, **kwargs):
+    if kwargs.get("all"):
+        return set(job_path_map.keys())
+
     jobs = set()
 
     rules = {}
     includes = kwargs.get("includes")
     if includes is not None:
         includes = set(includes)
-    for key, value in iteritems(job_path_map):
+    for key, value in job_path_map.items():
         if includes is None or key in includes:
             rules[key] = Ruleset(value)
 
@@ -102,7 +124,7 @@ def get_jobs(paths, **kwargs):
 
     # Default jobs shuld run even if there were no changes
     if not paths:
-        for job, path_re in iteritems(job_path_map):
+        for job, path_re in job_path_map.items():
             if ".*" in path_re:
                 jobs.add(job)
 
@@ -112,6 +134,7 @@ def get_jobs(paths, **kwargs):
 def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("revish", default=None, help="Commits to consider. Defaults to the commits on the current branch", nargs="?")
+    parser.add_argument("--all", help="List all jobs unconditionally.", action="store_true")
     parser.add_argument("--includes", default=None, help="Jobs to check for. Return code is 0 if all jobs are found, otherwise 1", nargs="*")
     return parser
 

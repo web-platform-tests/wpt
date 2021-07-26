@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>Test for font-display @font-face descriptor</title>
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
 .ahem {
   font-family: Ahem;
@@ -13,7 +14,6 @@
 <tr>
  <th>T[sec]</th>
  <th>delay[sec]</th>
- <th>auto</th>
  <th>block</th>
  <th>swap</th>
  <th>fallback</th>
@@ -23,15 +23,13 @@
  <td>0</td>
  <td>1</td>
  <td></td>
- <td></td>
  <td class="arial">a</td>
  <td></td>
- <td></td>
+ <td class="arial">a</td>
 </tr>
 <tr>
  <td>1</td>
  <td>0</td>
- <td class="ahem">a</td>
  <td class="ahem">a</td>
  <td class="ahem">a</td>
  <td class="ahem">a</td>
@@ -43,13 +41,11 @@
  <td class="ahem">a</td>
  <td class="ahem">a</td>
  <td class="ahem">a</td>
- <td class="ahem">a</td>
  <td class="arial">a</td>
 </tr>
 <tr>
  <td>1</td>
  <td>3</td>
- <td></td>
  <td></td>
  <td class="arial">a</td>
  <td class="arial">a</td>
@@ -61,13 +57,11 @@
  <td class="ahem">a</td>
  <td class="ahem">a</td>
  <td class="ahem">a</td>
- <td class="ahem">a</td>
  <td class="arial">a</td>
 </tr>
 <tr>
  <td>5</td>
  <td>4</td>
- <td class="ahem">a</td>
  <td class="ahem">a</td>
  <td class="ahem">a</td>
  <td class="arial">a</td>
@@ -76,7 +70,6 @@
 <tr>
  <td>5</td>
  <td>8</td>
- <td class="arial">a</td>
  <td class="arial">a</td>
  <td class="arial">a</td>
  <td class="arial">a</td>

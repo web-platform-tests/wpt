@@ -1,5 +1,9 @@
 'use strict';
 
+const content = {};
+const bluetooth = {};
+const MOJO_CHOOSER_EVENT_TYPE_MAP = {};
+
 function toMojoCentralState(state) {
   switch (state) {
     case 'absent':
@@ -13,6 +17,23 @@ function toMojoCentralState(state) {
   }
 }
 
+// Converts bluetooth.mojom.WriteType to a string. If |writeType| is
+// invalid, this method will throw.
+function writeTypeToString(writeType) {
+  switch (writeType) {
+    case bluetooth.mojom.WriteType.kNone:
+      return 'none';
+    case bluetooth.mojom.WriteType.kWriteDefaultDeprecated:
+      return 'default-deprecated';
+    case bluetooth.mojom.WriteType.kWriteWithResponse:
+      return 'with-response';
+    case bluetooth.mojom.WriteType.kWriteWithoutResponse:
+      return 'without-response';
+    default:
+      throw `Unknown bluetooth.mojom.WriteType: ${writeType}`;
+  }
+}
+
 // Canonicalizes UUIDs and converts them to Mojo UUIDs.
 function canonicalizeAndConvertToMojoUUID(uuids) {
   let canonicalUUIDs = uuids.map(val => ({uuid: BluetoothUUID.getService(val)}));
@@ -21,51 +42,33 @@ function canonicalizeAndConvertToMojoUUID(uuids) {
 
 // Converts WebIDL a record<DOMString, BufferSource> to a map<K, array<uint8>> to
 // use for Mojo, where the value for K is calculated using keyFn.
-function convertToMojoMap(record, keyFn) {
+function convertToMojoMap(record, keyFn, isNumberKey = false) {
   let map = new Map();
   for (const [key, value] of Object.entries(record)) {
     let buffer = ArrayBuffer.isView(value) ? value.buffer : value;
+    if (isNumberKey) {
+      let numberKey = parseInt(key);
+      if (Number.isNaN(numberKey))
+        throw `Map key ${key} is not a number`;
+      map.set(keyFn(numberKey), Array.from(new Uint8Array(buffer)));
+      continue;
+    }
     map.set(keyFn(key), Array.from(new Uint8Array(buffer)));
   }
   return map;
 }
 
-// Mapping of the property names of
-// BluetoothCharacteristicProperties defined in
-// https://webbluetoothcg.github.io/web-bluetooth/#characteristicproperties
-// to property names of the CharacteristicProperties mojo struct.
-const CHARACTERISTIC_PROPERTIES_WEB_TO_MOJO = {
-  broadcast: 'broadcast',
-  read: 'read',
-  write_without_response: 'write_without_response',
-  write: 'write',
-  notify: 'notify',
-  indicate: 'indicate',
-  authenticatedSignedWrites: 'authenticated_signed_writes',
-  extended_properties: 'extended_properties',
-};
-
 function ArrayToMojoCharacteristicProperties(arr) {
-  let struct = new bluetooth.mojom.CharacteristicProperties();
-
-  arr.forEach(val => {
-    let mojo_property =
-      CHARACTERISTIC_PROPERTIES_WEB_TO_MOJO[val];
-
-    if (struct.hasOwnProperty(mojo_property))
-      struct[mojo_property] = true;
-    else
-      throw `Invalid member '${val}' for CharacteristicProperties`;
-  });
-
+  const struct = {};
+  arr.forEach(property => { struct[property] = true; });
   return struct;
 }
 
 class FakeBluetooth {
   constructor() {
-    this.fake_bluetooth_ptr_ = new bluetooth.mojom.FakeBluetoothPtr();
-    Mojo.bindInterface(bluetooth.mojom.FakeBluetooth.name,
-        mojo.makeRequest(this.fake_bluetooth_ptr_).handle, 'process');
+    this.fake_bluetooth_ptr_ = new bluetooth.mojom.FakeBluetoothRemote();
+    this.fake_bluetooth_ptr_.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
+    this.fake_central_ = null;
   }
 
   // Set it to indicate whether the platform supports BLE. For example,
@@ -89,12 +92,16 @@ class FakeBluetooth {
   // See Bluetooth 4.2 Vol 3 Part C 2.2.2 "Roles when Operating over an
   // LE Physical Transport".
   async simulateCentral({state}) {
+    if (this.fake_central_)
+      throw 'simulateCentral() should only be called once';
+
     await this.setLESupported(true);
 
     let {fakeCentral: fake_central_ptr} =
       await this.fake_bluetooth_ptr_.simulateCentral(
         toMojoCentralState(state));
-    return new FakeCentral(fake_central_ptr);
+    this.fake_central_ = new FakeCentral(fake_central_ptr);
+    return this.fake_central_;
   }
 
   // Returns true if there are no pending responses.
@@ -122,21 +129,23 @@ class FakeCentral {
     this.peripherals_ = new Map();
   }
 
-  // Simulates a peripheral with |address|, |name| and |known_service_uuids|
-  // that has already been connected to the system. If the peripheral existed
-  // already it updates its name and known UUIDs. |known_service_uuids| should
-  // be an array of BluetoothServiceUUIDs
+  // Simulates a peripheral with |address|, |name|, |manufacturerData| and
+  // |known_service_uuids| that has already been connected to the system. If the
+  // peripheral existed already it updates its name, manufacturer data, and
+  // known UUIDs. |known_service_uuids| should be an array of
+  // BluetoothServiceUUIDs
   // https://webbluetoothcg.github.io/web-bluetooth/#typedefdef-bluetoothserviceuuid
   //
   // Platforms offer methods to retrieve devices that have already been
   // connected to the system or weren't connected through the UA e.g. a user
   // connected a peripheral through the system's settings. This method is
   // intended to simulate peripherals that those methods would return.
-  async simulatePreconnectedPeripheral({
-    address, name, knownServiceUUIDs = []}) {
-
+  async simulatePreconnectedPeripheral(
+      {address, name, manufacturerData = {}, knownServiceUUIDs = []}) {
     await this.fake_central_ptr_.simulatePreconnectedPeripheral(
-      address, name, canonicalizeAndConvertToMojoUUID(knownServiceUUIDs));
+        address, name,
+        convertToMojoMap(manufacturerData, Number, true /* isNumberKey */),
+        canonicalizeAndConvertToMojoUUID(knownServiceUUIDs));
 
     return this.fetchOrCreatePeripheral_(address);
   }
@@ -145,8 +154,12 @@ class FakeCentral {
   // from a device. If central is currently scanning, the device will appear on
   // the list of discovered devices.
   async simulateAdvertisementReceived(scanResult) {
+    // Create a deep-copy to prevent the original |scanResult| from being
+    // modified when the UUIDs, manufacturer, and service data are converted.
+    let clonedScanResult = JSON.parse(JSON.stringify(scanResult));
+
     if ('uuids' in scanResult.scanRecord) {
-      scanResult.scanRecord.uuids =
+      clonedScanResult.scanRecord.uuids =
           canonicalizeAndConvertToMojoUUID(scanResult.scanRecord.uuids);
     }
 
@@ -155,13 +168,13 @@ class FakeCentral {
     // the fields are undefined, set the hasValue field as false and value as 0.
     // Otherwise, set the hasValue field as true and value with the field value.
     const has_appearance = 'appearance' in scanResult.scanRecord;
-    scanResult.scanRecord.appearance = {
+    clonedScanResult.scanRecord.appearance = {
       hasValue: has_appearance,
       value: (has_appearance ? scanResult.scanRecord.appearance : 0)
     }
 
     const has_tx_power = 'txPower' in scanResult.scanRecord;
-    scanResult.scanRecord.txPower = {
+    clonedScanResult.scanRecord.txPower = {
       hasValue: has_tx_power,
       value: (has_tx_power ? scanResult.scanRecord.txPower : 0)
     }
@@ -169,21 +182,33 @@ class FakeCentral {
     // Convert manufacturerData from a record<DOMString, BufferSource> into a
     // map<uint8, array<uint8>> for Mojo.
     if ('manufacturerData' in scanResult.scanRecord) {
-      scanResult.scanRecord.manufacturerData = convertToMojoMap(
-          scanResult.scanRecord.manufacturerData, Number);
+      clonedScanResult.scanRecord.manufacturerData = convertToMojoMap(
+          scanResult.scanRecord.manufacturerData, Number,
+          true /* isNumberKey */);
     }
 
     // Convert serviceData from a record<DOMString, BufferSource> into a
     // map<string, array<uint8>> for Mojo.
     if ('serviceData' in scanResult.scanRecord) {
-      scanResult.scanRecord.serviceData.serviceData = convertToMojoMap(
-          scanResult.scanRecord.serviceData, BluetoothUUID.getService);
+      clonedScanResult.scanRecord.serviceData.serviceData = convertToMojoMap(
+          scanResult.scanRecord.serviceData, BluetoothUUID.getService,
+          false /* isNumberKey */);
     }
 
     await this.fake_central_ptr_.simulateAdvertisementReceived(
-        new bluetooth.mojom.ScanResult(scanResult));
+        clonedScanResult);
 
-    return this.fetchOrCreatePeripheral_(scanResult.deviceAddress);
+    return this.fetchOrCreatePeripheral_(clonedScanResult.deviceAddress);
+  }
+
+  // Simulates a change in the central device described by |state|. For example,
+  // setState('powered-off') can be used to simulate the central device powering
+  // off.
+  //
+  // This method should be used for any central state changes after
+  // simulateCentral() has been called to create a FakeCentral object.
+  async setState(state) {
+    await this.fake_central_ptr_.setState(toMojoCentralState(state));
   }
 
   // Create a fake_peripheral object from the given address.
@@ -417,16 +442,19 @@ class FakeRemoteGATTCharacteristic {
     return isNotifying;
   }
 
-  // Gets the last successfully written value to the characteristic.
-  // Returns null if no value has yet been written to the characteristic.
+  // Gets the last successfully written value to the characteristic and its
+  // write type. Write type is one of 'none', 'default-deprecated',
+  // 'with-response', 'without-response'. Returns {lastValue: null,
+  // lastWriteType: 'none'} if no value has yet been written to the
+  // characteristic.
   async getLastWrittenValue() {
-    let {success, value} =
-      await this.fake_central_ptr_.getLastWrittenCharacteristicValue(
-          ...this.ids_);
+    let {success, value, writeType} =
+        await this.fake_central_ptr_.getLastWrittenCharacteristicValue(
+            ...this.ids_);
 
     if (!success) throw 'getLastWrittenCharacteristicValue failed';
 
-    return value;
+    return {lastValue: value, lastWriteType: writeTypeToString(writeType)};
   }
 
   // Removes the fake GATT Characteristic from its fake service.
@@ -504,23 +532,98 @@ class FakeRemoteGATTDescriptor {
   }
 }
 
-// FakeChooser allows clients to simulate events that a user would trigger when
-// using the Bluetooth chooser, and monitor the events that are produced.
+// FakeChooser allows clients to simulate user actions on a Bluetooth chooser,
+// and records the events produced by the Bluetooth chooser.
 class FakeChooser {
   constructor() {
+    let fakeBluetoothChooserFactoryRemote =
+        new content.mojom.FakeBluetoothChooserFactoryRemote();
+    fakeBluetoothChooserFactoryRemote.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
+
     this.fake_bluetooth_chooser_ptr_ =
-        new content.mojom.FakeBluetoothChooserPtr();
-    Mojo.bindInterface(content.mojom.FakeBluetoothChooser.name,
-        mojo.makeRequest(this.fake_bluetooth_chooser_ptr_).handle, 'process');
+        new content.mojom.FakeBluetoothChooserRemote();
+    this.fake_bluetooth_chooser_client_receiver_ =
+        new content.mojom.FakeBluetoothChooserClientReceiver(this);
+    fakeBluetoothChooserFactoryRemote.createFakeBluetoothChooser(
+        this.fake_bluetooth_chooser_ptr_.$.bindNewPipeAndPassReceiver(),
+        this.fake_bluetooth_chooser_client_receiver_.$.associateAndPassRemote());
+
+    this.events_ = new Array();
+    this.event_listener_ = null;
+  }
+
+  // If the chooser has received more events than |numOfEvents| this function
+  // will reject the promise, else it will wait until |numOfEvents| events are
+  // received before resolving with an array of |FakeBluetoothChooserEvent|
+  // objects.
+  async waitForEvents(numOfEvents) {
+    return new Promise(resolve => {
+      if (this.events_.length > numOfEvents) {
+        throw `Asked for ${numOfEvents} event(s), but received ` +
+            `${this.events_.length}.`;
+      }
+
+      this.event_listener_ = () => {
+         if (this.events_.length === numOfEvents) {
+          let result = Array.from(this.events_);
+          this.event_listener_ = null;
+          this.events_ = [];
+          resolve(result);
+        }
+      };
+      this.event_listener_();
+    });
+  }
+
+  async selectPeripheral(peripheral) {
+    if (!(peripheral instanceof FakePeripheral)) {
+      throw '|peripheral| must be an instance of FakePeripheral';
+    }
+    await this.fake_bluetooth_chooser_ptr_.selectPeripheral(peripheral.address);
+  }
+
+  async cancel() {
+    await this.fake_bluetooth_chooser_ptr_.cancel();
+  }
+
+  async rescan() {
+    await this.fake_bluetooth_chooser_ptr_.rescan();
+  }
+
+  onEvent(chooserEvent) {
+    chooserEvent.type = MOJO_CHOOSER_EVENT_TYPE_MAP[chooserEvent.type];
+    this.events_.push(chooserEvent);
+    if (this.event_listener_ !== null) {
+      this.event_listener_();
+    }
   }
 }
 
-// If this line fails, it means that current environment does not support the
-// Web Bluetooth Test API.
-try {
-  navigator.bluetooth.test = new FakeBluetooth();
-} catch {
+async function initializeChromiumResources() {
+  content.mojom = await import(
+      '/gen/content/web_test/common/fake_bluetooth_chooser.mojom.m.js');
+  bluetooth.mojom = await import(
+      '/gen/device/bluetooth/public/mojom/test/fake_bluetooth.mojom.m.js');
+
+  const map = MOJO_CHOOSER_EVENT_TYPE_MAP;
+  const types = content.mojom.ChooserEventType;
+  map[types.CHOOSER_OPENED] = 'chooser-opened';
+  map[types.CHOOSER_CLOSED] = 'chooser-closed';
+  map[types.ADAPTER_REMOVED] = 'adapter-removed';
+  map[types.ADAPTER_DISABLED] = 'adapter-disabled';
+  map[types.ADAPTER_ENABLED] = 'adapter-enabled';
+  map[types.DISCOVERY_FAILED_TO_START] = 'discovery-failed-to-start';
+  map[types.DISCOVERING] = 'discovering';
+  map[types.DISCOVERY_IDLE] = 'discovery-idle';
+  map[types.ADD_OR_UPDATE_DEVICE] = 'add-or-update-device';
+
+  // If this line fails, it means that current environment does not support the
+  // Web Bluetooth Test API.
+  try {
+    navigator.bluetooth.test = new FakeBluetooth();
+  } catch {
     throw 'Web Bluetooth Test API is not implemented on this ' +
         'environment. See the bluetooth README at ' +
-        'https://github.com/w3c/web-platform-tests/blob/master/bluetooth/README.md#web-bluetooth-testing';
+        'https://github.com/web-platform-tests/wpt/blob/master/bluetooth/README.md#web-bluetooth-testing';
+  }
 }

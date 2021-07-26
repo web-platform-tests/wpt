@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -13,6 +14,15 @@ test(function() {
        "observer.thresholds");
   test(function() { assert_equals(observer.rootMargin, "0px 0px 0px 0px") },
        "observer.rootMargin");
+
+  observer = new IntersectionObserver(function(e) {}, {
+    rootMargin: " ",
+    threshold: []
+  });
+  test(function() { assert_array_equals(observer.thresholds, [0]) },
+       "empty observer.thresholds");
+  test(function() { assert_equals(observer.rootMargin, "0px 0px 0px 0px") },
+       "whitespace observer.rootMargin");
 
   var rootDiv = document.getElementById("root");
   observer = new IntersectionObserver(function(e) {}, {

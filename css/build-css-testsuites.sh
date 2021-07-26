@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 set -ex
 
-SCRIPT_DIR=$(dirname $(readlink -f "$0"))
-WPT_ROOT=$(readlink -f $SCRIPT_DIR/..)
+SCRIPT_DIR=$(cd $(dirname "$0") && pwd -P)
+WPT_ROOT=$SCRIPT_DIR/..
 cd $WPT_ROOT
 
 main() {
@@ -35,17 +35,17 @@ main() {
             exit 1
         fi
 
+        # The maximum Unicode code point is U+10FFFF = 1114111
+        if [ `$PYTHON -c 'import sys; print(sys.maxunicode)'` != "1114111" ]; then
+            echo "UCS-4 support for Python is required"
+            exit 1
+        fi
+
         virtualenv -p $PYTHON $VENV || { echo "Please ensure virtualenv is installed"; exit 2; }
     fi
 
     # Install dependencies
     $VENV/bin/pip install -r requirements.txt
-
-    # Error if submodules are not there
-    if [ ! -d tools/apiclient -o ! -d tools/w3ctestlib ]; then
-        echo 'Please run `git submodule update --init --recursive`'
-        exit 1
-    fi
 
     # Run the build script
     $VENV/bin/python tools/build.py "$@"

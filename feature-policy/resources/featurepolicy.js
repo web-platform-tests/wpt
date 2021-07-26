@@ -1,3 +1,8 @@
+// Feature test to avoid timeouts
+function assert_feature_policy_supported() {
+  assert_not_equals(document.featurePolicy, undefined,
+                    'Feature Policy is supported');
+}
 // Tests whether a feature that is enabled/disabled by feature policy works
 // as expected.
 // Arguments:
@@ -8,9 +13,9 @@
 //        "/feature-policy/resources/feature-policy-payment.html",
 //        "/feature-policy/resources/feature-policy-usb.html".
 //    expect_feature_available: a callback(data, feature_description) to
-//        verify if a feature is avaiable or unavailable as expected.
+//        verify if a feature is available or unavailable as expected.
 //        The file under the path "src" defines what "data" is sent back as a
-//        pistMessage. Inside the callback, some tests (e.g., EXPECT_EQ,
+//        postMessage. Inside the callback, some tests (e.g., EXPECT_EQ,
 //        EXPECT_TRUE, etc) are run accordingly to test a feature's
 //        availability.
 //        Example: expect_feature_available_default(data, feature_description).
@@ -18,9 +23,9 @@
 //      attribute. "feature_name" is the feature name of a policy controlled
 //      feature (https://wicg.github.io/feature-policy/#features).
 //      See examples at:
-//      https://github.com/WICG/feature-policy/blob/gh-pages/features.md
-//    allow_attribute: Optional argument, only used for testing fullscreen or
-//      payment: either "allowfullscreen" or "allowpaymentrequest" is passed.
+//      https://github.com/WICG/feature-policy/blob/master/features.md
+//    allow_attribute: Optional argument, only used for testing fullscreen:
+//      "allowfullscreen"
 function test_feature_availability(
     feature_description, test, src, expect_feature_available, feature_name,
     allow_attribute) {
@@ -78,7 +83,7 @@ function test_feature_availability_with_post_message_result(
 // tests the feature availability and posts the result back to the parent.
 // Otherwise, does nothing.
 function test_feature_in_iframe(feature_name, feature_promise_factory) {
-  if (location.hash.includes(feature_name)) {
+  if (location.hash.endsWith(`#${feature_name}`)) {
     feature_promise_factory().then(
         () => window.parent.postMessage('#OK', '*'),
         (e) => window.parent.postMessage('#' + e.name, '*'));
@@ -246,6 +251,16 @@ function run_all_fp_tests_allow_all(
       },
       'Feature policy "' + feature_name +
           '" can be disabled in cross-origin iframes using "allow" attribute.');
+
+  // 5. Blocked in same-origin iframe with "allow" attribute set to 'none'.
+  async_test(
+      t => {
+        test_feature_availability_with_post_message_result(
+            t, same_origin_frame_pathname, '#' + error_name,
+            feature_name + " 'none'");
+      },
+      'Feature policy "' + feature_name +
+          '" can be disabled in same-origin iframes using "allow" attribute.');
 }
 
 // This function tests that a given policy allows each feature for the correct
@@ -253,7 +268,8 @@ function run_all_fp_tests_allow_all(
 // Arguments:
 //     expected_policy: A list of {feature, allowlist} pairs where the feature is
 //         enabled for every origin in the allowlist, in the |policy|.
-//     policy: Either a document.policy or a iframe.policy to be tested.
+//     policy: Either a document.featurePolicy or an iframe.featurePolicy to be
+//         tested.
 //     message: A short description of what policy is being tested.
 function test_allowlists(expected_policy, policy, message) {
   for (var allowlist of allowlists) {
@@ -279,6 +295,7 @@ function test_allowed_feature_for_subframe(message, feature, src, allow) {
     frame.allow = allow;
   }
   promise_test(function() {
+    assert_feature_policy_supported();
     frame.src = src;
     return new Promise(function(resolve, reject) {
       window.addEventListener('message', function handler(evt) {
@@ -305,6 +322,7 @@ function test_disallowed_feature_for_subframe(message, feature, src, allow) {
     frame.allow = allow;
   }
   promise_test(function() {
+    assert_feature_policy_supported();
     frame.src = src;
     return new Promise(function(resolve, reject) {
       window.addEventListener('message', function handler(evt) {
@@ -333,15 +351,12 @@ function test_subframe_header_policy(
     feature, frame_header_policy, src, test_expects, test_name) {
   let frame = document.createElement('iframe');
   promise_test(function() {
+    assert_feature_policy_supported()
     frame.src = src + '?pipe=sub|header(Feature-Policy,' + feature + ' '
         + frame_header_policy + ';)';
-    return new Promise(function(resolve, reject) {
-      let results = [];
+    return new Promise(function(resolve) {
       window.addEventListener('message', function handler(evt) {
-        results.push(evt.data);
-        if (results.length >= 6) {
-          resolve(results);
-        }
+        resolve(evt.data);
       });
       document.body.appendChild(frame);
     }).then(function(results) {
@@ -389,19 +404,20 @@ function test_subframe_header_policy(
 // by iframe allow attribute.
 // Arguments:
 //     feature: feature name.
-//     src: the URL to load in the frame.
+//     src: the URL to load in the frame. If undefined, the iframe will have a
+//         srcdoc="" attribute
 //     test_expect: boolean value of whether the feature should be allowed.
 //     allow: optional, the allow attribute (container policy) of the iframe.
 //     allowfullscreen: optional, boolean value of allowfullscreen attribute.
 //     sandbox: optional boolean. If true, the frame will be sandboxed (with
 //         allow-scripts, so that tests can run in it.)
 function test_frame_policy(
-    feature, src, test_expect, allow, allowfullscreen, sandbox) {
+    feature, src, srcdoc, test_expect, allow, allowfullscreen, sandbox) {
   let frame = document.createElement('iframe');
   document.body.appendChild(frame);
   // frame_policy should be dynamically updated as allow and allowfullscreen is
   // updated.
-  var frame_policy = frame.policy;
+  var frame_policy = frame.featurePolicy;
   if (typeof allow !== 'undefined') {
     frame.setAttribute('allow', allow);
   }
@@ -411,10 +427,28 @@ function test_frame_policy(
   if (!!sandbox) {
     frame.setAttribute('sandbox', 'allow-scripts');
   }
-  frame.src = src;
+  if (!!src) {
+    frame.src = src;
+  }
+  if (!!srcdoc) {
+    frame.srcdoc = "<h1>Hello world!</h1>";
+  }
   if (test_expect) {
     assert_true(frame_policy.allowedFeatures().includes(feature));
   } else {
     assert_false(frame_policy.allowedFeatures().includes(feature));
   }
+}
+
+function expect_reports(report_count, policy_name, description) {
+  async_test(t => {
+    var num_received_reports = 0;
+    new ReportingObserver(t.step_func((reports, observer) => {
+        const relevant_reports = reports.filter(r => (r.body.featureId === policy_name));
+        num_received_reports += relevant_reports.length;
+        if (num_received_reports >= report_count) {
+            t.done();
+        }
+   }), {types: ['permissions-policy-violation'], buffered: true}).observe();
+  }, description);
 }

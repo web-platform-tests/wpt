@@ -1,3 +1,14 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Encoding Standard (https://encoding.spec.whatwg.org/)
+
+interface mixin TextDecoderCommon {
+  readonly attribute DOMString encoding;
+  readonly attribute boolean fatal;
+  readonly attribute boolean ignoreBOM;
+};
+
 dictionary TextDecoderOptions {
   boolean fatal = false;
   boolean ignoreBOM = false;
@@ -7,18 +18,42 @@ dictionary TextDecodeOptions {
   boolean stream = false;
 };
 
-[Constructor(optional DOMString label = "utf-8", optional TextDecoderOptions options),
- Exposed=(Window,Worker)]
+[Exposed=(Window,Worker)]
 interface TextDecoder {
+  constructor(optional DOMString label = "utf-8", optional TextDecoderOptions options = {});
+
+  USVString decode(optional [AllowShared] BufferSource input, optional TextDecodeOptions options = {});
+};
+TextDecoder includes TextDecoderCommon;
+
+interface mixin TextEncoderCommon {
   readonly attribute DOMString encoding;
-  readonly attribute boolean fatal;
-  readonly attribute boolean ignoreBOM;
-  USVString decode(optional BufferSource input, optional TextDecodeOptions options);
 };
 
-[Constructor,
- Exposed=(Window,Worker)]
-interface TextEncoder {
-  readonly attribute DOMString encoding;
-  [NewObject] Uint8Array encode(optional USVString input = "");
+dictionary TextEncoderEncodeIntoResult {
+  unsigned long long read;
+  unsigned long long written;
 };
+
+[Exposed=(Window,Worker)]
+interface TextEncoder {
+  constructor();
+
+  [NewObject] Uint8Array encode(optional USVString input = "");
+  TextEncoderEncodeIntoResult encodeInto(USVString source, [AllowShared] Uint8Array destination);
+};
+TextEncoder includes TextEncoderCommon;
+
+[Exposed=(Window,Worker)]
+interface TextDecoderStream {
+  constructor(optional DOMString label = "utf-8", optional TextDecoderOptions options = {});
+};
+TextDecoderStream includes TextDecoderCommon;
+TextDecoderStream includes GenericTransformStream;
+
+[Exposed=(Window,Worker)]
+interface TextEncoderStream {
+  constructor();
+};
+TextEncoderStream includes TextEncoderCommon;
+TextEncoderStream includes GenericTransformStream;

@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset={{GET[encoding]}}> <!-- ends up as <meta charset> by default which is windows-1252 -->
+<meta name=variant content="?encoding=windows-1252">
 <meta name=variant content="?encoding=x-cp1251">
 <meta name=variant content="?encoding=utf8">
 <script src=/resources/testharness.js></script>
@@ -9,7 +10,7 @@
 function expected(encoding) {
   return "?" + {
     "UTF-8": "%C3%BF",
-    "windows-1251": "&%23255;",
+    "windows-1251": "%26%23255%3B",
     "windows-1252": "%FF"
   }[encoding];
 }

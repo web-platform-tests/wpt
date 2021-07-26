@@ -12,11 +12,11 @@
     <script>
         var t_spv = async_test("Should fire securitypolicyviolation");
         window.addEventListener('securitypolicyviolation', t_spv.step_func_done(function(e) {
-            assert_equals(e.violatedDirective, "style-src");
+            assert_equals(e.violatedDirective, "style-src-elem");
         }));
-      
+
     </script>
-    
+
     <style nonce="noncynonce">
         #test1 {
             color: green;
@@ -51,7 +51,7 @@
         });
 
     </script>
-    <p>Style correctly whitelisted via a 'nonce-*' expression in 'style-src' should be applied to the page.</p>
+    <p>Style correctly allowed via a 'nonce-*' expression in 'style-src' should be applied to the page.</p>
     <div id="log"></div>
 </body>
 

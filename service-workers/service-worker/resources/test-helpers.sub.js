@@ -1,10 +1,19 @@
 // Adapter for testharness.js-style tests with Service Workers
 
-function service_worker_unregister_and_register(test, url, scope) {
+/**
+ * @param options an object that represents RegistrationOptions except for scope.
+ * @param options.type a WorkerType.
+ * @param options.updateViaCache a ServiceWorkerUpdateViaCache.
+ * @see https://w3c.github.io/ServiceWorker/#dictdef-registrationoptions
+ */
+function service_worker_unregister_and_register(test, url, scope, options) {
   if (!scope || scope.length == 0)
     return Promise.reject(new Error('tests must define a scope'));
 
-  var options = { scope: scope };
+  if (options && options.scope)
+    return Promise.reject(new Error('scope must not be passed in options'));
+
+  options = Object.assign({ scope: scope }, options);
   return service_worker_unregister(test, scope)
     .then(function() {
         return navigator.serviceWorker.register(url, options);
@@ -46,9 +55,14 @@ function unreached_rejection(test, prefix) {
     });
 }
 
-// Adds an iframe to the document and returns a promise that resolves to the
-// iframe when it finishes loading. The caller is responsible for removing the
-// iframe later if needed.
+/**
+ * Adds an iframe to the document and returns a promise that resolves to the
+ * iframe when it finishes loading. The caller is responsible for removing the
+ * iframe later if needed.
+ *
+ * @param {string} url
+ * @returns {HTMLIFrameElement}
+ */
 function with_iframe(url) {
   return new Promise(function(resolve) {
       var frame = document.createElement('iframe');
@@ -70,62 +84,74 @@ function wait_for_update(test, registration) {
   }
 
   return new Promise(test.step_func(function(resolve) {
-      registration.addEventListener('updatefound', test.step_func(function() {
-          resolve(registration.installing);
-        }));
+      var handler = test.step_func(function() {
+        registration.removeEventListener('updatefound', handler);
+        resolve(registration.installing);
+      });
+      registration.addEventListener('updatefound', handler);
     }));
+}
+
+// Return true if |state_a| is more advanced than |state_b|.
+function is_state_advanced(state_a, state_b) {
+  if (state_b === 'installing') {
+    switch (state_a) {
+      case 'installed':
+      case 'activating':
+      case 'activated':
+      case 'redundant':
+        return true;
+    }
+  }
+
+  if (state_b === 'installed') {
+    switch (state_a) {
+      case 'activating':
+      case 'activated':
+      case 'redundant':
+        return true;
+    }
+  }
+
+  if (state_b === 'activating') {
+    switch (state_a) {
+      case 'activated':
+      case 'redundant':
+        return true;
+    }
+  }
+
+  if (state_b === 'activated') {
+    switch (state_a) {
+      case 'redundant':
+        return true;
+    }
+  }
+  return false;
 }
 
 function wait_for_state(test, worker, state) {
   if (!worker || worker.state == undefined) {
     return Promise.reject(new Error(
-      'wait_for_state must be passed a ServiceWorker'));
+      'wait_for_state needs a ServiceWorker object to be passed.'));
   }
   if (worker.state === state)
     return Promise.resolve(state);
 
-  if (state === 'installing') {
-    switch (worker.state) {
-      case 'installed':
-      case 'activating':
-      case 'activated':
-      case 'redundant':
-        return Promise.reject(new Error(
-          'worker is ' + worker.state + ' but waiting for ' + state));
-    }
+  if (is_state_advanced(worker.state, state)) {
+    return Promise.reject(new Error(
+      `Waiting for ${state} but the worker is already ${worker.state}.`));
   }
-
-  if (state === 'installed') {
-    switch (worker.state) {
-      case 'activating':
-      case 'activated':
-      case 'redundant':
-        return Promise.reject(new Error(
-          'worker is ' + worker.state + ' but waiting for ' + state));
-    }
-  }
-
-  if (state === 'activating') {
-    switch (worker.state) {
-      case 'activated':
-      case 'redundant':
-        return Promise.reject(new Error(
-          'worker is ' + worker.state + ' but waiting for ' + state));
-    }
-  }
-
-  if (state === 'activated') {
-    switch (worker.state) {
-      case 'redundant':
-        return Promise.reject(new Error(
-          'worker is ' + worker.state + ' but waiting for ' + state));
-    }
-  }
-
-  return new Promise(test.step_func(function(resolve) {
+  return new Promise(test.step_func(function(resolve, reject) {
       worker.addEventListener('statechange', test.step_func(function() {
           if (worker.state === state)
             resolve(state);
+
+          if (is_state_advanced(worker.state, state)) {
+            reject(new Error(
+              `The state of the worker becomes ${worker.state} while waiting` +
+                `for ${state}.`));
+          }
         }));
     }));
 }
@@ -258,16 +284,46 @@ function with_sandboxed_iframe(url, sandbox) {
     });
 }
 
-// Registers, waits for activation, then unregisters on a dummy scope.
+// Registers, waits for activation, then unregisters on a sample scope.
 //
 // This can be used to wait for a period of time needed to register,
 // activate, and then unregister a service worker.  When checking that
 // certain behavior does *NOT* happen, this is preferable to using an
 // arbitrary delay.
-async function wait_for_activation_on_dummy_scope(t, window_or_workerglobalscope) {
+async function wait_for_activation_on_sample_scope(t, window_or_workerglobalscope) {
   const script = '/service-workers/service-worker/resources/empty-worker.js';
   const scope = 'resources/there/is/no/there/there?' + Date.now();
   let registration = await window_or_workerglobalscope.navigator.serviceWorker.register(script, { scope });
   await wait_for_state(t, registration.installing, 'activated');
   await registration.unregister();
 }
+
+// This installs resources/appcache-ordering.manifest.
+function install_appcache_ordering_manifest() {
+  let resolve_install_appcache;
+  let reject_install_appcache;
+
+  // This is notified by the child iframe, i.e. appcache-ordering.install.html,
+  // that's to be created below.
+  window.notify_appcache_installed = success => {
+    if (success)
+      resolve_install_appcache();
+    else
+      reject_install_appcache();
+  };
+
+  return new Promise((resolve, reject) => {
+      const frame = document.createElement('iframe');
+      frame.src = 'resources/appcache-ordering.install.html';
+      document.body.appendChild(frame);
+      resolve_install_appcache = function() {
+          document.body.removeChild(frame);
+          resolve();
+        };
+      reject_install_appcache = function() {
+          document.body.removeChild(frame);
+          reject();
+        };
+  });
+}
+

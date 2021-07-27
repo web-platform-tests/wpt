@@ -59,6 +59,7 @@
     const selectMenu0Child3 = document.getElementById("selectMenu0-child3");
     const selectMenu0Child4 = document.getElementById("selectMenu0-child4");
     const selectMenu0Child5 = document.getElementById("selectMenu0-child5");
+    assert_equals(selectMenu0.options.length, 2, "There are only two valid options");
     assert_equals(selectMenu0.value, "one");
     await clickOn(selectMenu0);
     await clickOn(selectMenu0Child2);
@@ -82,6 +83,7 @@
     const selectMenu1Popup = document.getElementById("selectMenu1-popup");
     const selectMenu1Button = document.getElementById("selectMenu1-button");
     const selectMenu1Child2 = document.getElementById("selectMenu1-child2");
+    assert_equals(selectMenu1.options.length, 2, "There are only two valid options");
     assert_false(selectMenu1Popup.open);
     selectMenu1Button.click();
     assert_false(selectMenu1Popup.open, "Clicking a button part that is a descendant of the listbox part should have no effect");
@@ -99,6 +101,8 @@
     const selectMenu2Button = document.getElementById("selectMenu2-button");
     const selectMenu2Child2 = document.getElementById("selectMenu2-child2");
     const selectMenu2Child4 = document.getElementById("selectMenu2-child4");
+
+    assert_equals(selectMenu2.options.length, 2, "There are only two valid options");
 
     assert_false(selectMenu2Popup.open);
     await clickOn(selectMenu2Button);

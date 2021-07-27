@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Geolocation Test: non-fully active document</title>
+<link
+  rel="help"
+  href="https://github.com/w3c/geolocation-api/pull/97"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="support.js"></script>
+
+<script>
+  // Rewrite http://dev.w3.org/geo/api/test-suite/t.html?00086, 00088, 00091 and 00092
+  promise_test(async function () {
+    await test_driver.set_permission({ name: "geolocation" }, "granted");
+
+    // Create the iframe, wait for it to load...
+    const iframe = document.createElement("iframe");
+    iframe.src = "iframe.html";
+    iframe.allow = "geolocation";
+    document.body.appendChild(iframe);
+
+    // ...wait for the iframe to load...
+    await new Promise((r) =>
+      iframe.addEventListener("load", r, { once: true })
+    );
+
+    // Steal geolocation.
+    const geo = iframe.contentWindow.navigator.geolocation;
+
+    // No longer fully active.
+    iframe.remove();
+
+    // Try to watch a position while not fully active...
+    const watchError = await new Promise((resolve, reject) => {
+      const result = geo.watchPosition(
+        reject, // We don't want a position
+        resolve // We want an error!
+      );
+      // Some error value... 0 or less...
+      assert_less_than_equal(
+        result,
+        0,
+        "watchPosition() on non-fully-active document"
+      );
+    });
+    is(
+      watchError.code,
+      GeolocationPositionError.POSITION_UNAVAILABLE,
+      "watchPosition() returns an error on non-fully-active document"
+    );
+
+    // Now try to get current position while not fully active...
+    const positionError = await new Promise((resolve, reject) => {
+      const result = geo.getCurrentPosition(
+        reject, // We don't want a position
+        resolve // We want an error!
+      );
+    });
+    is(
+      positionError.code,
+      GeolocationPositionError.POSITION_UNAVAILABLE,
+      "getCurrentPosition returns an error on non-fully-active document"
+    );
+
+    // Re-attach, and go back to fully active.
+    document.body.appendChild(iframe);
+    iframe.contentWindow.opener = window;
+    await new Promise((r) =>
+      window.addEventListener("message", r, { once: true })
+    );
+
+    // And we are back to fully active.
+    let watchId;
+    let position = await new Promise((resolve, reject) => {
+      watchId = iframe.contentWindow.navigator.geolocation.watchPosition(
+        resolve,
+        reject
+      );
+    });
+    assert_greater_than_equal(0, "Expected anything greater than -1");
+    ok(position, "Expected a position");
+
+    // Finally, let's get the position from the reattached document.
+    position = await new Promise((resolve, reject) => {
+      iframe.contentWindow.navigator.geolocation.getCurrentPosition(
+        resolve,
+        reject
+      );
+    });
+    ok(position, "Expected a position");
+    iframe.contentWindow.navigator.geolocation.clearWatch(watchId);
+  }, "non-fully active document behavior");
+</script>

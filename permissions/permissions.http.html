@@ -6,12 +6,15 @@
 <div id="log"></div>
 
 <script>
-const securePermissions = ["geolocation"];
+const securePermissions = [
+  "geolocation",
+  "midi",
+];
 
 for (const permission of securePermissions) {
   promise_test(async () => {
     const result = await navigator.permissions.query({
-      name: "permission",
+      name: permission,
     });
     assert_equals(result.state, "denied", `"${permission}" is not available in insecure contexts`);
   }, `getting permission status of "${permission}" in insecure contexts`);

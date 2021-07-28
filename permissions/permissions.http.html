@@ -1,0 +1,19 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Test Secure-Context-only permissions in HTTP context.</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id="log"></div>
+
+<script>
+const securePermissions = ["geolocation"];
+
+for (const permission of securePermissions) {
+  promise_test(async () => {
+    const result = await navigator.permissions.query({
+      name: "permission",
+    });
+    assert_equals(result.state, "denied", `"${permission}" is not available in insecure contexts`);
+  }, `getting permission status of "${permission}" in insecure contexts`);
+}
+</script>

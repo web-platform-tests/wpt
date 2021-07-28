@@ -15,7 +15,6 @@
   }
 
   const testRules = [
-    `.foo .bar { color: green; }`,
     `.foo { & { color: green; } }`, // 🐰
     `.foo { &.bar { color: green; } }`,
     `.foo { & .bar { color: green; } }`,

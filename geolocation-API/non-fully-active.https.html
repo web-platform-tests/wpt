@@ -80,7 +80,7 @@
       );
     });
     assert_true(Number.isInteger(watchId), "Expected some number for watchId");
-    ok(position, "Expected a position");
+    assert_true(position, "Expected a position");
 
     // Finally, let's get the position from the reattached document.
     position = await new Promise((resolve, reject) => {
@@ -89,7 +89,7 @@
         reject
       );
     });
-    ok(position, "Expected a position");
+    assert_true(position, "Expected a position");
     iframe.contentWindow.navigator.geolocation.clearWatch(watchId);
   }, "non-fully active document behavior");
 </script>

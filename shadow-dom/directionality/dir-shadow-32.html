@@ -19,7 +19,15 @@ div {border: 1px solid gray; margin: 1em; padding: 0.25em;}
 
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
-  root.innerHTML = `<span>RTL</span>`;
+  root.innerHTML = `
+    <style>
+      span {border: 1px solid silver;}
+      span::before { content: "DIRECTIONUNKNOWN" }
+      span:dir(rtl)::before { content: "RTL" }
+      span:dir(ltr)::before { content: "LTR" }
+    </style>
+    <span></span>
+  `;
   result.innerHTML += getComputedStyle(root.querySelector('span')).direction + '.';
 </script>
 

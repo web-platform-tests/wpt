@@ -21,10 +21,10 @@ div {border: 1px solid gray; margin: 1em; padding: 0.25em;}
   let root = host.attachShadow({mode:"open"});
   root.innerHTML = `
     <style>
-	span {border: 1px solid silver;}
-	span::before { content: "DIRECTIONUNKNOWN" }
-	span:dir(rtl)::before { content: "RTL" }
-	span:dir(ltr)::before { content: "LTR" }
+      span {border: 1px solid silver;}
+      span::before { content: "DIRECTIONUNKNOWN" }
+      span:dir(rtl)::before { content: "RTL" }
+      span:dir(ltr)::before { content: "LTR" }
     </style>
     <span></span>
   `;

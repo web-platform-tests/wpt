@@ -88,7 +88,7 @@
         reject
       );
     });
-    assert_true(position, "Expected a position");
+    assert_true(Boolean(position), "Expected a position");
     iframe.contentWindow.navigator.geolocation.clearWatch(watchId);
   }, "non-fully active document behavior");
 </script>

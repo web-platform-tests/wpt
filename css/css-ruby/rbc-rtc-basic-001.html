@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+ <html lang="ja">
+
+  <meta charset="UTF-8">
+
+  <title>CSS Ruby Test: rbc and rtc elements (basic)</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-ruby-1/#box-fixup">
+
+  <meta content="" name="flags">
+
+  <style>
+  body
+    {
+      font-size: 60px;
+      line-height: 3;
+    }
+
+  ruby
+    {
+      background: lightblue;
+    }
+
+  div.rbc
+    {
+      display: ruby-base-container;
+      unicode-bidi: isolate;
+    }
+
+  rtc
+    {
+      display: ruby-text-container;
+      unicode-bidi: isolate;
+    }
+  </style>
+
+  <ruby><div class="rbc">あい</div><rt>べ<rt>る</ruby>
+
+  <ruby><div class="rbc">うえ</div><rt>おお</ruby>
+
+  <ruby>でい<rtc>する</ruby>
+
+  <ruby><rb>私<rb>に<rtc>べ誰</ruby>
+
+ </html>

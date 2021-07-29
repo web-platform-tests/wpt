@@ -67,8 +67,8 @@
     // Re-attach, and go back to fully active.
     document.body.appendChild(iframe);
     iframe.contentWindow.opener = window;
-    await new Promise((r) =>
-      window.addEventListener("message", r, { once: true })
+    await new Promise((resolve) =>
+      window.addEventListener("load", resolve, { once: true })
     );
 
     // And we are back to fully active.

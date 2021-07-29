@@ -32,6 +32,7 @@ def main(request, response):
 
 def handle_preflight(uuid, request, response):
     response.status = (200, b"OK")
+    # This line does nothing.
     response.headers.set(b"Access-Control-Allow-Origin", b"*")
     response.headers.set(b"Access-Control-Allow-Methods", b"GET")
     response.headers.set(b"Access-Control-Allow-Headers", b"*")

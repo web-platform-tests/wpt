@@ -12,7 +12,6 @@
 <script src="support.js"></script>
 
 <script>
-  // Rewrite http://dev.w3.org/geo/api/test-suite/t.html?00086, 00088, 00091 and 00092
   promise_test(async function () {
     await test_driver.set_permission({ name: "geolocation" }, "granted");
 
@@ -45,7 +44,7 @@
         "watchPosition() on non-fully-active document"
       );
     });
-    is(
+    assert_equals(
       watchError.code,
       GeolocationPositionError.POSITION_UNAVAILABLE,
       "watchPosition() returns an error on non-fully-active document"
@@ -58,7 +57,7 @@
         resolve // We want an error!
       );
     });
-    is(
+    assert_equals(
       positionError.code,
       GeolocationPositionError.POSITION_UNAVAILABLE,
       "getCurrentPosition returns an error on non-fully-active document"

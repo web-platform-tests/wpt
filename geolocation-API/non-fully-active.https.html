@@ -35,14 +35,13 @@
 
     // Try to watch a position while not fully active...
     const watchError = await new Promise((resolve, reject) => {
-      const result = geo.watchPosition(
+      const watchId = geo.watchPosition(
         reject, // We don't want a position
         resolve // We want an error!
       );
-      // Some error value... 0 or less...
-      assert_less_than_equal(
-        result,
-        0,
+      // It returns some browser specific error number.
+      assert_true(
+        Number.isInteger(watchId),
         "watchPosition() on non-fully-active document"
       );
     });
@@ -80,7 +79,7 @@
         reject
       );
     });
-    assert_greater_than_equal(0, "Expected anything greater than -1");
+    assert_true(Number.isInteger(watchId), "Expected some number for watchId");
     ok(position, "Expected a position");
 
     // Finally, let's get the position from the reattached document.

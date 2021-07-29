@@ -35,9 +35,24 @@
         reject, // We don't want a position
         resolve // We want an error!
       );
-      // always return 0.
-      assert_true(0, "watchPosition() on non-fully-active document");
+      // Always return 0.
+      assert_equals(
+        watchId,
+        0,
+        "watchId is 0 when document is not fully-active"
+      );
+      // And again, to make sure it's not changing
+      const watchId2 = geo.watchPosition(
+        () => {},
+        () => {}
+      );
+      assert_equals(
+        watchId2,
+        0,
+        "watchId remains 0 when document is not fully-active"
+      );
     });
+
     assert_equals(
       watchError.code,
       GeolocationPositionError.POSITION_UNAVAILABLE,
@@ -54,7 +69,7 @@
     assert_equals(
       positionError.code,
       GeolocationPositionError.POSITION_UNAVAILABLE,
-      "getCurrentPosition returns an error on non-fully-active document"
+      "getCurrentPosition() calls the errorCallback with POSITION_UNAVAILABLE"
     );
 
     // Re-attach, and go back to fully active.

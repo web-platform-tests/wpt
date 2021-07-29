@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <title>Geolocation Test: non-fully active document</title>
-<link
-  rel="help"
-  href="https://github.com/w3c/geolocation-api/pull/97"
-/>
+<link rel="help" href="https://github.com/w3c/geolocation-api/pull/97" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -38,11 +35,8 @@
         reject, // We don't want a position
         resolve // We want an error!
       );
-      // It returns some browser specific error number.
-      assert_true(
-        Number.isInteger(watchId),
-        "watchPosition() on non-fully-active document"
-      );
+      // always return 0.
+      assert_true(0, "watchPosition() on non-fully-active document");
     });
     assert_equals(
       watchError.code,
@@ -52,7 +46,7 @@
 
     // Now try to get current position while not fully active...
     const positionError = await new Promise((resolve, reject) => {
-      const result = geo.getCurrentPosition(
+      geo.getCurrentPosition(
         reject, // We don't want a position
         resolve // We want an error!
       );

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Ruby Test: rt element dynamically appended into a ruby container (basic)</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-ruby-1/#ruby-display">
+  <link rel="help" href="https://www.w3.org/TR/css-ruby-1/#box-fixup">
+  <link rel="match" href="reference/rt-dynamically-appended-001-ref.html">
+
+  <meta content="" name="flags">
+
+  <!--
+
+  This test was triggered by examination of
+  http://wpt.live/css/css-ruby/block-ruby-004.html
+
+  -->
+
+  <style>
+  body
+    {
+      font-size: 60px;
+    }
+
+  ruby
+    {
+      background-color: lightblue;
+      margin: 200px 0px;
+    }
+
+  /*
+  vertical margins should have *_no_* effect,
+  none whatsoever on a non-replaced inline element.
+  */
+  </style>
+
+  <rt id="to-append">X</rt>
+
+  <ruby id="receiver">bas<rt>T</rt></ruby>
+
+  <script>
+  /* We first create an initial reflow */
+  document.body.getClientRects();
+
+  document.getElementById("receiver").appendChild(document.getElementById("to-append"));
+
+  /* We now force a final reflow */
+  document.getElementById("receiver").offsetHeight;
+  </script>

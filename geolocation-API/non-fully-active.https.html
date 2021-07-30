@@ -19,8 +19,8 @@
     document.body.appendChild(iframe);
 
     // ...wait for the iframe to load...
-    await new Promise((r) =>
-      iframe.addEventListener("load", r, { once: true })
+    await new Promise((resolve) =>
+      iframe.addEventListener("load", resolve, { once: true })
     );
 
     // Steal geolocation.

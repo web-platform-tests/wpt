@@ -12,28 +12,16 @@
   <meta content="" name="flags">
   <meta content="This test checks that an improperly-contained ruby annotation is wrapped in an anonymous ruby container.">
 
-  <!--
-
-  This test was necessary since Chromium 94 and
-  lower do not support rb, rbc and rtc elements.
-
-  This test was triggered by examination of
-  http://wpt.live/css/css-ruby/block-ruby-003.html
-
-  -->
-
   <style>
   ruby
     {
       background-color: lightblue;
       font-size: 40px;
-      line-height: 1;
     }
 
   rbc
     {
       display: ruby-base-container;
-      unicode-bidi: isolate;
     }
   </style>
 

@@ -489,3 +489,51 @@ promise_test(async t => {
   await promise_rejects_js(t, TypeError, reader.closed, 'reader.closed should reject');
 }, 'ReadableStream with byte source: readFully() with 2-element Uint16Array on close()-d stream ' +
    'with 3 byte enqueue()-d must fail');
+
+promise_test(async t => {
+  let pullCount = 0;
+  let controller;
+  const rs = new ReadableStream({
+    type: 'bytes',
+    start: t.step_func((c) => {
+      controller = c;
+    }),
+    pull: t.step_func((c) => {
+      ++pullCount;
+    })
+  });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader({ mode: 'byob' }));
+
+  await Promise.resolve();
+  assert_equals(pullCount, 0, 'pull() must not have been called yet');
+
+  const read1 = reader1.readFully(new Uint8Array(3));
+  const read2 = reader2.read(new Uint8Array(1));
+
+  assert_equals(pullCount, 1, 'pull() must have been called once');
+  const byobRequest1 = controller.byobRequest;
+  assert_equals(byobRequest1.view.byteLength, 3, 'first byobRequest.view.byteLength should be 3');
+  byobRequest1.view[0] = 0x01;
+  byobRequest1.respond(1);
+
+  const result2 = await read2;
+  assert_false(result2.done, 'branch2 first read() should not be done');
+  assert_typed_array_equals(result2.value, new Uint8Array([0x01]), 'branch2 first read() value');
+
+  assert_equals(pullCount, 2, 'pull() must have been called 2 times');
+  const byobRequest2 = controller.byobRequest;
+  assert_equals(byobRequest2.view.byteLength, 2, 'second byobRequest.view.byteLength should be 2');
+  byobRequest2.view[0] = 0x02;
+  byobRequest2.view[1] = 0x03;
+  byobRequest2.respond(2);
+
+  const result1 = await read1;
+  assert_false(result1.done, 'branch1 readFully() should not be done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0x01, 0x02, 0x03]), 'branch1 readFully() value');
+
+  const result3 = await reader2.read(new Uint8Array(2));
+  assert_equals(pullCount, 2, 'pull() must only be called 2 times');
+  assert_false(result3.done, 'branch2 second read() should not be done');
+  assert_typed_array_equals(result3.value, new Uint8Array([0x02, 0x03]), 'branch2 second read() value');
+}, 'ReadableStream with byte source: tee() with readFully() from branch1 and read() from branch2');

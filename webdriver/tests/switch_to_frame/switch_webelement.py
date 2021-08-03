@@ -87,14 +87,12 @@ def test_frame_id_webelement_no_frame_element(session, inline):
 def test_frame_id_webelement_cloned_into_iframe(session, inline, iframe):
     session.url = inline(iframe("<body><p>hello world</p></body>"))
 
-    response = session.execute_script("""
+    session.execute_script("""
             const iframe = document.getElementsByTagName('iframe')[0];
             const div = document.createElement('div');
             div.innerHTML = 'I am a div created in top window and appended into the iframe';
             iframe.contentWindow.document.body.appendChild(div);
-            return 1;
     """)
-    assert_success(response, 1)
 
     frame = session.find.css("iframe", all=False)
     response = switch_to_frame(session, frame)

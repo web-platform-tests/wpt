@@ -5,6 +5,16 @@ import webdriver.protocol as protocol
 from tests.support.asserts import assert_error, assert_success
 
 
+def execute_script(session, script, args=None):
+    if args is None:
+        args = []
+    body = {"script": script, "args": args}
+
+    return session.transport.send(
+        "POST", "/session/{session_id}/execute/sync".format(
+            session_id=session.session_id),
+        body)
+
 def switch_to_frame(session, frame):
     return session.transport.send(
         "POST", "session/{session_id}/frame".format(**vars(session)),
@@ -83,14 +93,17 @@ def test_frame_id_webelement_no_frame_element(session, inline):
     response = switch_to_frame(session, no_frame)
     assert_error(response, "no such frame")
 
-def test_frame_id_webelement_cloned_into_iframe(session, inline):
-    session.url = inline("""
-        <iframe id="iframe"></iframe>
-        <script>
+def test_frame_id_webelement_cloned_into_iframe(session, inline, iframe):
+    session.url = inline(iframe("<body><p>hello world</p></body>"))
+
+    response = execute_script(session, """
+            const iframe = document.getElementsByTagName('iframe')[0];
             const div = document.createElement('div');
             div.innerHTML = 'I am a div created in top window and appended into the iframe';
-            document.getElementById('iframe').contentWindow.document.body.appendChild(div);
-        </script>""")
+            iframe.contentWindow.document.body.appendChild(div);
+            return 1;
+    """)
+    assert_success(response, 1)
 
     frame = session.find.css("iframe", all=False)
     response = switch_to_frame(session, frame)

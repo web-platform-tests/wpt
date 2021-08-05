@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 from lxml import etree
 from utils.misc import downloadWithProgressBar, UnicodeXMLURL, InlineAxisOperatorsURL
@@ -30,7 +30,7 @@ def buildKeyAndValueFrom(characters, form):
     # Concatenate characters and form to build the key.
     key = ""
     for c in characters:
-        key += unichr(c)
+        key += chr(c)
     key += " " + form
     # But save characters as an individual property for easier manipulation in
     # this Python script.
@@ -82,7 +82,7 @@ font = mathfont.create("operators", "Copyright (c) 2019 Igalia S.L.")
 
 # Set parameters for largeop and stretchy tests.
 font.math.DisplayOperatorMinHeight = 2 * mathfont.em
-font.math.MinConnectorOverlap = mathfont.em / 2
+font.math.MinConnectorOverlap = mathfont.em // 2
 
 # Set parameters for accent tests so that we only have large gap when
 # overscript is an accent.
@@ -98,10 +98,10 @@ for key in operatorDictionary:
         if c in font:
             continue
         if c == NonBreakingSpace:
-            g = font.createChar(c)
-            mathfont.drawRectangleGlyph(g, mathfont.em, mathfont.em / 3, 0)
+             g = font.createChar(c)
+             mathfont.drawRectangleGlyph(g, mathfont.em, mathfont.em // 3, 0)
         else:
-            mathfont.createSquareGlyph(font, c)
+             mathfont.createSquareGlyph(font, c)
         mathfont.createStretchy(font, c, c in inlineAxisOperators)
 mathfont.save(font)
 

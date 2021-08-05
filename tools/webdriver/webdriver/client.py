@@ -378,7 +378,7 @@ class Frame(object):
 class ShadowRoot(object):
     identifier = "shadow-6066-11e4-a52e-4f735466cecf"
 
-    def __init__(self, session, id):
+    def __init__(self, id, session):
         """
         Construct a new shadow root representation.
 

@@ -23,7 +23,7 @@ def check_user_prompt_closed_without_exception(session, create_dialog, checkbox_
         response = get_shadow_root(session, element.id)
         value = assert_success(response)
         assert isinstance(value, dict)
-        assert "shadow-075b-4da1-b6ba-e579c2d3230a" in dict
+        assert "shadow-6066-11e4-a52e-4f735466cecf" in dict
 
         assert_dialog_handled(session, expected_text=dialog_type, expected_retval=retval)
 

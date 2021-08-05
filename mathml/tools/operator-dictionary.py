@@ -98,10 +98,10 @@ for key in operatorDictionary:
         if c in font:
             continue
         if c == NonBreakingSpace:
-             g = font.createChar(c)
-             mathfont.drawRectangleGlyph(g, mathfont.em, mathfont.em // 3, 0)
+            g = font.createChar(c)
+            mathfont.drawRectangleGlyph(g, mathfont.em, mathfont.em // 3, 0)
         else:
-             mathfont.createSquareGlyph(font, c)
+            mathfont.createSquareGlyph(font, c)
         mathfont.createStretchy(font, c, c in inlineAxisOperators)
 mathfont.save(font)
 

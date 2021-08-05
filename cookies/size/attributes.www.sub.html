@@ -29,17 +29,56 @@
         defaultPath: false,
       },
       {
-        // This page opens on the www subdomain, so we set domain to {{host}}
-        // to see if anything works as expected.
-        cookie: `test=3; domain=${host}; domain=${"a".repeat(1024)}.com`,
-        expected: "test=3",
-        name: "Too long domain attribute (>1024 bytes) is ignored; previous valid domain wins."
+        cookie: `test=3; path=/cookies/size; path=/${"a".repeat(1023)};`,
+        expected: "",
+        name: "Max size path attribute (==1024 bytes) is not ignored; as expected",
+        defaultPath: false,
       },
       {
-        cookie: `test=4; domain=${"a".repeat(1024)}.com; domain=${host}`,
+        cookie: `test=4; path=/cookies/size; path=/${"a".repeat(1024)};`,
         expected: "test=4",
-        name: "Too long domain attribute (>1024 bytes) is ignored; next valid domain wins."
-      }
+        name: "Too long path attribute (==1025 bytes) is ignored; as expected",
+        defaultPath: false,
+      },
+      {
+        // This page opens on the www subdomain, so we set domain to {{host}}
+        // to see if anything works as expected.
+        cookie: `test=5; domain=${host}; domain=${"a".repeat(1024)}.com`,
+        expected: "test=5",
+        name: "Too long domain attribute (>1024 bytes) is ignored; previous valid domain wins.",
+        location: `http://${host}/cookies/size/attributes.www.sub.html`,
+      },
+      {
+        cookie: `test=6; domain=${"a".repeat(1024)}.com; domain=${host}`,
+        expected: "test=6",
+        name: "Too long domain attribute (>1024 bytes) is ignored; next valid domain wins.",
+        location: `http://${host}/cookies/size/attributes.www.sub.html`,
+      },
+      {
+        cookie: `test=7; domain=${"a".repeat(1020)}.com;`,
+        expected: "",
+        name: "Max size domain attribute (==1024 bytes) is not ignored; as expected"
+      },
+      {
+        cookie: `test=8; domain=${"a".repeat(1021)}.com;`,
+        expected: "test=8",
+        name: "Too long domain attribute (==1025 bytes) is ignored; as expected"
+      },
+      {
+        cookie: cookieStringWithNameAndValueLengths(2048, 2048) +
+          `; domain=${"a".repeat(1020)}.com; domain=${host}`,
+        expected: cookieStringWithNameAndValueLengths(2048, 2048),
+        name: "Set max-size cookie that also has max-size attribute",
+      },
+      {
+        cookie: cookieStringWithNameAndValueLengths(2048, 2048) +
+          `; domain=${"a".repeat(1020)}.com` +
+          `; domain=${"a".repeat(1020)}.com` +
+          `; domain=${"a".repeat(1020)}.com` +
+          `; domain=${"a".repeat(1020)}.com; domain=${host}`,
+        expected: cookieStringWithNameAndValueLengths(2048, 2048),
+        name: "Set max-size cookie with multiple max-size attributes (>8k bytes total)",
+      },
     ];
 
     for (const test of attrSizeTests) {

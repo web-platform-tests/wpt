@@ -39,4 +39,8 @@ sync_access_handle_test(async (testCase, handle) => {
   assert_equals(6, handle.read(readBuffer, {at: 0}));
   assert_array_equals(expected, readBuffer);
 }, 'test SyncAccessHandle.truncate after SyncAccessHandle.write');
+
+sync_access_handle_test(async (testCase, handle) => {
+  assert_throws_js(TypeError, handle.truncate(-1));
+}, 'createSyncAccessHandle.truncate with negative length should fail');
 done();

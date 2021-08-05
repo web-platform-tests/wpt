@@ -35,6 +35,7 @@ errors = {
     "unknown error": 500,
     "unknown method": 405,
     "unsupported operation": 500,
+    "no such shadow root": 404,
 }
 
 

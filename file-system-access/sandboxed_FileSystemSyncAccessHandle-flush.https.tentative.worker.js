@@ -32,7 +32,7 @@ sync_access_handle_test(async (testCase, handle) => {
   const readBuffer = new Uint8Array(4);
   assert_throws_dom(
       'InvalidStateError', () => handle.read(readBuffer, {at: 0}));
-  assert_equals(await flushPromise, undefined);
+  assert_equals(await flushPromise, true);
 },
 'SyncAccessHandle.read fails when there is a pending SyncAccessHandle.flush');
 
@@ -42,7 +42,7 @@ sync_access_handle_test(async (testCase, handle) => {
   writeBuffer.set([96, 97, 98, 99]);
   assert_throws_dom(
       'InvalidStateError', () => handle.write(writeBuffer, {at: 0}));
-  assert_equals(await flushPromise, undefined);
+  assert_equals(await flushPromise, true);
 },
 'SyncAccessHandle.write fails when there is a pending SyncAccessHandle.flush');
 

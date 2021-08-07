@@ -1,8 +1,6 @@
 import asyncio
 import logging
 import os
-import signal
-import sys
 import traceback
 from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional, Tuple
@@ -17,22 +15,24 @@ from aioquic.tls import SessionTicket
 from aioquic.quic.packet import QuicErrorCode
 
 SERVER_NAME = 'webtransport-h3-server'
-logger = logging.getLogger(__name__)
 
-handlers_path = ''
+_logger = None
+_doc_root = ''
 
+"""
+A WebTransport over HTTP/3 server for testing.
+
+The server interprets the underlying protocols (WebTransport, HTTP/3 and QUIC)
+and passes events to a particular webtransport handler. From the standpoint of
+test authors, a webtransport handler is a Python script which contains some
+callback functions. See handler.py for available callbacks.
+"""
 
 class WebTransportH3Protocol(QuicConnectionProtocol):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self._handler: Optional[EventHandler] = None
+        self._handler: Optional[WebTransportEventHandler] = None
         self._http: Optional[H3Connection] = None
-
-        def handle_signal(*_):
-            self.close()
-            sys.exit(0)
-        signal.signal(signal.SIGTERM, handle_signal)
-        signal.signal(signal.SIGINT, handle_signal)
 
     def quic_event_received(self, event: QuicEvent) -> None:
         if isinstance(event, ProtocolNegotiated):
@@ -56,19 +56,21 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
             else:
                 self._send_error_response(event.stream_id, 400)
         elif isinstance(event, WebTransportStreamDataReceived):
-            self._handler.stream_data_received(
-                stream_id=event.stream_id, data=event.data, stream_ended=event.stream_ended)
+            self._handler.stream_data_received(stream_id=event.stream_id,
+                                               data=event.data,
+                                               stream_ended=event.stream_ended)
         elif isinstance(event, DatagramReceived):
             self._handler.datagram_received(data=event.data)
 
     def _send_error_response(self, stream_id: int, status_code: int) -> None:
-        headers = [
-            (b"server", SERVER_NAME.encode()),
-            (b":status", str(status_code).encode())]
-        self._http.send_headers(
-            stream_id=stream_id, headers=headers, end_stream=True)
+        headers = [(b"server", SERVER_NAME.encode()),
+                   (b":status", str(status_code).encode())]
+        self._http.send_headers(stream_id=stream_id,
+                                headers=headers,
+                                end_stream=True)
 
-    def _handshake_webtransport(self, stream_id: int, request_headers: Dict[bytes, bytes]) -> None:
+    def _handshake_webtransport(self, stream_id: int,
+                                request_headers: Dict[bytes, bytes]) -> None:
         authority = request_headers.get(b":authority")
         path = request_headers.get(b":path")
         if authority is None or path is None:
@@ -79,7 +81,9 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         # Create a handler using `:path`.
         try:
             self._handler = self._create_event_handler(
-                session_id=stream_id, path=path, request_headers=request_headers)
+                session_id=stream_id,
+                path=path,
+                request_headers=request_headers)
         except IOError:
             self._send_error_response(stream_id, 404)
             return
@@ -87,34 +91,33 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         response_headers = [
             (b"server", SERVER_NAME.encode()),
         ]
-        self._handler.connect_received(
-            path=path, response_headers=response_headers)
+        self._handler.connect_received(path=path,
+                                       response_headers=response_headers)
 
-        status = any(
-            header[0] == b":status" for header in response_headers)
+        status = any(header[0] == b":status" for header in response_headers)
         if not status:
             response_headers.append((b":status", b"200"))
-        self._http.send_headers(
-            stream_id=stream_id, headers=response_headers)
+        self._http.send_headers(stream_id=stream_id, headers=response_headers)
 
         self._handler.session_established()
 
-    def _create_event_handler(self, session_id: int, path: bytes, request_headers: Dict[bytes, bytes]):
+    def _create_event_handler(self, session_id: int, path: bytes,
+                              request_headers: Dict[bytes, bytes]):
         parsed = urlparse(path.decode())
-        file_path = os.path.join(handlers_path, parsed.path.lstrip('/'))
+        file_path = os.path.join(_doc_root, parsed.path.lstrip('/'))
         callbacks = {"__file__": file_path}
         with open(file_path) as f:
             exec(compile(f.read(), path, "exec"), callbacks)
         session = WebTransportSession(self, session_id, request_headers)
-        return EventHandler(session, callbacks)
+        return WebTransportEventHandler(session, callbacks)
 
 
-class WebTransportSession(object):
+class WebTransportSession:
     """
     A WebTransport session.
     """
-
-    def __init__(self, protocol: WebTransportH3Protocol, session_id: int, request_headers: Dict[bytes, bytes]) -> None:
+    def __init__(self, protocol: WebTransportH3Protocol, session_id: int,
+                 request_headers: Dict[bytes, bytes]) -> None:
         self.session_id = session_id
         self.request_headers = request_headers
 
@@ -122,7 +125,7 @@ class WebTransportSession(object):
         self._http: H3Connection = protocol._http
 
     def stream_is_unidirectional(self, stream_id: int) -> bool:
-        """Returns True if the stream is unidirectional."""
+        """Return True if the stream is unidirectional."""
         return stream_is_unidirectional(stream_id)
 
     def close(self, error_code: int = QuicErrorCode.NO_ERROR) -> None:
@@ -138,7 +141,8 @@ class WebTransportSession(object):
         """
         Create a unidirectional WebTransport stream and return the stream ID.
         """
-        return self._http.create_webtransport_stream(session_id=self.session_id, is_unidirectional=True)
+        return self._http.create_webtransport_stream(
+            session_id=self.session_id, is_unidirectional=True)
 
     def create_bidirectional_stream(self) -> int:
         """
@@ -148,7 +152,10 @@ class WebTransportSession(object):
             session_id=self.session_id, is_unidirectional=False)
         return stream_id
 
-    def send_stream_data(self, stream_id: int, data: bytes, end_stream: bool = False) -> None:
+    def send_stream_data(self,
+                         stream_id: int,
+                         data: bytes,
+                         end_stream: bool = False) -> None:
         """
         Send data on the specific stream.
 
@@ -156,8 +163,9 @@ class WebTransportSession(object):
         :param data: The data to send.
         :param end_stream: If set to True, the stream will be closed.
         """
-        self._http._quic.send_stream_data(
-            stream_id=stream_id, data=data, end_stream=end_stream)
+        self._http._quic.send_stream_data(stream_id=stream_id,
+                                          data=data,
+                                          end_stream=end_stream)
 
     def send_datagram(self, data: bytes) -> None:
         """
@@ -168,8 +176,9 @@ class WebTransportSession(object):
         self._http.send_datagram(flow_id=self.session_id, data=data)
 
 
-class EventHandler(object):
-    def __init__(self, session: WebTransportSession, callbacks: Dict[str, Any]) -> None:
+class WebTransportEventHandler:
+    def __init__(self, session: WebTransportSession,
+                 callbacks: Dict[str, Any]) -> None:
         self._session = session
         self._callbacks = callbacks
 
@@ -179,29 +188,29 @@ class EventHandler(object):
         try:
             self._callbacks[callback_name](*args, **kwargs)
         except Exception as e:
-            logger.warn(str(e))
+            _logger.warn(str(e))
             traceback.print_exc()
 
-    def connect_received(self, path: str, response_headers: List[Tuple[bytes, bytes]]) -> None:
+    def connect_received(self, path: str,
+                         response_headers: List[Tuple[bytes, bytes]]) -> None:
         self._run_callback("connect_received", path, response_headers)
 
     def session_established(self) -> None:
         self._run_callback("session_established", self._session)
 
-    def stream_data_received(self, stream_id: int, data: bytes, stream_ended: bool) -> None:
-        self._run_callback("stream_data_received",
-                           self._session, stream_id, data, stream_ended)
+    def stream_data_received(self, stream_id: int, data: bytes,
+                             stream_ended: bool) -> None:
+        self._run_callback("stream_data_received", self._session, stream_id,
+                           data, stream_ended)
 
     def datagram_received(self, data: bytes) -> None:
-        self._run_callback("datagram_received",
-                           self._session, data)
+        self._run_callback("datagram_received", self._session, data)
 
 
 class SessionTicketStore:
     """
     Simple in-memory store for session tickets.
     """
-
     def __init__(self) -> None:
         self.tickets: Dict[bytes, SessionTicket] = {}
 
@@ -212,36 +221,64 @@ class SessionTicketStore:
         return self.tickets.pop(label, None)
 
 
-def start(**kwargs: Any) -> None:
-    configuration = QuicConfiguration(
-        alpn_protocols=H3_ALPN,
-        is_client=False,
-        max_datagram_frame_size=65536,
-    )
+# TODO(bashi): Consider adding more configuration information, such as
+# providing access to StashServer.
+class WebTransportH3Server:
+    """
+    A WebTransport over HTTP/3 for testing.
 
-    global handlers_path
-    handlers_path = os.path.abspath(os.path.expanduser(
-        kwargs['handlers_path']))
-    logger.info('port = %s', kwargs['port'])
-    logger.info('handlers path = %s', handlers_path)
+    :param host: Host from which to serve.
+    :param port: Port from which to serve.
+    :param doc_root: Document root for serving handlers.
+    :param cert_path: Path to certificate file to use.
+    :param key_path: Path to key file to use.
+    :param logger: a Logger object for this server.
+    """
+    def __init__(self, host: str, port: int, doc_root: str, cert_path: str,
+                 key_path: str, logger: Optional[logging.Logger]) -> None:
+        self.host = host
+        self.port = port
+        self.doc_root = doc_root
+        self.cert_path = cert_path
+        self.key_path = key_path
+        global _logger
+        _logger = logging.getLogger(__name__) if logger is None else logger
 
-    # load SSL certificate and key
-    configuration.load_cert_chain(kwargs['certificate'], kwargs['private_key'])
-
-    ticket_store = SessionTicketStore()
-
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(
-        serve(
-            kwargs['host'],
-            kwargs['port'],
-            configuration=configuration,
-            create_protocol=WebTransportH3Protocol,
-            session_ticket_fetcher=ticket_store.pop,
-            session_ticket_handler=ticket_store.add,
+    def start(self) -> None:
+        """Start the server."""
+        configuration = QuicConfiguration(
+            alpn_protocols=H3_ALPN,
+            is_client=False,
+            max_datagram_frame_size=65536,
         )
-    )
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        pass
+
+        global _doc_root
+        _doc_root = self.doc_root
+        _logger.info("Starting WebTransport over HTTP/3 server on %s:%s",
+                     self.host, self.port)
+
+        # Load SSL certificate and key
+        configuration.load_cert_chain(self.cert_path, self.key_path)
+
+        ticket_store = SessionTicketStore()
+
+        self.loop = asyncio.get_event_loop()
+        self.loop.run_until_complete(
+            serve(
+                self.host,
+                self.port,
+                configuration=configuration,
+                create_protocol=WebTransportH3Protocol,
+                session_ticket_fetcher=ticket_store.pop,
+                session_ticket_handler=ticket_store.add,
+            ))
+        try:
+            self.loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+
+    def stop(self) -> None:
+        """Stop the server."""
+        if self.loop and self.loop.is_running():
+            self.loop.stop()
+        _logger.info("Stopped WebTransport over HTTP/3 server")

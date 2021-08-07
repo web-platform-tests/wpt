@@ -27,6 +27,7 @@ from wptserve import config
 from wptserve.handlers import filesystem_path, wrap_pipeline
 from wptserve.utils import get_port, HTTPException, http2_compatible
 from mod_pywebsocket import standalone as pywebsocket
+from webtransport.h3.webtransport_h3_server import WebTransportH3Server
 
 
 EDIT_HOSTS_HELP = ("Please ensure all the necessary WPT subdomains "
@@ -846,59 +847,17 @@ def start_quic_transport_server(logger, host, port, paths, routes, bind_address,
         startup_failed(logger)
 
 
-class WebTransportH3Daemon(object):
-    def __init__(self, host, port, handlers_path=None, private_key=None, certificate=None, log_level=None):
-        args = ["python3", "wpt", "serve-webtransport-h3"]
-        if host:
-            args += ["--host", host]
-        if port:
-            args += ["--port", str(port)]
-        if private_key:
-            args += ["--private-key", private_key]
-        if certificate:
-            args += ["--certificate", certificate]
-        if handlers_path:
-            args += ["--handlers-path", handlers_path]
-        if log_level == "debug":
-            args += ["--verbose"]
-        self.command = args
-        self.proc = None
-
-    def start(self):
-        def handle_signal(*_):
-            if self.proc:
-                try:
-                    self.proc.terminate()
-                except OSError:
-                    # It's fine if the child already exits.
-                    pass
-                self.proc.wait()
-            sys.exit(0)
-
-        signal.signal(signal.SIGTERM, handle_signal)
-        signal.signal(signal.SIGINT, handle_signal)
-
-        self.proc = subprocess.Popen(self.command)
-        # Give the server a second to start and then check.
-        time.sleep(1)
-        if self.proc.poll():
-            sys.exit(1)
-
-    def stop(self):
-        if self.proc:
-            self.proc.terminate()
-        self.proc = None
-
-
 def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
     try:
-        return WebTransportH3Daemon(host,
-                                    port,
-                                    private_key=config.ssl_config["key_path"],
-                                    certificate=config.ssl_config["cert_path"],
-                                    log_level=config.log_level)
+        return WebTransportH3Server(host=host,
+                                    port=port,
+                                    doc_root=paths["doc_root"],
+                                    cert_path=config.ssl_config["cert_path"],
+                                    key_path=config.ssl_config["key_path"],
+                                    logger=logger)
     except Exception:
-        startup_failed(logger)
+        logger.critical("Failed to start WebTransport over HTTP/3 server")
+        sys.exit(0)
 
 
 def start(logger, config, routes, mp_context, log_handlers, **kwargs):

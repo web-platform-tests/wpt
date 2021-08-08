@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+import threading
 import traceback
 from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional, Tuple
@@ -13,12 +14,6 @@ from aioquic.quic.connection import stream_is_unidirectional
 from aioquic.quic.events import QuicEvent, ProtocolNegotiated
 from aioquic.tls import SessionTicket
 from aioquic.quic.packet import QuicErrorCode
-
-SERVER_NAME = 'webtransport-h3-server'
-
-_logger = None
-_doc_root = ''
-
 """
 A WebTransport over HTTP/3 server for testing.
 
@@ -27,6 +22,12 @@ and passes events to a particular webtransport handler. From the standpoint of
 test authors, a webtransport handler is a Python script which contains some
 callback functions. See handler.py for available callbacks.
 """
+
+SERVER_NAME = 'webtransport-h3-server'
+
+_logger = None
+_doc_root = ''
+
 
 class WebTransportH3Protocol(QuicConnectionProtocol):
     def __init__(self, *args, **kwargs) -> None:
@@ -241,28 +242,35 @@ class WebTransportH3Server:
         self.doc_root = doc_root
         self.cert_path = cert_path
         self.key_path = key_path
+        self.started = False
         global _logger
         _logger = logging.getLogger(__name__) if logger is None else logger
+        global _doc_root
+        _doc_root = self.doc_root
 
     def start(self) -> None:
         """Start the server."""
+        self.server_thread = threading.Thread(
+            target=self._start_on_server_thread, daemon=True)
+        self.server_thread.start()
+        self.started = True
+
+    def _start_on_server_thread(self) -> None:
         configuration = QuicConfiguration(
             alpn_protocols=H3_ALPN,
             is_client=False,
             max_datagram_frame_size=65536,
         )
 
-        global _doc_root
-        _doc_root = self.doc_root
         _logger.info("Starting WebTransport over HTTP/3 server on %s:%s",
                      self.host, self.port)
 
-        # Load SSL certificate and key
         configuration.load_cert_chain(self.cert_path, self.key_path)
 
         ticket_store = SessionTicketStore()
 
-        self.loop = asyncio.get_event_loop()
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
         self.loop.run_until_complete(
             serve(
                 self.host,
@@ -272,13 +280,18 @@ class WebTransportH3Server:
                 session_ticket_fetcher=ticket_store.pop,
                 session_ticket_handler=ticket_store.add,
             ))
-        try:
-            self.loop.run_forever()
-        except KeyboardInterrupt:
-            pass
+        self.loop.run_forever()
 
     def stop(self) -> None:
         """Stop the server."""
-        if self.loop and self.loop.is_running():
-            self.loop.stop()
-        _logger.info("Stopped WebTransport over HTTP/3 server")
+        if self.started:
+            asyncio.run_coroutine_threadsafe(self._stop_on_server_thread(),
+                                             self.loop)
+            self.server_thread.join()
+            self.server_thread = None
+            _logger.info("Stopped WebTransport over HTTP/3 server on %s:%s",
+                         self.host, self.port)
+        self.started = False
+
+    async def _stop_on_server_thread(self) -> None:
+        self.loop.stop()

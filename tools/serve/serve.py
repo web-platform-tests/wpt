@@ -27,7 +27,6 @@ from wptserve import config
 from wptserve.handlers import filesystem_path, wrap_pipeline
 from wptserve.utils import get_port, HTTPException, http2_compatible
 from mod_pywebsocket import standalone as pywebsocket
-from webtransport.h3.webtransport_h3_server import WebTransportH3Server
 
 
 EDIT_HOSTS_HELP = ("Please ensure all the necessary WPT subdomains "
@@ -848,6 +847,9 @@ def start_quic_transport_server(logger, host, port, paths, routes, bind_address,
 
 
 def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+    # TODO(bashi): Move this import at the beginning of the file once aioquic
+    # dependency is added by default.
+    from webtransport.h3.webtransport_h3_server import WebTransportH3Server
     try:
         return WebTransportH3Server(host=host,
                                     port=port,

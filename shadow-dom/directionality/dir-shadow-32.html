@@ -19,6 +19,7 @@ div {border: 1px solid gray; margin: 1em; padding: 0.25em;}
 
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
+<<<<<<< HEAD
   root.innerHTML = `
     <style>
       span {border: 1px solid silver;}
@@ -28,6 +29,9 @@ div {border: 1px solid gray; margin: 1em; padding: 0.25em;}
     </style>
     <span></span>
   `;
+=======
+  root.innerHTML = `<style>span {border: 1px solid silver;}</style><span>RTL</span>`;
+>>>>>>> 1c01f560eb (Updated tests to remove CSS reliance)
   result.innerHTML += getComputedStyle(root.querySelector('span')).direction + '.';
 </script>
 

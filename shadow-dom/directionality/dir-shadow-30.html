@@ -15,13 +15,13 @@ div {border: 1px solid gray; margin: 1em;}
 
 <p>`dir=auto` on a paragraph in the shadow tree, text in the light tree</p>
 <div id="host">
-RTL اختبر
+اختبر
 </div>
 <p id="result">The computed `direction` value for the paragraph is: </p>
 
 <script type="text/javascript">
   let root = host.attachShadow({mode:"open"});
-  root.innerHTML = `<p dir="auto"><slot></slot></p>`;
+  root.innerHTML = `<style>p {width: 50%; border: 1px dotted;}</style><p dir="auto"><slot></slot></p>`;
   result.innerHTML += getComputedStyle(root.querySelector('p')).direction + '.';
 </script>
 

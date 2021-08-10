@@ -59,7 +59,7 @@
       .send();
   }
   function eventLoop() {
-    return new Promise(resolve => setTimeout(resolve, 0));
+    return new Promise(resolve => setTimeout(resolve, 3));
   }
 
   const popup1 = document.querySelector('#p1');

@@ -10,6 +10,7 @@ test(() => {
   assert_equals(blob1.constructor.name, "File");
   assert_equals(blob1.name, "blob");
   assert_equals(blob1.type, "");
+  assert_equals(formData.get("blob-1") === formData.get("blob-1"), true, "should return the same value when get the same blob entry from FormData");
   assert_less_than(Math.abs(blob1.lastModified - Date.now()), 200, "lastModified should be now");
 }, "blob without type");
 

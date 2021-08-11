@@ -19,7 +19,7 @@ def test_no_top_browsing_context(session, closed_window):
 
     session.window_handle = original_handle
     response = get_shadow_root(session, element.id)
-    assert_error(response, "stale element reference")
+    assert_error(response, "no such element")
 
 
 def test_no_browsing_context(session, closed_frame):

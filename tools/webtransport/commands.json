@@ -1,0 +1,12 @@
+{
+  "serve-webtransport-h3": {
+    "path": "serve.py",
+    "script": "run",
+    "parser": "get_parser",
+    "help": "Start the WebTransport over HTTP/3 test server",
+    "virtualenv": true,
+    "requirements": [
+      "requirements.txt"
+    ]
+  }
+}

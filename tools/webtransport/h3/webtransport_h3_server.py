@@ -26,7 +26,7 @@ callback functions. See handler.py for available callbacks.
 SERVER_NAME = 'webtransport-h3-server'
 
 _logger = None
-_doc_root = ''
+_doc_root = ""
 
 
 class WebTransportH3Protocol(QuicConnectionProtocol):

@@ -276,8 +276,6 @@ class TestEnvironment(object):
             for scheme, servers in self.servers.items():
                 if scheme == "quic-transport" or scheme == "webtransport-h3":
                     # TODO(bashi): Find a way to test QUIC's UDP port.
-                    # As a work around, give the server a second to start.
-                    time.sleep(1)
                     continue
                 for port, server in servers:
                     s = socket.socket()

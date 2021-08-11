@@ -846,16 +846,47 @@ def start_quic_transport_server(logger, host, port, paths, routes, bind_address,
         startup_failed(logger)
 
 
+class WebTransportH3Daemon:
+    def __init__(self, host, port, doc_root, config, logger):
+        args = ["python3", "wpt", "serve-webtransport-h3"]
+        args += [
+            "--host",
+            host,
+            "--port",
+            str(port),
+            "--doc-root",
+            doc_root,
+            "--cert-path",
+            config.ssl_config["cert_path"],
+            "--key-path",
+            config.ssl_config["key_path"],
+            "--log-level",
+            logging.getLevelName(logger.level),
+        ]
+        self.command = args
+        self.proc = None
+
+    def start(self):
+        self.proc = subprocess.Popen(self.command)
+        # Give the server a second to start and then check.
+        time.sleep(1)
+        if self.proc.poll():
+            sys.exit(1)
+
+    def stop(self):
+        if self.proc:
+            try:
+                self.proc.terminate()
+            except OSError:
+                pass
+
+
 def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
-    # TODO(bashi): Move this import at the beginning of the file once aioquic
-    # dependency is added by default.
-    from webtransport.h3.webtransport_h3_server import WebTransportH3Server
     try:
-        return WebTransportH3Server(host=host,
+        return WebTransportH3Daemon(host=host,
                                     port=port,
                                     doc_root=paths["doc_root"],
-                                    cert_path=config.ssl_config["cert_path"],
-                                    key_path=config.ssl_config["key_path"],
+                                    config=config,
                                     logger=logger)
     except Exception:
         logger.critical("Failed to start WebTransport over HTTP/3 server")

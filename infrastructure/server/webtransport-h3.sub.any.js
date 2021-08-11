@@ -2,7 +2,8 @@
 // META: script=/common/get-host-info.sub.js
 
 const HOST = get_host_info().ORIGINAL_HOST;
-const PORT = '{{ports[webtransport-h3][0]}}';
+// TODO(bashi): Use port substitutions once the WebTransport server is enabled.
+const PORT = '11000';
 const BASE = `https://${HOST}:${PORT}`;
 
 promise_test(async t => {

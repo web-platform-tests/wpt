@@ -69,7 +69,7 @@ def run(venv: Any, **kwargs: Any) -> None:
                                   doc_root=kwargs["doc_root"],
                                   cert_path=kwargs["cert_path"],
                                   key_path=kwargs["key_path"],
-                                  logger=logging.getLogger())
+                                  logger=logging.getLogger("webtransport-h3"))
     server.start()
 
     try:

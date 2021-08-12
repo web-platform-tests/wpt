@@ -72,7 +72,9 @@ def test_found_element_equivalence(session, get_shadow_page):
 @pytest.mark.parametrize("using,value",
                          [("css selector", "#linkText"),
                           ("link text", "full link text"),
-                          ("partial link text", "link text")])
+                          ("partial link text", "link text"),
+                          ("tag name", "a"),
+                          ("xpath", "//a")])
 def test_find_element(session, get_shadow_page, using, value):
     # Step 8 - 9
     session.url = get_shadow_page("<div><a href=# id=linkText>full link text</a></div>")

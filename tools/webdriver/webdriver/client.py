@@ -786,7 +786,7 @@ class Element(object):
     """
     identifier = "element-6066-11e4-a52e-4f735466cecf"
 
-    def __init__(self, id, session):
+    def __init__(self, session, id):
         """
         Construct a new web element representation.
 
@@ -807,7 +807,7 @@ class Element(object):
     @classmethod
     def from_json(cls, json, session):
         uuid = json[Element.identifier]
-        return cls(uuid, session)
+        return cls(session, uuid)
 
     def send_element_command(self, method, uri, body=None):
         url = "element/%s/%s" % (self.id, uri)

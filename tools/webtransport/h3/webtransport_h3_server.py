@@ -53,7 +53,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
             method = headers.get(b":method")
             protocol = headers.get(b":protocol")
             if method == b"CONNECT" and protocol == b"webtransport":
-                self._handshake_webtransport(event.stream_id, headers)
+                self._handshake_webtransport(event, headers)
             else:
                 self._send_error_response(event.stream_id, 400)
         elif isinstance(event, WebTransportStreamDataReceived):
@@ -70,23 +70,22 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                                 headers=headers,
                                 end_stream=True)
 
-    def _handshake_webtransport(self, stream_id: int,
+    def _handshake_webtransport(self, event: HeadersReceived,
                                 request_headers: Dict[bytes, bytes]) -> None:
-        authority = request_headers.get(b":authority")
         path = request_headers.get(b":path")
-        if authority is None or path is None:
-            # `:authority` and `:path` must be provided.
-            self._send_error_response(stream_id, 400)
+        if path is None:
+            # `:path` must be provided.
+            self._send_error_response(event.stream_id, 400)
             return
 
         # Create a handler using `:path`.
         try:
             self._handler = self._create_event_handler(
-                session_id=stream_id,
+                session_id=event.stream_id,
                 path=path,
-                request_headers=request_headers)
+                request_headers=event.headers)
         except IOError:
-            self._send_error_response(stream_id, 404)
+            self._send_error_response(event.stream_id, 404)
             return
 
         response_headers = [
@@ -98,12 +97,10 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         status = any(header[0] == b":status" for header in response_headers)
         if not status:
             response_headers.append((b":status", b"200"))
-        self._http.send_headers(stream_id=stream_id, headers=response_headers)
-
-        self._handler.session_established()
+        self._http.send_headers(stream_id=event.stream_id, headers=response_headers)
 
     def _create_event_handler(self, session_id: int, path: bytes,
-                              request_headers: Dict[bytes, bytes]):
+                              request_headers: List[Tuple[bytes, bytes]]):
         parsed = urlparse(path.decode())
         file_path = os.path.join(_doc_root, parsed.path.lstrip('/'))
         callbacks = {"__file__": file_path}
@@ -118,7 +115,7 @@ class WebTransportSession:
     A WebTransport session.
     """
     def __init__(self, protocol: WebTransportH3Protocol, session_id: int,
-                 request_headers: Dict[bytes, bytes]) -> None:
+                 request_headers: List[Tuple[bytes, bytes]]) -> None:
         self.session_id = session_id
         self.request_headers = request_headers
 
@@ -129,14 +126,19 @@ class WebTransportSession:
         """Return True if the stream is unidirectional."""
         return stream_is_unidirectional(stream_id)
 
-    def close(self, error_code: int = QuicErrorCode.NO_ERROR) -> None:
+    def close(self,
+              error_code: int = QuicErrorCode.NO_ERROR,
+              reason_phrase: str = "") -> None:
         """
         Close the session.
 
         :param error_code: An error code indicating why the session is
                            being closed.
+        :param reason_phrase: A human readable explanation of why the
+                              session is being closed.
         """
-        self._http._quic.close(error_code=error_code)
+        self._http._quic.close(error_code=error_code,
+                               reason_phrase=reason_phrase)
 
     def create_unidirectional_stream(self) -> int:
         """
@@ -194,10 +196,8 @@ class WebTransportEventHandler:
 
     def connect_received(self, path: str,
                          response_headers: List[Tuple[bytes, bytes]]) -> None:
-        self._run_callback("connect_received", path, response_headers)
-
-    def session_established(self) -> None:
-        self._run_callback("session_established", self._session)
+        self._run_callback("connect_received", self._session, path,
+                           response_headers)
 
     def stream_data_received(self, stream_id: int, data: bytes,
                              stream_ended: bool) -> None:

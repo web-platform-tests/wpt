@@ -25,11 +25,35 @@ def datagram_received(session, data: bytes):
 
 `session` is a `WebTransportSession` object that represents a WebTransport over HTTP/3 session. It provides APIs to handle the session.
 
-### APIs
+### Handler APIs
 
-```eval_rst
-.. toctree::
-   :maxdepth: 1
+#### `connection_received(session, path, response_headers):`
+Called whenever an extended CONNECT method is received.
 
-   docs/handler
-```
+- <b>Parameters</b>
+
+  - <b>session</b>: A WebTransport session object.
+  - <b>path</b>: Value of ``:path`` pseudo header in the CONNECT method.
+  - <b>response_headers</b>: The response headers which will be sent to the peer `:status` is set to 200 when it isn't specified.
+
+---
+
+#### `stream_data_received(session, stream_id, data, stream_ended):`
+Called whenever data is received on a WebTransport stream.
+
+- <b>Parameters</b>
+
+  - <b>session</b>: A WebTransport session object.
+  - <b>stream_id</b>: The ID of the stream.
+  - <b>data</b>: The received data.
+  - <b>stream_ended</b>: Whether the stream is ended.
+
+---
+
+#### `datagram_received(session, data):`
+Called whenever a datagram is received on a WebTransport session.
+
+- <b>Parameters</b>
+
+  - <b>session</b>: A WebTransport session object.
+  - <b>data</b>: The received data.

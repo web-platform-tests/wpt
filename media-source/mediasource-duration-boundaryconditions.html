@@ -47,9 +47,6 @@
 
           DurationBoundaryConditionTest(Math.pow(2, 31) - 1, null, "Set duration to 2^31 - 1");
           DurationBoundaryConditionTest(1, null, "Set duration to 1");
-          DurationBoundaryConditionTest(Number.MAX_VALUE, null, "Set duration to Number.MAX_VALUE");
-          DurationBoundaryConditionTest(Number.MIN_VALUE, null, "Set duration to Number.MIN_VALUE");
-          DurationBoundaryConditionTest(Number.MAX_VALUE - 1, null, "Set duration to Number.MAX_VALUE - 1");
           DurationBoundaryConditionTest(Number.MIN_VALUE - 1, TypeError, "Set duration to Number.MIN_VALUE - 1");
           DurationBoundaryConditionTest(Number.POSITIVE_INFINITY, null, "Set duration to Number.POSITIVE_INFINITY");
           DurationBoundaryConditionTest(Number.NEGATIVE_INFINITY, TypeError, "Set duration to Number.NEGATIVE_INFINITY");

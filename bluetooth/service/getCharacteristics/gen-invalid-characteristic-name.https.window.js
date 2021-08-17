@@ -9,12 +9,9 @@ const expected = new DOMException(
     'Failed to execute \'getCharacteristics\' on ' +
         '\'BluetoothRemoteGATTService\': Invalid Characteristic name: ' +
         '\'wrong_name\'. ' +
-        'It must be a valid UUID alias (e.g. 0x1234), ' +
+        'It must be a valid UUID alias (e.g. 0x1234) or ' +
         'UUID (lowercase hex characters e.g. ' +
-        '\'00001234-0000-1000-8000-00805f9b34fb\'), ' +
-        'or recognized standard name from ' +
-        'https://www.bluetooth.com/specifications/gatt/characteristics' +
-        ' e.g. \'aerobic_heart_rate_lower_limit\'.',
+        '\'00001234-0000-1000-8000-00805f9b34fb\').',
     'TypeError');
 
 bluetooth_test(

@@ -285,8 +285,12 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
             try:
                 handler(request, response)
             except HTTPException as e:
+                self.logger.error("HTTPException in handler: %s" % e)
+                self.logger.error(traceback.format_exc())
                 response.set_error(e.code, str(e))
             except Exception as e:
+                self.logger.error("Exception in handler: %s" % e)
+                self.logger.error(traceback.format_exc())
                 self.respond_with_error(response, e)
         self.logger.debug("%i %s %s (%s) %i" % (response.status[0],
                                                 request.method,

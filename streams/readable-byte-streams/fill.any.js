@@ -199,27 +199,27 @@ promise_test(async t => {
 
   const byobReader = stream.getReader({ mode: 'byob' });
   const result1 = await byobReader.fill(new Uint8Array(8));
-  assert_false(result1.done, 'done');
+  assert_false(result1.done, 'result1.done');
 
   const view1 = result1.value;
-  assert_equals(view1.constructor, Uint8Array, 'value.constructor');
-  assert_equals(view1.buffer.byteLength, 8, 'value.buffer.byteLength');
-  assert_equals(view1.byteOffset, 0, 'value.byteOffset');
-  assert_equals(view1.byteLength, 8, 'value.byteLength');
-  assert_equals(view1[0], 0x01);
+  assert_equals(view1.constructor, Uint8Array, 'result1.value.constructor');
+  assert_equals(view1.buffer.byteLength, 8, 'result1.value.buffer.byteLength');
+  assert_equals(view1.byteOffset, 0, 'result1.value.byteOffset');
+  assert_equals(view1.byteLength, 8, 'result1.value.byteLength');
+  assert_equals(view1[0], 0x01, 'result1.value[0]');
 
   byobReader.releaseLock();
 
   const reader = stream.getReader();
   const result2 = await reader.read();
-  assert_false(result2.done, 'done');
+  assert_false(result2.done, 'result2.done');
 
   const view2 = result2.value;
-  assert_equals(view2.constructor, Uint8Array, 'value.constructor');
-  assert_equals(view2.buffer.byteLength, 16, 'value.buffer.byteLength');
-  assert_equals(view2.byteOffset, 8, 'value.byteOffset');
-  assert_equals(view2.byteLength, 8, 'value.byteLength');
-  assert_equals(view2[0], 0x02);
+  assert_equals(view2.constructor, Uint8Array, 'result2.value.constructor');
+  assert_equals(view2.buffer.byteLength, 16, 'result2.value.buffer.byteLength');
+  assert_equals(view2.byteOffset, 8, 'result2.value.byteOffset');
+  assert_equals(view2.byteLength, 8, 'result2.value.byteLength');
+  assert_equals(view2[0], 0x02, 'result2.value[0]');
 }, 'ReadableStream with byte source: enqueue(), fill() partially, then read()');
 
 promise_test(async () => {
@@ -443,21 +443,21 @@ promise_test(async () => {
   const reader = stream.getReader({ mode: 'byob' });
 
   const result1 = await reader.fill(new Uint8Array(8));
-  assert_false(result1.done, 'done');
+  assert_false(result1.done, 'result1.done');
 
   const view1 = result1.value;
-  assert_equals(view1.byteOffset, 0);
-  assert_equals(view1.byteLength, 8);
-  assert_equals(view1[7], 0x01);
+  assert_equals(view1.byteOffset, 0, 'result1.value.byteOffset');
+  assert_equals(view1.byteLength, 8, 'result1.value.byteLength');
+  assert_equals(view1[7], 0x01, 'result1.value[7]');
 
   const result2 = await reader.fill(new Uint8Array(8));
   assert_false(pullCalled, 'pull() must not have been called');
-  assert_false(result2.done, 'done');
+  assert_false(result2.done, 'result2.done');
 
   const view2 = result2.value;
-  assert_equals(view2.byteOffset, 0);
-  assert_equals(view2.byteLength, 8);
-  assert_equals(view2[7], 0x02);
+  assert_equals(view2.byteOffset, 0, 'result2.value.byteOffset');
+  assert_equals(view2.byteLength, 8, 'result2.value.byteLength');
+  assert_equals(view2[7], 0x02, 'result2.value[7]');
 }, 'ReadableStream with byte source: enqueue(), then fill() with smaller views');
 
 promise_test(async t => {

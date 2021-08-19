@@ -492,8 +492,27 @@ promise_test(async t => {
 
   await promise_rejects_js(t, TypeError, reader.fill(new Uint16Array(2)), 'fill() must fail');
   await promise_rejects_js(t, TypeError, reader.closed, 'reader.closed should reject');
-}, 'ReadableStream with byte source: fill() with 2-element Uint16Array on close()-d stream ' +
-   'with 3 byte enqueue()-d must fail');
+}, 'ReadableStream with byte source: 3 byte enqueue(), then close(), then fill() with 2-element Uint16Array must fail');
+
+promise_test(async t => {
+  let controller;
+  const stream = new ReadableStream({
+    start(c) {
+      controller = c;
+    },
+    pull: t.unreached_func('pull() should not be called'),
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+  const fillPromise = reader.fill(new Uint16Array(2));
+
+  controller.enqueue(new Uint8Array([0xaa, 0xbb, 0xcc]));
+  assert_throws_js(TypeError, () => controller.close(), 'controller.close() must throw');
+
+  await promise_rejects_js(t, TypeError, fillPromise, 'fill(view) must fail');
+  await promise_rejects_js(t, TypeError, reader.closed, 'reader.closed must reject');
+}, 'ReadableStream with byte source: fill() with 2-element Uint16Array, then 3 byte enqueue(), then close() must fail');
 
 promise_test(async t => {
   let pullCount = 0;

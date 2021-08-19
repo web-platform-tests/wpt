@@ -91,12 +91,11 @@ promise_test(async t => {
 
 promise_test(async t => {
   let pullCount = 0;
-  let controller;
   const byobRequests = [];
   const rs = new ReadableStream({
     type: 'bytes',
     start: t.step_func((c) => {
-      controller = c;
+      c.enqueue(new Uint8Array([0x01]));
     }),
     pull: t.step_func((c) => {
       const byobRequest = c.byobRequest;
@@ -115,8 +114,6 @@ promise_test(async t => {
     })
   });
   const reader = rs.getReader({ mode: 'byob' });
-
-  controller.enqueue(new Uint8Array([0x01]));
 
   const result = await reader.fill(new Uint8Array(3));
   assert_false(result.done, 'first result should not be done');
@@ -226,17 +223,12 @@ promise_test(async t => {
 }, 'ReadableStream with byte source: enqueue(), fill() partially, then read()');
 
 promise_test(async () => {
-  let controller;
-
   let pullCount = 0;
   const byobRequestDefined = [];
   let byobRequestViewDefined;
 
   const stream = new ReadableStream({
-    start(c) {
-      controller = c;
-    },
-    async pull() {
+    async pull(controller) {
       byobRequestDefined.push(controller.byobRequest !== null);
       const initialByobRequest = controller.byobRequest;
 
@@ -363,12 +355,7 @@ promise_test(t => {
 
   const passedReason = new TypeError('foo');
 
-  let controller;
-
   const stream = new ReadableStream({
-    start(c) {
-      controller = c;
-    },
     pull: t.unreached_func('pull() should not be called'),
     cancel(r) {
       if (cancelCount === 0) {

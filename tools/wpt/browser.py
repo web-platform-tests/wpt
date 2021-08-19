@@ -745,6 +745,10 @@ class Chrome(Browser):
             os.chmod(existing_binary_path, stat.S_IWUSR)
             os.remove(existing_binary_path)
 
+        # Pinned Chrome to 93.0.4577.18 TODO(kyle).
+        # See https://github.com/web-platform-tests/wpt/issues/30090.
+        version = "93.0.4577.18"
+
         url = self._latest_chromedriver_url(version) if version \
             else self._chromium_chromedriver_url(None)
         self.logger.info("Downloading ChromeDriver from %s" % url)

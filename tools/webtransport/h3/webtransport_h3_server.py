@@ -91,13 +91,16 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         response_headers = [
             (b"server", SERVER_NAME.encode()),
         ]
-        self._handler.connect_received(path=path,
-                                       response_headers=response_headers)
+        self._handler.connect_received(response_headers=response_headers)
 
         status = any(header[0] == b":status" for header in response_headers)
         if not status:
             response_headers.append((b":status", b"200"))
-        self._http.send_headers(stream_id=event.stream_id, headers=response_headers)
+        self._http.send_headers(stream_id=event.stream_id,
+                                headers=response_headers)
+
+        if not status or status[1] == b"200":
+            self._handler.session_established()
 
     def _create_event_handler(self, session_id: int, path: bytes,
                               request_headers: List[Tuple[bytes, bytes]]):
@@ -194,10 +197,13 @@ class WebTransportEventHandler:
             _logger.warn(str(e))
             traceback.print_exc()
 
-    def connect_received(self, path: str,
-                         response_headers: List[Tuple[bytes, bytes]]) -> None:
-        self._run_callback("connect_received", self._session, path,
+    def connect_received(self, response_headers: List[Tuple[bytes,
+                                                            bytes]]) -> None:
+        self._run_callback("connect_received", self._session.request_headers,
                            response_headers)
+
+    def session_established(self) -> None:
+        self._run_callback("session_established", self._session)
 
     def stream_data_received(self, stream_id: int, data: bytes,
                              stream_ended: bool) -> None:

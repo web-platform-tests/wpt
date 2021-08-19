@@ -5,17 +5,24 @@ from .webtransport_h3_server import WebTransportSession
 # This file exists for documentation purpose.
 
 
-def connect_received(session: WebTransportSession, path: str,
+def connect_received(request_headers: List[Tuple[bytes, bytes]],
                      response_headers: List[Tuple[bytes, bytes]]) -> None:
     """
     Called whenever an extended CONNECT method is received.
 
-    :param session: A WebTransport session object.
-    :param path: Value of ``:path`` pseudo header in the CONNECT method.
+    :param request_headers: The request headers received from the peer.
     :param response_headers: The response headers which will be sent to the peer. ``:status`` is set
                              to 200 when it isn't specified.
     """
     pass
+
+
+def session_established(session: WebTransportSession) -> None:
+    """
+    Called whenever an WebTransport session is established.
+
+    :param session: A WebTransport session object.
+    """
 
 
 def stream_data_received(session: WebTransportSession, stream_id: int,

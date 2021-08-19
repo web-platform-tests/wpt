@@ -27,14 +27,22 @@ def datagram_received(session, data: bytes):
 
 ### Handler APIs
 
-#### `connection_received(session, path, response_headers):`
+#### `connection_received(request_headers, response_headers):`
 Called whenever an extended CONNECT method is received.
 
 - <b>Parameters</b>
 
-  - <b>session</b>: A WebTransport session object.
-  - <b>path</b>: Value of ``:path`` pseudo header in the CONNECT method.
+  - <b>request_headers</b>: The request headers received from the peer.
   - <b>response_headers</b>: The response headers which will be sent to the peer `:status` is set to 200 when it isn't specified.
+
+---
+
+#### `session_established(session):`
+Called whenever a WebTransport session is established.
+
+- <b>Parameters</b>
+
+  - <b>session</b>: A WebTransport session object.
 
 ---
 

@@ -228,15 +228,15 @@ promise_test(async () => {
   let byobRequestViewDefined;
 
   const stream = new ReadableStream({
-    async pull(controller) {
-      byobRequestDefined.push(controller.byobRequest !== null);
-      const initialByobRequest = controller.byobRequest;
+    async pull(c) {
+      byobRequestDefined.push(c.byobRequest !== null);
+      const initialByobRequest = c.byobRequest;
 
-      const transferredView = await transferArrayBufferView(controller.byobRequest.view);
+      const transferredView = await transferArrayBufferView(c.byobRequest.view);
       transferredView[0] = 0x01;
-      controller.byobRequest.respondWithNewView(transferredView);
+      c.byobRequest.respondWithNewView(transferredView);
 
-      byobRequestDefined.push(controller.byobRequest !== null);
+      byobRequestDefined.push(c.byobRequest !== null);
       byobRequestViewDefined = initialByobRequest.view !== null;
 
       ++pullCount;

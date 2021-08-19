@@ -256,6 +256,24 @@ promise_test(async () => {
 }, 'ReadableStream with byte source: fill(), then respondWithNewView() with a transferred ArrayBuffer');
 
 promise_test(async t => {
+  const stream = new ReadableStream({
+    start(c) {
+      c.close();
+    },
+    pull: t.unreached_func('pull() should not be called'),
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+
+  const result = await reader.fill(new Uint8Array([0x01]));
+  assert_true(result.done, 'result.done');
+  assert_typed_array_equals(result.value, new Uint8Array([0x01]).subarray(0, 0), 'result.value');
+
+  await reader.closed;
+}, 'ReadableStream with byte source: fill() on a closed stream');
+
+promise_test(async t => {
   let pullCount = 0;
   const rs = new ReadableStream({
     type: 'bytes',

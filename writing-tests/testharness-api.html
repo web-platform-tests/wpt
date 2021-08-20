@@ -189,7 +189,7 @@ code in Promise “executor” functions to only track asynchronous operations</
 place fallible assertion code in subsequent reaction handlers.</p>
 <p>For example, instead of</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(</span><span class="nx">t</span> <span class="p">=&gt;</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="ow">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="p">{</span>
     <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="nx">event</span> <span class="p">=&gt;</span> <span class="p">{</span>
       <span class="nx">assert_true</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span> <span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
       <span class="nx">resolve</span><span class="p">();</span>
@@ -200,7 +200,7 @@ place fallible assertion code in subsequent reaction handlers.</p>
 </div>
 <p>Try,</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_test</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="ow">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="p">{</span>
     <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">resolve</span><span class="p">);</span>
   <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">event</span> <span class="p">=&gt;</span> <span class="p">{</span>
     <span class="nx">assert_true</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span> <span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
@@ -218,7 +218,7 @@ starts.</p>
 <p><code class="docutils literal notranslate"><span class="pre">promise_rejects_dom</span></code>, <code class="docutils literal notranslate"><span class="pre">promise_rejects_js</span></code>, and <code class="docutils literal notranslate"><span class="pre">promise_rejects_exactly</span></code> can
 be used to test Promises that need to reject:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">promise_rejects_dom</span><span class="p">(</span><span class="nx">test_object</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span>
-<span class="nx">promise_rejects_js</span><span class="p">(</span><span class="nx">test_object</span><span class="p">,</span> <span class="nx">constructor</span><span class="p">,</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span>
+<span class="nx">promise_rejects_js</span><span class="p">(</span><span class="nx">test_object</span><span class="p">,</span> <span class="kr">constructor</span><span class="p">,</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span>
 <span class="nx">promise_rejects_exactly</span><span class="p">(</span><span class="nx">test_object</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">description</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -228,11 +228,11 @@ argument to the <code class="docutils literal notranslate"><span class="pre">ass
 <p>Here’s an example where the <code class="docutils literal notranslate"><span class="pre">bar()</span></code> function returns a Promise that rejects
 with a TypeError:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nx">TypeError</span><span class="p">());</span>
+  <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="ow">new</span> <span class="ne">TypeError</span><span class="p">());</span>
 <span class="p">}</span>
 
 <span class="nx">promise_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nx">promise_rejects_js</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">TypeError</span><span class="p">,</span> <span class="nx">bar</span><span class="p">());</span>
+  <span class="k">return</span> <span class="nx">promise_rejects_js</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="nx">bar</span><span class="p">());</span>
 <span class="p">},</span> <span class="s2">&quot;Another example&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -246,7 +246,7 @@ of events, including ensuring that unexpected events are not fired at any point.
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">t</span> <span class="o">=</span> <span class="nx">async_test</span><span class="p">(</span><span class="s2">&quot;Event order on animation start&quot;</span><span class="p">);</span>
 
 <span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">watchedNode</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">()[</span><span class="mf">0</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">eventWatcher</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">EventWatcher</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">watchedNode</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;animationstart&#39;</span><span class="p">,</span>
+<span class="kd">var</span> <span class="nx">eventWatcher</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">EventWatcher</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">watchedNode</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;animationstart&#39;</span><span class="p">,</span>
                                                      <span class="s1">&#39;animationiteration&#39;</span><span class="p">,</span>
                                                      <span class="s1">&#39;animationend&#39;</span><span class="p">]);</span>
 
@@ -338,7 +338,7 @@ leftover; see the <a class="reference external" href="https://github.com/web-pla
 <code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code></a>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">assert_implements_optional</span></code> can also be used during test setup. For example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">setup</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-  <span class="nx">assert_implements_optional</span><span class="p">(</span><span class="s2">&quot;optionalfeature&quot;</span> <span class="k">in</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span>
+  <span class="nx">assert_implements_optional</span><span class="p">(</span><span class="s2">&quot;optionalfeature&quot;</span> <span class="ow">in</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span>
                              <span class="s2">&quot;&#39;optionalfeature&#39; event supported&quot;</span><span class="p">);</span>
 <span class="p">});</span>
 <span class="nx">async_test</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="cm">/* test #1 waiting for &quot;optionalfeature&quot; event */</span> <span class="p">});</span>
@@ -746,7 +746,7 @@ event and don’t require an explicit <code class="docutils literal notranslate"
 <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;log&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 
-<span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker.js&quot;</span><span class="p">));</span>
+<span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="ow">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker.js&quot;</span><span class="p">));</span>
 
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
@@ -761,8 +761,8 @@ behaves as if those tests were running in the containing document itself.</p>
 tests have completed. This is useful if you’re importing tests from multiple
 workers and want to ensure they run in series:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="k">async</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">await</span> <span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-1.js&quot;</span><span class="p">));</span>
-  <span class="k">await</span> <span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-2.js&quot;</span><span class="p">));</span>
+  <span class="k">await</span> <span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="ow">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-1.js&quot;</span><span class="p">));</span>
+  <span class="k">await</span> <span class="nx">fetch_tests_from_worker</span><span class="p">(</span><span class="ow">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="s2">&quot;worker-2.js&quot;</span><span class="p">));</span>
 <span class="p">})();</span>
 </pre></div>
 </div>

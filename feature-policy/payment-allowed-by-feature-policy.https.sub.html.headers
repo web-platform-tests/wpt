@@ -1,1 +1,2 @@
 Feature-Policy: payment *
+Permissions-Policy: payment=self

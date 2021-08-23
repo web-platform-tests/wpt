@@ -93,19 +93,23 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         ]
         self._handler.connect_received(response_headers=response_headers)
 
-        status = any(header[0] == b":status" for header in response_headers)
-        if not status:
+        status_code = None
+        for name, value in response_headers:
+            if name == b":status":
+                status_code = value
+                break
+        if not status_code:
             response_headers.append((b":status", b"200"))
         self._http.send_headers(stream_id=event.stream_id,
                                 headers=response_headers)
 
-        if not status or status[1] == b"200":
+        if status_code is None or status_code == b"200":
             self._handler.session_established()
 
     def _create_event_handler(self, session_id: int, path: bytes,
                               request_headers: List[Tuple[bytes, bytes]]):
         parsed = urlparse(path.decode())
-        file_path = os.path.join(_doc_root, parsed.path.lstrip('/'))
+        file_path = os.path.join(_doc_root, parsed.path.lstrip("/"))
         callbacks = {"__file__": file_path}
         with open(file_path) as f:
             exec(compile(f.read(), path, "exec"), callbacks)

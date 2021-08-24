@@ -1,7 +1,7 @@
 // getDefaultPathCookies is a helper method to get and delete cookies on the
 // "default path" (which for these tests will be at `/cookies/resources`),
 // determined by the path portion of the request-uri.
-async function getDefaultPathCookies(path = '/cookies/resources') {
+async function getDefaultPathCookies(expected, path = '/cookies/resources') {
   return new Promise((resolve, reject) => {
     try {
       const iframe = document.createElement('iframe');
@@ -11,7 +11,13 @@ async function getDefaultPathCookies(path = '/cookies/resources') {
       iframe.addEventListener('load', (e) => {
         const win = e.target.contentWindow;
         const iframeCookies = win.getCookies();
-        win.expireCookie('test', path);
+        // clear empty cookie
+        win.expireCookie("", path);
+        // clear every other expected cookie by splitting the expectation on ; and ,
+        expected.split(/[;,]/).forEach(cookie => {
+          // find the name before the value by splitting on =
+          win.expireCookie(cookie.split("=")[0].trim(), path);
+        });
         resolve(iframeCookies);
       }, {once: true});
 
@@ -67,6 +73,9 @@ async function getRedirectedCookies(location, cookie) {
 // `cookie` may be a single cookie string, or an array of cookie strings, where
 // the order of the array items represents the order of the Set-Cookie headers
 // sent by the server.
+//
+// Note: this function has a dependency on testdriver.js. Any test files calling
+// it should include testdriver.js and testdriver-vendor.js
 function httpCookieTest(cookie, expectedValue, name, defaultPath = true) {
   return promise_test(async (t) => {
     let encodedCookie = encodeURIComponent(JSON.stringify(cookie));
@@ -76,20 +85,23 @@ function httpCookieTest(cookie, expectedValue, name, defaultPath = true) {
       // for the tests where a Path is set from the request-uri
       // path, we need to go look for cookies in an iframe at that
       // default path.
-      cookies = await getDefaultPathCookies();
+      cookies = await getDefaultPathCookies(expectedValue);
     }
     if (Boolean(expectedValue)) {
       assert_equals(cookies, expectedValue, 'The cookie was set as expected.');
     } else {
       assert_equals(cookies, expectedValue, 'The cookie was rejected.');
     }
-    await fetch(`/cookies/resources/cookie.py?drop=${encodedCookie}`);
+    await test_driver.delete_all_cookies();
   }, name);
 }
 
 // This is a variation on httpCookieTest, where a redirect happens via
 // the Location header and we check to see if cookies are sent via
 // getRedirectedCookies
+//
+// Note: this function has a dependency on testdriver.js. Any test files calling
+// it should include testdriver.js and testdriver-vendor.js
 function httpRedirectCookieTest(cookie, expectedValue, name, location) {
   return promise_test(async (t) => {
     const encodedCookie = encodeURIComponent(JSON.stringify(cookie));
@@ -104,34 +116,25 @@ function httpRedirectCookieTest(cookie, expectedValue, name, location) {
     } else {
       assert_equals(cookies, expectedValue, 'The cookie was rejected.');
     }
-    await fetch(`/cookies/resources/cookie.py?drop=${encodedCookie}`);
+    await test_driver.delete_all_cookies();
   }, name);
-}
-
-// Cleans up all cookies accessible via document.cookie. This will not clean up
-// any HttpOnly cookies.
-function dropAllDomCookies() {
-  let cookies = document.cookie.split('; ');
-  for (const cookie of cookies) {
-    if (!Boolean(cookie))
-      continue;
-    document.cookie = `${cookie}; expires=01 Jan 1970 00:00:00 GMT`;
-  }
-  assert_equals(document.cookie, '', 'All DOM cookies were dropped.');
 }
 
 // Sets a `cookie` via the DOM, checks it against `expectedValue` via the DOM,
 // then cleans it up via the DOM. This is needed in cases where going through
 // HTTP headers may modify the cookie line (e.g. by stripping control
 // characters).
+//
+// Note: this function has a dependency on testdriver.js. Any test files calling
+// it should include testdriver.js and testdriver-vendor.js
 function domCookieTest(cookie, expectedValue, name) {
   return promise_test(async (t) => {
     document.cookie = cookie;
     let cookies = document.cookie;
-    t.add_cleanup(dropAllDomCookies);
     assert_equals(cookies, expectedValue, Boolean(expectedValue) ?
                                           'The cookie was set as expected.' :
                                           'The cookie was rejected.');
+    await test_driver.delete_all_cookies();
   }, name);
 }
 

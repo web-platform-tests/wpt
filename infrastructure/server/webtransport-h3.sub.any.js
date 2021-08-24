@@ -20,7 +20,7 @@ promise_test(async t => {
     writer.releaseLock();
 
     const reader = stream.readable.getReader();
-    const { done, value } = await reader.read();
+    const { value } = await reader.read();
     const reply = decoder.decode(value);
 
     assert_equals(reply, "Hello");

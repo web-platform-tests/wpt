@@ -1,6 +1,6 @@
-# WebTransport in web-platform-test
+# WebTransport in web-platform-tests
 
-This document describes [WebTransport](https://datatracker.ietf.org/wg/webtrans/documents/) support in web-platform-test.
+This document describes [WebTransport](https://datatracker.ietf.org/wg/webtrans/documents/) support in web-platform-tests.
 
 ## WebTransport over HTTP/3
 `tools/webtransport` provides a simple
@@ -10,7 +10,7 @@ This document describes [WebTransport](https://datatracker.ietf.org/wg/webtrans/
 
 A WebTransport handler is a python script which contains callback functions. Callback functions are called every time a WebTransport event happens. Definitions of all callback can be found the [APIs section](#APIs).
 
-The follwoing is an example handler which echos back received data.
+The following is an example handler which echos back received data.
 
 ```python
 def stream_data_received(session, stream_id: int, data: bytes, stream_ended: bool):
@@ -27,7 +27,7 @@ def datagram_received(session, data: bytes):
 
 ### Handler APIs
 
-#### `connection_received(request_headers, response_headers):`
+#### `connection_received(request_headers, response_headers)`
 Called whenever an extended CONNECT method is received.
 
 - <b>Parameters</b>
@@ -37,7 +37,7 @@ Called whenever an extended CONNECT method is received.
 
 ---
 
-#### `session_established(session):`
+#### `session_established(session)`
 Called whenever a WebTransport session is established.
 
 - <b>Parameters</b>
@@ -46,7 +46,7 @@ Called whenever a WebTransport session is established.
 
 ---
 
-#### `stream_data_received(session, stream_id, data, stream_ended):`
+#### `stream_data_received(session, stream_id, data, stream_ended)`
 Called whenever data is received on a WebTransport stream.
 
 - <b>Parameters</b>
@@ -58,7 +58,7 @@ Called whenever data is received on a WebTransport stream.
 
 ---
 
-#### `datagram_received(session, data):`
+#### `datagram_received(session, data)`
 Called whenever a datagram is received on a WebTransport session.
 
 - <b>Parameters</b>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Text Test: text-align - match-parent on the root element</title>
+<link rel="help" href="https://drafts.csswg.org/css-text/#valdef-text-align-match-parent">
+<meta name="assert" content="'text-align: match-parent' on the root element with 'direction: rtl' should compute to 'right'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  html {
+    text-align: -webkit-match-parent;
+    text-align: match-parent;
+    direction: rtl;
+  }
+  #log {
+  	direction: ltr;
+  	text-align: start;
+  }
+</style>
+<div id="log"></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(document.documentElement).textAlign, 'right');
+  });
+</script>

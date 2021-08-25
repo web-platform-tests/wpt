@@ -56,7 +56,6 @@ promise_test(async (t) => {
   await test_driver.bless();
   const acceptPromise = request.show(); // Sets state to "interactive"
 
-  // No user activation...
   await promise_rejects_dom(t, "InvalidStateError", request.show());
 
   // With user activation, but already showing the sheet...

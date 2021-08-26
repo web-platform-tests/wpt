@@ -326,9 +326,14 @@ class Window(object):
     @command
     def size(self, new_size):
         """Set window size by passing a tuple of `(width, height)`."""
-        width, height = new_size
-        body = {"width": width, "height": height}
-        self.session.send_session_command("POST", "window/rect", body)
+        try:
+            width, height = new_size
+            body = {"width": width, "height": height}
+            self.session.send_session_command("POST", "window/rect", body)
+        except (error.UnknownErrorException, error.InvalidArgumentException):
+            # silently ignore this error as the command is not implemented
+            # for Android. Revert this once it is implemented.
+            pass
 
     @property  # type: ignore
     @command
@@ -341,9 +346,14 @@ class Window(object):
     @command
     def position(self, new_position):
         """Set window position by passing a tuple of `(x, y)`."""
-        x, y = new_position
-        body = {"x": x, "y": y}
-        self.session.send_session_command("POST", "window/rect", body)
+        try:
+            x, y = new_position
+            body = {"x": x, "y": y}
+            self.session.send_session_command("POST", "window/rect", body)
+        except error.UnknownErrorException:
+            # silently ignore this error as the command is not implemented
+            # for Android. Revert this once it is implemented.
+            pass
 
     @command
     def maximize(self):
@@ -376,7 +386,7 @@ class Frame(object):
 
 
 class ShadowRoot(object):
-    identifier = "shadow-075b-4da1-b6ba-e579c2d3230a"
+    identifier = "shadow-6066-11e4-a52e-4f735466cecf"
 
     def __init__(self, session, id):
         """
@@ -392,7 +402,7 @@ class ShadowRoot(object):
     @classmethod
     def from_json(cls, json, session):
         uuid = json[ShadowRoot.identifier]
-        return cls(uuid, session)
+        return cls(session, uuid)
 
     def send_shadow_command(self, method, uri, body=None):
         url = "shadow/{}/{}".format(self.id, uri)

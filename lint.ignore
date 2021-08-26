@@ -1,4 +1,4 @@
-# File containing whiteslist for lint errors
+# File containing allowlist for lint errors
 # Format is:
 # ERROR TYPE:file/name/pattern[:line number]
 # e.g.
@@ -165,7 +165,6 @@ SET TIMEOUT: html/cross-origin-embedder-policy/credentialless/resources/dispatch
 SET TIMEOUT: html/editing/dnd/*
 SET TIMEOUT: html/semantics/embedded-content/the-iframe-element/*
 SET TIMEOUT: html/semantics/embedded-content/the-img-element/*
-SET TIMEOUT: html/semantics/interactive-elements/the-popup-element/popup-light-dismiss.tentative.html
 SET TIMEOUT: html/semantics/scripting-1/the-script-element/*
 SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/0*
 SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/resources/history-frame.html
@@ -178,6 +177,7 @@ SET TIMEOUT: IndexedDB/*
 SET TIMEOUT: infrastructure/*
 SET TIMEOUT: intersection-observer/resources/*
 SET TIMEOUT: intersection-observer/target-in-different-window.html
+SET TIMEOUT: js-self-profiling/resources/profiling-script.js
 SET TIMEOUT: measure-memory/*
 SET TIMEOUT: media-source/mediasource-util.js
 SET TIMEOUT: media-source/URL-createObjectURL-revoke.html
@@ -189,6 +189,8 @@ SET TIMEOUT: portals/resources/portals-adopt-predecessor-portal.html
 SET TIMEOUT: preload/single-download-preload.html
 SET TIMEOUT: resize-observer/resources/iframe.html
 SET TIMEOUT: resource-timing/resources/nested-contexts.js
+SET TIMEOUT: reporting/resources/first-csp-report.https.sub.html
+SET TIMEOUT: reporting/resources/second-csp-report.https.sub.html
 SET TIMEOUT: secure-contexts/basic-popup-and-iframe-tests.https.js
 SET TIMEOUT: service-workers/cache-storage/script-tests/cache-abort.js
 SET TIMEOUT: service-workers/service-worker/activation.https.html
@@ -742,16 +744,14 @@ MISSING DEPENDENCY: resources/chromium/mock-facedetection.js
 MISSING DEPENDENCY: resources/chromium/mock-idle-detection.js
 MISSING DEPENDENCY: resources/chromium/mock-imagecapture.js
 MISSING DEPENDENCY: resources/chromium/mock-managed-config.js
-MISSING DEPENDENCY: resources/chromium/mock-screenenumeration.js
 MISSING DEPENDENCY: resources/chromium/mock-textdetection.js
 MISSING DEPENDENCY: resources/chromium/nfc-mock.js
 MISSING DEPENDENCY: resources/chromium/webxr-test.js
 
 # Tests that are false positives for using Ahem as a system font
 AHEM SYSTEM FONT: acid/acid3/test.html
-AHEM SYSTEM FONT: resource-timing/entry-attributes.html
 AHEM SYSTEM FONT: resource-timing/font-timestamps.html
-AHEM SYSTEM FONT: resource-timing/resources/all_resource_types.html
+AHEM SYSTEM FONT: resource-timing/initiator-type/style.html
 AHEM SYSTEM FONT: resource-timing/resources/iframe-reload-TAO.sub.html
 AHEM SYSTEM FONT: html/canvas/element/drawing-text-to-the-canvas/2d.text.measure.fontBoundingBox.ahem.html
 AHEM SYSTEM FONT: css/css-font-loading/fontface-override-descriptors.html

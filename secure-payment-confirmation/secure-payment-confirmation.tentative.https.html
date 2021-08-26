@@ -18,8 +18,8 @@ test(() => {
        // All valid parameters.
        action: 'authenticate',
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-       networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+       payeeOrigin: window.location.origin,
        timeout: 60000,
        instrument: {
         displayName: 'X',
@@ -35,8 +35,8 @@ test(() => {
     data: {
        // Omitted action field.
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-       networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+       payeeOrigin: window.location.origin,
        timeout: 60000,
        instrument: {
          displayName: 'X',
@@ -52,8 +52,8 @@ test(() => {
     data: {
        action: 'authenticate',
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-       networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+       payeeOrigin: window.location.origin,
        // Omitted timeout field.
        instrument: {
          displayName: 'X',
@@ -70,8 +70,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -89,8 +89,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -108,8 +108,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -127,8 +127,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -146,8 +146,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -165,8 +165,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -185,8 +185,8 @@ test(() => {
         // Invalid action parameter.
         action: 'authorize',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -204,8 +204,8 @@ test(() => {
       data: {
         action: 'authenticate',
         // Omitted credentialIds field.
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -223,7 +223,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        // Omitted networkData and challenge fields.
+        payeeOrigin: window.location.origin,
+        // Omitted challenge field.
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -232,7 +233,7 @@ test(() => {
       },
     }], details);
   });
-}, 'The networkData field is required.');
+}, 'The challenge field is required.');
 
 test(() => {
   assert_throws_js(RangeError, () => {
@@ -243,8 +244,8 @@ test(() => {
         relyingPartyId: 'relying-party.example',
         // Empty credentialIds field.
         credentialIds: [],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -262,9 +263,9 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        // Null networkData and challenge fields.
-        networkData: null,
+        // Null challenge fields.
         challenge: null,
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -273,7 +274,7 @@ test(() => {
       },
     }], details);
   });
-}, 'Null networkData field throws exception.');
+}, 'Null challenge field throws exception.');
 
 test(() => {
   assert_throws_js(TypeError, () => {
@@ -282,8 +283,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        // Empty networkData and challenge fields.
-        networkData: [],
+        payeeOrigin: window.location.origin,
+        // Empty challenge fields.
         challenge: [],
         timeout: 60000,
         instrument: {
@@ -293,7 +294,7 @@ test(() => {
       },
     }], details);
   });
-}, 'Empty networkData field throws exception.');
+}, 'Empty challenge field throws exception.');
 
 test(() => {
   assert_throws_js(RangeError, () => {
@@ -302,8 +303,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         // Timeout longer than 1 hour.
         timeout: 1000 * 60 * 60 + 1,
         instrument: {
@@ -324,8 +325,8 @@ test(() => {
         // Large credentialIds value.
         credentialIds: [Uint8Array.from(
             'x'.repeat(1024 * 1024), c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -343,9 +344,9 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        // Large networkData and challenge values.
-        networkData: Uint8Array.from('x'.repeat(1024 * 1024), c => c.charCodeAt(0)),
+        // Large challenge value.
         challenge: Uint8Array.from('x'.repeat(1024 * 1024), c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -354,7 +355,7 @@ test(() => {
       },
     }], details);
   });
-}, 'Large networkData value throws exception.');
+}, 'Large challenge value throws exception.');
 
 test(() => {
   assert_throws_js(TypeError, () => {
@@ -363,8 +364,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         // Omitted instrument field.
       },
@@ -379,8 +380,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           // Ommitted instrument display name.
@@ -398,8 +399,8 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -409,4 +410,24 @@ test(() => {
     }], details);
   });
 }, 'Instrument icon is required.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        // Omitted payee origin.
+        action: 'authenticate',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+      },
+    }], details);
+  });
+}, 'Payee origin is required.');
+
 </script>

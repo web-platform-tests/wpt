@@ -12,7 +12,7 @@ async_test(t => {
       appHistory.onnavigate = t.step_func_done(e => {
         assert_equals(e.navigationType, "traverse");
         assert_true(e.cancelable);
-        assert_true(e.canRespond);
+        assert_true(e.canTransition);
         assert_false(e.userInitiated);
         assert_true(e.hashChange);
         assert_equals(new URL(e.destination.url).hash, "");
@@ -24,7 +24,7 @@ async_test(t => {
         assert_equals(e.info, "hi");
       });
       assert_true(appHistory.canGoBack);
-      appHistory.back({ navigateInfo: "hi" });
+      appHistory.back({ info: "hi" });
     });
   }, 0);
 }, "navigate event for appHistory.back() - same-document");

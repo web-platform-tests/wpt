@@ -11,6 +11,10 @@ promise_test(async t => {
     const decoder = new TextDecoder();
 
     const wt = new WebTransport(`${BASE}/webtransport/handlers/echo.py`);
+    // When a connection fails `closed` attribute will be rejected.
+    wt.closed.catch((error) => {
+        t.unreached_func(`The 'closed' attribute should not be rejected: ${error}`);
+    });
     await wt.ready;
 
     const stream = await wt.createBidirectionalStream();

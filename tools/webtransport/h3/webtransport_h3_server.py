@@ -112,9 +112,8 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         if status_code is None or status_code == b"200":
             self._handler.session_established()
 
-    def _create_event_handler(
-        self, session_id: int, path: bytes,
-        request_headers: List[Tuple[bytes, bytes]]) -> Any:
+    def _create_event_handler(self, session_id: int, path: bytes,
+                              request_headers: List[Tuple[bytes, bytes]]) -> Any:
         parsed = urlparse(path.decode())
         file_path = os.path.join(_doc_root, parsed.path.lstrip("/"))
         callbacks = {"__file__": file_path}

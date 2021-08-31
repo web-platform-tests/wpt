@@ -45,7 +45,9 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
 
     def _h3_event_received(self, event: H3Event) -> None:
         if isinstance(event, HeadersReceived):
-            # Convert from List[Tuple[bytes, bytes]] to Dict[bytes, bytes]
+            # Convert from List[Tuple[bytes, bytes]] to Dict[bytes, bytes].
+            # Only the last header will be kept when there are duplicate
+            # headers.
             headers = {}
             for header, value in event.headers:
                 headers[header] = value

@@ -852,8 +852,7 @@ def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address
     try:
         # TODO(bashi): Move the following import to the beginning of this file
         # once WebTransportH3Server is enabled by default.
-        # type: ignore
-        from webtransport.h3.webtransport_h3_server import WebTransportH3Server
+        from webtransport.h3.webtransport_h3_server import WebTransportH3Server # type: ignore
         return WebTransportH3Server(host=host,
                                     port=port,
                                     doc_root=paths["doc_root"],

@@ -6,7 +6,7 @@
 <link rel="match" href="compute-kind-widget-ref.html">
 <style>
     #container { width: 500px; }
-    #container > #select-menulist { appearance: auto; }
+    #container > #search-text-input { appearance: textfield; }
     #container > #select-menulist-button { appearance: none; appearance: menulist-button; }
 </style>
 
@@ -34,13 +34,19 @@
 </div>
 
 <script>
-    var button = document.getElementById('button');
-    var buttonInput = document.getElementById('button-input');
-    var submitButton = document.getElementById('submit-input');
-    var resetButton = document.getElementById('reset-input');
+var button = document.getElementById('button');
+var buttonInput = document.getElementById('button-input');
+var submitButton = document.getElementById('submit-input');
+var resetButton = document.getElementById('reset-input');
+var textInput = document.getElementById('text-input');
+var searchInput = document.getElementById('search-input');
+var textarea = document.getElementById('textarea');
 
-    button.style.backgroundColor = getComputedStyle(button).backgroundColor;
-    buttonInput.style.backgroundColor = getComputedStyle(buttonInput).backgroundColor;
-    submitButton.style.backgroundColor = getComputedStyle(submitButton).backgroundColor;
-    resetButton.style.backgroundColor = getComputedStyle(button).backgroundColor;
+button.style.backgroundColor = getComputedStyle(button).backgroundColor;
+buttonInput.style.backgroundColor = getComputedStyle(buttonInput).backgroundColor;
+submitButton.style.backgroundColor = getComputedStyle(submitButton).backgroundColor;
+resetButton.style.backgroundColor = getComputedStyle(resetButton).backgroundColor;
+textInput.style.backgroundColor = getComputedStyle(textInput).backgroundColor;
+searchInput.style.backgroundColor = getComputedStyle(searchInput).backgroundColor;
+textarea.style.backgroundColor = getComputedStyle(textarea).backgroundColor;
 </script>

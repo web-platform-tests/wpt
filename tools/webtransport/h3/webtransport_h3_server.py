@@ -25,14 +25,14 @@ callback functions. See handler.py for available callbacks.
 
 SERVER_NAME = 'webtransport-h3-server'
 
-_logger = None
-_doc_root = ""
+_logger: logging.Logger = logging.getLogger(__name__)
+_doc_root: str = ""
 
 
 class WebTransportH3Protocol(QuicConnectionProtocol):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self._handler: Optional[WebTransportEventHandler] = None
+        self._handler: Optional[Any] = None
         self._http: Optional[H3Connection] = None
 
     def quic_event_received(self, event: QuicEvent) -> None:
@@ -58,14 +58,17 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                 self._handshake_webtransport(event, headers)
             else:
                 self._send_error_response(event.stream_id, 400)
-        elif isinstance(event, WebTransportStreamDataReceived):
-            self._handler.stream_data_received(stream_id=event.stream_id,
-                                               data=event.data,
-                                               stream_ended=event.stream_ended)
-        elif isinstance(event, DatagramReceived):
-            self._handler.datagram_received(data=event.data)
+
+        if self._handler is not None:
+            if isinstance(event, WebTransportStreamDataReceived):
+                self._handler.stream_data_received(stream_id=event.stream_id,
+                                                   data=event.data,
+                                                   stream_ended=event.stream_ended)
+            elif isinstance(event, DatagramReceived):
+                self._handler.datagram_received(data=event.data)
 
     def _send_error_response(self, stream_id: int, status_code: int) -> None:
+        assert self._http is not None
         headers = [(b"server", SERVER_NAME.encode()),
                    (b":status", str(status_code).encode())]
         self._http.send_headers(stream_id=stream_id,
@@ -74,6 +77,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
 
     def _handshake_webtransport(self, event: HeadersReceived,
                                 request_headers: Dict[bytes, bytes]) -> None:
+        assert self._http is not None
         path = request_headers.get(b":path")
         if path is None:
             # `:path` must be provided.
@@ -108,8 +112,9 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         if status_code is None or status_code == b"200":
             self._handler.session_established()
 
-    def _create_event_handler(self, session_id: int, path: bytes,
-                              request_headers: List[Tuple[bytes, bytes]]):
+    def _create_event_handler(
+        self, session_id: int, path: bytes,
+        request_headers: List[Tuple[bytes, bytes]]) -> Any:
         parsed = urlparse(path.decode())
         file_path = os.path.join(_doc_root, parsed.path.lstrip("/"))
         callbacks = {"__file__": file_path}
@@ -194,7 +199,8 @@ class WebTransportEventHandler:
         self._session = session
         self._callbacks = callbacks
 
-    def _run_callback(self, callback_name: str, *args, **kwargs) -> None:
+    def _run_callback(self, callback_name: str,
+                      *args: Any, **kwargs: Any) -> None:
         if callback_name not in self._callbacks:
             return
         try:
@@ -255,10 +261,11 @@ class WebTransportH3Server:
         self.cert_path = cert_path
         self.key_path = key_path
         self.started = False
-        global _logger
-        _logger = logging.getLogger(__name__) if logger is None else logger
         global _doc_root
         _doc_root = self.doc_root
+        global _logger
+        if logger is not None:
+            _logger = logger
 
     def start(self) -> None:
         """Start the server."""
@@ -300,7 +307,6 @@ class WebTransportH3Server:
             asyncio.run_coroutine_threadsafe(self._stop_on_server_thread(),
                                              self.loop)
             self.server_thread.join()
-            self.server_thread = None
             _logger.info("Stopped WebTransport over HTTP/3 server on %s:%s",
                          self.host, self.port)
         self.started = False

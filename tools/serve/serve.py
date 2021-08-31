@@ -857,8 +857,9 @@ def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address
                                     cert_path=config.ssl_config["cert_path"],
                                     key_path=config.ssl_config["key_path"],
                                     logger=logger)
-    except Exception:
-        logger.critical("Failed to start WebTransport over HTTP/3 server")
+    except Exception as error:
+        logger.critical(
+            "Failed to start WebTransport over HTTP/3 server: {}".format(error))
         sys.exit(0)
 
 

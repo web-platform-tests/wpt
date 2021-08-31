@@ -1,19 +1,20 @@
 cask "safari-technology-preview" do
-  if MacOS.version <= :catalina
-    version "125,071-44527-20210526-93430244-0334-4fae-878d-56502a656003"
-    sha256 "6ea830ec5c9101665e18d77f31a7f220a0fc8afc35b9ac036ee29d5ee3dbdd23"
-  else
-    version "125,071-45899-20210526-3fe7359c-0f20-4850-b6ec-da9b197119c2"
-    sha256 "63e4961fd0cca345b58128c0edb33627847d02b99a77613c54c0a89e6402d36e"
+  if MacOS.version == :monterey
+    version "130,071-85875-20210818-4A85CF1C-4491-48AC-9B6D-72265DF075BC"
+    url "https://secure-appldnld.apple.com/STP/#{version.after_comma}/SafariTechnologyPreview.dmg"
+    sha256 "aab8c18e912a91cb5c54280cb0878215c015cc5fd6421a667bfdbb7e137739e9"
+  elsif MacOS.version == :big_sur
+    version "130,071-81359-20210818-152F5574-2BE4-4FAB-86AB-199701F65B0C"
+    url "https://secure-appldnld.apple.com/STP/#{version.after_comma}/SafariTechnologyPreview.dmg"
+    sha256 "a9d05c7b84cbd0cc92702a1b46d036b246ae9c4c260e1047dc50fe8904112fb0"
   end
 
-  url "https://secure-appldnld.apple.com/STP/#{version.after_comma}/SafariTechnologyPreview.dmg"
   appcast "https://developer.apple.com/safari/download/"
   name "Safari Technology Preview"
   homepage "https://developer.apple.com/safari/download/"
 
   auto_updates true
-  depends_on macos: ">= :catalina"
+  depends_on macos: ">= :big_sur"
 
   pkg "Safari Technology Preview.pkg"
 

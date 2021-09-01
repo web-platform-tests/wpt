@@ -30,17 +30,22 @@
         color: orange;
     }
     main > span::selection {
-        background: blue;
+        /*
+            Safari on macOS: opaque selection backgrounds are made
+            translucent in the used value, so we need to choose a
+            background color with known but non-opaque alpha.
+        */
+        background: #0000FFC0;
         color: transparent;
     }
 </style>
 <p>Test passes if the blue rectangle below contains no orange.
-<main class="highlight_reftest"><span>fffff</span></main>
+<main class="highlight_reftest"><span>ii∫∫∫</span></main>
 <script>
     const target = document.querySelector("main > span");
     selectRangeWith(range => {
         range.selectNodeContents(target);
-        range.setStart(target.childNodes[0], 1);
-        range.setEnd(target.childNodes[0], 4);
+        range.setStart(target.childNodes[0], 0);
+        range.setEnd(target.childNodes[0], 3);
     });
 </script>

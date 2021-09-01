@@ -1,0 +1,57 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="iframe" src="/common/blank.html"></iframe>
+<script>
+promise_test(async (t) => {
+  // Wait for after the load event so that the navigation doesn't get converted
+  // into a replace navigation.
+  await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+
+  iframe.contentWindow.location.search = "?1";
+  await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
+
+  const keyFor1 = iframe.contentWindow.appHistory.current.key;
+
+  iframe.contentWindow.location.search = "?2";
+  await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
+  iframe.contentWindow.location.search = "?3";
+  await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
+
+  iframe.contentWindow.appHistory.goTo(keyFor1);
+  await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
+
+  assert_equals((new URL(iframe.contentWindow.location.href)).search, "?1");
+
+  assert_equals(iframe.contentWindow.appHistory.entries().length, 4);
+  const entry3 = iframe.contentWindow.appHistory.entries()[3];
+
+  let beforedispose3Called = false;
+  let promiseRejected = false;
+  entry3.addEventListener("beforedispose", t.step_func(e => {
+    beforedispose3Called = true;
+
+    iframe.contentWindow.appHistory.navigate("?spoon").then(
+      t.unreached_func("navigate() must not fulfill"),
+      t.step_func(e => {
+        promiseRejected = true;
+        assert_equals(e.constructor, iframe.contentWindow.DOMException);
+        assert_equals(e.name, "InvalidStateError");
+      })
+    );
+  }));
+
+  let pagehideCalled = false;
+  iframe.contentWindow.onpagehide = t.step_func(e => {
+    assert_true(beforedispose3Called, "beforedispose for 2 and 3 must happen before pagehide");
+    pagehideCalled = true;
+  });
+
+  iframe.contentWindow.appHistory.navigate("/common/blank.html?fork");
+  await new Promise(r => iframe.onload = r);
+
+  assert_true(promiseRejected, "the navigate() promise must have rejected");
+  assert_true(pagehideCalled, "pagehide must have happened");
+  assert_equals(iframe.contentWindow.location.search, "?fork");
+}, "navigate() during a cross-document-navigation-initiated beforedispose fails, just like during unload");
+</script>

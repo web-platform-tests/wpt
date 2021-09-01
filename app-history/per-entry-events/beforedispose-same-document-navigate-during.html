@@ -1,0 +1,58 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async (t) => {
+  // Wait for after the load event so that the navigation doesn't get converted
+  // into a replace navigation.
+  await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+
+  location.hash = "#1";
+  location.hash = "#2";
+  location.hash = "#3";
+
+  assert_equals(appHistory.entries().length, 4);
+  const [entry0, entry1, entry2, entry3] = appHistory.entries();
+  assert_equals((new URL(entry2.url)).hash, "#2");
+  assert_equals((new URL(entry3.url)).hash, "#3");
+
+  let beforedispose3Called = 0;
+  let promiseFulfilled = false;
+  entry3.addEventListener("beforedispose", t.step_func(e => {
+    ++beforedispose3Called;
+
+    // This navigation will cancel the ongoing navigation to #fork. It will
+    // succeed, since nothing interrupts it (we're past the navigation to
+    // #fork's "interrupt ongoing navigations" at this point).
+    //
+    // In fact, it will take effect before the navigation to #fork, since we
+    // haven't yet committed the URL and history update for the #fork
+    // navigation.
+    appHistory.navigate("#spoon").then(
+      () => {
+        promiseFulfilled = true;
+      },
+      t.unreached_func("inner navigate() must not reject")
+    );
+  }));
+
+  await appHistory.goTo(entry1.key);
+
+  // The navigation to #fork will *not* be finished by the time the navigation
+  // to #spoon kicks off, so this promise will get rejected.
+  await promise_rejects_dom(t, "AbortError", appHistory.navigate("#fork"));
+
+  assert_equals(beforedispose3Called, 1, "beforedispose for entry 3 must happen exactly once");
+  assert_true(promiseFulfilled, "the inner navigate() must have succeeded");
+
+  assert_equals(appHistory.entries().length, 4);
+  const [finalEntry0, finalEntry1, finalEntry2, finalEntry3] = appHistory.entries();
+  assert_equals(finalEntry0, entry0);
+  assert_equals(finalEntry1, entry1);
+  assert_not_equals(finalEntry2, entry2);
+  assert_not_equals(finalEntry3, entry3);
+  assert_equals(appHistory.current, finalEntry3);
+  assert_equals((new URL(finalEntry2.url)).hash, "#spoon");
+  assert_equals((new URL(finalEntry3.url)).hash, "#fork");
+}, "navigate() during a same-document-navigation-initiated beforedispose works");
+</script>

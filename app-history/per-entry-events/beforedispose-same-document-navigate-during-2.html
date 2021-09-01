@@ -1,0 +1,66 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async (t) => {
+  // Wait for after the load event so that the navigation doesn't get converted
+  // into a replace navigation.
+  await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+
+  location.hash = "#1";
+  location.hash = "#2";
+  location.hash = "#3";
+
+  assert_equals(appHistory.entries().length, 4);
+  const [entry0, entry1, entry2, entry3] = appHistory.entries();
+  assert_equals((new URL(entry2.url)).hash, "#2");
+  assert_equals((new URL(entry3.url)).hash, "#3");
+
+  let beforedispose3Called = 0;
+  let spoonRejected = false;
+  let knifeFulfilled = false;
+  entry3.addEventListener("beforedispose", t.step_func(e => {
+    ++beforedispose3Called;
+
+    // These navigations will take effect before the navigation to #fork, since
+    // we haven't yet committed the URL and history update for the #fork
+    // navigation.
+
+    appHistory.navigate("#spoon", { replace: true }).then(
+      t.unreached_func("inner navigate() to #spoon must not fulfill"),
+      () => {
+        spoonRejected = true;
+      }
+    );
+
+    appHistory.navigate("#knife", { replace: true }).then(
+      () => {
+        knifeFulfilled = true;
+      },
+      t.unreached_func("inner navigate() to #knife must not reject")
+    );
+  }));
+
+  await appHistory.goTo(entry1.key);
+
+  // The navigation to #fork will *not* be finished by the time the navigations
+  // to #spoon and #knife kick off, so this promise will get rejected.
+  await promise_rejects_dom(t, "AbortError", appHistory.navigate("#fork"));
+
+  assert_equals(beforedispose3Called, 1, "beforedispose for entry 3 must happen exactly once");
+  assert_true(spoonRejected, "the navigate() to #spoon must have failed");
+  assert_true(knifeFulfilled, "the navigate() to #knife must have succeeded");
+
+  assert_equals(appHistory.entries().length, 3);
+  const [finalEntry0, finalEntry1, finalEntry2] = appHistory.entries();
+  assert_equals(finalEntry0, entry0, "entry 0 must be unchanged");
+
+  assert_not_equals(finalEntry1, entry1, "entry 1 must be replaced");
+  assert_equals((new URL(finalEntry1.url)).hash, "#knife");
+
+  assert_not_equals(finalEntry2, entry2, "entry 2 must be the new fork");
+  assert_equals((new URL(finalEntry2.url)).hash, "#fork");
+
+  assert_equals(appHistory.current, finalEntry2, "current must be entry 2");
+}, "2x replacement navigate() during a same-document-navigation-initiated beforedispose works");
+</script>

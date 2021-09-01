@@ -1,0 +1,42 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="iframe" src="/common/blank.html"></iframe>
+<script>
+promise_test(async (t) => {
+  // Wait for after the load event so that we're definitely testing a replace-
+  // due-to-replace(), not a replace due to the automatic conversion of pre-load
+  // pushes.
+  await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+
+  const entriesBefore = iframe.contentWindow.appHistory.entries();
+  const currentBefore = iframe.contentWindow.appHistory.current;
+  const hrefBefore = iframe.contentWindow.location.href;
+
+  let beforedisposeCalled = false;
+  iframe.contentWindow.appHistory.current.onbeforedispose = t.step_func(e => {
+    beforedisposeCalled = true;
+
+    assert_equals(e.constructor, iframe.contentWindow.Event);
+    assert_equals(e.bubbles, false);
+    assert_equals(e.cancelable, false);
+    assert_equals(e.composed, false);
+
+    assert_array_equals(iframe.contentWindow.appHistory.entries(), entriesBefore);
+    assert_equals(iframe.contentWindow.appHistory.current, currentBefore);
+    assert_equals(appHistory.transition, null);
+    assert_equals(iframe.contentWindow.location.href, hrefBefore);
+  });
+
+  let pagehideCalled = false;
+  iframe.contentWindow.onpagehide = t.step_func(e => {
+    assert_true(beforedisposeCalled);
+    pagehideCalled = true;
+  });
+
+  iframe.contentWindow.location.replace("/common/blank.html?replacement");
+  await new Promise(r => iframe.onload = r);
+
+  assert_true(pagehideCalled, "pagehide must have happened");
+}, "beforedispose events are fired right before pagehide when doing a cross-document replacement");
+</script>

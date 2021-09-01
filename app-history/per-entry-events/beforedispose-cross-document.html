@@ -1,0 +1,84 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="iframe" src="/common/blank.html"></iframe>
+<script>
+promise_test(async (t) => {
+  // Wait for after the load event so that the navigation doesn't get converted
+  // into a replace navigation.
+  await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+
+  iframe.contentWindow.location.search = "?1";
+  await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
+
+  const keyFor1 = iframe.contentWindow.appHistory.current.key;
+
+  iframe.contentWindow.location.search = "?2";
+  await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
+  iframe.contentWindow.location.search = "?3";
+  await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
+
+  assert_equals(iframe.contentWindow.appHistory.entries().length, 4);
+  const [, , originalEntry2, originalEntry3] = iframe.contentWindow.appHistory.entries();
+  assert_equals((new URL(originalEntry2.url)).search, "?2");
+  assert_equals((new URL(originalEntry3.url)).search, "?3");
+
+  originalEntry2.onbeforedispose = t.unreached_func("The original AppHistoryEntry 2 must not receive beforedispose");
+  originalEntry3.onbeforedispose = t.unreached_func("The original AppHistoryEntry 3 must not receive beforedispose");
+
+  iframe.contentWindow.appHistory.goTo(keyFor1);
+  await new Promise(r => iframe.onload = () => t.step_timeout(r, 0));
+
+  assert_equals((new URL(iframe.contentWindow.location.href)).search, "?1");
+
+  assert_equals(iframe.contentWindow.appHistory.entries().length, 4);
+  const [entry0, entry1, entry2, entry3] = iframe.contentWindow.appHistory.entries();
+
+  let beforedispose2Called = false;
+  entry2.onbeforedispose = t.step_func(e => {
+    beforedispose2Called = true;
+
+    assert_equals(e.constructor, iframe.contentWindow.Event);
+    assert_equals(e.bubbles, false);
+    assert_equals(e.cancelable, false);
+    assert_equals(e.composed, false);
+
+    assert_array_equals(
+      iframe.contentWindow.appHistory.entries(),
+      [entry0, entry1, entry2, entry3],
+      "during beforedispose for entry 2 the entries must not have been modified");
+    assert_equals(iframe.contentWindow.appHistory.current, entry1, "current entry is still entry 1 during beforedispose for entry 2");
+    assert_equals(iframe.contentWindow.appHistory.transition, null, "transition is null during beforedispose for entry 2");
+    assert_true(iframe.contentWindow.appHistory.canGoBack, "canGoBack is still true during beforedispose for entry 2");
+    assert_true(iframe.contentWindow.appHistory.canGoForward, "canGoForward is still true during beforedispose for entry 2");
+    assert_equals((new URL(iframe.contentWindow.location.href)).search, "?1", "location.href still on ?1 during beforedispose for entry 2");
+  });
+
+  let beforedispose3Called = false;
+  entry3.addEventListener("beforedispose", t.step_func(e => {
+    beforedispose3Called = true;
+
+    assert_true(beforedispose2Called, "beforedispose for entry 2 must have happened before entry 3");
+    assert_array_equals(
+      iframe.contentWindow.appHistory.entries(),
+      [entry0, entry1, entry2, entry3],
+      "during beforedispose for entry 3 the entries must not have been modified");
+    assert_equals(iframe.contentWindow.appHistory.current, entry1, "current entry is still entry 1 during beforedispose for entry 3");
+    assert_equals(iframe.contentWindow.appHistory.transition, null, "transition is null during beforedispose for entry 3");
+    assert_true(iframe.contentWindow.appHistory.canGoBack, "canGoBack is still true during beforedispose for entry 3");
+    assert_true(iframe.contentWindow.appHistory.canGoForward, "canGoForward is still true during beforedispose for entry 3");
+    assert_equals((new URL(iframe.contentWindow.location.href)).search, "?1", "location.href still on ?1 during beforedispose for entry 3");
+  }));
+
+  let pagehideCalled = false;
+  iframe.contentWindow.onpagehide = t.step_func(e => {
+    assert_true(beforedispose3Called, "beforedispose for 2 and 3 must happen before pagehide");
+    pagehideCalled = true;
+  });
+
+  iframe.contentWindow.appHistory.navigate("/common/blank.html?fork");
+  await new Promise(r => iframe.onload = r);
+
+  assert_true(pagehideCalled, "pagehide must have happened");
+}, "beforedispose events are fired right before pagehide when doing a cross-document navigation");
+</script>

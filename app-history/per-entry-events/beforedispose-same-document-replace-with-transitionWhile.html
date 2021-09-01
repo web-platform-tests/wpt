@@ -1,0 +1,37 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async (t) => {
+  // Wait for after the load event so that the navigation doesn't get converted
+  // into a replace navigation.
+  await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+
+  const entriesBefore = appHistory.entries();
+  const currentBefore = appHistory.current;
+  const hrefBefore = location.href;
+
+  let beforedisposeCalled = false;
+  appHistory.current.onbeforedispose = t.step_func(e => {
+    beforedisposeCalled = true;
+
+    assert_equals(e.constructor, Event);
+    assert_equals(e.bubbles, false);
+    assert_equals(e.cancelable, false);
+    assert_equals(e.composed, false);
+
+    assert_array_equals(appHistory.entries(), entriesBefore);
+    assert_equals(appHistory.current, currentBefore);
+    assert_equals(appHistory.transition.from, appHistory.current);
+    assert_equals(appHistory.transition.navigationType, "replace");
+    assert_equals(location.href, hrefBefore);
+  });
+
+  appHistory.addEventListener("navigate", e => e.transitionWhile(Promise.resolve()));
+
+  appHistory.navigate("?replacement", { replace: true });
+  assert_true(beforedisposeCalled);
+  assert_equals((new URL(location.href)).search, "?replacement");
+  assert_not_equals(appHistory.current, currentBefore);
+}, "beforedispose events when doing a same-document replace using appHistory.navigate() and transitionWhile()");
+</script>

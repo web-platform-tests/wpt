@@ -5,39 +5,43 @@
 <link rel="help" href="https://drafts.csswg.org/css-text-decor-4/#painting">
 <link rel="help" href="https://www.w3.org/TR/CSS22/zindex.html#painting-order">
 <link rel="match" href="selection-decoration-p4-ref.html">
-<meta name="assert" value="originating decorations on selected parts are painted over ::selection background">
+<meta name="assert" value="originating line-through decorations paint over ::selection backgrounds on selected text">
 <script src="support/selections.js"></script>
 <link rel="stylesheet" href="support/highlights.css">
+<link rel="stylesheet" href="/fonts/ahem.css">
 <style>
     /*
-        This test verifies that originating decorations are correctly
-        “lifted” to paint over the ::selection background.
+        This test verifies that originating line-through decorations
+        on selected text are not obscured by ::selection background.
 
-        Chromium fails this test before /c/2902289.
+        Chromium fails this test between <https://crrev.com/850580>
+        (inclusive) and <https://crrev.com/886768> (exclusive).
     */
-    * {
-        text-decoration-skip-ink: none;
-        text-decoration-skip: none;
-    }
     main {
-        font-size: 7em;
+        font: 80px/1 Ahem;
         margin: 0.5em;
         width: min-content;
-        text-decoration: 0.125em currentColor solid underline;
-        /* try to keep decoration between ascent and baseline */
-        text-underline-offset: -0.5em;
+        color: black;
+        text-decoration: 1em black solid line-through;
     }
     main::selection {
+        /*
+            Safari on macOS: with an opaque selection background, the
+            used value will be translucent. The ref shouldn’t need to
+            take this into account, as the selected text and its
+            decorations should entirely obscure the background.
+        */
         background: white;
+        color: black;
     }
 </style>
-<p>Test passes if there is a solid line through the “O” below.
-<main class="highlight_reftest">O</main>
+<p>Test passes if there is one line of constant thickness below.
+<main class="highlight_reftest">ppppp</main>
 <script>
     const target = document.querySelector("main");
     selectRangeWith(range => {
         range.selectNodeContents(target);
-        range.setStart(target.childNodes[0], 0);
-        range.setEnd(target.childNodes[0], 1);
+        range.setStart(target.childNodes[0], 1);
+        range.setEnd(target.childNodes[0], 4);
     });
 </script>

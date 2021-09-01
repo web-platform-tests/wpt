@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="support/highlights.css">
+<style>
+    @font-face {
+        font-family: CSSTest;
+        src: url(/fonts/CSSTest/csstest-basic-italic.ttf);
+    }
+    main {
+        font: 80px/1 CSSTest;
+        margin: 0.5em;
+        width: min-content;
+    }
+    .unselected {
+        background: black;
+    }
+    .orange {
+        color: orange;
+    }
+    .selected {
+        background: blue;
+        color: transparent;
+    }
+</style>
+<!--
+    In this ref, the overhanging parts of the selected text are
+    visible, being painted in orange. Gecko does this.
+-->
+<p>Test passes if the blue rectangle below contains no orange.
+<main class="highlight_reftest">
+    <div class="hrt_layers">
+        <div><span class="unselected"><span class="orange">f</span>fff<span class="orange">f</span></span></div>
+        <div>f<span class="selected">fff</span>f</div>
+        fffff
+    </div>
+</main>

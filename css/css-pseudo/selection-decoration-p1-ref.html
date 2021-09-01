@@ -3,11 +3,28 @@
 <link rel="stylesheet" href="support/highlights.css">
 <link rel="stylesheet" href="/fonts/ahem.css">
 <style>
+    * {
+        text-decoration-skip-ink: none;
+        text-decoration-skip: none;
+    }
     main {
-        font: 7em Ahem;
+        font: 80px/1 Ahem;
         margin: 0.5em;
         width: min-content;
+        /*
+            Edge anti-aliases Ahem for some reason, so we still need
+            this underline so we can see the tips [...]
+        */
+        text-decoration: 0.25em currentColor solid underline;
+        /* try to keep decoration between ascent and descent */
+        text-underline-offset: -0.5em;
+    }
+    main > span {
+        color: blue;
+        text-decoration: 0.25em blue solid underline;
+        /* try to keep decoration between ascent and descent */
+        text-underline-offset: -0.5em;
     }
 </style>
-<p>Test passes if there is no red below.
-<main class="highlight_reftest">XX</main>
+<p>Test passes if there is no red below and two squares, entirely blue (left) and entirely black (right).
+<main class="highlight_reftest"><span>X</span>X</main>

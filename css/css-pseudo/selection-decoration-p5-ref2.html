@@ -1,0 +1,34 @@
+<!doctype html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="support/highlights.css">
+<style>
+    @font-face {
+        font-family: CSSTest;
+        src: url(/fonts/CSSTest/csstest-basic-italic.ttf);
+    }
+    main {
+        font: 80px/1 CSSTest;
+        margin: 0.5em;
+        width: min-content;
+    }
+    .unselected {
+        background: black;
+        color: orange;
+    }
+    .selected {
+        background: blue;
+        color: transparent;
+    }
+</style>
+<!--
+    In this ref, the overhanging parts of the selected text are
+    invisible, being painted in transparent. Blink does this.
+-->
+<p>Test passes if the blue rectangle below contains no orange.
+<main class="highlight_reftest">
+    <div class="hrt_layers">
+        <div><span class="unselected">fffff</span></div>
+        <div>f<span class="selected">fff</span>f</div>
+        fffff
+    </div>
+</main>

@@ -13,10 +13,12 @@
     }
     .unselected {
         background: black;
+    }
+    .orange {
         color: orange;
     }
     .selected {
-        background: blue;
+        background: #0000FFC0;
         color: transparent;
     }
 </style>
@@ -27,8 +29,13 @@
 <p>Test passes if the blue rectangle below contains no orange.
 <main class="highlight_reftest">
     <div class="hrt_layers">
-        <div><span class="unselected">fffff</span></div>
-        <div>f<span class="selected">fff</span>f</div>
-        fffff
+        <div><span class="unselected">ii∫∫∫</span></div>
+        <div>ii∫<span class="hrt_hider">
+            <div><span class="orange">ii∫</span>∫∫</div>
+            ∫∫
+        </span></div>
+        <div>ii∫<span class="orange">∫∫</span></div>
+        <div><span class="selected">ii∫</span>∫∫</div>
+        ii∫∫∫
     </div>
 </main>

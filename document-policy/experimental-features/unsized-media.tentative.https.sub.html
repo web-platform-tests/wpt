@@ -13,16 +13,6 @@ const srcs = [
   "/document-policy/experimental-features/resources/image.svg"
 ];
 const test_cases = [
-// Test when no size is specified, img/video is laid out by the default size.
-{expected_width: default_width, expected_height: default_height},
-// Test when only one dimension is specified, img/video uses the default length for
-// the other dimension.
-{attribute: "width", value: 500, expected_width: 500, expected_height: 500 / 2},
-{attribute: "height", value: 800, expected_width: 800 * 2, expected_height: 800},
-// Test when only one dimension is specified by CSS style, img/video uses the
-// default length for the other dimension.
-{attribute: "style", value: "width:500px;", expected_width: 500, expected_height: 500 / 2},
-{attribute: "style", value: "height:800px;", expected_width: 800 * 2, expected_height: 800},
 // Test when the size of the image is specified, img/video is laid out by the
 // specified size.
 {attribute: "width", value: 500, attribute1: "height", value1: 800, expected_width: 500, expected_height:800},

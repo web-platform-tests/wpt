@@ -799,6 +799,7 @@ TESTHARNESS-IN-OTHER-TYPE: html/semantics/forms/the-input-element/type-change-fi
 TESTHARNESS-IN-OTHER-TYPE: html/semantics/interactive-elements/the-details-element/display-table-with-rt-crash.html
 TESTHARNESS-IN-OTHER-TYPE: html/semantics/interactive-elements/the-summary-element/display-table-with-rt-crash.html
 TESTHARNESS-IN-OTHER-TYPE: html/semantics/text-level-semantics/the-ruby-element/rt-without-ruby-crash.html
+TESTHARNESS-IN-OTHER-TYPE: mediacapture-image/takePhoto-with-PhotoSettings-crash.html
 TESTHARNESS-IN-OTHER-TYPE: portals/portals-no-frame-crash.html
 TESTHARNESS-IN-OTHER-TYPE: quirks/table-replaced-descendant-percentage-height-crash.html
 TESTHARNESS-IN-OTHER-TYPE: scroll-animations/null-scroll-source-crash.html

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<link rel="author" href="mailto:zino@chromium.org">
+<link rel="help" href="https://crbug.com/1229991">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async t => {
+  const canvas = document.createElement("canvas")
+  const stream = canvas.captureStream();
+  const capture = new window.ImageCapture(stream.getTracks()[0]);
+  const settings = await capture.getPhotoSettings();
+  capture.takePhoto(settings);
+});
+</script>

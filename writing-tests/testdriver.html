@@ -151,9 +151,10 @@ being called and the promise settling.</p>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.delete_all_cookies(context=null)</span></code></p>
 <ul class="simple">
 <li><p><em>context</em>: an optional WindowProxy for the browsing context in which to
-perform the call.</p></li>
+perform the call. Defaults to the current browsing context.</p></li>
 </ul>
-<p>This function deletes all cookies for the current browsing context.</p>
+<p>This function returns a promise that resolves after all the cookies have
+been deleted from the provided browsing context.</p>
 <section id="send-keys">
 <h3>send_keys<a class="headerlink" href="#send-keys" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.send_keys(element,</span> <span class="pre">keys)</span></code></p>

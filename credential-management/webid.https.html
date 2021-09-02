@@ -11,7 +11,9 @@ promise_test(function(t) {
               federated: {
                 providers: [{
                   provider: "bar"
-                }]
+                }],
+                // Specify whether the account chooser is modal or not
+                modal: true
               }
             }));
 }, "navigator.credentials.get() with invalid providers.");

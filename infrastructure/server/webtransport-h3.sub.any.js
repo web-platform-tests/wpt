@@ -2,14 +2,12 @@
 // META: script=/common/get-host-info.sub.js
 
 const HOST = get_host_info().ORIGINAL_HOST;
-// TODO(bashi): Use port substitutions once the WebTransport server is enabled.
+// TODO(bashi): Use port substitutions once the aioquic dependency is resolved
+// and the WebTransport over HTTP/3 server is enabled.
 const PORT = '11000';
 const BASE = `https://${HOST}:${PORT}`;
 
 promise_test(async t => {
-    const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
-
     const wt = new WebTransport(`${BASE}/webtransport/handlers/echo.py`);
     // When a connection fails `closed` attribute will be rejected.
     wt.closed.catch((error) => {
@@ -20,12 +18,11 @@ promise_test(async t => {
     const stream = await wt.createBidirectionalStream();
 
     const writer = stream.writable.getWriter();
-    await writer.write(encoder.encode("Hello"));
+    await writer.write(new Uint8Array([42]));
     writer.releaseLock();
 
     const reader = stream.readable.getReader();
     const { value } = await reader.read();
-    const reply = decoder.decode(value);
 
-    assert_equals(reply, "Hello");
+    assert_equals(value[0], 42);
 }, "WebTransport server should be running and should handle a bidirectional stream");

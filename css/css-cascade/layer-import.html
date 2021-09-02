@@ -254,8 +254,7 @@ const testCases = [
     },
 ];
 
-for (let i = 0; i < testCases.length; ++i) {
-    const testCase = testCases[i];
+for (let testCase of testCases) {
     promise_test(async t => {
         const styleElement = document.createElement('style');
         const styleText = testCase['style'].replaceAll(/url\((.+?)\)/g, (match, p1) => {

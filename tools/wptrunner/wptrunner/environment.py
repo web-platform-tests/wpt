@@ -131,7 +131,8 @@ class TestEnvironment(object):
                                    self.config,
                                    self.get_routes(),
                                    mp_context=mpcontext.get_context(),
-                                   log_handlers=[server_log_handler])
+                                   log_handlers=[server_log_handler],
+                                   webtransport_h3=self.enable_webtransport)
 
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
             self.ignore_interrupts()
@@ -174,11 +175,10 @@ class TestEnvironment(object):
             "ws": [8888],
             "wss": [8889],
             "h2": [9000],
+            "webtransport-h3": [11000],
         }
         if self.enable_quic:
             ports["quic-transport"] = [10000]
-        if self.enable_webtransport:
-            ports["webtransport-h3"] = [11000]
         config.ports = ports
 
         if os.path.exists(override_path):

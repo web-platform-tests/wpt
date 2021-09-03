@@ -630,6 +630,10 @@ def start_servers(logger, host, ports, paths, routes, bind_address, config,
                          'Requires OpenSSL 1.0.2+')
             continue
 
+        # Skip WebTransport over HTTP/3 server unless it is enabled explicitly.
+        if scheme == 'webtransport-h3' and not kwargs.get("webtransport_h3"):
+            continue
+
         for port in ports:
             if port is None:
                 continue
@@ -1004,8 +1008,9 @@ def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs)
     if kwargs.get("quic_transport"):
         rv._default["ports"]["quic-transport"] = [10000]
 
-    if kwargs.get("webtransport_h3"):
-        rv._default["ports"]["webtransport-h3"] = [11000]
+    # Provide a default port number for WebTransport over HTTP/3 even it is not
+    # enabled so that port substitutions work.
+    rv._default["ports"]["webtransport-h3"] = [11000]
 
     if override_path and os.path.exists(override_path):
         with open(override_path) as f:

@@ -7,7 +7,7 @@
 async_test(t => {
   postMessage('');
   onmessage = t.step_func_done(e => {
-  	assert_equals(e.data, '');
+    assert_equals(e.data, '');
   });
  });
 </script>

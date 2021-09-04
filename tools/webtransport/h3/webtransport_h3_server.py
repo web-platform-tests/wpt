@@ -15,7 +15,7 @@ from aioquic.quic.events import QuicEvent, ProtocolNegotiated
 from aioquic.tls import SessionTicket
 from aioquic.quic.packet import QuicErrorCode
 
-from tools.wptserve.wptserve import stash
+from tools.wptserve.wptserve import stash  # type: ignore
 
 """
 A WebTransport over HTTP/3 server for testing.

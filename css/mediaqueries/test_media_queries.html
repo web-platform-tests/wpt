@@ -555,9 +555,11 @@ setup({ "explicit_done": true });
     expression_should_not_be_parseable("overflow-block: some-random-invalid-thing")
 
     // Sanity check for overflow-block
-    var any_overflow_block = query_applies("(overflow-block)");
-    var overflow_block_none = query_applies("(overflow-block: none)");
-    assert_not_equals(any_overflow_block, overflow_block_none, "overflow-block should be equivalent to not (overflow-block: none)");
+    test(function() {
+      var any_overflow_block = query_applies("(overflow-block)");
+      var overflow_block_none = query_applies("(overflow-block: none)");
+      assert_not_equals(any_overflow_block, overflow_block_none, "overflow-block should be equivalent to not (overflow-block: none)");
+    }, "Sanity check for overflow-block");
 
     // Parsing tests for overflow-inline from mediaqueries-4
     expression_should_be_parseable("overflow-inline")
@@ -566,9 +568,11 @@ setup({ "explicit_done": true });
     expression_should_not_be_parseable("overflow-inline: some-random-invalid-thing")
 
     // Sanity check for overflow-inline
-    var any_overflow_inline = query_applies("(overflow-inline)");
-    var overflow_inline_none = query_applies("(overflow-inline: none)");
-    assert_not_equals(any_overflow_inline, overflow_inline_none, "overflow-inline should be equivalent to not (overflow-inline: none)");
+    test(function() {
+      var any_overflow_inline = query_applies("(overflow-inline)");
+      var overflow_inline_none = query_applies("(overflow-inline: none)");
+      assert_not_equals(any_overflow_inline, overflow_inline_none, "overflow-inline should be equivalent to not (overflow-inline: none)");
+    }, "Sanity check for overflow-inline");
 
     // Parsing tests for interaction media features.
     expression_should_be_parseable("hover")
@@ -578,10 +582,21 @@ setup({ "explicit_done": true });
     expression_should_be_parseable("any-hover: hover")
     expression_should_be_parseable("any-hover: none")
 
-    assert_equals(query_applies("(hover)"), query_applies("(hover: hover)"), "(hover) == (hover: hover)");
-    assert_not_equals(query_applies("(hover)"), query_applies("(hover: none)"), "(hover) == not (hover: none)");
-    assert_equals(query_applies("(any-hover)"), query_applies("(any-hover: hover)"), "(any-hover) == (any-hover: hover)");
-    assert_not_equals(query_applies("(any-hover)"), query_applies("(any-hover: none)"), "(any-hover) == not (any-hover: none)");
+    test(function() {
+      assert_equals(query_applies("(hover)"), query_applies("(hover: hover)"));
+    } , "(hover) == (hover: hover)");
+
+    test(function() {
+      assert_not_equals(query_applies("(hover)"), query_applies("(hover: none)"));
+    }, "(hover) == not (hover: none)");
+
+    test(function() {
+      assert_equals(query_applies("(any-hover)"), query_applies("(any-hover: hover)"));
+    }, "(any-hover) == (any-hover: hover)");
+
+    test(function() {
+      assert_not_equals(query_applies("(any-hover)"), query_applies("(any-hover: none)"));
+    }, "(any-hover) == not (any-hover: none)");
 
     expression_should_be_parseable("pointer")
     expression_should_be_parseable("pointer: coarse")
@@ -591,18 +606,26 @@ setup({ "explicit_done": true });
     expression_should_be_parseable("any-pointer: coarse")
     expression_should_be_parseable("any-pointer: fine")
     expression_should_be_parseable("any-pointer: none")
-    assert_equals(query_applies("(pointer)"),
-                  query_applies("(pointer: coarse)") || query_applies("(pointer: fine)"),
-                  "(pointer) == (pointer: coarse) or (pointer: fine)");
-    assert_not_equals(query_applies("(pointer)"),
-                      query_applies("(pointer: none)"),
-                      "(pointer) == not (pointer: none)");
-    assert_equals(query_applies("(any-pointer)"),
-                  query_applies("(any-pointer: coarse)") || query_applies("(any-pointer: fine)"),
-                  "(any-pointer) == (any-pointer: coarse) or (any-pointer: fine)");
-    assert_not_equals(query_applies("(any-pointer)"),
-                      query_applies("(any-pointer: none)"),
-                      "(any-pointer) == not (any-pointer: none)");
+
+    test(function() {
+      assert_equals(query_applies("(pointer)"),
+                    query_applies("(pointer: coarse)") || query_applies("(pointer: fine)"));
+    }, "(pointer) == (pointer: coarse) or (pointer: fine)");
+
+    test(function() {
+      assert_not_equals(query_applies("(pointer)"),
+                        query_applies("(pointer: none)"));
+    }, "(pointer) == not (pointer: none)");
+
+    test(function() {
+      assert_equals(query_applies("(any-pointer)"),
+                    query_applies("(any-pointer: coarse)") || query_applies("(any-pointer: fine)"));
+    }, "(any-pointer) == (any-pointer: coarse) or (any-pointer: fine)");
+
+    test(function() {
+      assert_not_equals(query_applies("(any-pointer)"),
+                        query_applies("(any-pointer: none)"));
+    }, "(any-pointer) == not (any-pointer: none)");
 
     done();
 }

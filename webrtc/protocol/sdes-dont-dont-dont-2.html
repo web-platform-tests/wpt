@@ -29,6 +29,7 @@ a=ice-ufrag:ETEn
 a=ice-pwd:OtSK0WpNtpUjkY4+86js7Z/l
 `;
 
+/*
 promise_test(async t => {
   const pc = new RTCPeerConnection(null, sdes_constraint);
   t.add_cleanup(() => pc.close());
@@ -37,6 +38,7 @@ promise_test(async t => {
   const offer = await pc.createOffer();
   assert_false(offer.sdp.includes('\na=crypto:'));
 }, 'does not create offers with SDES');
+*/
 
 promise_test(async t => {
   const pc = new RTCPeerConnection();

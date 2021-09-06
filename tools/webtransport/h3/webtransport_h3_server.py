@@ -15,6 +15,9 @@ from aioquic.quic.connection import stream_is_unidirectional  # type: ignore
 from aioquic.quic.events import QuicEvent, ProtocolNegotiated  # type: ignore
 from aioquic.tls import SessionTicket  # type: ignore
 from aioquic.quic.packet import QuicErrorCode  # type: ignore
+
+from tools.wptserve.wptserve import stash  # type: ignore
+
 """
 A WebTransport over HTTP/3 server for testing.
 
@@ -128,6 +131,7 @@ class WebTransportSession:
     """
     A WebTransport session.
     """
+
     def __init__(self, protocol: WebTransportH3Protocol, session_id: int,
                  request_headers: List[Tuple[bytes, bytes]]) -> None:
         self.session_id = session_id
@@ -135,6 +139,19 @@ class WebTransportSession:
 
         self._protocol: WebTransportH3Protocol = protocol
         self._http: H3Connection = protocol._http
+
+        # Use the a shared default path for all handlers so that different
+        # WebTransport sessions can access the same store easily.
+        self._stash_path = '/webtransport/handlers'
+        self._stash: Optional[stash.Stash] = None
+
+    @property
+    def stash(self) -> stash.Stash:
+        """A Stash object for storing cross-session state."""
+        if self._stash is None:
+            address, authkey = stash.load_env_config()
+            self._stash = stash.Stash(self._stash_path, address, authkey)
+        return self._stash
 
     def stream_is_unidirectional(self, stream_id: int) -> bool:
         """Return True if the stream is unidirectional."""
@@ -153,6 +170,7 @@ class WebTransportSession:
         """
         self._http._quic.close(error_code=error_code,
                                reason_phrase=reason_phrase)
+        self._protocol.transmit()
 
     def create_unidirectional_stream(self) -> int:
         """
@@ -240,8 +258,6 @@ class SessionTicketStore:
         return self.tickets.pop(label, None)
 
 
-# TODO(bashi): Consider adding more configuration information, such as
-# providing access to StashServer.
 class WebTransportH3Server:
     """
     A WebTransport over HTTP/3 for testing.

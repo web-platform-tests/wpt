@@ -138,7 +138,7 @@ We do not support loading a test over WebTransport over HTTP/3 yet, but a test
 can establish a WebTransport session to the test server.
 
 The WebTransport over HTTP/3 server is not yet enabled by default, so
-WebTransport tests will be failed unless `--enable-webtransport` is specified to
+WebTransport tests will fail unless `--enable-webtransport` is specified to
  `./wpt run`.
 
 ### Test Features specified as query params

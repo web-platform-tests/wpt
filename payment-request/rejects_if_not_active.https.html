@@ -35,7 +35,7 @@ const validDetails = Object.freeze({
 
 async function getLoadedPaymentRequest(iframe, url) {
   await new Promise((resolve) => {
-    iframe.addEventListener("load",resolve, { once: true } );
+    iframe.addEventListener("load", resolve, { once: true });
     iframe.src = url;
   });
   return new iframe.contentWindow.PaymentRequest(validMethods, validDetails);

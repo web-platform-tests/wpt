@@ -1,4 +1,4 @@
-// META: global=window,dedicatedworker,sharedworker
+// META: global=window,dedicatedworker,sharedworker,dedicatedworker-module,sharedworker-module
 
 function objectUrlFromModule(module) {
   const blob = new Blob([module], { type: "text/javascript" });

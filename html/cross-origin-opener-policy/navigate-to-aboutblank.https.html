@@ -4,9 +4,9 @@
 <meta name=timeout content=long>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/channel.sub.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
-<script src="/common/dispatcher/dispatcher.js"></script>
 
 <p>Non-initial empty documents (about:blank) should inherit their
   cross-origin-opener-policy from the navigation's initiator top level document,
@@ -24,7 +24,8 @@
 </ol>
 
 <script>
-const executor_path = "/common/dispatcher/executor.html?pipe=";
+const directory = "/html/cross-origin-opener-policy";
+const executor_path = directory + "/resources/executor-channel.html?pipe=";
 const same_origin = get_host_info().HTTPS_ORIGIN;
 const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
 const coop_same_origin_header =
@@ -47,47 +48,46 @@ function navigateToAboutBlankTest(
   expect_openee_closed
 ){
   return promise_test(async t => {
-    const this_window_token = token();
-    const opener_token = token();
-    const openee_token = token();
-    const iframe_token = token();
+    const [this_window_recv, this_window_send] = channel();
+    this_window_recv.connect();
+
+    const opener = new RemoteGlobal();
+    const openee = new RemoteGlobal();
+    const iframe = new RemoteGlobal();
 
     const opener_url = same_origin + executor_path + opener_COOP_header +
-        `&uuid=${opener_token}`;
+        `&uuid=${opener.uuid}`;
     const openee_url = openee_origin + executor_path + openee_COOP_header +
-        `&uuid=${openee_token}`;
-    const iframe_url = iframe_origin + executor_path + iframe_header + `&uuid=${iframe_token}`;
+        `&uuid=${openee.uuid}`;
+    const iframe_url = iframe_origin + executor_path + iframe_header + `&uuid=${iframe.uuid}`;
 
-    t.add_cleanup(() => {
-      send(openee_token, "window.close()");
-      send(opener_token, "window.close()");
+    t.add_cleanup(async () => {
+      await opener.call(() => window.close());
+      await close_all_channel_sockets();
     });
 
     // 1. Create the opener window.
-    let opener_window_proxy = window.open(opener_url, opener_token);
+    window.open(opener_url, opener.uuid);
 
     // 2. Create the iframe.
-    send(opener_token, `
+    await opener.call(iframe_url => {
       iframe = document.createElement('iframe');
-      iframe.src = "${iframe_url}";
+      iframe.src = iframe_url;
       document.body.appendChild(iframe);
-    `);
+    }, iframe_url);
 
     // 3. The iframe opens its openee window.
-    send(iframe_token, `
-      window.openee = window.open(
-          '${openee_url.replace(/,/g, '\\,')}',
-          "${openee_token}"
-      );
-    `);
+    await iframe.call((url, uuid) => {
+        window.openee = window.open(url, uuid)
+    }, openee_url, openee.uuid);
 
     // 4. Ensure the popup is fully loaded.
-    send(openee_token, `send("${this_window_token}", "Ack");`);
-    assert_equals(await receive(this_window_token), "Ack");
+    const resp = await openee.call(() => "Ack");
+    assert_equals(resp, "Ack");
 
     // 5. The iframe navigates openee to about:blank.
-    send(iframe_token, `
-      window.openee_blank = window.open('about:blank', "${openee_token}");
+    await iframe.call((openee_token, test_channel) => {
+      window.openee_blank = window.open('about:blank', openee_token);
       (async function() {
         const timeout = 2000;
         const retry_delay = 100;
@@ -97,22 +97,20 @@ function navigateToAboutBlankTest(
           try {
             if (window.openee_blank.closed ||
                 window.openee_blank.document.location.href == "about:blank") {
-              send("${this_window_token}", "about:blank loaded");
+              test_channel.send("about:blank loaded");
               return;
             }
           } catch(e) {}
           await new Promise(resolve => setTimeout(resolve, retry_delay));
         }
-        send("${this_window_token}", "about:blank not loaded");
+        test_channel.send("about:blank not loaded");
       })()
-    `);
-    assert_equals(await receive(this_window_token), "about:blank loaded");
+    }, openee.uuid, this_window_send);
+    assert_equals(await this_window_recv.nextMessage(), "about:blank loaded");
 
     // 6. Retrieve and check the results.
-    send(iframe_token, `
-      send("${this_window_token}", window.openee.closed);
-    `);
-    assert_equals(await receive(this_window_token), `${expect_openee_closed}`);
+    const closed = await iframe.call(() => window.openee.closed);
+    assert_equals(closed, expect_openee_closed);
   }, `Navigate to about:blank from iframe with opener.top \
 COOP: ${opener_COOP_header}, iframe origin: ${iframe_origin}, \
 openee COOP: ${openee_COOP_header}, openee origin: ${openee_origin}.`);

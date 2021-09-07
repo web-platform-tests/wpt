@@ -40,7 +40,7 @@ with WPT. The functionality is organized into “sub-commands”, and each accep
 a different set of command-line arguments.</p>
 <p>This page documents all of the available sub-commands and associated arguments.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">wpt</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-           <span class="p">{</span><span class="n">test</span><span class="o">-</span><span class="n">jobs</span><span class="p">,</span><span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span><span class="p">,</span><span class="n">regen</span><span class="o">-</span><span class="n">certs</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">decision</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">sink</span><span class="o">-</span><span class="n">task</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">run</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">push</span><span class="p">,</span><span class="n">lint</span><span class="p">,</span><span class="n">manifest</span><span class="p">,</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">paths</span><span class="p">,</span><span class="n">serve</span><span class="o">-</span><span class="n">quic</span><span class="o">-</span><span class="n">transport</span><span class="p">,</span><span class="n">serve</span><span class="p">,</span><span class="n">serve</span><span class="o">-</span><span class="n">wave</span><span class="p">,</span><span class="n">run</span><span class="p">,</span><span class="n">create</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">expectations</span><span class="p">,</span><span class="n">files</span><span class="o">-</span><span class="n">changed</span><span class="p">,</span><span class="n">tests</span><span class="o">-</span><span class="n">affected</span><span class="p">,</span><span class="n">install</span><span class="p">,</span><span class="n">rev</span><span class="o">-</span><span class="nb">list</span><span class="p">,</span><span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">}</span>
+           <span class="p">{</span><span class="n">test</span><span class="o">-</span><span class="n">jobs</span><span class="p">,</span><span class="n">make</span><span class="o">-</span><span class="n">hosts</span><span class="o">-</span><span class="n">file</span><span class="p">,</span><span class="n">regen</span><span class="o">-</span><span class="n">certs</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">decision</span><span class="p">,</span><span class="n">tc</span><span class="o">-</span><span class="n">sink</span><span class="o">-</span><span class="n">task</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">run</span><span class="p">,</span><span class="n">docker</span><span class="o">-</span><span class="n">push</span><span class="p">,</span><span class="n">lint</span><span class="p">,</span><span class="n">manifest</span><span class="p">,</span><span class="n">manifest</span><span class="o">-</span><span class="n">download</span><span class="p">,</span><span class="n">test</span><span class="o">-</span><span class="n">paths</span><span class="p">,</span><span class="n">serve</span><span class="p">,</span><span class="n">serve</span><span class="o">-</span><span class="n">wave</span><span class="p">,</span><span class="n">run</span><span class="p">,</span><span class="n">create</span><span class="p">,</span><span class="n">update</span><span class="o">-</span><span class="n">expectations</span><span class="p">,</span><span class="n">files</span><span class="o">-</span><span class="n">changed</span><span class="p">,</span><span class="n">tests</span><span class="o">-</span><span class="n">affected</span><span class="p">,</span><span class="n">install</span><span class="p">,</span><span class="n">rev</span><span class="o">-</span><span class="nb">list</span><span class="p">,</span><span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">,</span><span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span><span class="p">}</span>
            <span class="o">...</span>
 </pre></div>
 </div>
@@ -400,50 +400,58 @@ a different set of command-line arguments.</p>
 </dl>
 </section>
 </section>
-<section id="serve-quic-transport">
-<h3>serve-quic-transport<a class="headerlink" href="#serve-quic-transport" title="Permalink to this headline">¶</a></h3>
-<p>Start the QUIC server for WebTransport</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">serve</span><span class="o">-</span><span class="n">quic</span><span class="o">-</span><span class="n">transport</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CERTIFICATE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span> <span class="n">HOST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">-</span><span class="n">k</span> <span class="n">PRIVATE_KEY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">handlers</span><span class="o">-</span><span class="n">path</span> <span class="n">HANDLERS_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span>
-</pre></div>
-</div>
-<section id="Named Arguments_repeat11">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>-c, --certificate</kbd></dt>
-<dd><p>load the TLS certificate from the specified file</p>
-<p>Default: “/home/runner/work/wpt/wpt/tools/quic/certs/cert.pem”</p>
-</dd>
-<dt><kbd>--host</kbd></dt>
-<dd><p>listen on the specified address (defaults to ::)</p>
-<p>Default: “::”</p>
-</dd>
-<dt><kbd>--port</kbd></dt>
-<dd><p>listen on the specified port (defaults to 4433)</p>
-<p>Default: 4433</p>
-</dd>
-<dt><kbd>-k, --private-key</kbd></dt>
-<dd><p>load the TLS private key from the specified file</p>
-<p>Default: “/home/runner/work/wpt/wpt/tools/quic/certs/cert.key”</p>
-</dd>
-<dt><kbd>--handlers-path</kbd></dt>
-<dd><p>the directory path of QuicTransport event handlers</p>
-<p>Default: “/home/runner/work/wpt/wpt/tools/quic/../../webtransport/quic/handlers”</p>
-</dd>
-<dt><kbd>-v, --verbose</kbd></dt>
-<dd><p>increase logging verbosity</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</section>
-</section>
 <section id="serve">
 <h3>serve<a class="headerlink" href="#serve" title="Permalink to this headline">¶</a></h3>
 <p>Run wptserve server</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">serve</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">latency</span> <span class="n">LATENCY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG_PATH</span><span class="p">]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">doc_root</span> <span class="n">DOC_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ws_doc_root</span> <span class="n">WS_DOC_ROOT</span><span class="p">]</span>
-          <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">h2</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quic</span><span class="o">-</span><span class="n">transport</span><span class="p">]</span>
-          <span class="p">[</span><span class="o">--</span><span class="n">webtransport</span><span class="o">-</span><span class="n">h3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">h2</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">webtransport</span><span class="o">-</span><span class="n">h3</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="Named Arguments_repeat11">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--latency</kbd></dt>
+<dd><p>Artificial latency to add before sending http responses, in ms</p>
+</dd>
+<dt><kbd>--config</kbd></dt>
+<dd><p>Path to external config file</p>
+</dd>
+<dt><kbd>--doc_root</kbd></dt>
+<dd><p>Path to document root. Overrides config.</p>
+</dd>
+<dt><kbd>--ws_doc_root</kbd></dt>
+<dd><p>Path to WebSockets document root. Overrides config.</p>
+</dd>
+<dt><kbd>--alias_file</kbd></dt>
+<dd><p>File with entries for aliases/multiple doc roots. In form of <cite>/ALIAS_NAME/, DOC_ROOTn</cite></p>
+</dd>
+<dt><kbd>--no-h2</kbd></dt>
+<dd><p>Disable the HTTP/2.0 server</p>
+</dd>
+<dt><kbd>--webtransport-h3</kbd></dt>
+<dd><p>Enable WebTransport over HTTP/3 server</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--exit-after-start</kbd></dt>
+<dd><p>Exit after starting servers</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--verbose</kbd></dt>
+<dd><p>Enable verbose logging</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="serve-wave">
+<h3>serve-wave<a class="headerlink" href="#serve-wave" title="Permalink to this headline">¶</a></h3>
+<p>Run wptserve server for WAVE</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">serve</span><span class="o">-</span><span class="n">wave</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">latency</span> <span class="n">LATENCY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG_PATH</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">doc_root</span> <span class="n">DOC_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ws_doc_root</span> <span class="n">WS_DOC_ROOT</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">h2</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">webtransport</span><span class="o">-</span><span class="n">h3</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments_repeat12">
@@ -466,59 +474,6 @@ a different set of command-line arguments.</p>
 </dd>
 <dt><kbd>--no-h2</kbd></dt>
 <dd><p>Disable the HTTP/2.0 server</p>
-</dd>
-<dt><kbd>--quic-transport</kbd></dt>
-<dd><p>Enable QUIC server for WebTransport</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--webtransport-h3</kbd></dt>
-<dd><p>Enable WebTransport over HTTP/3 server</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--exit-after-start</kbd></dt>
-<dd><p>Exit after starting servers</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--verbose</kbd></dt>
-<dd><p>Enable verbose logging</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</section>
-</section>
-<section id="serve-wave">
-<h3>serve-wave<a class="headerlink" href="#serve-wave" title="Permalink to this headline">¶</a></h3>
-<p>Run wptserve server for WAVE</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">serve</span><span class="o">-</span><span class="n">wave</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">latency</span> <span class="n">LATENCY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG_PATH</span><span class="p">]</span>
-               <span class="p">[</span><span class="o">--</span><span class="n">doc_root</span> <span class="n">DOC_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ws_doc_root</span> <span class="n">WS_DOC_ROOT</span><span class="p">]</span>
-               <span class="p">[</span><span class="o">--</span><span class="n">alias_file</span> <span class="n">ALIAS_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">h2</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quic</span><span class="o">-</span><span class="n">transport</span><span class="p">]</span>
-               <span class="p">[</span><span class="o">--</span><span class="n">webtransport</span><span class="o">-</span><span class="n">h3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="p">]</span>
-</pre></div>
-</div>
-<section id="Named Arguments_repeat13">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--latency</kbd></dt>
-<dd><p>Artificial latency to add before sending http responses, in ms</p>
-</dd>
-<dt><kbd>--config</kbd></dt>
-<dd><p>Path to external config file</p>
-</dd>
-<dt><kbd>--doc_root</kbd></dt>
-<dd><p>Path to document root. Overrides config.</p>
-</dd>
-<dt><kbd>--ws_doc_root</kbd></dt>
-<dd><p>Path to WebSockets document root. Overrides config.</p>
-</dd>
-<dt><kbd>--alias_file</kbd></dt>
-<dd><p>File with entries for aliases/multiple doc roots. In form of <cite>/ALIAS_NAME/, DOC_ROOTn</cite></p>
-</dd>
-<dt><kbd>--no-h2</kbd></dt>
-<dd><p>Disable the HTTP/2.0 server</p>
-</dd>
-<dt><kbd>--quic-transport</kbd></dt>
-<dd><p>Enable QUIC server for WebTransport</p>
-<p>Default: False</p>
 </dd>
 <dt><kbd>--webtransport-h3</kbd></dt>
 <dd><p>Enable WebTransport over HTTP/3 server</p>
@@ -556,23 +511,22 @@ a different set of command-line arguments.</p>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">chaos</span><span class="o">-</span><span class="n">mode</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span> <span class="n">VERIFY_MAX_TIME</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span> <span class="o">|</span> <span class="o">--</span><span class="n">verify</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">wdspec</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">testharness</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">types</span> <span class="p">[{</span><span class="n">testharness</span><span class="p">,</span><span class="n">crashtest</span><span class="p">,</span><span class="n">reftest</span><span class="p">,</span><span class="nb">print</span><span class="o">-</span><span class="n">reftest</span><span class="p">,</span><span class="n">wdspec</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span> <span class="n">INCLUDE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">file</span> <span class="n">INCLUDE_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">manifest</span> <span class="n">INCLUDE_MANIFEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">groups</span> <span class="n">TEST_GROUPS_FILE</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">timeout</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">implementation</span><span class="o">-</span><span class="n">status</span> <span class="p">{</span><span class="ow">not</span><span class="o">-</span><span class="n">implementing</span><span class="p">,</span><span class="n">backlog</span><span class="p">,</span><span class="n">implementing</span><span class="p">}]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">quic</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">webtransport</span><span class="o">-</span><span class="n">h3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tag</span> <span class="n">TAGS</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">exclude</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debugger</span> <span class="p">[</span><span class="n">DEBUGGER</span><span class="p">]]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">debugger</span><span class="o">-</span><span class="n">args</span> <span class="n">DEBUGGER_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rerun</span> <span class="n">RERUN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">repeat</span> <span class="n">REPEAT</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="n">until</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pause</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">test</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">pause</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">test</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="o">-</span><span class="n">test</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pause</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">restart</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">symbols</span><span class="o">-</span><span class="n">path</span> <span class="n">SYMBOLS_PATH</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">stackwalk</span><span class="o">-</span><span class="n">binary</span> <span class="n">STACKWALK_BINARY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pdb</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">binary</span> <span class="n">BINARY</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">binary</span><span class="o">-</span><span class="n">arg</span> <span class="n">BINARY_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">binary</span> <span class="n">BINARY</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">arg</span> <span class="n">WEBDRIVER_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">adb</span><span class="o">-</span><span class="n">binary</span> <span class="n">ADB_BINARY</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">package</span><span class="o">-</span><span class="n">name</span> <span class="n">PACKAGE_NAME</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">device</span><span class="o">-</span><span class="n">serial</span> <span class="n">DEVICE_SERIAL</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">metadata</span> <span class="n">METADATA_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tests</span> <span class="n">TESTS_ROOT</span><span class="p">]</span>
-        <span class="p">[</span><span class="o">--</span><span class="n">manifest</span> <span class="n">MANIFEST_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">run</span><span class="o">-</span><span class="n">info</span> <span class="n">RUN_INFO</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">webtransport</span><span class="o">-</span><span class="n">h3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tag</span> <span class="n">TAGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">exclude</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">debugger</span> <span class="p">[</span><span class="n">DEBUGGER</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">debugger</span><span class="o">-</span><span class="n">args</span> <span class="n">DEBUGGER_ARGS</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">rerun</span> <span class="n">RERUN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">repeat</span> <span class="n">REPEAT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">repeat</span><span class="o">-</span><span class="n">until</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">pause</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">test</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">pause</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">test</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="o">-</span><span class="n">test</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">pause</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">restart</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">unexpected</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">symbols</span><span class="o">-</span><span class="n">path</span> <span class="n">SYMBOLS_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">stackwalk</span><span class="o">-</span><span class="n">binary</span> <span class="n">STACKWALK_BINARY</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">pdb</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">binary</span> <span class="n">BINARY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">binary</span><span class="o">-</span><span class="n">arg</span> <span class="n">BINARY_ARGS</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">binary</span> <span class="n">BINARY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">webdriver</span><span class="o">-</span><span class="n">arg</span> <span class="n">WEBDRIVER_ARGS</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">adb</span><span class="o">-</span><span class="n">binary</span> <span class="n">ADB_BINARY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">package</span><span class="o">-</span><span class="n">name</span> <span class="n">PACKAGE_NAME</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">device</span><span class="o">-</span><span class="n">serial</span> <span class="n">DEVICE_SERIAL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metadata</span> <span class="n">METADATA_ROOT</span><span class="p">]</span>
+        <span class="p">[</span><span class="o">--</span><span class="n">tests</span> <span class="n">TESTS_ROOT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manifest</span> <span class="n">MANIFEST_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">run</span><span class="o">-</span><span class="n">info</span> <span class="n">RUN_INFO</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">product</span> <span class="p">{</span><span class="n">android_weblayer</span><span class="p">,</span><span class="n">android_webview</span><span class="p">,</span><span class="n">chrome</span><span class="p">,</span><span class="n">chrome_android</span><span class="p">,</span><span class="n">chrome_ios</span><span class="p">,</span><span class="n">edgechromium</span><span class="p">,</span><span class="n">edge</span><span class="p">,</span><span class="n">edge_webdriver</span><span class="p">,</span><span class="n">firefox</span><span class="p">,</span><span class="n">firefox_android</span><span class="p">,</span><span class="n">ie</span><span class="p">,</span><span class="n">safari</span><span class="p">,</span><span class="n">sauce</span><span class="p">,</span><span class="n">servo</span><span class="p">,</span><span class="n">servodriver</span><span class="p">,</span><span class="n">opera</span><span class="p">,</span><span class="n">webkit</span><span class="p">,</span><span class="n">webkitgtk_minibrowser</span><span class="p">,</span><span class="n">epiphany</span><span class="p">}]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">browser</span><span class="o">-</span><span class="n">version</span> <span class="n">BROWSER_VERSION</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">browser</span><span class="o">-</span><span class="n">channel</span> <span class="n">BROWSER_CHANNEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span>
@@ -627,8 +581,8 @@ a different set of command-line arguments.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat14">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat13">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--channel</kbd></dt>
 <dd><p>Possible choices: stable, release, beta, dev, canary, nightly, preview, experimental</p>
@@ -756,9 +710,9 @@ channel.) This flag overrides –browser-channel.</p>
 <h4>Test Selection<a class="headerlink" href="#Test Selection" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--test-types</kbd></dt>
-<dd><p>Possible choices: wdspec, print-reftest, reftest, crashtest, testharness</p>
+<dd><p>Possible choices: testharness, crashtest, reftest, print-reftest, wdspec</p>
 <p>Test types to run</p>
-<p>Default: {‘wdspec’, ‘print-reftest’, ‘reftest’, ‘crashtest’, ‘testharness’}</p>
+<p>Default: {‘testharness’, ‘crashtest’, ‘reftest’, ‘print-reftest’, ‘wdspec’}</p>
 </dd>
 <dt><kbd>--include</kbd></dt>
 <dd><p>URL prefix to include</p>
@@ -782,10 +736,6 @@ channel.) This flag overrides –browser-channel.</p>
 <dt><kbd>--skip-implementation-status</kbd></dt>
 <dd><p>Possible choices: not-implementing, backlog, implementing</p>
 <p>Skip tests that have the given implementation status</p>
-</dd>
-<dt><kbd>--enable-quic</kbd></dt>
-<dd><p>Enable tests that require QUIC server (default: false)</p>
-<p>Default: False</p>
 </dd>
 <dt><kbd>--enable-webtransport-h3</kbd></dt>
 <dd><p>Enable tests that require WebTransport over HTTP/3 server (default: false)</p>
@@ -1206,8 +1156,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat15">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat14">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--no-editor</kbd></dt>
 <dd><p>Don’t try to open the test in an editor</p>
@@ -1286,8 +1236,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat16">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat15">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--product</kbd></dt>
 <dd><p>Possible choices: android_weblayer, android_webview, chrome, chrome_android, chrome_ios, edgechromium, edge, edge_webdriver, firefox, firefox_android, ie, safari, sauce, servo, servodriver, opera, webkit, webkitgtk_minibrowser, epiphany</p>
@@ -1454,8 +1404,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat17">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat17" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat16">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--ignore-rule</kbd></dt>
 <dd><p>Override the rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything. This flag can be used multiple times for multiple rules. Specifying this flag overrides the default: resources/testharness*, resources/testdriver*</p>
@@ -1495,8 +1445,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat18">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat18" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat17">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat17" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--ignore-rule</kbd></dt>
 <dd><p>Override the rules for paths to exclude from lists of changes. Rules are paths relative to the test root, with * before a separator or the end matching anything other than a path separator and ** in that position matching anything. This flag can be used multiple times for multiple rules. Specifying this flag overrides the default: resources/testharness*, resources/testdriver*</p>
@@ -1546,8 +1496,8 @@ channel.) This flag overrides –browser-channel.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat19">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat19" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat18">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat18" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--channel</kbd></dt>
 <dd><p>Possible choices: stable, release, beta, dev, canary, nightly, preview, experimental</p>
@@ -1579,8 +1529,8 @@ channel.) This flag overrides –browser-channel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">rev</span><span class="o">-</span><span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">epoch</span> <span class="n">EPOCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">count</span> <span class="n">MAX_COUNT</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat20">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat20" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat19">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat19" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--epoch</kbd></dt>
 <dd><p>regular interval of time selected to get the tagged revisions. Valid values are digits followed by h/d/w (e.x. 9h, 9d, 9w …) where the mimimun selectable interval is one hour (1h)</p>
@@ -1599,8 +1549,8 @@ channel.) This flag overrides –browser-channel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">install</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat21">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat21" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat20">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat20" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--reinstall</kbd></dt>
 <dd><p>Force reinstall even if the emulator already exists</p>
@@ -1615,8 +1565,8 @@ channel.) This flag overrides –browser-channel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wpt</span> <span class="n">start</span><span class="o">-</span><span class="n">android</span><span class="o">-</span><span class="n">emulator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reinstall</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat22">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat22" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat21">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat21" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--reinstall</kbd></dt>
 <dd><p>Force reinstall even if the emulator already exists</p>

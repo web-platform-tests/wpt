@@ -51,7 +51,6 @@ precise details of the response:</p>
 <ul class="simple">
 <li><p><em>wptserve</em>, a custom Python HTTP server</p></li>
 <li><p><em>pywebsocket</em>, an existing websockets server</p></li>
-<li><p><em>tools/quic</em>, a custom Python 3 QUIC server using <code class="docutils literal notranslate"><span class="pre">aioquic</span></code></p></li>
 </ul>
 <p>wptserve is a Python-based web server. By default it serves static
 files in the test suite. For more sophisticated requirements, several
@@ -149,27 +148,13 @@ supported in
 <a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</p>
 </div></blockquote>
 </section>
-<section id="tests-requiring-quic">
-<h2>Tests Requiring QUIC<a class="headerlink" href="#tests-requiring-quic" title="Permalink to this headline">¶</a></h2>
-<p>We do not support loading a test over QUIC yet, but a test can establish a QUIC
-connection to the test server (e.g. for WebTransport, similar to WebSocket).
-Since the QUIC server is not yet enabled by default, tests must explicitly
-declare that they need access to the QUIC server:</p>
-<ul class="simple">
-<li><p>For HTML tests (including testharness.js and reference tests), add the
-following element:</p></li>
-</ul>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;quic&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;true&quot;</span><span class="p">&gt;</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li><p>For JavaScript tests (auto-generated tests), add the following comment:</p></li>
-</ul>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// META: quic=true</span>
-</pre></div>
-</div>
-<p>The QUIC server is not yet enabled by default, so QUIC tests will be skipped
-unless <code class="docutils literal notranslate"><span class="pre">--enable-quic</span></code> is specified to <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code>.</p>
+<section id="tests-requiring-webtransport-over-http-3">
+<h2>Tests Requiring WebTransport over HTTP/3<a class="headerlink" href="#tests-requiring-webtransport-over-http-3" title="Permalink to this headline">¶</a></h2>
+<p>We do not support loading a test over WebTransport over HTTP/3 yet, but a test
+can establish a WebTransport session to the test server.</p>
+<p>The WebTransport over HTTP/3 server is not yet enabled by default, so
+WebTransport tests will fail unless <code class="docutils literal notranslate"><span class="pre">--enable-webtransport</span></code> is specified to
+<code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">run</span></code>.</p>
 </section>
 <section id="test-features-specified-as-query-params">
 <h2>Test Features specified as query params<a class="headerlink" href="#test-features-specified-as-query-params" title="Permalink to this headline">¶</a></h2>

@@ -885,6 +885,7 @@ class ConfigBuilder(config.ConfigBuilder):
             "https-public": ["auto"],
             "ws": ["auto"],
             "wss": ["auto"],
+            "webtransport-h3": ["auto"],
         },
         "check_subdomains": True,
         "log_level": "info",
@@ -950,10 +951,6 @@ def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs)
         enable_http2 = True
     if enable_http2:
         rv._default["ports"]["h2"] = [9000]
-
-    # Provide a default port number for WebTransport over HTTP/3 even if it is not
-    # enabled so that port substitutions work.
-    rv._default["ports"]["webtransport-h3"] = [11000]
 
     if override_path and os.path.exists(override_path):
         with open(override_path) as f:

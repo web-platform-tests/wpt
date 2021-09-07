@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Selectors Invalidation: attribute selectors in :has() argument</title>
+<link rel="author" title="Byungwoo Lee" href="mailto:blee@igalia.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://drafts.csswg.org/selectors/#relational">
+<style>
+div { color: grey }
+.parent > .subject:has(> .child) { color: red }
+.subject:has(> .child) { color: green }
+.subject:has(.descendant) { color: yellowgreen }
+.subject:has(.descendant ~ .next_sibling_of_descendant) { color: darkgreen }
+.subject:has(.descendant > .child_of_descendant) { color: darkseagreen }
+.subject:has(.descendant1) { color: plum }
+.subject:has(.descendant1.descendant2) { color: peachpuff }
+.subject:has(+ .direct_next_sibling) { color: blue }
+.subject:has(~ .next_sibling) { color: skyblue }
+.subject:has(~ .next_sibling .descendant_of_next_sibling) { color: blueviolet }
+.subject:has(~ .next_sibling + .direct_next_sibling_of_next_sibling) { color: navy }
+.subject:is(:has(.descendant_or_next_sibling), :has(~ .descendant_or_next_sibling)) { color: indigo }
+</style>
+<main id=main>
+  <div id=div_parent>
+    <div id=div_subject class="subject">
+      <div id=div_child>
+        <div id=div_grandchild>
+          <div id=div_descendant></div>
+        </div>
+      </div>
+      <div id=div_next_sibling_of_child></div>
+    </div>
+    <div id=div_direct_next_sibling>
+      <div id=div_child_of_direct_next_sibling></div>
+    </div>
+    <div id=div_indirect_next_sibling></div>
+    <div id=div_succeeding></div>
+  </div>
+</main>
+<script>
+  let grey = 'rgb(128, 128, 128)';
+  let red = 'rgb(255, 0, 0)';
+  let green = 'rgb(0, 128, 0)';
+  let yellowgreen = 'rgb(154, 205, 50)';
+  let darkgreen = 'rgb(0, 100, 0)';
+  let darkseagreen = 'rgb(143, 188, 143)';
+  let blue = 'rgb(0, 0, 255)';
+  let skyblue = 'rgb(135, 206, 235)';
+  let navy = 'rgb(0, 0, 128)';
+  let blueviolet = 'rgb(138, 43, 226)';
+  let indigo = 'rgb(75, 0, 130)';
+  let plum = 'rgb(221, 160, 221)';
+  let peachpuff = 'rgb(255, 218, 185)';
+
+
+  function test_div(test_name, id, color) {
+    test(function() {
+      assert_equals(getComputedStyle(id).color, color);
+    }, test_name + ': div#' + id.id + '.color');
+  }
+
+  test_div('initial_color', div_parent, grey);
+  test_div('initial_color', div_subject, grey);
+  test_div('initial_color', div_child, grey);
+  test_div('initial_color', div_grandchild, grey);
+  test_div('initial_color', div_descendant, grey);
+  test_div('initial_color', div_direct_next_sibling, grey);
+  test_div('initial_color', div_indirect_next_sibling, grey);
+  test_div('initial_color', div_succeeding, grey);
+
+  div_parent.classList.add('parent');
+  test_div('add .parent to #div_parent', div_subject, grey);
+  div_child.classList.add('child');
+  test_div('add .child to .parent > #div_child', div_subject, red);
+  div_child.classList.remove('child');
+  test_div('remove .child from .parent > #div_child', div_subject, grey);
+  div_parent.classList.remove('parent');
+  test_div('remove .parent from #div_parent', div_subject, grey);
+
+  div_child.classList.add('child');
+  test_div('add .child to #div_child', div_subject, green);
+  div_child.classList.remove('child');
+  test_div('remove .child from #div_child', div_subject, grey);
+
+  div_grandchild.classList.add('child');
+  test_div('add .child to #div_grandchild', div_subject, grey);
+  div_grandchild.classList.remove('child');
+  test_div('remove .child from #div_grandchild', div_subject, grey);
+
+  div_child.classList.add('descendant');
+  test_div('add .descendant to #div_child', div_subject, yellowgreen);
+  div_grandchild.classList.add('child_of_descendant');
+  test_div('add .child_of_descendant to #div_grandchild', div_subject, darkseagreen);
+  div_grandchild.classList.remove('child_of_descendant');
+  test_div('remove .child_of_descendant from #div_grandchild', div_subject, yellowgreen);
+  div_next_sibling_of_child.classList.add('next_sibling_of_descendant');
+  test_div('add .next_sibling_of_descendant to #div_next_sibling_of_child', div_subject, darkgreen);
+  div_next_sibling_of_child.classList.remove('next_sibling_of_descendant');
+  test_div('remove .next_sibling_of_descendant from #div_next_sibling_of_child', div_subject, yellowgreen);
+  div_child.classList.remove('descendant');
+  test_div('remove .descendant from #div_child', div_subject, grey);
+
+  div_grandchild.classList.add('descendant1');
+  test_div('add .descendant1 to #div_grandchild', div_subject, plum);
+  div_grandchild.classList.add('descendant2');
+  test_div('add .descendant2 to #div_grandchild', div_subject, peachpuff);
+  div_grandchild.classList.remove('descendant2');
+  test_div('remove .descendant2 from #div_grandchild', div_subject, plum);
+  div_grandchild.classList.remove('descendant1');
+  test_div('remove .descendant1 from #div_grandchild', div_subject, grey);
+  div_grandchild.classList.add('descendant1');
+  div_grandchild.classList.add('descendant2');
+  test_div('add .descendant1, .descendant2 to #div_grandchild', div_subject, peachpuff);
+  div_grandchild.classList.remove('descendant1');
+  div_grandchild.classList.remove('descendant2');
+  test_div('remove .descendant1, .descendant2 from #div_grandchild', div_subject, grey);
+
+  div_direct_next_sibling.classList.add('direct_next_sibling');
+  test_div('add .direct_next_sibling to #div_direct_next_sibling', div_subject, blue);
+  div_direct_next_sibling.classList.remove('direct_next_sibling');
+  test_div('remove .direct_next_sibling from #div_direct_next_sibling', div_subject, grey);
+
+  div_indirect_next_sibling.classList.add('direct_next_sibling');
+  test_div('add .direct_next_sibling to #div_indirect_next_sibling', div_subject, grey);
+  div_indirect_next_sibling.classList.remove('direct_next_sibling');
+  test_div('remove .direct_next_sibling from #div_indirect_next_sibling', div_subject, grey);
+
+  div_direct_next_sibling.classList.add('next_sibling');
+  test_div('add .next_sibling to #div_direct_next_sibling', div_subject, skyblue);
+  div_indirect_next_sibling.classList.add('direct_next_sibling_of_next_sibling');
+  test_div('add .direct_next_sibling_of_next_sibling to #div_indirect_next_sibling', div_subject, navy);
+  div_indirect_next_sibling.classList.remove('direct_next_sibling_of_next_sibling');
+  test_div('remove .direct_next_sibling_of_next_sibling from #div_indirect_next_sibling', div_subject, skyblue);
+  div_child_of_direct_next_sibling.classList.add('descendant_of_next_sibling');
+  test_div('add .descendant_of_next_sibling to #div_child_of_direct_next_sibling', div_subject, blueviolet);
+  div_child_of_direct_next_sibling.classList.remove('descendant_of_next_sibling');
+  test_div('remove .descendant_of_next_sibling from #div_child_of_direct_next_sibling', div_subject, skyblue);
+  div_direct_next_sibling.classList.remove('next_sibling');
+  test_div('remove .next_sibling from #div_direct_next_sibling', div_subject, grey);
+
+  div_grandchild.classList.add('descendant_or_next_sibling');
+  test_div('add .descendant_or_next_sibling to #div_grandchild', div_subject, indigo);
+  div_grandchild.classList.remove('descendant_or_next_sibling');
+  test_div('remove .descendant_or_next_sibling from #div_grandchild', div_subject, grey);
+  div_indirect_next_sibling.classList.add('descendant_or_next_sibling');
+  test_div('add .descendant_or_next_sibling to #div_indirect_next_sibling', div_subject, indigo);
+  div_indirect_next_sibling.classList.remove('descendant_or_next_sibling');
+  test_div('remove .descendant_or_next_sibling to #div_indirect_next_sibling', div_subject, grey);
+
+</script>

@@ -951,7 +951,7 @@ def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs)
     if enable_http2:
         rv._default["ports"]["h2"] = [9000]
 
-    # Provide a default port number for WebTransport over HTTP/3 even it is not
+    # Provide a default port number for WebTransport over HTTP/3 even if it is not
     # enabled so that port substitutions work.
     rv._default["ports"]["webtransport-h3"] = [11000]
 

@@ -1,11 +1,10 @@
 import json
 import os
 import re
+from collections import OrderedDict
 from copy import deepcopy
 
-import six
 import yaml
-from six import iteritems
 
 here = os.path.dirname(__file__)
 
@@ -26,7 +25,7 @@ def load_task_file(path):
 
 
 def update_recursive(data, update_data):
-    for key, value in iteritems(update_data):
+    for key, value in update_data.items():
         if key not in data:
             data[key] = value
         else:
@@ -93,13 +92,13 @@ def replace_vars(input_string, variables):
 
 
 def sub_variables(data, variables):
-    if isinstance(data, six.string_types):
+    if isinstance(data, str):
         return replace_vars(data, variables)
     if isinstance(data, list):
         return [sub_variables(item, variables) for item in data]
     if isinstance(data, dict):
         return {key: sub_variables(value, variables)
-                for key, value in iteritems(data)}
+                for key, value in data.items()}
     return data
 
 
@@ -137,7 +136,7 @@ def expand_maps(task):
 
 
 def load_tasks(tasks_data):
-    map_resolved_tasks = {}
+    map_resolved_tasks = OrderedDict()
     tasks = []
 
     for task in tasks_data["tasks"]:
@@ -153,13 +152,13 @@ def load_tasks(tasks_data):
                 raise ValueError("Got duplicate task name %s" % new_name)
             map_resolved_tasks[new_name] = substitute_variables(data)
 
-    for task_default_name, data in iteritems(map_resolved_tasks):
+    for task_default_name, data in map_resolved_tasks.items():
         task = resolve_use(data, tasks_data["components"])
         task = resolve_name(task, task_default_name)
         tasks.extend(resolve_chunks(task))
 
     tasks = [substitute_variables(task_data) for task_data in tasks]
-    return {task["name"]: task for task in tasks}
+    return OrderedDict([(t["name"], t) for t in tasks])
 
 
 def load_tasks_from_path(path):

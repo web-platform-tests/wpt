@@ -71,8 +71,30 @@
       let request = new XMLHttpRequest();
       request.open('GET', 'https://trusttoken.example');
       request.setTrustToken({
-        type: "send-srr",
-        issuer: "not a valid URL"
+        type: "send-redemption-record",
+        issuers: []
+      });
+    });
+  }, 'Trust Tokens signing operations require at least one issuer URL.');
+
+  test(() => {
+    assert_throws_js(TypeError, () => {
+      let request = new XMLHttpRequest();
+      request.open('GET', 'https://trusttoken.example');
+      request.setTrustToken({
+        type: "send-redemption-record",
+        issuers: [3]
+      });
+    });
+  }, 'Trust Tokens operations require string issuer URLs, if provided.');
+
+  test(() => {
+    assert_throws_js(TypeError, () => {
+      let request = new XMLHttpRequest();
+      request.open('GET', 'https://trusttoken.example');
+      request.setTrustToken({
+        type: "send-redemption-record",
+        issuers: ["not a valid URL"]
       });
     });
   }, 'Trust Tokens operations require valid issuer URLs, if provided.');
@@ -82,8 +104,8 @@
       let request = new XMLHttpRequest();
       request.open('GET', 'https://trusttoken.example');
       request.setTrustToken({
-        type: "send-srr",
-        issuer: "http://not-secure.com"
+        type: "send-redemption-record",
+        issuers: ["http://not-secure.com"]
       });
     });
   }, 'Trust Tokens operations require secure issuer URLs, if provided.');
@@ -92,8 +114,8 @@
     let request = new XMLHttpRequest();
     request.open('GET', 'https://trusttoken.example');
     request.setTrustToken({
-      type: "send-srr",
-      issuer: "http://localhost"
+      type: "send-redemption-record",
+      issuers: ["http://localhost"]
     });
   }, 'Since localhost URLs are potentially trustworthy, setting an issuer to localhost should succeed.');
 </script>

@@ -1,7 +1,7 @@
-from __future__ import print_function
 import time
 import subprocess
 from .base import Browser, ExecutorBrowser, require_arg
+from .base import NullBrowser  # noqa: F401
 from ..webdriver_server import EdgeDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: F401
@@ -10,7 +10,8 @@ from ..executors.executoredge import EdgeDriverWdspecExecutor  # noqa: F401
 
 __wptrunner__ = {"product": "edge",
                  "check_args": "check_args",
-                 "browser": "EdgeBrowser",
+                 "browser": {None: "EdgeBrowser",
+                             "wdspec": "NullBrowser"},
                  "executor": {"testharness": "SeleniumTestharnessExecutor",
                               "reftest": "SeleniumRefTestExecutor",
                               "wdspec": "EdgeDriverWdspecExecutor"},
@@ -34,7 +35,7 @@ def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 
 
-def browser_kwargs(test_type, run_info_data, config, **kwargs):
+def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
     return {"webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs.get("webdriver_args"),
             "timeout_multiplier": get_timeout_multiplier(test_type,
@@ -42,10 +43,9 @@ def browser_kwargs(test_type, run_info_data, config, **kwargs):
                                                          **kwargs)}
 
 
-def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
+def executor_kwargs(logger, test_type, test_environment, run_info_data,
                     **kwargs):
-    executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, run_info_data, **kwargs)
+    executor_kwargs = base_executor_kwargs(test_type, test_environment, run_info_data, **kwargs)
     executor_kwargs["close_after_done"] = True
     executor_kwargs["timeout_multiplier"] = get_timeout_multiplier(test_type,
                                                                    run_info_data,
@@ -65,10 +65,10 @@ def env_options():
 
 
 class EdgeBrowser(Browser):
-    used_ports = set()
     init_timeout = 60
 
-    def __init__(self, logger, webdriver_binary, timeout_multiplier=None, webdriver_args=None):
+    def __init__(self, logger, webdriver_binary,
+            timeout_multiplier=None, webdriver_args=None, **kwargs):
         Browser.__init__(self, logger)
         self.server = EdgeDriverServer(self.logger,
                                        binary=webdriver_binary,
@@ -89,15 +89,15 @@ class EdgeBrowser(Browser):
         edge_proc_name = 'MicrosoftEdge.exe'
         for i in range(0,5):
             procs = subprocess.check_output(['tasklist', '/fi', 'ImageName eq ' + edge_proc_name])
-            if 'MicrosoftWebDriver.exe' not in procs:
+            if b'MicrosoftWebDriver.exe' not in procs:
                 # Edge driver process already exited, don't wait for browser process to exit
                 break
-            elif edge_proc_name in procs:
+            elif edge_proc_name.encode() in procs:
                 time.sleep(0.5)
             else:
                 break
 
-        if edge_proc_name in procs:
+        if edge_proc_name.encode() in procs:
             # close Edge process if it is still running
             subprocess.call(['taskkill.exe', '/f', '/im', 'microsoftedge*'])
 

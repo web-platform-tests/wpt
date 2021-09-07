@@ -124,6 +124,8 @@ const ALL_FEATURES = [
   'hit-test',
   'dom-overlay',
   'light-estimation',
+  'anchors',
+  'depth-sensing',
 ];
 
 const TRACKED_IMMERSIVE_DEVICE = {
@@ -131,7 +133,9 @@ const TRACKED_IMMERSIVE_DEVICE = {
     supportedModes: [ "inline", "immersive-vr"],
     views: VALID_VIEWS,
     viewerOrigin: IDENTITY_TRANSFORM,
-    supportedFeatures: ALL_FEATURES
+    supportedFeatures: ALL_FEATURES,
+    environmentBlendMode: "opaque",
+    interactionMode: "world-space"
 };
 
 const IMMERSIVE_AR_DEVICE = {
@@ -139,7 +143,9 @@ const IMMERSIVE_AR_DEVICE = {
   supportedModes: [ "inline", "immersive-ar"],
   views: VALID_VIEWS,
   viewerOrigin: IDENTITY_TRANSFORM,
-  supportedFeatures: ALL_FEATURES
+  supportedFeatures: ALL_FEATURES,
+  environmentBlendMode: "additive",
+  interactionMode: "screen-space"
 };
 
 const VALID_NON_IMMERSIVE_DEVICE = {
@@ -147,7 +153,9 @@ const VALID_NON_IMMERSIVE_DEVICE = {
     supportedModes: ["inline"],
     views: NON_IMMERSIVE_VIEWS,
     viewerOrigin: IDENTITY_TRANSFORM,
-    supportedFeatures: ALL_FEATURES
+    supportedFeatures: ALL_FEATURES,
+    environmentBlendMode: "opaque",
+    interactionMode: "screen-space"
 };
 
 const VALID_CONTROLLER = {

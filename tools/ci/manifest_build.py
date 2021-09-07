@@ -107,6 +107,7 @@ def get_pr(owner, repo, sha):
 
 
 def create_release(manifest_path, owner, repo, sha, tag, body):
+    logger.info("Creating a release for tag='%s', target_commitish='%s'" % (tag, sha))
     create_url = "https://api.github.com/repos/%s/%s/releases" % (owner, repo)
     create_data = {"tag_name": tag,
                    "target_commitish": sha,
@@ -138,7 +139,8 @@ def create_release(manifest_path, owner, repo, sha, tag, body):
 
     release_id = create_resp["id"]
     edit_url = "https://api.github.com/repos/%s/%s/releases/%s" % (owner, repo, release_id)
-    edit_data = {"draft": False}
+    edit_data = create_data.copy()
+    edit_data["draft"] = False
     edit_resp = request(edit_url, "Release publishing", method=requests.patch, json_data=edit_data)
     if not edit_resp:
         return False
@@ -173,7 +175,7 @@ def main():
     owner, repo = os.environ["GITHUB_REPOSITORY"].split("/", 1)
 
     git = get_git_cmd(wpt_root)
-    head_rev = git("rev-parse", "HEAD")
+    head_rev = git("rev-parse", "HEAD").strip()
     body = git("show", "--no-patch", "--format=%B", "HEAD")
 
     if dry_run:
@@ -191,6 +193,6 @@ def main():
 
 
 if __name__ == "__main__":
-    code = main()
+    code = main()  # type: ignore
     assert isinstance(code, int)
     sys.exit(code)

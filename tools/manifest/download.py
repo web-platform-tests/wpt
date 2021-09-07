@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import argparse
 import bz2
 import gzip
@@ -7,8 +5,7 @@ import json
 import io
 import os
 from datetime import datetime, timedelta
-
-from six.moves.urllib.request import urlopen
+from urllib.request import urlopen
 
 try:
     import zstandard
@@ -35,12 +32,12 @@ logger = log.get_logger()
 
 
 def abs_path(path):
-    # type: (str) -> str
+    # type: (Text) -> Text
     return os.path.abspath(os.path.expanduser(path))
 
 
 def should_download(manifest_path, rebuild_time=timedelta(days=5)):
-    # type: (str, timedelta) -> bool
+    # type: (Text, timedelta) -> bool
     if not os.path.exists(manifest_path):
         return True
     mtime = datetime.fromtimestamp(os.path.getmtime(manifest_path))
@@ -51,7 +48,7 @@ def should_download(manifest_path, rebuild_time=timedelta(days=5)):
 
 
 def merge_pr_tags(repo_root, max_count=50):
-    # type: (str, int) -> List[Text]
+    # type: (Text, int) -> List[Text]
     gitfunc = git(repo_root)
     tags = []  # type: List[Text]
     if gitfunc is None:
@@ -64,7 +61,7 @@ def merge_pr_tags(repo_root, max_count=50):
 
 
 def score_name(name):
-    # type: (str) -> Optional[int]
+    # type: (Text) -> Optional[int]
     """Score how much we like each filename, lower wins, None rejects"""
 
     # Accept both ways of naming the manifest asset, even though
@@ -111,7 +108,7 @@ def github_url(tags):
 
 
 def download_manifest(
-        manifest_path,  # type: str
+        manifest_path,  # type: Text
         tags_func,  # type: Callable[[], List[Text]]
         url_func,  # type: Callable[[List[Text]], Optional[List[Text]]]
         force=False  # type: bool
@@ -159,7 +156,8 @@ def download_manifest(
             fileobj = io.BytesIO(resp.read())
             try:
                 with gzip.GzipFile(fileobj=fileobj) as gzf:
-                    decompressed = gzf.read()  # type: ignore
+                    data = gzf.read()
+                    decompressed = data
             except IOError:
                 logger.warning("Failed to decompress downloaded file")
                 continue
@@ -194,7 +192,7 @@ def create_parser():
 
 
 def download_from_github(path, tests_root, force=False):
-    # type: (str, str, bool) -> bool
+    # type: (Text, Text, bool) -> bool
     return download_manifest(path, lambda: merge_pr_tags(tests_root), github_url,
                              force=force)
 

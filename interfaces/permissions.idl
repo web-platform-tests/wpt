@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Permissions (https://w3c.github.io/permissions/)
 
 dictionary PermissionDescriptor {
@@ -32,6 +32,28 @@ partial interface WorkerNavigator {
 [Exposed=(Window,Worker)]
 interface Permissions {
   Promise<PermissionStatus> query(object permissionDesc);
+};
+
+enum PermissionName {
+  "accelerometer",
+  "ambient-light-sensor",
+  "background-fetch",
+  "background-sync",
+  "bluetooth",
+  "camera",
+  "clipboard-write",
+  "device-info",
+  "display-capture",
+  "geolocation",
+  "gyroscope",
+  "magnetometer",
+  "microphone",
+  "midi",
+  "nfc",
+  "notifications",
+  "persistent-storage",
+  "push",
+  "speaker-selection",
 };
 
 dictionary PushPermissionDescriptor : PermissionDescriptor {

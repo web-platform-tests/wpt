@@ -1,4 +1,3 @@
-from __future__ import print_function
 import base64
 import json
 import os
@@ -7,7 +6,6 @@ import tempfile
 import threading
 import traceback
 import uuid
-from six import ensure_str, iteritems
 
 from mozprocess import ProcessHandler
 
@@ -20,10 +18,9 @@ from .base import (ConnectionlessProtocol,
                    reftest_result_converter,
                    TimedRunner,
                    WdspecExecutor,
-                   WebDriverProtocol)
+                   WdspecProtocol)
 from .process import ProcessTestExecutor
 from ..browsers.base import browser_command
-from ..process import cast_env
 from ..webdriver_server import ServoDriverServer
 
 
@@ -48,7 +45,7 @@ def build_servo_command(test, test_url_func, browser, binary, pause_after_test, 
         args += ["-Z", debug_opts]
     for stylesheet in browser.user_stylesheets:
         args += ["--user-stylesheet", stylesheet]
-    for pref, value in iteritems(test.environment.get('prefs', {})):
+    for pref, value in test.environment.get('prefs', {}).items():
         args += ["--pref", "%s=%s" % (pref, value)]
     if browser.ca_certificate_path:
         args += ["--certificate-path", browser.ca_certificate_path]
@@ -65,9 +62,9 @@ def build_servo_command(test, test_url_func, browser, binary, pause_after_test, 
 class ServoTestharnessExecutor(ProcessTestExecutor):
     convert_result = testharness_result_converter
 
-    def __init__(self, browser, server_config, timeout_multiplier=1, debug_info=None,
+    def __init__(self, logger, browser, server_config, timeout_multiplier=1, debug_info=None,
                  pause_after_test=False, **kwargs):
-        ProcessTestExecutor.__init__(self, browser, server_config,
+        ProcessTestExecutor.__init__(self, logger, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
         self.pause_after_test = pause_after_test
@@ -103,11 +100,11 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
             self.proc = ProcessHandler(self.command,
                                        processOutputLine=[self.on_output],
                                        onFinish=self.on_finish,
-                                       env=cast_env(env),
+                                       env=env,
                                        storeOutput=False)
             self.proc.run()
         else:
-            self.proc = subprocess.Popen(self.command, env=cast_env(env))
+            self.proc = subprocess.Popen(self.command, env=env)
 
         try:
             timeout = test.timeout * self.timeout_multiplier
@@ -182,10 +179,11 @@ class TempFilename(object):
 class ServoRefTestExecutor(ProcessTestExecutor):
     convert_result = reftest_result_converter
 
-    def __init__(self, browser, server_config, binary=None, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, binary=None, timeout_multiplier=1,
                  screenshot_cache=None, debug_info=None, pause_after_test=False,
                  **kwargs):
         ProcessTestExecutor.__init__(self,
+                                     logger,
                                      browser,
                                      server_config,
                                      timeout_multiplier=timeout_multiplier,
@@ -208,7 +206,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
         os.rmdir(self.tempdir)
         ProcessTestExecutor.teardown(self)
 
-    def screenshot(self, test, viewport_size, dpi):
+    def screenshot(self, test, viewport_size, dpi, page_ranges):
         with TempFilename(self.tempdir) as output_path:
             extra_args = ["--exit",
                           "--output=%s" % output_path,
@@ -234,7 +232,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             if not self.interactive:
                 self.proc = ProcessHandler(self.command,
                                            processOutputLine=[self.on_output],
-                                           env=cast_env(env))
+                                           env=env)
 
 
                 try:
@@ -246,7 +244,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
                     raise
             else:
                 self.proc = subprocess.Popen(self.command,
-                                             env=cast_env(env))
+                                             env=env)
                 try:
                     rv = self.proc.wait()
                 except KeyboardInterrupt:
@@ -263,7 +261,9 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             with open(output_path, "rb") as f:
                 # Might need to strip variable headers or something here
                 data = f.read()
-                return True, ensure_str(base64.b64encode(data))
+                # Returning the screenshot as a string could potentially be avoided,
+                # see https://github.com/web-platform-tests/wpt/issues/28929.
+                return True, [base64.b64encode(data).decode()]
 
     def do_test(self, test):
         result = self.implementation.run_test(test)
@@ -280,7 +280,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
                                        " ".join(self.command))
 
 
-class ServoDriverProtocol(WebDriverProtocol):
+class ServoDriverProtocol(WdspecProtocol):
     server_cls = ServoDriverServer
 
 
@@ -308,10 +308,11 @@ class ServoTimedRunner(TimedRunner):
 class ServoCrashtestExecutor(ProcessTestExecutor):
     convert_result = crashtest_result_converter
 
-    def __init__(self, browser, server_config, binary=None, timeout_multiplier=1,
+    def __init__(self, logger, browser, server_config, binary=None, timeout_multiplier=1,
                  screenshot_cache=None, debug_info=None, pause_after_test=False,
                  **kwargs):
         ProcessTestExecutor.__init__(self,
+                                     logger,
                                      browser,
                                      server_config,
                                      timeout_multiplier=timeout_multiplier,
@@ -355,11 +356,11 @@ class ServoCrashtestExecutor(ProcessTestExecutor):
 
         if not self.interactive:
             self.proc = ProcessHandler(command,
-                                       env=cast_env(env),
+                                       env=env,
                                        storeOutput=False)
             self.proc.run()
         else:
-            self.proc = subprocess.Popen(command, env=cast_env(env))
+            self.proc = subprocess.Popen(command, env=env)
 
         self.proc.wait()
 

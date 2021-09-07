@@ -3,7 +3,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/webxr_util.js"></script>
 <script src="resources/webxr_test_constants.js"></script>
-<canvas />
 
 <script>
 let immersiveTestName = "Ensure that the framebuffer given by the WebGL layer" +
@@ -43,7 +42,7 @@ let testFunction =
   const gl = sessionObjects.gl;
   const webglLayer = sessionObjects.glLayer;
   const xrFramebuffer = webglLayer.framebuffer;
-  const webglCanvas = document.getElementsByTagName('canvas')[0];
+  const webglCanvas = sessionObjects.gl.canvas;
 
   session.requestAnimationFrame((time, xrFrame) => {
     t.step(() => {
@@ -184,7 +183,7 @@ let testFunction =
 
     // check that the main color is used correctly (green)
     pixels[0] = pixels[1] = pixels[2] = pixels[3] = 30;
-    gl.readPixels(xrViewport.x + xrViewport.width / 2, xrViewport.y + xrViewport.height/4, 1, 1, gl.RGB, gl.UNSIGNED_BYTE, pixels);
+    gl.readPixels(xrViewport.x + xrViewport.width / 2, xrViewport.y + xrViewport.height/4, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
     if (pixels[0] == 0x0 && pixels[1] == 0xFF && pixels[2] == 0x0) { // green?
       // PASSED.
     } else if (pixels[0] == 0xFF && pixels[1] == 0xFF && pixels[2] == 0xFF) { // white?
@@ -195,7 +194,7 @@ let testFunction =
 
     // check if stencil worked, i.e. white pixels in the center
     pixels[0] = pixels[1] = pixels[2] = pixels[3] = 20;
-    gl.readPixels(xrViewport.x + xrViewport.width / 2, xrViewport.y + xrViewport.height/2, 1, 1, gl.RGB, gl.UNSIGNED_BYTE, pixels);
+    gl.readPixels(xrViewport.x + xrViewport.width / 2, xrViewport.y + xrViewport.height/2, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
     if (pixels[0] == 0xFF && pixels[1] == 0xFF && pixels[2] == 0xFF) { // white?
       // PASSED.
     } else if (pixels[0] == 0x0 && pixels[1] == 0xFF && pixels[2] == 0x0) { // green?

@@ -1,7 +1,7 @@
 import os
-from six.moves import cPickle as pickle  # noqa: N813
+import pickle
 
-here = os.path.abspath(os.path.split(__file__)[0])
+here = os.path.abspath(os.path.dirname(__file__))
 
 class BaseState(object):
     def __new__(cls, logger):
@@ -97,7 +97,7 @@ class SavedState(BaseState):
         try:
             if not os.path.isfile(cls.filename):
                 return None
-            with open(cls.filename) as f:
+            with open(cls.filename, "rb") as f:
                 try:
                     rv = pickle.load(f)
                     logger.debug("Loading data %r" % (rv._data,))
@@ -111,7 +111,7 @@ class SavedState(BaseState):
 
     def save(self):
         """Write the state to disk"""
-        with open(self.filename, "w") as f:
+        with open(self.filename, "wb") as f:
             pickle.dump(self, f)
 
     def clear(self):

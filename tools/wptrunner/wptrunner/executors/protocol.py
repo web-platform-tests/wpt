@@ -1,6 +1,7 @@
 import traceback
 
 from abc import ABCMeta, abstractmethod
+from typing import ClassVar, List, Type
 
 
 class Protocol(object):
@@ -16,7 +17,7 @@ class Protocol(object):
     :param Browser browser: The Browser using this protocol"""
     __metaclass__ = ABCMeta
 
-    implements = []
+    implements = []  # type: ClassVar[List[Type[ProtocolPart]]]
 
     def __init__(self, executor, browser):
         self.executor = executor
@@ -82,7 +83,7 @@ class ProtocolPart(object):
     :param Protocol parent: The parent protocol"""
     __metaclass__ = ABCMeta
 
-    name = None
+    name = None  # type: ClassVar[str]
 
     def __init__(self, parent):
         self.parent = parent
@@ -147,6 +148,11 @@ class BaseProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
+    def window_handles(self):
+        """Get a list of handles to top-level browsing contexts"""
+        pass
+
+    @abstractmethod
     def load(self, url):
         """Load a url in the current browsing context
 
@@ -189,6 +195,10 @@ class TestharnessProtocolPart(ProtocolPart):
         :returns: A protocol-specific window handle.
         """
         pass
+
+    @abstractmethod
+    def test_window_loaded(self):
+        """Wait until the newly opened test window has been loaded."""
 
 
 class PrefsProtocolPart(ProtocolPart):
@@ -241,28 +251,18 @@ class SelectorProtocolPart(ProtocolPart):
 
     name = "select"
 
-    def element_by_selector(self, element_selector, frame="window"):
-        elements = self.elements_by_selector_and_frame(element_selector, frame)
-        frame_name = "window"
-        if (frame != "window"):
-            frame_name = frame.id
+    def element_by_selector(self, element_selector):
+        elements = self.elements_by_selector(element_selector)
         if len(elements) == 0:
-            raise ValueError("Selector '%s' in frame '%s' matches no elements" % (element_selector, frame_name))
+            raise ValueError("Selector '%s' matches no elements" % (element_selector,))
         elif len(elements) > 1:
-            raise ValueError("Selector '%s' in frame '%s' matches multiple elements" % (element_selector, frame_name))
+            raise ValueError("Selector '%s' matches multiple elements" % (element_selector,))
         return elements[0]
 
     @abstractmethod
     def elements_by_selector(self, selector):
         """Select elements matching a CSS selector
 
-        :param str selector: The CSS selector
-        :returns: A list of protocol-specific handles to elements"""
-        pass
-
-    @abstractmethod
-    def elements_by_selector_and_frame(self, element_selector, frame):
-        """Select elements matching a CSS selector
         :param str selector: The CSS selector
         :returns: A list of protocol-specific handles to elements"""
         pass
@@ -279,6 +279,18 @@ class ClickProtocolPart(ProtocolPart):
         """Perform a trusted click somewhere on a specific element.
 
         :param element: A protocol-specific handle to an element."""
+        pass
+
+
+class CookiesProtocolPart(ProtocolPart):
+    """Protocol part for managing cookies"""
+    __metaclass__ = ABCMeta
+
+    name = "cookies"
+
+    @abstractmethod
+    def delete_all_cookies(self):
+        """Delete all cookies."""
         pass
 
 
@@ -349,13 +361,87 @@ class TestDriverProtocolPart(ProtocolPart):
     name = "testdriver"
 
     @abstractmethod
-    def send_message(self, message_type, status, message=None):
+    def send_message(self, cmd_id, message_type, status, message=None):
         """Send a testdriver message to the browser.
 
+        :param int cmd_id: The id of the command to which we're responding
         :param str message_type: The kind of the message.
         :param str status: Either "failure" or "success" depending on whether the
                            previous command succeeded.
         :param str message: Additional data to add to the message."""
+        pass
+
+    def switch_to_window(self, wptrunner_id, initial_window=None):
+        """Switch to a window given a wptrunner window id
+
+        :param str wptrunner_id: Testdriver-specific id for the target window
+        :param str initial_window: WebDriver window id for the test window"""
+        if wptrunner_id is None:
+            return
+
+        if initial_window is None:
+            initial_window = self.parent.base.current_window
+
+        stack = [str(item) for item in self.parent.base.window_handles()]
+        first = True
+        while stack:
+            item = stack.pop()
+
+            if item is None:
+                assert first is False
+                self._switch_to_parent_frame()
+                continue
+
+            if isinstance(item, str):
+                if not first or item != initial_window:
+                    self.parent.base.set_window(item)
+                first = False
+            else:
+                assert first is False
+                try:
+                    self._switch_to_frame(item)
+                except ValueError:
+                    # The frame no longer exists, or doesn't have a nested browsing context, so continue
+                    continue
+
+            try:
+                # Get the window id and a list of elements containing nested browsing contexts.
+                # For embed we can't tell fpr sure if there's a nested browsing context, so always return it
+                # and fail later if there isn't
+                result = self.parent.base.execute_script("""
+                let contextParents = Array.from(document.querySelectorAll("frame, iframe, embed, object"))
+                    .filter(elem => elem.localName !== "embed" ? (elem.contentWindow !== null) : true);
+                return [window.__wptrunner_id, contextParents]""")
+            except Exception:
+                continue
+
+            if result is None:
+                # With marionette at least this is possible if the content process crashed. Not quite
+                # sure how we want to handle that case.
+                continue
+
+            handle_window_id, nested_context_containers = result
+
+            if handle_window_id and str(handle_window_id) == wptrunner_id:
+                return
+
+            for elem in reversed(nested_context_containers):
+                # None here makes us switch back to the parent after we've processed the frame
+                stack.append(None)
+                stack.append(elem)
+
+        raise Exception("Window with id %s not found" % wptrunner_id)
+
+    @abstractmethod
+    def _switch_to_frame(self, index_or_elem):
+        """Switch to a frame in the current window
+
+        :param int index_or_elem: Frame id or container element"""
+        pass
+
+    @abstractmethod
+    def _switch_to_parent_frame(self):
+        """Switch to the parent of the current frame"""
         pass
 
 
@@ -387,6 +473,7 @@ class CoverageProtocolPart(ProtocolPart):
     def dump(self):
         """Dump coverage counters"""
         pass
+
 
 class VirtualAuthenticatorProtocolPart(ProtocolPart):
     """Protocol part for creating and manipulating virtual authenticators"""
@@ -446,3 +533,44 @@ class VirtualAuthenticatorProtocolPart(ProtocolPart):
         :param str authenticator_id: The ID of the authenticator
         :param bool uv: the user verified flag"""
         pass
+
+
+class PrintProtocolPart(ProtocolPart):
+    """Protocol part for rendering to a PDF."""
+    __metaclass__ = ABCMeta
+
+    name = "pdf_print"
+
+    @abstractmethod
+    def render_as_pdf(self, width, height):
+        """Output document as PDF"""
+        pass
+
+
+class DebugProtocolPart(ProtocolPart):
+    """Protocol part for debugging test failures."""
+    __metaclass__ = ABCMeta
+
+    name = "debug"
+
+    @abstractmethod
+    def load_devtools(self):
+        """Load devtools in the current window"""
+        pass
+
+    def load_reftest_analyzer(self, test, result):
+        import io
+        import mozlog
+        from urllib.parse import quote, urljoin
+
+        debug_test_logger = mozlog.structuredlog.StructuredLogger("debug_test")
+        output = io.StringIO()
+        debug_test_logger.suite_start([])
+        debug_test_logger.add_handler(mozlog.handlers.StreamHandler(output, formatter=mozlog.formatters.TbplFormatter()))
+        debug_test_logger.test_start(test.id)
+        # Always use PASS as the expected value so we get output even for expected failures
+        debug_test_logger.test_end(test.id, result["status"], "PASS", extra=result.get("extra"))
+
+        self.parent.base.load(urljoin(self.parent.executor.server_url("https"),
+                              "/common/third_party/reftest-analyzer.xhtml#log=%s" %
+                               quote(output.getvalue())))

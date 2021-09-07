@@ -1,7 +1,6 @@
-import mock
-from six import binary_type
+from unittest import mock
 
-from wptserve.request import Request, RequestHeaders
+from wptserve.request import Request, RequestHeaders, MultiDict
 
 
 class MockHTTPMessage(dict):
@@ -49,9 +48,9 @@ def test_request_headers_encoding():
         'x-bar': ['bar1', 'bar2'],
     })
     headers = RequestHeaders(raw_headers)
-    assert isinstance(headers['x-foo'], binary_type)
-    assert isinstance(headers['x-bar'], binary_type)
-    assert isinstance(headers.get_list('x-bar')[0], binary_type)
+    assert isinstance(headers['x-foo'], bytes)
+    assert isinstance(headers['x-bar'], bytes)
+    assert isinstance(headers.get_list('x-bar')[0], bytes)
 
 
 def test_request_url_from_server_address():
@@ -76,3 +75,30 @@ def test_request_url_from_host_header():
     request = Request(request_handler)
     assert request.url == 'http://web-platform.test:8001/demo'
     assert isinstance(request.url, str)
+
+
+def test_multidict():
+    m = MultiDict()
+    m["foo"] = "bar"
+    m["bar"] = "baz"
+    m.add("foo", "baz")
+    m.add("baz", "qux")
+
+    assert m["foo"] == "bar"
+    assert m.get("foo") == "bar"
+    assert m["bar"] == "baz"
+    assert m.get("bar") == "baz"
+    assert m["baz"] == "qux"
+    assert m.get("baz") == "qux"
+
+    assert m.first("foo") == "bar"
+    assert m.last("foo") == "baz"
+    assert m.get_list("foo") == ["bar", "baz"]
+    assert m.get_list("non_existent") == []
+
+    assert m.get("non_existent") is None
+    try:
+        m["non_existent"]
+        assert False, "An exception should be raised"
+    except KeyError:
+        pass

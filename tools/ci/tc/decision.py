@@ -7,7 +7,6 @@ import subprocess
 from collections import OrderedDict
 
 import taskcluster
-from six import iteritems, itervalues
 
 from . import taskgraph
 
@@ -47,8 +46,8 @@ def fetch_event_data(queue):
 
 def filter_triggers(event, all_tasks):
     is_pr, branch = get_triggers(event)
-    triggered = {}
-    for name, task in iteritems(all_tasks):
+    triggered = OrderedDict()
+    for name, task in all_tasks.items():
         if "trigger" in task:
             if is_pr and "pull-request" in task["trigger"]:
                 triggered[name] = task
@@ -102,9 +101,9 @@ def get_extra_jobs(event):
 
 
 def filter_schedule_if(event, tasks):
-    scheduled = {}
+    scheduled = OrderedDict()
     run_jobs = None
-    for name, task in iteritems(tasks):
+    for name, task in tasks.items():
         if "schedule-if" in task:
             if "run-job" in task["schedule-if"]:
                 if run_jobs is None:
@@ -138,7 +137,7 @@ def get_fetch_rev(event):
                 if not output:
                     logger.error("Failed to get commit for %s" % ref)
                 else:
-                    sha = output.split()[0]
+                    sha = output.decode("utf-8").split()[0]
             rv.append(sha)
         rv = tuple(rv)
     else:
@@ -199,7 +198,6 @@ def build_full_command(event, task):
 ~/start.sh \
   %(repo_url)s \
   %(fetch_ref)s;
-sudo add-apt-repository ppa:deadsnakes/ppa
 %(install_str)s
 cd web-platform-tests;
 ./tools/ci/run_tc.py %(options_str)s -- %(task_cmd)s;
@@ -239,13 +237,16 @@ def create_tc_task(event, task, taskgroup_id, depends_on_ids, env_extra=None):
         },
         "extra": {
             "github_event": json.dumps(event)
-        }
+        },
+        "routes": ["checks"]
     }
+    if "extra" in task:
+        task_data["extra"].update(task["extra"])
     if env_extra:
         task_data["payload"]["env"].update(env_extra)
     if depends_on_ids:
         task_data["dependencies"] = depends_on_ids
-        task_data["requires"] = "all-completed"
+        task_data["requires"] = task.get("requires", "all-completed")
     return task_id, task_data
 
 
@@ -281,14 +282,33 @@ def build_task_graph(event, all_tasks, tasks):
                                             env_extra=env_extra)
         task_id_map[task_name] = (task_id, task_data)
 
-    for task_name, task in iteritems(tasks):
+    for task_name, task in tasks.items():
+        if task_name == "sink-task":
+            # sink-task will be created below at the end of the ordered dict,
+            # so that it can depend on all other tasks.
+            continue
         add_task(task_name, task)
+
+    # GitHub branch protection for pull requests needs us to name explicit
+    # required tasks - which doesn't suffice when using a dynamic task graph.
+    # To work around this we declare a sink task that depends on all the other
+    # tasks completing, and checks if they have succeeded. We can then
+    # make the sink task the sole required task for pull requests.
+    sink_task = tasks.get("sink-task")
+    if sink_task:
+        logger.info("Scheduling sink-task")
+        depends_on_ids = [x[0] for x in task_id_map.values()]
+        sink_task["command"] += " {0}".format(" ".join(depends_on_ids))
+        task_id_map["sink-task"] = create_tc_task(
+            event, sink_task, taskgroup_id, depends_on_ids)
+    else:
+        logger.info("sink-task is not scheduled")
 
     return task_id_map
 
 
 def create_tasks(queue, task_id_map):
-    for (task_id, task_data) in itervalues(task_id_map):
+    for (task_id, task_data) in task_id_map.values():
         queue.createTask(task_id, task_data)
 
 

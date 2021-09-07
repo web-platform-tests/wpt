@@ -1,4 +1,3 @@
-<!doctype html>
 <meta name="timeout" content="long">
 <title>Cross-Origin-Embedder-Policy header and nested navigable resource without such header</title>
 <script src=/resources/testharness.js></script>
@@ -7,6 +6,7 @@
 <script src="/common/get-host-info.sub.js"></script>
 <div id=log></div>
 <script>
+
 const HOST = get_host_info();
 const BASE = new URL("resources", location).pathname;
 
@@ -42,20 +42,10 @@ async_test(t => {
 }, `"none" top-level: navigating a frame from "require-corp" to "none" should succeed`);
 
 async_test(t => {
-  const w = window.open(`resources/navigate-none.sub.html?to=navigate-require-corp.sub.html`, "window_name");
-  t.add_cleanup(() => w.close());
-
-  w.onload = t.step_func(() => {
-    w.history.back();
-    t.step_timeout(() => {
-      assert_not_equals(w.document, null);
-      t.done();
-    }, 1500);
-  });
-}, `"none" top-level: navigating a frame back from "require-corp" should succeed`);
-
-async_test(t => {
   let pageLoaded = false;
+  // TODO(arthursonzogni): Consider switching toward another message passing
+  // API like:
+  // /html/cross-origin-embedder-policy/credentialless/resources/dispatcher.js
   const bc = new BroadcastChannel(token());
   let finished = false;
   let doneCheck = _ => {

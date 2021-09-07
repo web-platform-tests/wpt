@@ -5,6 +5,7 @@
 -->
 <html>
 <head>
+  <meta name="timeout" content="long">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/testdriver.js"></script>
@@ -24,7 +25,7 @@
     let num_children_to_report = 3;
 
     function finishLoadPhase() {
-        assert_true(num_children_to_load == 0);
+        assert_equals(num_children_to_load, 0);
 
         test(() => {
             assert_false(navigator.userActivation.isActive);
@@ -35,7 +36,7 @@
     }
 
     function finishReportPhase() {
-        assert_true(num_children_to_report == 0);
+        assert_equals(num_children_to_report, 0);
 
         test(() => {
             assert_true(navigator.userActivation.isActive);

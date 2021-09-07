@@ -2,9 +2,9 @@ import base64
 import cgi
 import tempfile
 
-from six import BytesIO, binary_type, iteritems, PY3
-from six.moves.http_cookies import BaseCookie
-from six.moves.urllib.parse import parse_qsl, urlsplit
+from http.cookies import BaseCookie
+from io import BytesIO
+from urllib.parse import parse_qsl, urlsplit
 
 from . import stash
 from .utils import HTTPException, isomorphic_encode, isomorphic_decode
@@ -169,6 +169,10 @@ class Request(object):
     Regexp match object from matching the request path to the route
     selected for the request.
 
+    .. attribute:: client_address
+
+    Contains a tuple of the form (host, port) representing the client's address.
+
     .. attribute:: protocol_version
 
     HTTP version specified in the request.
@@ -245,6 +249,7 @@ class Request(object):
     def __init__(self, request_handler):
         self.doc_root = request_handler.server.router.doc_root
         self.route_match = None  # Set by the router
+        self.client_address = request_handler.client_address
 
         self.protocol_version = request_handler.protocol_version
         self.method = request_handler.command
@@ -294,7 +299,11 @@ class Request(object):
     @property
     def GET(self):
         if self._GET is None:
-            params = parse_qsl(self.url_parts.query, keep_blank_values=True)
+            kwargs = {
+                "keep_blank_values": True,
+                "encoding": "iso-8859-1",
+            }
+            params = parse_qsl(self.url_parts.query, **kwargs)
             self._GET = MultiDict()
             for key, value in params:
                 self._GET.add(isomorphic_encode(key), isomorphic_encode(value))
@@ -311,9 +320,8 @@ class Request(object):
                 "environ": {"REQUEST_METHOD": self.method},
                 "headers": self.raw_headers,
                 "keep_blank_values": True,
+                "encoding": "iso-8859-1",
             }
-            if PY3:
-                kwargs["encoding"] = "iso-8859-1"
             fs = cgi.FieldStorage(**kwargs)
             self._POST = MultiDict.from_field_storage(fs)
             self.raw_input.seek(pos)
@@ -326,7 +334,7 @@ class Request(object):
             cookie_headers = self.headers.get("cookie", b"")
             parser.load(cookie_headers)
             cookies = Cookies()
-            for key, value in iteritems(parser):
+            for key, value in parser.items():
                 cookies[isomorphic_encode(key)] = CookieValue(value)
             self._cookies = cookies
         return self._cookies
@@ -555,6 +563,17 @@ class MultiDict(dict):
             return default
         raise KeyError(key)
 
+    # We need to explicitly override dict.get; otherwise, it won't call
+    # __getitem__ and would return a list instead.
+    def get(self, key, default=None):
+        """Get the first value with a given key
+
+        :param key: The key to lookup
+        :param default: The default to return if key is
+                        not found (None by default)
+        """
+        return self.first(key, default)
+
     def get_list(self, key):
         """Get all values with a given key as a list
 
@@ -609,17 +628,15 @@ class BinaryCookieParser(BaseCookie):
         This overrides and calls BaseCookie.load. Unlike BaseCookie.load, it
         does not accept dictionaries.
         """
-        assert isinstance(rawdata, binary_type)
-        if PY3:
-            # BaseCookie.load expects a native string, which in Python 3 is text.
-            rawdata = isomorphic_decode(rawdata)
-        super(BinaryCookieParser, self).load(rawdata)
+        assert isinstance(rawdata, bytes)
+        # BaseCookie.load expects a native string
+        super(BinaryCookieParser, self).load(isomorphic_decode(rawdata))
 
 
 class Cookies(MultiDict):
     """MultiDict specialised for Cookie values
 
-    Keys and values are binary strings.
+    Keys are binary strings and values are CookieValue objects.
     """
     def __init__(self):
         pass
@@ -654,7 +671,7 @@ class Authentication(object):
 
         if "authorization" in headers:
             header = headers.get("authorization")
-            assert isinstance(header, binary_type)
+            assert isinstance(header, bytes)
             auth_type, data = header.split(b" ", 1)
             if auth_type in auth_schemes:
                 self.username, self.password = auth_schemes[auth_type](data)
@@ -662,6 +679,6 @@ class Authentication(object):
                 raise HTTPException(400, "Unsupported authentication scheme %s" % auth_type)
 
     def decode_basic(self, data):
-        assert isinstance(data, binary_type)
+        assert isinstance(data, bytes)
         decoded_data = base64.b64decode(data)
         return decoded_data.split(b":", 1)

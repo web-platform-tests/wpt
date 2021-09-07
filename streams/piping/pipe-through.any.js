@@ -106,17 +106,19 @@ for (const readable of badReadables) {
 
   test(() => {
     const rs = new ReadableStream();
-    const writable = new WritableStream();
     let writableGetterCalled = false;
-    assert_throws_js(TypeError, () => rs.pipeThrough({
-      get writable() {
-        writableGetterCalled = true;
-        return new WritableStream();
-      },
-      readable
-    }),
-                  'pipeThrough should brand-check readable');
-    assert_true(writableGetterCalled, 'writable should have been accessed');
+    assert_throws_js(
+      TypeError,
+      () => rs.pipeThrough({
+        get writable() {
+          writableGetterCalled = true;
+          return new WritableStream();
+        },
+        readable
+      }),
+      'pipeThrough should brand-check readable'
+    );
+    assert_false(writableGetterCalled, 'writable should not have been accessed');
   }, `pipeThrough should brand-check readable and not allow '${readable}'`);
 }
 
@@ -150,7 +152,7 @@ test(t => {
   }, { highWaterMark: 0 });
 
   const throwingWritable = {
-    readable: {},
+    readable: rs,
     get writable() {
       throw error;
     }
@@ -264,3 +266,66 @@ test(() => {
     }
   }), 'pipeThrough should throw');
 }, 'pipeThrough() should throw if an option getter grabs a writer');
+
+test(() => {
+  const rs = new ReadableStream();
+  const readable = new ReadableStream();
+  const writable = new WritableStream();
+  rs.pipeThrough({readable, writable}, null);
+}, 'pipeThrough() should not throw if option is null');
+
+test(() => {
+  const rs = new ReadableStream();
+  const readable = new ReadableStream();
+  const writable = new WritableStream();
+  rs.pipeThrough({readable, writable}, {signal:undefined});
+}, 'pipeThrough() should not throw if signal is undefined');
+
+function tryPipeThrough(pair, options)
+{
+  const rs = new ReadableStream();
+  if (!pair)
+    pair = {readable:new ReadableStream(), writable:new WritableStream()};
+  try {
+    rs.pipeThrough(pair, options)
+  } catch (e) {
+    return e;
+  }
+}
+
+test(() => {
+  let result = tryPipeThrough({
+    get readable() {
+      return new ReadableStream();
+    },
+    get writable() {
+      throw "writable threw";
+    }
+  }, { });
+  assert_equals(result, "writable threw");
+
+  result = tryPipeThrough({
+    get readable() {
+      throw "readable threw";
+    },
+    get writable() {
+      throw "writable threw";
+    }
+  }, { });
+  assert_equals(result, "readable threw");
+
+  result = tryPipeThrough({
+    get readable() {
+      throw "readable threw";
+    },
+    get writable() {
+      throw "writable threw";
+    }
+  }, {
+    get preventAbort() {
+      throw "preventAbort threw";
+    }
+  });
+  assert_equals(result, "readable threw");
+
+}, 'pipeThrough() should throw if readable/writable getters throw');

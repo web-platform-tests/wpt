@@ -1,5 +1,5 @@
 # This is the configuration file for Azure Pipelines, used to run tests on
-# macOS. Documentation to help understand this setup:
+# macOS and Windows. Documentation to help understand this setup:
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/triggers
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/multiple-phases
@@ -25,6 +25,11 @@ trigger:
 - triggers/safari_stable
 - triggers/safari_preview
 
+# Set safaridriver_diagnose to true to enable safaridriver diagnostics. The
+# logs won't appear in `./wpt run` output but will be uploaded as an artifact.
+variables:
+  safaridriver_diagnose: false
+
 jobs:
 # The affected tests jobs are unconditional for speed, as most PRs have one or
 # more affected tests: https://github.com/web-platform-tests/wpt/issues/13936.
@@ -32,11 +37,11 @@ jobs:
   displayName: 'affected tests: Safari Technology Preview'
   condition: eq(variables['Build.Reason'], 'PullRequest')
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
+      versionSpec: '3.9'
   - template: tools/ci/azure/affected_tests.yml
     parameters:
       artifactName: 'safari-preview-affected-tests'
@@ -49,11 +54,11 @@ jobs:
   displayName: 'affected tests without changes: Safari Technology Preview'
   condition: eq(variables['Build.Reason'], 'PullRequest')
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
+      versionSpec: '3.9'
   - template: tools/ci/azure/affected_tests.yml
     parameters:
       checkoutCommit: 'HEAD^1'
@@ -70,10 +75,15 @@ jobs:
   displayName: './wpt test-jobs'
   condition: eq(variables['Build.Reason'], 'PullRequest')
   pool:
-    vmImage: 'ubuntu-18.04'
+    vmImage: 'ubuntu-20.04'
   steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.9'
   - template: tools/ci/azure/checkout.yml
   - script: |
+      set -euo pipefail
+      git fetch --depth 50 --quiet origin master
       ./wpt test-jobs | while read job; do
         echo "$job"
         echo "##vso[task.setvariable variable=$job;isOutput=true]true";
@@ -81,16 +91,16 @@ jobs:
     name: test_jobs
     displayName: 'Run ./wpt test-jobs'
 
-- job: infrastructure_macOS
+- job: infrastructure_mac
   displayName: 'infrastructure/ tests: macOS'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_infrastructure']
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
+      versionSpec: '3.9'
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/pip_install.yml
     parameters:
@@ -102,155 +112,89 @@ jobs:
   - template: tools/ci/azure/install_safari.yml
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
-  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel dev chrome infrastructure/
+  - script: ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel dev chrome infrastructure/
     displayName: 'Run tests (Chrome Dev)'
-  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel nightly firefox infrastructure/
+  - script: ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel nightly firefox infrastructure/
     displayName: 'Run tests (Firefox Nightly)'
-  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel preview safari infrastructure/
+  - script: ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level info --channel preview safari infrastructure/
     displayName: 'Run tests (Safari Technology Preview)'
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish results'
-    inputs:
-      artifactName: 'infrastructure'
-    condition: always()
+  - template: tools/ci/azure/publish_logs.yml
 
-- job: tools_unittest_macOS
-  displayName: 'tools/ unittests: macOS'
+- job: tools_unittest_mac_py36
+  displayName: 'tools/ unittests: macOS + Python 3.6'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.tools_unittest']
   pool:
-    vmImage: 'macOS-10.14'
-  variables:
-    HYPOTHESIS_PROFILE: ci
+    vmImage: 'macOS-10.15'
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
-  - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/tox_pytest.yml
-    parameters:
-      directory: tools/
-      toxenv: py27
-
-- job: tools_unittest_macOS_py3
-  displayName: 'tools/ unittests: macOS (Python 3.6)'
-  dependsOn: decision
-  condition: dependencies.decision.outputs['test_jobs.tools_unittest']
-  pool:
-    vmImage: 'macOS-10.14'
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.6.x'
+      versionSpec: '3.6'
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
       directory: tools/
       toxenv: py36
 
-- job: tools_unittest_macOS_py38
-  displayName: 'tools/ unittests: macOS (Python 3.8)'
+- job: tools_unittest_mac_py39
+  displayName: 'tools/ unittests: macOS + Python 3.9'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.tools_unittest']
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.8.x'
+      versionSpec: '3.9'
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
       directory: tools/
-      toxenv: py38
+      toxenv: py39
 
-- job: wptrunner_unittest_macOS
-  displayName: 'tools/wptrunner/ unittests: macOS'
+- job: wptrunner_unittest_mac_py36
+  displayName: 'tools/wptrunner/ unittests: macOS + Python 3.6'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
   pool:
-    vmImage: 'macOS-10.14'
-  variables:
-    HYPOTHESIS_PROFILE: ci
+    vmImage: 'macOS-10.15'
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
-  - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/tox_pytest.yml
-    parameters:
-      directory: tools/wptrunner/
-      toxenv: py27
-
-- job: wptrunner_unittest_macOS_py3
-  displayName: 'tools/wptrunner/ unittests: macOS (Python 3.6)'
-  dependsOn: decision
-  condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
-  pool:
-    vmImage: 'macOS-10.14'
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.6.x'
+      versionSpec: '3.6'
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
       directory: tools/wptrunner/
       toxenv: py36
 
-- job: wptrunner_unittest_macOS_py38
-  displayName: 'tools/wptrunner/ unittests: macOS (Python 3.8)'
+- job: wptrunner_unittest_mac_py39
+  displayName: 'tools/wptrunner/ unittests: macOS + Python 3.9'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.8.x'
+      versionSpec: '3.9'
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
       directory: tools/wptrunner/
-      toxenv: py38
+      toxenv: py39
 
-- job: wpt_integration_macOS
-  displayName: 'tools/wpt/ tests: macOS'
+- job: wpt_integration_mac_py36
+  displayName: 'tools/wpt/ tests: macOS + Python 3.6'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wpt_integration']
   pool:
-    vmImage: 'macOS-10.14'
-  variables:
-    HYPOTHESIS_PROFILE: ci
+    vmImage: 'macOS-10.15'
   steps:
   # full checkout required
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
-  - template: tools/ci/azure/install_chrome.yml
-  - template: tools/ci/azure/install_firefox.yml
-  - template: tools/ci/azure/update_hosts.yml
-  - template: tools/ci/azure/update_manifest.yml
-  - template: tools/ci/azure/tox_pytest.yml
-    parameters:
-      directory: tools/wpt/
-      toxenv: py27
-
-- job: wpt_integration_macOS_py3
-  displayName: 'tools/wpt/ tests: macOS (Python 3.6)'
-  dependsOn: decision
-  condition: dependencies.decision.outputs['test_jobs.wpt_integration']
-  pool:
-    vmImage: 'macOS-10.14'
-  steps:
-  # full checkout required
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.6.x'
-  # Python 2.7 still needed to update manifest.
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '2.7.x'
+      versionSpec: '3.6'
   - template: tools/ci/azure/install_chrome.yml
   - template: tools/ci/azure/install_firefox.yml
   - template: tools/ci/azure/update_hosts.yml
@@ -260,21 +204,17 @@ jobs:
       directory: tools/wpt/
       toxenv: py36
 
-- job: wpt_integration_macOS_py38
-  displayName: 'tools/wpt/ tests: macOS (Python 3.8)'
+- job: wpt_integration_mac_py39
+  displayName: 'tools/wpt/ tests: macOS + Python 3.9'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wpt_integration']
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
   steps:
   # full checkout required
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.8.x'
-  # Python 2.7 still needed to update manifest.
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '2.7.x'
+      versionSpec: '3.9'
   - template: tools/ci/azure/install_chrome.yml
   - template: tools/ci/azure/install_firefox.yml
   - template: tools/ci/azure/update_hosts.yml
@@ -282,10 +222,10 @@ jobs:
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
       directory: tools/wpt/
-      toxenv: py38
+      toxenv: py39
 
-- job: tools_unittest_win
-  displayName: 'tools/ unittests: Windows'
+- job: tools_unittest_win_py36
+  displayName: 'tools/ unittests: Windows + Python 3.6'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.tools_unittest']
   pool:
@@ -295,25 +235,7 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
-  - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/tox_pytest.yml
-    parameters:
-      directory: tools/
-      toxenv: py27
-
-- job: tools_unittest_win_py3
-  displayName: 'tools/ unittests: Windows (Python 3.6)'
-  dependsOn: decision
-  condition: dependencies.decision.outputs['test_jobs.tools_unittest']
-  pool:
-    vmImage: 'windows-2019'
-  variables:
-    HYPOTHESIS_PROFILE: ci
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.6.x'
+      versionSpec: '3.6'
       addToPath: false
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
@@ -321,8 +243,8 @@ jobs:
       directory: tools/
       toxenv: py36
 
-- job: tools_unittest_win_py38
-  displayName: 'tools/ unittests: Windows (Python 3.8)'
+- job: tools_unittest_win_py39
+  displayName: 'tools/ unittests: Windows + Python 3.9'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.tools_unittest']
   pool:
@@ -330,34 +252,16 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.8.x'
+      versionSpec: '3.9'
       addToPath: false
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
       directory: tools/
-      toxenv: py38
+      toxenv: py39
 
-- job: wptrunner_unittest_win
-  displayName: 'tools/wptrunner/ unittests: Windows'
-  dependsOn: decision
-  condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
-  pool:
-    vmImage: 'windows-2019'
-  variables:
-    HYPOTHESIS_PROFILE: ci
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '2.7.x'
-  - template: tools/ci/azure/checkout.yml
-  - template: tools/ci/azure/tox_pytest.yml
-    parameters:
-      directory: tools/wptrunner/
-      toxenv: py27
-
-- job: wptrunner_unittest_win_py3
-  displayName: 'tools/wptrunner/ unittests: Windows (Python 3.6)'
+- job: wptrunner_unittest_win_py36
+  displayName: 'tools/wptrunner/ unittests: Windows + Python 3.6'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
   pool:
@@ -365,7 +269,7 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.6.x'
+      versionSpec: '3.6'
       addToPath: false
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
@@ -373,8 +277,8 @@ jobs:
       directory: tools/wptrunner/
       toxenv: py36
 
-- job: wptrunner_unittest_win_py38
-  displayName: 'tools/wptrunner/ unittests: Windows (Python 3.8)'
+- job: wptrunner_unittest_win_py39
+  displayName: 'tools/wptrunner/ unittests: Windows + Python 3.9'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
   pool:
@@ -382,40 +286,16 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.8.x'
+      versionSpec: '3.9'
       addToPath: false
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
       directory: tools/wptrunner/
-      toxenv: py38
+      toxenv: py39
 
-- job: wpt_integration_win
-  displayName: 'tools/wpt/ tests: Windows'
-  dependsOn: decision
-  condition: dependencies.decision.outputs['test_jobs.wpt_integration']
-  pool:
-    vmImage: 'windows-2019'
-  variables:
-    HYPOTHESIS_PROFILE: ci
-  steps:
-  # full checkout required
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '2.7.x'
-  # currently just using the outdated Chrome/Firefox on the VM rather than
-  # figuring out how to install Chrome Dev channel on Windows
-  # - template: tools/ci/azure/install_chrome.yml
-  # - template: tools/ci/azure/install_firefox.yml
-  - template: tools/ci/azure/update_hosts.yml
-  - template: tools/ci/azure/update_manifest.yml
-  - template: tools/ci/azure/tox_pytest.yml
-    parameters:
-      directory: tools/wpt/
-      toxenv: py27
-
-- job: wpt_integration_win_py3
-  displayName: 'tools/wpt/ tests: Windows (Python 3.6)'
+- job: wpt_integration_win_py36
+  displayName: 'tools/wpt/ tests: Windows + Python 3.6'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wpt_integration']
   pool:
@@ -424,13 +304,7 @@ jobs:
   # full checkout required
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.6.x'
-      addToPath: false
-  # Python 2.7 still needed to update manifest.
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '2.7.x'
-      addToPath: true
+      versionSpec: '3.6'
   # currently just using the outdated Chrome/Firefox on the VM rather than
   # figuring out how to install Chrome Dev channel on Windows
   # - template: tools/ci/azure/install_chrome.yml
@@ -442,8 +316,8 @@ jobs:
       directory: tools/wpt/
       toxenv: py36
 
-- job: wpt_integration_win_py38
-  displayName: 'tools/wpt/ tests: Windows (Python 3.8)'
+- job: wpt_integration_win_py39
+  displayName: 'tools/wpt/ tests: Windows + Python 3.9'
   dependsOn: decision
   condition: dependencies.decision.outputs['test_jobs.wpt_integration']
   pool:
@@ -452,13 +326,7 @@ jobs:
   # full checkout required
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.8.x'
-      addToPath: false
-  # Python 2.7 still needed to update manifest.
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '2.7.x'
-      addToPath: true
+      versionSpec: '3.9'
   # currently just using the outdated Chrome/Firefox on the VM rather than
   # figuring out how to install Chrome Dev channel on Windows
   # - template: tools/ci/azure/install_chrome.yml
@@ -468,7 +336,7 @@ jobs:
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
       directory: tools/wpt/
-      toxenv: py38
+      toxenv: py39
 
 - job: infrastructure_win10
   displayName: 'infrastructure/ tests: Windows 10'
@@ -614,11 +482,11 @@ jobs:
     parallel: 5 # chosen to make runtime ~2h
   timeoutInMinutes: 180
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
+      versionSpec: '3.9'
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/pip_install.yml
     parameters:
@@ -629,13 +497,13 @@ jobs:
       channel: stable
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
-  # --exclude is a workaround for https://github.com/web-platform-tests/wpt/issues/18634 + https://github.com/web-platform-tests/wpt/issues/22175
-  - script: no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info safari --exclude /inert/inert-retargeting.tentative.html --exclude /inert/inert-retargeting-iframe.tentative.html --exclude /pointerevents/pointerevent_pointercapture-not-lost-in-chorded-buttons.html --exclude /pointerevents/pointerevent_pointercapture_in_frame.html --exclude /web-share/share-sharePromise-internal-slot.https.html
+  - script: ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info --channel stable --kill-safari safari
     displayName: 'Run tests'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:
       artifactName: 'safari-results'
+  - template: tools/ci/azure/publish_logs.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari
@@ -651,11 +519,11 @@ jobs:
     parallel: 5 # chosen to make runtime ~2h
   timeoutInMinutes: 180
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
+      versionSpec: '3.9'
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/pip_install.yml
     parameters:
@@ -664,13 +532,13 @@ jobs:
   - template: tools/ci/azure/install_safari.yml
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
-  # --exclude is a workaround for https://github.com/web-platform-tests/wpt/issues/18995 + https://github.com/web-platform-tests/wpt/issues/20887
-  - script: no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info --channel preview safari --exclude /pointerevents/pointerevent_pointercapture_in_frame.html --exclude /web-share/share-sharePromise-internal-slot.https.html
+  - script: ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --log-wptscreenshot $(Build.ArtifactStagingDirectory)/wpt_screenshot_$(System.JobPositionInPhase).txt --log-mach - --log-mach-level info --channel preview --kill-safari safari
     displayName: 'Run tests'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:
       artifactName: 'safari-preview-results'
+  - template: tools/ci/azure/publish_logs.yml
 - template: tools/ci/azure/fyi_hook.yml
   parameters:
     dependsOn: results_safari_preview

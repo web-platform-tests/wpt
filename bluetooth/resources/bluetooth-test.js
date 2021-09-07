@@ -19,19 +19,6 @@ function loadScript(path) {
 }
 
 /**
- * Loads the scripts in |paths|.
- * @param {string[]} paths
- * @returns {Promise<void>} A promise chain that resolves when all scripts have
- *     finished loading.
- */
-async function loadScripts(paths) {
-  for (let path of paths) {
-    await loadScript(path);
-  }
-  return;
-}
-
-/**
  * Performs the Chromium specific setup necessary to run the tests in the
  * Chromium browser. This test file is shared between Web Platform Tests and
  * Blink Web Tests, so this method figures out the correct paths to use for
@@ -42,37 +29,25 @@ async function loadScripts(paths) {
  * @returns {Promise<void>} Resolves when Chromium specific setup is complete.
  */
 async function performChromiumSetup() {
-  // Make sure we are actually on Chromium with Mojo enabled.
-  if (typeof Mojo === 'undefined') {
+  // Determine path prefixes.
+  let resPrefix = '/resources';
+  const chromiumResources = ['/resources/chromium/web-bluetooth-test.js'];
+  const pathname = window.location.pathname;
+  if (pathname.includes('/wpt_internal/')) {
+    chromiumResources.push(
+        '/wpt_internal/bluetooth/resources/bluetooth-fake-adapter.js');
+  }
+
+  await loadScript(`${resPrefix}/test-only-api.js`);
+  if (!isChromiumBased) {
     return;
   }
 
-  // Load the Chromium-specific resources.
-  let prefix = '/resources/chromium';
-  let genPrefix = '/gen';
-  let extra = [];
-  const pathname = window.location.pathname;
-  if (pathname.includes('/LayoutTests/') || pathname.includes('/web_tests/')) {
-    let root = pathname.match(/.*(?:LayoutTests|web_tests)/);
-    prefix = `${root}/external/wpt/resources/chromium`;
-    extra = [
-      `${root}/resources/bluetooth/bluetooth-fake-adapter.js`,
-    ];
-    genPrefix = 'file:///gen';
-  } else if (window.location.pathname.startsWith('/bluetooth/https/')) {
-    extra = [
-      '/js-test-resources/bluetooth/bluetooth-fake-adapter.js',
-    ];
+  for (const path of chromiumResources) {
+    await loadScript(path);
   }
-  await loadScripts([
-    `${genPrefix}/layout_test_data/mojo/public/js/mojo_bindings.js`,
-    `${genPrefix}/content/test/data/mojo_web_test_helper_test.mojom.js`,
-    `${genPrefix}/device/bluetooth/public/mojom/uuid.mojom.js`,
-    `${genPrefix}/url/mojom/origin.mojom.js`,
-    `${genPrefix}/device/bluetooth/public/mojom/test/fake_bluetooth.mojom.js`,
-    `${genPrefix}/content/shell/common/web_test/fake_bluetooth_chooser.mojom.js`,
-    `${prefix}/web-bluetooth-test.js`,
-  ].concat(extra));
+
+  await initializeChromiumResources();
 
   // Call setBluetoothFakeAdapter() to clean up any fake adapters left over by
   // legacy tests. Legacy tests that use setBluetoothFakeAdapter() sometimes
@@ -98,8 +73,10 @@ async function performChromiumSetup() {
  */
 function bluetooth_test(test_function, name, properties) {
   return promise_test(async (t) => {
+    assert_implements(navigator.bluetooth, 'missing navigator.bluetooth');
     // Trigger Chromium-specific setup.
     await performChromiumSetup();
+    assert_implements(navigator.bluetooth.test, 'missing navigator.bluetooth.test');
     await test_function(t);
     let consumed = await navigator.bluetooth.test.allResponsesConsumed();
     assert_true(consumed);
@@ -374,5 +351,19 @@ function assert_no_events(object, event_name) {
 function assert_properties_equal(properties, expected_properties) {
   for (let key in expected_properties) {
     assert_equals(properties[key], expected_properties[key]);
+  }
+}
+
+/**
+ * Asserts that |data_map| contains |expected_key|, and that the uint8 values
+ * for |expected_key| matches |expected_value|.
+ */
+function assert_data_maps_equal(data_map, expected_key, expected_value) {
+  assert_true(data_map.has(expected_key));
+
+  const value = new Uint8Array(data_map.get(expected_key).buffer);
+  assert_equals(value.length, expected_value.length);
+  for (let i = 0; i < value.length; ++i) {
+    assert_equals(value[i], expected_value[i]);
   }
 }

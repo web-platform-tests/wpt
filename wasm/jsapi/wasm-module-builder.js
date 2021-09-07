@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 // Used for encoding f32 and double constants to bits.
-let f32_view = new Float32Array(1);
-let f32_bytes_view = new Uint8Array(f32_view.buffer);
-let f64_view = new Float64Array(1);
-let f64_bytes_view = new Uint8Array(f64_view.buffer);
+let byte_view = new Uint8Array(8);
+let data_view = new DataView(byte_view.buffer);
 
 // The bytes function receives one of
 //  - several arguments, each of which is either a number or a string of length
@@ -101,7 +99,6 @@ let kWasmF64 = 0x7c;
 let kWasmS128 = 0x7b;
 let kWasmAnyRef = 0x6f;
 let kWasmAnyFunc = 0x70;
-let kWasmExnRef = 0x68;
 
 let kExternalFunction = 0;
 let kExternalTable = 1;
@@ -151,17 +148,14 @@ let kSig_f_d = makeSig([kWasmF64], [kWasmF32]);
 let kSig_d_d = makeSig([kWasmF64], [kWasmF64]);
 let kSig_r_r = makeSig([kWasmAnyRef], [kWasmAnyRef]);
 let kSig_a_a = makeSig([kWasmAnyFunc], [kWasmAnyFunc]);
-let kSig_e_e = makeSig([kWasmExnRef], [kWasmExnRef]);
 let kSig_i_r = makeSig([kWasmAnyRef], [kWasmI32]);
 let kSig_v_r = makeSig([kWasmAnyRef], []);
 let kSig_v_a = makeSig([kWasmAnyFunc], []);
-let kSig_v_e = makeSig([kWasmExnRef], []);
 let kSig_v_rr = makeSig([kWasmAnyRef, kWasmAnyRef], []);
 let kSig_v_aa = makeSig([kWasmAnyFunc, kWasmAnyFunc], []);
 let kSig_r_v = makeSig([], [kWasmAnyRef]);
 let kSig_a_v = makeSig([], [kWasmAnyFunc]);
 let kSig_a_i = makeSig([kWasmI32], [kWasmAnyFunc]);
-let kSig_e_v = makeSig([], [kWasmExnRef]);
 
 function makeSig(params, results) {
   return {params: params, results: results};
@@ -196,6 +190,7 @@ let kExprIf = 0x04;
 let kExprElse = 0x05;
 let kExprTry = 0x06;
 let kExprCatch = 0x07;
+let kExprCatchAll = 0x19;
 let kExprThrow = 0x08;
 let kExprRethrow = 0x09;
 let kExprBrOnExn = 0x0a;
@@ -748,9 +743,8 @@ class WasmModuleBuilder {
   }
 
   addTable(type, initial_size, max_size = undefined) {
-    if (type != kWasmAnyRef && type != kWasmAnyFunc && type != kWasmExnRef) {
-      throw new Error(
-          'Tables must be of type kWasmAnyRef, kWasmAnyFunc, or kWasmExnRef');
+    if (type != kWasmAnyRef && type != kWasmAnyFunc) {
+      throw new Error('Tables must be of type kWasmAnyRef or kWasmAnyFunc');
     }
     let table = new WasmTableBuilder(this, type, initial_size, max_size);
     table.index = this.tables.length + this.num_imported_tables;
@@ -1017,14 +1011,10 @@ class WasmModuleBuilder {
               section.emit_u64v(global.init);
               break;
             case kWasmF32:
-              section.emit_u8(kExprF32Const);
-              f32_view[0] = global.init;
-              section.emit_bytes(f32_bytes_view);
+              section.emit_bytes(wasmF32Const(global.init));
               break;
             case kWasmF64:
-              section.emit_u8(kExprF64Const);
-              f64_view[0] = global.init;
-              section.emit_bytes(f64_bytes_view);
+              section.emit_bytes(wasmF64Const(global.init));
               break;
             case kWasmAnyFunc:
             case kWasmAnyRef:
@@ -1034,9 +1024,6 @@ class WasmModuleBuilder {
               } else {
                 section.emit_u8(kExprRefNull);
               }
-              break;
-            case kWasmExnRef:
-              section.emit_u8(kExprRefNull);
               break;
             }
           } else {
@@ -1179,9 +1166,6 @@ class WasmModuleBuilder {
             if (l.anyfunc_count > 0) {
               local_decls.push({count: l.anyfunc_count, type: kWasmAnyFunc});
             }
-            if (l.except_count > 0) {
-              local_decls.push({count: l.except_count, type: kWasmExnRef});
-            }
           }
 
           header.emit_u32v(local_decls.length);
@@ -1322,18 +1306,18 @@ function wasmI32Const(val) {
 }
 
 function wasmF32Const(f) {
-  f32_view[0] = f;
+  // Write in little-endian order at offset 0.
+  data_view.setFloat32(0, f, true);
   return [
-    kExprF32Const, f32_bytes_view[0], f32_bytes_view[1], f32_bytes_view[2],
-    f32_bytes_view[3]
+    kExprF32Const, byte_view[0], byte_view[1], byte_view[2], byte_view[3]
   ];
 }
 
 function wasmF64Const(f) {
-  f64_view[0] = f;
+  // Write in little-endian order at offset 0.
+  data_view.setFloat64(0, f, true);
   return [
-    kExprF64Const, f64_bytes_view[0], f64_bytes_view[1], f64_bytes_view[2],
-    f64_bytes_view[3], f64_bytes_view[4], f64_bytes_view[5], f64_bytes_view[6],
-    f64_bytes_view[7]
+    kExprF64Const, byte_view[0], byte_view[1], byte_view[2],
+    byte_view[3], byte_view[4], byte_view[5], byte_view[6], byte_view[7]
   ];
 }

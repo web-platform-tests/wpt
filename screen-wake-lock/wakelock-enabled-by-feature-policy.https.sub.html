@@ -15,7 +15,7 @@
 
   promise_test(async t => {
     await test_driver.set_permission(
-        { name: 'screen-wake-lock' }, 'granted', false);
+        { name: 'screen-wake-lock' }, 'granted');
     await navigator.wakeLock.request('screen').then(lock => lock.release());
   }, 'Feature-Policy header {"screen-wake-lock" : ["*"]} allows the top-level document.');
 
@@ -28,12 +28,15 @@
     );
   }, 'Feature-Policy header {"screen-wake-lock" : ["*"]} allows same-origin iframes.');
 
+  // Set allow="screen-wake-lock" on iframe element to delegate
+  // 'screen-wake-lock' to cross origin subframe.
   async_test(t => {
     test_feature_availability(
       'navigator.wakeLock.request("screen")',
       t,
       cross_origin_src,
-      expect_feature_available_default
+      expect_feature_available_default,
+      'screen-wake-lock'
     );
   }, 'Feature-Policy header {"screen-wake-lock" : ["*"]} allows cross-origin iframes.');
 

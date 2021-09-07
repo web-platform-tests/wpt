@@ -303,7 +303,7 @@ class WebSocketHandshake(object):
                                 self._options.server_port,
                                 self._options.use_tls))
 
-        if self._options.version is 8:
+        if self._options.version == 8:
             fields.append(_sec_origin_header(self._options.origin))
         else:
             fields.append(_origin_header(self._options.origin))
@@ -315,6 +315,11 @@ class WebSocketHandshake(object):
         fields.append(u'Sec-WebSocket-Key: %s\r\n' % key.decode('UTF-8'))
 
         fields.append(u'Sec-WebSocket-Version: %d\r\n' % self._options.version)
+
+        if self._options.use_basic_auth:
+            credential = 'Basic ' + base64.b64encode(
+                self._options.basic_auth_credential.encode('UTF-8')).decode()
+            fields.append(u'Authorization: %s\r\n' % credential)
 
         # Setting up extensions.
         if len(self._options.extensions) > 0:
@@ -609,6 +614,8 @@ class ClientOptions(object):
         self.server_port = -1
         self.socket_timeout = 1000
         self.use_tls = False
+        self.use_basic_auth = False
+        self.basic_auth_credential = 'test:test'
         self.extensions = []
 
 

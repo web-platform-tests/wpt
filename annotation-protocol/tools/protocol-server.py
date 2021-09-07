@@ -4,17 +4,13 @@
 #
 # Developed by Benjamin Young (@bigbulehat) and Shane McCarron (@halindrome).
 # Sponsored by Spec-Ops (https://spec-ops.io)
-#
-# Copyright (c) 2016 Spec-Ops
-#
-# for license information, see http://www.w3.org/Consortium/Legal/2008/04-testsuite-copyright.html
 
 from __future__ import print_function
 
 import os
 import sys
 
-here = os.path.abspath(os.path.split(__file__)[0])
+here = os.path.abspath(os.path.dirname(__file__))
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
 sys.path.insert(0, os.path.join(repo_root, "tools"))

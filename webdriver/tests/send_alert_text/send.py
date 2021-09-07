@@ -4,12 +4,11 @@ from webdriver.error import NoSuchAlertException
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_success
-from tests.support.inline import inline
 from tests.support.sync import Poll
 
 
 @pytest.fixture
-def page(session):
+def page(session, inline):
     session.url = inline("""
         <script>window.result = window.prompt('Enter Your Name: ', 'Name');</script>
     """)
@@ -39,9 +38,14 @@ def test_invalid_input(session, page, text):
     assert_error(response, "invalid argument")
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, closed_window):
     response = send_alert_text(session, "Federer")
     assert_error(response, "no such window")
+
+
+def test_no_browsing_context(session, closed_frame):
+    response = send_alert_text(session, "Federer")
+    assert_error(response, "no such alert")
 
 
 def test_no_user_prompt(session):
@@ -50,7 +54,7 @@ def test_no_user_prompt(session):
 
 
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm"])
-def test_alert_element_not_interactable(session, dialog_type):
+def test_alert_element_not_interactable(session, inline, dialog_type):
     session.url = inline("<script>window.{}('Hello');</script>".format(dialog_type))
 
     response = send_alert_text(session, "Federer")

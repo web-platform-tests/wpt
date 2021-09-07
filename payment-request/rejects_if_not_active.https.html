@@ -45,6 +45,9 @@ promise_test(async (t) => {
   const iframe = document.createElement("iframe");
   iframe.allow = "payment";
   document.body.appendChild(iframe);
+  t.add_cleanup(() => {
+    iframe.remove();
+  });
   // We first got to page1.html, grab a PaymentRequest instance.
   const request1 = await getLoadedPaymentRequest(
     iframe,
@@ -83,8 +86,6 @@ promise_test(async (t) => {
     request2.show(),
     "Abort already called, so InvalidStateError"
   );
-  // We are done, so clean up.
-  iframe.remove();
 }, "PaymentRequest.show() aborts if the document is not active.");
 
 promise_test(async (t) => {
@@ -92,6 +93,9 @@ promise_test(async (t) => {
   const outerIframe = document.createElement("iframe");
   outerIframe.allow = "payment";
   document.body.appendChild(outerIframe);
+  t.add_cleanup(() => {
+    outerIframe.remove();
+  });
   // Load the outer iframe (we don't care about the awaited request)
   await getLoadedPaymentRequest(
     outerIframe,
@@ -133,9 +137,6 @@ promise_test(async (t) => {
     showPromise,
     "Active, but not fully active, so must throw AbortError"
   );
-
-  // We are done, so clean up.
-  outerIframe.remove();
 }, "PaymentRequest.show() aborts if the document is active, but not fully active.");
 </script>
 </body>

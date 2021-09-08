@@ -606,13 +606,13 @@ def write_file(path, content):
 
 def generate_tests(testcase, tentative):
     title, encoding, template_testcase_markup, template_nonspeculative_testcase_markup, expect_load, test_nonspeculative = testcase
-    if template_nonspeculative_testcase_markup is None:
+    if template_nonspeculative_testcase_markup == None:
         template_nonspeculative_testcase_markup = template_testcase_markup
     ext = u""
     if tentative:
         ext = u".tentative"
 
-    if encoding is None:
+    if encoding == None:
         encoding_decl = no_meta_charset
     else:
         encoding_decl = f"<meta charset={encoding}>"
@@ -621,7 +621,7 @@ def generate_tests(testcase, tentative):
     html_nonspeculative_testcase_markup = template_nonspeculative_testcase_markup.format(url_wptserve_sub)
     js_testcase_markup = template_testcase_markup.format(url_js_sub).replace(u"</script>", u"<\/script>")
 
-    if test_nonspeculative is u'true':
+    if test_nonspeculative == u'true':
         nonspeculative = template_nonspeculative.format(preamble=preamble, encoding_decl=encoding_decl, title=title, nonspeculative_testcase_markup=html_nonspeculative_testcase_markup, delay=delay)
         write_file(f"resources/{title}-nonspeculative.sub.html", nonspeculative)
 

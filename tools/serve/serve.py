@@ -629,7 +629,7 @@ def start_servers(logger, host, ports, paths, routes, bind_address, config,
                          'Requires OpenSSL 1.0.2+')
             continue
 
-        # Skip WebTransport over HTTP/3 server unless it is enabled explicitly.
+        # Skip WebTransport over HTTP/3 server unless if is enabled explicitly.
         if scheme == 'webtransport-h3' and not kwargs.get("webtransport_h3"):
             continue
 

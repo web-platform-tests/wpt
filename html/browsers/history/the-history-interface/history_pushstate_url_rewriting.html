@@ -27,16 +27,16 @@ const basicCases = [
   [new URL("/common/blank.html", location.href), "about:srcdoc", false],
   [blobURL, blobURL, true],
   [blobURL, blobURL + "#newhash", true],
-  [blobURL, blobURL + "?newsearch", true],
+  [blobURL, blobURL + "?newsearch", false],
   [blobURL, "blob:newpath", false],
-  [blobURL, "blob:" + self.origin + "/syntheticblob", true],
-  [blobURL, blobURL2, true],
+  [blobURL, "blob:" + self.origin + "/syntheticblob", false],
+  [blobURL, blobURL2, false],
 
   // Note: these are cases where we create the iframe pointing at the initial URL,
   // so its origin will actually be self.origin.
   ["about:blank", "about:blank", true],
   ["about:blank", "about:srcdoc", false],
-  ["about:blank", "about:blank?newsearch", true],
+  ["about:blank", "about:blank?newsearch", false],
   ["about:blank", "about:blank#newhash", true],
   ["about:blank", self.origin + "/blank", false],
 
@@ -76,7 +76,7 @@ for (const [from, to, expectedToWork] of basicCases) {
 
 const srcdocCases = [
   ["about:srcdoc", true],
-  ["about:srcdoc?newsearch", true],
+  ["about:srcdoc?newsearch", false],
   ["about:srcdoc#newhash", true],
   [self.origin + "/srcdoc", false]
 ];
@@ -107,7 +107,7 @@ const sandboxedCases = [
   [new URL("resources/url-rewriting-helper.html", location.href), new URL("resources/url-rewriting-helper.html", location.href), true],
   [new URL("resources/url-rewriting-helper.html", location.href), new URL("resources/url-rewriting-helper.html#newhash", location.href), true],
   [new URL("resources/url-rewriting-helper.html", location.href), new URL("resources/url-rewriting-helper.html?newsearch", location.href), true],
-  [new URL("resources/url-rewriting-helper.html", location.href), new URL("/newpath", location.href), false],
+  [new URL("resources/url-rewriting-helper.html", location.href), new URL("/newpath", location.href), true],
   [new URL("resources/url-rewriting-helper.html", location.href), new URL("resources/url-rewriting-helper.html", baseWithUsernamePassword), false],
 ].map(([from, to, expectedToWork]) => [from.toString(), to.toString(), expectedToWork]);
 
@@ -141,7 +141,7 @@ fetch("resources/url-rewriting-helper.html").then(r => r.text()).then(htmlInside
   const dataURLCases = [
     [dataURLStart, dataURLStart, true],
     [dataURLStart, dataURLStart + "#newhash", true],
-    [dataURLStart, dataURLStart + "?newsearch", true],
+    [dataURLStart, dataURLStart + "?newsearch", false],
     [dataURLStart, "data:newpath", false]
   ];
 

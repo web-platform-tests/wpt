@@ -50,13 +50,13 @@ it impossible to tell whether the text or the decoration was painted on top.
 
 Some ways this test could become possible:
 
-•   Wider impl support for ::target-text or ::highlight decorations.
+*   Wider impl support for ::target-text or ::highlight decorations.
     Decorations introduced by highlight pseudos aren’t recolored, so
     we could move the originating text-decoration to any highlight
     that paints under ::selection (currently all of them), choose
     another ::selection color, and check which is painted on top.
 
-•   SVG adds support for text-decoration-color, or HTML adds support
+*   SVG adds support for text-decoration-color, or HTML adds support
     for stroke and stroke-width via CSS, as long as we continue to
     recolor originating decorations to color only. Then we could
     stroke in another color, and check which is painted on top.

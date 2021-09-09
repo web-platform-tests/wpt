@@ -88,9 +88,11 @@ function runToBlobTest(testScenario) {
     });
 
     srcCanvas.toBlob(function(blob) {
+        t_blob.assert_true(blob.type === testScenario.imageFormat, 'Types dont match. Browser does not support type ' + blob.type)
+
         var urlCreator = window.URL || window.webkitURL;
         image.src = urlCreator.createObjectURL(blob);
-    }, 'image/png', 1);
+    }, testScenario.imageFormat, 1);
 }
 
 function runToDataURLTest(testScenario) {
@@ -108,7 +110,8 @@ function runToDataURLTest(testScenario) {
         var actualPixels = ctx.getImageData(0, 0, 2, 2).data;
         testPixels(actualPixels, testScenario.alpha);
     });
-    image.src = srcCanvas.toDataURL();
+    image.src = srcCanvas.toDataURL(testScenario.imageFormat);
+    t_dataURL.assert_true(image.src.startsWith('data:' + testScenario.imageFormat), 'Types dont match. Browser does not support type ' + blob.type)
 }
 
 function runAllTests() {

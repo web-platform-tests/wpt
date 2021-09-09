@@ -12,8 +12,9 @@
         margin: 0.5em;
         width: min-content;
         /*
-            Edge anti-aliases Ahem for some reason, so we still need
-            this underline so we can see the tip of it under the aa.
+            Edge on Windows anti-aliases Ahem for some reason, which
+            allows the tip of the test underline to show through, so
+            we still need this underline despite seeming unnecessary.
         */
         text-decoration: 0.25em currentColor solid underline;
         /* try to keep decoration between ascent and descent */
@@ -22,8 +23,9 @@
     main > span {
         color: blue;
         /*
-            Edge anti-aliases Ahem for some reason, so we still need
-            this underline so we can see the tip of it under the aa.
+            Edge on Windows anti-aliases Ahem for some reason, which
+            allows the tip of the test underline to show through, so
+            we still need this underline despite seeming unnecessary.
         */
         text-decoration: 0.25em blue solid underline;
         /* try to keep decoration between ascent and descent */

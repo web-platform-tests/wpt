@@ -4,7 +4,6 @@
 <title>CSS Grid Layout Test: Grid positioned item dynamic change</title>
 <link rel="author" title="Filipp Riabchun" href="mailto:talpa@yandex.ru">
 <link rel="help" href="https://drafts.csswg.org/css-grid-1/#abspos" title="9. Absolute Positioning">
-<link rel="match" href="grid-positioned-item-dynamic-change-006-ref.html">
 <meta name="assert" content="This test checks that positioned items react to grid track size changes.">
 <style>
 .grid {
@@ -19,9 +18,9 @@
   height: 100px;
 }
 
-.blue {
+.red {
   position: absolute;
-  border: 3px solid blue;
+  border: 3px solid red;
   top: 0;
   right: 0;
   bottom: 0;
@@ -33,12 +32,12 @@
 
 </style>
 
-<p>Test passes if there is a filled green rectangle on top and a green square with blue border on bottom.</p>
+<p>Test passes if there is a filled green rectangle on top and a green square with red border on bottom.</p>
 
 <div class="grid">
   <div class="green" id="item"></div>
   <div class="green"></div>
-  <div class="blue"></div>
+  <div class="red"></div>
 </div>
 
 <script>

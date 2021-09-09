@@ -88,7 +88,7 @@ function runToBlobTest(testScenario) {
     });
 
     srcCanvas.toBlob(function(blob) {
-        assert_true(blob.type === testScenario.imageFormat, 'Types dont match. Browser does not support type ' + blob.type)
+        assert_true(blob.type === testScenario.imageFormat, 'Types dont match. Browser does not support type ' + testScenario.imageFormat)
 
         var urlCreator = window.URL || window.webkitURL;
         image.src = urlCreator.createObjectURL(blob);
@@ -102,6 +102,8 @@ function runToDataURLTest(testScenario) {
 
     var image = new Image();
     image.onload = t_dataURL.step_func_done(function() {
+        assert_true(image.src.startsWith('data:' + testScenario.imageFormat), 'Types dont match. Browser does not support type ' + testScenario.imageFormat)
+    
         var dstCanvas = document.createElement("canvas");
         dstCanvas.width = 2;
         dstCanvas.height = 2;
@@ -110,8 +112,8 @@ function runToDataURLTest(testScenario) {
         var actualPixels = ctx.getImageData(0, 0, 2, 2).data;
         testPixels(actualPixels, testScenario.alpha);
     });
-    image.src = srcCanvas.toDataURL(testScenario.imageFormat);
-    assert_true(image.src.startsWith('data:' + testScenario.imageFormat), 'Types dont match. Browser does not support type ' + blob.type)
+    image.src = srcCanvas.toDataURL(testScenario.imageFormat, 1);
+
 }
 
 function runAllTests() {

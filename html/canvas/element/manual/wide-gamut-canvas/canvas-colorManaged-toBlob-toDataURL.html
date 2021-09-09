@@ -77,7 +77,9 @@ function runToBlobTest(testScenario) {
         color managed canvas: " + testScenarioToString(testScenario));
 
     var image = new Image();
+    let type = ''
     image.onload = t_blob.step_func_done(function() {
+        assert_true(type === testScenario.imageFormat, 'Types dont match. Browser does not support type ' + testScenario.imageFormat)
         var dstCanvas = document.createElement("canvas");
         dstCanvas.width = 2;
         dstCanvas.height = 2;
@@ -88,8 +90,7 @@ function runToBlobTest(testScenario) {
     });
 
     srcCanvas.toBlob(function(blob) {
-        assert_true(blob.type === testScenario.imageFormat, 'Types dont match. Browser does not support type ' + testScenario.imageFormat)
-
+        type = blob.type
         var urlCreator = window.URL || window.webkitURL;
         image.src = urlCreator.createObjectURL(blob);
     }, testScenario.imageFormat, 1);

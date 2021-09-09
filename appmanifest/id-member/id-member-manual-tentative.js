@@ -30,6 +30,5 @@ window.onload = () => {
 async function main() {
   await navigator.serviceWorker.register("id-member-manual-tentative-service-worker.js");
   await navigator.serviceWorker.ready;
-  console.log("Service worker is ready.");
 }
 main();

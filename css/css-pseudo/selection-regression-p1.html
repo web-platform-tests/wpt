@@ -1,23 +1,15 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>CSS Pseudo-Elements Test: regression tests for ::selection backgrounds and decorations</title>
+<title>CSS Pseudo-Elements Test: originating underlines remain under unselected parts when selecting text</title>
 <link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#highlight-painting">
 <link rel="help" href="https://drafts.csswg.org/css-text-decor-4/#painting">
 <link rel="help" href="https://www.w3.org/TR/CSS22/zindex.html#painting-order">
 <link rel="match" href="selection-regression-p1-ref.html">
-<meta name="assert" value="originating underlines remain under unselected parts when selecting text">
+<meta name="assert" value="This test verifies that selecting text does not cause originating underline decorations, which should always paint under text, to paint over unselected parts.">
 <script src="support/selections.js"></script>
 <link rel="stylesheet" href="support/highlights.css">
 <link rel="stylesheet" href="/fonts/ahem.css">
 <style>
-    /*
-        This test verifies that selecting text does not cause
-        originating underline decorations, which should always paint
-        under text, to paint over unselected parts.
-
-        Chromium fails this test between <https://crrev.com/886768>
-        (inclusive) and <https://crrev.com/915543> (exclusive).
-    */
     * {
         text-decoration-skip-ink: none;
         text-decoration-skip: none;

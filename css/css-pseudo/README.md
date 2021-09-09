@@ -34,14 +34,15 @@ directly on layers as your highlight backgrounds, they will always be exactly
 and so on can still be taller (unless they contain Ahem text only).
 
 
-## selection-regression-* tests
+## Selection regression tests
 
-These tests are based on the properties described in <https://crrev.com/915543>,
-and were originally designed to catch regressions from these Chromium patches:
+Four tests are based on the properties described in <https://crrev.com/915543>,
+and were designed to catch regressions as bugs were fixed in Chromium:
 
-*   <https://crrev.com/915543>
-*   <https://crrev.com/886768>
-*   <https://crrev.com/850580>
+*   selection-originating-underline-order.html (P1)
+*   selection-originating-decoration-color.html (P3)
+*   selection-originating-strikethrough-order.html (P4)
+*   selection-background-painting-order.html (P5)
 
 Ideally we would want a test for property P2, that line-through decorations are
 always painted over text when selecting some of that text. But unfortunately,

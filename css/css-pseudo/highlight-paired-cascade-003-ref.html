@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<script src="support/selections.js"></script>
+<link rel="stylesheet" href="support/highlights.css">
+<style>
+    main {
+        font-size: 7em;
+        margin: 0.5em;
+        width: min-content;
+        background: black;
+    }
+</style>
+<p>Test passes if the text below is legible.
+<main class="highlight_reftest">PASS</main>
+<script>selectNodeContents(document.querySelector("main"));</script>

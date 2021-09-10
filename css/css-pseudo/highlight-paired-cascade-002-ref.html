@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8">
+<script src="support/selections.js"></script>
+<link rel="stylesheet" href="support/highlights.css">
+<style>
+    main {
+        font-size: 7em;
+        margin: 0.5em;
+        width: min-content;
+    }
+    main::selection {
+        background-color: black;
+        color: black;
+    }
+</style>
+<p>Test passes if no text is legible below.
+<main class="highlight_reftest">FAIL</main>
+<script>selectNodeContents(document.querySelector("main"));</script>

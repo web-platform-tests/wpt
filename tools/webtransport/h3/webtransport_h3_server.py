@@ -346,7 +346,7 @@ async def _connect_server_with_timeout(host: str, port: int, timeout: float) -> 
     try:
         await asyncio.wait_for(_connect_to_server(host, port), timeout=timeout)
     except asyncio.TimeoutError:
-        _logger.warn("Failed to connect WebTransport over HTTP/3 server")
+        _logger.warning("Failed to connect WebTransport over HTTP/3 server")
         return False
     return True
 

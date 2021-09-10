@@ -45,7 +45,7 @@ def serve_path(test_paths):
     return test_paths["/"]["tests_path"]
 
 
-def webtranport_h3_server_is_running(host: str, port: int, timeout: float) -> bool:
+def webtranport_h3_server_is_running(host, port, timeout):
     # TODO(bashi): Move the following import to the beginning of this file
     # once WebTransportH3Server is enabled by default.
     from webtransport.h3.webtransport_h3_server import server_is_running  # type: ignore

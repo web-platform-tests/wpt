@@ -126,7 +126,7 @@ function test_math_specified(testString, expectedString, {approx, msg, msgExtra,
         const expectedValue = testEl.style[prop];
         assert_not_equals(expectedValue, '', `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
         assert_equals(usedValue, expectedValue, `${testString} and ${expectedString} serialize to the same thing in ${stage} values.`);
-    }, msg || `${testString} should be ${stage}-value-equivalent sss to ${expectedString}`);
+    }, msg || `${testString} should be ${stage}-value-equivalent to ${expectedString}`);
 }
 
 /*
@@ -191,5 +191,5 @@ function _test_math({stage, testEl, testString, expectedString, type, approx, ms
         } else {
             assert_equals(usedValue, expectedValue, `${testString} and ${expectedString} serialize to the same thing in ${stage} values.`);
         }
-    }, msg || `${testString} should be ${stage}-value-equivalent ${approx} dsfsdfto ${expectedString}`);
+    }, msg || `${testString} should be ${stage}-value-equivalent to ${expectedString}`);
 }

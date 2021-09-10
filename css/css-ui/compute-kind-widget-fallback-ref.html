@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Reference: Compute kind of widget</title>
+<title>Reference: Compute kind of widget - fallback</title>
 <style>
     #container { width: 500px; }
     button,
@@ -18,6 +18,7 @@
     #select-menulist-button { appearance: none; appearance: menulist-button; }
 </style>
 <div id="container">
+    <a>a</a>
     <button>button</button>
     <input type="button" value="input-button">
     <input type="submit" value="input-submit">
@@ -33,8 +34,8 @@
     <input type="color">
 
     <textarea>textarea</textarea>
-    <select multiple id="select-listbox"><option>select-multiple</option></select>
-    <select id="select-dropdown-box"><option>select-menulist</option></select>
+    <select multiple id="select-listbox"><option>select-listbox</option></select>
+    <select id="select-dropdown-box"><option>select-dropdown-box</option></select>
     <select id="select-menulist-button"><option>select-menulist-button</option></select>
     <meter value=0.5></meter>
     <progress value=0.5></progress>

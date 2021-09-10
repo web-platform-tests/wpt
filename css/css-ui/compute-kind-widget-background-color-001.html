@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Test: Compute kind of widget: properties that disable native appearance for widgets</title>
+<link rel="help" href="https://drafts.csswg.org/css-ui-4/#computing-kind-widget">
+<meta name="assert" content="appropriate widget is returned when authorProps includes the tested property.">
+<link rel="match" href="compute-kind-widget-fallback-ref.html">
+<meta name="variant" content="?background-color">
+<meta name="variant" content="?border-top-color">
+<meta name="variant" content="?border-top-style">
+<meta name="variant" content="?border-top-width">
+<meta name="variant" content="?border-right-color">
+<meta name="variant" content="?border-right-style">
+<meta name="variant" content="?border-right-width">
+<meta name="variant" content="?border-bottom-color">
+<meta name="variant" content="?border-bottom-style">
+<meta name="variant" content="?border-bottom-width">
+<meta name="variant" content="?border-left-color">
+<meta name="variant" content="?border-left-style">
+<meta name="variant" content="?border-left-width">
+<meta name="variant" content="?border-block-start-color">
+<meta name="variant" content="?border-block-end-color">
+<meta name="variant" content="?border-inline-start-color">
+<meta name="variant" content="?border-inline-end-color">
+<meta name="variant" content="?border-block-start-style">
+<meta name="variant" content="?border-block-end-style">
+<meta name="variant" content="?border-inline-start-style">
+<meta name="variant" content="?border-inline-end-style">
+<meta name="variant" content="?border-block-start-width">
+<meta name="variant" content="?border-block-end-width">
+<meta name="variant" content="?border-inline-start-width">
+<meta name="variant" content="?border-inline-end-width">
+<meta name="variant" content="?background-image">
+<meta name="variant" content="?background-attachment">
+<meta name="variant" content="?background-position">
+<meta name="variant" content="?background-clip">
+<meta name="variant" content="?background-origin">
+<meta name="variant" content="?background-size">
+<meta name="variant" content="?border-image-source">
+<meta name="variant" content="?border-image-slice">
+<meta name="variant" content="?border-image-width">
+<meta name="variant" content="?border-image-outset">
+<meta name="variant" content="?border-image-repeat">
+<meta name="variant" content="?border-top-left-radius">
+<meta name="variant" content="?border-top-right-radius">
+<meta name="variant" content="?border-bottom-right-radius">
+<meta name="variant" content="?border-bottom-left-radius">
+<meta name="variant" content="?border-start-start-radius">
+<meta name="variant" content="?border-start-end-radius">
+<meta name="variant" content="?border-end-start-radius">
+<meta name="variant" content="?border-end-end-radius">
+<style>
+    #container { width: 500px; }
+    #container > #search-text-input { appearance: textfield; }
+    #container > #select-menulist-button { appearance: none; appearance: menulist-button; }
+</style>
+
+<div id="container">
+    <a>a</a>
+    <button id="button">button</button>
+    <input id="button-input" type="button" value="input-button">
+    <input id="submit-input" type="submit" value="input-submit">
+    <input id="reset-input" type="reset" value="input-reset">
+
+    <input id="text-input" type="text" value="input-text">
+    <input id="search-text-input" type="search" value="input-search-text">
+    <input id="search-input" type="search" value="input-search">
+
+    <input id="range-input" type="range">
+    <input id="checkbox-input" type="checkbox">
+    <input id="radio-input" type="radio">
+    <input id="color-input" type="color">
+
+    <textarea id="textarea">textarea</textarea>
+    <select multiple id="select-listbox"><option>select-listbox</option></select>
+    <select id="select-dropdown-box"><option>select-dropdown-box</option></select>
+    <select id="select-menulist-button"><option>select-menulist-button</option></select>
+    <meter id="meter" value=0.5></meter>
+    <progress id="progress" value=0.5></progress>
+</div>
+
+<script>
+// Set author-level CSS that matches UA style, but don't use the 'revert' value.
+const elements = document.querySelectorAll('#container > *');
+const prop = location.search.substr(1);
+if (!prop) {
+  document.body.append('Test error: no variant found. Append e.g. "?background-color" to the URL.');
+} else {
+  for (const el of elements) {
+    el.style.setProperty(prop, getComputedStyle(el).getPropertyValue(prop));
+  }
+}
+</script>

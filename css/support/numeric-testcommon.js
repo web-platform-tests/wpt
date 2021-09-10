@@ -103,7 +103,7 @@ function test_math_specified(testString, expectedString, {approx, msg, msgExtra,
         testEl.style[p] = extraStyle[p];
     }
     if(!msg) {
-        msg = `${testString} should be ${stage}-value-equivalent to ${expectedString} ssss`;
+        msg = `${testString} should be ${stage}-value-equivalent to ${expectedString}`;
         if(msgExtra) msg += "; " + msgExtra;
     }
     let t = testString;

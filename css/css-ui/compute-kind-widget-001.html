@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>CSS Basic User Interface Test: Compute kind of widget</title>
 <link rel="help" href="https://drafts.csswg.org/css-ui-4/#computing-kind-widget">
-<meta name="assert" content="appropriate widget is returned.">
+<meta name="assert" content="appropriate widget is returned when authorProps includes background-color.">
 <link rel="match" href="compute-kind-widget-ref.html">
 <style>
     #container { width: 500px; }
@@ -34,19 +34,9 @@
 </div>
 
 <script>
-var button = document.getElementById('button');
-var buttonInput = document.getElementById('button-input');
-var submitButton = document.getElementById('submit-input');
-var resetButton = document.getElementById('reset-input');
-var textInput = document.getElementById('text-input');
-var searchInput = document.getElementById('search-input');
-var textarea = document.getElementById('textarea');
-
-button.style.backgroundColor = getComputedStyle(button).backgroundColor;
-buttonInput.style.backgroundColor = getComputedStyle(buttonInput).backgroundColor;
-submitButton.style.backgroundColor = getComputedStyle(submitButton).backgroundColor;
-resetButton.style.backgroundColor = getComputedStyle(resetButton).backgroundColor;
-textInput.style.backgroundColor = getComputedStyle(textInput).backgroundColor;
-searchInput.style.backgroundColor = getComputedStyle(searchInput).backgroundColor;
-textarea.style.backgroundColor = getComputedStyle(textarea).backgroundColor;
+// Set author-level CSS that matches UA style, but don't use the 'revert' value.
+const elements = document.querySelectorAll('#container > *');
+for (const el of elements) {
+  el.style.backgroundColor = getComputedStyle(el).backgroundColor;
+}
 </script>

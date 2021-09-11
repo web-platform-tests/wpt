@@ -10,7 +10,12 @@
     ],
     "requirements": [
       "../wptrunner/requirements.txt"
-    ]
+    ],
+    "optional_requirements": {
+      "enable_webtransport_h3": [
+        "../webtransport/requirements.txt"
+      ]
+    }
   },
   "create": {
     "path": "create.py",

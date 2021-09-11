@@ -37,7 +37,14 @@ def load_commands():
                     "requirements": [os.path.join(base_dir, item)
                                      for item in props.get("requirements", [])]
                 }
-                if rv[command]["install"] or rv[command]["requirements"]:
+
+                optional_requirements = {}
+                for command_flag_name, requirements_paths in props.get("optional_requirements", {}).items():
+                    optional_requirements[command_flag_name] = [
+                        os.path.join(base_dir, path) for path in requirements_paths]
+                rv[command]["optional_requirements"] = optional_requirements
+
+                if rv[command]["install"] or rv[command]["requirements"] or rv[command]["optional_requirements"]:
                     assert rv[command]["virtualenv"]
     return rv
 
@@ -130,6 +137,13 @@ def setup_virtualenv(path, skip_venv_setup, props):
     return venv
 
 
+def install_optional_requirements(venv, kwargs, optional_requirements):
+    for command_flag_name, requirements in optional_requirements.items():
+        if command_flag_name in kwargs:
+            for path in requirements:
+                venv.install_requirements(path)
+
+
 def main(prog=None, argv=None):
     logging.basicConfig(level=logging.INFO)
     # Ensure we use the spawn start method for all multiprocessing
@@ -170,6 +184,7 @@ def main(prog=None, argv=None):
         kwargs = {}
 
     if venv is not None:
+        install_optional_requirements(venv, kwargs, props["optional_requirements"])
         args = (venv,) + extras
     else:
         args = extras

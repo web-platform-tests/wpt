@@ -333,7 +333,7 @@ class WebTransportH3Server:
         self.loop.stop()
 
 
-def server_is_running(host: str, port: int, timeout: float = 1.0) -> bool:
+def server_is_running(host: str, port: int, timeout: float) -> bool:
     """
     Check the WebTransport over HTTP/3 server is running at the given `host` and
     `port`.

@@ -1,5 +1,0 @@
-# Prevent accidentially touching CSS subtree
-/css/tools/apiclient/ @plinss @jgraham
-
-# Prevent accidentally touching tools/third_party
-/tools/third_party/ @jgraham

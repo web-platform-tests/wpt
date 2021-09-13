@@ -2,5 +2,7 @@
 // offline requests.
 
 self.addEventListener("fetch", e => {
-  return fetch(e.request);
+  e.respondWith(fetch(e.request).catch(_ => {
+    return new Response('Offline test.');
+  }));
 });

@@ -10,8 +10,6 @@
     main {
         font-size: 7em;
         margin: 0.5em;
-        width: min-content;
-        background: black;
     }
     main::selection {
         /*
@@ -20,6 +18,6 @@
         color: revert;
     }
 </style>
-<p>Test passes if the text below is legible.
-<main class="highlight_reftest">PASS</main>
+<p>Test passes if the text below appears to be highlighted.
+<main class="highlight_reftest">quick</main>
 <script>selectNodeContents(document.querySelector("main"));</script>

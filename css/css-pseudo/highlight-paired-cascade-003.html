@@ -10,27 +10,16 @@
     main {
         font-size: 7em;
         margin: 0.5em;
-        width: min-content;
-
-        /*
-            For manual verification only.
-
-            If the test fails because UA default highlight colors are
-            suppressed, the highlight colors are initial on initial,
-            or black (WPT assumption) on transparent (by definition).
-            This makes the text black on transparent on black, which
-            should be illegible.
-        */
-        background-color: black;
     }
     main::selection {
         /*
             Used values for color and background-color should be the
-            UA defaults, usually like black on blue or white on blue.
+            UA defaults, usually like black on blue or white on blue,
+            *not* initial on initial (like unhighlighted content).
         */
         text-decoration: none;
     }
 </style>
-<p>Test passes if the text below is legible.
-<main class="highlight_reftest">PASS</main>
+<p>Test passes if the text below appears to be highlighted.
+<main class="highlight_reftest">quick</main>
 <script>selectNodeContents(document.querySelector("main"));</script>

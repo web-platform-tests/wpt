@@ -11,8 +11,6 @@
     main {
         font-size: 7em;
         margin: 0.5em;
-        width: min-content;
-        background: black;
     }
     main::selection {
         /*
@@ -22,6 +20,6 @@
         color: unset;
     }
 </style>
-<p>Test passes if no text is legible below.
-<main class="highlight_reftest">FAIL</main>
+<p>Test passes if the text below does not appear to be highlighted.
+<main class="highlight_reftest">quick</main>
 <script>selectNodeContents(document.querySelector("main"));</script>

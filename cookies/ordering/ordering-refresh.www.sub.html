@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset=utf-8>
+    <title>Test cookie ordering after cookies are loaded more than once (eg. refresh)</title>
+    <meta name=help href="https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-07#section-5.5">
+    <meta name="timeout" content="long">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  </head>
+  <body>
+    <script>
+      const host = "{{host}}";
+      const wwwHost = "{{domains[www]}}";
+
+      function set_cookies() {
+        // Delays added to ensure distinct creation times.
+        document.cookie = `duplicate=a; path=/; domain=${host};`;
+        t.step_timeout(function() {
+          document.cookie = `duplicate=b; path=/; domain=.${host};`;
+        }, 100);
+        t.step_timeout(function() {
+          document.cookie = `duplicate=d; path=/; domain=${host};`;
+        }, 200);
+        t.step_timeout(function() {
+          document.cookie = `duplicate=c; path=/; domain=${wwwHost};`;
+        }, 300);
+      }
+
+      function clear_cookies() {
+        document.cookie = `duplicate=; path=/; domain=${wwwHost}; expires=Sun, 06 Nov 1994 08:49:37 GMT`;
+        document.cookie = `duplicate=; path=/; domain=${host}; expires=Sun, 06 Nov 1994 08:49:37 GMT`;
+      }
+
+      var t = async_test("Refresh still yields expected cookie ordering");
+      t.add_cleanup(clear_cookies);
+
+      t.step(() => {
+        set_cookies();
+        t.step_timeout(function() {
+          assert_equals(document.cookie, "duplicate=d; duplicate=c", "unexpected cookies after first set");
+          set_cookies();
+        }, 400);
+        t.step_timeout(function() {
+          assert_equals(document.cookie, "duplicate=d; duplicate=c", "unexpected cookies after second set (refresh)");
+        }, 800);
+      });
+    </script>
+  </body>
+</html>

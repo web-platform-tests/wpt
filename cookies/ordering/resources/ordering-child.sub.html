@@ -63,6 +63,18 @@
           name: "For equal length paths, list the cookie with an earlier creation time first",
           location: "/cookies/attributes/resources/path/one.html",
         },
+        {
+          cookie: [
+            // Recreating test scenario from crbug.com/1034533.
+            `duplicate=a; path=/; domain=${host}`,
+            `duplicate=b; path=/; domain=.${host}`,
+            `duplicate=d; path=/; domain=${host}`,
+            `duplicate=c; path=/; domain=${wwwHost}`,
+          ],
+          expected: "duplicate=d; duplicate=c",
+          name: "Duplicate cookies should sort by creation time (oldest first)",
+          location: "/cookies/attributes/resources/path/one.html",
+        },
       ];
 
       for (const test of orderingTests) {

@@ -78,9 +78,22 @@ structuredCloneBatteryOfTests.push({
   description: 'A subclass instance will be received as its closest transferable superclass',
   async f(runner) {
     // MessagePort doesn't have a constructor, so we must use something else.
-    class OffscreenCanvasSubclass extends OffscreenCanvas {}
-    const original = new OffscreenCanvasSubclass(200, 200);
+
+    // Make sure that ReadableStream is transferable before we test its subclasses.
+    try {
+      const stream = new ReadableStream();
+      await runner.structuredClone(stream, [stream]);
+    } catch(err) {
+      if (err instanceof DOMException && err.code === DOMException.DATA_CLONE_ERR) {
+        throw new OptionalFeatureUnsupportedError("ReadableStream isn't transferable");
+      } else {
+        throw err;
+      }
+    }
+
+    class ReadableStreamSubclass extends ReadableStream {}
+    const original = new ReadableStreamSubclass();
     const transfer = await runner.structuredClone(original, [original]);
-    assert_equals(Object.getPrototypeOf(transfer), OffscreenCanvas.prototype);
+    assert_equals(Object.getPrototypeOf(transfer), ReadableStream.prototype);
   }
 });

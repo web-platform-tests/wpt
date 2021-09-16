@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-values-4/#comp-func">
+<link rel="help" href="https://drafts.csswg.org/css-values-4/#angles">
+<link rel="help" href="https://drafts.csswg.org/css-values-4/#calc-type-checking">
+<link rel="author" title="Apple Inc">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../support/parsing-testcommon.js"></script>
+<script>
+function test_invalid_angle(value) {
+  test_invalid_value('transform', `rotate(${value})`);
+}
+
+// Syntax checking
+test_invalid_angle('exp()');
+test_invalid_angle('exp( )');
+test_invalid_angle('exp(,)');
+test_invalid_angle('exp(1dag)');
+test_invalid_angle('exp(1deg, )');
+test_invalid_angle('exp(, 1deg)');
+test_invalid_angle('exp(1deg + )');
+test_invalid_angle('exp(1deg - )');
+test_invalid_angle('exp(1deg * )');
+test_invalid_angle('exp(1deg / )');
+test_invalid_angle('exp(1deg 2deg)');
+test_invalid_angle('exp(1deg, , 2deg)');
+test_invalid_angle('exp(1, 1)');
+test_invalid_angle('log()');
+test_invalid_angle('log( )');
+test_invalid_angle('log(,)');
+test_invalid_angle('log(1dag)');
+test_invalid_angle('log(1deg, )');
+test_invalid_angle('log(, 1deg)');
+test_invalid_angle('log(1deg + )');
+test_invalid_angle('log(1deg - )');
+test_invalid_angle('log(1deg * )');
+test_invalid_angle('log(1deg / )');
+test_invalid_angle('log(1deg 2deg)');
+test_invalid_angle('log(1deg, , 2deg)');
+test_invalid_angle('exp(1, 1,1 )');
+</script>

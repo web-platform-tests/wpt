@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" class="reftest-wait">
+<meta charset="utf-8">
+<title>Reference file for spellcheck tests</title>
+<style>
+  div {
+    padding: 10px;
+    background: silver;
+  }
+</style>
+
+<p>The test passes if you see a spelling error marker in the word "quikc".</p>
+<div id="test" contenteditable=true spellcheck=false>The quikc brown fox.</div>
+
+<script>
+  var test = document.getElementById("test");
+  test.addEventListener("focus", () => {
+    document.documentElement.classList.remove("reftest-wait");
+  });
+  // Force spellcheck by focus.
+  test.focus();
+</script>

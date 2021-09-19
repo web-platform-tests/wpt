@@ -181,6 +181,18 @@ class SetUserVerifiedAction(object):
             "Setting user verified flag on authenticator %s to %s" % (authenticator_id, uv["isUserVerified"]))
         return self.protocol.virtual_authenticator.set_user_verified(authenticator_id, uv)
 
+class SetTimeZoneAction(object):
+    name = "set_time_zone"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        time_zone = payload["time_zone"]
+        self.logger.debug("Setting time_zone to %s" % time_zone)
+        self.protocol.set_time_zone.set_time_zone(time_zone)
+
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
@@ -194,4 +206,5 @@ actions = [ClickAction,
            GetCredentialsAction,
            RemoveCredentialAction,
            RemoveAllCredentialsAction,
-           SetUserVerifiedAction]
+           SetUserVerifiedAction,
+           SetTimeZoneAction]

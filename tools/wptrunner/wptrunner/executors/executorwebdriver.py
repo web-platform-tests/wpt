@@ -26,6 +26,7 @@ from .protocol import (BaseProtocolPart,
                        GenerateTestReportProtocolPart,
                        SetPermissionProtocolPart,
                        VirtualAuthenticatorProtocolPart,
+                       SetTimeZoneProtocolPart,
                        DebugProtocolPart)
 
 from webdriver.client import Session
@@ -301,6 +302,14 @@ class WebDriverDebugProtocolPart(DebugProtocolPart):
         raise NotImplementedError()
 
 
+class WebDriverSetTimeZoneProtocolPart(SetTimeZoneProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def set_time_zone(self, time_zone):
+        return self.webdriver.send_session_command("POST", "time_zone", {"time_zone": time_zone})
+
+
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
                   WebDriverTestharnessProtocolPart,
@@ -313,6 +322,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverGenerateTestReportProtocolPart,
                   WebDriverSetPermissionProtocolPart,
                   WebDriverVirtualAuthenticatorProtocolPart,
+                  WebDriverSetTimeZoneProtocolPart,
                   WebDriverDebugProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):

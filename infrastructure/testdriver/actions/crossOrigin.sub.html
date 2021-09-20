@@ -11,7 +11,7 @@
 <script>
 setup({single_test: true});
 addEventListener("message", (msg) => {
-    assert_equals(msg.data, "PASS");
+    assert_equals(JSON.stringify(msg.data), JSON.stringify("PASS"));
     done();
 });
 </script>

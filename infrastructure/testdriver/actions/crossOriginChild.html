@@ -13,6 +13,8 @@ addEventListener("load", async () => {
      .pointerDown()
      .pointerUp()
      .send();
+    test_driver.message_test(document.activeElement.localName);
+    return;
     await new test_driver.Actions()
      .keyDown("P")
      .keyUp("P")
@@ -23,6 +25,6 @@ addEventListener("load", async () => {
      .keyDown("S")
      .keyUp("S")
      .send();
-    test_driver.message_test(input.value, "*")
+    test_driver.message_test(input.value, "*");
 });
 </script>

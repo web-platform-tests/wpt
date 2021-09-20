@@ -11,10 +11,7 @@
 <script>
 setup({single_test: true});
 addEventListener("message", (msg) => {
-    if (msg.data === "PASS") {
-        done();
-    } else if (msg.data === "FAIL") {
-        assert_unreached("actions failed")
-    }
+    assert_equals(msg.data, "PASS");
+    done();
 });
 </script>

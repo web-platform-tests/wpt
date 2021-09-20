@@ -23,10 +23,6 @@ addEventListener("load", async () => {
      .keyDown("S")
      .keyUp("S")
      .send();
-    if (input.value === "PASS") {
-      test_driver.message_test("PASS", "*")
-    } else {
-      test_driver.message_test("FAIL", "*")
-    }
+    test_driver.message_test(input.value, "*")
 });
 </script>

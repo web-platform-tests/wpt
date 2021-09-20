@@ -11,6 +11,9 @@
 <script>
 setup({single_test: true});
 addEventListener("message", (msg) => {
+    if (typeof msg.data !== "string") {
+        return;
+    }
     assert_equals(JSON.stringify(msg.data), JSON.stringify("PASS"));
     done();
 });

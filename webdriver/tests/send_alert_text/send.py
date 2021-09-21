@@ -62,7 +62,7 @@ def test_alert_element_not_interactable(session, inline, dialog_type):
 
 
 @pytest.mark.parametrize("text", ["", "Federer", " Fed erer ", "Fed\terer"])
-def test_send_alert_text(session, page, text):
+def test_send_prompt_text(session, page, text):
     send_response = send_alert_text(session, text)
     assert_success(send_response)
 

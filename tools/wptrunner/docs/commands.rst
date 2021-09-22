@@ -62,12 +62,12 @@ additional fields. All paths are relative to the commands.json.
   set.
 
 :code:`conditional_requirements`
-  A key-value object. Values in this object are lists of paths similar to
-  :code:`requirements`, but requirements specified in these lists are
-  installed only when a certain condition is met. Currently "commandline_flag"
-  is the only supported key. "commandline_flag" is used to specify requirements
-  needed for a certain command line flag of the subcommand. For example, given
-  the following commands.json::
+  A key-value object. Each key represents a condition, and value represents
+  additional requirements when the condition is met. The requirements have the
+  same format as :code:`requirements`. Currently "commandline_flag" is the only
+  supported key. "commandline_flag" is used to specify requirements needed for a
+  certain command line flag of the subcommand. For example, given the following
+  commands.json::
 
     "baz": {
       "path": "baz.py",

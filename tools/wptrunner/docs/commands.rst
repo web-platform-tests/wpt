@@ -61,19 +61,24 @@ additional fields. All paths are relative to the commands.json.
   running the subcommand. :code:`virtualenv` must be true when this field is
   set.
 
-:code:`optional_requirements`
-  Similar to :code:`requirements`, but requirements specified in this list are
-  installed only when the corresponding command line flag is specified for the
-  subcommand. For example, given the following commands.json::
+:code:`conditional_requirements`
+  A key-value object. Values in this object are lists of paths similar to
+  :code:`requirements`, but requirements specified in these lists are
+  installed only when a certain condition is met. Currently "commandline_flag"
+  is the only supported key. "commandline_flag" is used to specify requirements
+  needed for a certain command line flag of the subcommand. For example, given
+  the following commands.json::
 
     "baz": {
       "path": "baz.py",
       "script": "run",
       "vritualenv": true,
-      "optional_requirements": {
-        "enable_feature1": [
-          "requirements_feature1.txt"
-        ]
+      "conditional_requirements": {
+        "commandline_flag": {
+          "enable_feature1": [
+            "requirements_feature1.txt"
+          ]
+        }
       }
     }
 

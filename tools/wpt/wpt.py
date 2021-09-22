@@ -14,6 +14,28 @@ here = os.path.dirname(__file__)
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
 
+def load_conditional_requirements(props, base_dir):
+    """Load conditional requirements from commands.json."""
+
+    conditional_requirements = props.get("conditional_requirements", {})
+    if not conditional_requirements:
+        return {}
+
+    commandline_flag_requirements = {}
+    for key, value in props.get("conditional_requirements", {}).items():
+        if key == "commandline_flag":
+            for flag_name, requirements_paths in value.items():
+                commandline_flag_requirements[flag_name] = [
+                    os.path.join(base_dir, path) for path in requirements_paths]
+        else:
+            raise KeyError(
+                'Unsupported conditional requirement key: {}'.format(key))
+
+    return {
+        "commandline_flag": commandline_flag_requirements,
+    }
+
+
 def load_commands():
     rv = {}
     with open(os.path.join(here, "paths"), "r") as f:
@@ -38,13 +60,10 @@ def load_commands():
                                      for item in props.get("requirements", [])]
                 }
 
-                optional_requirements = {}
-                for command_flag_name, requirements_paths in props.get("optional_requirements", {}).items():
-                    optional_requirements[command_flag_name] = [
-                        os.path.join(base_dir, path) for path in requirements_paths]
-                rv[command]["optional_requirements"] = optional_requirements
+                rv[command]["conditional_requirements"] = load_conditional_requirements(
+                    props, base_dir)
 
-                if rv[command]["install"] or rv[command]["requirements"] or rv[command]["optional_requirements"]:
+                if rv[command]["install"] or rv[command]["requirements"] or rv[command]["conditional_requirements"]:
                     assert rv[command]["virtualenv"]
     return rv
 
@@ -137,10 +156,10 @@ def setup_virtualenv(path, skip_venv_setup, props):
     return venv
 
 
-def install_optional_requirements(venv, kwargs, optional_requirements):
-    for command_flag_name, requirements in optional_requirements.items():
+def install_command_flag_requirements(venv, kwargs, requirements):
+    for command_flag_name, requirement_paths in requirements.items():
         if command_flag_name in kwargs:
-            for path in requirements:
+            for path in requirement_paths:
                 venv.install_requirements(path)
 
 
@@ -184,7 +203,8 @@ def main(prog=None, argv=None):
         kwargs = {}
 
     if venv is not None:
-        install_optional_requirements(venv, kwargs, props["optional_requirements"])
+        requirements = props["conditional_requirements"]["commandline_flag"]
+        install_command_flag_requirements(venv, kwargs, requirements)
         args = (venv,) + extras
     else:
         args = extras

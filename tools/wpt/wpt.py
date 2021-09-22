@@ -203,8 +203,9 @@ def main(prog=None, argv=None):
         kwargs = {}
 
     if venv is not None:
-        requirements = props["conditional_requirements"]["commandline_flag"]
-        install_command_flag_requirements(venv, kwargs, requirements)
+        requirements = props["conditional_requirements"].get("commandline_flag")
+        if requirements is not None:
+            install_command_flag_requirements(venv, kwargs, requirements)
         args = (venv,) + extras
     else:
         args = extras

@@ -1,6 +1,6 @@
 {
   "name": "id member test",
-  "id": "testId",
+  "id": "/testId",
   "start_url": "id-member-manual-tentative-v2.html",
   "icons": [
     {

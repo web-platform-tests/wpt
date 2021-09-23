@@ -1,19 +1,22 @@
 import asyncio
 import logging
 import os
+import ssl
 import threading
 import traceback
 from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional, Tuple
 
-from aioquic.asyncio import QuicConnectionProtocol, serve
-from aioquic.h3.connection import H3_ALPN, H3Connection
-from aioquic.h3.events import H3Event, HeadersReceived, WebTransportStreamDataReceived, DatagramReceived
-from aioquic.quic.configuration import QuicConfiguration
-from aioquic.quic.connection import stream_is_unidirectional
-from aioquic.quic.events import QuicEvent, ProtocolNegotiated
-from aioquic.tls import SessionTicket
-from aioquic.quic.packet import QuicErrorCode
+# TODO(bashi): Remove import check suppressions once aioquic dependency is resolved.
+from aioquic.asyncio import QuicConnectionProtocol, serve  # type: ignore
+from aioquic.asyncio.client import connect  # type: ignore
+from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection  # type: ignore
+from aioquic.h3.events import H3Event, HeadersReceived, WebTransportStreamDataReceived, DatagramReceived  # type: ignore
+from aioquic.quic.configuration import QuicConfiguration  # type: ignore
+from aioquic.quic.connection import stream_is_unidirectional  # type: ignore
+from aioquic.quic.events import QuicEvent, ProtocolNegotiated  # type: ignore
+from aioquic.tls import SessionTicket  # type: ignore
+from aioquic.quic.packet import QuicErrorCode  # type: ignore
 
 from tools.wptserve.wptserve import stash  # type: ignore
 
@@ -184,6 +187,13 @@ class WebTransportSession:
         """
         stream_id = self._http.create_webtransport_stream(
             session_id=self.session_id, is_unidirectional=False)
+        # TODO(bashi): Remove this workaround when aioquic supports receiving
+        # data on server-initiated bidirectional streams.
+        stream = self._http._get_or_create_stream(stream_id)
+        assert stream.frame_type is None
+        assert stream.session_id is None
+        stream.frame_type = FrameType.WEBTRANSPORT_STREAM
+        stream.session_id = self.session_id
         return stream_id
 
     def send_stream_data(self,
@@ -328,3 +338,32 @@ class WebTransportH3Server:
 
     async def _stop_on_server_thread(self) -> None:
         self.loop.stop()
+
+
+def server_is_running(host: str, port: int, timeout: float) -> bool:
+    """
+    Check the WebTransport over HTTP/3 server is running at the given `host` and
+    `port`.
+    """
+    loop = asyncio.get_event_loop()
+    return loop.run_until_complete(_connect_server_with_timeout(host, port, timeout))
+
+
+async def _connect_server_with_timeout(host: str, port: int, timeout: float) -> bool:
+    try:
+        await asyncio.wait_for(_connect_to_server(host, port), timeout=timeout)
+    except asyncio.TimeoutError:
+        _logger.warning("Failed to connect WebTransport over HTTP/3 server")
+        return False
+    return True
+
+
+async def _connect_to_server(host: str, port: int) -> None:
+    configuration = QuicConfiguration(
+        alpn_protocols=H3_ALPN,
+        is_client=True,
+        verify_mode=ssl.CERT_NONE,
+    )
+
+    async with connect(host, port, configuration=configuration) as protocol:
+        await protocol.ping()

@@ -240,6 +240,8 @@ class WebTransportSession:
 
         :param close_info The close information to send.
         """
+        if self._handler:
+            self._handler.disallow_calling_session_closed()
         assert self._session_stream_id is not None
         if close_info is not None:
             code = close_info.code
@@ -310,7 +312,7 @@ class WebTransportEventHandler:
                  callbacks: Dict[str, Any]) -> None:
         self._session = session
         self._callbacks = callbacks
-        self._called_session_closed = False
+        self._allow_calling_session_closed = True
 
     def _run_callback(self, callback_name: str,
                       *args: Any, **kwargs: Any) -> None:
@@ -340,12 +342,14 @@ class WebTransportEventHandler:
 
     def session_closed(
             self, close_info: Optional[Tuple[int, bytes]], abruptly: bool):
-        if _called_session_closed:
+        if not self._allow_calling_session_closed:
             return
-        _called_session_closed = True
+        self._allow_calling_session_closed = False
         self._run_callback(
             "session_closed", self._session, close_info, abruptly=abruptly)
 
+    def disallow_calling_session_closed(self):
+        self._allow_calling_session_closed = False
 
 class SessionTicketStore:
     """

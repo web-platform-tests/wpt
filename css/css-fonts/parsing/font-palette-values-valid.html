@@ -121,7 +121,7 @@ test(function() {
     assert_equals(rule.constructor.name, "CSSFontPaletteValuesRule");
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 0);
+    assert_equals(rule.overrideColor, "");
 });
 
 test(function() {
@@ -133,7 +133,7 @@ test(function() {
     let rule = rules[1];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 0);
+    assert_equals(rule.overrideColor, "");
 });
 
 test(function() {
@@ -152,7 +152,7 @@ test(function() {
     let rule = rules[2];
     assert_equals(rule.fontFamily, "bar");
     assert_equals(rule.basePalette, "2");
-    assert_equals(rule.size, 0);
+    assert_equals(rule.overrideColor, "\"b\" rgb(17, 34, 51)");
 });
 
 test(function() {
@@ -169,9 +169,9 @@ test(function() {
     let rule = rules[3];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "bar");
-    assert_equals(rule.size, 1);
-    assert_equals(rule.get(7), undefined);
-    assert_not_equals(rule.get(4).indexOf("rgb"), -1);
+    assert_equals(rule.overrideColor.indexOf("),"), -1);
+    assert_equals(rule.overrideColor.indexOf("4 "), 0);
+    assert_not_equals(rule.overrideColor.indexOf("rgb"), -1);
 });
 
 test(function() {
@@ -184,9 +184,9 @@ test(function() {
     let rule = rules[4];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 1);
-    assert_equals(rule.get(7), undefined);
-    assert_not_equals(rule.get(3).indexOf("102"), -1);
+    assert_equals(rule.overrideColor.indexOf("),"), -1);
+    assert_equals(rule.overrideColor.indexOf("3 "), 0);
+    assert_not_equals(rule.overrideColor.indexOf("102"), -1);
 });
 
 test(function() {
@@ -198,7 +198,7 @@ test(function() {
     let rule = rules[5];
     assert_equals(rule.fontFamily, "foo");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 0);
+    assert_equals(rule.overrideColor, "");
 });
 
 test(function() {
@@ -211,10 +211,11 @@ test(function() {
     let rule = rules[6];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 2);
-    assert_equals(rule.get(7), undefined);
-    assert_not_equals(rule.get(3).indexOf("51"), -1);
-    assert_not_equals(rule.get(4).indexOf("102"), -1);
+    assert_equals(rule.overrideColor.split("),").length, 2);
+    assert_equals(rule.overrideColor.indexOf("3 "), 0);
+    assert_not_equals(rule.overrideColor.indexOf("), 4 "), -1);
+    assert_not_equals(rule.overrideColor.indexOf("51"), -1);
+    assert_not_equals(rule.overrideColor.indexOf("102"), -1);
 });
 
 test(function() {
@@ -227,10 +228,11 @@ test(function() {
     let rule = rules[7];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 1);
-    assert_equals(rule.get(7), undefined);
-    assert_not_equals(rule.get(3).indexOf("102"), -1);
-    assert_equals(rule.get(4), undefined);
+    assert_not_equals(rule.overrideColor.indexOf("),"), -1);
+    assert_equals(rule.overrideColor.indexOf("3 "), 0);
+    assert_not_equals(rule.overrideColor.indexOf("), 3 "), -1);
+    assert_not_equals(rule.overrideColor.indexOf("51"), -1);
+    assert_not_equals(rule.overrideColor.indexOf("102"), -1);
 });
 
 test(function() {
@@ -242,7 +244,7 @@ test(function() {
     let rule = rules[8];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "-3");
-    assert_equals(rule.size, 0);
+    assert_equals(rule.overrideColor, "");
 });
 
 test(function() {
@@ -254,9 +256,8 @@ test(function() {
     let rule = rules[9];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 1);
-    assert_equals(rule.get(7), undefined);
-    assert_equals(rule.get(-3), undefined);
+    assert_equals(rule.overrideColor.indexOf("),"), -1);
+    assert_equals(rule.overrideColor.indexOf("-3 "), 0);
 });
 
 test(function() {
@@ -269,8 +270,8 @@ test(function() {
     let rule = rules[10];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 1);
-    assert_equals(rule.get(0), "rgb(0, 0, 255)");
+    assert_equals(rule.overrideColor.indexOf("),"), -1);
+    assert_not_equals(rule.overrideColor.indexOf("rgb(0, 0, 255)"), -1);
 });
 
 test(function() {
@@ -283,8 +284,8 @@ test(function() {
     let rule = rules[11];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 1);
-    assert_equals(rule.get(0), "rgb(0, 128, 0)");
+    assert_equals(rule.overrideColor.indexOf("),"), -1);
+    assert_not_equals(rule.overrideColor.indexOf("rgb(0, 128, 0)"), -1);
 });
 
 test(function() {
@@ -297,8 +298,8 @@ test(function() {
     let rule = rules[12];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 1);
-    assert_equals(rule.get(0), "rgba(0, 0, 0, 0)");
+    assert_equals(rule.overrideColor.indexOf("),"), -1);
+    assert_not_equals(rule.overrideColor.indexOf("rgba(0, 0, 0, 0)"), -1);
 });
 
 test(function() {
@@ -311,8 +312,8 @@ test(function() {
     let rule = rules[13];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 1);
-    assert_not_equals(rule.get(0).indexOf("2"), -1);
+    assert_equals(rule.overrideColor.indexOf("),"), -1);
+    assert_not_equals(rule.overrideColor.indexOf("2"), -1);
 });
 
 test(function() {
@@ -325,8 +326,8 @@ test(function() {
     let rule = rules[14];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 1);
-    assert_not_equals(rule.get(0).indexOf("lab"), -1);
+    assert_equals(rule.overrideColor.indexOf("),"), -1);
+    assert_not_equals(rule.overrideColor.indexOf("lab"), -1);
 });
 
 test(function() {
@@ -339,8 +340,8 @@ test(function() {
     let rule = rules[15];
     assert_equals(rule.fontFamily, "");
     assert_equals(rule.basePalette, "");
-    assert_equals(rule.size, 1);
-    assert_not_equals(rule.get(0).indexOf("display-p3"), -1);
+    assert_equals(rule.overrideColor.indexOf("),"), -1);
+    assert_not_equals(rule.overrideColor.indexOf("display-p3"), -1);
 });
 </script>
 </body>

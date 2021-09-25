@@ -9,16 +9,16 @@
 <script src="/resources/testharnessreport.js"></script>
 <style id="style">
 /* 0 */
-@font-palette-values A {
+@font-palette-values --A {
 }
 
 /* 1 */
-@font-palette-values B {
+@font-palette-values --B {
     font-weight: 400;
 }
 
 /* 2 */
-@font-palette-values C {
+@font-palette-values --C {
     font-family: foo;
     font-family: bar;
     base-palette: 1;
@@ -30,7 +30,7 @@
 }
 
 /* 3 */
-@font-palette-values D {
+@font-palette-values --D {
     base-palette: "foo";
     base-palette: 1;
     base-palette: "bar";
@@ -40,53 +40,53 @@
 }
 
 /* 4 */
-@font-palette-values E {
+@font-palette-values --E {
     override-color: 3 rgb(17, 34, 51);
     override-color: 3 rgb(68, 85, 102);
 }
 
 /* 5 */
-@font-palette-values F {
+@font-palette-values --F {
     font-family: "foo";
 }
 
 /* 6 */
-@font-palette-values G {
+@font-palette-values --G {
     override-color: 3 rgb(17, 34, 51), 4 rgb(68, 85, 102);
 }
 
 /* 7 */
-@font-palette-values H {
+@font-palette-values --H {
     override-color: 3 rgb(17, 34, 51), 3 rgb(68, 85, 102);
 }
 
 /* 8 */
-@font-palette-values I {
+@font-palette-values --I {
     override-color: 0 #0000FF;
 }
 
 /* 9 */
-@font-palette-values J {
+@font-palette-values --J {
     override-color: 0 green;
 }
 
 /* 10 */
-@font-palette-values K {
+@font-palette-values --K {
     override-color: 0 transparent;
 }
 
 /* 11 */
-@font-palette-values L {
+@font-palette-values --L {
     override-color: 0 rgba(1 2 3 / 4);
 }
 
 /* 12 */
-@font-palette-values M {
+@font-palette-values --M {
     override-color: 0 lab(29.2345% 39.3825 20.0664);
 }
 
 /* 13 */
-@font-palette-values N {
+@font-palette-values --N {
     override-color: 0 color(display-p3 100% 100% 100%);
 }
 </style>
@@ -97,7 +97,7 @@ let rules = document.getElementById("style").sheet.cssRules;
 test(function() {
     let text = rules[0].cssText;
     assert_not_equals(text.indexOf("@font-palette-values "), -1);
-    assert_not_equals(text.indexOf(" A "), -1);
+    assert_not_equals(text.indexOf(" --A "), -1);
     assert_not_equals(text.indexOf("{"), -1);
     assert_not_equals(text.indexOf("}"), -1);
     assert_equals(text.indexOf("font-family"), -1);

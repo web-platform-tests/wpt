@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>This test validates that a failed cross-origin fetch creates an opaque network timing entry.
+</title>
+<link rel="author" title="Noam Rosenthal" href="noam@webkit.org">
+<link rel="help" href="https://www.w3.org/TR/resource-timing-2/#sec-performanceresourcetiming"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/entry-invariants.js"></script>
+</head>
+<body>
+<script src="csp-block-fetch.js"></script>
+</body>
+</html>

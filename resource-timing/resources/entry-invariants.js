@@ -481,3 +481,27 @@ const attribute_test = (loader, path, run_test, test_label) => {
 const attribute_test_with_validator = (loader, path, validator, run_test, test_label) => {
   attribute_test_internal(loader, path, validator, run_test, test_label);
 };
+
+const network_error_entry_test = (url, args_or_loader, label) => {
+    promise_test(async () => {
+        const timeBefore = performance.now();
+        loader = (typeof args_or_loader === 'function') ?
+          (() => args_or_loader(url)) :
+          (() => fetch(url, args_or_loader));
+        try {
+          url = await loader()
+        } catch (e) {
+            const timeAfter = performance.now();
+            const entries = performance.getEntriesByName(url);
+            assert_equals(entries.length, 1, 'resource timing entry for network error');
+            const entry = entries[0]
+            assert_equals(entry.startTime, entry.fetchStart, 'startTime and fetchStart should be equal');
+            assert_greater_than_equal(entry.startTime, timeBefore, 'startTime and fetchStart should be greater than the time before fetching');
+            assert_greater_than_equal(timeAfter, entry.responseEnd, 'endTime should be less than the time right after returning from the fetch');
+            invariants.assert_tao_failure_resource(entry);
+            return
+        }
+
+        throw new Error(`Expected fetch to throw an error`);
+    }, `Verify resource timing entry for network error: ${label}`);
+}

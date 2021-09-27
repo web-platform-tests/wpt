@@ -9,6 +9,4 @@ def main(request, response):
     if prev is not None:
         value = prev + 1
     stash.put(key, value)
-    headers = [(b"Content-Type", b"text/plain"),
-               (b"Cache-Control", b"cache")]
-    return headers, str(value)
+    return [], str(value)

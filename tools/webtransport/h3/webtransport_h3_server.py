@@ -260,7 +260,7 @@ class WebTransportSession:
             abruptly: bool) -> None:
         allow_calling_session_closed = self._allow_calling_session_closed
         self._allow_calling_session_closed = False
-        if self.protocol._handler and allow_calling_session_closed:
+        if self._protocol._handler and allow_calling_session_closed:
             self._protocol._handler.session_closed(close_info, abruptly)
 
     def create_unidirectional_stream(self) -> int:
@@ -342,7 +342,9 @@ class WebTransportEventHandler:
         self._run_callback("datagram_received", self._session, data)
 
     def session_closed(
-            self, close_info: Optional[Tuple[int, bytes]], abruptly: bool):
+            self,
+            close_info: Optional[Tuple[int, bytes]],
+            abruptly: bool) -> None:
         self._run_callback(
             "session_closed", self._session, close_info, abruptly=abruptly)
 

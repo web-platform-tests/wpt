@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<title>Test cases for scenarios not defined in the preload spec</title>
+<script src="/resources/testharness.js" a></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+    const serveUrl = './resources/inc.py'
+    function uuidv4() {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+    }
+
+    async function load(key) {
+        const response = await fetch(`${serveUrl}?key=${key}`, {cache: 'force-cache'})
+        return await response.text()
+    }
+
+    function preload(key) {
+        const link = document.createElement('link')
+        link.rel = "preload"
+        link.href = `${serveUrl}?key=${key}`
+        link.as = "fetch"
+        link.setAttribute("crossorigin", "crossorigin")
+        document.head.appendChild(link)
+        return new Promise(resolve => {
+            link.addEventListener("load", resolve)
+        })
+    }
+
+    promise_test(async() => {
+        const key = uuidv4()
+        const p = await preload(key)
+        const results = [await load(key), await load(key)]
+
+        const expected = {
+            // Preload result is used for all subsequent requests
+            gecko: ["0", "0"],
+
+            // Preload is used once
+            blink: ["0", "1"],
+
+            // Preload is not used in subsequent requests
+            webkit: ["1", "2"]
+        }
+
+        assert_array_equals(results, expected.gecko)
+    })
+</script>

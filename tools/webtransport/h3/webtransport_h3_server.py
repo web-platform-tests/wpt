@@ -52,7 +52,7 @@ class H3Capsule:
         self.data = data
 
     @staticmethod
-    def decode(data: bytes) -> any:
+    def decode(data: bytes) -> Any:
         """
         Returns an H3Capsule representing the given bytes.
         """
@@ -77,8 +77,8 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         super().__init__(*args, **kwargs)
         self._handler: Optional[Any] = None
         self._http: Optional[H3Connection] = None
-        self._connect_stream_id: Optional[int] = None
-        self._connect_stream_data: bytes = b""
+        self._session_stream_id: Optional[int] = None
+        self._session_stream_data: bytes = b""
 
     def quic_event_received(self, event: QuicEvent) -> None:
         if isinstance(event, ProtocolNegotiated):
@@ -110,11 +110,12 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
 
         if self._session_stream_id == event.stream_id and\
            isinstance(event, WebTransportStreamDataReceived):
-            self._connect_stream_data += event.data
+            self._session_stream_data += event.data
             if event.stream_ended:
                 close_info = None
-                if len(self._connect_stream_data) > 0:
-                    capsule = H3Capsule.decode(self._connect_stream_data)
+                if len(self._session_stream_data) > 0:
+                    capsule: H3Capsule =\
+                        H3Capsule.decode(self._session_stream_data)
                     close_info = (0, "")
                     if capsule.type == CapsuleType.CLOSE_WEBTRANSPORT_SESSION:
                         buffer = Buffer(capsule.data)
@@ -234,12 +235,13 @@ class WebTransportSession:
         self._allow_calling_session_closed = False
         assert self._session_stream_id is not None
         if close_info is not None:
-            code = close_info.code
-            reason = close_info.reason
+            code = close_info[0]
+            reason = close_info[1]
             buffer = Buffer(capacity=len(reason) + 4)
             buffer.push_uint32(code)
             buffer.push_bytes(reason)
-            capsule = H3Capsule(CLOSE_WEBTRANSPORT_SESSION, buffer.data)
+            capsule =\
+                H3Capsule(CapsuleType.CLOSE_WEBTRANSPORT_SESSION, buffer.data)
             self.send_stream_data(self._session_stream_id, capsule.encode())
 
         self.send_stream_data(self._session_stream_id, b'', end_stream=True)

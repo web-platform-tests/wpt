@@ -116,11 +116,11 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                 if len(self._session_stream_data) > 0:
                     capsule: H3Capsule =\
                         H3Capsule.decode(self._session_stream_data)
-                    close_info = (0, "")
+                    close_info = (0, b"")
                     if capsule.type == CapsuleType.CLOSE_WEBTRANSPORT_SESSION:
                         buffer = Buffer(capsule.data)
                         close_info[0] = buffer.pull_uint32()
-                        reason = buffer.data()
+                        close_info[1] = buffer.data()
                         # TODO(yutakahirano): Make sure `reason` is a
                         # UTF-8 text.
                 self.call_session_closed(close_info, abruptly=False)
@@ -233,7 +233,8 @@ class WebTransportSession:
         :param close_info The close information to send.
         """
         self._allow_calling_session_closed = False
-        assert self._session_stream_id is not None
+        assert self._protocol._session_stream_id is not None
+        session_stream_id = self._protocol._session_stream_id
         if close_info is not None:
             code = close_info[0]
             reason = close_info[1]
@@ -242,9 +243,9 @@ class WebTransportSession:
             buffer.push_bytes(reason)
             capsule =\
                 H3Capsule(CapsuleType.CLOSE_WEBTRANSPORT_SESSION, buffer.data)
-            self.send_stream_data(self._session_stream_id, capsule.encode())
+            self.send_stream_data(session_stream_id, capsule.encode())
 
-        self.send_stream_data(self._session_stream_id, b'', end_stream=True)
+        self.send_stream_data(session_stream_id, b'', end_stream=True)
         self._protocol.transmit()
         # TODO(yutakahirano): Reset all other streams.
         # TODO(yutakahirano): Reject future stream open requests

@@ -7,22 +7,20 @@
         <link rel="help" href="http://www.w3.org/TR/navigation-timing-2/#sec-PerformanceNavigationTiming"/>
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
+        <script src="/../resource-timing/resources/entry-invariants.js"></script>
         <script src="/common/utils.js"></script>
         <script>
             setup({ single_test: true });
 
             function onload_test()
             {
-                var performanceNamespace = document.getElementById("frameContext").contentWindow.performance;
-                assert_equals(performanceNamespace.getEntriesByType("navigation")[0].type,
-                    "navigate",
-                    "Expected navigation type to be navigate.");
-                assert_equals(performanceNamespace.getEntriesByType("navigation")[0].redirectCount, 0,
-                    "Expected redirectCount to be 0.");
-                assert_equals(performanceNamespace.getEntriesByType("navigation")[0].redirectStart, 0,
-                    "Expected redirectStart to be 0.");
-                assert_equals(performanceNamespace.getEntriesByType("navigation")[0].redirectEnd, 0,
-                    "Expected redirectEnd to be 0.");
+                const performanceNamespace = document.getElementById("frameContext").contentWindow.performance;
+                const navigationEntry = performanceNamespace.getEntriesByType("navigation")[0]
+                assert_equals(navigationEntry.type, "navigate", "Expected navigation type to be navigate.");
+
+                assert_equals(navigationEntry.redirectCount, 0, "Expected redirectCount to be zero.");
+
+                invariants.assert_cross_origin_redirected_resource(navigationEntry);
 
                 done();
             }

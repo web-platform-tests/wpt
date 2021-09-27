@@ -36,8 +36,6 @@ _logger: logging.Logger = logging.getLogger(__name__)
 _doc_root: str = ""
 
 
-# TODO(yutakahirano): Use aioquic's H3Capsule when
-# https://github.com/aiortc/aioquic/pull/229 is accepted.
 class CapsuleType(IntEnum):
     # Defined in
     # https://www.ietf.org/archive/id/draft-ietf-masque-h3-datagram-03.html.
@@ -50,8 +48,6 @@ class CapsuleType(IntEnum):
     CLOSE_WEBTRANSPORT_SESSION = 0x2843
 
 
-# TODO(yutakahirano): Use aioquic's H3Capsule when
-# https://github.com/aiortc/aioquic/pull/229 is accepted.
 class H3Capsule:
     """
     Represents the Capsule concept defined in

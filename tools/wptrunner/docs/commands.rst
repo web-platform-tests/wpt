@@ -49,14 +49,14 @@ additional fields. All paths are relative to the commands.json.
   to True.
 
 :code:`install`
-  A list of strings of each string represents a
+  A list of strings where each string represents a
   `requirement object <https://setuptools.readthedocs.io/en/latest/pkg_resources.html#requirement-objects>`_.
   These requirements are installed into the virtualenv environment before
   running the subcommand. :code:`virtualenv` must be true when this field is
   set.
 
 :code:`requirements`
-  A list of paths of each path specifies a requirements.txt. All requirements
+  A list of paths where each path specifies a requirements.txt. All requirements
   listed in these files are installed into the virtualenv environment before
   running the subcommand. :code:`virtualenv` must be true when this field is
   set.
@@ -72,7 +72,7 @@ additional fields. All paths are relative to the commands.json.
     "baz": {
       "path": "baz.py",
       "script": "run",
-      "vritualenv": true,
+      "virtualenv": true,
       "conditional_requirements": {
         "commandline_flag": {
           "enable_feature1": [

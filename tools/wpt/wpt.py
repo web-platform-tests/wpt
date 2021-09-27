@@ -17,12 +17,12 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 def load_conditional_requirements(props, base_dir):
     """Load conditional requirements from commands.json."""
 
-    conditional_requirements = props.get("conditional_requirements", {})
+    conditional_requirements = props.get("conditional_requirements")
     if not conditional_requirements:
         return {}
 
     commandline_flag_requirements = {}
-    for key, value in props.get("conditional_requirements", {}).items():
+    for key, value in conditional_requirements.items():
         if key == "commandline_flag":
             for flag_name, requirements_paths in value.items():
                 commandline_flag_requirements[flag_name] = [

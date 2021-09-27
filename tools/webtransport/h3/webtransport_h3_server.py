@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional, Tuple
 
 # TODO(bashi): Remove import check suppressions once aioquic dependency is resolved.
+from aioquic.buffer import UINT_VAR_MAX_SIZE, Buffer
 from aioquic.asyncio import QuicConnectionProtocol, serve  # type: ignore
 from aioquic.asyncio.client import connect  # type: ignore
 from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection  # type: ignore
@@ -17,7 +18,6 @@ from aioquic.quic.configuration import QuicConfiguration  # type: ignore
 from aioquic.quic.connection import stream_is_unidirectional  # type: ignore
 from aioquic.quic.events import QuicEvent, ProtocolNegotiated, ConnectionTerminated  # type: ignore
 from aioquic.tls import SessionTicket  # type: ignore
-from aioquic.quic.packet import QuicErrorCode  # type: ignore
 
 from tools.wptserve.wptserve import stash  # type: ignore
 
@@ -251,10 +251,12 @@ class WebTransportSession:
         # client's behavior.
         # TODO(yutakahirano): Implement the above.
 
-    def call_session_closed(self, close_info: Optional[Tuple[int, bytes]], abruptly: bool) -> None:
+    def call_session_closed(
+            self, close_info: Optional[Tuple[int, bytes]],
+            abruptly: bool) -> None:
         allow_calling_session_closed = self._allow_calling_session_closed
         self._allow_calling_session_closed = False
-        if self._handler and self._allow_calling_session_closed:
+        if self._handler and allow_calling_session_closed:
             self._handler.session_closed(close_info, abruptly)
 
     def create_unidirectional_stream(self) -> int:
@@ -339,6 +341,7 @@ class WebTransportEventHandler:
             self, close_info: Optional[Tuple[int, bytes]], abruptly: bool):
         self._run_callback(
             "session_closed", self._session, close_info, abruptly=abruptly)
+
 
 class SessionTicketStore:
     """

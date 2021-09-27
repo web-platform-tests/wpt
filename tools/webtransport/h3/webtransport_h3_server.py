@@ -119,10 +119,11 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                     close_info = (0, b"")
                     if capsule.type == CapsuleType.CLOSE_WEBTRANSPORT_SESSION:
                         buffer = Buffer(capsule.data)
-                        close_info[0] = buffer.pull_uint32()
-                        close_info[1] = buffer.data()
+                        code = buffer.pull_uint32()
+                        reason = buffer.data()
                         # TODO(yutakahirano): Make sure `reason` is a
                         # UTF-8 text.
+                        close_info = (code, reason)
                 self.call_session_closed(close_info, abruptly=False)
         elif self._handler is not None:
             if isinstance(event, WebTransportStreamDataReceived):
@@ -259,8 +260,8 @@ class WebTransportSession:
             abruptly: bool) -> None:
         allow_calling_session_closed = self._allow_calling_session_closed
         self._allow_calling_session_closed = False
-        if self._handler and allow_calling_session_closed:
-            self._handler.session_closed(close_info, abruptly)
+        if self.protocol._handler and allow_calling_session_closed:
+            self._protocol._handler.session_closed(close_info, abruptly)
 
     def create_unidirectional_stream(self) -> int:
         """

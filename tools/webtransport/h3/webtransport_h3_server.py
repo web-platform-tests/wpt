@@ -38,12 +38,6 @@ _doc_root: str = ""
 
 class CapsuleType(IntEnum):
     # Defined in
-    # https://www.ietf.org/archive/id/draft-ietf-masque-h3-datagram-03.html.
-    DATAGRAM = 0xff37a0
-    REGISTER_DATAGRAM_CONTEXT = 0xff37a1
-    REGISTER_DATAGRAM_NO_CONTEXT = 0xff37a2
-    CLOSE_DATAGRAM_CONTEXT = 0xff37a3
-    # Defined in
     # https://www.ietf.org/archive/id/draft-ietf-webtrans-http3-01.html.
     CLOSE_WEBTRANSPORT_SESSION = 0x2843
 
@@ -94,8 +88,8 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
             for http_event in self._http.handle_event(event):
                 self._h3_event_received(http_event)
 
-        if isinstance(event, ConnectionTerminated) and self._handler:
-            self._handler.session_closed(close_info=None, abruptly=True)
+        if isinstance(event, ConnectionTerminated):
+            self.call_session_closed(close_info=None, abruptly=True)
 
     def _h3_event_received(self, event: H3Event) -> None:
         if isinstance(event, HeadersReceived):
@@ -117,7 +111,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
         if self._session_stream_id == event.stream_id and\
            isinstance(event, WebTransportStreamDataReceived):
             self._connect_stream_data += event.data
-            if self._handler is not None and event.stream_ended:
+            if event.stream_ended:
                 close_info = None
                 if len(self._connect_stream_data) > 0:
                     capsule = H3Capsule.decode(self._connect_stream_data)
@@ -128,7 +122,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                         reason = buffer.data()
                         # TODO(yutakahirano): Make sure `reason` is a
                         # UTF-8 text.
-                self._handler.session_closed(session, close_info, abruptly=False)
+                self.call_session_closed(close_info, abruptly=False)
         elif self._handler is not None:
             if isinstance(event, WebTransportStreamDataReceived):
                 self._handler.stream_data_received(
@@ -212,6 +206,7 @@ class WebTransportSession:
         self._stash_path = '/webtransport/handlers'
         self._stash: Optional[stash.Stash] = None
         self._dict_for_handlers: Dict[str, Any] = {}
+        self._allow_calling_session_closed = True
 
     @property
     def stash(self) -> stash.Stash:
@@ -236,8 +231,7 @@ class WebTransportSession:
 
         :param close_info The close information to send.
         """
-        if self._handler:
-            self._handler.disallow_calling_session_closed()
+        self._allow_calling_session_closed = False
         assert self._session_stream_id is not None
         if close_info is not None:
             code = close_info.code
@@ -256,6 +250,12 @@ class WebTransportSession:
         # we need to close the connection. At this moment we're relying on the
         # client's behavior.
         # TODO(yutakahirano): Implement the above.
+
+    def call_session_closed(self, close_info: Optional[Tuple[int, bytes]], abruptly: bool) -> None:
+        allow_calling_session_closed = self._allow_calling_session_closed
+        self._allow_calling_session_closed = False
+        if self._handler and self._allow_calling_session_closed:
+            self._handler.session_closed(close_info, abruptly)
 
     def create_unidirectional_stream(self) -> int:
         """
@@ -308,7 +308,6 @@ class WebTransportEventHandler:
                  callbacks: Dict[str, Any]) -> None:
         self._session = session
         self._callbacks = callbacks
-        self._allow_calling_session_closed = True
 
     def _run_callback(self, callback_name: str,
                       *args: Any, **kwargs: Any) -> None:
@@ -338,14 +337,8 @@ class WebTransportEventHandler:
 
     def session_closed(
             self, close_info: Optional[Tuple[int, bytes]], abruptly: bool):
-        if not self._allow_calling_session_closed:
-            return
-        self._allow_calling_session_closed = False
         self._run_callback(
             "session_closed", self._session, close_info, abruptly=abruptly)
-
-    def disallow_calling_session_closed(self):
-        self._allow_calling_session_closed = False
 
 class SessionTicketStore:
     """

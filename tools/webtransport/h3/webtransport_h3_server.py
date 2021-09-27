@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional, Tuple
 
 # TODO(bashi): Remove import check suppressions once aioquic dependency is resolved.
-from aioquic.buffer import UINT_VAR_MAX_SIZE, Buffer
+from aioquic.buffer import UINT_VAR_MAX_SIZE, Buffer  # type: ignore
 from aioquic.asyncio import QuicConnectionProtocol, serve  # type: ignore
 from aioquic.asyncio.client import connect  # type: ignore
 from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection  # type: ignore

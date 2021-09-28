@@ -7,6 +7,11 @@ def main(request, response):
     if (b"count" in request.GET):
         return [], str(stash.take(key))
 
+    status = 200
+
+    if (b"status" in request.GET):
+        status = int(request.GET[b"status"])
+
     content = request.GET[b"content"]
     headers = request.GET[b"headers"]
 
@@ -22,4 +27,4 @@ def main(request, response):
     count = count + 1
 
     stash.put(key, count)
-    return headers, content
+    return status, headers, content

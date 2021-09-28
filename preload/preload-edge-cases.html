@@ -9,15 +9,10 @@
         );
     }
 
-    function generateUrl({headers, content, key}) {
+    function generateUrl({headers, content, key, status}) {
         const params = new URLSearchParams(
-            {key, content, headers: JSON.stringify(Object.entries(headers || {}))})
+            {status: status || 200, key, content, headers: JSON.stringify(Object.entries(headers || {}))})
         return `resources/inc-requests.py?${params.toString()}`
-    }
-
-    async function fetch_loader(url, options) {
-        const response = await fetch(url, options)
-        return await response.text()
     }
 
     async function get_count(key) {
@@ -35,14 +30,20 @@
         document.head.appendChild(link)
         return new Promise(resolve => {
             link.addEventListener("load", () => resolve(link))
+            link.addEventListener("error", () => resolve(link))
         })
     }
 
-    const default_load_count = 3
-    async function load_and_count({num_loads, content, headers, type, crossOrigin, load, expected}) {
+    const default_load_count = 2
+
+    async function load_and_count({contentType, num_loads, content, cache, type, crossOrigin, load, expected}) {
         num_loads = num_loads || default_load_count
         const key = uuidv4()
-        const url = generateUrl({headers, key, content})
+        const cacheControls = {cache: "Max-Age=1000", "no-cache": "no-store", error: ""}
+        const cacheControl = cacheControls[cache]
+        const headers = {"Cache-Control": cacheControl, "Content-Type": contentType }
+        
+        const url = generateUrl({headers, key, content, status: cache === "error" ? 404 : 200})
         const link = await preload(url, type, crossOrigin)
         const results = []
         for (let i = 0; i < num_loads; i++)
@@ -53,152 +54,107 @@
         assert_equals(count, expected);
     }
 
-    function test_preload_with_fetch({headers, options, num_loads, expected, label}) {
-        promise_test(() => 
-            load_and_count({headers, num_loads, expected, content: "OK", crossOrigin: true,
-                load: url => fetch(url, options)
-            }), `Test ${num_loads || default_load_count} fetches after preload with ${label}`)
+    const fetch_with_force_cache = url => fetch(url, {cache: "force-cache"})
+    const fetch_image = url => {
+        const image = document.createElement('img')
+        image.src = url
+        document.body.appendChild(image)
+        return new Promise(resolve => image.onload = image.onerror = () => {
+            image.remove()
+            resolve()
+        })
+    }
+    const fetch_script = url => {
+        const script = document.createElement('script')
+        script.src = url
+        document.body.appendChild(script)
+        return new Promise(resolve => {
+            script.onload = script.onerror = () => {
+                resolve()
+                script.remove()
+            }
+        })
+    }
+    const fetch_style = url => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        document.head.appendChild(link)
+        return new Promise(resolve => {
+            link.onload = link.onerror = () => {
+                resolve()
+                link.remove()
+            }
+        })
     }
 
-    function test_preload_with_image({headers, num_loads, expected, label}) {
+    const variants = {
+        fetch: {
+            content: '{}',
+            contentType: 'application/json',
+            load: fetch,
+            crossOrigin: true,
+            as: 'fetch'
+        },
+        fetch_force_cache: {
+            content: '{}',
+            contentType: 'application/json',
+            load: fetch_with_force_cache,
+            crossOrigin: true,
+            as: 'fetch'
+        },
+        image: {
+            content: '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2" />',
+            contentType: 'image/svg+xml',
+            load: fetch_image,
+            crossOrigin: false,
+            as: 'image'
+        },
+        invalid_image: {
+            content: '/<!##123\n3131',
+            contentType: 'image/svg+xml',
+            load: fetch_image,
+            crossOrigin: false,
+            as: 'image'
+        },
+        script: {
+            content: '//',
+            contentType: 'text/javascript',
+            load: fetch_script,
+            crossOrigin: false,
+            as: 'script'
+        },
+        style: {
+            content: '.some-class { all: revert }',
+            contentType: 'text/css',
+            load: fetch_style,
+            crossOrigin: false,
+            as: 'style'
+        },
+    }
+
+    function test_preload({cache, status, resourceType, num_loads}) {
+        const variant = variants[resourceType];
+        num_loads = num_loads || default_load_count
+        const expected = 1
         promise_test(() => 
             load_and_count({
-                headers: {...headers, "Content-Type": "image/svg+xml"},
-                num_loads,
-                expected, 
-                content: '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2" />',
-                type: "image",
-                load: url => {
-                    const image = document.createElement('img')
-                    image.src = url
-                    return new Promise(resolve => image.onload = image.onerror = () => {
-                        resolve()
-                    })
-                    document.body.appendChild(image)
-                }
-            }), `Test ${num_loads || default_load_count} image loads after preload with ${label}`)
+                cache,
+                contentType: variant.contentType,
+                num_loads: num_loads || default_load_count,
+                expected: 1,
+                content: variant.content,
+                type: variant.as,
+                load: variant.load
+            }), `${num_loads} loads after preload: (${resourceType}, ${cache})
+                should make ${expected} server requests`)
     }
 
-    function test_preload_with_script({headers, expected, label, num_loads}) {
-        promise_test(() => 
-            load_and_count({
-                headers: {...headers, "Content-Type": "text/javascript"},
-                num_loads,
-                crossOrigin: false,
-                type: "script",
-                content: "//",
-                expected, 
-                    load: url => {
-                        const script = document.createElement('script')
-                        script.src = url
-                        document.body.appendChild(script)
-                        return new Promise(resolve => {
-                            script.onload = script.onerror = resolve
-                        })
-
-                    }
-           }), `Test ${num_loads || default_load_count} script loads after preload with ${label}`)
+    for (const resourceType in variants) {
+        for (const cache of ["no-cache", "cache", "error"]) {
+            test_preload({cache, resourceType})
+        }
     }
 
-
-
-    const disableCacheResponseHeaders = {"Cache-Control": "no-store"}
-    const enableCacheResponseHeaders =  {"Cache-Control": "Max-Age=1000"}
-
-    /*
-        Cache disabled
-
-        Chrome+Firefox: preload result is used once
-        Safari: preload result is ignored
-    */
-    test_preload_with_fetch({
-        headers: disableCacheResponseHeaders,
-        expected: 1,
-        label: "cache disabled by server"
-    })
-
-    /*
-        Cache disabled, but "forced" by client (using force-cache)
-
-        Chrome: preload result is used once
-        Firefox+Safari: preload result is ignored
-    */
-    test_preload_with_fetch({
-        headers: disableCacheResponseHeaders,
-        options: {cache: "force-cache"},
-        expected: 1,
-        label: "cache disabled by server, forced by client"
-    })
-
-    /*
-        Cache enabled using max-age
-
-        Firefox: preload result is used once
-        Safari+Chrome: preload result is reused
-    */
-    test_preload_with_fetch({
-        headers: enableCacheResponseHeaders,
-        expected: 1,
-        label: "cache enabled by server"
-    })
-
-    /*
-        Cache enabled using max-age + force-cache
-
-        Chrome+Safari+Firefox: preload result is reused
-    */
-    test_preload_with_fetch({
-        headers: enableCacheResponseHeaders,
-        options: {cache: "force-cache"},
-        expected: 1,
-        label: "cache enabled by server + force-cache"
-    })
-
-    /*
-        Cache enabled image
-
-        Chrome+Safari+Firefox: preload result is reused
-    */
-    test_preload_with_image({
-        headers: enableCacheResponseHeaders,
-        expected: 1,
-        label: "cache enabled by server"
-    })
-
-    /*
-        Cache disabled image
-
-        Chrome: preload result is used once
-        Safari+Firefox: preload result is reused
-    */
-    test_preload_with_image({
-        headers: disableCacheResponseHeaders,
-        expected: 1,
-        label: "cache disabled by server"
-    })
-
-    /*
-        Cache enabled script
-
-        Firefox: preload result is used once
-        Chrome+Safari: preload result is reused
-    */
-    test_preload_with_script({
-        headers: enableCacheResponseHeaders,
-        expected: 1,
-        label: "cache enabled by server"
-    })
-
-    /*
-        Cache enabled script
-
-        Chrome+Firefox: preload result is used once
-        Safari: preload result is reused
-    */
-    test_preload_with_script({
-        headers: disableCacheResponseHeaders,
-        expected: 1,
-        label: "cache disabled by server"
-    })
 </script>
 <img src="1x1.svg" />

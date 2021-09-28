@@ -14,10 +14,9 @@ async_test((t) => {
 
   worker.addEventListener(
     "message",
-    t.step_func((evt) => {
-      assert_true(evt.data.success);
+    t.step_func_done((evt) => {
+      assert_true(evt.data.importSucceeded);
       assert_equals(evt.data.module.foo, "bar");
-      t.done();
     })
   );
 }, "A blob URL created in a window agent can be imported from a worker");
@@ -31,10 +30,9 @@ async_test((t) => {
 
   worker.addEventListener(
     "message",
-    t.step_func((evt) => {
-      assert_false(evt.data.success);
+    t.step_func_done((evt) => {
+      assert_false(evt.data.importSucceeded);
       assert_equals(evt.data.errorName, "TypeError");
-      t.done();
     })
   );
 }, "A blob URL revoked in a window agent will not resolve in a worker");
@@ -53,7 +51,7 @@ promise_test(async (t) => {
     worker.addEventListener(
       "message",
       t.step_func((evt) => {
-        assert_false(evt.data.success);
+        assert_false(evt.data.importSucceeded);
         assert_equals(evt.data.errorName, "TypeError");
         resolve();
       })

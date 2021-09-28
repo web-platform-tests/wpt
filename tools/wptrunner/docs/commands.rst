@@ -16,7 +16,7 @@ would look like the following::
     "bar": {
       "path": "bar.py",
       "script": "run",
-      "vritualenv": true,
+      "virtualenv": true,
       "requirements": [
         "requirements.txt"
       ]

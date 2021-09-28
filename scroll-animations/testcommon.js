@@ -15,7 +15,10 @@ function setupScrollTimelineTest(
   let scroller = document.createElement('div');
   scroller.style.width = '100px';
   scroller.style.height = '100px';
-  scroller.style.overflow = 'scroll';
+  // Hide the scrollbars, but maintain the ability to scroll. This setting
+  // ensures that variability in scrollbar sizing does not contribute to test
+  // failures or flakes.
+  scroller.style.overflow = 'hidden';
   for (const [key, value] of scrollerOverrides) {
     scroller.style[key] = value;
   }
@@ -90,7 +93,7 @@ function createScrollLinkedAnimationWithTiming(test, timing, timeline) {
     new KeyframeEffect(createDiv(test), KEYFRAMES, timing), timeline);
 }
 
-function assert_approx_equals_or_null(actual, expected, tolerance, name){
+function assert_approx_equals_or_null(actual, expected, tolerance, name) {
   if (actual === null || expected === null){
     assert_equals(actual, expected, name);
   }
@@ -99,7 +102,10 @@ function assert_approx_equals_or_null(actual, expected, tolerance, name){
   }
 }
 
-function assert_percents_equal(actual, expected, description){
+function assert_percents_approx_equal(actual, expected, maxScroll,
+                                      description) {
+  // Base the tolerance on being out by up to half a pixel.
+  const tolerance = 0.5 / maxScroll * 100;
   assert_equals(actual.unit, "percent", `'actual' unit type must be ` +
       `'percent' for "${description}"`);
   assert_true(actual instanceof CSSUnitValue, `'actual' must be of type ` +
@@ -109,10 +115,18 @@ function assert_percents_equal(actual, expected, description){
     // type
     assert_equals(expected.unit, "percent", `'expected' unit type must be ` +
         `'percent' for "${description}"`);
-    assert_approx_equals(actual.value, expected.value, 0.01, `values do not ` +
-        `match for "${description}"`);
+    assert_approx_equals(actual.value, expected.value, tolerance,
+        `values do not match for "${description}"`);
   } else if (typeof expected, "number"){
-    assert_approx_equals(actual.value, expected, 0.01, `values do not match ` +
-        `for "${description}"`);
+    assert_approx_equals(actual.value, expected, tolerance,
+        `values do not match for "${description}"`);
   }
+}
+
+function assert_percents_equal(actual, expected, description) {
+  // Rough estimate of the default size of the scrollable area based on
+  // sizes in setupScrollTimelineTest.
+  const defaultScrollRange = 400;
+  return assert_percents_approx_equal(actual, expected, defaultScrollRange,
+                                      description);
 }

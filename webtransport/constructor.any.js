@@ -1,7 +1,6 @@
 // META: global=window,worker
 // META: script=/common/get-host-info.sub.js
-
-const HOST = get_host_info().ORIGINAL_HOST;
+// META: script=resources/webtransport-test-helpers.sub.js
 
 const BAD_URLS = [
   null,
@@ -21,12 +20,17 @@ for (const url of BAD_URLS) {
   }, `WebTransport constructor should reject URL '${url}'`);
 }
 
-// TODO(bashi): Test CSP.
-
-promise_test(t => {
+promise_test(async t => {
   const wt = new WebTransport(`https://${HOST}:0/`);
-  return Promise.all([
-    promise_rejects_js(t, TypeError, wt.ready, 'ready promise rejects'),
-    promise_rejects_js(t, TypeError, wt.closed, 'closed promise rejects'),
-  ]);
-}, 'connection to port 0 should fail');
+
+  // Sadly we cannot use promise_rejects_dom as the error constructor is
+  // WebTransportError rather than DOMException.
+  // We get a possible error, and then make sure wt.ready is rejected with it.
+  const e = await wt.ready.catch(e => e);
+
+  await promise_rejects_exactly(t, e, wt.ready, 'ready should be rejected');
+  await promise_rejects_exactly(t, e, wt.closed, 'closed should be rejected');
+  assert_true(e instanceof WebTransportError);
+  assert_equals(e.source, 'session', 'source');
+  assert_equals(e.streamErrorCode, null, 'streamErrorCode');
+}, 'Connection to port 0 should fail');

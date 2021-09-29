@@ -34,23 +34,28 @@
         })
     }
 
-    const default_load_count = 2
+    const defaultLoadCount = 2
 
-    async function load_and_count({contentType, num_loads, content, cache, type, crossOrigin, load, expected}) {
-        num_loads = num_loads || default_load_count
+    async function load_and_count({loadType, contentType, numLoads, content, cache, type, crossOrigin, load, expected}) {
+        numLoads = numLoads || defaultLoadCount
         const key = uuidv4()
         const cacheControls = {cache: "Max-Age=1000", "no-cache": "no-store", error: ""}
         const cacheControl = cacheControls[cache]
         const headers = {"Cache-Control": cacheControl, "Content-Type": contentType }
         
         const url = generateUrl({headers, key, content, status: cache === "error" ? 404 : 200})
-        const link = await preload(url, type, crossOrigin)
+        let link
+        if (loadType === "preload")
+            link = await preload(url, type, crossOrigin)
+        else
+            load(url)
         const results = []
-        for (let i = 0; i < num_loads; i++)
+        for (let i = 0; i < numLoads; i++)
             await load(url)
 
         const count = await get_count(key)
-        link.remove()
+        if (loadType === "preload")
+            link.remove()
         assert_equals(count, expected);
     }
 
@@ -133,26 +138,28 @@
         },
     }
 
-    function test_preload({cache, status, resourceType, num_loads}) {
+    function test_preload({cache, status, resourceType, numLoads, loadType}) {
         const variant = variants[resourceType];
-        num_loads = num_loads || default_load_count
+        numLoads = numLoads || defaultLoadCount
         const expected = 1
         promise_test(() => 
             load_and_count({
+                loadType,
                 cache,
                 contentType: variant.contentType,
-                num_loads: num_loads || default_load_count,
+                numLoads: numLoads || defaultLoadCount,
                 expected: 1,
                 content: variant.content,
                 type: variant.as,
                 load: variant.load
-            }), `${num_loads} loads after preload: (${resourceType}, ${cache})
+            }), `${numLoads} loads after ${loadType}: (${resourceType}, ${cache})
                 should make ${expected} server requests`)
     }
 
     for (const resourceType in variants) {
-        for (const cache of ["no-cache", "cache", "error"]) {
-            test_preload({cache, resourceType})
+        for (const cache of ["cache", "no-cache", "error"]) {
+            for (const loadType of ["load", "preload"])
+                test_preload({cache, resourceType, loadType})
         }
     }
 

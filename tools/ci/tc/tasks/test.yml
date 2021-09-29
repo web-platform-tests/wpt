@@ -62,6 +62,7 @@ components:
       --log-wptreport=../artifacts/wpt_report.json
       --log-wptscreenshot=../artifacts/wpt_screenshot.txt
       --no-fail-on-unexpected
+      --chunk-type=hash
       --this-chunk=${chunks.id}
       --total-chunks=${chunks.total}
       --test-type=${vars.suite}

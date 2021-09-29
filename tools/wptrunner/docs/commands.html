@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>commands.json &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="wptrunner Design" href="design.html" />
+    <link rel="prev" title="Expectation Data" href="expectation.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="commands-json">
+<h1>commands.json<a class="headerlink" href="#commands-json" title="Permalink to this headline">¶</a></h1>
+<p><code class="code docutils literal notranslate"><span class="pre">commands.json</span></code> files define how subcommands are executed by the
+<code class="code docutils literal notranslate"><span class="pre">./wpt</span></code> command. <code class="code docutils literal notranslate"><span class="pre">wpt</span></code> searches all command.json files under the top
+directory and sets up subcommands from these JSON files. A typical commands.json
+would look like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;foo.py&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;script&quot;</span><span class="p">:</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;parser&quot;</span><span class="p">:</span> <span class="s2">&quot;get_parser&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Run foo&quot;</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;bar.py&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;script&quot;</span><span class="p">:</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;virtualenv&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="s2">&quot;requirements&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;requirements.txt&quot;</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Each key of the top level object defines a name of a subcommand, and its value
+(a properties object) specifies how the subcommand is executed. Each properties
+object must contain <code class="code docutils literal notranslate"><span class="pre">path</span></code> and <code class="code docutils literal notranslate"><span class="pre">script</span></code> fields and may contain
+additional fields. All paths are relative to the commands.json.</p>
+<dl>
+<dt><code class="code docutils literal notranslate"><span class="pre">path</span></code></dt><dd><p>The path to a Python script that implements the subcommand.</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">script</span></code></dt><dd><p>The name of a function that is used as the entry point of the subcommand.</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">parser</span></code></dt><dd><p>The name of a function that creates an argparse parser for the subcommand.</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">parse_known</span></code></dt><dd><p>When True, <a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.parse_known_args">parse_known_args()</a>
+is used instead of parse_args() for the subcommand. Default to False.</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">help</span></code></dt><dd><p>Brief description of the subcommand.</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">virtualenv</span></code></dt><dd><p>When True, the subcommand is executed with a virtualenv environment. Default
+to True.</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">install</span></code></dt><dd><p>A list of strings where each string represents a
+<a class="reference external" href="https://setuptools.readthedocs.io/en/latest/pkg_resources.html#requirement-objects">requirement object</a>.
+These requirements are installed into the virtualenv environment before
+running the subcommand. <code class="code docutils literal notranslate"><span class="pre">virtualenv</span></code> must be true when this field is
+set.</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">requirements</span></code></dt><dd><p>A list of paths where each path specifies a requirements.txt. All requirements
+listed in these files are installed into the virtualenv environment before
+running the subcommand. <code class="code docutils literal notranslate"><span class="pre">virtualenv</span></code> must be true when this field is
+set.</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">conditional_requirements</span></code></dt><dd><p>A key-value object. Each key represents a condition, and value represents
+additional requirements when the condition is met. The requirements have the
+same format as <code class="code docutils literal notranslate"><span class="pre">requirements</span></code>. Currently “commandline_flag” is the only
+supported key. “commandline_flag” is used to specify requirements needed for a
+certain command line flag of the subcommand. For example, given the following
+commands.json:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;baz&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;baz.py&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;script&quot;</span><span class="p">:</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;virtualenv&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+  <span class="s2">&quot;conditional_requirements&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;commandline_flag&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;enable_feature1&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;requirements_feature1.txt&quot;</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Requirements in <code class="code docutils literal notranslate"><span class="pre">requirements_features1.txt</span></code> are installed only when
+<code class="code docutils literal notranslate"><span class="pre">--enable-feature1</span></code> is specified to <code class="code docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">baz</span></code>.</p>
+</dd>
+</dl>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../test-suite-design.html">Test Suite Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro-video-transcript.html">“Introduction to WPT” video transcript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../writing-tests/index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../admin/index.html">Project Administration</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../admin/index.html#tooling">Tooling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../admin/index.html#secrets">Secrets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../admin/index.html#third-party-account-owners">Third-party account owners</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../admin/index.html#emergency-playbook">Emergency playbook</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../admin/index.html">Project Administration</a><ul>
+  <li><a href="../README.html">wptrunner: A web-platform-tests harness</a><ul>
+      <li>Previous: <a href="expectation.html" title="previous chapter">Expectation Data</a></li>
+      <li>Next: <a href="design.html" title="next chapter">wptrunner Design</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/tools/wptrunner/docs/commands.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

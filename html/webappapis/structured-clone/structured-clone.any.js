@@ -4,7 +4,7 @@
 // META: script=/html/webappapis/structured-clone/structured-clone-battery-of-tests-harness.js
 
 runStructuredCloneBatteryOfTests({
-  structuredClone: (obj, transfer) => { 
+  structuredClone: (obj, transfer) => {
     return Promise.resolve().then(
       () => self.structuredClone(obj, { transfer })
     );

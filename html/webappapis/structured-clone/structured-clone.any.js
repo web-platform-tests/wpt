@@ -5,9 +5,9 @@
 
 runStructuredCloneBatteryOfTests({
   structuredClone: (obj, transfer) => {
-    return new Promise(resolve => {
-      resolve(self.structuredClone(obj, { transfer }));
-    });
+    return Promise.resolve().then(
+      () => self.structuredClone(obj, { transfer })
+    );
   },
   hasDocument: typeof document !== "undefined",
 });

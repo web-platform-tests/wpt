@@ -66,7 +66,7 @@ def stream_reset(session: WebTransportSession,
                  stream_id: int
                  error_code: int) -> None:
     """
-    Called when a stream is Reset with RESET_STREAM.
+    Called when a stream is reset with RESET_STREAM.
 
     :param session: A WebTransport session.
     :param stream_id: The ID of the stream.

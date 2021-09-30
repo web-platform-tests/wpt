@@ -29,7 +29,7 @@ async function test_xhr(url, event = "load") {
 promise_test(() => test_xhr("/common/dummy.xml"),
     `Verify resource timing entry creation for successful XHR`);
 
-promise_test(() => test_xhr(`${REMOTE_ORIGIN}/common/dummy.xml`, "error"), 
+promise_test(() => test_xhr(`${REMOTE_ORIGIN}/common/dummy.xml`, "error"),
     `Verify resource timing entry creation for XHR failing with CORS`);
 
 promise_test(() => test_xhr(`nowhere://common/dummy.xml`, "error"),

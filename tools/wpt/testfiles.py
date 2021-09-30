@@ -154,8 +154,8 @@ def repo_files_changed(revish, include_uncommitted=False, include_new=False):
     if git is None:
         raise Exception("git not found")
 
-    files_list = git("diff", "--name-only", "-z", revish).split(u"\0")
-    assert not files_list[-1]
+    files_list = git("diff", "--no-renames", "--name-only", "-z", revish).split(u"\0")
+    assert not files_list[-1], f"final item should be empty, got: {files_list[-1]!r}"
     files = set(files_list[:-1])
 
     if include_uncommitted:

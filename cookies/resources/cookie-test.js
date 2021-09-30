@@ -108,47 +108,32 @@ function httpRedirectCookieTest(cookie, expectedValue, name, location) {
   }, name);
 }
 
-// Cleans up all cookies accessible via document.cookie. This will not clean up
-// any HttpOnly cookies.
-function dropAllDomCookies() {
-  let cookies = document.cookie.split('; ');
-  for (const cookie of cookies) {
-    if (!Boolean(cookie))
-      continue;
-    document.cookie = `${cookie}; expires=01 Jan 1970 00:00:00 GMT`;
-  }
-  assert_equals(document.cookie, '', 'All DOM cookies were dropped.');
-}
-
 // Sets a `cookie` via the DOM, checks it against `expectedValue` via the DOM,
 // then cleans it up via the DOM. This is needed in cases where going through
 // HTTP headers may modify the cookie line (e.g. by stripping control
 // characters).
+//
+// Note: this function has a dependency on testdriver.js. Any test files calling
+// it should include testdriver.js and testdriver-vendor.js
 function domCookieTest(cookie, expectedValue, name) {
   return promise_test(async (t) => {
+    await test_driver.delete_all_cookies();
+    t.add_cleanup(test_driver.delete_all_cookies);
+
     document.cookie = cookie;
     let cookies = document.cookie;
-    t.add_cleanup(dropAllDomCookies);
     assert_equals(cookies, expectedValue, Boolean(expectedValue) ?
                                           'The cookie was set as expected.' :
                                           'The cookie was rejected.');
   }, name);
 }
 
-// Returns two arrays of control characters along with their ASCII codes. The
-// TERMINATING_CTLS should result in termination of the cookie string. The
-// remaining CTLS should result in rejection of the cookie. Control characters
-// are defined by RFC 5234 to be %x00-1F / %x7F.
+// Returns an array of control characters along with their ASCII codes. Control
+// characters are defined by RFC 5234 to be %x00-1F / %x7F.
 function getCtlCharacters() {
-  const termCtlCodes = [0x00 /* NUL */, 0x0A /* LF */, 0x0D /* CR */];
   const ctlCodes = [...Array(0x20).keys()]
-                       .filter(i => termCtlCodes.indexOf(i) === -1)
                        .concat([0x7F]);
-  return {
-    TERMINATING_CTLS:
-        termCtlCodes.map(i => ({code: i, chr: String.fromCharCode(i)})),
-    CTLS: ctlCodes.map(i => ({code: i, chr: String.fromCharCode(i)}))
-  };
+  return ctlCodes.map(i => ({ code: i, chr: String.fromCharCode(i) }))
 }
 
 // Returns a cookie string with name set to "t" * nameLength and value

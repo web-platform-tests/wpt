@@ -16,7 +16,7 @@ from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection  # type: igno
 from aioquic.h3.events import H3Event, HeadersReceived, WebTransportStreamDataReceived, DatagramReceived  # type: ignore
 from aioquic.quic.configuration import QuicConfiguration  # type: ignore
 from aioquic.quic.connection import stream_is_unidirectional  # type: ignore
-from aioquic.quic.events import QuicEvent, ProtocolNegotiated, ConnectionTerminated  # type: ignore
+from aioquic.quic.events import QuicEvent, ProtocolNegotiated, ConnectionTerminated, StreamReset  # type: ignore
 from aioquic.tls import SessionTicket  # type: ignore
 
 from tools.wptserve.wptserve import stash  # type: ignore
@@ -91,6 +91,9 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
 
         if isinstance(event, ConnectionTerminated):
             self._call_session_closed(close_info=None, abruptly=True)
+        if isinstance(event, StreamReset):
+            if self._handler:
+                self._handler.stream_reset(event.stream_id, event.error_code)
 
     def _h3_event_received(self, event: H3Event) -> None:
         if isinstance(event, HeadersReceived):
@@ -361,6 +364,10 @@ class WebTransportEventHandler:
             abruptly: bool) -> None:
         self._run_callback(
             "session_closed", self._session, close_info, abruptly=abruptly)
+
+    def stream_reset(self, stream_id: int, error_code: int) -> None:
+        self._run_callback(
+            "stream_reset", self._session, stream_id, error_code)
 
 
 class SessionTicketStore:

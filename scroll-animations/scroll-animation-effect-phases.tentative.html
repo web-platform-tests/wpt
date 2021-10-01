@@ -60,7 +60,7 @@
     // Case 1: No delays. Effect starts at the same time as the timeline.
     [["before timeline start", 0, 0, 0.10], [0, 0, 0, null, "before"]],
     [["at timeline start",     0, 0, 0.25], [0, 0, 0, 0, "active"]],
-    [["in timeline range",     0, 0, 0.50], [50, 50, 50, 0.5, "active"]],
+    [["in timeline range",     0, 0, 0.50], [50, 50, 50, 50, "active"]],
     [["at timeline end",       0, 0, 0.75], [100, 100, 100, null, "after"]],
     [["after timeline end",    0, 0, 0.90], [100, 100, 100, null, "after"]],
 
@@ -71,21 +71,21 @@
     [["at timeline start",     500, 0, 0.25], [0, 0, 0, null, "before"]],
     [["before effect delay",   500, 0, 0.30], [10, 10, 10, null, "before"]],
     [["at effect start",       500, 0, 0.50], [50, 50, 50, 0, "active"]],
-    [["in timeline range",     500, 0, 0.65], [80, 80, 80, 0.6, "active"]],
+    [["in timeline range",     500, 0, 0.65], [80, 80, 80, 60, "active"]],
     [["at timeline end",       500, 0, 0.75], [100, 100, 100, null, "after"]],
     [["after timeline end",    500, 0, 0.90], [100, 100, 100, null, "after"]],
 
     // Case 3: Negative delay, no endDelay.
     [["before timeline start", -250, 0, 0.10], [0, 0, 0, null, "before"]],
-    [["at timeline start",     -250, 0, 0.25], [0, 0, 0, 0.5, "active"]],
-    [["in timeline range",     -250, 0, 0.50], [50, 50, 50, 0.75, "active"]],
+    [["at timeline start",     -250, 0, 0.25], [0, 0, 0, 50, "active"]],
+    [["in timeline range",     -250, 0, 0.50], [50, 50, 50, 75, "active"]],
     [["at timeline end",       -250, 0, 0.75], [100, 100, 100, null, "after"]],
     [["after timeline end",    -250, 0, 0.90], [100, 100, 100, null,  "after"]],
 
     // Case 4: No delay, negative endDelay. Effect will never progress to 100%
     [["before timeline start", 0, -250, 0.10], [0, 0, 0, null, "before"]],
     [["at timeline start",     0, -250, 0.25], [0, 0, 0, 0, "active"]],
-    [["in timeline range",     0, -250, 0.50], [50, 50, 50, 0.25, "active"]],
+    [["in timeline range",     0, -250, 0.50], [50, 50, 50, 25, "active"]],
     [["at timeline end",       0, -250, 0.75], [100, 100, 100, null, "after"]],
     [["after timeline end",    0, -250, 0.90], [100, 100, 100, null, "after"]],
 
@@ -94,7 +94,7 @@
     //            = 100% * (0 + 500) / (0 + 500 + 500) = 50%
     [["before timeline start", 0, 500, 0.10], [0, 0, 0, null, "before"]],
     [["at timeline start",     0, 500, 0.25], [0, 0, 0, 0, "active"]],
-    [["in timeline range",     0, 500, 0.40], [30, 30, 30, 0.6, "active"]],
+    [["in timeline range",     0, 500, 0.40], [30, 30, 30, 60, "active"]],
     [["at effect end",         0, 500, 0.50], [50, 50, 50, null, "after"]],
     [["after effect endDelay", 0, 500, 0.60], [70, 70, 70, null, "after"]],
     [["at timeline end",       0, 500, 0.75], [100, 100, 100, null,"after"]],
@@ -111,7 +111,7 @@
     [["at timeline start",     375, 375, 0.25], [0, 0, 0, null, "before"]],
     [["before effect delay",   375, 375, 0.27], [4, 4, 4, null, "before"]],
     [["at effect start",       375, 375, 0.40], [30, 30, 30, 0, "active"]],
-    [["in timeline range",     375, 375, 0.50], [50, 50, 50, 0.5,  "active"]],
+    [["in timeline range",     375, 375, 0.50], [50, 50, 50, 50,  "active"]],
     [["at effect end",         375, 375, 0.60], [70, 70, 70, null, "after"]],
     [["after effect endDelay", 375, 375, 0.70], [90, 90, 90, null, "after"]],
     [["at timeline end",       375, 375, 0.75], [100, 100, 100, null, "after"]],
@@ -124,7 +124,7 @@
     [["at timeline start",     600, -100, 0.25], [0, 0, 0, null, "before"]],
     [["before effect delay",   600, -100, 0.40], [30, 30, 30, null, "before"]],
     [["at effect start",       600, -100, 0.55], [60, 60, 60, 0, "active"]],
-    [["in timeline range",     600, -100, 0.70], [90, 90, 90, 0.6, "active"]],
+    [["in timeline range",     600, -100, 0.70], [90, 90, 90, 60, "active"]],
     [["at timeline end",       600, -100, 0.75], [100, 100, 100, null, "after"]],
     [["after timeline end",    600, -100, 0.90], [100, 100, 100, null, "after"]],
 
@@ -132,8 +132,8 @@
     // effect end = 100% * (start + duration) / (start + duration + end)
     //            = (-100 + 500) / (-100 + 500 + 600) = 40%
     [["before timeline start", -100, 600, 0.10], [0, 0, 0, null, "before"]],
-    [["at timeline start",     -100, 600, 0.25], [0, 0, 0, 0.2,  "active"]],
-    [["in timeline range",     -100, 600, 0.30], [10, 10, 10, 0.4, "active"]],
+    [["at timeline start",     -100, 600, 0.25], [0, 0, 0, 20,  "active"]],
+    [["in timeline range",     -100, 600, 0.30], [10, 10, 10, 40, "active"]],
     [["at effect end",         -100, 600, 0.45], [40, 40, 40, null, "after"]],
     [["after effect endDelay", -100, 600, 0.70], [90, 90, 90, null, "after"]],
     [["at timeline end",       -100, 600, 0.75], [100, 100, 100, null, "after"]],
@@ -141,8 +141,8 @@
 
     // Case 9: Negative delay, negative endDelay.
     [["before timeline start", -200, -200, 0.10], [0, 0, 0, null, "before"]],
-    [["at timeline start",     -200, -200, 0.25], [0, 0, 0, 0.4,  "active"]],
-    [["in timeline range",     -200, -200, 0.50], [50, 50, 50, 0.5,  "active"]],
+    [["at timeline start",     -200, -200, 0.25], [0, 0, 0, 40,  "active"]],
+    [["in timeline range",     -200, -200, 0.50], [50, 50, 50, 50,  "active"]],
     [["at timeline end",       -200, -200, 0.75], [100, 100, 100, null, "after"]],
     [["after timeline end",    -200, -200, 0.90], [100, 100, 100, null, "after"]],
   ];
@@ -214,11 +214,19 @@
           animation.effect.getComputedTiming().localTime,
           expected_effect_local_time,
           "animation effect local time");
-      assert_approx_equals_or_null(
-          animation.effect.getComputedTiming().progress,
-          expected_effect_progress,
-          0.001,
-          "animation effect progress");
+      const progress = animation.effect.getComputedTiming().progress
+      if (progress === null || expected_effect_progress === null){
+        assert_equals(
+            progress,
+            expected_effect_progress,
+            "animation effect progress");
+      }
+      else {
+        assert_percents_equal(
+            progress,
+            expected_effect_progress,
+            "animation effect progress");
+      }
       assert_phase_at_time(
           animation, expected_effect_phase, animation.currentTime);
     }
@@ -357,8 +365,8 @@ promise_test(async t => {
       "effect local time after setting animation current time");
 
   // Check effect phase
-  // progress == 0.5 AND opacity == 0.5 shows we are in the effect active phase
-  assert_equals(animation.effect.getComputedTiming().progress, 0.5,
+  // progress == 50 AND opacity == 0.5 shows we are in the effect active phase
+  assert_percents_equal(animation.effect.getComputedTiming().progress, 50,
       "effect progress");
   assert_equals(
       window.getComputedStyle(animation.effect.target)
@@ -380,8 +388,8 @@ promise_test(async t => {
   animation.pause();
   await animation.ready;
   // verify effect is applied.
-  const expected_progress = 0.5;
-  assert_equals(
+  const expected_progress = 50;
+  assert_percents_equal(
       animation.effect.getComputedTiming().progress,
       expected_progress,
       "Verify effect progress after pausing.");
@@ -391,7 +399,7 @@ promise_test(async t => {
   await waitForAnimationFrames(2);
   assert_equals(animation.timeline.currentTime, null,
       'Sanity check the timeline is inactive.');
-  assert_equals(
+  assert_percents_equal(
       animation.effect.getComputedTiming().progress,
       expected_progress,
       "Verify effect progress after the timeline goes inactive.");

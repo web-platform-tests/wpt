@@ -68,7 +68,7 @@ test(t => {
   const anim = createScrollLinkedAnimationWithTiming(t, { fill: 'both', duration: 100 })
   anim.play();
   anim.effect.updateTiming({ delay: -50 });
-  assert_equals(anim.effect.getComputedTiming().progress, 0.5);
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 50);
 }, 'Allows setting the delay of an animation in progress: negative delay that'
    + ' seeks into the active interval');
 
@@ -76,7 +76,7 @@ test(t => {
   const anim = createScrollLinkedAnimationWithTiming(t, { fill: 'both', duration: 100 })
   anim.play();
   anim.effect.updateTiming({ delay: -100 });
-  assert_equals(anim.effect.getComputedTiming().progress, 1);
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0);
 }, 'Allows setting the delay of an animation in progress: large negative delay'
    + ' that causes the animation to be finished');
@@ -160,7 +160,7 @@ test(t => {
                                       delay: 1 })
   anim.play();
   anim.effect.updateTiming({ iterationStart: 2.5 });
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.5);
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 50);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 2);
 }, 'Allows setting the iterationStart of an animation in progress:'
    + ' backwards-filling');
@@ -173,7 +173,7 @@ test(t => {
                                       delay: 0 })
   anim.play();
   anim.effect.updateTiming({ iterationStart: 2.5 });
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.5);
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 50);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 2);
 }, 'Allows setting the iterationStart of an animation in progress:'
    + ' active phase');
@@ -187,19 +187,19 @@ test(t => {
   anim.play();
   assert_percents_equal(anim.currentTime, 0);
   assert_percents_equal(anim.effect.getComputedTiming().localTime, 0, "localTime");
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.3);
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 30);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0);
 
   anim.finish();
   assert_percents_equal(anim.currentTime, 100);
   assert_percents_equal(anim.effect.getComputedTiming().localTime, 100, "localTime");
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.3);
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 30);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 1);
 
   anim.effect.updateTiming({ iterationStart: 2.5 });
   assert_percents_equal(anim.currentTime, 100);
   assert_percents_equal(anim.effect.getComputedTiming().localTime, 100, "localTime");
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.5);
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 50);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 3);
 }, 'Allows setting the iterationStart of an animation in progress:'
    + ' forwards-filling');
@@ -243,8 +243,8 @@ test(t => {
   anim.play();
   anim.finish();
 
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'progress when animation is finished');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress when animation is finished');
   assert_equals(anim.effect.getComputedTiming().duration, 100,
                 'duration when animation is finished');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0,
@@ -252,8 +252,8 @@ test(t => {
 
   anim.effect.updateTiming({ iterations: 2 });
 
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'progress after adding an iteration');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress after adding an iteration');
   assert_equals(anim.effect.getComputedTiming().duration, 50,
                 'duration after adding an iteration');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 1,
@@ -261,8 +261,8 @@ test(t => {
 
   anim.effect.updateTiming({ iterations: 4 });
 
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'progress after setting iterations to 4');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress after setting iterations to 4');
   assert_equals(anim.effect.getComputedTiming().duration, 25,
                 'duration after setting iterations to 4');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 3,
@@ -270,8 +270,8 @@ test(t => {
 
   anim.effect.updateTiming({ iterations: 0 });
 
-  assert_equals(anim.effect.getComputedTiming().progress, 0,
-                'progress after setting iterations to zero');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 0,
+                        'progress after setting iterations to zero');
   assert_equals(anim.effect.getComputedTiming().duration, 0,
                 'duration after setting iterations to zero');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0,
@@ -284,8 +284,8 @@ test(t => {
   anim.play();
   anim.finish();
 
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'progress when animation is finished');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress when animation is finished');
   assert_equals(anim.effect.getComputedTiming().duration, 100,
                 'duration when animation is finished');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0,
@@ -293,8 +293,8 @@ test(t => {
 
   anim.effect.updateTiming({ iterations: 2 });
 
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'progress after adding an iteration');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress after adding an iteration');
   assert_equals(anim.effect.getComputedTiming().duration, 50,
                 'duration after adding an iteration');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 1,
@@ -302,8 +302,8 @@ test(t => {
 
   anim.effect.updateTiming({ iterations: 4 });
 
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'progress after setting iterations to 4');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress after setting iterations to 4');
   assert_equals(anim.effect.getComputedTiming().duration, 25,
                 'duration after setting iterations to 4');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 3,
@@ -311,8 +311,8 @@ test(t => {
 
   anim.effect.updateTiming({ iterations: 0 });
 
-  assert_equals(anim.effect.getComputedTiming().progress, 0,
-                'progress after setting iterations to zero');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 0,
+                        'progress after setting iterations to zero');
   assert_equals(anim.effect.getComputedTiming().duration, 0,
                 'duration after setting iterations to zero');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0,
@@ -369,17 +369,17 @@ test(t => {
   const anim = createScrollLinkedAnimationWithTiming(t,  { duration: 100000, fill: 'both' })
   anim.play();
   anim.finish();
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'progress when animation is finished');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress when animation is finished');
   anim.effect.updateTiming({ duration: anim.effect.getTiming().duration * 2 });
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 1,
-                             'progress after doubling the duration');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress after doubling the duration');
   anim.effect.updateTiming({ duration: 0 });
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'progress after setting duration to zero');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress after setting duration to zero');
   anim.effect.updateTiming({ duration: 'auto' });
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'progress after setting duration to \'auto\'');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress after setting duration to \'auto\'');
 }, 'Allows setting the duration of an animation in progress');
 
 promise_test(t => {
@@ -438,26 +438,26 @@ promise_test(async t => {
   scroller.scrollTop = maxScroll * 0.07
   await waitForNextFrame();
 
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.07,
-                             'progress before updating direction');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 7,
+                        'progress before updating direction');
 
   anim.effect.updateTiming({ direction: 'reverse' });
 
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.93,
-                             'progress after updating direction');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 93,
+                        'progress after updating direction');
 }, 'Allows setting the direction of an animation in progress from \'normal\' to'
    + ' \'reverse\'');
 
 test(t => {
   const anim = createScrollLinkedAnimationWithTiming(t, { duration: 10000, direction: 'normal' });
   anim.play();
-  assert_equals(anim.effect.getComputedTiming().progress, 0,
-                'progress before updating direction');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 0,
+                        'progress before updating direction');
 
   anim.effect.updateTiming({ direction: 'reverse' });
 
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'progress after updating direction');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress after updating direction');
 }, 'Allows setting the direction of an animation in progress from \'normal\' to'
    + ' \'reverse\' while at start of active interval');
 
@@ -467,13 +467,13 @@ test(t => {
                                       delay: 10000,
                                       direction: 'normal' });
   anim.play();
-  assert_equals(anim.effect.getComputedTiming().progress, 0,
-                'progress before updating direction');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 0,
+                        'progress before updating direction');
 
   anim.effect.updateTiming({ direction: 'reverse' });
 
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'progress after updating direction');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'progress after updating direction');
 }, 'Allows setting the direction of an animation in progress from \'normal\' to'
    + ' \'reverse\' while filling backwards');
 
@@ -488,13 +488,13 @@ promise_test(async t => {
   scroller.scrollTop = maxScroll * 0.17 // 34% through first iteration
   await waitForNextFrame();
 
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.34,
-                             'progress before updating direction');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 34,
+                        'progress before updating direction');
 
   anim.effect.updateTiming({ direction: 'alternate' });
 
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.34,
-                             'progress after updating direction');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 34,
+                        'progress after updating direction');
 }, 'Allows setting the direction of an animation in progress from \'normal\' to'
    + ' \'alternate\'');
 
@@ -509,13 +509,13 @@ promise_test(async t => {
   scroller.scrollTop = maxScroll * 0.17
   await waitForNextFrame();
   // anim.currentTime = 17000; // 34% through first iteration
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.34,
-                             'progress before updating direction');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 34,
+                        'progress before updating direction');
 
   anim.effect.updateTiming({ direction: 'alternate-reverse' });
 
-  assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.66,
-                             'progress after updating direction');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 66,
+                        'progress after updating direction');
 }, 'Allows setting the direction of an animation in progress from \'alternate\''
    + ' to \'alternate-reverse\'');
 
@@ -529,11 +529,10 @@ async function assert_progress(animation, scrollPercent, easingFunction) {
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = maxScroll * scrollPercent
   await waitForNextFrame();
-  assert_approx_equals(animation.effect.getComputedTiming().progress,
-                       easingFunction(scrollPercent),
-                       0.01,
-                       'The progress of the animation should be approximately'
-                       + ` ${easingFunction(scrollPercent)} at ${scrollPercent}%`);
+  assert_percents_equal(animation.effect.getComputedTiming().progress,
+                        easingFunction(scrollPercent) * 100,
+                        'The progress of the animation should be approximately '
+                        + `${easingFunction(scrollPercent)} at ${scrollPercent}%`);
 }
 
 for (const options of gEasingTests) {
@@ -578,25 +577,25 @@ promise_test(async t => {
   await anim.ready;
 
   anim.effect.updateTiming({ easing: 'steps(2, end)' });
-  assert_equals(anim.effect.getComputedTiming().progress, 0,
-                'easing replace to steps(2, end) at before phase');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 0,
+                        'easing replace to steps(2, end) at before phase');
 
   scroller.scrollTop = maxScroll * 0.875
   await waitForNextFrame();
 
-  assert_equals(anim.effect.getComputedTiming().progress, 0.5,
-                'change currentTime to active phase');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 50,
+                        'change currentTime to active phase');
 
   anim.effect.updateTiming({ easing: 'steps(2, start)' });
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'easing replace to steps(2, start) at active phase');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'easing replace to steps(2, start) at active phase');
 
   scroller.scrollTop = maxScroll * 1.25
   await waitForNextFrame();
 
   anim.effect.updateTiming({ easing: 'steps(2, end)' });
-  assert_equals(anim.effect.getComputedTiming().progress, 1,
-                'easing replace to steps(2, end) again at after phase');
+  assert_percents_equal(anim.effect.getComputedTiming().progress, 100,
+                        'easing replace to steps(2, end) again at after phase');
 }, 'Allows setting the easing of an animation in progress');
 </script>
 </body>

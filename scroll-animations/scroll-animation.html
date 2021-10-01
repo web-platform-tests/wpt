@@ -57,11 +57,9 @@
     await waitForNextFrame();
     assert_percents_equal(animation.currentTime, animation.timeline.currentTime,
       "The current time corresponds to the scroll position of the scroller.");
-    assert_times_equal(
+    assert_percents_equal(
       animation.effect.getComputedTiming().progress,
-      // Division by 100 is temporary, it will be removed when progress returns
-      // a CSSNumericValue instead of a double 0-1
-      animation.timeline.currentTime.value / 100,
+      animation.timeline.currentTime,
       'Effect progress corresponds to the scroll position of the scroller.');
 }, 'Animation start and current times are correct for each animation state.');
 

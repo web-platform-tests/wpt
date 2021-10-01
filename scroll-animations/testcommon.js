@@ -93,15 +93,6 @@ function createScrollLinkedAnimationWithTiming(test, timing, timeline) {
     new KeyframeEffect(createDiv(test), KEYFRAMES, timing), timeline);
 }
 
-function assert_approx_equals_or_null(actual, expected, tolerance, name) {
-  if (actual === null || expected === null){
-    assert_equals(actual, expected, name);
-  }
-  else {
-    assert_approx_equals(actual, expected, tolerance, name);
-  }
-}
-
 function assert_percents_approx_equal(actual, expected, maxScroll,
                                       description) {
   // Base the tolerance on being out by up to half a pixel.

@@ -61,7 +61,7 @@ class H3ConnectionWithDatagram04(H3Connection):
         return settings
 
     @property
-    def supports_h3_datagram_04(self):
+    def supports_h3_datagram_04(self) -> bool:
         """
         True if the client supports the latest HTTP Datagram protocol.
         """

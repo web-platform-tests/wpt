@@ -1,5 +1,3 @@
-// See also /fetch/api/basic/status.h2.any.js
-
 [
   200,
   210,

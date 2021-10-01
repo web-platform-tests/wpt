@@ -332,7 +332,7 @@ class WebTransportSession:
         """
         flow_id = self.session_id
         if self._http.supports_h3_datagram_04:
-            flow_id = self.session_id / 4
+            flow_id = self.session_id // 4
         self._http.send_datagram(flow_id=flow_id, data=data)
 
     def stop_stream(self, stream_id: int, code: int) -> None:

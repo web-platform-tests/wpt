@@ -36,7 +36,7 @@ _logger: logging.Logger = logging.getLogger(__name__)
 _doc_root: str = ""
 
 
-class MyH3Connection(H3Connection):
+class H3ConnectionWithDatagram04(H3Connection):
     """
     A H3Connection subclass, to make it work with the latest
     HTTP Datagram protocol.
@@ -48,14 +48,14 @@ class MyH3Connection(H3Connection):
         self._supports_h3_datagram_04 = False
 
     def _validate_settings(self, settings: Dict[int, int]) -> None:
-        H3_DATAGRAM_04 = MyH3Connection.H3_DATAGRAM_04
+        H3_DATAGRAM_04 = H3ConnectionWithDatagram04.H3_DATAGRAM_04
         if H3_DATAGRAM_04 in settings and settings[H3_DATAGRAM_04] == 1:
             settings[Setting.H3_DATAGRAM] = 1
             self._supports_h3_datagram_04 = True
         return super()._validate_settings(settings)
 
     def _get_local_settings(self) -> Dict[int, int]:
-        H3_DATAGRAM_04 = MyH3Connection.H3_DATAGRAM_04
+        H3_DATAGRAM_04 = H3ConnectionWithDatagram04.H3_DATAGRAM_04
         settings = super()._get_local_settings()
         settings[H3_DATAGRAM_04] = 1
         return settings
@@ -80,7 +80,8 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
 
     def quic_event_received(self, event: QuicEvent) -> None:
         if isinstance(event, ProtocolNegotiated):
-            self._http = MyH3Connection(self._quic, enable_webtransport=True)
+            self._http = H3ConnectionWithDatagram04(
+                self._quic, enable_webtransport=True)
 
         if self._http is not None:
             for http_event in self._http.handle_event(event):

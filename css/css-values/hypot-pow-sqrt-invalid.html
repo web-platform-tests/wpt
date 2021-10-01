@@ -15,54 +15,43 @@ function test_invalid_length(value) {
   test_invalid_value('letter-spacing', value);
 }
 
-
 // Syntax checking
-test_invalid_number('abs()');
-test_invalid_number('abs( )');
-test_invalid_number('abs(,)');
-test_invalid_number('abs(1, )');
-test_invalid_number('abs(, 1)');
-test_invalid_number('abs(1 + )');
-test_invalid_number('abs(1 - )');
-test_invalid_number('abs(1 * )');
-test_invalid_number('abs(1 / )');
-test_invalid_number('abs(1 2)');
-test_invalid_number('abs(1, , 2)');
-test_invalid_number('abs(1, 2)');
-test_invalid_number('sign()');
-test_invalid_number('sign( )');
-test_invalid_number('sign(,)');
-test_invalid_number('sign(1, )');
-test_invalid_number('sign(, 1)');
-test_invalid_number('sign(1 + )');
-test_invalid_number('sign(1 - )');
-test_invalid_number('sign(1 * )');
-test_invalid_number('sign(1 / )');
-test_invalid_number('sign(1 2)');
-test_invalid_number('sign(1, , 2)');
-test_invalid_number('sign(1, 2)');
-
-// Type checking
-test_invalid_number('abs(0px)');
-test_invalid_number('abs(0s)');
-test_invalid_number('abs(0deg)');
-test_invalid_number('abs(0Hz)');
-test_invalid_number('abs(0dpi)');
-test_invalid_number('abs(0fr)');
-test_invalid_number('abs(1, 1%)');
-test_invalid_number('abs(1, 0px)');
-test_invalid_number('abs(1, 0s)');
-test_invalid_number('abs(1, 0deg)');
-test_invalid_number('abs(1, 0Hz)');
-test_invalid_number('abs(1, 0dpi)');
-test_invalid_number('abs(1, 0fr)');
-test_invalid_number('sign(1, 1%)');
-test_invalid_number('sign(1, 0px)');
-test_invalid_number('sign(1, 0s)');
-test_invalid_number('sign(1, 0deg)');
-test_invalid_number('sign(1, 0Hz)');
-test_invalid_number('sign(1, 0dpi)');
-test_invalid_number('sign(1, 0fr)');
+test_invalid_number('hypot()');
+test_invalid_number('hypot( )');
+test_invalid_number('hypot(,)');
+test_invalid_number('hypot(1, )');
+test_invalid_number('hypot(, 1)');
+test_invalid_number('hypot(1 + )');
+test_invalid_number('hypot(1 - )');
+test_invalid_number('hypot(1 * )');
+test_invalid_number('hypot(1 / )');
+test_invalid_number('hypot(1 2)');
+test_invalid_number('hypot(1, , 2)');
+test_invalid_number('hypot(1, 2)');
+test_invalid_number('sqrt()');
+test_invalid_number('sqrt( )');
+test_invalid_number('sqrt(,)');
+test_invalid_number('sqrt(1, )');
+test_invalid_number('sqrt(, 1)');
+test_invalid_number('sqrt(1 + )');
+test_invalid_number('sqrt(1 - )');
+test_invalid_number('sqrt(1 * )');
+test_invalid_number('sqrt(1 / )');
+test_invalid_number('sqrt(1 2)');
+test_invalid_number('sqrt(1, , 2)');
+test_invalid_number('sqrt(1, 2)');
+test_invalid_number('sqrt()');
+test_invalid_number('pow( )');
+test_invalid_number('pow(,)');
+test_invalid_number('pow(1, )');
+test_invalid_number('pow(, 1)');
+test_invalid_number('pow(1 + )');
+test_invalid_number('pow(1 - )');
+test_invalid_number('pow(1 * )');
+test_invalid_number('pow(1 / )');
+test_invalid_number('pow(1 2)');
+test_invalid_number('pow(1, , 2)');
+test_invalid_number('pow(1, 2)');
 
 // General tests 
 test_invalid_length('calc(1px * pow(1))');
@@ -74,7 +63,7 @@ test_invalid_length('hypot(3, ,4)');
 test_invalid_length('calc(1px * pow(2 3))');
 test_invalid_length('hypot()');
 test_invalid_length('calc(pow(2))');
-test_invalid_length('pow())'); 
+test_invalid_length('pow())');
 test_invalid_length('calc(sqrt())');
 test_invalid_length('calc(sqrt(100, 200))');
 </script>

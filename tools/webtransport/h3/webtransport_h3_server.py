@@ -45,11 +45,13 @@ class MyH3Connection(H3Connection):
     
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        self._supports_h3_datagram_04 = False
 
     def _validate_settings(self, settings: Dict[int, int]) -> None:
         H3_DATAGRAM_04 = MyH3Connection.H3_DATAGRAM_04
         if H3_DATAGRAM_04 in settings and settings[H3_DATAGRAM_04] == 1:
             settings[Setting.H3_DATAGRAM] = 1
+            self._supports_h3_datagram_04 = True
         return super()._validate_settings(settings)
 
     def _get_local_settings(self) -> Dict[int, int]:
@@ -58,6 +60,12 @@ class MyH3Connection(H3Connection):
         settings[H3_DATAGRAM_04] = 1
         return settings
 
+    @property
+    def supports_h3_datagram_04(self):
+        """
+        True if the client supports the latest HTTP Datagram protocol.
+        """
+        return self._supports_h3_datagram_04
 
 class WebTransportH3Protocol(QuicConnectionProtocol):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -322,7 +330,10 @@ class WebTransportSession:
 
         :param data: The data to send.
         """
-        self._http.send_datagram(flow_id=self.session_id, data=data)
+        flow_id = self.session_id
+        if self._http.supports_h3_datagram_04:
+            flow_id = self.session_id / 4
+        self._http.send_datagram(flow_id=flow_id, data=data)
 
     def stop_stream(self, stream_id: int, code: int) -> None:
         """

@@ -62,8 +62,9 @@ def session_closed(session: WebTransportSession,
     """
     pass
 
+
 def stream_reset(session: WebTransportSession,
-                 stream_id: int
+                 stream_id: int,
                  error_code: int) -> None:
     """
     Called when a stream is reset with RESET_STREAM.

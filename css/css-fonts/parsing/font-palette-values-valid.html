@@ -89,6 +89,10 @@
 @font-palette-values --N {
     override-color: 0 color(display-p3 100% 100% 100%);
 }
+
+/* 14 */
+@font-palette-values -- {
+}
 </style>
 </head>
 <body>
@@ -305,6 +309,17 @@ test(function() {
     assert_equals(rule.basePalette, "");
     assert_equals(rule.size, 1);
     assert_not_equals(rule.get(0).indexOf("display-p3"), -1);
+});
+
+test(function() {
+    let text = rules[14].cssText;
+    assert_not_equals(text.indexOf("--"), -1);
+});
+
+test(function() {
+    let rule = rules[14];
+    assert_equals(rule.fontFamily, "");
+    assert_equals(rule.basePalette, "");
 });
 </script>
 </body>

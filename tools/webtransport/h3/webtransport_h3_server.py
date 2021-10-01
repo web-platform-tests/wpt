@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from aioquic.buffer import Buffer  # type: ignore
 from aioquic.asyncio import QuicConnectionProtocol, serve  # type: ignore
 from aioquic.asyncio.client import connect  # type: ignore
-from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection, ProtocolError  # type: ignore
+from aioquic.h3.connection import H3_ALPN, FrameType, H3Connection, ProtocolError, Setting  # type: ignore
 from aioquic.h3.events import H3Event, HeadersReceived, WebTransportStreamDataReceived, DatagramReceived  # type: ignore
 from aioquic.quic.configuration import QuicConfiguration  # type: ignore
 from aioquic.quic.connection import stream_is_unidirectional  # type: ignore
@@ -36,6 +36,29 @@ _logger: logging.Logger = logging.getLogger(__name__)
 _doc_root: str = ""
 
 
+class MyH3Connection(H3Connection):
+    """
+    A H3Connection subclass, to make it work with the latest
+    HTTP Datagram protocol.
+    """
+    H3_DATAGRAM_04 = 0xffd277
+    
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+    def _validate_settings(self, settings: Dict[int, int]) -> None:
+        H3_DATAGRAM_04 = MyH3Connection.H3_DATAGRAM_04
+        if H3_DATAGRAM_04 in settings and settings[H3_DATAGRAM_04] == 1:
+            settings[Setting.H3_DATAGRAM] = 1
+        return super()._validate_settings(settings)
+
+    def _get_local_settings(self) -> Dict[int, int]:
+        H3_DATAGRAM_04 = MyH3Connection.H3_DATAGRAM_04
+        settings = super()._get_local_settings()
+        settings[H3_DATAGRAM_04] = 1
+        return settings
+
+
 class WebTransportH3Protocol(QuicConnectionProtocol):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -49,7 +72,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
 
     def quic_event_received(self, event: QuicEvent) -> None:
         if isinstance(event, ProtocolNegotiated):
-            self._http = H3Connection(self._quic, enable_webtransport=True)
+            self._http = MyH3Connection(self._quic, enable_webtransport=True)
 
         if self._http is not None:
             for http_event in self._http.handle_event(event):

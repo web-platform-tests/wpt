@@ -336,6 +336,9 @@ class WebTransportSession:
         """
         flow_id = self.session_id
         if self._http.supports_h3_datagram_04:
+            # The REGISTER_DATAGRAM_NO_CONTEXT capsule was on the session
+            # stream, so we must have the ID of the stream.
+            assert self._protocol._session_stream_id is not None
             # TODO(yutakahirano): Make sure if this is the correct logic.
             # Chrome always use 0 for the initial stream and the initial flow
             # ID, we cannot check the correctness with it.

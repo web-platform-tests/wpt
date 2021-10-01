@@ -52,6 +52,6 @@ function safelist(headers, expectPreflight = false) {
   ["bytes=200-"],
   ["bytes=200-100", true],
   [`bytes=1${'0'.repeat(60)}-2${'0'.repeat(60)}`, true],
-].forEach(([mimeType, preflight = false]) => {
-  safelist({"range": mimeType}, preflight);
+].forEach(([value, preflight = false]) => {
+  safelist({"range": value}, preflight);
 });

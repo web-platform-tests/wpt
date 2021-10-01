@@ -336,6 +336,9 @@ class WebTransportSession:
         """
         flow_id = self.session_id
         if self._http.supports_h3_datagram_04:
+            # TODO(yutakahirano): Make sure if this is the correct logic.
+            # Chrome always use 0 for the initial stream and the initial flow
+            # ID, we cannot check the correctness with it.
             flow_id = self._protocol._session_stream_id // 4
         self._http.send_datagram(flow_id=flow_id, data=data)
 

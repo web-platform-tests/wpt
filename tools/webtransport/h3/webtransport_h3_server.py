@@ -71,7 +71,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._handler: Optional[Any] = None
-        self._http: Optional[H3Connection] = None
+        self._http: Optional[H3ConnectionWithDatagram04] = None
         self._session_stream_id: Optional[int] = None
         self._close_info: Optional[Tuple[int, bytes]] = None
         self._capsule_decoder_for_session_stream: H3CapsuleDecoder =\

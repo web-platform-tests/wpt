@@ -42,7 +42,7 @@ class H3ConnectionWithDatagram04(H3Connection):
     HTTP Datagram protocol.
     """
     H3_DATAGRAM_04 = 0xffd277
-    
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._supports_h3_datagram_04 = False

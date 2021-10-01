@@ -109,7 +109,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
 
         if isinstance(event, WebTransportStreamDataReceived) and\
            self._session_stream_id == event.stream_id:
-            if not self._http.supports_h3_datagram_04:
+            if self_.http and not self._http.supports_h3_datagram_04:
                 raise ProtocolError('Unexpected data on the session stream')
             self._receive_data_on_session_stream(
                 event.data, event.stream_ended)

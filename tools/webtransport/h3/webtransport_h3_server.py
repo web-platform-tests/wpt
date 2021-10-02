@@ -157,6 +157,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
             if capsule.type == CapsuleType.REGISTER_DATAGRAM_NO_CONTEXT:
                 buffer = Buffer(data=capsule.data)
                 format_type = buffer.pull_uint_var()
+                # https://ietf-wg-webtrans.github.io/draft-ietf-webtrans-http3/draft-ietf-webtrans-http3.html#name-datagram-format-type
                 WEBTRANPORT_FORMAT_TYPE = 0xff7c00
                 if format_type != WEBTRANPORT_FORMAT_TYPE:
                     raise ProtocolError(
@@ -345,8 +346,8 @@ class WebTransportSession:
         :param data: The data to send.
         """
         if not self._protocol._allow_datagrams:
-            _logger.Warn(
-                "Sending a datagram while it's now allowed - discarding it")
+            _logger.warn(
+                "Sending a datagram while that's now allowed - discarding it")
             return
         flow_id = self.session_id
         if self._http.supports_h3_datagram_04:

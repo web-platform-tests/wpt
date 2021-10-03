@@ -9,10 +9,8 @@
 <link rel="stylesheet" href="/html/canvas/resources/canvas-tests.css">
 <body>
 <script>
-function testCanvasDisplayingPattern(canvas, options)
+function testCanvasDisplayingPattern(canvas, width, height, options)
 {
-    var width = canvas.width;
-    var height = canvas.height;
     var tolerance = 10; // high tolerance for differing colour management results
     const check = (x, y, r, g, b, a) =>
         _assertPixelApprox(canvas, x,y, r,g,b,a, `${x},${y}`, `${r},${g},${b},${a}`, tolerance);
@@ -39,7 +37,7 @@ function testDrawImageBitmap(source, options)
     var ctx = canvas.getContext("2d");
     return createImageBitmap(source, options).then(imageBitmap => {
         ctx.drawImage(imageBitmap, 0, 0);
-        testCanvasDisplayingPattern(canvas,options);
+        testCanvasDisplayingPattern(canvas, 20, 20, options);
     });
 }
 

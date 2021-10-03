@@ -8,6 +8,7 @@
 <link rel="help" href="https://www.w3.org/TR/resource-timing-2/#sec-performanceresourcetiming"/>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/resource-loaders.js"></script>
 <script src="resources/entry-invariants.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 </head>
@@ -15,24 +16,14 @@
 <script>
 const {REMOTE_ORIGIN} = get_host_info();
 
-async function test_xhr(url, event = "load") {
-    const timeBefore = performance.now();
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", url)
-    xhr.send();
-    await new Promise(resolve => xhr.addEventListener(event, resolve));
-    const timeAfterLoadEvent = performance.now();
-    const entries = performance.getEntriesByName(new URL(url, location.href).toString());
-    assert_equals(entries.length, 1, "entry should be available when the load event is fired");
-    assert_greater_than_equal(timeAfterLoadEvent, entries[0].responseEnd, "response endTime should be before the load event");
-}
-promise_test(() => test_xhr("/common/dummy.xml"),
-    `Verify resource timing entry creation for successful XHR`);
+attribute_test(
+  load.xhr_async, "/common/dummy.xml",
+  invariants.assert_tao_pass_no_redirect_http,
+  "Verify resource timing entry creation for successful XHR");
 
-promise_test(() => test_xhr(`${REMOTE_ORIGIN}/common/dummy.xml`, "error"),
-    `Verify resource timing entry creation for XHR failing with CORS`);
-
-promise_test(() => test_xhr(`nowhere://common/dummy.xml`, "error"),
-    `Verify resource timing entry creation for XHR failing with a non-CORS network error`);
+attribute_test(
+  load.xhr_async, `${REMOTE_ORIGIN}/common/dummy.xml`,
+  invariants.assert_tao_failure_resource,
+    "Verify resource timing entry creation for XHR failing with CORS");
 </script>
 </body>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<title>createImageBitmap + drawImage test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/canvas-tests.js"></script>
+<script src="/common/media.js"></script>
+<script src="common.sub.js"></script>
+<link rel="stylesheet" href="/html/canvas/resources/canvas-tests.css">
+<body>
+<script>
+function testCanvasDisplayingPattern(canvas, options)
+{
+    var width = canvas.width;
+    var height = canvas.height;
+    var tolerance = 10; // high tolerance for differing colour management results
+    const check = (x, y, r, g, b, a) =>
+        _assertPixelApprox(canvas, x,y, r,g,b,a, `${x},${y}`, `${r},${g},${b},${a}`, tolerance);
+
+    if (options.colorSpaceConversion == 'none') {
+        check(1 * width / 4, 1 * height / 4, 124,0,27,255);
+        check(3 * width / 4, 1 * height / 4, 0,124,46,255);
+        check(1 * width / 4, 3 * height / 4, 60,0,123,255);
+        check(3 * width / 4, 3 * height / 4, 0,0,0,255);
+    } else {
+        check(1 * width / 4, 1 * height / 4, 255,0,0,255);
+        check(3 * width / 4, 1 * height / 4, 0,249,0,255);
+        check(1 * width / 4, 3 * height / 4, 30,0,239,255);
+        check(3 * width / 4, 3 * height / 4, 0,0,0,255);
+    }
+}
+
+function testDrawImageBitmap(source, options)
+{
+    console.log(source);
+    var canvas = document.createElement("canvas");
+    canvas.width = 20;
+    canvas.height = 20;
+    var ctx = canvas.getContext("2d");
+    return createImageBitmap(source, options).then(imageBitmap => {
+        ctx.drawImage(imageBitmap, 0, 0);
+        testCanvasDisplayingPattern(canvas,options);
+    });
+}
+
+var wideGamutImageSourceTypes = [
+    { name: 'a bitmap HTMLImageElement', factory: makeMakeHTMLImage("/images/wide-gamut-pattern.png") },
+    { name: 'a Blob',                    factory: makeBlob("/images/wide-gamut-pattern.png") },
+];
+
+for (let { name, factory } of wideGamutImageSourceTypes) {
+    promise_test(function() {
+        return factory().then(function(img) {
+            return testDrawImageBitmap(img, { colorSpaceConversion: "default"} );
+        });
+    }, `createImageBitmap from ${name}, and drawImage on the created ImageBitmap with colorSpaceConversion: default`);
+
+    promise_test(function() {
+        return factory().then(function(img) {
+            return testDrawImageBitmap(img, { colorSpaceConversion: "none"} );
+        });
+    }, `createImageBitmap from ${name}, and drawImage on the created ImageBitmap with colorSpaceConversion: none`);
+}
+</script>
+</body>
+</html>

@@ -92,6 +92,16 @@ const load = {
     document.body.removeChild(script);
   },
 
+  script_import: async path => import(path),
+  worker: async path => {
+    const worker = new Worker(path)
+    await new Promise(resolve => {
+      worker.onmessage = resolve
+    });
+
+    worker.terminate();
+  },
+
   // Returns a promise that settles once the given path has been fetched as an
   // object.
   object: async (path, type) => {

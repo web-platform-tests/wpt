@@ -46,6 +46,8 @@ function safelist(headers, expectPreflight = false) {
   ["100-200", true],
   ["MB=100-200", true],
   ["bytes=100-200"],
+  ["bytes=100-200hello", true],
+  ["bytes=abc-def", true],  
   ["BYTES=100-200"],
   ["bytes=100-200,300-400", true],
   ["bytes=-200", true],

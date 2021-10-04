@@ -175,6 +175,7 @@ a unique ID, the document must not have any DOM mutations made
 between the function being called and the promise settling.</p>
 <p>To send special keys, one must send the respective key’s codepoint. Since this uses the WebDriver protocol, you can find a <a class="reference external" href="https://w3c.github.io/webdriver/#keyboard-actions">list for code points to special keys in the spec</a>.
 For example, to send the tab key you would send “\uE004”.</p>
+<p><em>Note: these special-key codepoints are not necessarily what you would expect. For example, <kbd>Esc</kbd> is the invalid Unicode character <code class="docutils literal notranslate"><span class="pre">\uE00C</span></code>, not the <code class="docutils literal notranslate"><span class="pre">\u001B</span></code> Escape character from ASCII.</em></p>
 </section>
 <section id="set-permission">
 <h3>set_permission<a class="headerlink" href="#set-permission" title="Permalink to this headline">¶</a></h3>

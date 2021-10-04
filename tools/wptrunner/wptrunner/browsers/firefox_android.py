@@ -8,14 +8,14 @@ from .base import (get_free_port,
                    browser_command)
 from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # noqa: F401
                                             MarionetteRefTestExecutor,  # noqa: F401
-                                            MarionetteCrashtestExecutor)  # noqa: F401
-from ..process import cast_env
+                                            MarionetteCrashtestExecutor,  # noqa: F401
+                                            MarionetteWdspecExecutor)  # noqa: F401
 from .base import (Browser,
                    ExecutorBrowser)
 from .firefox import (get_timeout_multiplier,  # noqa: F401
                       run_info_extras as fx_run_info_extras,
                       update_properties,  # noqa: F401
-                      executor_kwargs,  # noqa: F401
+                      executor_kwargs as fx_executor_kwargs,  # noqa: F401
                       ProfileCreator as FirefoxProfileCreator)
 
 
@@ -24,7 +24,8 @@ __wptrunner__ = {"product": "firefox_android",
                  "browser": "FirefoxAndroidBrowser",
                  "executor": {"testharness": "MarionetteTestharnessExecutor",
                               "reftest": "MarionetteRefTestExecutor",
-                              "crashtest": "MarionetteCrashtestExecutor"},
+                              "crashtest": "MarionetteCrashtestExecutor",
+                              "wdspec": "MarionetteWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -38,8 +39,9 @@ def check_args(**kwargs):
     pass
 
 
-def browser_kwargs(test_type, run_info_data, config, **kwargs):
-    return {"package_name": kwargs["package_name"],
+def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
+    return {"adb_binary": kwargs["adb_binary"],
+            "package_name": kwargs["package_name"],
             "device_serial": kwargs["device_serial"],
             "prefs_root": kwargs["prefs_root"],
             "extra_prefs": kwargs["extra_prefs"],
@@ -64,6 +66,15 @@ def browser_kwargs(test_type, run_info_data, config, **kwargs):
             "install_fonts": kwargs["install_fonts"],
             "tests_root": config.doc_root,
             "specialpowers_path": kwargs["specialpowers_path"]}
+
+
+def executor_kwargs(logger, test_type, test_environment, run_info_data,
+                    **kwargs):
+    rv = fx_executor_kwargs(logger, test_type, test_environment, run_info_data,
+                            **kwargs)
+    if test_type == "wdspec":
+        rv["capabilities"]["moz:firefoxOptions"]["androidPackage"] = kwargs["package_name"]
+    return rv
 
 
 def env_extras(**kwargs):
@@ -128,7 +139,8 @@ class FirefoxAndroidBrowser(Browser):
                  ca_certificate_path=None, e10s=False, enable_webrender=False, stackfix_dir=None,
                  binary_args=None, timeout_multiplier=None, leak_check=False, asan=False,
                  stylo_threads=1, chaos_mode_flags=None, config=None, browser_channel="nightly",
-                 install_fonts=False, tests_root=None, specialpowers_path=None, **kwargs):
+                 install_fonts=False, tests_root=None, specialpowers_path=None, adb_binary=None,
+                 **kwargs):
 
         super(FirefoxAndroidBrowser, self).__init__(logger)
         self.prefs_root = prefs_root
@@ -154,6 +166,7 @@ class FirefoxAndroidBrowser(Browser):
         self.install_fonts = install_fonts
         self.tests_root = tests_root
         self.specialpowers_path = specialpowers_path
+        self.adb_binary = adb_binary
 
         self.profile_creator = ProfileCreator(logger,
                                               prefs_root,
@@ -218,11 +231,13 @@ class FirefoxAndroidBrowser(Browser):
         self.runner = FennecEmulatorRunner(app=self.package_name,
                                            profile=self.profile,
                                            cmdargs=cmd[1:],
-                                           env=cast_env(env),
+                                           env=env,
                                            symbols_path=self.symbols_path,
                                            serial=self.device_serial,
                                            # TODO - choose appropriate log dir
-                                           logdir=os.getcwd())
+                                           logdir=os.getcwd(),
+                                           adb_path=self.adb_binary,
+                                           explicit_cleanup=True)
 
         self.logger.debug("Starting %s" % self.package_name)
         # connect to a running emulator
@@ -254,7 +269,7 @@ class FirefoxAndroidBrowser(Browser):
                     self.logger.warning("Failed to remove forwarded or reversed ports: %s" % e)
             # We assume that stopping the runner prompts the
             # browser to shut down.
-            self.runner.stop()
+            self.runner.cleanup()
         self.logger.debug("stopped")
 
     def pid(self):

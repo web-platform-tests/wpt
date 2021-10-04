@@ -232,7 +232,10 @@ addTest(function(win) {
   }
   for (var prop of windowAllowlists.namedFrames) {
     win[prop]; // Shouldn't throw.
-    Object.getOwnPropertyDescriptor(win, prop); // Shouldn't throw.
+    var desc = Object.getOwnPropertyDescriptor(win, prop);
+    assert_false(desc.writable, "[[Writable]] for named frame " + String(prop));
+    assert_false(desc.enumerable, "[[Enumerable]] for named frame " + String(prop));
+    assert_true(desc.configurable, "[[Configurable]] for named frame " + String(prop));
     assert_true(Object.prototype.hasOwnProperty.call(win, prop), "hasOwnProperty for " + String(prop));
   }
   for (var prop in location) {
@@ -379,7 +382,11 @@ addTest(function(win) {
                    "preventExtensions on cross-origin Window should throw");
   assert_throws_js(TypeError, function() { Object.preventExtensions(win.location) },
                    "preventExtensions on cross-origin Location should throw");
-}, "[[PreventExtensions]] should throw for cross-origin objects");
+  assert_false(Reflect.preventExtensions(win),
+              "Reflect.preventExtensions on cross-origin Window");
+  assert_false(Reflect.preventExtensions(win.location),
+              "Reflect.preventExtensions on cross-origin Location");
+}, "[[PreventExtensions]] should return false cross-origin objects");
 
 /*
  * [[GetOwnProperty]]

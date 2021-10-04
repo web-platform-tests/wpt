@@ -1,9 +1,8 @@
 import json
 import os
-from io import open
+from unittest import mock
 
 import jsone
-import mock
 import pytest
 import requests
 import yaml
@@ -93,6 +92,7 @@ def test_verify_payload():
       'wpt-firefox-nightly-testharness-14',
       'wpt-firefox-nightly-testharness-15',
       'wpt-firefox-nightly-testharness-16',
+      'wpt-firefox-nightly-testharness-17',
       'wpt-chrome-dev-testharness-1',
       'wpt-chrome-dev-testharness-2',
       'wpt-chrome-dev-testharness-3',
@@ -109,6 +109,7 @@ def test_verify_payload():
       'wpt-chrome-dev-testharness-14',
       'wpt-chrome-dev-testharness-15',
       'wpt-chrome-dev-testharness-16',
+      'wpt-chrome-dev-testharness-17',
       'wpt-firefox-nightly-reftest-1',
       'wpt-firefox-nightly-reftest-2',
       'wpt-firefox-nightly-reftest-3',
@@ -130,18 +131,14 @@ def test_verify_payload():
       'lint']),
     ("pr_event.json", True, {".taskcluster.yml", ".travis.yml", "tools/ci/start.sh"},
      ['lint',
-      'tools/ unittests (Python 2)',
       'tools/ unittests (Python 3.6)',
-      'tools/ unittests (Python 3.8)',
-      'tools/ integration tests (Python 2)',
+      'tools/ unittests (Python 3.9)',
       'tools/ integration tests (Python 3.6)',
-      'tools/ integration tests (Python 3.8)',
-      'resources/ tests (Python 2)',
+      'tools/ integration tests (Python 3.9)',
       'resources/ tests (Python 3.6)',
-      'resources/ tests (Python 3.8)',
+      'resources/ tests (Python 3.9)',
       'download-firefox-nightly',
       'infrastructure/ tests',
-      'infrastructure/ tests (Python 3)',
       'sink-task']),
     # More tests are affected in the actual PR but it shouldn't affect the scheduled tasks
     ("pr_event_tests_affected.json", True, {"layout-instability/clip-negative-bottom-margin.html",
@@ -173,6 +170,7 @@ def test_verify_payload():
       'wpt-firefox-stable-testharness-14',
       'wpt-firefox-stable-testharness-15',
       'wpt-firefox-stable-testharness-16',
+      'wpt-firefox-stable-testharness-17',
       'wpt-chrome-nightly-testharness-1',
       'wpt-chrome-nightly-testharness-2',
       'wpt-chrome-nightly-testharness-3',
@@ -189,6 +187,7 @@ def test_verify_payload():
       'wpt-chrome-nightly-testharness-14',
       'wpt-chrome-nightly-testharness-15',
       'wpt-chrome-nightly-testharness-16',
+      'wpt-chrome-nightly-testharness-17',
       'wpt-chrome-stable-testharness-1',
       'wpt-chrome-stable-testharness-2',
       'wpt-chrome-stable-testharness-3',
@@ -205,6 +204,7 @@ def test_verify_payload():
       'wpt-chrome-stable-testharness-14',
       'wpt-chrome-stable-testharness-15',
       'wpt-chrome-stable-testharness-16',
+      'wpt-chrome-stable-testharness-17',
       'wpt-webkitgtk_minibrowser-nightly-testharness-1',
       'wpt-webkitgtk_minibrowser-nightly-testharness-2',
       'wpt-webkitgtk_minibrowser-nightly-testharness-3',
@@ -221,6 +221,7 @@ def test_verify_payload():
       'wpt-webkitgtk_minibrowser-nightly-testharness-14',
       'wpt-webkitgtk_minibrowser-nightly-testharness-15',
       'wpt-webkitgtk_minibrowser-nightly-testharness-16',
+      'wpt-webkitgtk_minibrowser-nightly-testharness-17',
       'wpt-servo-nightly-testharness-1',
       'wpt-servo-nightly-testharness-2',
       'wpt-servo-nightly-testharness-3',
@@ -237,6 +238,7 @@ def test_verify_payload():
       'wpt-servo-nightly-testharness-14',
       'wpt-servo-nightly-testharness-15',
       'wpt-servo-nightly-testharness-16',
+      'wpt-servo-nightly-testharness-17',
       'wpt-firefox-stable-reftest-1',
       'wpt-firefox-stable-reftest-2',
       'wpt-firefox-stable-reftest-3',

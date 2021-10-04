@@ -1,7 +1,7 @@
 import os, sys
 from wptserve.utils import isomorphic_decode
-sys.path.insert(0, os.path.dirname(os.path.abspath(isomorphic_decode(__file__))))
-import subresource
+import importlib
+subresource = importlib.import_module("common.security-features.subresource.subresource")
 
 def generate_payload(request, server_data):
     data = (u'{"headers": %(headers)s}') % server_data
@@ -22,6 +22,12 @@ def generate_payload(request, server_data):
         return subresource.get_template(u"svg.css.template") % {
             u"id": isomorphic_decode(request.GET[b"id"]),
             u"property": isomorphic_decode(request.GET[b"property"])}
+
+    # A `'stylesheet-only'`-type stylesheet has no nested resources; this is
+    # useful in tests that cover referrers for stylesheet fetches (e.g. fetches
+    # triggered by `@import` statements).
+    elif type == b'stylesheet-only':
+        return u''
 
 def generate_import_rule(request, server_data):
     return u"@import url('%(url)s');" % {

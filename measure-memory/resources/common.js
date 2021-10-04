@@ -1,41 +1,7 @@
 const ORIGINS = {
-  'same-origin': get_host_info().HTTP_ORIGIN,
-  'cross-origin': get_host_info().HTTP_REMOTE_ORIGIN,
-  'cross-site': get_host_info().HTTP_NOTSAMESITE_ORIGIN,
-}
-
-function checkMeasureMemoryBreakdown(breakdown, options, required) {
-  const allowed = new Set(options.allowed);
-  assert_own_property(breakdown, 'bytes');
-  assert_greater_than_equal(breakdown.bytes, 0);
-  assert_own_property(breakdown, 'userAgentSpecificTypes');
-  for (const userAgentSpecificType of breakdown.userAgentSpecificTypes) {
-    assert_equals(typeof userAgentSpecificType, 'string');
-  }
-  assert_own_property(breakdown, 'attribution');
-  for (const attribution of breakdown.attribution) {
-    assert_equals(typeof attribution, 'string');
-    assert_true(
-        allowed.has(attribution),
-        `${attribution} must be in ${JSON.stringify(options.allowed)}`);
-    if (required.has(attribution)) {
-      required.delete(attribution);
-    }
-  }
-}
-
-function checkMeasureMemory(result, options) {
-    assert_own_property(result, 'bytes');
-    assert_own_property(result, 'breakdown');
-    const required = new Set(options.required);
-    let bytes = 0;
-    for (let breakdown of result.breakdown) {
-      checkMeasureMemoryBreakdown(breakdown, options, required);
-      bytes += breakdown.bytes;
-    }
-    assert_equals(bytes, result.bytes);
-    assert_equals(required.size, 0, JSON.stringify(result.breakdown) +
-        ' does not include ' + JSON.stringify(required.values()));
+  'same-origin': get_host_info().HTTPS_ORIGIN,
+  'cross-origin': get_host_info().HTTPS_REMOTE_ORIGIN,
+  'cross-site': get_host_info().HTTPS_NOTSAMESITE_ORIGIN,
 }
 
 function url(params) {
@@ -52,7 +18,8 @@ function url(params) {
   }
   let url = `${origin}/${file}?id=${params.id}`;
   if (params.redirect === 'server') {
-    url = `${origin}/common/redirect.py?location=${encodeURIComponent(url)}`;
+    url = (`${origin}/measure-memory/resources/redirect.py?` +
+           `location=${encodeURIComponent(url)}`);
   }
   return url;
 }
@@ -95,31 +62,7 @@ let waitForMessage = (function () {
   }
 })();
 
-// Constructs iframes based on their descriptoin.
-async function build(children) {
-  window.accessible_children = {iframes: {}, windows: {}};
-  await Promise.all(children.map(buildChild));
-  const result = window.accessible_children;
-  delete window.accessible_children;
-  return result;
-}
-
-async function buildChild(params) {
-  let child = null;
-  function target() {
-    return params.window_open ? child : child.contentWindow;
-  }
-  if (params.window_open) {
-    child = window.open(url(params));
-  } else {
-    child = document.createElement('iframe');
-    child.src = url(params);
-    child.id = params.id;
-    document.body.appendChild(child);
-  }
-  const ready = await waitForMessage(params.id);
-  target().postMessage({id: 'parent', payload: params.children}, '*');
-  const done = await waitForMessage(params.id);
+function getMainWindow() {
   let main = window;
   while (true) {
     if (main === main.parent) {
@@ -132,17 +75,17 @@ async function buildChild(params) {
       main = main.parent;
     }
   }
+  return main;
+}
+
+function isSameOrigin(other) {
   try {
-    main.accessible_children;
+    other.descendants;
   } catch (e) {
     // Cross-origin iframe that cannot access the main frame.
-    return;
+    return false;
   }
-  if (params.window_open) {
-    main.accessible_children.windows[params.id] = child;
-  } else  {
-    main.accessible_children.iframes[params.id] = child;
-  }
+  return !!other.descendants;
 }
 
 function getId() {
@@ -157,15 +100,57 @@ function getParent() {
   return window.parent;
 }
 
+// Constructs iframes based on their descriptoin.
+async function build(children) {
+  window.descendants = {iframes: {}, windows: {}};
+  await Promise.all(children.map(buildChild));
+  const result = window.descendants;
+  return result;
+}
+
+async function buildChild(params) {
+  let child = null;
+  function target() {
+    return params.window_open ? child : child.contentWindow;
+  }
+  if (params.window_open) {
+    child = window.open(url(params));
+    if (!params.id.startsWith('same-origin')) {
+      // Cross-origin windows gets their own browsing context groups with COOP.
+      // The postMessage calls before would not work for them, so we do not
+      // wait for them to load.
+      return;
+    }
+  } else {
+    child = document.createElement('iframe');
+    child.src = url(params);
+    child.id = params.id;
+    document.body.appendChild(child);
+  }
+  const ready = await waitForMessage(params.id);
+  target().postMessage({id: 'parent', payload: params.children}, '*');
+  const done = await waitForMessage(params.id);
+  if (!params.window_open) {
+    const main = getMainWindow();
+    if (isSameOrigin(main)) {
+      main.descendants.iframes[params.id] = child;
+    }
+  }
+}
+
 // This function runs within an iframe.
 // It gets the children descriptions from the parent and constructs them.
 async function setupChild() {
   const id = getId();
+  const main = getMainWindow();
+  if (isSameOrigin(main)) {
+    main.descendants.windows[id] = window;
+  }
   document.getElementById('title').textContent = id;
   getParent().postMessage({id : id, payload: 'ready'}, '*');
   const children = await waitForMessage('parent');
   if (children) {
-    await build(children);
+    await Promise.all(children.map(buildChild));
   }
   getParent().postMessage({id: id, payload: 'done'}, '*');
 }
@@ -186,8 +171,7 @@ async function createWorker(bytes) {
   let resolve_promise;
   const promise = new Promise(resolve => resolve_promise = resolve);
   worker.onmessage = function (message) {
-    assert_equals(message.data, 'ready');
-    resolve_promise();
+    resolve_promise(message.data);
   }
   worker.postMessage({bytes});
   return promise;

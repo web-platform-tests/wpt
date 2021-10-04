@@ -35,6 +35,12 @@ function redirectTo(origin, url) {
   return origin + "/cookies/resources/redirectWithCORSHeaders.py?status=307&location=" + encodeURIComponent(url);
 }
 
+// Returns a URL on |origin| which navigates the window to the given URL (by
+// setting window.location).
+function navigateTo(origin, url) {
+  return origin + "/cookies/resources/navigate.html?location=" + encodeURIComponent(url);
+}
+
 // Asserts that `document.cookie` contains or does not contain (according to
 // the value of |present|) a cookie named |name| with a value of |value|.
 function assert_dom_cookie(name, value, present) {
@@ -161,32 +167,9 @@ async function resetSameSiteCookies(origin, value) {
   }
 }
 
-// Given an |expectedStatus| and |expectedValue|, assert the |cookies| contains the
-// proper set of cookie names and values, according to the legacy behavior where
-// unspecified SameSite attribute defaults to SameSite=None behavior.
-function verifySameSiteCookieStateLegacy(expectedStatus, expectedValue, cookies, domCookieStatus) {
-    assert_equals(cookies["samesite_none"], expectedValue, "SameSite=None cookies are always sent.");
-    assert_equals(cookies["samesite_unspecified"], expectedValue, "Unspecified-SameSite cookies are always sent.");
-    if (expectedStatus == SameSiteStatus.CROSS_SITE) {
-      assert_not_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are not sent with cross-site requests.");
-      assert_not_equals(cookies["samesite_lax"], expectedValue, "SameSite=Lax cookies are not sent with cross-site requests.");
-    } else if (expectedStatus == SameSiteStatus.LAX) {
-      assert_not_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are not sent with lax requests.");
-      assert_equals(cookies["samesite_lax"], expectedValue, "SameSite=Lax cookies are sent with lax requests.");
-    } else if (expectedStatus == SameSiteStatus.STRICT) {
-      assert_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are sent with strict requests.");
-      assert_equals(cookies["samesite_lax"], expectedValue, "SameSite=Lax cookies are sent with strict requests.");
-    }
-
-    if (cookies["domcookies"]) {
-      verifyDocumentCookieLegacy(domCookieStatus, expectedValue, cookies["domcookies"]);
-    }
-}
-
-// Same as above except this expects samesite_unspecified to act the same as
-// samesite_lax (which is the behavior expected when SameSiteByDefault is
-// enabled).
-function verifySameSiteCookieStateWithSameSiteByDefault(expectedStatus, expectedValue, cookies, domCookieStatus) {
+// Given an |expectedStatus| and |expectedValue|, assert the |cookies| contains
+// the proper set of cookie names and values. Expects SameSite-Lax-by-default.
+function verifySameSiteCookieState(expectedStatus, expectedValue, cookies, domCookieStatus) {
     assert_equals(cookies["samesite_none"], expectedValue, "SameSite=None cookies are always sent.");
     if (expectedStatus == SameSiteStatus.CROSS_SITE) {
       assert_not_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are not sent with cross-site requests.");
@@ -203,32 +186,11 @@ function verifySameSiteCookieStateWithSameSiteByDefault(expectedStatus, expected
     }
 
     if (cookies["domcookies"]) {
-      verifyDocumentCookieWithSameSiteByDefault(domCookieStatus, expectedValue, cookies["domcookies"]);
-    }
-}
-
-function verifyDocumentCookieLegacy(expectedStatus, expectedValue, domcookies) {
-  const cookies = domcookies.split(";")
-                            .map(cookie => cookie.trim().split("="))
-                            .reduce((obj, cookie) => {
-                              obj[cookie[0]] = cookie[1];
-                              return obj;
-                            }, {});
-
-  if (expectedStatus == DomSameSiteStatus.SAME_SITE) {
-    assert_equals(cookies["samesite_none"], expectedValue, "SameSite=None cookies are always included in document.cookie.");
-    assert_equals(cookies["samesite_unspecified"], expectedValue, "Unspecified-SameSite cookies are always included in document.cookie.");
-    assert_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are always included in document.cookie.");
-    assert_equals(cookies["samesite_lax"], expectedValue, "SameSite=Lax cookies are always included in document.cookie.");
-  } else if (expectedStatus == DomSameSiteStatus.CROSS_SITE) {
-    assert_equals(cookies["samesite_none"], expectedValue, "SameSite=None cookies are always included in document.cookie.");
-    assert_equals(cookies["samesite_unspecified"], expectedValue, "Unspecified-SameSite cookies are always included in document.cookie.");
-    assert_not_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are not included in document.cookie when cross-site.");
-    assert_not_equals(cookies["samesite_lax"], expectedValue, "SameSite=Lax cookies are not included in document.cookie when cross-site.");
+      verifyDocumentCookieSameSite(domCookieStatus, expectedValue, cookies['domcookies']);
   }
 }
 
-function verifyDocumentCookieWithSameSiteByDefault(expectedStatus, expectedValue, domcookies) {
+function verifyDocumentCookieSameSite(expectedStatus, expectedValue, domcookies) {
   const cookies = domcookies.split(";")
                             .map(cookie => cookie.trim().split("="))
                             .reduce((obj, cookie) => {
@@ -247,16 +209,6 @@ function verifyDocumentCookieWithSameSiteByDefault(expectedStatus, expectedValue
     assert_not_equals(cookies["samesite_strict"], expectedValue, "SameSite=Strict cookies are not included in document.cookie when cross-site.");
     assert_not_equals(cookies["samesite_lax"], expectedValue, "SameSite=Lax cookies are not included in document.cookie when cross-site.");
   }
-}
-
-function isLegacySameSite() {
-  return location.search === "?legacy-samesite";
-}
-
-// Get the proper verifier based on the test's variant type.
-function getSameSiteVerifier() {
-  return isLegacySameSite() ?
-      verifySameSiteCookieStateLegacy : verifySameSiteCookieStateWithSameSiteByDefault;
 }
 
 //
@@ -296,6 +248,28 @@ function resetSameSiteNoneCookies(origin, value) {
     })
     .then(_ => {
       return credFetch(origin + "/cookies/resources/setSameSiteNone.py?" + value);
+    })
+}
+
+// Reset test cookies with multiple SameSite attributes on |origin|.
+// If |origin| matches `self.origin`, assert (via `document.cookie`)
+// that they were properly removed.
+function resetSameSiteMultiAttributeCookies(origin, value) {
+  return credFetch(origin + "/cookies/resources/dropSameSiteMultiAttribute.py")
+    .then(_ => {
+      if (origin == self.origin) {
+        assert_dom_cookie("samesite_unsupported", value, false);
+        assert_dom_cookie("samesite_unsupported_none", value, false);
+        assert_dom_cookie("samesite_unsupported_lax", value, false);
+        assert_dom_cookie("samesite_unsupported_strict", value, false);
+        assert_dom_cookie("samesite_none_unsupported", value, false);
+        assert_dom_cookie("samesite_lax_unsupported", value, false);
+        assert_dom_cookie("samesite_strict_unsupported", value, false);
+        assert_dom_cookie("samesite_lax_none", value, false);
+      }
+    })
+    .then(_ => {
+      return credFetch(origin + "/cookies/resources/setSameSiteMultiAttribute.py?" + value);
     })
 }
 

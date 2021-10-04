@@ -18,9 +18,7 @@ typedef (ContainerBasedOffset or ElementBasedOffset) ScrollTimelineOffset;
 dictionary ScrollTimelineOptions {
   Element? source;
   ScrollDirection orientation = "block";
-  ScrollTimelineOffset start = "auto";
-  ScrollTimelineOffset end = "auto";
-  (double or ScrollTimelineAutoKeyword) timeRange = "auto";
+  sequence<ScrollTimelineOffset> scrollOffsets = [];
 };
 
 [Exposed=Window]
@@ -28,9 +26,7 @@ interface ScrollTimeline : AnimationTimeline {
   constructor(optional ScrollTimelineOptions options = {});
   readonly attribute Element? source;
   readonly attribute ScrollDirection orientation;
-  readonly attribute ScrollTimelineOffset start;
-  readonly attribute ScrollTimelineOffset end;
-  readonly attribute (double or ScrollTimelineAutoKeyword) timeRange;
+  readonly attribute FrozenArray<ScrollTimelineOffset> scrollOffsets;
 };
 
 enum Edge { "start", "end" };
@@ -43,10 +39,8 @@ dictionary ElementBasedOffset {
 
 [Exposed=Window]
 interface CSSScrollTimelineRule : CSSRule {
-    readonly attribute CSSOMString name;
-    readonly attribute CSSOMString source;
-    readonly attribute CSSOMString orientation;
-    readonly attribute CSSOMString start;
-    readonly attribute CSSOMString end;
-    readonly attribute CSSOMString timeRange;
+  readonly attribute CSSOMString name;
+  readonly attribute CSSOMString source;
+  readonly attribute CSSOMString orientation;
+  readonly attribute CSSOMString scrollOffsets;
 };

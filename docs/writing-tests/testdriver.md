@@ -124,6 +124,15 @@ Note that if the element to be clicked does not have a unique ID, the
 document must not have any DOM mutations made between the function
 being called and the promise settling.
 
+## delete_all_cookies
+
+Usage: `test_driver.delete_all_cookies(context=null)`
+ * _context_: an optional WindowProxy for the browsing context in which to
+              perform the call. Defaults to the current browsing context.
+
+This function returns a promise that resolves after all the cookies have
+been deleted from the provided browsing context.
+
 ### send_keys
 
 Usage: `test_driver.send_keys(element, keys)`
@@ -147,11 +156,13 @@ between the function being called and the promise settling.
 To send special keys, one must send the respective key's codepoint. Since this uses the WebDriver protocol, you can find a [list for code points to special keys in the spec](https://w3c.github.io/webdriver/#keyboard-actions).
 For example, to send the tab key you would send "\uE004".
 
+_Note: these special-key codepoints are not necessarily what you would expect. For example, <kbd>Esc</kbd> is the invalid Unicode character `\uE00C`, not the `\u001B` Escape character from ASCII._
+
 [activation]: https://html.spec.whatwg.org/multipage/interaction.html#activation
 
 ### set_permission
 
-Usage: `test_driver.set_permission(descriptor, state, one_realm, context=null)`
+Usage: `test_driver.set_permission(descriptor, state, one_realm=false, context=null)`
  * _descriptor_: a
    [PermissionDescriptor](https://w3c.github.io/permissions/#dictdef-permissiondescriptor)
    or derived object

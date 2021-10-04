@@ -36,11 +36,14 @@ enum XRVisibilityState {
 [SecureContext, Exposed=Window] interface XRSession : EventTarget {
   // Attributes
   readonly attribute XRVisibilityState visibilityState;
+  readonly attribute float? frameRate;
+  readonly attribute Float32Array? supportedFrameRates;
   [SameObject] readonly attribute XRRenderState renderState;
   [SameObject] readonly attribute XRInputSourceArray inputSources;
 
   // Methods
   undefined updateRenderState(optional XRRenderStateInit state = {});
+  Promise<undefined> updateTargetFrameRate(float rate);
   [NewObject] Promise<XRReferenceSpace> requestReferenceSpace(XRReferenceSpaceType type);
 
   unsigned long requestAnimationFrame(XRFrameRequestCallback callback);
@@ -58,6 +61,7 @@ enum XRVisibilityState {
   attribute EventHandler onsqueezestart;
   attribute EventHandler onsqueezeend;
   attribute EventHandler onvisibilitychange;
+  attribute EventHandler onframeratechange;
 };
 
 dictionary XRRenderStateInit {
@@ -141,6 +145,9 @@ interface XRRigidTransform {
 
 [SecureContext, Exposed=Window] interface XRPose {
   [SameObject] readonly attribute XRRigidTransform transform;
+  [SameObject] readonly attribute DOMPointReadOnly? linearVelocity;
+  [SameObject] readonly attribute DOMPointReadOnly? angularVelocity;
+
   readonly attribute boolean emulatedPosition;
 };
 
@@ -199,6 +206,7 @@ interface XRWebGLLayer: XRLayer {
   // Attributes
   readonly attribute boolean antialias;
   readonly attribute boolean ignoreDepthValues;
+  attribute float? fixedFoveation;
 
   [SameObject] readonly attribute WebGLFramebuffer? framebuffer;
   readonly attribute unsigned long framebufferWidth;
@@ -266,6 +274,10 @@ interface XRReferenceSpaceEvent : Event {
 dictionary XRReferenceSpaceEventInit : EventInit {
   required XRReferenceSpace referenceSpace;
   XRRigidTransform? transform = null;
+};
+
+dictionary XRSessionSupportedPermissionDescriptor: PermissionDescriptor {
+  XRSessionMode mode;
 };
 
 dictionary XRPermissionDescriptor: PermissionDescriptor {

@@ -1,17 +1,39 @@
 import argparse
 import json
 import logging
+import multiprocessing
 import os
 import sys
 
 from tools import localpaths  # noqa: F401
 
-from six import iteritems
 from . import virtualenv
 
 
 here = os.path.dirname(__file__)
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
+
+
+def load_conditional_requirements(props, base_dir):
+    """Load conditional requirements from commands.json."""
+
+    conditional_requirements = props.get("conditional_requirements")
+    if not conditional_requirements:
+        return {}
+
+    commandline_flag_requirements = {}
+    for key, value in conditional_requirements.items():
+        if key == "commandline_flag":
+            for flag_name, requirements_paths in value.items():
+                commandline_flag_requirements[flag_name] = [
+                    os.path.join(base_dir, path) for path in requirements_paths]
+        else:
+            raise KeyError(
+                'Unsupported conditional requirement key: {}'.format(key))
+
+    return {
+        "commandline_flag": commandline_flag_requirements,
+    }
 
 
 def load_commands():
@@ -23,7 +45,7 @@ def load_commands():
         base_dir = os.path.dirname(abs_path)
         with open(abs_path, "r") as f:
             data = json.load(f)
-            for command, props in iteritems(data):
+            for command, props in data.items():
                 assert "path" in props
                 assert "script" in props
                 rv[command] = {
@@ -31,14 +53,17 @@ def load_commands():
                     "script": props["script"],
                     "parser": props.get("parser"),
                     "parse_known": props.get("parse_known", False),
-                    "py3only": props.get("py3only", False),
                     "help": props.get("help"),
                     "virtualenv": props.get("virtualenv", True),
                     "install": props.get("install", []),
                     "requirements": [os.path.join(base_dir, item)
                                      for item in props.get("requirements", [])]
                 }
-                if rv[command]["install"] or rv[command]["requirements"]:
+
+                rv[command]["conditional_requirements"] = load_conditional_requirements(
+                    props, base_dir)
+
+                if rv[command]["install"] or rv[command]["requirements"] or rv[command]["conditional_requirements"]:
                     assert rv[command]["virtualenv"]
     return rv
 
@@ -50,12 +75,8 @@ def parse_args(argv, commands=load_commands()):
                         dest="skip_venv_setup",
                         help="Whether to use the virtualenv as-is. Must set --venv as well")
     parser.add_argument("--debug", action="store_true", help="Run the debugger in case of an exception")
-    parser.add_argument("--py3", action="store_true",
-                        help="Run with Python 3 (requires a `python3` binary on the PATH)")
-    parser.add_argument("--py2", action="store_true",
-                        help="Run with Python 2 (requires a `python2` binary on the PATH)")
     subparsers = parser.add_subparsers(dest="command")
-    for command, props in iteritems(commands):
+    for command, props in commands.items():
         subparsers.add_parser(command, help=props["help"], add_help=False)
 
     args, extra = parser.parse_known_args(argv)
@@ -100,8 +121,7 @@ def create_complete_parser():
     for command in commands:
         props = commands[command]
 
-        if (props["virtualenv"] and
-            (not props["py3only"] or sys.version_info.major == 3)):
+        if props["virtualenv"]:
             setup_virtualenv(None, False, props)
 
         subparser = import_command('wpt', command, props)[1]
@@ -136,8 +156,24 @@ def setup_virtualenv(path, skip_venv_setup, props):
     return venv
 
 
+def install_command_flag_requirements(venv, kwargs, requirements):
+    for command_flag_name, requirement_paths in requirements.items():
+        if command_flag_name in kwargs:
+            for path in requirement_paths:
+                venv.install_requirements(path)
+
+
 def main(prog=None, argv=None):
     logging.basicConfig(level=logging.INFO)
+    # Ensure we use the spawn start method for all multiprocessing
+    try:
+        multiprocessing.set_start_method('spawn')
+    except RuntimeError as e:
+        # This can happen if we call back into wpt having already set the context
+        start_method = multiprocessing.get_start_method()
+        if start_method != "spawn":
+            logging.critical("The multiprocessing start method was set to %s by a caller", start_method)
+            raise e
 
     if prog is None:
         prog = sys.argv[0]
@@ -167,6 +203,9 @@ def main(prog=None, argv=None):
         kwargs = {}
 
     if venv is not None:
+        requirements = props["conditional_requirements"].get("commandline_flag")
+        if requirements is not None:
+            install_command_flag_requirements(venv, kwargs, requirements)
         args = (venv,) + extras
     else:
         args = extras
@@ -186,4 +225,4 @@ def main(prog=None, argv=None):
 
 
 if __name__ == "__main__":
-    main()
+    main()  # type: ignore

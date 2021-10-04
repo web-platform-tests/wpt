@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
- <html lang="en">
+ <html>
 
   <meta charset="UTF-8">
 
@@ -13,43 +13,11 @@
   <meta content="" name="flags">
   <meta name="assert" content="In this test, the div::selection pseudo-element must be drawn over the div::spelling-error overlay.">
 
-  <!--
-
-  The initial version of this test was relying on color
-  composition and was predicting a lime-green-ish (#7FBF80:
-  slightly desaturated lime green) background color for "Txet".
-
-  "#7fbf80 color description : Slightly desaturated lime green"
-  https://www.colorhexa.com/7fbf80
-
-  This test does not rely on color composition but the
-  test nevertheless verifies the ::selection overlay drawn
-  over the ::grammar-error overlay.
-
-  Chromium 83+'s selection highlight will vertically
-  extend to line box top and bottom... which is
-  under an eventual discussion in
-  https://github.com/w3c/csswg-drafts/issues/5395
-  One easy way to work around this issue
-  would be to set 'line-height' to '1' instead of
-  '90px'.
-
-  -->
-
+  <link rel="stylesheet" href="support/highlights.css">
   <style>
   div
     {
       font-size: 60px;
-      line-height: 1;
-      /*
-      We deliberately set line-height to 1 in order
-      to avoid/work around a possible difference
-      of rendering of highlight overlay among browsers.
-      In Chrome 80+, the selection highlight
-      overlay will extent vertically to include line
-      box top and line box bottom. This is not
-      the case in Firefox 68+.
-      */
     }
 
   div::selection
@@ -70,19 +38,7 @@
     }
   </style>
 
-  <script>
-  function startTest()
-  {
-  var targetRange = document.createRange();
-  /* We first create an empty range */
-  targetRange.selectNodeContents(document.getElementById("test"));
-  /* Then we set the range boundaries to the children of div#test */
-  window.getSelection().addRange(targetRange);
-  /* Finally, we now select such range of content */
-  }
-  </script>
-
-  <body onload="startTest();">
+  <script src="support/selections.js"></script>
 
   <p>PREREQUISITE: User agent needs to have an enabled and capable spelling error module. If it does not, then this test does not apply to such user agent.
 
@@ -96,7 +52,17 @@
   </ul>
 
   <!--
-  The bad spelling of Txet is intentional and part of this test
-  -->
+    The bad spelling of Txet is intentional and part of this test.
 
-  <div id="test">Txet sample</div>
+    https://html.spec.whatwg.org/multipage/interaction.html#spelling-and-grammar-checking
+    • contenteditable makes the text “checkable for the purposes of [spelling and grammar checking]”
+    • spellcheck tries to enable spelling and grammar checking (subject to user preferences)
+    • lang tries to guide the UA towards checking the text in English (but the UA may ignore this)
+  -->
+  <div id="test" class="highlight_reftest" contenteditable="true" spellcheck="true" lang="en">Txet sample</div>
+
+  <script>
+  const test = document.querySelector("#test");
+  selectNodeContents(test);
+  trySpellcheck(test);
+  </script>

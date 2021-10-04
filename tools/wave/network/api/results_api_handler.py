@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
 import json
 
 from .api_handler import ApiHandler
@@ -82,7 +80,7 @@ class ResultsApiHandler(ApiHandler):
     def read_results_api_wpt_multi_report_uri(self, request, response):
         try:
             uri_parts = self.parse_uri(request)
-            api = uri_parts[3]
+            api = uri_parts[2]
             query = self.parse_query_parameters(request)
             tokens = query["tokens"].split(",")
             uri = self._results_manager.read_results_wpt_multi_report_uri(

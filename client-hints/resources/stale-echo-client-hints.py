@@ -16,12 +16,13 @@ def main(request, response):
         b"rtt",
         b"downlink",
         b"ect",
-        b"sec-ch-lang",
         b"sec-ch-ua",
         b"sec-ch-ua-arch",
         b"sec-ch-ua-platform",
         b"sec-ch-ua-platform-version",
         b"sec-ch-ua-model",
+        b"sec-ch-prefers-color-scheme",
+        b"sec-ch-viewport-height",
     ]
 
     client_hints_curr = {i:request.headers.get(i) for i in client_hint_headers}

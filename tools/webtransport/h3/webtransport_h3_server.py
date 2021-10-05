@@ -169,7 +169,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                 code = buffer.pull_uint32()
                 # TODO(yutakahirano): Make sure `reason` is a
                 # UTF-8 text.
-                reason = buffer.data
+                reason = buffer.pull_bytes(len(capsule.data) - 4)
                 self._close_info = (code, reason)
                 if fin:
                     self._call_session_closed(self._close_info, abruptly=False)

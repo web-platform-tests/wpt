@@ -167,9 +167,9 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
             elif capsule.type == CapsuleType.CLOSE_WEBTRANSPORT_SESSION:
                 buffer = Buffer(data=capsule.data)
                 code = buffer.pull_uint32()
-                # TODO(yutakahirano): Make sure `reason` is a
-                # UTF-8 text.
+                # 4 bytes for the uint32.
                 reason = buffer.pull_bytes(len(capsule.data) - 4)
+                # TODO(yutakahirano): Make sure `reason` is a UTF-8 text.
                 self._close_info = (code, reason)
                 if fin:
                     self._call_session_closed(self._close_info, abruptly=False)

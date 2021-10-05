@@ -80,6 +80,14 @@ promise_test(async t => {
 }, 'close with code and long reason');
 
 promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('server-close.py'));
+
+  const close_info = await wt.closed;
+  assert_not_own_property(close_info, 'closeCode');
+  assert_not_own_property(close_info, 'reason');
+}, 'server initiated closure');
+
+promise_test(async t => {
   const code = 32;
   const reason = 'abc';
   const wt = new WebTransport(
@@ -87,9 +95,9 @@ promise_test(async t => {
   add_completion_callback(() => wt.close());
 
   const close_info = await wt.closed;
-  assert_equals(close_info.code, code, 'code');
+  assert_equals(close_info.closeCode, code, 'code');
   assert_equals(close_info.reason, reason, 'reason');
-}, 'server initiated closure');
+}, 'server initiated closure with code and reason');
 
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('server-connection-close.py'));

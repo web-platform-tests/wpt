@@ -135,18 +135,12 @@ also influenced by <a class="reference internal" href="server-pipes.html"><span 
 </section>
 <section id="tests-requiring-http-2-0">
 <h2>Tests Requiring HTTP/2.0<a class="headerlink" href="#tests-requiring-http-2-0" title="Permalink to this headline">¶</a></h2>
-<p>The server now has a prototype HTTP/2.0 server which gives you access to
-some of the HTTP/2.0 specific functionality. Currently, the server is off
-by default and needs to be run using <code class="docutils literal notranslate"><span class="pre">./wpt</span> <span class="pre">serve</span> <span class="pre">--h2</span></code> in order to enable it.
-The HTTP/2.0 server supports handlers that work per-frame; these, along with the
+<p>To make a test run over an HTTP/2.0 connection, use <code class="docutils literal notranslate"><span class="pre">.h2.</span></code> in the filename.
+By default the HTTP/2.0 server can be accessed using port 9000. At the moment
+accessing tests that use <code class="docutils literal notranslate"><span class="pre">.h2.</span></code> over ports that do not use an HTTP/2.0 server
+also succeeds, so beware of that when creating them.</p>
+<p>The HTTP/2.0 server supports handlers that work per-frame; these, along with the
 API are documented in <a class="reference internal" href="h2tests.html"><span class="doc">Writing H2 Tests</span></a>.</p>
-<blockquote>
-<div><p><b>Important:</b> The HTTP/2.0 server requires you to have
-OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
-<a class="reference external" href="https://tools.ietf.org/html/rfc7301">TLS ALPN</a> extension, which is only
-supported in
-<a class="reference external" href="https://www.openssl.org/news/openssl-1.0.2-notes.html">OpenSSL 1.0.2</a> and up.</p>
-</div></blockquote>
 </section>
 <section id="tests-requiring-webtransport-over-http-3">
 <h2>Tests Requiring WebTransport over HTTP/3<a class="headerlink" href="#tests-requiring-webtransport-over-http-3" title="Permalink to this headline">¶</a></h2>

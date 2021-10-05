@@ -291,10 +291,9 @@ class WebTransportSession:
             buffer.push_bytes(reason)
             capsule =\
                 H3Capsule(CapsuleType.CLOSE_WEBTRANSPORT_SESSION, buffer.data)
-            self.send_stream_data(session_stream_id, capsule.encode())
+            self._http.send_data(session_stream_id, capsule.encode(), end_stream=False)
 
-        self.send_stream_data(session_stream_id, b'', end_stream=True)
-        self._protocol.transmit()
+        self._http.send_data(session_stream_id, b'', end_stream=True)
         # TODO(yutakahirano): Reset all other streams.
         # TODO(yutakahirano): Reject future stream open requests
         # We need to wait for the stream data to arrive at the client, and then

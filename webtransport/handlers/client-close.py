@@ -45,7 +45,7 @@ def session_closed(
     token = session.dict_for_handlers['token']
     data = session.stash.take(key=token) or {}
 
-    decoded_close_info : Optional[Dict[str, Any]]
+    decoded_close_info: Optional[Dict[str, Any]] = None
     if close_info:
         decoded_close_info = {
             'code': close_info[0],

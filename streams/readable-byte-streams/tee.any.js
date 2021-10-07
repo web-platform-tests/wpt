@@ -892,3 +892,27 @@ promise_test(async () => {
   assert_typed_array_equals(result2.value, new Uint8Array([0x22]).subarray(0, 0), 'second read');
 
 }, 'ReadableStream teeing with byte source: close when both branches have pending BYOB reads');
+
+promise_test(async () => {
+
+  const rs = recordingReadableStream({ type: 'bytes' });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader());
+  const read1 = reader1.read();
+  const read2 = reader2.read();
+
+  await flushAsyncEvents();
+  rs.controller.enqueue(new Uint8Array([0x11]));
+  rs.controller.close();
+
+  const result1 = await read1;
+  assert_equals(result1.done, false, 'first read() from branch1 should be not done');
+  assert_typed_array_equals(result1.value, new Uint8Array([0x11]), 'first chunk from branch1 should be correct');
+  const result2 = await read2;
+  assert_equals(result2.done, false, 'first read() from branch2 should be not done');
+  assert_typed_array_equals(result2.value, new Uint8Array([0x11]), 'first chunk from branch2 should be correct');
+
+  assert_object_equals(await reader1.read(), { value: undefined, done: true }, 'second read() from branch1 should be done');
+  assert_object_equals(await reader2.read(), { value: undefined, done: true }, 'second read() from branch2 should be done');
+
+}, 'ReadableStream teeing with byte source: enqueue() and close() while both branches are pulling');

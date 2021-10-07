@@ -260,11 +260,11 @@ for (let testCase of testCases) {
         const styleText = testCase['style'].replaceAll(/url\((.+?)\)/g, (match, p1) => {
             return `url(data:text/css,${ encodeURI(imports[p1]) })`;
         });
-        styleElement.innerText = styleText;
+        styleElement.textContent = styleText;
 
         await new Promise(resolve => {
             styleElement.onload = resolve;
-            document.head.appendChild(styleElement);
+            document.head.append(styleElement);
         });
 
         try {
@@ -272,7 +272,7 @@ for (let testCase of testCases) {
             for (target of targets)
                 assert_equals(window.getComputedStyle(target).color, 'rgb(0, 128, 0)', testCase['title'] + ", target '" + target.classList[0] + "'");
         } finally {
-           styleElement.remove();
+            styleElement.remove();
         }
     }, testCase['title']);
 }

@@ -158,11 +158,14 @@ promise_test(async t => {
 
   // Write a chunk, close the stream, and then abort the stream immediately to
   // abort the closing operation.
-  writer.write(new Uint8Array([32]));
-  writer.close();
-  await writer.abort(
-      new WebTransportError({streamErrorCode: WT_CODE}));
+  const chunk = new Uint8Array(64 * 1024);
+  const e = new WebTransportError({streamErrorCode: WT_CODE});
+  await writer.write(chunk);
+  const close_promise = writer.close();
+  await writer.abort(e);
 
+  await promise_rejects_exactly(t, e, close_promise, 'close_promise');
+  await promise_rejects_exactly(t, e, writer.closed, '.closed');
   writer.releaseLock();
 
   await wait(10);

@@ -7,11 +7,16 @@
 async_test(function(t) {
   var w = window.open("resources/unload-bubbles.html");
   window.onmessage = t.step_func(function(event) {
+    console.log(event)
     if (event.data === "close") {
       w.close();
       return;
     }
-    assert_equals(event.data, "hidden");
+
+    const {state, target, bubbles} = event.data
+    assert_equals(state, "hidden");
+    assert_equals(target, "#document");
+    assert_equals(bubbles, true);
     t.done();
   });
 });

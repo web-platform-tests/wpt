@@ -507,8 +507,8 @@ var testCases = [
 
 for (let testCase of testCases) {
     const styleElement = document.createElement('style');
-    styleElement.innerText = testCase['style'];
-    document.head.appendChild(styleElement);
+    styleElement.textContent = testCase['style'];
+    document.head.append(styleElement);
 
     test(function () {
         var targets = document.querySelectorAll('target');

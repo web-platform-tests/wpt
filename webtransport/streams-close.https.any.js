@@ -156,7 +156,7 @@ promise_test(async t => {
   const WT_CODE = 134;
   const HTTP_CODE = webtransport_code_to_http_code(WT_CODE);
 
-  // We use a large chunk so that sending FIN signal takes time.
+  // We use a large chunk so that sending the FIN signal takes time.
   const chunk = new Uint8Array(64 * 1024);
   const e = new WebTransportError({streamErrorCode: WT_CODE});
   // Write a chunk, close the stream, and then abort the stream immediately to

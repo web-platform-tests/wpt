@@ -4,7 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 function resolveUrl(relativeUrl) {
-  var a = document.createElement('a');
+  var a = document.createElement('a'); 
   a.href = relativeUrl;
   return a.href;
 }

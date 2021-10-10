@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>window.requestIdleCallback max idle period deadline (timeout).</title>
+<meta name="timeout" content="long">
+<link rel="author" title="Noam Rosenthal" href="mailto:noam@webkit.org" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/ric-utils.js"></script>
+<script>
+
+promise_test(async done => {
+  const timeouts = [15, 20, 30, 100]
+  for (let i = 0; i < 10; ++i)
+  for (const timeoutValue of timeouts) {
+    let resolved = false
+    const waitForTimeout = new Promise(resolve => setTimeout(() => {
+      resolved = true
+      resolve()
+    }, timeoutValue))
+    const deadline = await getDeadlineForNextIdleCallback()
+    if (!resolved) {
+      assert_less_than_equal(deadline, timeoutValue)
+      await waitForTimeout
+    }
+  }
+}, 'Check that the deadline is capped at the next timeout.');
+</script>
+<h1>Test of requestIdleCallback deadline behavior</h1>
+<div id="log"></div>

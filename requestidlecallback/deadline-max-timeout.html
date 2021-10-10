@@ -12,7 +12,7 @@ promise_test(async done => {
   for (let i = 0; i < 10; ++i)
   for (const timeoutValue of timeouts) {
     let resolved = false
-    const waitForTimeout = new Promise(resolve => setTimeout(() => {
+    const waitForTimeout = new Promise(resolve => step_timeout(() => {
       resolved = true
       resolve()
     }, timeoutValue))

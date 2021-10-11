@@ -9,17 +9,18 @@
 
 promise_test(async done => {
   const timeouts = [15, 20, 30, 100]
-  for (let i = 0; i < 10; ++i)
-  for (const timeoutValue of timeouts) {
-    let resolved = false
-    const waitForTimeout = new Promise(resolve => step_timeout(() => {
-      resolved = true
-      resolve()
-    }, timeoutValue))
-    const deadline = await getDeadlineForNextIdleCallback()
-    if (!resolved) {
-      assert_less_than_equal(deadline, timeoutValue)
-      await waitForTimeout
+  for (let i = 0; i < 10; ++i) {
+    for (const timeoutValue of timeouts) {
+      let resolved = false
+      const waitForTimeout = new Promise(resolve => step_timeout(() => {
+        resolved = true
+        resolve()
+      }, timeoutValue))
+      const deadline = await getDeadlineForNextIdleCallback()
+      if (!resolved) {
+        assert_less_than_equal(deadline, timeoutValue)
+        await waitForTimeout
+      }
     }
   }
 }, 'Check that the deadline is capped at the next timeout.');

@@ -8,7 +8,7 @@
 <script>
 
 promise_test(async () => {
-  for (let i = 0; i < 10; ++i) {
+  for (let i = 0; i < getRICRetryCount(); ++i) {
     for (const timeout of [10, 20, 30]) {
       const {before, after} = await new Promise(resolve => requestIdleCallback(async deadline => {
         const before = deadline.timeRemaining();

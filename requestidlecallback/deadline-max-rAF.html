@@ -8,9 +8,9 @@
 <script>
 
 promise_test(async done => {
-  for (let i = 0; i < 10; ++i) {
+  for (let i = 0; i < getRICRetryCount(); ++i) {
     requestAnimationFrame(() => {})
-    assert_less_than_equal(await getDeadlineForNextIdleCallback(), 1000 / 60)
+    assert_less_than_equal(await getDeadlineForNextIdleCallback(), getPendingRenderDeadlineCap())
   }
 
 }, 'Check that the deadline is less than 16ms when there is a pending animation frame.');

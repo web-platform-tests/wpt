@@ -5,3 +5,10 @@ function getDeadlineForNextIdleCallback() {
     );
 }
 
+function getPendingRenderDeadlineCap() {
+    return 1000 / 60;
+}
+
+function getRICRetryCount() {
+    return 10;
+}

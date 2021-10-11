@@ -463,17 +463,17 @@ promise_test(async () => {
   const rs = recordingReadableStream();
 
   const [reader1, reader2] = rs.tee().map(branch => branch.getReader());
-  const read1 = reader1.read();
-  const read2 = reader2.read();
+  const branch1Reads = [reader1.read(), reader1.read()];
+  const branch2Reads = [reader2.read(), reader2.read()];
 
   await flushAsyncEvents();
   rs.controller.enqueue('a');
   rs.controller.close();
 
-  assert_object_equals(await read1, { value: 'a', done: false }, 'first chunk from branch1 should be correct');
-  assert_object_equals(await read2, { value: 'a', done: false }, 'first chunk from branch2 should be correct');
+  assert_object_equals(await branch1Reads[0], { value: 'a', done: false }, 'first chunk from branch1 should be correct');
+  assert_object_equals(await branch2Reads[0], { value: 'a', done: false }, 'first chunk from branch2 should be correct');
 
-  assert_object_equals(await reader1.read(), { value: undefined, done: true }, 'second read() from branch1 should be done');
-  assert_object_equals(await reader2.read(), { value: undefined, done: true }, 'second read() from branch2 should be done');
+  assert_object_equals(await branch1Reads[1], { value: undefined, done: true }, 'second read() from branch1 should be done');
+  assert_object_equals(await branch2Reads[1], { value: undefined, done: true }, 'second read() from branch2 should be done');
 
 }, 'ReadableStream teeing: enqueue() and close() while both branches are pulling');

@@ -109,7 +109,11 @@
     }
 
     WindowTestEnvironment.prototype._dispatch = function(selector, callback_args, message_arg) {
-        this.dispatched_messages.push(message_arg);
+        const message_wrapper = {
+          message_id: this.dispatched_messages.length,
+          message: message_arg
+        }
+        this.dispatched_messages.push(message_wrapper);
         this._forEach_windows(
                 function(w, same_origin) {
                     if (same_origin) {
@@ -127,7 +131,7 @@
                         }
                     }
                     if (supports_post_message(w) && w !== self) {
-                        w.postMessage(message_arg, "*");
+                        w.postMessage(message_wrapper, "*");
                     }
                 });
     };
@@ -253,10 +257,14 @@
     }
 
     WorkerTestEnvironment.prototype._dispatch = function(message) {
-        this.message_list.push(message);
+        const message_wrapper = {
+          message_id: this.message_list.length,
+          message
+        };
+        this.message_list.push(message_wrapper);
         for (var i = 0; i < this.message_ports.length; ++i)
         {
-            this.message_ports[i].postMessage(message);
+            this.message_ports[i].postMessage(message_wrapper);
         }
     };
 
@@ -2538,6 +2546,7 @@
         this.started = false;
         this.tests = new Array();
         this.early_exception = null;
+        this.received_messages = new Set();
 
         var this_obj = this;
         // If remote context is cross origin assigning to onerror is not
@@ -2553,16 +2562,20 @@
         // from going away before all the messages are dispatched.
         this.remote = remote;
         this.message_target = message_target;
-        this.message_handler = function(message) {
-            var passesFilter = !message_filter || message_filter(message);
-            // The reference to the `running` property in the following
-            // condition is unnecessary because that value is only set to
-            // `false` after the `message_handler` function has been
-            // unsubscribed.
-            // TODO: Simplify the condition by removing the reference.
-            if (this_obj.running && message.data && passesFilter &&
-                (message.data.type in this_obj.message_handlers)) {
-                this_obj.message_handlers[message.data.type].call(this_obj, message.data);
+        this.message_handler = function(evt) {
+            var passesFilter = !message_filter || message_filter(evt);
+
+            if (passesFilter && evt.data && typeof evt.data.message_id === "number") {
+              // Discard duplicate messages
+              if (this_obj.received_messages.has(evt.data.message_id)) {
+                return;
+              }
+              this_obj.received_messages.add(evt.data.message_id);
+
+              const {message} = evt.data;
+              if (message && message.type in this_obj.message_handlers) {
+                this_obj.message_handlers[message.type].call(this_obj, message);
+              }
             }
         };
 

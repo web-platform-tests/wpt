@@ -3416,8 +3416,8 @@
                                                ],
                                                ["button",
                                                 {"onclick": "let evt = new Event('__test_restart'); " +
-                                                 "let run_default = window.dispatchEvent(evt);" +
-                                                 "if (run_default) { location.reload() }"},
+                                                 "let canceled = !window.dispatchEvent(evt);" +
+                                                 "if (!canceled) { location.reload() }"},
                                                 "Rerun"]
                                               ]];
 

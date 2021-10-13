@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<script>
+    window.onload = async () => {
+        const url = 'simple.txt'
+        const entries = {}
+        const fetchWithMode = async mode => {
+            const before = performance.now()
+            const name = `${url}?mode=${mode}`
+            await (await fetch(name)).text()
+            const total = performance.now() - before
+            const [entry] = performance.getEntriesByName(new URL(name, document.location).toString())
+            const fix = n => n ? (n - before) : null
+            const keys = [
+                'fetchStart',
+                'workerStart',
+                'redirectStart',
+                'redirectEnd', 
+                'connectStart',
+                'sectureConnectionStart',
+                'requestStart',
+                'responseStart',
+                'responseEnd']
+            entries[mode] = {
+                total,
+                duration: entry.duration,
+                transferSize: entry.transferSize,
+                ...Object.fromEntries(keys.map(k => [k, fix(entry[k])]))
+            }
+        }
+        await fetchWithMode('delay-before-fetch')
+        await fetchWithMode('delay-after-fetch')
+        await fetchWithMode('forward')
+        await fetchWithMode('redirect')
+        await fetchWithMode('delay-redirect-delay')
+        await fetchWithMode('generate-ahead-of-time')
+        await fetchWithMode('generate')
+        await fetchWithMode('passthrough')
+
+        parent.postMessage(entries)
+
+    }
+</script>

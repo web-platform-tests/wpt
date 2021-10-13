@@ -24,7 +24,6 @@ function verify(options) {
   const url = options.mode === 'cross-origin' ? crossOriginUrl(options.resource)
     : resourceUrl(options.resource);
   const entryList = options.performance.getEntriesByName(url, 'resource');
-  console.log({url, entryList});
   if (options.should_no_performance_entry) {
     // The performance timeline may not have an entry for a resource
     // which failed to load.
@@ -70,7 +69,7 @@ promise_test(async (t) => {
   t.add_cleanup(() => registration.unregister());
   await wait_for_state(t, registration.installing, 'activated');
   const frame = await with_iframe(scope);
-//  t.add_cleanup(() => frame.remove());
+  t.add_cleanup(() => frame.remove());
 
   const performance = frame.contentWindow.performance;
   verify({

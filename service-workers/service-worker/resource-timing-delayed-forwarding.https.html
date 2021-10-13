@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+</head>
+
+<body>
+<script>
+promise_test(async t => {
+    const worker_url = 'resources/multi-mode-delay-worker.js';
+    const scope = 'resources/iframe-with-delay.html';
+    const registration = await service_worker_unregister_and_register(t, worker_url, scope)
+    t.add_cleanup(() => registration.unregister());
+    await wait_for_state(t, registration.installing, 'activated');
+    const frame = await with_iframe(scope);
+    t.add_cleanup(() => frame.remove());
+    const entries = await new Promise(resolve => window.addEventListener('message', message => {
+        resolve(message.data)
+    }))
+    console.log(entries)
+}, 'Test that timing allow check fails when service worker changes origin from same to cross origin.');
+</script>
+</body>
+</html>

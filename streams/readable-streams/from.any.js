@@ -426,3 +426,26 @@ promise_test(async t => {
   await reader.closed;
 
 }, `ReadableStream.from: reader.cancel() inside return()`);
+
+promise_test(async t => {
+
+  let array = ['a', 'b'];
+
+  const rs = ReadableStream.from(array);
+  const reader = rs.getReader();
+
+  const read1 = await reader.read();
+  assert_object_equals(read1, { value: 'a', done: false }, 'first read should be correct');
+  const read2 = await reader.read();
+  assert_object_equals(read2, { value: 'b', done: false }, 'second read should be correct');
+
+  array.push('c');
+
+  const read3 = await reader.read();
+  assert_object_equals(read3, { value: 'c', done: false }, 'third read after push() should be correct');
+  const read4 = await reader.read();
+  assert_object_equals(read4, { value: undefined, done: true }, 'fourth read should be done');
+
+  await reader.closed;
+
+}, `ReadableStream.from(array), push() to array while reading`);

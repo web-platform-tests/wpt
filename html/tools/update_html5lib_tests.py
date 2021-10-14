@@ -56,11 +56,11 @@ class Html5libInstall:
     def __enter__(self):
         self.html5lib_dir = tempfile.TemporaryDirectory()
         html5lib_path = self.html5lib_dir.__enter__()
-        subprocess.check_call(["git", "clone", "git@github.com:html5lib/html5lib-python.git", "html5lib"],
+        subprocess.check_call(["git", "clone", "--no-checkout", "https://github.com/html5lib/html5lib-python.git", "html5lib"],
                               cwd=html5lib_path)
-        if self.rev is not None:
-            subprocess.check_call(["git", "checkout", self.rev],
-                                  cwd=os.path.join(html5lib_path, "html5lib"))
+        rev = self.rev if self.rev is not None else "origin/master"
+        subprocess.check_call(["git", "checkout", rev],
+                              cwd=os.path.join(html5lib_path, "html5lib"))
         subprocess.check_call(["pip", "install", "-e", "html5lib"], cwd=html5lib_path)
         reload(site)
 

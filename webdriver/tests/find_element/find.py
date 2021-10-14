@@ -46,7 +46,10 @@ def test_invalid_selector_argument(session, value):
                           ("link text", "full link text"),
                           ("partial link text", "link text"),
                           ("tag name", "a"),
-                          ("xpath", "//a")])
+                          ("xpath", "//a"),
+                          # Note the below includes a literal \u200E character.
+                          ("xpath", "//*[translate(text(), '‎', '') ='full link text']"),
+                          ("xpath", "//*[translate(text(), '\\u200E', '') ='full link text']")])
 def test_find_element(session, inline, using, value):
     # Step 8 - 9
     session.url = inline("<a href=# id=linkText>full link text</a>")
@@ -100,7 +103,10 @@ def test_no_element(session, using, value):
                           ("link text", "full link text"),
                           ("partial link text", "link text"),
                           ("tag name", "a"),
-                          ("xpath", "//*[name()='a']")])
+                          ("xpath", "//*[name()='a']"),
+                          # Note the below includes a literal \u200E character.
+                          ("xpath", "//*[translate(text(), '‎', '') ='full link text']"),
+                          ("xpath", "//*[translate(text(), '\\u200E', '') ='full link text']")])
 def test_xhtml_namespace(session, inline, using, value):
     session.url = inline("""<a href="#" id="linkText">full link text</a>""",
                          doctype="xhtml")

@@ -1,8 +1,13 @@
-const aheadResponse = new Response(new Blob(['a simple text file']))
+importScripts('/common/get-host-info.sub.js');
+importScripts('test-helpers.sub.js');
+
+const storedResponse = new Response(new Blob(['a simple text file']))
+const absolultePath = `${base_path()}/simple.txt`
 
 self.addEventListener('fetch', event => {
-    const mode = new URLSearchParams(new URL(event.request.url).search.substr(1)).get('mode')
-    const delay = 200
+    const search = new URLSearchParams(new URL(event.request.url).search.substr(1))
+    const mode = search.get('mode')
+    const delay = +search.get('delay')
     switch (mode) {
         case 'delay-before-fetch':
             event.respondWith(
@@ -21,19 +26,19 @@ self.addEventListener('fetch', event => {
             event.respondWith(
                 new Promise(resolve => {
                     setTimeout(() => {
-                        fetch(`/xhr/resources/redirect.py?location=${event.request.url}`)
+                        fetch(`/xhr/resources/redirect.py?location=`)
                             .then(response => setTimeout(() => resolve(response), delay))
                     }, delay)
             }))
             break
         case 'redirect':
-            event.respondWith(fetch(`/xhr/resources/redirect.py?location=${event.request.url}`))
+            event.respondWith(fetch(`/xhr/resources/redirect.py?location=${base_path()}/simple.txt`))
             break
         case 'generate':
             event.respondWith(new Response(new Blob(['a simple text file'])))
             break
         case 'generate-ahead-of-time':
-            event.respondWith(aheadResponse)
+            event.respondWith(storedResponse)
             break
         case 'forward':
             event.respondWith(fetch(event.request.url))

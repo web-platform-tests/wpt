@@ -2,34 +2,50 @@
 <script>
     window.onload = async () => {
         const url = 'simple.txt'
+        const delay = 200
         const entries = {}
         const fetchWithMode = async mode => {
             const before = performance.now()
-            const name = `${url}?mode=${mode}`
+            const name = `${url}?mode=${mode}&delay=${delay}`
             await (await fetch(name)).text()
-            const total = performance.now() - before
             const [entry] = performance.getEntriesByName(new URL(name, document.location).toString())
-            const fix = n => n ? (n - before) : null
             const keys = [
-                'fetchStart',
-                'workerStart',
+                'startTime',
                 'redirectStart',
                 'redirectEnd', 
+                'workerStart',
+                'fetchStart',
+                'dnsLookupStart',
                 'connectStart',
-                'sectureConnectionStart',
                 'requestStart',
                 'responseStart',
-                'responseEnd']
+                'responseEnd'
+            ]
+
+            let cursor = before
+            function step(value) {
+                if (!value)
+                    return 'X'
+                const diff = value - cursor
+                cursor = value
+                if (diff < 0)
+                    return '<'
+                if (diff === 0)
+                    return '·'
+                if (diff < delay)
+                    return '>'
+                return '≫'
+            }
+            const delays = keys.map(k => step(entry[k]))
+            delays.push(step(performance.now()))
             entries[mode] = {
-                total,
-                duration: entry.duration,
-                transferSize: entry.transferSize,
-                ...Object.fromEntries(keys.map(k => [k, fix(entry[k])]))
+                sequence: delays.join(''), entry: entry.toJSON(), transferSize: entry.transferSize
             }
         }
         await fetchWithMode('delay-before-fetch')
         await fetchWithMode('delay-after-fetch')
         await fetchWithMode('forward')
+        await fetchWithMode('cors-forward')
         await fetchWithMode('redirect')
         await fetchWithMode('delay-redirect-delay')
         await fetchWithMode('generate-ahead-of-time')

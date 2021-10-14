@@ -41,7 +41,7 @@ promise_test(async t => {
     })
   });
   const reader = rs.getReader({ mode: 'byob' });
-  const read1 = reader.fill(new Uint8Array(3));
+  const read1 = reader.read(new Uint8Array(3), { atLeast: 3 });
   const read2 = reader.read(new Uint8Array(1));
 
   const result1 = await read1;
@@ -115,7 +115,7 @@ promise_test(async t => {
   });
   const reader = rs.getReader({ mode: 'byob' });
 
-  const result = await reader.fill(new Uint8Array(3));
+  const result = await reader.read(new Uint8Array(3), { atLeast: 3 });
   assert_false(result.done, 'first result should not be done');
   assert_typed_array_equals(result.value, new Uint8Array([0x01, 0x02, 0x03]), 'first result value');
 
@@ -155,7 +155,7 @@ promise_test(async t => {
   });
   const reader = rs.getReader({ mode: 'byob' });
 
-  const result = await reader.fill(new Uint8Array(3));
+  const result = await reader.read(new Uint8Array(3), { atLeast: 3 });
   assert_false(result.done, 'first result should not be done');
   assert_typed_array_equals(result.value, new Uint8Array([0x01, 0x02, 0x03]), 'first result value');
 
@@ -198,7 +198,7 @@ promise_test(async t => {
   });
 
   const byobReader = stream.getReader({ mode: 'byob' });
-  const result1 = await byobReader.fill(new Uint8Array(8));
+  const result1 = await byobReader.read(new Uint8Array(8), { atLeast: 8 });
   assert_false(result1.done, 'result1.done');
 
   const view1 = result1.value;
@@ -245,7 +245,7 @@ promise_test(async () => {
   });
 
   const reader = stream.getReader({ mode: 'byob' });
-  const result = await reader.fill(new Uint8Array(1));
+  const result = await reader.read(new Uint8Array(1), { atLeast: 1 });
   assert_false(result.done, 'result.done');
   assert_equals(result.value.byteLength, 1, 'result.value.byteLength');
   assert_equals(result.value[0], 0x01, 'result.value[0]');
@@ -266,7 +266,7 @@ promise_test(async t => {
 
   const reader = stream.getReader({ mode: 'byob' });
 
-  const result = await reader.fill(new Uint8Array([0x01]));
+  const result = await reader.read(new Uint8Array([0x01]), { atLeast: 1 });
   assert_true(result.done, 'result.done');
   assert_typed_array_equals(result.value, new Uint8Array([0x01]).subarray(0, 0), 'result.value');
 
@@ -290,7 +290,7 @@ promise_test(async t => {
   });
   const reader = rs.getReader({ mode: 'byob' });
 
-  const result = await reader.fill(new Uint8Array(3));
+  const result = await reader.read(new Uint8Array(3), { atLeast: 3 });
   assert_true(result.done, 'result.done');
   assert_typed_array_equals(result.value, new Uint8Array([0x01, 0, 0]).subarray(0, 1), 'result.value');
 
@@ -318,7 +318,7 @@ promise_test(async t => {
   });
   const reader = rs.getReader({ mode: 'byob' });
 
-  const result = await reader.fill(new Uint8Array(3));
+  const result = await reader.read(new Uint8Array(3), { atLeast: 3 });
   assert_false(result.done, 'result.done');
   assert_typed_array_equals(result.value, new Uint8Array([0x01, 0x02, 0x03]), 'result.value');
 
@@ -338,7 +338,7 @@ promise_test(async t => {
   });
 
   const reader = stream.getReader({ mode: 'byob' });
-  const read = reader.fill(new Uint8Array(1));
+  const read = reader.read(new Uint8Array(1), { atLeast: 1 });
 
   await Promise.all([
     promise_rejects_exactly(t, error1, read, 'fill() must fail'),
@@ -357,7 +357,7 @@ promise_test(async t => {
   });
 
   const reader = stream.getReader({ mode: 'byob' });
-  const read = reader.fill(new Uint8Array(1));
+  const read = reader.read(new Uint8Array(1), { atLeast: 1 });
 
   controller.error(error1);
 
@@ -389,7 +389,7 @@ promise_test(t => {
 
   const reader = stream.getReader({ mode: 'byob' });
 
-  const readPromise = reader.fill(new Uint8Array(1)).then(result => {
+  const readPromise = reader.read(new Uint8Array(1), { atLeast: 1 }).then(result => {
     assert_true(result.done, 'result.done');
     assert_equals(result.value, undefined, 'result.value');
   });
@@ -425,7 +425,7 @@ promise_test(async t => {
   assert_equals(pullCount, 0, 'pull() must not have been called yet');
 
   const reader = rs.getReader({ mode: 'byob' });
-  const read = reader.fill(new Uint8Array(3));
+  const read = reader.read(new Uint8Array(3), { atLeast: 3 });
   assert_equals(pullCount, 1, 'pull() must have been called once');
   assert_not_equals(byobRequest, null, 'byobRequest should not be null');
   assert_equals(viewInfos[0].byteLength, 3, 'byteLength before respond() should be 3');
@@ -460,7 +460,7 @@ promise_test(async () => {
 
   const reader = stream.getReader({ mode: 'byob' });
 
-  const result1 = await reader.fill(new Uint8Array(8));
+  const result1 = await reader.read(new Uint8Array(8), { atLeast: 8 });
   assert_false(result1.done, 'result1.done');
 
   const view1 = result1.value;
@@ -468,7 +468,7 @@ promise_test(async () => {
   assert_equals(view1.byteLength, 8, 'result1.value.byteLength');
   assert_equals(view1[7], 0x01, 'result1.value[7]');
 
-  const result2 = await reader.fill(new Uint8Array(8));
+  const result2 = await reader.read(new Uint8Array(8), { atLeast: 8 });
   assert_false(pullCalled, 'pull() must not have been called');
   assert_false(result2.done, 'result2.done');
 
@@ -490,7 +490,7 @@ promise_test(async t => {
 
   const reader = stream.getReader({ mode: 'byob' });
 
-  await promise_rejects_js(t, TypeError, reader.fill(new Uint16Array(2)), 'fill() must fail');
+  await promise_rejects_js(t, TypeError, reader.read(new Uint16Array(2), { atLeast: 2 }), 'fill() must fail');
   await promise_rejects_js(t, TypeError, reader.closed, 'reader.closed should reject');
 }, 'ReadableStream with byte source: 3 byte enqueue(), then close(), then fill() with 2-element Uint16Array must fail');
 
@@ -505,7 +505,7 @@ promise_test(async t => {
   });
 
   const reader = stream.getReader({ mode: 'byob' });
-  const fillPromise = reader.fill(new Uint16Array(2));
+  const fillPromise = reader.read(new Uint16Array(2), { atLeast: 2 });
 
   controller.enqueue(new Uint8Array([0xaa, 0xbb, 0xcc]));
   assert_throws_js(TypeError, () => controller.close(), 'controller.close() must throw');
@@ -532,7 +532,7 @@ promise_test(async t => {
   await Promise.resolve();
   assert_equals(pullCount, 0, 'pull() must not have been called yet');
 
-  const read1 = reader1.fill(new Uint8Array(3));
+  const read1 = reader1.read(new Uint8Array(3), { atLeast: 3 });
   const read2 = reader2.read(new Uint8Array(1));
 
   assert_equals(pullCount, 1, 'pull() must have been called once');

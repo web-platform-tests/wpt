@@ -16,7 +16,7 @@ function toSequence({before, after, entry}) {
     const keys = [
         'startTime',
         'redirectStart',
-        'redirectEnd', 
+        'redirectEnd',
         'workerStart',
         'fetchStart',
         'connectStart',
@@ -95,7 +95,6 @@ promise_test(async t => {
 }, 'Delay from within service-worker (before internal fetching) should be measured in the client ResourceTiming entry');
 promise_test(async t => {
     const result = await testVariant(t, 'generate-ahead-of-time')
-    console.log(result)
     const whereIsDelayMeasured = Object.entries(result).find(r => r[1] === 'delay')[0]
     assert_equals(whereIsDelayMeasured, 'responseStart')
 }, 'Delay from within service-worker (before internal fetching) should be measured in the client ResourceTiming entry');

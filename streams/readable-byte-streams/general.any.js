@@ -236,15 +236,16 @@ promise_test(t => {
   });
 }, 'ReadableStream with byte source: Test that erroring a stream does not release a BYOB reader automatically');
 
-test(() => {
+promise_test(async t => {
   const stream = new ReadableStream({
     type: 'bytes'
   });
 
   const reader = stream.getReader();
-  reader.read();
-  assert_throws_js(TypeError, () => reader.releaseLock(), 'reader.releaseLock() must throw');
-}, 'ReadableStream with byte source: releaseLock() on ReadableStreamDefaultReader with pending read() must throw');
+  const read = reader.read();
+  reader.releaseLock();
+  await promise_rejects_js(t, TypeError, read, 'pending read must reject');
+}, 'ReadableStream with byte source: releaseLock() on ReadableStreamDefaultReader must reject pending read()');
 
 promise_test(() => {
   let pullCount = 0;
@@ -2111,7 +2112,7 @@ promise_test(() => {
   });
 }, 'calling respond() should throw when canceled');
 
-promise_test(() => {
+promise_test(async t => {
   let resolvePullCalledPromise;
   const pullCalledPromise = new Promise(resolve => {
     resolvePullCalledPromise = resolve;
@@ -2127,14 +2128,13 @@ promise_test(() => {
     type: 'bytes'
   });
   const reader = rs.getReader({ mode: 'byob' });
-  reader.read(new Uint8Array(16));
-  return pullCalledPromise.then(() => {
-    resolvePull();
-    return delay(0).then(() => {
-      assert_throws_js(TypeError, () => reader.releaseLock(), 'releaseLock() should throw');
-    });
-  });
-}, 'pull() resolving should not make releaseLock() possible');
+  const read = reader.read(new Uint8Array(16));
+  await pullCalledPromise;
+  resolvePull();
+  await delay(0);
+  reader.releaseLock();
+  await promise_rejects_js(t, TypeError, read, 'pending read should reject');
+}, 'pull() resolving should not resolve read()');
 
 promise_test(() => {
   // Tests https://github.com/whatwg/streams/issues/686

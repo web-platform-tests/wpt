@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Navigation Timing 2 WPT</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/navigation-timing-2/#sec-PerformanceNavigationTiming"/>
+        <script src="/common/get-host-info.sub.js"></script>
+<script>
+    const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
+</script>
+    </head>
+    <body>
+        <h1>Description</h1>
+
+        <p>This example shows how navigation timing exposes cross-origin information.</p>
+        <form method="post" action="resources/redirect_delay.py">
+            <input type="hidden" name="location" /> 
+            <label><input type="checkbox" name="delay" value="2" /> Subscribe to our
+            newsletter.</label>
+            <input type="submit" value="OK" />
+        </form>
+        <script>
+            document.forms[0].elements.location.value = `${REMOTE_ORIGIN}/navigation-timing/resources/xo-result.html`
+        </script>
+    </body>
+</html>

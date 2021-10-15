@@ -93,11 +93,6 @@ promise_test(async t => {
     const whereIsDelayMeasured = Object.entries(result).find(r => r[1] === 'delay')[0]
     assert_equals(whereIsDelayMeasured, 'responseStart')
 }, 'Delay from within service-worker (before internal fetching) should be measured in the client ResourceTiming entry');
-promise_test(async t => {
-    const result = await testVariant(t, 'generate-ahead-of-time')
-    const whereIsDelayMeasured = Object.entries(result).find(r => r[1] === 'delay')[0]
-    assert_equals(whereIsDelayMeasured, 'responseStart')
-}, 'Delay from within service-worker (before internal fetching) should be measured in the client ResourceTiming entry');
 </script>
 </body>
 </html>

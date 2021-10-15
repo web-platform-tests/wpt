@@ -26,4 +26,6 @@ promise_test(async done => {
 }, 'Check that the deadline is capped at the next timeout.');
 </script>
 <h1>Test of requestIdleCallback deadline behavior</h1>
+<p>The test pass accidentally as idle deadlines have a maximum but they can always be shorter.
+It runs multiple times to expose potential failures.</p>
 <div id="log"></div>

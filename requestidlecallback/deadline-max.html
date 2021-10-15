@@ -15,4 +15,6 @@ promise_test(async done => {
 </script>
 <h1>Test of requestIdleCallback deadline behavior</h1>
 <p>This test validates that deadlines returned for requestIdleCallback are less than 50ms.</p>
+<p>The test pass accidentally as idle deadlines have a maximum but they can always be shorter.
+It runs multiple times to expose potential failures.</p>
 <div id="log"></div>

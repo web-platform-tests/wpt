@@ -71,8 +71,8 @@ test(t => {
   const reason = Error('hello');
   controller.abort(reason);
 
-  assert_true(signal.aborted);
-  assert_equals(signal.reason, reason, "signal reason should be set when controller is aborted");
+  assert_true(signal.aborted, "signal.aborted");
+  assert_equals(signal.reason, reason, "signal.reason");
 }, "AbortController abort(reason) should set signal.reason");
 
 test(t => {
@@ -81,8 +81,8 @@ test(t => {
 
   controller.abort();
 
-  assert_true(signal.aborted);
-  assert_true(signal.reason instanceof AbortError);
-}, "Aborting AbortController without reason creates an "AbortError" DOMException");
+  assert_true(signal.aborted, "signal.aborted");
+  assert_true(signal.reason instanceof AbortError, "signal.reason");
+}, "aborting AbortController without reason creates an "AbortError" DOMException");
 
 done();

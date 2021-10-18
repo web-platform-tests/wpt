@@ -236,4 +236,12 @@
     window.test_driver_internal.set_user_verified = function(authenticator_id, uv, context=null) {
         return create_action("set_user_verified", {authenticator_id, uv, context});
     };
+
+    window.test_driver_internal.accept_spc_transaction = function(context = null) {
+        return create_action("accept_spc_transaction", {context});
+    };
+
+    window.test_driver_internal.reject_spc_transaction = function(context = null) {
+        return create_action("reject_spc_transaction", {context});
+    };
 })();

@@ -455,6 +455,36 @@
             const blocked = state === "blocked";
             return window.test_driver_internal.set_storage_access(origin, embedding_origin, blocked, context);
         },
+
+        /**
+         * Accepts a currently-shown Secure Payment Confirmation transaction UX
+         * modal window.
+         *
+         * TODO: Update link before merging.
+         * {@link https://pr-preview.s3.amazonaws.com/w3c/secure-payment-confirmation/pull/150.html#sctn-automation}
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         */
+        accept_spc_transaction: function(context=null) {
+          return window.test_driver_internal.accept_spc_transaction(context);
+        },
+
+        /**
+         * Rejects a currently-shown Secure Payment Confirmation transaction UX
+         * modal window.
+         *
+         * TODO: Update link before merging.
+         * {@link https://pr-preview.s3.amazonaws.com/w3c/secure-payment-confirmation/pull/150.html#sctn-automation}
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         */
+        reject_spc_transaction: function(context=null) {
+          return window.test_driver_internal.reject_spc_transaction(context);
+        },
     };
 
     window.test_driver_internal = {
@@ -558,6 +588,14 @@
         },
 
         set_storage_access: function(origin, embedding_origin, blocked, context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        accept_spc_transaction: function(context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        reject_spc_transaction: function(context=null) {
             return Promise.reject(new Error("unimplemented"));
         },
     };

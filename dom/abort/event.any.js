@@ -64,4 +64,25 @@ test(t => {
   controller.abort();
 }, "the abort event should have the right properties");
 
+test(t => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  const reason = Error('hello');
+  controller.abort(reason);
+
+  assert_true(signal.aborted);
+  assert_equals(signal.reason, reason, "signal reason should be set when controller is aborted");
+}, "AbortController abort(reason) should set signal.reason");
+
+test(t => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  controller.abort();
+
+  assert_true(signal.aborted);
+  assert_true(signal.reason instanceof AbortError);
+}, "Aborting AbortController without reason creates an "AbortError" DOMException");
+
 done();

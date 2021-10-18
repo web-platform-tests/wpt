@@ -166,7 +166,8 @@ class TestLoader(object):
                                                include_list):
                         continue
                     if reference_results is not None and \
-                       test_path not in reference_results[api]:
+                       (api not in reference_results or \
+                       (api in reference_results and test_path not in reference_results[api])):
                         continue
                     if api not in loaded_tests:
                         loaded_tests[api] = []

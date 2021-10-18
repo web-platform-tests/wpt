@@ -88,7 +88,7 @@ class ResultsManager(object):
             filter_api = next((p for p in filter_path.split("/")
                                if p is not None), None)
         results = self._read_from_cache(token)
-        if results is []:
+        if results == []:
             results = self.load_results(token)
             self._set_session_cache(token, results);
 
@@ -214,6 +214,7 @@ class ResultsManager(object):
                         if test in failed_tests[api]:
                             continue
                         failed_tests[api].append(test)
+        return passed_tests
 
     def read_results_wpt_report_uri(self, token, api):
         api_directory = os.path.join(self._results_directory_path, token, api)

@@ -7329,6 +7329,21 @@
     "search": "",
     "hash": ""
   },
+  {
+    "input": "blob:",
+    "base": "about:blank",
+    "href": "blob:",
+    "origin": "null",
+    "protocol": "blob:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "",
+    "search": "",
+    "hash": ""
+  },
   "Invalid IPv4 radix digits",
   {
     "input": "http://0x7f.0.0.0x7g",

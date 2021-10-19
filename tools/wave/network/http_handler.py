@@ -95,7 +95,7 @@ class HttpHandler(object):
         uri = uri + "?" + request.url_parts.query
         content_length = request.headers.get('Content-Length')
         data = ""
-        if content_length is not None: 
+        if content_length is not None:
             data = request.raw_input.read(int(content_length))
         method = request.method
 

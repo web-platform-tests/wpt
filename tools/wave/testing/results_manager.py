@@ -18,9 +18,9 @@ from .wpt_report import generate_report, generate_multi_report
 from ..data.session import COMPLETED
 
 WAVE_SRC_DIR = "./tools/wave"
-RESULTS_FILE_REGEX = "^\w\w\d\d\d?\.json$"
+RESULTS_FILE_REGEX = r"^\w\w\d\d\d?\.json$"
 RESULTS_FILE_PATTERN = re.compile(RESULTS_FILE_REGEX)
-SESSION_RESULTS_TIMEOUT = 60*30 # 30min
+SESSION_RESULTS_TIMEOUT = 60*30  # 30min
 
 
 class ResultsManager(object):
@@ -90,7 +90,7 @@ class ResultsManager(object):
         results = self._read_from_cache(token)
         if results == []:
             results = self.load_results(token)
-            self._set_session_cache(token, results);
+            self._set_session_cache(token, results)
 
         filtered_results = {}
 
@@ -669,4 +669,4 @@ class ResultsManager(object):
         def handler(self, token):
             self._clear_session_cache(token)
 
-        self._timeouts[token] = Timer(SESSION_RESULTS_TIMEOUT, handler, [self, token]);
+        self._timeouts[token] = Timer(SESSION_RESULTS_TIMEOUT, handler, [self, token])

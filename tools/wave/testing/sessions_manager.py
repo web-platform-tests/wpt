@@ -128,7 +128,7 @@ class SessionsManager(object):
             return None
         session = self._read_from_cache(token)
         if session is None or session.test_state is None:
-            print("loading session from file system");
+            print("loading session from file system")
             session = self.load_session(token)
         if session is not None:
             self._push_to_cache(session)

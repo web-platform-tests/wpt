@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<title>Test different scenarios of how browser interactions </title>
+<link rel="author" title="Noam Rosenthal"  href="mailto:noam@webkit.org">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+
+const iframePath = 'resources/blank_page_green.html'
+
+promise_test(async t => {
+    assert_equals(document.visibilityState, "visible");
+    assert_equals(document.hidden, false);
+    const rect = await test_driver.minimize_window();
+    assert_equals(document.visibilityState, "hidden");
+    assert_equals(document.hidden, true);
+    await test_driver.restore_window(rect);;
+    assert_equals(document.visibilityState, "visible");
+    assert_equals(document.hidden, false);
+}, "visibilityState & hidden should be affected by window being minimized/restored");
+
+promise_test(async t => {
+    const events = [];
+    const callback = () => events.push(document.visibilityState);
+    document.addEventListener('visibilitychange', callback);
+    t.add_cleanup(() => document.removeEventListener('visibilitychange', callback));
+    await test_driver.minimize_window();
+    await test_driver.restore_window();
+    assert_array_equals(events, ['hidden', 'visible']);
+}, "visibilitychange event should be fired when minimized/restored")
+
+promise_test(async t => {
+    const events = [];
+    const iframe = document.createElement('iframe');
+    iframe.src = iframePath;
+    document.body.appendChild(iframe);
+    t.add_cleanup(() => iframe.remove());
+    await new Promise(resolve => iframe.onload = resolve);
+    const callback = () => events.push(iframe.contentWindow.document.visibilityState);
+    iframe.contentWindow.addEventListener('visibilitychange', callback);
+    await test_driver.minimize_window();
+    await test_driver.restore_window();
+    iframe.contentWindow.removeEventListener('visibilitychange', callback);
+    assert_array_equals(events, ['hidden', 'visible']);
+}, "iframe should receive visibility events when top level window is shown/hidden");
+</script>

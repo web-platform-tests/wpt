@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test for the 'secure-payment-confirmation' payment method authentication - user rejects case</title>
+<link rel="help" href="https://w3c.github.io/secure-payment-confirmation/sctn-authentication">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+'use strict';
+
+const details = {total:
+    {label: 'Total', amount: {value: '0.01', currency: 'USD'}}};
+const instrumentIcon = 'https://{{hosts[][www]}}:{{ports[https][0]}}/secure-payment-confirmation/troy.png';
+
+const authenticatorOptions = {
+  protocol: 'ctap2_1',
+  transport: 'internal',
+  hasResidentKey: true,
+  hasUserVerification: true,
+  isUserVerified: true,
+};
+
+async function createCredential(set_payment_extension=true) {
+  const challengeBytes = new Uint8Array(16);
+  window.crypto.getRandomValues(challengeBytes);
+
+  const publicKey = {
+    challenge: challengeBytes,
+    rp: {
+      name: 'Acme',
+    },
+    user: {
+      id: new Uint8Array(16),
+      name: 'jane.doe@example.com',
+      displayName: 'Jane Doe',
+    },
+    pubKeyCredParams: [{
+      type: 'public-key',
+      alg: -7,  // 'ES256'
+    }],
+    authenticatorSelection: {
+      userVerification: 'required',
+      residentKey: 'required',
+      authenticatorAttachment: 'platform',
+    },
+    timeout: 30000,
+  };
+
+  if (set_payment_extension) {
+    publicKey.extensions = {
+      payment: { isPayment: true },
+    };
+  }
+
+  return navigator.credentials.create({publicKey});
+}
+
+promise_test(async t => {
+  const authenticator = await window.test_driver.add_virtual_authenticator(
+      authenticatorOptions);
+  t.add_cleanup(() => {
+    return window.test_driver.remove_virtual_authenticator(authenticator);
+  });
+
+  const credential = await createCredential();
+
+  const challenge = 'server challenge';
+  const payeeOrigin = 'https://merchant.com';
+  const displayName = 'Troycard ***1234';
+  const request = new PaymentRequest([{
+    supportedMethods: 'secure-payment-confirmation',
+    data: {
+      credentialIds: [credential.rawId],
+      challenge: Uint8Array.from(challenge, c => c.charCodeAt(0)),
+      payeeOrigin,
+      timeout: 60000,
+      instrument: {
+        displayName,
+        icon: instrumentIcon,
+      },
+    }
+  }], details);
+
+  // The call to test_driver below will reject the promise returned by
+  // request.show(), so we have to bind the assertion to it here first.
+  const promise = promise_rejects_dom(t, "NotAllowedError", request.show());
+
+  await window.test_driver.reject_spc_transaction();
+
+  return promise;
+}, 'Rejected SPC call');
+</script>

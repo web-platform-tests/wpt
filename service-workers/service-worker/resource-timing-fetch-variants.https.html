@@ -6,13 +6,30 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/test-helpers.sub.js"></script>
+<link rel="help" href="https://w3c.github.io/resource-timing/" >
+<!--
+    This test checks that the different properties in a PerformanceResourceTimingEntry
+    measure what they are supposed to measure according to spec.
+
+    It is achieved by generating programmatic delays and redirects inside a service worker,
+    and checking how the different metrics respond to the delays and redirects.
+
+    The deltas are not measured precisely, but rather relatively to the delay.
+    The delay needs to be long enough so that it's clear that what's measured is the test's
+    programmatic delay and not arbitrary system delays.
+-->
 </head>
 
 <body>
 <script>
+
 const delay = 200;
 const absolutePath = `${base_path()}/simple.txt`
 function toSequence({before, after, entry}) {
+    /*
+        The order of keys is the same as in this chart:
+        https://w3c.github.io/resource-timing/#attribute-descriptions
+    */
     const keys = [
         'startTime',
         'redirectStart',
@@ -27,18 +44,23 @@ function toSequence({before, after, entry}) {
 
     let cursor = before;
     const step = value => {
+        // A zero/null value, reflect that in the sequence
         if (!value)
             return value;
 
+        // Value is the same as before
         if (value === cursor)
             return "same";
 
+        // Oops, value is in the wrong place
         if (value < cursor)
             return "back";
 
+        // Delta is greater than programmatic delay, this is where the delay is measured.
         if ((value - cursor) >= delay)
             return "delay";
 
+        // Some small delta, probably measuring an actual networking stack delay
         return "tick";
     }
 
@@ -94,5 +116,6 @@ promise_test(async t => {
     assert_equals(whereIsDelayMeasured, 'responseStart');
 }, 'Delay from within service-worker (before internal fetching) should be measured before responseStart in the client ResourceTiming entry');
 </script>
+
 </body>
 </html>

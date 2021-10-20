@@ -26,8 +26,7 @@ self.addEventListener('fetch', event => {
             }))
             break
         case 'delay-after-fetch':
-            event.respondWith(
-            new Promise(resolve => {
+            event.respondWith(new Promise(resolve => {
                 fetch(event.request.url)
                     .then(response => step_timeout(() => resolve(response), delay))
             }))

@@ -23,76 +23,76 @@ function toSequence({before, after, entry}) {
         'requestStart',
         'responseStart',
         'responseEnd'
-    ]
+    ];
 
-    let cursor = before
+    let cursor = before;
     const step = value => {
         if (!value)
-            return value
+            return value;
 
         if (value === cursor)
-            return "same"
+            return "same";
 
         if (value < cursor)
-            return "back"
+            return "back";
 
         if ((value - cursor) >= delay)
-            return "delay"
+            return "delay";
 
-        return "tick"
+        return "tick";
     }
 
     const res = keys.map(key => {
-        const value = step(entry[key])
+        const value = step(entry[key]);
         if (entry[key])
-            cursor = entry[key]
-        return [key, value]
-    })
+            cursor = entry[key];
+        return [key, value];
+    });
 
-    return Object.fromEntries([...res, ['after', step(after)]])
+    return Object.fromEntries([...res, ['after', step(after)]]);
 }
 async function testVariant(t, variant) {
     const worker_url = 'resources/fetch-variants-worker.js';
-    const url = encodeURIComponent(`simple.txt?delay=${delay}&variant=${variant}`)
+    const url = encodeURIComponent(`simple.txt?delay=${delay}&variant=${variant}`);
     const scope = `resources/iframe-with-fetch-variants.html?url=${url}`;
-    const registration = await service_worker_unregister_and_register(t, worker_url, scope)
+    const registration = await service_worker_unregister_and_register(t, worker_url, scope);
     t.add_cleanup(() => registration.unregister());
     await wait_for_state(t, registration.installing, 'activated');
     const frame = await with_iframe(scope);
     t.add_cleanup(() => frame.remove());
     const result = await new Promise(resolve => window.addEventListener('message', message => {
-        resolve(message.data)
+        resolve(message.data);
     }))
 
     return toSequence(result);
 }
 
 promise_test(async t => {
-    const result = await testVariant(t, 'redirect')
-    assert_equals(result.redirectStart, 0)
+    const result = await testVariant(t, 'redirect');
+    assert_equals(result.redirectStart, 0);
 }, 'Redirects done from within a service-worker should not be exposed to client ResourceTiming');
 
 promise_test(async t => {
-    const result = await testVariant(t, 'forward')
-    assert_equals(result.connectStart, 'same')
+    const result = await testVariant(t, 'forward');
+    assert_equals(result.connectStart, 'same');
 }, 'Connection info from within a service-worker should not be exposed to client ResourceTiming');
 
 promise_test(async t => {
-    const result = await testVariant(t, 'forward')
-    assert_not_equals(result.requestStart, 'back')
+    const result = await testVariant(t, 'forward');
+    assert_not_equals(result.requestStart, 'back');
 }, 'requestStart should never be before fetchStart');
 
 promise_test(async t => {
-    const result = await testVariant(t, 'delay-after-fetch')
-    const whereIsDelayMeasured = Object.entries(result).find(r => r[1] === 'delay')[0]
-    assert_equals(whereIsDelayMeasured, 'responseStart')
+    const result = await testVariant(t, 'delay-after-fetch');
+    const whereIsDelayMeasured = Object.entries(result).find(r => r[1] === 'delay')[0];
+    assert_equals(whereIsDelayMeasured, 'responseStart');
 }, 'Delay from within service-worker (after internal fetching) should be accessible through `responseStart`');
 
 promise_test(async t => {
-    const result = await testVariant(t, 'delay-before-fetch')
-    const whereIsDelayMeasured = Object.entries(result).find(r => r[1] === 'delay')[0]
-    assert_equals(whereIsDelayMeasured, 'responseStart')
-}, 'Delay from within service-worker (before internal fetching) should be measured in the client ResourceTiming entry');
+    const result = await testVariant(t, 'delay-before-fetch');
+    const whereIsDelayMeasured = Object.entries(result).find(r => r[1] === 'delay')[0];
+    assert_equals(whereIsDelayMeasured, 'responseStart');
+}, 'Delay from within service-worker (before internal fetching) should be measured before responseStart in the client ResourceTiming entry');
 </script>
 </body>
 </html>

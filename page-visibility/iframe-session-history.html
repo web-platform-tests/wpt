@@ -37,40 +37,29 @@ function assert_sequence(sequence) {
 }
 promise_test(async t => {
     const iframe = document.createElement('iframe');
-    const expected_order = [{
-      type: 'pagehide',
-      target: '#document',
-      visibilityState: 'visible',
-      cancelable: true
-    }, {
-      type: 'visibilitychange',
-      target: '#document',
-      visibilityState: 'hidden',
-      cancelable: false
-    }]
     iframe.src = iframePath1;
     document.body.appendChild(iframe);
-    let sequence = []
+    let sequence = [];
     t.add_cleanup(() => iframe.remove());
-    iframe.src = iframePath1
-    await waitForLoad(iframe)
+    iframe.src = iframePath1;
+    await waitForLoad(iframe);
     const handler = t.step_func(event => sequence.push({
       type: event.type,
       target: event.target.nodeName,
       cancelable: event.cancelable,
       visibilityState: iframe.contentWindow.document.visibilityState
-    }))
-    iframe.contentWindow.document.addEventListener('visibilitychange', handler)
-    iframe.contentWindow.addEventListener('pagehide', handler)
-    iframe.contentWindow.location.href = iframePath2
-    await waitForLoad(iframe)
-    assert_sequence(sequence)
-    sequence = []
-    iframe.contentWindow.addEventListener('pagehide', handler)
-    iframe.contentWindow.document.addEventListener('visibilitychange', handler)
-    iframe.contentWindow.history.back()
-    await waitForLoad(iframe)
-    assert_sequence(sequence)
-}, "visibilityState & hidden should be affected by window being minimized/restored");
+    }));
+    iframe.contentWindow.document.addEventListener('visibilitychange', handler);
+    iframe.contentWindow.addEventListener('pagehide', handler);
+    iframe.contentWindow.location.href = iframePath2;
+    await waitForLoad(iframe);
+    assert_sequence(sequence);
+    sequence = [];
+    iframe.contentWindow.addEventListener('pagehide', handler);
+    iframe.contentWindow.document.addEventListener('visibilitychange', handler);
+    iframe.contentWindow.history.back();
+    await waitForLoad(iframe);
+    assert_sequence(sequence);
+}, "pagehide should be called before visibilitychange, and visibilityState should be set to hidden at the right time");
 </script>
 </body>

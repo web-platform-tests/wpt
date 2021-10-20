@@ -26,6 +26,7 @@ from .protocol import (BaseProtocolPart,
                        GenerateTestReportProtocolPart,
                        SetPermissionProtocolPart,
                        VirtualAuthenticatorProtocolPart,
+                       WindowProtocolPart,
                        DebugProtocolPart)
 
 from webdriver.client import Session
@@ -201,6 +202,19 @@ class WebDriverCookiesProtocolPart(CookiesProtocolPart):
         self.logger.info("Deleting all cookies")
         return self.webdriver.send_session_command("DELETE", "cookie")
 
+class WebDriverWindowProtocolPart(WindowProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+        self.previous_rect = None
+
+    def minimize(self):
+        self.previous_rect = self.webdriver.window.rect
+        self.logger.info("Minimizing")
+        self.webdriver.window.minimize()
+
+    def restore(self):
+        self.logger.info("Restoring")
+        self.webdriver.window.previous_rect = self.rect
 
 class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
     def setup(self):
@@ -311,6 +325,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverClickProtocolPart,
                   WebDriverCookiesProtocolPart,
                   WebDriverSendKeysProtocolPart,
+                  WebDriverWindowProtocolPart,
                   WebDriverActionSequenceProtocolPart,
                   WebDriverTestDriverProtocolPart,
                   WebDriverGenerateTestReportProtocolPart,

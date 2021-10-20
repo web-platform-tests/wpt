@@ -38,6 +38,7 @@ from .protocol import (ActionSequenceProtocolPart,
                        CoverageProtocolPart,
                        GenerateTestReportProtocolPart,
                        VirtualAuthenticatorProtocolPart,
+                       WindowProtocolPart,
                        SetPermissionProtocolPart,
                        PrintProtocolPart,
                        DebugProtocolPart)
@@ -453,6 +454,23 @@ class MarionetteSendKeysProtocolPart(SendKeysProtocolPart):
     def send_keys(self, element, keys):
         return element.send_keys(keys)
 
+class MarionetteWindowProtocolPart(WindowProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+        self.original_rect = None
+        self.window = None
+
+    def minimize(self):
+        with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
+            self.original_rect = self.marionette.window_rect
+            self.marionette.set_window_rect(0, 0, 10, 10)
+            self.marionette.minimize_window()
+
+    def restore(self):
+        with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
+            rect = self.original_rect
+            self.marionette.set_window_rect(rect["x"], rect["y"], rect["height"], rect["width"])
+
 
 class MarionetteActionSequenceProtocolPart(ActionSequenceProtocolPart):
     def setup(self):
@@ -673,6 +691,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteClickProtocolPart,
                   MarionetteCookiesProtocolPart,
                   MarionetteSendKeysProtocolPart,
+                  MarionetteWindowProtocolPart,
                   MarionetteActionSequenceProtocolPart,
                   MarionetteTestDriverProtocolPart,
                   MarionetteAssertsProtocolPart,

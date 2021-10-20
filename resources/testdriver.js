@@ -212,6 +212,40 @@
         },
 
         /**
+         * Minimizes the window.
+         *
+         * This function changes the {@link
+         * https://www.w3.org/TR/webdriver/#dfn-window-states Window State}
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} fufiled after the actions are performed, or rejected in
+         *                    the cases the WebDriver command errors
+         */
+        minimize_window: function(context=null) {
+            return window.test_driver_internal.minimize_window(context);
+        },
+
+        /**
+         * Restoring the window to the previous position/size before it was minimized.
+         *
+         * This function changes the {@link
+         * https://www.w3.org/TR/webdriver/#dfn-window-states Window State}
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} fufiled after the actions are performed, or rejected in
+         *                    the cases the WebDriver command errors
+         */
+        restore_window: function(context=null) {
+            return window.test_driver_internal.restore_window(context);
+        },
+
+        /**
          * Send a sequence of actions
          *
          * This function sends a sequence of actions
@@ -513,6 +547,14 @@
         },
 
         freeze: function(context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        minimize_window: function(context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        restore_window: function(context=null) {
             return Promise.reject(new Error("unimplemented"));
         },
 

@@ -176,6 +176,14 @@
         return create_action("delete_all_cookies", {context});
     };
 
+    window.test_driver_internal.minimize_window = function(context=null) {
+        return create_action("minimize_window", {context});
+    };
+
+    window.test_driver_internal.restore_window = function(context=null) {
+        return create_action("restore_window", {context});
+    };
+
     window.test_driver_internal.send_keys = function(element, keys) {
         const selector = get_selector(element);
         const context = get_context(element);

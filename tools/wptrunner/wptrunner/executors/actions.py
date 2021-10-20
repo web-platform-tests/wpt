@@ -40,6 +40,27 @@ class SendKeysAction(object):
         self.protocol.send_keys.send_keys(element, keys)
 
 
+class MinimizeWindowAction(object):
+    name = "minimize_window"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.window.minimize()
+
+class RestoreWindowAction(object):
+    name = "restore_window"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.protocol.window.restore()
+
+
 class ActionSequenceAction(object):
     name = "action_sequence"
 
@@ -185,6 +206,8 @@ class SetUserVerifiedAction(object):
 actions = [ClickAction,
            DeleteAllCookiesAction,
            SendKeysAction,
+           MinimizeWindowAction,
+           RestoreWindowAction,
            ActionSequenceAction,
            GenerateTestReportAction,
            SetPermissionAction,

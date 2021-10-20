@@ -5,7 +5,7 @@ def main(request, response):
     delay = 0
     if b"delay" in request.POST:
         delay = float(request.POST.first(b"delay"))
-        
+
     time.sleep(delay)
     response.status = status
     location = request.POST.first(b"location")

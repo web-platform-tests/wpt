@@ -458,13 +458,10 @@ class MarionetteWindowProtocolPart(WindowProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
         self.original_rect = None
-        self.window = None
 
     def minimize(self):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
-            self.original_rect = self.marionette.window_rect
-            self.marionette.set_window_rect(0, 0, 10, 10)
-            self.marionette.minimize_window()
+            self.original_rect = self.marionette.minimize_window()
 
     def restore(self):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):

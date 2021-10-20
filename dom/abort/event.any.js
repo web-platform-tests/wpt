@@ -85,4 +85,14 @@ test(t => {
   assert_true(signal.reason instanceof AbortError, "signal.reason");
 }, "aborting AbortController without reason creates an "AbortError" DOMException");
 
+test(t => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  controller.abort(undefined);
+
+  assert_true(signal.aborted, "signal.aborted");
+  assert_true(signal.reason instanceof AbortError, "signal.reason");
+}, "AbortController abort(undefined) creates an "AbortError" DOMException");
+
 done();

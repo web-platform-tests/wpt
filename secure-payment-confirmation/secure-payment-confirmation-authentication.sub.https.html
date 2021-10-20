@@ -193,7 +193,6 @@ promise_test(async t => {
   // verifySignature(cred);
 }, 'Successful SPC call');
 
-/*
 promise_test(async t => {
   const authenticator = await window.test_driver.add_virtual_authenticator(
       authenticatorOptions);
@@ -203,13 +202,10 @@ promise_test(async t => {
 
   const credential = await createCredential();
 
-  // Instruct the browser to reject the SPC transaction dialog.
-  await window.test_driver.set_secure_payment_confirmation_accepted(false);
-
   const request = new PaymentRequest([{
     supportedMethods: 'secure-payment-confirmation',
     data: {
-      credentialIds: [credential.id],
+      credentialIds: [credential.rawId],
       challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
       payeeOrigin: window.location.origin,
       timeout: 60000,
@@ -220,9 +216,19 @@ promise_test(async t => {
     }
   }], details);
 
-  return promise_rejects_dom(NotAllowedError, request.show());
-}, 'Rejected SPC call');
+  const responsePromise = request.show();
 
+  await window.test_driver.reject_spc_transaction();
+
+  try {
+    await responsePromise;
+    assert_unreached();
+  } catch (e) {
+    console.log(e);
+    assert_true(e instanceof DOMException);
+  }
+}, 'Rejected SPC call');
+/*
 promise_test(async t => {
   const authenticator = await window.test_driver.add_virtual_authenticator(
       authenticatorOptions);

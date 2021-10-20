@@ -20,6 +20,7 @@ from .protocol import (BaseProtocolPart,
                        ClickProtocolPart,
                        CookiesProtocolPart,
                        SendKeysProtocolPart,
+                       WindowProtocolPart,
                        ActionSequenceProtocolPart,
                        TestDriverProtocolPart)
 

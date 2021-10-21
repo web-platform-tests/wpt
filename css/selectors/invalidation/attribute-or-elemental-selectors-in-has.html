@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Selectors Invalidation: attribute or elemental selectors in :has() argument</title>
+<link rel="author" title="Byungwoo Lee" href="mailto:blee@igalia.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://drafts.csswg.org/selectors/#relational">
+<style>
+div, main { color: grey }
+.subject:has(> .child) { color: red }
+.subject:has(.descendant) { color: green }
+.subject:has(.descendant[attrname=descendant]) { color: blue }
+.subject:has(.descendant[attrname=descendant]#div_descendant) { color: yellow }
+#main:has(.descendant1) { color: yellowgreen }
+main:has(.descendant2) { color: skyblue }
+[attrname=main]:has(.descendant3) { color: orange }
+.subject:has(.descendant4, .descendant5) { color: navy }
+.subject:has(.descendant6, #div_descendant6, [attrname2=descendant6], descendant6) { color: lightgreen }
+#main:has(.descendant7, #div_descendant7, [attrname3=descendant7], descendant7) { color: darkgreen }
+main:has(.descendant8, #div_descendant8, [attrname4=descendant8], descendant8) { color: limegreen }
+[attrname=main]:has(.descendant9, #div_descendant9, [attrname5=descendant9], descendant9) { color: lime }
+</style>
+<main id=main attrname=main>
+  <div id=div_subject class="subject">
+    <div id=div_child>
+      <div id=div_grandchild></div>
+    </div>
+  </div>
+</main>
+<script>
+  let grey = 'rgb(128, 128, 128)';
+  let red = 'rgb(255, 0, 0)';
+  let green = 'rgb(0, 128, 0)';
+  let blue = 'rgb(0, 0, 255)';
+  let yellow = 'rgb(255, 255, 0)';
+  let yellowgreen = 'rgb(154, 205, 50)';
+  let skyblue = 'rgb(135, 206, 235)';
+  let orange = 'rgb(255, 165, 0)';
+  let navy = 'rgb(0, 0, 128)';
+  let lightgreen = 'rgb(144, 238, 144)';
+  let darkgreen = 'rgb(0, 100, 0)';
+  let limegreen = 'rgb(50, 205, 50)';
+  let lime = 'rgb(0, 255, 0)';
+
+  function test_div(test_name, el, color) {
+    test(function() {
+      assert_equals(getComputedStyle(el).color, color);
+    }, test_name + ': div#' + el.id + '.color');
+  }
+
+  test_div('initial_color', div_subject, grey);
+  test_div('initial_color', div_child, grey);
+  test_div('initial_color', div_grandchild, grey);
+
+  div_child.classList.add('child');
+  test_div('add .child to #div_child', div_subject, red);
+  div_child.classList.remove('child');
+  test_div('remove .child from #div_child', div_subject, grey);
+
+  div_grandchild.classList.add('child');
+  test_div('add .child to #div_grandchild', div_subject, grey);
+  div_grandchild.classList.remove('child');
+  test_div('remove .child from #div_grandchild', div_subject, grey);
+
+  div_child.classList.add('descendant');
+  test_div('add .descendant to #div_child', div_subject, green);
+  div_child.classList.remove('descendant');
+  test_div('remove .descendant from #div_child', div_subject, grey);
+
+  div_grandchild.classList.add('descendant');
+  test_div('add .descendant to #div_grandchild', div_subject, green);
+  div_grandchild.setAttribute('attrname', 'descendant');
+  test_div('set descendant to #div_grandchild[attrname]', div_subject, blue);
+  div_grandchild.id = 'div_descendant';
+  test_div('change #div_grandchild to #div_descendant', div_subject, yellow);
+  div_descendant.id = 'div_grandchild';
+  test_div('change #div_descendant to #div_grandchild', div_subject, blue);
+  div_grandchild.setAttribute('attrname', '');
+  test_div('clear #div_grandchild[attrname]', div_subject, green);
+  div_grandchild.classList.remove('descendant');
+  test_div('remove .descendant from #div_grandchild', div_subject, grey);
+
+  div_child.classList.add('descendant1');
+  test_div('add .descendant1 to #div_child', main, yellowgreen);
+  div_child.classList.remove('descendant1');
+  test_div('remove .descendant1 from #div_child', main, grey);
+
+  div_child.classList.add('descendant2');
+  test_div('add .descendant2 to #div_child', main, skyblue);
+  div_child.classList.remove('descendant2');
+  test_div('remove .descendant2 from #div_child', main, grey);
+
+  div_child.classList.add('descendant3');
+  test_div('add .descendant3 to #div_child', main, orange);
+  div_child.classList.remove('descendant3');
+  test_div('remove .descendant3 from #div_child', main, grey);
+
+  div_child.classList.add('descendant4');
+  test_div('add .descendant4 to #div_child', div_subject, navy);
+  div_child.classList.remove('descendant4');
+  test_div('remove .descendant4 from #div_child', div_subject, grey);
+
+  div_child.classList.add('descendant5');
+  test_div('add .descendant5 to #div_child', div_subject, navy);
+  div_child.classList.remove('descendant5');
+  test_div('remove .descendant5 from #div_child', div_subject, grey);
+
+  descendant6 = document.createElement('div');
+  descendant6.classList.add('descendant6');
+  div_subject.appendChild(descendant6);
+  test_div('add div.descendant6 to #div_subject', div_subject, lightgreen);
+  div_subject.removeChild(descendant6);
+  test_div('remove div.descendant6 from #div_subject', div_subject, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant6);
+  div_subject.appendChild(div);
+  test_div('add "div > div.descendant6" to #div_subject', div_subject, lightgreen);
+  div_subject.removeChild(div);
+  test_div('remove "div > div.descendant6" from #div_subject', div_subject, grey);
+
+  descendant6 = document.createElement('div');
+  descendant6.id = 'div_descendant6';
+  div_subject.appendChild(descendant6);
+  test_div('add div#descendant6 to #div_subject', div_subject, lightgreen);
+  div_subject.removeChild(descendant6);
+  test_div('remove div#descendant6 from #div_subject', div_subject, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant6);
+  div_subject.appendChild(div);
+  test_div('add "div > div#descendant6" to #div_subject', div_subject, lightgreen);
+  div_subject.removeChild(div);
+  test_div('remove "div > div#descendant6" from #div_subject', div_subject, grey);
+
+  descendant6 = document.createElement('div');
+  descendant6.setAttribute('attrname2', 'descendant6');
+  div_subject.appendChild(descendant6);
+  test_div('add div[attrname2=descendant6] to #div_subject', div_subject, lightgreen);
+  div_subject.removeChild(descendant6);
+  test_div('remove div[attrname2=descendant6] from #div_subject', div_subject, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant6);
+  div_subject.appendChild(div);
+  test_div('add "div > div[attrname2=descendant6]" to #div_subject', div_subject, lightgreen);
+  div_subject.removeChild(div);
+  test_div('remove "div > div[attrname2=descendant6]" from #div_subject', div_subject, grey);
+
+  descendant6 = document.createElement('descendant6');
+  div_subject.appendChild(descendant6);
+  test_div('add descendant6 to #div_subject', div_subject, lightgreen);
+  div_subject.removeChild(descendant6);
+  test_div('remove descendant6 from #div_subject', div_subject, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant6);
+  div_subject.appendChild(div);
+  test_div('add "div > descendant6" to #div_subject', div_subject, lightgreen);
+  div_subject.removeChild(div);
+  test_div('remove "div > descendant6" from #div_subject', div_subject, grey);
+
+  descendant7 = document.createElement('div');
+  descendant7.id = 'div_descendant7';
+  main.appendChild(descendant7);
+  test_div('add div#descendant7 to #main', main, darkgreen);
+  main.removeChild(descendant7);
+  test_div('remove div#descendant7 from #main', main, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant7);
+  main.appendChild(div);
+  test_div('add "div > div#descendant7" to #main', main, darkgreen);
+  main.removeChild(div);
+  test_div('remove "div > div#descendant7" from #main', main, grey);
+
+  descendant7 = document.createElement('div');
+  descendant7.setAttribute('attrname3', 'descendant7');
+  main.appendChild(descendant7);
+  test_div('add div[attrname3=descendant7] to #main', main, darkgreen);
+  main.removeChild(descendant7);
+  test_div('remove div[attrname3=descendant7] from #main', main, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant7);
+  main.appendChild(div);
+  test_div('add "div > div[attrname3=descendant7]" to #main', main, darkgreen);
+  main.removeChild(div);
+  test_div('remove "div > div[attrname3=descendant7]" from #main', main, grey);
+
+  descendant7 = document.createElement('descendant7');
+  main.appendChild(descendant7);
+  test_div('add descendant7 to #main', main, darkgreen);
+  main.removeChild(descendant7);
+  test_div('remove descendant7 from #main', main, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant7);
+  main.appendChild(div);
+  test_div('add "div > descendant7" to #main', main, darkgreen);
+  main.removeChild(div);
+  test_div('remove "div > descendant7" from #main', main, grey);
+
+  descendant8 = document.createElement('div');
+  descendant8.id = 'div_descendant8';
+  main.appendChild(descendant8);
+  test_div('add div#descendant8 to #main', main, limegreen);
+  main.removeChild(descendant8);
+  test_div('remove div#descendant8 from #main', main, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant8);
+  main.appendChild(div);
+  test_div('add "div > div#descendant8" to #main', main, limegreen);
+  main.removeChild(div);
+  test_div('remove "div > div#descendant8" from #main', main, grey);
+
+  descendant8 = document.createElement('div');
+  descendant8.setAttribute('attrname4', 'descendant8');
+  main.appendChild(descendant8);
+  test_div('add div[attrname4=descendant8] to #main', main, limegreen);
+  main.removeChild(descendant8);
+  test_div('remove div[attrname4=descendant8] from #main', main, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant8);
+  main.appendChild(div);
+  test_div('add "div > div[attrname4=descendant8]" to #main', main, limegreen);
+  main.removeChild(div);
+  test_div('remove "div > div[attrname4=descendant8]" from #main', main, grey);
+
+  descendant8 = document.createElement('descendant8');
+  main.appendChild(descendant8);
+  test_div('add descendant8 to #main', main, limegreen);
+  main.removeChild(descendant8);
+  test_div('remove descendant8 from #main', main, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant8);
+  main.appendChild(div);
+  test_div('add "div > descendant8" to #main', main, limegreen);
+  main.removeChild(div);
+  test_div('remove "div > descendant8" from #main', main, grey);
+
+  descendant9 = document.createElement('div');
+  descendant9.id = 'div_descendant9';
+  main.appendChild(descendant9);
+  test_div('add div#descendant9 to #main', main, lime);
+  main.removeChild(descendant9);
+  test_div('remove div#descendant9 from #main', main, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant9);
+  main.appendChild(div);
+  test_div('add "div > div#descendant9" to #main', main, lime);
+  main.removeChild(div);
+  test_div('remove "div > div#descendant9" from #main', main, grey);
+
+  descendant9 = document.createElement('div');
+  descendant9.setAttribute('attrname5', 'descendant9');
+  main.appendChild(descendant9);
+  test_div('add div[attrname5=descendant9] to #main', main, lime);
+  main.removeChild(descendant9);
+  test_div('remove div[attrname5=descendant9] from #main', main, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant9);
+  main.appendChild(div);
+  test_div('add "div > div[attrname5=descendant9]" to #main', main, lime);
+  main.removeChild(div);
+  test_div('remove "div > div[attrname5=descendant9]" from #main', main, grey);
+
+  descendant9 = document.createElement('descendant9');
+  main.appendChild(descendant9);
+  test_div('add descendant9 to #main', main, lime);
+  main.removeChild(descendant9);
+  test_div('remove descendant9 from #main', main, grey);
+
+  div = document.createElement('div');
+  div.appendChild(descendant9);
+  main.appendChild(div);
+  test_div('add "div > descendant9" to #main', main, lime);
+  main.removeChild(div);
+  test_div('remove "div > descendant9" from #main', main, grey);
+
+</script>

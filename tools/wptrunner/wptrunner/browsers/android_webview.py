@@ -54,7 +54,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     capabilities["goog:chromeOptions"]["androidPackage"] = \
         kwargs.get("package_name", "org.chromium.webview_shell")
     capabilities["goog:chromeOptions"]["androidActivity"] = \
-        "org.chromium.webview_shell.WebViewBrowserActivity"
+        "org.chromium.webview_shell.WebPlatformTestsActivity"
     capabilities["goog:chromeOptions"]["androidUseRunningApp"] = kwargs["use_running_browser"]
     if kwargs.get("device_serial"):
         capabilities["goog:chromeOptions"]["androidDeviceSerial"] = kwargs["device_serial"]

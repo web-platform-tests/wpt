@@ -5,6 +5,7 @@
 promise_test(async t => {
   const wt =
       new WebTransport(webtransport_url('abort-server-initiated-stream.py'));
+  add_completion_callback(() => wt.close());
   await wt.ready;
 
   // Need to ensure that the reset has been processed. Unfortunately, there's no

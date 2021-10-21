@@ -1,0 +1,607 @@
+[
+  {
+    "description": "Windows Icon",
+    "expected_mime_type": "image/x-icon",
+    "headers": [
+    ],
+    "payload": "00 00 01 00"
+  },
+  {
+    "description": "Windows Cursor",
+    "expected_mime_type": "image/x-icon",
+    "headers": [
+    ],
+    "payload": "00 00 02 00"
+  },
+  {
+    "description": "BMP",
+    "expected_mime_type": "image/bmp",
+    "headers": [
+    ],
+    "payload": "42 4D"
+  },
+  {
+    "description": "GIF87a",
+    "expected_mime_type": "image/gif",
+    "headers": [
+    ],
+    "payload": "47 49 46 38 37 61"
+  },
+  {
+    "description": "GIF89a",
+    "expected_mime_type": "image/gif",
+    "headers": [
+    ],
+    "payload": "47 49 46 38 39 61"
+  },
+  {
+    "description": "WebP with VP",
+    "expected_mime_type": "image/webp",
+    "headers": [
+    ],
+    "payload": "52 49 46 46 00 00 00 00 57 45 42 50 56 50"
+  },
+  {
+    "description": "WebP without VP",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "52 49 46 46 00 00 00 00 57 45 42 50"
+  },
+  {
+    "description": "PNG",
+    "expected_mime_type": "image/png",
+    "headers": [
+    ],
+    "payload": "89 50 4E 47 0D 0A 1A 0A"
+  },
+  {
+    "description": "JPEG",
+    "expected_mime_type": "image/jpeg",
+    "headers": [
+    ],
+    "payload": "FF D8 FF"
+  },
+  {
+    "description": "basic audio",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "2E 73 6E 64"
+  },
+  {
+    "description": "AIFF",
+    "expected_mime_type": "audio/aiff",
+    "headers": [
+    ],
+    "payload": "46 4F 52 4D 00 00 00 00 41 49 46 46"
+  },
+  {
+    "description": "ID3v2-tagged MP3",
+    "expected_mime_type": "audio/mpeg",
+    "headers": [
+    ],
+    "payload": "49 44 33"
+  },
+  {
+    "description": "Ogg container with null byte",
+    "expected_mime_type": "application/ogg",
+    "headers": [
+    ],
+    "payload": "4F 67 67 53 00"
+  },
+  {
+    "description": "Ogg container without null byte",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "4F 67 67 53"
+  },
+  {
+    "description": "MIDI",
+    "expected_mime_type": "audio/midi",
+    "headers": [
+    ],
+    "payload": "4D 54 68 64 00 00 00 06"
+  },
+  {
+    "description": "AVI",
+    "expected_mime_type": "video/avi",
+    "headers": [
+    ],
+    "payload": "52 49 46 46 00 00 00 00 41 56 49 20"
+  },
+  {
+    "description": "WAVE",
+    "expected_mime_type": "audio/wave",
+    "headers": [
+    ],
+    "payload": "52 49 46 46 00 00 00 00 57 41 56 45"
+  },
+  {
+    "description": "mp4 (first brand)",
+    "expected_mime_type": "video/mp4",
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 6D 70 34 00 00 00 00 00"
+  },
+  {
+    "description": "mp4 (second brand)",
+    "expected_mime_type": "video/mp4",
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 6D 70 34 00 00 00 00 00"
+  },
+  {
+    "description": "mp41 (first brand)",
+    "expected_mime_type": "video/mp4",
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 6D 70 34 31 00 00 00 00"
+  },
+  {
+    "description": "mp41 (second brand)",
+    "expected_mime_type": "video/mp4",
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 6D 70 34 31 00 00 00 00"
+  },
+  {
+    "description": "mp42 (first brand)",
+    "expected_mime_type": "video/mp4",
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 6D 70 34 32 00 00 00 00"
+  },
+  {
+    "description": "mp42 (second brand)",
+    "expected_mime_type": "video/mp4",
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 6D 70 34 32 00 00 00 00"
+  },
+  {
+    "description": "WebM with default header values",
+    "expected_mime_type": "video/webm",
+    "headers": [
+    ],
+    "payload": "1A 45 DF A3 81 42 82 84 77 65 62 6D"
+  },
+  {
+    "description": "WebM with explicit header values",
+    "expected_mime_type": "video/webm",
+    "headers": [
+    ],
+    "payload": "1A 45 DF A3 01 FF FF FF FF FF FF FF 42 86 81 01 42 F7 81 01 42 F2 81 04 42 F3 81 08 42 87 81 01 42 85 81 01 42 82 84 77 65 62 6D"
+  },
+  {
+    "description": "GZIP archive",
+    "expected_mime_type": "application/x-gzip",
+    "headers": [
+    ],
+    "payload": "1F 8B 08"
+  },
+  {
+    "description": "ZIP archive",
+    "expected_mime_type": "application/zip",
+    "headers": [
+    ],
+    "payload": "50 4B 03 04"
+  },
+  {
+    "description": "RAR archive",
+    "expected_mime_type": "application/x-rar-compressed",
+    "headers": [
+    ],
+    "payload": "52 61 72 21 1A 07 00"
+  },
+  {
+    "description": "binary bytes",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 01 02 03 04 05 06 07 08 0B 0E 0F 10 11 12 13 14 15 16 17 18 19 1A 1C 1D 1E 1F"
+  },
+  {
+    "description": "no binary bytes (lower ASCII)",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "20 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30 31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3E 3F 40 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D 4E 4F 50 51 52 53 54 55 56 57 58 59 5A 5B 5C 5D 5E 5F 60 61 62 63 64 65 66 67 68 69 6A 6B 6C 6D 6E 6F 70 71 72 73 74 75 76 77 78 79 7A 7B 7C 7D 7E 7F"
+  },
+  {
+    "description": "no binary bytes (upper ASCII)",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "80 81 82 83 84 85 86 87 88 89 8A 8B 8C 8D 8E 8F 90 91 92 93 94 95 96 97 98 99 9A 9B 9C 9D 9E 9F A0 A1 A2 A3 A4 A5 A6 A7 A8 A9 AA AB AC AD AE AF B0 B1 B2 B3 B4 B5 B6 B7 B8 B9 BA BB BC BD BE BF C0 C1 C2 C3 C4 C5 C6 C7 C8 C9 CA CB CC CD CE CF D0 D1 D2 D3 D4 D5 D6 D7 D8 D9 DA DB DC DD DE DF E0 E1 E2 E3 E4 E5 E6 E7 E8 E9 EA EB EC ED EE EF F0 F1 F2 F3 F4 F5 F6 F7 F8 F9 FA FB FC FD FE FF"
+  },
+  {
+    "description": "RealAudio",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "2E 52 4D 46"
+  },
+  {
+    "description": "ASF",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "30 26 B2 75 8E 66 CF 11 A6 D9 00 AA 00 62 CE 6C"
+  },
+  {
+    "description": "TIFF (big-endian)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "4D 4D 00 2A"
+  },
+  {
+    "description": "TIFF (little-endian)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "49 49 2A 00"
+  },
+  {
+    "description": "TIFF (I I)",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "49 20 49"
+  },
+  {
+    "description": "TIFF (little-endian without null byte)",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "49 49 2A"
+  },
+  {
+    "description": "WMF (Aldus Placeable Metafile)",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "D7 CD C6 9A"
+  },
+  {
+    "description": "JFIF",
+    "expected_mime_type": "image/jpeg",
+    "headers": [
+    ],
+    "payload": "FF D8 FF E0 00 00 4A 46 49 46 00"
+  },
+  {
+    "description": "ART 03",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "4A 47 03 0E 00"
+  },
+  {
+    "description": "ART 04",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "4A 47 04 0E 00"
+  },
+  {
+    "description": "JPEG XL codestream",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "FF 0A"
+  },
+  {
+    "description": "JPEG XL container",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 0C 4A 58 4C 20 0D 0A 87 0A"
+  },
+  {
+    "description": "MP3 in RIFF WAVE",
+    "expected_mime_type": "audio/wave",
+    "headers": [
+    ],
+    "payload": "52 49 46 46 00 00 00 00 57 41 56 45 00 00 00 00 00 00 00 00 55 00"
+  },
+  {
+    "description": "FLAC",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "66 4C 61 43"
+  },
+  {
+    "description": "Extended M3U playlist",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "23 45 58 54 4D 33 55"
+  },
+  {
+    "description": "avc (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 61 76 63 00 00 00 00 00"
+  },
+  {
+    "description": "avc (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 61 76 63 00 00 00 00 00"
+  },
+  {
+    "description": "avc1 (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 61 76 63 31 00 00 00 00"
+  },
+  {
+    "description": "avc1 (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 61 76 63 31 00 00 00 00"
+  },
+  {
+    "description": "avc2 (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 61 76 63 32 00 00 00 00"
+  },
+  {
+    "description": "avc2 (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 61 76 63 32 00 00 00 00"
+  },
+  {
+    "description": "3gp4 (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 33 67 70 34 00 00 00 00"
+  },
+  {
+    "description": "3gp4 (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 33 67 70 34 00 00 00 00"
+  },
+  {
+    "description": "3gp (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 33 67 70 00 00 00 00 00"
+  },
+  {
+    "description": "3gp (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 33 67 70 00 00 00 00 00"
+  },
+  {
+    "description": "3gp5 (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 33 67 70 35 00 00 00 00"
+  },
+  {
+    "description": "3gp5 (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 33 67 70 35 00 00 00 00"
+  },
+  {
+    "description": "M4V (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 4D 34 56 20 00 00 00 00"
+  },
+  {
+    "description": "M4V (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 4D 34 56 20 00 00 00 00"
+  },
+  {
+    "description": "M4A (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 4D 34 41 20 00 00 00 00"
+  },
+  {
+    "description": "M4A (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 4D 34 41 20 00 00 00 00"
+  },
+  {
+    "description": "M4P (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 4D 34 50 20 00 00 00 00"
+  },
+  {
+    "description": "M4P (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 4D 34 50 20 00 00 00 00"
+  },
+  {
+    "description": "qt (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 71 74 20 20 00 00 00 00"
+  },
+  {
+    "description": "qt (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 71 74 20 20 00 00 00 00"
+  },
+  {
+    "description": "iso (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 69 73 6F 00 00 00 00 00"
+  },
+  {
+    "description": "iso (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 69 73 6F 00 00 00 00 00"
+  },
+  {
+    "description": "isom (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 69 73 6F 6D 00 00 00 00"
+  },
+  {
+    "description": "isom (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 69 73 6F 6D 00 00 00 00"
+  },
+  {
+    "description": "iso2 (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 69 73 6F 32 00 00 00 00"
+  },
+  {
+    "description": "iso2 (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 69 73 6F 32 00 00 00 00"
+  },
+  {
+    "description": "mmp4 (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 6D 6D 70 34 00 00 00 00"
+  },
+  {
+    "description": "mmp4 (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 6D 6D 70 34 00 00 00 00"
+  },
+  {
+    "description": "avif (first brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 10 66 74 79 70 61 76 69 66 00 00 00 00"
+  },
+  {
+    "description": "avif (second brand)",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 18 66 74 79 70 00 00 00 00 00 00 00 00 61 76 69 66 00 00 00 00"
+  },
+  {
+    "description": "JPEG2000",
+    "expected_mime_type": "application/octet-stream",
+    "download_expectation": true,
+    "headers": [
+    ],
+    "payload": "00 00 00 0C 6A 50 20 20 0D 0A 87 0A"
+  },
+  {
+    "description": "JPEG2000 box contents",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "0D 0A 87 0A"
+  },
+  {
+    "description": "JPEG2000 codestream (J2K)",
+    "expected_mime_type": "text/plain",
+    "download_expectation": false,
+    "headers": [
+    ],
+    "payload": "FF 4F FF 51"
+  }
+]

@@ -6,12 +6,13 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/echo-helper.js"></script>
+<link rel=help href="https://github.com/w3c/csswg-drafts/pull/6715">
 </head>
 
 <body>
 <script>
     const image_url = '/css/support/1x1-green.png'
-    const font_url = '/fonts/Ahem.ttf'
+    const font_url = '/fonts/pass.woff'
     const stylesheet_url = '/css/support/a-green.css'
 
     async function load_image({url, prop, uid}, t) {
@@ -28,16 +29,15 @@
     async function load_font({url, uid}, t) {
         const echo = get_resource_echo_url(uid, url)
         const style = `
-          @font-face { font-family: "Ahem"; src: url(${echo}); }
-          .ahem {font-family: Ahem; }
+          @font-face { font-family: "SomeFont"; src: url(${echo}); }
         `
 
         const styleElement =  document.createElement('style')
         styleElement.innerHTML = style
         document.head.appendChild(styleElement)
         const element = document.createElement('p')
-        element.innerText = "Ahem"
-        element.style.fontFamily = 'Ahem'
+        element.innerText = "SomeFont"
+        element.style.fontFamily = 'SomeFont'
         document.body.appendChild(element)
         t.add_cleanup(() => element.remove())
         t.add_cleanup(() => styleElement.remove())
@@ -94,12 +94,11 @@
         const uid = "{{uuid()}}";
         const echo = get_resource_echo_url(uid, font_url);
         const styleUrl = load_style(`
-          @font-face { font-family: "Ahem"; src: url(${echo}); }
-          .ahem {font-family: Ahem; }
+          @font-face { font-family: "SomeFont"; src: url(${echo}); }
         `, '', t)
         const element = document.createElement('p')
-        element.innerText = "Ahem"
-        element.style.fontFamily = 'Ahem'
+        element.innerText = "SomeFont"
+        element.style.fontFamily = 'SomeFont'
         document.body.appendChild(element)
         t.add_cleanup(() => element.remove());
         await wait_for_resource(echo);

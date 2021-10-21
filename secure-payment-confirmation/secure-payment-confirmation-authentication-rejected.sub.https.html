@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Test for the 'secure-payment-confirmation' payment method authentication - success case</title>
+<title>Test for the 'secure-payment-confirmation' payment method authentication - user rejects case</title>
 <link rel="help" href="https://w3c.github.io/secure-payment-confirmation/sctn-authentication">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,8 +11,7 @@
 
 const details = {total:
     {label: 'Total', amount: {value: '0.01', currency: 'USD'}}};
-//const instrumentIcon = 'https://{{hosts[][www]}}:{{ports[https][0]}}/secure-payment-confirmation/troy.png';
-const instrumentIcon = 'https://{{hosts[][www]}}:{{ports[https][0]}}/common/slow-redirect.py?delay=2&location=/secure-payment-confirmation/troy.png';
+const instrumentIcon = 'https://{{hosts[][www]}}:{{ports[https][0]}}/secure-payment-confirmation/troy.png';
 
 const authenticatorOptions = {
   protocol: 'ctap2_1',
@@ -57,15 +56,6 @@ async function createCredential(set_payment_extension=true) {
   return navigator.credentials.create({publicKey});
 }
 
-function arrayBufferToString(buffer) {
-  return String.fromCharCode(...new Uint8Array(buffer));
-}
-
-function base64UrlEncode(data) {
-  let result = btoa(data);
-  return result.replace(/=+$/g, '').replace(/\+/g, "-").replace(/\//g, "_");
-}
-
 promise_test(async t => {
   const authenticator = await window.test_driver.add_virtual_authenticator(
       authenticatorOptions);
@@ -92,32 +82,12 @@ promise_test(async t => {
     }
   }], details);
 
-  const responsePromise = request.show();
+  // The call to test_driver below will reject the promise returned by
+  // request.show(), so we have to bind the assertion to it here first.
+  const promise = promise_rejects_dom(t, "NotAllowedError", request.show());
 
-  await window.test_driver.accept_spc_transaction();
+  await window.test_driver.reject_spc_transaction();
 
-  const response = await responsePromise;
-  await response.complete('success');
-
-  const cred = response.details;
-  assert_equals(cred.id, credential.id);
-
-  const clientDataJSON = JSON.parse(arrayBufferToString(cred.response.clientDataJSON));
-  assert_equals(clientDataJSON.type, 'payment.get');
-  assert_equals(clientDataJSON.challenge, base64UrlEncode(challenge));
-  assert_equals(clientDataJSON.origin, window.location.origin);
-  assert_false(clientDataJSON.crossOrigin);
-
-  // Payment-specific information.
-  assert_equals(clientDataJSON.payment.rp, window.location.hostname);
-  assert_equals(clientDataJSON.payment.topOrigin, window.location.origin);
-  assert_equals(clientDataJSON.payment.payeeOrigin, payeeOrigin);
-  assert_equals(clientDataJSON.payment.total.value, details.total.amount.value);
-  assert_equals(clientDataJSON.payment.total.currency, details.total.amount.currency);
-  assert_equals(clientDataJSON.payment.instrument.icon, instrumentIcon);
-  assert_equals(clientDataJSON.payment.instrument.displayName, displayName);
-
-  // TODO: Verify cred.response.signature, to validate that it covers all fields
-  // from clientDataJSON.
-}, 'Successful SPC call');
+  return promise;
+}, 'Rejected SPC call');
 </script>

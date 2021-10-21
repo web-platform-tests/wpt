@@ -206,8 +206,6 @@ scheme host and port.""")
                               help="Path to adb binary to use")
     config_group.add_argument("--package-name", action="store",
                               help="Android package name to run tests against")
-    config_group.add_argument("--android-activity-name", action="store", default=None,
-                              help="Activity name for Andriod browser to run")
     config_group.add_argument("--use-running-browser", action="store_true", default=False,
                               help="Run tests against a running browser instead of launching one")
     config_group.add_argument("--device-serial", action="store",

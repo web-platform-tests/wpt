@@ -30,11 +30,13 @@ class ManifestItemMeta(ABCMeta):
         assert issubclass(inst, ManifestItem)
         if MYPY:
             inst_ = cast(Type[ManifestItem], inst)
+            item_type = cast(str, inst_.item_type)
         else:
             inst_ = inst
+            assert isinstance(inst_.item_type, str)
+            item_type = inst_.item_type
 
-        assert isinstance(inst_.item_type, str)
-        item_types[inst_.item_type] = inst_
+        item_types[item_type] = inst_
 
         return inst_
 

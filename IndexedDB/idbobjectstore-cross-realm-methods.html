@@ -127,27 +127,27 @@ const testCases = [
 for (const testCase of testCases) {
     async_test(t => {
         const iframe = document.createElement("iframe");
-        iframe.onload = () => {
+        iframe.onload = t.step_func(() => {
             const method = iframe.contentWindow.IDBObjectStore.prototype[testCase.methodName];
             iframe.remove();
 
             let db;
             const open_rq = createdb(t);
-            open_rq.onupgradeneeded = e => {
+            open_rq.onupgradeneeded = t.step_func(e => {
                 db = e.target.result;
                 const objectStore = db.createObjectStore("store");
                 objectStore.add(VALUE_EXISTING_LOWER, KEY_EXISTING_LOWER);
                 objectStore.add(VALUE_EXISTING_UPPER, KEY_EXISTING_UPPER);
-            };
+            });
 
-            open_rq.onsuccess = () => {
+            open_rq.onsuccess = t.step_func(() => {
                 const objectStore = db.transaction("store", "readwrite").objectStore("store");
                 const rq = method.call(objectStore, ...testCase.arguments);
                 rq.onsuccess = t.step_func(e => {
                     testCase.validateResult(t, e);
                 });
-            };
-        };
+            });
+        });
         document.body.append(iframe);
     }, `Cross-realm IDBObjectStore::${testCase.methodName}() method from detached <iframe> works as expected`);
 }

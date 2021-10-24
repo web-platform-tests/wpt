@@ -1,0 +1,26 @@
+atomicwrites==1.4.0
+attrs==21.2.0
+certifi==2021.10.8
+funcsigs==1.0.2
+h2==2.6.2
+hpack==3.0.0
+html5lib==1.1
+hyper==0.7.0
+hyperframe==3.2.0
+importlib-metadata==4.8.1
+iniconfig==1.1.1
+mod-pywebsocket @ git+https://github.com/GoogleChromeLabs/pywebsocket3.git@50602a14f1b6da17e0b619833a13addc6ea78bc2
+more-itertools==8.10.0
+packaging==21.0
+pathlib2==2.3.6
+pluggy==1.0.0
+py==1.10.0
+pyparsing==3.0.0
+pytest==6.2.5
+pytest-asyncio==0.16.0
+six==1.16.0
+toml==0.10.2
+typing-extensions==3.10.0.2
+webencodings==0.5.1
+websockets==9.1
+zipp==3.6.0

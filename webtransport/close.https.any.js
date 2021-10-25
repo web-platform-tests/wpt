@@ -5,54 +5,43 @@
 
 promise_test(async t => {
   const id = token();
-  let wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  const wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  add_completion_callback(() => wt.close());
   await wt.ready;
 
   wt.close();
 
   const close_info = await wt.closed;
 
-  assert_not_own_property(close_info, 'code');
+  assert_not_own_property(close_info, 'closeCode');
   assert_not_own_property(close_info, 'reason');
 
-  wt = new WebTransport(webtransport_url(`query.py?token=${id}`));
-  await wt.ready;
-
-  const streams = await wt.incomingUnidirectionalStreams;
-  const streams_reader = streams.getReader();
-  const { value: readable } = await streams_reader.read();
-  streams_reader.releaseLock();
-
-  const data = await read_stream_as_json(readable);
+  await wait(10);
+  const data = await query(id);
 
   assert_own_property(data, 'session-close-info');
   const info = data['session-close-info']
 
   assert_false(info.abruptly, 'abruptly');
-  assert_equals(info.close_info, null, 'close_info');
+  assert_equals(info.close_info.code, 0, 'code');
+  assert_equals(info.close_info.reason, '', 'reason');
 }, 'close');
 
 promise_test(async t => {
   const id = token();
-  let wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  const wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  add_completion_callback(() => wt.close());
   await wt.ready;
 
-  wt.close({code: 99, reason: 'reason'});
+  wt.close({closeCode: 99, reason: 'reason X'});
 
   const close_info = await wt.closed;
 
-  assert_equals(close_info.code, 99, 'code');
+  assert_equals(close_info.closeCode, 99, 'code');
   assert_equals(close_info.reason, 'reason X', 'reason');
 
-  wt = new WebTransport(webtransport_url(`query.py?token=${id}`));
-  await wt.ready;
-
-  const streams = await wt.incomingUnidirectionalStreams;
-  const streams_reader = streams.getReader();
-  const { value: readable } = await streams_reader.read();
-  streams_reader.releaseLock();
-
-  const data = await read_stream_as_json(readable);
+  await wait(10);
+  const data = await query(id);
 
   assert_own_property(data, 'session-close-info');
   const info = data['session-close-info']
@@ -64,50 +53,55 @@ promise_test(async t => {
 
 promise_test(async t => {
   const id = token();
-  let wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  const wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  add_completion_callback(() => wt.close());
   await wt.ready;
   const reason = 'あいうえお'.repeat(1000);
 
-  wt.close({code: 11, reason});
+  wt.close({closeCode: 11, reason});
 
   const close_info = await wt.closed;
 
-  assert_equals(close_info.code, 11, 'code');
+  assert_equals(close_info.closeCode, 11, 'code');
   assert_equals(close_info.reason, reason, 'reason');
 
-  wt = new WebTransport(webtransport_url(`query.py?token=${id}`));
-  await wt.ready;
-
-  const streams = await wt.incomingUnidirectionalStreams;
-  const streams_reader = streams.getReader();
-  const { value: readable } = await streams_reader.read();
-  streams_reader.releaseLock();
-
-  const data = await read_stream_as_json(readable);
+  await wait(10);
+  const data = await query(id);
 
   assert_own_property(data, 'session-close-info');
   const info = data['session-close-info']
 
-  const expectedReason =
-    new TextDecoder().decode(new TextEncoder().encode(reason).slice(1024))
+  const expected_reason =
+    new TextDecoder().decode(
+      new TextEncoder().encode(reason).slice(0, 1024)).replaceAll('\ufffd', '');
   assert_false(info.abruptly, 'abruptly');
   assert_equals(info.close_info.code, 11, 'code');
-  assert_equals(info.close_info.reason, expectedReason, 'reason');
+  assert_equals(info.close_info.reason, expected_reason, 'reason');
 }, 'close with code and long reason');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('server-close.py'));
+
+  const close_info = await wt.closed;
+  assert_not_own_property(close_info, 'closeCode');
+  assert_not_own_property(close_info, 'reason');
+}, 'server initiated closure');
 
 promise_test(async t => {
   const code = 32;
   const reason = 'abc';
   const wt = new WebTransport(
     webtransport_url(`server-close.py?code=${code}&reason=${reason}`));
+  add_completion_callback(() => wt.close());
 
   const close_info = await wt.closed;
-  assert_equals(close_info.code, code, 'code');
+  assert_equals(close_info.closeCode, code, 'code');
   assert_equals(close_info.reason, reason, 'reason');
-}, 'server initiated closure');
+}, 'server initiated closure with code and reason');
 
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('server-connection-close.py'));
+  add_completion_callback(() => wt.close());
 
   const streams_reader = wt.incomingBidirectionalStreams.getReader();
   const { value: bidi } = await streams_reader.read();

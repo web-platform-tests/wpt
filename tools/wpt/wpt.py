@@ -82,6 +82,10 @@ def parse_args(argv, commands=load_commands()):
 
     args, extra = parser.parse_known_args(argv)
 
+    if args.command is None:
+        parser.print_help()
+        sys.exit(1)
+
     return args, extra
 
 

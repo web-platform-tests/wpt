@@ -84,7 +84,7 @@ def calculate_spki(cert_path):
     return base64.b64encode(dgst_output).decode('utf-8')
 
 
-def run(**kwargs):
+def run(_venv, **kwargs):
     logging.basicConfig()
 
     if kwargs["force"]:

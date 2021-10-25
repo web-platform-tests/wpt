@@ -13,7 +13,7 @@ def create_parser():
     return parser
 
 
-def run(**kwargs):
+def run(_venv, **kwargs):
     config_builder = build_config(os.path.join(repo_root, "config.json"),
                                   ssl={"type": "none"})
 

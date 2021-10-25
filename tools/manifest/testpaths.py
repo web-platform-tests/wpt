@@ -106,7 +106,7 @@ def write_output(path_id_map, as_json):
                 print("  " + test_id)
 
 
-def run(**kwargs):
-    # type: (**Any) -> None
+def run(_venv, **kwargs):
+    # type: (Any, **Any) -> None
     path_id_map = get_paths(**kwargs)
     write_output(path_id_map, as_json=kwargs["json"])

@@ -94,7 +94,8 @@ def run(venv=None, **kwargs):
         if not is_wptreport_installed():
             raise Exception("wptreport is not installed. Please install it from https://github.com/w3c/wptreport")
 
-    serve.run(config_cls=ConfigBuilder,
+    serve.run(venv,
+              config_cls=ConfigBuilder,
               route_builder=get_route_builder_func(kwargs["report"]),
               log_handlers=None,
               **kwargs)

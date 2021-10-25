@@ -197,8 +197,8 @@ def download_from_github(path, tests_root, force=False):
                              force=force)
 
 
-def run(**kwargs):
-    # type: (**Any) -> int
+def run(*args, **kwargs):
+    # type: (*Any, **Any) -> int
     if kwargs["path"] is None:
         path = os.path.join(kwargs["tests_root"], "MANIFEST.json")
     else:

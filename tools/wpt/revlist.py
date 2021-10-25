@@ -98,7 +98,7 @@ def get_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def run_rev_list(**kwargs: Any) -> None:
+def run_rev_list(_venv: Any, **kwargs: Any) -> None:
     # "epoch_threshold" is a safety margin. After this time it is fine to
     # assume that any tags are created and pushed.
     epoch_threshold = 600

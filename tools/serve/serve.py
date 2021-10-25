@@ -1040,7 +1040,7 @@ def get_logger(log_level, log_handlers):
     return logger
 
 
-def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handlers=None,
+def run(_venv, config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handlers=None,
         **kwargs):
     logger = get_logger("INFO", log_handlers)
 

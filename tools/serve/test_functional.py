@@ -60,7 +60,7 @@ def test_subprocess_exit(server_subprocesses, tempfile_name):
         # discarded through an explicit "reload" operation.
         reload(logger)
 
-        serve.run(config_path=tempfile_name)
+        serve.run(None, config_path=tempfile_name)
 
     thread = threading.Thread(target=target)
 

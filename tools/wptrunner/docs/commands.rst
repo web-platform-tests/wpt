@@ -1,5 +1,14 @@
+wpt frontend
+============
+
+The main entrypoint to all web-platform-tests functionality is the
+:code:`wpt` command. This has subcommands for each supported operation
+(e.g. running tests, updating the manifest, etc.). The :code:`wpt`
+frontend maintains a Python virtual environment that is used for the
+execution of all subcommands.
+
 commands.json
-=============
+-------------
 
 :code:`commands.json` files define how subcommands are executed by the
 :code:`./wpt` command. :code:`wpt` searches all command.json files under the top
@@ -16,7 +25,6 @@ would look like the following::
     "bar": {
       "path": "bar.py",
       "script": "run",
-      "virtualenv": true,
       "requirements": [
         "requirements.txt"
       ]
@@ -44,22 +52,16 @@ additional fields. All paths are relative to the commands.json.
 :code:`help`
   Brief description of the subcommand.
 
-:code:`virtualenv`
-  When True, the subcommand is executed with a virtualenv environment. Default
-  to True.
-
 :code:`install`
   A list of strings where each string represents a
   `requirement object <https://setuptools.readthedocs.io/en/latest/pkg_resources.html#requirement-objects>`_.
   These requirements are installed into the virtualenv environment before
-  running the subcommand. :code:`virtualenv` must be true when this field is
-  set.
+  running the subcommand.
 
 :code:`requirements`
   A list of paths where each path specifies a requirements.txt. All requirements
   listed in these files are installed into the virtualenv environment before
-  running the subcommand. :code:`virtualenv` must be true when this field is
-  set.
+  running the subcommand.
 
 :code:`conditional_requirements`
   A key-value object. Each key represents a condition, and value represents
@@ -72,7 +74,6 @@ additional fields. All paths are relative to the commands.json.
     "baz": {
       "path": "baz.py",
       "script": "run",
-      "virtualenv": true,
       "conditional_requirements": {
         "commandline_flag": {
           "enable_feature1": [

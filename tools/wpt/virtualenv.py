@@ -1,7 +1,9 @@
+import logging
 import os
 import shutil
+import site
 import sys
-import logging
+import venv
 from distutils.spawn import find_executable
 
 # The `pkg_resources` module is provided by `setuptools`, which is itself a
@@ -20,15 +22,12 @@ from tools.wpt.utils import call
 
 logger = logging.getLogger(__name__)
 
+
 class Virtualenv(object):
     def __init__(self, path, skip_virtualenv_setup):
         self.path = path
         self.skip_virtualenv_setup = skip_virtualenv_setup
-        if not skip_virtualenv_setup:
-            self.virtualenv = find_executable("virtualenv")
-            if not self.virtualenv:
-                raise ValueError("virtualenv must be installed and on the PATH")
-            self._working_set = None
+        self._working_set = None
 
     @property
     def exists(self):
@@ -45,7 +44,10 @@ class Virtualenv(object):
         if os.path.exists(self.path):
             shutil.rmtree(self.path)
             self._working_set = None
-        call(self.virtualenv, self.path, "-p", sys.executable)
+        venv.create(self.path, with_pip=True)
+        if not os.path.exists(self.pip_path):
+            raise ValueError(f"pip not installed into virtualenv at {self.pip_path}. "
+                             "the ensurepip Python library may be missing")
 
     @property
     def bin_path(self):
@@ -55,10 +57,7 @@ class Virtualenv(object):
 
     @property
     def pip_path(self):
-        path = find_executable("pip3", self.bin_path)
-        if path is None:
-            raise ValueError("pip3 not found")
-        return path
+        return os.path.join(self.bin_path, "pip3")
 
     @property
     def lib_path(self):
@@ -98,9 +97,16 @@ class Virtualenv(object):
             # https://github.com/web-platform-tests/wpt/issues/27377
             # https://github.com/python/cpython/pull/9516
             os.environ.pop('__PYVENV_LAUNCHER__', None)
-        path = os.path.join(self.bin_path, "activate_this.py")
-        with open(path) as f:
-            exec(f.read(), {"__file__": path})
+        # Update the Python environment to match the virtualenv settings
+        # Adapted from https://github.com/pypa/virtualenv/blob/main/src/virtualenv/activation/python/activate_this.py
+        os.environ["PATH"] = os.pathsep.join([self.bin_path] + os.environ.get("PATH", "").split(os.pathsep))
+        os.environ["VIRTUAL_ENV"] = self.path
+        prev_length = len(sys.path)
+        site.addsitedir(self.lib_path)
+        sys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]
+
+        sys.real_prefix = sys.prefix
+        sys.prefix = self.path
 
     def start(self):
         if not self.exists or self.broken_link:

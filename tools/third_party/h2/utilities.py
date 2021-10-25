@@ -33,6 +33,7 @@ _ALLOWED_PSEUDO_HEADER_FIELDS = frozenset([
     b':authority', u':authority',
     b':path', u':path',
     b':status', u':status',
+    b':protocol', u':protocol',
 ])
 
 
@@ -47,11 +48,17 @@ _REQUEST_ONLY_HEADERS = frozenset([
     b':scheme', u':scheme',
     b':path', u':path',
     b':authority', u':authority',
-    b':method', u':method'
+    b':method', u':method',
+    b':protocol', u':protocol',
 ])
 
 
 _RESPONSE_ONLY_HEADERS = frozenset([b':status', u':status'])
+
+
+# A Set of pseudo headers that are only valid if the method is
+# CONNECT, see RFC 8441 § 5
+_CONNECT_REQUEST_ONLY_HEADERS = frozenset([b':protocol', u':protocol'])
 
 
 if sys.version_info[0] == 2:  # Python 2.X
@@ -223,7 +230,7 @@ def validate_headers(headers, hdr_validation_flags):
     )
     headers = _check_path_header(headers, hdr_validation_flags)
 
-    return list(headers)
+    return headers
 
 
 def _reject_uppercase_header_fields(headers, hdr_validation_flags):
@@ -323,6 +330,7 @@ def _reject_pseudo_header_fields(headers, hdr_validation_flags):
     """
     seen_pseudo_header_fields = set()
     seen_regular_header = False
+    method = None
 
     for header in headers:
         if _custom_startswith(header[0], b':', u':'):
@@ -344,6 +352,12 @@ def _reject_pseudo_header_fields(headers, hdr_validation_flags):
                     "Received custom pseudo-header field %s" % header[0]
                 )
 
+            if header[0] in (b':method', u':method'):
+                if not isinstance(header[1], bytes):
+                    method = header[1].encode('utf-8')
+                else:
+                    method = header[1]
+
         else:
             seen_regular_header = True
 
@@ -351,11 +365,12 @@ def _reject_pseudo_header_fields(headers, hdr_validation_flags):
 
     # Check the pseudo-headers we got to confirm they're acceptable.
     _check_pseudo_header_field_acceptability(
-        seen_pseudo_header_fields, hdr_validation_flags
+        seen_pseudo_header_fields, method, hdr_validation_flags
     )
 
 
 def _check_pseudo_header_field_acceptability(pseudo_headers,
+                                             method,
                                              hdr_validation_flags):
     """
     Given the set of pseudo-headers present in a header block and the
@@ -394,6 +409,13 @@ def _check_pseudo_header_field_acceptability(pseudo_headers,
                 "Encountered response-only headers %s" %
                 invalid_request_headers
             )
+        if method != b'CONNECT':
+            invalid_headers = pseudo_headers & _CONNECT_REQUEST_ONLY_HEADERS
+            if invalid_headers:
+                raise ProtocolError(
+                    "Encountered connect-request-only headers %s" %
+                    invalid_headers
+                )
 
 
 def _validate_host_authority_header(headers):
@@ -546,6 +568,29 @@ def _check_sent_host_authority_header(headers, hdr_validation_flags):
     return _validate_host_authority_header(headers)
 
 
+def _combine_cookie_fields(headers, hdr_validation_flags):
+    """
+    RFC 7540 § 8.1.2.5 allows HTTP/2 clients to split the Cookie header field,
+    which must normally appear only once, into multiple fields for better
+    compression. However, they MUST be joined back up again when received.
+    This normalization step applies that transform. The side-effect is that
+    all cookie fields now appear *last* in the header block.
+    """
+    # There is a problem here about header indexing. Specifically, it's
+    # possible that all these cookies are sent with different header indexing
+    # values. At this point it shouldn't matter too much, so we apply our own
+    # logic and make them never-indexed.
+    cookies = []
+    for header in headers:
+        if header[0] == b'cookie':
+            cookies.append(header[1])
+        else:
+            yield header
+    if cookies:
+        cookie_val = b'; '.join(cookies)
+        yield NeverIndexedHeaderTuple(b'cookie', cookie_val)
+
+
 def normalize_outbound_headers(headers, hdr_validation_flags):
     """
     Normalizes a header sequence that we are about to send.
@@ -558,6 +603,17 @@ def normalize_outbound_headers(headers, hdr_validation_flags):
     headers = _strip_connection_headers(headers, hdr_validation_flags)
     headers = _secure_headers(headers, hdr_validation_flags)
 
+    return headers
+
+
+def normalize_inbound_headers(headers, hdr_validation_flags):
+    """
+    Normalizes a header sequence that we have received.
+
+    :param headers: The HTTP header set.
+    :param hdr_validation_flags: An instance of HeaderValidationFlags
+    """
+    headers = _combine_cookie_fields(headers, hdr_validation_flags)
     return headers
 
 
@@ -583,3 +639,22 @@ def validate_outbound_headers(headers, hdr_validation_flags):
     headers = _check_path_header(headers, hdr_validation_flags)
 
     return headers
+
+
+class SizeLimitDict(collections.OrderedDict):
+
+    def __init__(self, *args, **kwargs):
+        self._size_limit = kwargs.pop("size_limit", None)
+        super(SizeLimitDict, self).__init__(*args, **kwargs)
+
+        self._check_size_limit()
+
+    def __setitem__(self, key, value):
+        super(SizeLimitDict, self).__setitem__(key, value)
+
+        self._check_size_limit()
+
+    def _check_size_limit(self):
+        if self._size_limit is not None:
+            while len(self) > self._size_limit:
+                self.popitem(last=False)

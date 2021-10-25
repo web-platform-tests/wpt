@@ -5,12 +5,12 @@ Specification:
 https://tools.ietf.org/html/rfc8441
 """
 
-from mod_pywebsocket import common
+from third_party.mod_pywebsocket import common
 
-from mod_pywebsocket.handshake.base import get_mandatory_header
-from mod_pywebsocket.handshake.base import HandshakeException
-from mod_pywebsocket.handshake.base import validate_mandatory_header
-from mod_pywebsocket.handshake.base import HandshakerBase
+from third_party.mod_pywebsocket.handshake.base import get_mandatory_header
+from third_party.mod_pywebsocket.handshake.base import HandshakeException
+from third_party.mod_pywebsocket.handshake.base import validate_mandatory_header
+from third_party.mod_pywebsocket.handshake.base import HandshakerBase
 
 
 def check_connect_method(request):

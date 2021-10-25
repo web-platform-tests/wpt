@@ -8,7 +8,7 @@ from urllib.parse import urlencode, urlunsplit
 from urllib.request import Request as BaseRequest
 from urllib.request import urlopen
 
-from hyper import HTTP20Connection, tls
+from third_party.hyper import HTTP20Connection, tls
 import ssl
 from localpaths import repo_root
 

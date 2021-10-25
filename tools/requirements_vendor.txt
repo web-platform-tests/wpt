@@ -2,11 +2,11 @@ atomicwrites==1.4.0
 attrs==21.2.0
 certifi==2021.10.8
 funcsigs==1.0.2
-h2==2.6.2
+h2==3.2.0
 hpack==3.0.0
 html5lib==1.1
 hyper==0.7.0
-hyperframe==3.2.0
+hyperframe==5.2.0
 importlib-metadata==4.8.1
 iniconfig==1.1.1
 mod-pywebsocket @ git+https://github.com/GoogleChromeLabs/pywebsocket3.git@50602a14f1b6da17e0b619833a13addc6ea78bc2

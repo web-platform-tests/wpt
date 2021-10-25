@@ -10,7 +10,7 @@ import pytest
 
 wptserve = pytest.importorskip("wptserve")
 from .base import TestUsingServer, TestUsingH2Server, doc_root
-from h2.exceptions import ProtocolError
+from third_party.h2.exceptions import ProtocolError
 
 def send_body_as_header(self):
     if self._response.add_required_headers:

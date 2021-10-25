@@ -29,7 +29,7 @@ class DummyLogger(object):
     """
     An Logger object that does not actual logging, hence a DummyLogger.
 
-    For the class the log operation is merely a no-op.  The intent is to avoid
+    For the class the log operation is merely a no-op. The intent is to avoid
     conditionals being sprinkled throughout the hyper-h2 code for calls to
     logging functions when no logger is passed into the corresponding object.
     """
@@ -37,6 +37,12 @@ class DummyLogger(object):
         pass
 
     def debug(self, *vargs, **kwargs):
+        """
+        No-op logging. Only level needed for now.
+        """
+        pass
+
+    def trace(self, *vargs, **kwargs):
         """
         No-op logging. Only level needed for now.
         """
@@ -62,10 +68,14 @@ class H2Configuration(object):
 
     :param header_encoding: Controls whether the headers emitted by this object
         in events are transparently decoded to ``unicode`` strings, and what
-        encoding is used to do that decoding. For historical reasons, this
-        defaults to ``'utf-8'``. To prevent the decoding of headers (that is,
-        to force them to be returned as bytestrings), this can be set to
-        ``False`` or the empty string.
+        encoding is used to do that decoding. This defaults to ``None``,
+        meaning that headers will be returned as bytes. To automatically
+        decode headers (that is, to return them as unicode strings), this can
+        be set to the string name of any encoding, e.g. ``'utf-8'``.
+
+        .. versionchanged:: 3.0.0
+           Changed default value from ``'utf-8'`` to ``None``
+
     :type header_encoding: ``str``, ``False``, or ``None``
 
     :param validate_outbound_headers: Controls whether the headers emitted
@@ -89,6 +99,15 @@ class H2Configuration(object):
         according to RFC 7540. Defaults to ``True``.
     :type validate_inbound_headers: ``bool``
 
+    :param normalize_inbound_headers: Controls whether the headers received by
+        this object are normalized according to the rules of RFC 7540.
+        Disabling this setting may lead to hyper-h2 emitting header blocks that
+        some RFCs forbid, e.g. with multiple cookie fields.
+
+        .. versionadded:: 3.0.0
+
+    :type normalize_inbound_headers: ``bool``
+
     :param logger: A logger that conforms to the requirements for this module,
         those being no I/O and no context switches, which is needed in order
         to run in asynchronous operation.
@@ -107,19 +126,24 @@ class H2Configuration(object):
     validate_inbound_headers = _BooleanConfigOption(
         'validate_inbound_headers'
     )
+    normalize_inbound_headers = _BooleanConfigOption(
+        'normalize_inbound_headers'
+    )
 
     def __init__(self,
                  client_side=True,
-                 header_encoding='utf-8',
+                 header_encoding=None,
                  validate_outbound_headers=True,
                  normalize_outbound_headers=True,
                  validate_inbound_headers=True,
+                 normalize_inbound_headers=True,
                  logger=None):
         self.client_side = client_side
         self.header_encoding = header_encoding
         self.validate_outbound_headers = validate_outbound_headers
         self.normalize_outbound_headers = normalize_outbound_headers
         self.validate_inbound_headers = validate_inbound_headers
+        self.normalize_inbound_headers = normalize_inbound_headers
         self.logger = logger or DummyLogger(__name__)
 
     @property
@@ -127,10 +151,10 @@ class H2Configuration(object):
         """
         Controls whether the headers emitted by this object in events are
         transparently decoded to ``unicode`` strings, and what encoding is used
-        to do that decoding. For historical reasons, this defaults to
-        ``'utf-8'``. To prevent the decoding of headers (that is, to force them
-        to be returned as bytestrings), this can be set to ``False`` or the
-        empty string.
+        to do that decoding. This defaults to ``None``, meaning that headers
+        will be returned as bytes. To automatically decode headers (that is, to
+        return them as unicode strings), this can be set to the string name of
+        any encoding, e.g. ``'utf-8'``.
         """
         return self._header_encoding
 

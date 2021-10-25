@@ -356,20 +356,49 @@ class RemoteSettingsChanged(Event):
         )
 
 
-class PingAcknowledged(Event):
+class PingReceived(Event):
     """
-    The PingAcknowledged event is fired whenever a user-emitted PING is
-    acknowledged. This contains the data in the ACK'ed PING, allowing the
-    user to correlate PINGs and calculate RTT.
+    The PingReceived event is fired whenever a PING is received. It contains
+    the 'opaque data' of the PING frame. A ping acknowledgment with the same
+    'opaque data' is automatically emitted after receiving a ping.
+
+    .. versionadded:: 3.1.0
     """
     def __init__(self):
         #: The data included on the ping.
         self.ping_data = None
 
     def __repr__(self):
-        return "<PingAcknowledged ping_data:%s>" % (
+        return "<PingReceived ping_data:%s>" % (
             _bytes_representation(self.ping_data),
         )
+
+
+class PingAcknowledged(Event):
+    """
+    Same as PingAckReceived.
+
+    .. deprecated:: 3.1.0
+    """
+    def __init__(self):
+        #: The data included on the ping.
+        self.ping_data = None
+
+    def __repr__(self):
+        return "<PingAckReceived ping_data:%s>" % (
+            _bytes_representation(self.ping_data),
+        )
+
+
+class PingAckReceived(PingAcknowledged):
+    """
+    The PingAckReceived event is fired whenever a PING acknowledgment is
+    received. It contains the 'opaque data' of the PING+ACK frame, allowing the
+    user to correlate PINGs and calculate RTT.
+
+    .. versionadded:: 3.1.0
+    """
+    pass
 
 
 class StreamEnded(Event):
@@ -572,6 +601,28 @@ class AlternativeServiceAvailable(Event):
                 self.field_value.decode('utf-8', 'ignore'),
             )
         )
+
+
+class UnknownFrameReceived(Event):
+    """
+    The UnknownFrameReceived event is fired when the remote peer sends a frame
+    that hyper-h2 does not understand. This occurs primarily when the remote
+    peer is employing HTTP/2 extensions that hyper-h2 doesn't know anything
+    about.
+
+    RFC 7540 requires that HTTP/2 implementations ignore these frames. hyper-h2
+    does so. However, this event is fired to allow implementations to perform
+    special processing on those frames if needed (e.g. if the implementation
+    is capable of handling the frame itself).
+
+    .. versionadded:: 2.7.0
+    """
+    def __init__(self):
+        #: The hyperframe Frame object that encapsulates the received frame.
+        self.frame = None
+
+    def __repr__(self):
+        return "<UnknownFrameReceived>"
 
 
 def _bytes_representation(data):

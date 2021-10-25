@@ -1,6 +1,6 @@
 import os
 import sys
-from atomicwrites import atomic_write
+from third_party.atomicwrites import atomic_write
 from copy import deepcopy
 from multiprocessing import Pool, cpu_count
 

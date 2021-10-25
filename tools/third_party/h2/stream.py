@@ -5,8 +5,6 @@ h2/stream
 
 An implementation of a HTTP/2 stream.
 """
-import warnings
-
 from enum import Enum, IntEnum
 from third_party.hpack import HeaderTuple
 from third_party.hyperframe.frame import (
@@ -27,7 +25,7 @@ from .exceptions import (
 from .utilities import (
     guard_increment_window, is_informational_response, authority_from_headers,
     validate_headers, validate_outbound_headers, normalize_outbound_headers,
-    HeaderValidationFlags, extract_method_header
+    HeaderValidationFlags, extract_method_header, normalize_inbound_headers
 )
 from .windows import WindowManager
 
@@ -380,41 +378,6 @@ class H2StreamStateMachine(object):
         """
         raise ProtocolError("Attempted to push on closed stream.")
 
-    def window_on_closed_stream(self, previous_state):
-        """
-        Called when a WINDOW_UPDATE frame is received on an already-closed
-        stream.
-
-        If we sent an END_STREAM frame, we just ignore the frame, as instructed
-        in RFC 7540 Section 5.1. Technically we should eventually consider
-        WINDOW_UPDATE in this state an error, but we don't have access to a
-        clock so we just always allow it. If we closed the stream for any other
-        reason, we behave as we do for receiving any other frame on a closed
-        stream.
-        """
-        assert self.stream_closed_by is not None
-
-        if self.stream_closed_by == StreamClosedBy.SEND_END_STREAM:
-            return []
-        return self.recv_on_closed_stream(previous_state)
-
-    def reset_on_closed_stream(self, previous_state):
-        """
-        Called when a RST_STREAM frame is received on an already-closed stream.
-
-        If we sent an END_STREAM frame, we just ignore the frame, as instructed
-        in RFC 7540 Section 5.1. Technically we should eventually consider
-        RST_STREAM in this state an error, but we don't have access to a clock
-        so we just always allow it. If we closed the stream for any other
-        reason, we behave as we do for receiving any other frame on a closed
-        stream.
-        """
-        assert self.stream_closed_by is not None
-
-        if self.stream_closed_by is StreamClosedBy.SEND_END_STREAM:
-            return []
-        return self.recv_on_closed_stream(previous_state)
-
     def send_informational_response(self, previous_state):
         """
         Called when an informational header block is sent (that is, a block
@@ -742,11 +705,12 @@ _transitions = {
 
     # > WINDOW_UPDATE or RST_STREAM frames can be received in this state
     # > for a short period after a DATA or HEADERS frame containing a
-    # > END_STREAM flag is sent.
+    # > END_STREAM flag is sent, as instructed in RFC 7540 Section 5.1. But we
+    # > don't have access to a clock so we just always allow it.
     (StreamState.CLOSED, StreamInputs.RECV_WINDOW_UPDATE):
-        (H2StreamStateMachine.window_on_closed_stream, StreamState.CLOSED),
+        (None, StreamState.CLOSED),
     (StreamState.CLOSED, StreamInputs.RECV_RST_STREAM):
-        (H2StreamStateMachine.reset_on_closed_stream, StreamState.CLOSED),
+        (None, StreamState.CLOSED),
 
     # > A receiver MUST treat the receipt of a PUSH_PROMISE on a stream that is
     # > neither "open" nor "half-closed (local)" as a connection error of type
@@ -790,7 +754,7 @@ class H2Stream(object):
         self.max_outbound_frame_size = None
         self.request_method = None
 
-        # The curent value of the outbound stream flow control window
+        # The current value of the outbound stream flow control window
         self.outbound_flow_control_window = outbound_window_size
 
         # The flow control manager.
@@ -876,17 +840,6 @@ class H2Stream(object):
         or trailers.
         """
         self.config.logger.debug("Send headers %s on %r", headers, self)
-        # Convert headers to two-tuples.
-        # FIXME: The fallback for dictionary headers is to be removed in 3.0.
-        try:
-            headers = headers.items()
-            warnings.warn(
-                "Implicit conversion of dictionaries to two-tuples for "
-                "headers is deprecated and will be removed in 3.0.",
-                DeprecationWarning
-            )
-        except AttributeError:
-            headers = headers
 
         # Because encoding headers makes an irreversible change to the header
         # compression context, we make the state transition before we encode
@@ -1051,13 +1004,10 @@ class H2Stream(object):
         )
         events[0].pushed_stream_id = promised_stream_id
 
-        if self.config.validate_inbound_headers:
-            hdr_validation_flags = self._build_hdr_validation_flags(events)
-            headers = validate_headers(headers, hdr_validation_flags)
-
-        if header_encoding:
-            headers = list(_decode_headers(headers, header_encoding))
-        events[0].headers = headers
+        hdr_validation_flags = self._build_hdr_validation_flags(events)
+        events[0].headers = self._process_received_headers(
+            headers, hdr_validation_flags, header_encoding
+        )
         return [], events
 
     def remotely_pushed(self, pushed_headers):
@@ -1101,14 +1051,10 @@ class H2Stream(object):
             if not end_stream:
                 raise ProtocolError("Trailers must have END_STREAM set")
 
-        if self.config.validate_inbound_headers:
-            hdr_validation_flags = self._build_hdr_validation_flags(events)
-            headers = validate_headers(headers, hdr_validation_flags)
-
-        if header_encoding:
-            headers = list(_decode_headers(headers, header_encoding))
-
-        events[0].headers = headers
+        hdr_validation_flags = self._build_hdr_validation_flags(events)
+        events[0].headers = self._process_received_headers(
+            headers, hdr_validation_flags, header_encoding
+        )
         return [], events
 
     def receive_data(self, data, end_stream, flow_control_len):
@@ -1326,6 +1272,30 @@ class H2Stream(object):
 
         frames[-1].flags.add('END_HEADERS')
         return frames
+
+    def _process_received_headers(self,
+                                  headers,
+                                  header_validation_flags,
+                                  header_encoding):
+        """
+        When headers have been received from the remote peer, run a processing
+        pipeline on them to transform them into the appropriate form for
+        attaching to an event.
+        """
+        if self.config.normalize_inbound_headers:
+            headers = normalize_inbound_headers(
+                headers, header_validation_flags
+            )
+
+        if self.config.validate_inbound_headers:
+            headers = validate_headers(headers, header_validation_flags)
+
+        if header_encoding:
+            headers = _decode_headers(headers, header_encoding)
+
+        # The above steps are all generators, so we need to concretize the
+        # headers now.
+        return list(headers)
 
     def _initialize_content_length(self, headers):
         """

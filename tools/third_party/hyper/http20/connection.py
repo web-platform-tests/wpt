@@ -387,7 +387,7 @@ class HTTP20Connection(object):
         with self._conn as conn:
             conn.initiate_upgrade_connection()
             conn.update_settings(
-                {h2_settings.ENABLE_PUSH: int(self._enable_push)}
+                {h2_settings.SettingCodes.ENABLE_PUSH: int(self._enable_push)}
             )
         self._send_outstanding_data()
 
@@ -408,7 +408,7 @@ class HTTP20Connection(object):
         with self._conn as conn:
             conn.initiate_connection()
             conn.update_settings(
-                {h2_settings.ENABLE_PUSH: int(self._enable_push)}
+                {h2_settings.SettingCodes.ENABLE_PUSH: int(self._enable_push)}
             )
         self._send_outstanding_data()
 

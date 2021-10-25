@@ -6,7 +6,7 @@ h2/frame_buffer
 A data structure that provides a way to iterate over a byte buffer in terms of
 frames.
 """
-from third_party.hyperframe.exceptions import UnknownFrameError, InvalidFrameError
+from third_party.hyperframe.exceptions import InvalidFrameError
 from third_party.hyperframe.frame import (
     Frame, HeadersFrame, ContinuationFrame, PushPromiseFrame
 )
@@ -65,15 +65,6 @@ class FrameBuffer(object):
         """
         try:
             frame, length = Frame.parse_frame_header(data[:9])
-        except UnknownFrameError as e:  # Platform-specific: Hyperframe < 5.0
-            # Here we do something a bit odd. We want to consume the frame data
-            # as consistently as possible, but we also don't ever want to yield
-            # None. Instead, we make sure that, if there is no frame, we
-            # recurse into ourselves.
-            # This can only happen now on older versions of hyperframe.
-            # TODO: Remove in 3.0
-            length = e.length
-            frame = None
         except ValueError as e:
             # The frame header is invalid. This is a ProtocolError
             raise ProtocolError("Invalid frame header received: %s" % str(e))

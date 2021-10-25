@@ -118,3 +118,25 @@ index 598a14908e..7e42048427 100644
                  # If for any reason we can't reset the stream, just
                  # tolerate it.
                  pass
+diff --git a/tools/third_party/hyper/http20/connection.py b/tools/third_party/hyper/http20/connection.py
+index 21cd8dbd7d..bab94a2d46 100644
+--- a/tools/third_party/hyper/http20/connection.py
++++ b/tools/third_party/hyper/http20/connection.py
+@@ -387,7 +387,7 @@ class HTTP20Connection(object):
+         with self._conn as conn:
+             conn.initiate_upgrade_connection()
+             conn.update_settings(
+-                {h2_settings.ENABLE_PUSH: int(self._enable_push)}
++                {h2_settings.SettingCodes.ENABLE_PUSH: int(self._enable_push)}
+             )
+         self._send_outstanding_data()
+ 
+@@ -408,7 +408,7 @@ class HTTP20Connection(object):
+         with self._conn as conn:
+             conn.initiate_connection()
+             conn.update_settings(
+-                {h2_settings.ENABLE_PUSH: int(self._enable_push)}
++                {h2_settings.SettingCodes.ENABLE_PUSH: int(self._enable_push)}
+             )
+         self._send_outstanding_data()
+ 

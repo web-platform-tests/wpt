@@ -3,11 +3,16 @@
      xmlns:xlink="http://www.w3.org/1999/xlink"
      width="300" height="200" viewBox="0 0 300 200">
   <metadata>
-    <h:link rel="help" href="https://svgwg.org/svg2-draft/styling.html#RequiredProperties"/>
-    <link rel="match" href="transform-origin-not-explicit-style-visual-ref.svg"/>
-    <h:meta name="assert" content="The transform-origin property impacts SVG rendering."/>
+    <h:link rel="help" href="ttps://www.w3.org/TR/css-transforms-1/#transform-attribute-specificity"/>
+    <link rel="match" href="transform-origin-not-explicit-style-ref.svg"/>
+    <h:meta name="assert" content="The transform-origin attribute impacts SVG rendering."/>
   </metadata>
+  <style>
+    rect {
+      fill: green;
+    }
+  </style>
   <g transform="translate(140, 130)">
-    <rect x="0" y="0" width="40" height="10" style="fill:green" transform="scale(2, 3)" transform-origin="30 10"/>
+    <rect x="0" y="0" width="40" height="10" transform="scale(2, 3)" transform-origin="30 10"/>
   </g>
 </svg>

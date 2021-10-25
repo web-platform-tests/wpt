@@ -44,7 +44,11 @@ def load_commands():
         abs_path = os.path.join(wpt_root, path, "commands.json")
         base_dir = os.path.dirname(abs_path)
         with open(abs_path, "r") as f:
-            data = json.load(f)
+            try:
+                data = json.load(f)
+            except Exception:
+                sys.stderr.write(f"ERROR: Failed reading commands file {abs_path}\n")
+                raise
             for command, props in data.items():
                 assert "path" in props
                 assert "script" in props

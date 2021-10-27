@@ -53,6 +53,28 @@ promise_test(t => {
       });
 }, 'an aborted signal should cause the writable stream to reject with an AbortError');
 
+promise_test(t => {
+  const rs = recordingReadableStream(errorOnPull, hwm0);
+  const ws = new WritableStream();
+  const reason = Error('hello');
+
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+  abortController.abort(reason);
+  assert_equals(signal.reason, reason, 'signal\'s abort reason should be reason');
+
+  return promise_rejects_exactly(t, reason, rs.pipeTo(ws, { signal }), 'pipeTo should reject with reason')
+      .then(() => Promise.all([
+          rs.getReader().closed,
+          promise_rejects_exactly(t, reason, ws.getWriter().closed, 'writer.closed should reject with reason')
+      ]))
+      .then(() => {
+        assert_equals(rs.events.length, 2, 'cancel should have been called');
+        assert_equals(rs.events[0], 'cancel', 'first event should be cancel');
+        assert_equals(rs.events[1].name, reason, 'the argument to cancel should be reason');
+      });
+}, 'an aborted signal should cause the writable stream to reject with the signal\'s abort reason');
+
 promise_test(() => {
   let error;
   const rs = recordingReadableStream(errorOnPull, hwm0);

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<title>CSS Cascade: prev() function</title>
+<link rel="help" href="TODO">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<!----------------------------------------------------------------------->
+
+<style>
+  #t1 { --x:A; }
+  #t1 { --x:prev() B; }
+  #t1 { --x:prev() C; }
+</style>
+<div id=t1></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(t1).getPropertyValue('--x'), 'A B C');
+  }, 'Can reference previous value across rules');
+</script>
+
+<!----------------------------------------------------------------------->
+
+<style>
+  #t2 {
+    --x:A;
+    --x:prev() B;
+    --x:prev() C;
+  }
+</style>
+<div id=t2></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(t2).getPropertyValue('--x'), 'A B C');
+  }, 'Can reference previous value in same rule');
+</script>
+
+<!----------------------------------------------------------------------->
+
+<style>
+  #t3 { --x:A; }
+  #t3 {
+    --x:prev() B;
+    --x:prev() C;
+  }
+  #t3 { --x:prev() D; }
+</style>
+<div id=t3></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(t3).getPropertyValue('--x'), 'A B C D');
+  }, 'Can reference previous value in same rule and across rules');
+</script>
+
+<!----------------------------------------------------------------------->
+
+<style>
+  #t4 {
+    --x:prev() A;
+    --x:prev() B;
+    --x:prev() C;
+  }
+</style>
+<div id=t4></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(t4).getPropertyValue('--x'), ' A B C');
+  }, 'prev() substituted as empty token sequence if no previous value');
+</script>
+
+<!----------------------------------------------------------------------->
+
+<style>
+  #t5 {
+    --x:A;
+    --x:prev(,) B;
+    --x:prev(,) C;
+  }
+</style>
+<div id=t5></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(t5).getPropertyValue('--x'), 'A, B, C');
+  }, 'Comma-separated');
+</script>
+
+<!----------------------------------------------------------------------->
+
+<style>
+  #t6 {
+    --x:prev(,) A;
+    --x:prev(,) B;
+    --x:prev(,) C;
+  }
+</style>
+<div id=t6></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(t6).getPropertyValue('--x'), ' A, B, C');
+  }, 'Comma-separated, first prev() ignored');
+</script>
+
+
+<!----------------------------------------------------------------------->
+
+<style>
+  #t7 {
+    --x:A;
+    --x:prev( omg) B;
+    --x:prev( omg) C;
+  }
+</style>
+<div id=t7></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(t7).getPropertyValue('--x'), 'A omg B omg C');
+  }, 'Canonical omg seprarator');
+</script>
+
+
+<!----------------------------------------------------------------------->
+
+<style>
+  #t8 {
+    --x:prev() C !important;
+  }
+  #t8 {
+    --x:prev() A;
+    --x:prev() B;
+  }
+</style>
+<div id=t8></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(t8).getPropertyValue('--x'), ' A B C ');
+  }, 'Importance across rules');
+</script>
+
+
+<!----------------------------------------------------------------------->
+
+<style>
+  #t9 {
+    --x:prev() C !important;
+    --x:prev() A;
+    --x:prev() B;
+  }
+</style>
+<div id=t9></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(t9).getPropertyValue('--x'), ' A B C ');
+  }, 'Importance in same rule');
+</script>

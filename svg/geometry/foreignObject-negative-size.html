@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Test <svg:foreignObject>'s sizing with negative width/height</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://svgwg.org/svg2-draft/single-page.html#geometry-Sizing"/>
+<svg>
+  <foreignObject width="-10" height="-20"/>
+</svg>
+<script>
+test(() => {
+  var bbox = document.querySelector('foreignObject').getBBox();
+  assert_equals(bbox.width, 0);
+  assert_equals(bbox.height, 0);
+});
+</script>

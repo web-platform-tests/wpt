@@ -267,7 +267,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fufiled after the actions are performed, or rejected in
+         * @returns {Promise} fufilled after the actions are performed, or rejected in
          *                    the cases the WebDriver command errors
          */
         action_sequence: function(actions, context=null) {

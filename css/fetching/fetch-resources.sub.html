@@ -31,7 +31,6 @@
         const style = `
           @font-face { font-family: "SomeFont"; src: url(${echo}); }
         `
-
         const styleElement =  document.createElement('style')
         styleElement.innerHTML = style
         document.head.appendChild(styleElement)
@@ -66,47 +65,37 @@
         return styleURL
     }
 
+    function extract_cors_mode(result) {
+        const fetchMode = result['sec-fetch-mode'];
+        if (fetchMode)
+            return fetchMode;
+
+        return Reflect.has(result, 'origin') ? 'cors' : 'no-cors';
+    }
+
     promise_test(async t => {
         const uid = "{{uuid()}}";
         const result = await load_image({uid, url: image_url, prop: 'background'}, t)
-        assert_false(Reflect.has(result, 'origin'));
+        assert_equals(extract_cors_mode(result), 'no-cors');
     }, 'Background images should fetch with no-cors');
 
     promise_test(async t => {
         const uid = "{{uuid()}}";
         const result = await load_image({uid, url: image_url, prop: 'shape-outside'}, t)
-        assert_equals(result.origin, window.origin);
+        assert_equals(extract_cors_mode(result), 'cors');
     }, 'Shape images should fetched with cors');
 
     promise_test(async t => {
         const uid = "{{uuid()}}";
         const result = await load_font({uid, url: font_url}, t)
-        assert_equals(result.origin, window.origin);
+        assert_equals(extract_cors_mode(result), 'cors');
     }, "WebFonts should be fetched with cors")
 
     promise_test(async t => {
         const uid = "{{uuid()}}";
         const result = await load_stylesheet({uid, url: stylesheet_url}, t)
-        assert_false(Reflect.has(result, 'origin'));
+        assert_equals(extract_cors_mode(result), 'no-cors');
     }, "CSS imports should be fetched without cors")
-
-    promise_test(async t => {
-        const uid = "{{uuid()}}";
-        const echo = get_resource_echo_url(uid, font_url);
-        const styleUrl = load_style(`
-          @font-face { font-family: "SomeFont"; src: url(${echo}); }
-        `, '', t)
-        const element = document.createElement('p')
-        element.innerText = "SomeFont"
-        element.style.fontFamily = 'SomeFont'
-        document.body.appendChild(element)
-        t.add_cleanup(() => element.remove());
-        await wait_for_resource(echo);
-        const headers = (await get_headers(uid))[font_url];
-        assert_equals(headers.origin, window.origin);
-        assert_equals(headers.referer, styleUrl);
-    }, "WebFonts should receive stylesheet URL as referer")
-
 </script>
 
 </body>

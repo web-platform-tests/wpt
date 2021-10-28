@@ -14,6 +14,6 @@ function wait_for_resource(url) {
 }
 
 async function get_headers(uid) {
-    return (await fetch(`/css/fetching/support/echo-headers.py?token=${uid}&location=echo`)).json()
+    return await (await fetch(`/css/fetching/support/echo-headers.py?token=${uid}&location=echo`)).json()
 }
 

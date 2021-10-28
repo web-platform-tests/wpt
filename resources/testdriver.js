@@ -221,7 +221,9 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fufiled after the window is minimized.
+         * @returns {Promise} fufilled with the previous {@link
+                              https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
+                              value, after the window is minimized.
          */
         minimize_window: function(context=null) {
             return window.test_driver_internal.minimize_window(context);
@@ -239,7 +241,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fufiled after the window is restored to the given rect.
+         * @returns {Promise} fufilled after the window is restored to the given rect.
          */
         set_window_rect: function(rect, context=null) {
             return window.test_driver_internal.set_window_rect(rect, context);

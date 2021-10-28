@@ -50,6 +50,7 @@ class MinimizeWindowAction(object):
     def __call__(self, payload):
         return self.protocol.window.minimize()
 
+
 class SetWindowRectAction(object):
     name = "set_window_rect"
 

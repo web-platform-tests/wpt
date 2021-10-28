@@ -459,12 +459,10 @@ class MarionetteWindowProtocolPart(WindowProtocolPart):
         self.marionette = self.parent.marionette
 
     def minimize(self):
-        with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
-            return self.marionette.minimize_window()
+        return self.marionette.minimize_window()
 
     def set_rect(self, rect):
-        with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
-            self.marionette.set_window_rect(rect["x"], rect["y"], rect["height"], rect["width"])
+        self.marionette.set_window_rect(rect["x"], rect["y"], rect["height"], rect["width"])
 
 
 class MarionetteActionSequenceProtocolPart(ActionSequenceProtocolPart):

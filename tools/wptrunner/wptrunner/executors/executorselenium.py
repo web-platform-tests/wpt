@@ -202,9 +202,9 @@ class SeleniumWindowProtocolPart(WindowProtocolPart):
         self.logger.info("Minimizing")
         return self.webdriver.minimize()
 
-    def restore(self):
+    def set_rect(self, rect):
         self.logger.info("Setting window rect")
-        self.webdriver.window.rect = self.previous_rect
+        self.webdriver.window.rect = rect
 
 class SeleniumSendKeysProtocolPart(SendKeysProtocolPart):
     def setup(self):

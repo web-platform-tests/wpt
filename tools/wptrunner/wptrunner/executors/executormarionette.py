@@ -457,15 +457,13 @@ class MarionetteSendKeysProtocolPart(SendKeysProtocolPart):
 class MarionetteWindowProtocolPart(WindowProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
-        self.original_rect = None
 
     def minimize(self):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
-            self.original_rect = self.marionette.minimize_window()
+            return self.marionette.minimize_window()
 
-    def restore(self):
+    def set_rect(self, rect):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
-            rect = self.original_rect
             self.marionette.set_window_rect(rect["x"], rect["y"], rect["height"], rect["width"])
 
 

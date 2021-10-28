@@ -180,8 +180,8 @@
         return create_action("minimize_window", {context});
     };
 
-    window.test_driver_internal.restore_window = function(context=null) {
-        return create_action("restore_window", {context});
+    window.test_driver_internal.set_window_rect = function(rect, context=null) {
+        return create_action("set_window_rect", {rect, context});
     };
 
     window.test_driver_internal.send_keys = function(element, keys) {

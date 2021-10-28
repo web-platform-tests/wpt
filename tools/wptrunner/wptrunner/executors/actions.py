@@ -50,15 +50,16 @@ class MinimizeWindowAction(object):
     def __call__(self, payload):
         return self.protocol.window.minimize()
 
-class RestoreWindowAction(object):
-    name = "restore_window"
+class SetWindowRectAction(object):
+    name = "set_window_rect"
 
     def __init__(self, logger, protocol):
         self.logger = logger
         self.protocol = protocol
 
     def __call__(self, payload):
-        self.protocol.window.restore()
+        rect = payload["rect"]
+        self.protocol.window.set_rect(rect)
 
 
 class ActionSequenceAction(object):
@@ -207,7 +208,7 @@ actions = [ClickAction,
            DeleteAllCookiesAction,
            SendKeysAction,
            MinimizeWindowAction,
-           RestoreWindowAction,
+           SetWindowRectAction,
            ActionSequenceAction,
            GenerateTestReportAction,
            SetPermissionAction,

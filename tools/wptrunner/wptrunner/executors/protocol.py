@@ -317,13 +317,13 @@ class WindowProtocolPart(ProtocolPart):
     name = "window"
 
     @abstractmethod
-    def restore(self):
-        """Restores the window to its original size."""
+    def set_rect(self, rect):
+        """Restores the window to the given rect."""
         pass
 
     @abstractmethod
     def minimize(self):
-        """Minimizes the window."""
+        """Minimizes the window and returns the previous rect."""
         pass
 
 class GenerateTestReportProtocolPart(ProtocolPart):

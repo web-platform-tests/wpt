@@ -205,16 +205,14 @@ class WebDriverCookiesProtocolPart(CookiesProtocolPart):
 class WebDriverWindowProtocolPart(WindowProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
-        self.previous_rect = None
 
     def minimize(self):
-        self.previous_rect = self.webdriver.window.rect
         self.logger.info("Minimizing")
-        self.webdriver.window.minimize()
+        return self.webdriver.window.minimize()
 
-    def restore(self):
+    def set_rect(self, rect):
         self.logger.info("Restoring")
-        self.webdriver.window.previous_rect = self.rect
+        self.webdriver.window.rect = rect
 
 class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
     def setup(self):

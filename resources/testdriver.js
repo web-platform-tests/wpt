@@ -222,8 +222,8 @@
          *                                browsing context.
          *
          * @returns {Promise} fufilled with the previous {@link
-                              https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
-                              value, after the window is minimized.
+         *                    https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
+         *                      value, after the window is minimized.
          */
         minimize_window: function(context=null) {
             return window.test_driver_internal.minimize_window(context);
@@ -236,7 +236,7 @@
          * the {@link https://www.w3.org/TR/webdriver/#set-window-rect|Set Window Rect} command
          *
          * @param {Object} rect - A {@link
-                                  https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
+         *                           https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.

@@ -48,7 +48,7 @@ def unlink_source_dirs(created):
     # Sort backwards in length to remove all files before getting to directory
     for path in sorted(created, key=lambda x: -len(x)):
         # This will also remove empty parent directories
-        if os.path.isdir(path):
+        if not os.path.islink(path) and os.path.isdir(path):
             os.removedirs(path)
         else:
             os.unlink(path)

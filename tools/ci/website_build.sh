@@ -30,8 +30,8 @@ git config --global user.name "wpt-pr-bot"
 
 # Prepare the output directory so that the new build can be pushed to the
 # repository as an incremental change to the prior build.
-mkdir -p docs/_build/html
-cd docs/_build/html
+mkdir -p docs/_build
+cd docs/_build
 git init
 git fetch --depth 1 ${remote_url} gh-pages
 git checkout FETCH_HEAD
@@ -39,10 +39,9 @@ git rm -rf .
 
 # Build the website
 cd ../..
-pip install -r requirements.txt
-make html
+./wpt build-docs
 
-cd _build/html
+cd docs/_build
 # Configure DNS
 echo web-platform-tests.org > CNAME
 # Disable Jekyll

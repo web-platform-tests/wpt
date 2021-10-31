@@ -1,0 +1,58 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>WebRTC SVC Insertable Streams test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../webrtc/RTCPeerConnection-helper.js"></script>
+<script src="../webrtc/third_party/sdp/sdp.js"></script>
+<script src="../webrtc/simulcast/simulcast.js"></script>
+<script>
+// VP8 simulcast L1T2 and L1T3
+['L1T2', 'L1T3'].forEach(scalabilityMode => {
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection({encodedInsertableStreams:true});
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+
+    const stream = await navigator.mediaDevices.getUserMedia({video: {width: 1280, height: 720}});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+
+    const seenLayers = [];
+    const transceiver = pc1.addTransceiver(stream.getVideoTracks()[0], {
+      streams: [stream],
+      sendEncodings: [{scalabilityMode}],
+    });
+
+    const waitForLayers = new Promise(resolve => {
+      const senderStreams = transceiver.sender.createEncodedStreams();
+      let senderSSRCs = [];
+      const senderTransformer = new TransformStream({
+        async transform(encodedFrame, controller) {
+          const metadata = encodedFrame.getMetadata();
+          if (seenLayers.indexOf(metadata.temporalIndex) === -1) {
+            seenLayers.push(metadata.temporalIndex);
+            if ((scalabilityMode === 'L1T2' && seenLayers.length === 2) || (scalabilityMode === 'L1T3' && seenLayers.length === 3)) {
+              resolve();
+            }
+          }
+          controller.enqueue(encodedFrame);
+        }
+      });
+      senderStreams.readable
+          .pipeThrough(senderTransformer)
+          .pipeTo(senderStreams.writable);
+    });
+
+    exchangeIceCandidates(pc1, pc2);
+    const offer = await pc1.createOffer();
+    await pc1.setLocalDescription(offer);
+    await pc2.setRemoteDescription(offer);
+    const answer = await pc2.createAnswer();
+    await pc2.setLocalDescription(answer);
+    await pc1.setRemoteDescription(answer);
+
+    await waitForLayers;
+  }, `Scalabilitymode ${scalabilityMode} produces desired layers`);
+});
+</script>

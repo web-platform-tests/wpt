@@ -6,7 +6,7 @@
 <script>
 function isInterfaceRemoved(name) {
   test(function() {
-    assert_equals(name in window, false)
+    assert_false(name in window)
   }, "Historical DOM features must be removed: " + name)
 }
 var removedInterfaces = [
@@ -35,8 +35,8 @@ removedInterfaces.forEach(isInterfaceRemoved)
 function isRemovedFromDocument(name) {
   test(function() {
     var doc = document.implementation.createDocument(null,null,null)
-    assert_equals(name in document, false)
-    assert_equals(name in doc, false)
+    assert_false(name in document)
+    assert_false(name in doc)
   }, "Historical DOM features must be removed: " + name)
 }
 var documentRemoved = [
@@ -74,14 +74,14 @@ test(function() {
 }, "XMLDocument.load");
 
 test(function() {
-  assert_equals("getFeature" in document.implementation, false)
+  assert_false("getFeature" in document.implementation)
 }, "DOMImplementation.getFeature() must be removed.")
 
 function isRemovedFromElement(name) {
   test(function() {
     var ele = document.createElementNS("test", "test")
-    assert_equals(name in document.body, false)
-    assert_equals(name in ele, false)
+    assert_false(name in document.body)
+    assert_false(name in ele)
   }, "Historical DOM features must be removed: " + name)
 }
 var elementRemoved = [
@@ -95,7 +95,7 @@ elementRemoved.forEach(isRemovedFromElement)
 function isRemovedFromAttr(name) {
   test(function() {
     var attr = document.createAttribute("test")
-    assert_equals(name in attr, false)
+    assert_false(name in attr)
   }, "Attr member must be removed: " + name)
 }
 var attrRemoved = [
@@ -107,7 +107,7 @@ attrRemoved.forEach(isRemovedFromAttr)
 function isRemovedFromDoctype(name) {
   test(function() {
     var doctype = document.implementation.createDocumentType("test", "", "")
-    assert_equals(name in doctype, false)
+    assert_false(name in doctype)
   }, "DocumentType member must be removed: " + name)
 }
 var doctypeRemoved = [
@@ -120,7 +120,7 @@ doctypeRemoved.forEach(isRemovedFromDoctype)
 function isRemovedFromText(name) {
   test(function() {
     var text = document.createTextNode("test")
-    assert_equals(name in text, false)
+    assert_false(name in text)
   }, "Text member must be removed: " + name)
 }
 var textRemoved = [
@@ -134,9 +134,9 @@ function isRemovedFromNode(name) {
     var doc = document.implementation.createDocument(null,null,null)
     var doctype = document.implementation.createDocumentType("test", "", "")
     var text = document.createTextNode("test")
-    assert_equals(name in doc, false)
-    assert_equals(name in doctype, false)
-    assert_equals(name in text, false)
+    assert_false(name in doc)
+    assert_false(name in doctype)
+    assert_false(name in text)
   }, "Node member must be removed: " + name)
 }
 var nodeRemoved = [
@@ -155,7 +155,7 @@ nodeRemoved.forEach(isRemovedFromNode)
 
 function isRemovedFromWindow(name) {
   test(function() {
-    assert_equals(name in window, false)
+    assert_false(name in window)
   }, "Window member must be removed: " + name)
 }
 var windowRemoved = [
@@ -165,7 +165,7 @@ windowRemoved.forEach(isRemovedFromWindow)
 
 function isRemovedFromEvent(name) {
   test(() => {
-    assert_equals(name in Event, false)
+    assert_false(name in Event)
   }, "Event should not have this constant: " + name)
 }
 var EventRemoved = [
@@ -194,8 +194,8 @@ var EventPrototypeRemoved = [
 ]
 EventPrototypeRemoved.forEach(name => {
   test(() => {
-    assert_equals(name in Event.prototype, false)
-    assert_equals(name in new Event("test"), false)
+    assert_false(name in Event.prototype)
+    assert_false(name in new Event("test"))
   }, "Event.prototype should not have this property: " + name)
 })
 </script>

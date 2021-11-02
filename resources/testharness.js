@@ -661,8 +661,14 @@
                             if (value instanceof AssertionError) {
                                 throw value;
                             }
-                            assert(false, "promise_test", null,
-                                   "Unhandled rejection with value: ${value}", {value:value});
+                            if (value instanceof Error) {
+                                const stack = value.stack?.replace("\\n", "\n");
+                                assert(false, "promise_test", null,
+                                    "Unhandled rejection with error: ${error} ${stack}", {error:value,stack});
+                            } else {
+                                assert(false, "promise_test", null,
+                                    "Unhandled rejection with value: ${value}", {value:value});
+                            }
                         }))
                     .then(function() {
                         test.done();

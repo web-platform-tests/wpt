@@ -39,6 +39,54 @@ promise_test(async (t) => {
 }, "DOMException serialization: not transferable");
 
 promise_test(async () => {
+  const original = new DOMException("Test", "NotSupportedError");
+  const clone = await performStructuredClone(original);
+  assert_true(
+    clone instanceof DOMException,
+    "Clone is an instance of DOMException"
+  );
+  assert_equals(clone.name, original.name, "name property");
+  assert_equals(clone.message, original.message, "message property");
+  assert_equals(clone.code, original.code, "code property");
+}, "DOMException serialization: name and message");
+
+promise_test(async () => {
+  const original = new DOMException("Test", "IndexSizeError");
+  const clone = await performStructuredClone(original);
+  assert_true(
+    clone instanceof DOMException,
+    "Clone is an instance of DOMException"
+  );
+  assert_equals(clone.name, original.name, "name property");
+  assert_equals(clone.message, original.message, "message property");
+  assert_equals(clone.code, original.code, "code property");
+}, "DOMException serialization: deprecated error name");
+
+promise_test(async () => {
+  const original = new DOMException("Test", "NotAllowedError");
+  const clone = await performStructuredClone(original);
+  assert_true(
+    clone instanceof DOMException,
+    "Clone is an instance of DOMException"
+  );
+  assert_equals(clone.name, original.name, "name property");
+  assert_equals(clone.message, original.message, "message property");
+  assert_equals(clone.code, original.code, "code property");
+}, "DOMException serialization: valid error name without code");
+
+promise_test(async () => {
+  const original = new DOMException("Test", "NonExistentError");
+  const clone = await performStructuredClone(original);
+  assert_true(
+    clone instanceof DOMException,
+    "Clone is an instance of DOMException"
+  );
+  assert_equals(clone.name, original.name, "name property");
+  assert_equals(clone.message, original.message, "message property");
+  assert_equals(clone.code, original.code, "code property");
+}, "DOMException serialization: invalid error name");
+
+promise_test(async () => {
   const original = new DOMException();
   const clone = await performStructuredClone(original);
   // This should work even if DOMException doesn't support the stack property.

@@ -2,3 +2,4 @@ sphinx==3.5.4
 sphinx-argparse==0.3.1
 recommonmark==0.7.1
 sphinx-js==3.1.2
+sphinx-autobuild==0.7.1

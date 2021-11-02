@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<meta charset="UTF-8" />
+<script>
+  addEventListener("load", () => {
+    const value = new DOMException();
+    window.top.postMessage({ value, stack: value.stack });
+  });
+</script>

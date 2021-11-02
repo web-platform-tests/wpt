@@ -61,6 +61,8 @@ def get_parser():
     p = argparse.ArgumentParser()
     p.add_argument("--type", default="html", help="Output type (default: html)")
     p.add_argument("--docker", action="store_true", help="Run inside the docs docker image")
+    p.add_argument("--serve", default=None, nargs="?", const=8000,
+                   type=int, help="Run a server on the specified port (default: 8000)")
     return p
 
 
@@ -104,10 +106,22 @@ def build(_venv, **kwargs):
             failure_msg = "\n".join(f"{dest}: {err}" for (dest, err) in failed)
             logger.error(f"Failed to create source symlinks:\n{failure_msg}")
             sys.exit(1)
-        subprocess.check_call(["sphinx-build",
-                               "-n", "-v",
-                               "-b", kwargs["type"],
-                               here,
-                               out_dir])
+        if kwargs["serve"] is not None:
+            executable = "sphinx-autobuild"
+            extras = ["-p", str(kwargs["serve"]),
+                      "--host", "0.0.0.0",
+                      "--watch", os.path.abspath(os.path.join(here, os.pardir, "resources")),
+                      # Ignore changes to files specified with glob pattern
+                      "--ignore", "**/flycheck_*",
+                      "--ignore", "**/.*",
+                      "--ignore", "**/#*",
+                      "--ignore", "docs/frontend.py",
+                      "--ignore", "docs/docker/Dockerfile"]
+        else:
+            executable = "sphinx-build"
+            extras = []
+        cmd = [executable, "-n", "-v", "-b", kwargs["type"], "-j", "auto"] + extras + [here, out_dir]
+        logger.debug(" ".join(cmd))
+        subprocess.check_call(cmd)
     finally:
         unlink_source_dirs(created)

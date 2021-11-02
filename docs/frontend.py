@@ -1,6 +1,7 @@
 import argparse
-import subprocess
+import logging
 import os
+import subprocess
 import sys
 
 here = os.path.dirname(__file__)
@@ -14,8 +15,10 @@ link_dirs = [
     "tools/certs",
     "tools/wptrunner",
     "tools/webtransport",
-    "tools/third_party/pywebsocket3"
+    "tools/third_party/pywebsocket3",
 ]
+
+logger = logging.getLogger()
 
 
 def link_source_dirs():
@@ -57,20 +60,54 @@ def unlink_source_dirs(created):
 def get_parser():
     p = argparse.ArgumentParser()
     p.add_argument("--type", default="html", help="Output type (default: html)")
+    p.add_argument("--docker", action="store_true", help="Run inside the docs docker image")
     return p
 
 
+def docker_build(tag="wpt:docs"):
+    subprocess.check_call(["docker",
+                           "build",
+                           "--pull",
+                           "--tag", tag,
+                           os.path.join(here, "docker")])
+
+def docker_run(**kwargs):
+    cmd = ["docker", "run"]
+    cmd.extend(["--mount",
+                 "type=bind,source=%s,target=/app/web-platform-tests" % wpt_root])
+    if kwargs["serve"] is not None:
+        serve = str(kwargs["serve"])
+        cmd.extend(["--expose", serve, "--publish", f"{serve}:{serve}"])
+    cmd.extend(["-w", "/app/web-platform-tests"])
+    if os.isatty(os.isatty(sys.stdout.fileno())):
+        cmd.append("-it")
+    cmd.extend(["wpt:docs", "./wpt"])
+    if kwargs["venv"]:
+        cmd.extend(["--venv", kwargs["venv"]])
+    cmd.extend(["build-docs", "--type", kwargs["type"]])
+    if kwargs["serve"] is not None:
+        cmd.extend(["--serve", str(kwargs["serve"])])
+    logger.debug(" ".join(cmd))
+    return subprocess.call(cmd)
+
+
 def build(_venv, **kwargs):
+    if kwargs["docker"]:
+        docker_build()
+        kwargs["venv"] = "/app/venv"
+        return docker_run(**kwargs)
+
+    out_dir = os.path.join(here, "_build")
     try:
         created, failed = link_source_dirs()
         if failed:
             failure_msg = "\n".join(f"{dest}: {err}" for (dest, err) in failed)
-            print(f"Failed to create source symlinks:\n{failure_msg}")
+            logger.error(f"Failed to create source symlinks:\n{failure_msg}")
             sys.exit(1)
         subprocess.check_call(["sphinx-build",
                                "-n", "-v",
                                "-b", kwargs["type"],
                                here,
-                               os.path.join(here, "_build")])
+                               out_dir])
     finally:
         unlink_source_dirs(created)

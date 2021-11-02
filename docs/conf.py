@@ -48,6 +48,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     # Google-style Python docs
     'sphinx.ext.napoleon',
+    'sphinx_js'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -138,6 +139,10 @@ html_static_path = ['assets']
 #
 # html_sidebars = {}
 
+# Sphix-js configuration
+
+# Only document things under resources/ for now
+js_source_path = '../resources'
 
 # -- Options for HTMLHelp output ---------------------------------------------
 

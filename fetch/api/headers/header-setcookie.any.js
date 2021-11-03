@@ -11,6 +11,13 @@ const setCookie2HeaderList = [
   ["Set-Cookie2", "fizz2=buzz2; domain=example2.com"],
 ];
 
+function assert_nested_array_equals(actual, expected) {
+  assert_equals(actual.length, expected.length, "Array length is not equal");
+  for (let i = 0; i < expected.length; i++) {
+    assert_array_equals(actual[i], expected[i]);
+  }
+}
+
 test(function () {
   new Headers({ "Set-Cookie": "foo=bar" });
 }, "Create headers with a single set-cookie header in object");
@@ -34,7 +41,7 @@ test(function () {
 test(function () {
   const headers = new Headers(headerList);
   const list = [...headers];
-  assert_array_equals(list, [
+  assert_nested_array_equals(list, [
     ["set-cookie", "foo=bar"],
     ["set-cookie", "fizz=buzz; domain=example.com"],
   ]);
@@ -43,7 +50,7 @@ test(function () {
 test(function () {
   const headers = new Headers(setCookie2HeaderList);
   const list = [...headers];
-  assert_array_equals(list, [
+  assert_nested_array_equals(list, [
     ["set-cookie2", "foo2=bar2, fizz2=buzz2; domain=example2.com"],
   ]);
 }, "Headers iterator does not special case set-cookie2 headers");
@@ -51,7 +58,7 @@ test(function () {
 test(function () {
   const headers = new Headers([...headerList, ...setCookie2HeaderList]);
   const list = [...headers];
-  assert_array_equals(list, [
+  assert_nested_array_equals(list, [
     ["set-cookie", "foo=bar"],
     ["set-cookie", "fizz=buzz; domain=example.com"],
     ["set-cookie2", "foo2=bar2, fizz2=buzz2; domain=example2.com"],
@@ -67,58 +74,64 @@ test(function () {
     ["set-cookie", "n=n"],
   ]);
   const list = [...headers];
-  assert_array_equals(list, [
+  assert_nested_array_equals(list, [
     ["set-cookie", "z=z"],
     ["set-cookie", "a=a"],
     ["set-cookie", "n=n"],
   ]);
 }, "Headers iterator preserves set-cookie ordering");
 
-test(function () {
-  const headers = new Headers([
-    ["xylophone-header", "1"],
-    ["best-header", "2"],
-    ["set-cookie", "3"],
-    ["a-cool-header", "4"],
-    ["set-cookie", "5"],
-    ["a-cool-header", "6"],
-    ["best-header", "7"],
-  ]);
-  const list = [...headers];
-  assert_array_equals(list, [
-    ["a-cool-header", "4, 6"],
-    ["best-header", "2, 7"],
-    ["set-cookie", "3"],
-    ["set-cookie", "5"],
-    ["xylophone-header", "1"],
-  ]);
-}, "Headers iterator preserves per header ordering, but sorts keys alphabetically");
+test(
+  function () {
+    const headers = new Headers([
+      ["xylophone-header", "1"],
+      ["best-header", "2"],
+      ["set-cookie", "3"],
+      ["a-cool-header", "4"],
+      ["set-cookie", "5"],
+      ["a-cool-header", "6"],
+      ["best-header", "7"],
+    ]);
+    const list = [...headers];
+    assert_nested_array_equals(list, [
+      ["a-cool-header", "4, 6"],
+      ["best-header", "2, 7"],
+      ["set-cookie", "3"],
+      ["set-cookie", "5"],
+      ["xylophone-header", "1"],
+    ]);
+  },
+  "Headers iterator preserves per header ordering, but sorts keys alphabetically",
+);
 
-test(function () {
-  const headers = new Headers([
-    ["xylophone-header", "7"],
-    ["best-header", "6"],
-    ["set-cookie", "5"],
-    ["a-cool-header", "4"],
-    ["set-cookie", "3"],
-    ["a-cool-header", "2"],
-    ["best-header", "1"],
-  ]);
-  const list = [...headers];
-  assert_array_equals(list, [
-    ["a-cool-header", "4, 2"],
-    ["best-header", "6, 1"],
-    ["set-cookie", "5"],
-    ["set-cookie", "3"],
-    ["xylophone-header", "7"],
-  ]);
-}, "Headers iterator preserves per header ordering, but sorts keys alphabetically (and ignores value ordering)");
+test(
+  function () {
+    const headers = new Headers([
+      ["xylophone-header", "7"],
+      ["best-header", "6"],
+      ["set-cookie", "5"],
+      ["a-cool-header", "4"],
+      ["set-cookie", "3"],
+      ["a-cool-header", "2"],
+      ["best-header", "1"],
+    ]);
+    const list = [...headers];
+    assert_nested_array_equals(list, [
+      ["a-cool-header", "4, 2"],
+      ["best-header", "6, 1"],
+      ["set-cookie", "5"],
+      ["set-cookie", "3"],
+      ["xylophone-header", "7"],
+    ]);
+  },
+  "Headers iterator preserves per header ordering, but sorts keys alphabetically (and ignores value ordering)",
+);
 
 test(function () {
   const headers = new Headers(headerList);
   headers.set("set-cookie", "foo2=bar2");
   const list = [...headers];
-  assert_array_equals(list, [
+  assert_nested_array_equals(list, [
     ["set-cookie", "foo2=bar2"],
   ]);
 }, "Headers.prototype.set works for set-cookie");
@@ -152,7 +165,11 @@ test(function () {
 }, "Headers.prototype.getSetCookie with two equal headers");
 
 test(function () {
-  const headers = new Headers(["set-cookie2", "x"], ["set-cookie", "y"], ["set-cookie2", "z"]);
+  const headers = new Headers([
+    ["set-cookie2", "x"],
+    ["set-cookie", "y"],
+    ["set-cookie2", "z"],
+  ]);
   assert_equals(headers.getSetCookie(), ["y"]);
 }, "Headers.prototype.getSetCookie ignores set-cookie2 headers");
 
@@ -166,4 +183,3 @@ test(function () {
   ]);
   assert_equals(headers.getSetCookie(), ["z=z", "a=a", "n=n"]);
 }, "Headers.prototype.getSetCookie preserves header ordering");
-

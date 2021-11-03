@@ -59,8 +59,8 @@ test(function () {
 }, "Headers iterator does not combine set-cookie & set-cookie2 headers");
 
 test(function () {
-  // This is non alphabetic order, and the iterator should yield in this non
-  // alphabetic order.
+  // Values are in non alphabetic order, and the iterator should yield in the
+  // headers in the exact order of the input.
   const headers = new Headers([
     ["set-cookie", "z=z"],
     ["set-cookie", "a=a"],
@@ -73,6 +73,46 @@ test(function () {
     ["set-cookie", "n=n"],
   ]);
 }, "Headers iterator preserves set-cookie ordering");
+
+test(function () {
+  const headers = new Headers([
+    ["xylophone-header", "1"]
+    ["best-header", "2"],
+    ["set-cookie", "3"],
+    ["a-cool-header", "4"],
+    ["set-cookie", "5"],
+    ["a-cool-header", "6"],
+    ["best-header", "7"],
+  ]);
+  const list = [...headers];
+  assert_array_equals(list, [
+    ["a-cool-header", "4, 6"],
+    ["best-header", "2, 7"],
+    ["set-cookie", "3"],
+    ["set-cookie", "5"],
+    ["xylophone-header", "1"],
+  ]);
+}, "Headers iterator preserves per header ordering, but sorts keys alphabetically");
+
+test(function () {
+  const headers = new Headers([
+    ["xylophone-header", "7"]
+    ["best-header", "6"],
+    ["set-cookie", "5"],
+    ["a-cool-header", "4"],
+    ["set-cookie", "3"],
+    ["a-cool-header", "2"],
+    ["best-header", "1"],
+  ]);
+  const list = [...headers];
+  assert_array_equals(list, [
+    ["a-cool-header", "4, 2"],
+    ["best-header", "6, 1"],
+    ["set-cookie", "5"],
+    ["set-cookie", "3"],
+    ["xylophone-header", "7"],
+  ]);
+}, "Headers iterator preserves per header ordering, but sorts keys alphabetically (and ignores value ordering)");
 
 test(function () {
   const headers = new Headers(headerList);
@@ -117,8 +157,8 @@ test(function () {
 }, "Headers.prototype.getSetCookie ignores set-cookie2 headers");
 
 test(function () {
-  // This is non alphabetic order, and getSetCookie should return the values in
-  // non alphabetic order.
+  // Values are in non alphabetic order, and the iterator should yield in the
+  // headers in the exact order of the input.
   const headers = new Headers([
     ["set-cookie", "z=z"],
     ["set-cookie", "a=a"],

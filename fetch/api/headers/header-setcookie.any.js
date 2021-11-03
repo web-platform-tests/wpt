@@ -76,7 +76,7 @@ test(function () {
 
 test(function () {
   const headers = new Headers([
-    ["xylophone-header", "1"]
+    ["xylophone-header", "1"],
     ["best-header", "2"],
     ["set-cookie", "3"],
     ["a-cool-header", "4"],
@@ -96,7 +96,7 @@ test(function () {
 
 test(function () {
   const headers = new Headers([
-    ["xylophone-header", "7"]
+    ["xylophone-header", "7"],
     ["best-header", "6"],
     ["set-cookie", "5"],
     ["a-cool-header", "4"],

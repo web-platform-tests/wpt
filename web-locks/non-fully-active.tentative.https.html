@@ -53,16 +53,16 @@
     document.body.appendChild(iframe);
     const worker = new iframe.contentWindow.Worker("resources/worker.js");
 
-    const res = uniqueName(t);
-    await postToWorkerAndWait(worker, { op: 'request', name: res });
+    const name = uniqueName(t);
+    await postToWorkerAndWait(worker, { op: 'request', name });
 
     let query = await navigator.locks.query();
     assert_equals(query.held.length, 1, "One lock is present");
 
     iframe.remove();
 
-    const lock = await navigator.locks.request(res, lock => lock);
-    assert_equals(lock.name, res, "The following lock should be processed");
+    const lock = await navigator.locks.request(name, lock => lock);
+    assert_equals(lock.name, name, "The following lock should be processed");
 
     query = await navigator.locks.query();
     assert_equals(query.held.length, 0, "No lock is present");

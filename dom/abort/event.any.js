@@ -3,6 +3,9 @@ test(t => {
         s = c.signal;
   let state = "begin";
 
+  assert_true(s.reason instanceof DOMException, "signal.reason is DOMException");
+  assert_equals(s.reason.name, "AbortError", "signal.reason is AbortError");
+
   assert_false(s.aborted);
 
   s.addEventListener("abort",
@@ -68,7 +71,7 @@ test(t => {
   const controller = new AbortController();
   const signal = controller.signal;
 
-  const reason = Error('hello');
+  const reason = Error("hello");
   controller.abort(reason);
 
   assert_true(signal.aborted, "signal.aborted");
@@ -82,8 +85,9 @@ test(t => {
   controller.abort();
 
   assert_true(signal.aborted, "signal.aborted");
-  assert_true(signal.reason instanceof AbortError, "signal.reason");
-}, "aborting AbortController without reason creates an "AbortError" DOMException");
+  assert_true(signal.reason instanceof DOMException, "signal.reason is DOMException");
+  assert_equals(signal.reason.name, "AbortError", "signal.reason is AbortError");
+}, "aborting AbortController without reason creates an \"AbortError\" DOMException");
 
 test(t => {
   const controller = new AbortController();
@@ -92,7 +96,24 @@ test(t => {
   controller.abort(undefined);
 
   assert_true(signal.aborted, "signal.aborted");
-  assert_true(signal.reason instanceof AbortError, "signal.reason");
-}, "AbortController abort(undefined) creates an "AbortError" DOMException");
+  assert_true(signal.reason instanceof DOMException, "signal.reason is DOMException");
+  assert_equals(signal.reason.name, "AbortError", "signal.reason is AbortError");
+}, "AbortController abort(undefined) creates an \"AbortError\" DOMException");
+
+test(t => {
+  const signal = AbortSignal.abort();
+
+  assert_true(signal.aborted, "signal.aborted");
+  assert_true(signal.reason instanceof DOMException, "signal.reason is DOMException");
+  assert_equals(signal.reason.name, "AbortError", "signal.reason is AbortError");
+}, "static aborting signal should have right properties");
+
+test(t => {
+  const reason = Error("hello");
+  const signal = AbortSignal.abort(reason);
+
+  assert_true(signal.aborted, "signal.aborted");
+  assert_equals(signal.reason, reason, "signal.reason");
+}, "static aborting signal with reason should set signal.reason");
 
 done();

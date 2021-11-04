@@ -79,7 +79,8 @@ def main(product, channel, commit_range, wpt_args):
         "--no-restart-on-unexpected",
         "--install-fonts",
         "--no-headless",
-        "--verify-log-full"
+        "--verify-log-full",
+        "--webdriver-arg=-vv",
     ]
     wpt_args += get_browser_args(product, channel)
 

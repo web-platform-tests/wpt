@@ -53,50 +53,32 @@ promise_test(t => {
       });
 }, 'an aborted signal should cause the writable stream to reject with an AbortError');
 
-promise_test(async t => {
-  const rs = recordingReadableStream(errorOnPull, hwm0);
-  const ws = new WritableStream();
-  const reason = Error('hello');
-
-  const abortController = new AbortController();
-  const signal = abortController.signal;
-  abortController.abort(reason);
-  assert_equals(signal.reason, reason, 'signal\'s abort reason should be reason');
-
-  await promise_rejects_exactly(t, reason, rs.pipeTo(ws, { signal }), 'pipeTo should reject with reason');
-  await Promise.all([
-    rs.getReader().closed,
-    promise_rejects_exactly(t, reason, ws.getWriter().closed, 'writer.closed should reject with reason')
-  ]);
-
-  assert_equals(rs.events.length, 2, 'cancel should have been called');
-  assert_equals(rs.events[0], 'cancel', 'first event should be cancel');
-  assert_equals(rs.events[1].name, reason, 'the argument to cancel should be reason');
-}, 'an aborted signal should cause the writable stream to reject with the signal\'s abort reason');
-
-promise_test(() => {
-  let error;
-  const rs = recordingReadableStream(errorOnPull, hwm0);
-  const ws = new WritableStream();
-  const abortController = new AbortController();
-  const signal = abortController.signal;
-  abortController.abort();
-  return rs.pipeTo(ws, { signal })
-      .catch(e => {
-        error = e;
-      })
-      .then(() => Promise.all([
-        rs.getReader().closed,
-        ws.getWriter().closed.catch(e => {
-          assert_equals(e, error, 'the writable should be errored with the same object');
+for (const reason of [null, undefined, error1]) {
+  promise_test(() => {
+    let error;
+    const rs = recordingReadableStream(errorOnPull, hwm0);
+    const ws = new WritableStream();
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+    abortController.abort(reason);
+    return rs.pipeTo(ws, { signal })
+        .catch(e => {
+          error = e;
         })
-      ]))
-  .then(() => {
-    assert_equals(rs.events.length, 2, 'cancel should have been called');
-    assert_equals(rs.events[0], 'cancel', 'first event should be cancel');
-    assert_equals(rs.events[1], error, 'the readable should be canceled with the same object');
-  });
-}, 'all the AbortError objects should be the same object');
+        .then(() => Promise.all([
+          rs.getReader().closed,
+          ws.getWriter().closed.catch(e => {
+            assert_equals(e, error, 'the writable should be errored with the same object');
+          })
+        ]))
+    .then(() => {
+      assert_equals(signal.reason, error, 'signal.reason should be error'),
+      assert_equals(rs.events.length, 2, 'cancel should have been called');
+      assert_equals(rs.events[0], 'cancel', 'first event should be cancel');
+      assert_equals(rs.events[1], error, 'the readable should be canceled with the same object');
+    });
+  }, 'all the error objects should be the same object');
+}
 
 promise_test(t => {
   const rs = recordingReadableStream(errorOnPull, hwm0);
@@ -136,61 +118,70 @@ promise_test(t => {
     });
 }, 'preventCancel and preventAbort should prevent canceling the readable and aborting the readable');
 
-promise_test(t => {
-  const rs = new ReadableStream({
-    start(controller) {
-      controller.enqueue('a');
-      controller.enqueue('b');
-      controller.close();
-    }
-  });
-  const abortController = new AbortController();
-  const signal = abortController.signal;
-  const ws = recordingWritableStream({
-    write() {
-      abortController.abort();
-    }
-  });
-  return promise_rejects_dom(t, 'AbortError', rs.pipeTo(ws, { signal }), 'pipeTo should reject')
-      .then(() => {
-        assert_equals(ws.events.length, 4, 'only chunk "a" should have been written');
-        assert_array_equals(ws.events.slice(0, 3), ['write', 'a', 'abort'], 'events should match');
-        assert_equals(ws.events[3].name, 'AbortError', 'abort reason should be an AbortError');
-      });
-}, 'abort should prevent further reads');
+for (const reason of [null, undefined, error1]) {
+  promise_test(t => {
+    let error;
+    const rs = new ReadableStream({
+      start(controller) {
+        controller.enqueue('a');
+        controller.enqueue('b');
+        controller.close();
+      }
+    });
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+    const ws = recordingWritableStream({
+      write() {
+        abortController.abort(reason);
+      }
+    });
+    return rs.pipeTo(ws, { signal })
+        .catch(e => { error = e; })
+        .then(() => {
+          assert_equals(signal.reason, error, 'signal.reason should be error');
+          assert_equals(ws.events.length, 4, 'only chunk "a" should have been written');
+          assert_array_equals(ws.events.slice(0, 3), ['write', 'a', 'abort'], 'events should match');
+          assert_equals(ws.events[3], error, 'abort reason should be error');
+        });
+  }, 'abort should prevent further reads');
+}
 
-promise_test(t => {
-  let readController;
-  const rs = new ReadableStream({
-    start(c) {
-      readController = c;
-      c.enqueue('a');
-      c.enqueue('b');
-    }
-  });
-  const abortController = new AbortController();
-  const signal = abortController.signal;
-  let resolveWrite;
-  const writePromise = new Promise(resolve => {
-    resolveWrite = resolve;
-  });
-  const ws = recordingWritableStream({
-    write() {
-      return writePromise;
-    }
-  }, new CountQueuingStrategy({ highWaterMark: Infinity }));
-  const pipeToPromise = rs.pipeTo(ws, { signal });
-  return delay(0).then(() => {
-    abortController.abort();
-    readController.close(); // Make sure the test terminates when signal is not implemented.
-    resolveWrite();
-    return promise_rejects_dom(t, 'AbortError', pipeToPromise, 'pipeTo should reject');
-  }).then(() => {
-    assert_equals(ws.events.length, 6, 'chunks "a" and "b" should have been written');
-    assert_array_equals(ws.events.slice(0, 5), ['write', 'a', 'write', 'b', 'abort'], 'events should match');
-    assert_equals(ws.events[5].name, 'AbortError', 'abort reason should be an AbortError');
-  });
-}, 'all pending writes should complete on abort');
+for (const reason of [null, undefined, error1]) {
+  promise_test(t => {
+    let error;
+    let readController;
+    const rs = new ReadableStream({
+      start(c) {
+        readController = c;
+        c.enqueue('a');
+        c.enqueue('b');
+      }
+    });
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+    let resolveWrite;
+    const writePromise = new Promise(resolve => {
+      resolveWrite = resolve;
+    });
+    const ws = recordingWritableStream({
+      write() {
+        return writePromise;
+      }
+    }, new CountQueuingStrategy({ highWaterMark: Infinity }));
+    const pipeToPromise = rs.pipeTo(ws, { signal });
+    return delay(0).then(() => {
+      abortController.abort(reason);
+      readController.close(); // Make sure the test terminates when signal is not implemented.
+      resolveWrite();
+      return pipeToPromise.catch(e => { error = e; })
+    }).then(() => {
+      assert_equals(signal.reason, error, 'signal.reason should be error');
+      assert_equals(ws.events.length, 6, 'chunks "a" and "b" should have been written');
+      assert_array_equals(ws.events.slice(0, 5), ['write', 'a', 'write', 'b', 'abort'], 'events should match');
+      assert_equals(ws.events[5], error, 'abort reason should be error');
+    });
+  }, 'all pending writes should complete on abort');
+}
 
 promise_test(t => {
   const rs = new ReadableStream({

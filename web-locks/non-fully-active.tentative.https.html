@@ -11,9 +11,6 @@
 <script>
   function createNonFullyActiveIframe(src) {
     const iframe = document.createElement("iframe");
-    if (src) {
-      iframe.src = src;
-    }
     document.body.appendChild(iframe);
     const { navigator, DOMException, postMessage } = iframe.contentWindow;
     iframe.remove();
@@ -33,7 +30,7 @@
   }, "query() on a non-fully-active document must fail");
 
   promise_test(async t => {
-    const { navigator, DOMException, postMessage } = createNonFullyActiveIframe("resource/iframe.html");
+    const { navigator, DOMException, postMessage } = createNonFullyActiveIframe();
 
     const p = navigator.locks.request("-", () => { });
     await promise_rejects_dom(t, "InvalidStateError", DOMException, p, "Request should explicitly fail");

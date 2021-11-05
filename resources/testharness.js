@@ -542,8 +542,23 @@
         return test_environment.next_default_test_name();
     }
 
-    /*
-     * API functions
+    /**
+     * @callback TestFunction
+     * @param {Test} test - The test currnetly being run.
+     * @param {Any[]} args - Additional args to pass to function.
+     *
+     */
+
+    /**
+     * Create a synchronous test
+     *
+     * @param {TestFunction} func - Test function. This is executed
+     * immediately. If it returns without error, the test status is
+     * set to ``PASS``. If it throws an :js:class:`AssertionError`, or
+     * any other exception, the test status is set to ``FAIL``
+     * (typically from an `assert` function).
+     * @param {String} name - Test name. This must be unique in a
+     * given file and must be invariant between runs.
      */
     function test(func, name, properties)
     {
@@ -576,6 +591,17 @@
         }
     }
 
+    /**
+     * Create an asynchronous test
+     *
+     * @param {TestFunction|string} funcOrName - Initial step function
+     * to call immediately with the test name as an argument (if any),
+     * or name of the test.
+     * @param {String} name - Test name (if a test function was
+     * provided). This must be unique in a given file and must be
+     * invariant between runs.
+     * @returns {Test} An object representing the ongoing test.
+     */
     function async_test(func, name, properties)
     {
         if (tests.promise_setup_called) {
@@ -619,6 +645,20 @@
         return test_obj;
     }
 
+    /**
+     * Create a promise test.
+     *
+     * Promise tests are tests which are represeted by a promise
+     * object. If the promise is fulfilled the test passes, if it's
+     * rejected with an :js:class:`AssertionError` the test fails,
+     * otherwise the test errors.
+     *
+     * @param {TestFunction} func - Test function. This must return a
+     * promise. The test is automatically marked as complete once the
+     * promise settles.
+     * @param {String} name - Test name. This must be unique in a
+     * given file and must be invariant between runs.
+     */
     function promise_test(func, name, properties) {
         if (typeof func !== "function") {
             properties = name;
@@ -695,6 +735,16 @@
         return new Promise(promise.then.bind(promise));
     }
 
+    /**
+     * Assert that a Promise is rejected with the right ECMAScript exception.
+     *
+     * @param {Test} test - the `Test` to use for the assertion.
+     * @param {Function} constructor - The expected exception constructor.
+     * @param {Promise} promise - The promise that's expected to
+     * reject with the given exception.
+     * @param {string} [description] Error message to add to assert in case of
+     *                               failure.
+     */
     function promise_rejects_js(test, constructor, promise, description) {
         return bring_promise_to_current_realm(promise)
             .then(test.unreached_func("Should have rejected: " + description))
@@ -707,9 +757,6 @@
     /**
      * Assert that a Promise is rejected with the right DOMException.
      *
-     * @param test the test argument passed to promise_test
-     * @param {number|string} type.  See documentation for assert_throws_dom.
-     *
      * For the remaining arguments, there are two ways of calling
      * promise_rejects_dom:
      *
@@ -721,8 +768,21 @@
      * third argument should be the DOMException constructor from that global,
      * the fourth argument the promise expected to reject, and the fifth,
      * optional, argument the assertion description.
+     *
+     * @param {Test} test - the `Test` to use for the assertion.
+     * @param {number|string} type -  See documentation for assert_throws_dom.
+     * @param {Function} promiseOrConstructor - Either the constructor
+     * for the expected exception (if the exception comes from another
+     * global), or the promise that's expected to reject (if the
+     * exception comes from the current global).
+     * @param {Function|string} descriptionOrPromise - Either the
+     * promise that's expected to reject (if the exception comes from
+     * another global), or the optional description of the condition
+     * being tested (if the exception comes from the current global).
+     * @param {string} [description] - Description of the condition
+     * being tested (if the exception comes from another global).
+     *
      */
-
     function promise_rejects_dom(test, type, promiseOrConstructor, descriptionOrPromise, maybeDescription) {
         let constructor, promise, description;
         if (typeof promiseOrConstructor === "function" &&
@@ -745,6 +805,16 @@
             });
     }
 
+    /**
+     * Assert that a Promise is rejected with the provided value.
+     *
+     * @param {Test} test - the `Test` to use for the assertion.
+     * @param {Any} exception - The expected value of the rejected promise.
+     * @param {Promise} promise - The promise that's expected to
+     * reject.
+     * @param {string} [description] Error message to add to assert in case of
+     *                               failure.
+     */
     function promise_rejects_exactly(test, exception, promise, description) {
         return bring_promise_to_current_realm(promise)
             .then(test.unreached_func("Should have rejected: " + description))
@@ -755,9 +825,23 @@
     }
 
     /**
-     * This constructor helper allows DOM events to be handled using Promises,
-     * which can make it a lot easier to test a very specific series of events,
+     * Allow DOM events to be handled using Promises.
+     *
+     * This can make it a lot easier to test a very specific series of events,
      * including ensuring that unexpected events are not fired at any point.
+     *
+     * `EventWatcher` will assert if an event occurs while there is no `wait_for`
+     * created Promise waiting to be fulfilled, or if the event is of a different type
+     * to the type currently expected. This ensures that only the events that are
+     * expected occur, in the correct order, and with the correct timing.
+     *
+     * @constructor
+     * @param {Test} test - The `Test` to use for the assertion.
+     * @param {EventTarget} watchedNode - The target expected to receive the events.
+     * @param {string[]} eventTypes - List of events to watch for.
+     * @param {Promise} timeoutPromise - Promise that will cause the
+     * test to be set to `TIMEOUT` once fulfilled.
+     *
      */
     function EventWatcher(test, watchedNode, eventTypes, timeoutPromise)
     {
@@ -806,15 +890,13 @@
          * Returns a Promise that will resolve after the specified event or
          * series of events has occurred.
          *
-         * @param options An optional options object. If the 'record' property
-         *                on this object has the value 'all', when the Promise
-         *                returned by this function is resolved,  *all* Event
-         *                objects that were waited for will be returned as an
-         *                array.
+         * @param {Object} options An optional options object. If the 'record' property
+         *                 on this object has the value 'all', when the Promise
+         *                 returned by this function is resolved,  *all* Event
+         *                 objects that were waited for will be returned as an
+         *                 array.
          *
-         * For example,
-         *
-         * ```js
+         * @example
          * const watcher = new EventWatcher(t, div, [ 'animationstart',
          *                                            'animationiteration',
          *                                            'animationend' ]);
@@ -823,7 +905,6 @@
          *   assert_equals(evts[0].elapsedTime, 0.0);
          *   assert_equals(evts[1].elapsedTime, 2.0);
          * });
-         * ```
          */
         this.wait_for = function(types, options) {
             if (waitingFor) {
@@ -865,6 +946,9 @@
             });
         };
 
+        /**
+         * Stop listening for events
+         */
         function stop_watching() {
             for (var i = 0; i < eventTypes.length; i++) {
                 watchedNode.removeEventListener(eventTypes[i], eventHandler, false);
@@ -877,6 +961,46 @@
     }
     expose(EventWatcher, 'EventWatcher');
 
+    /**
+     * @typedef {Object} SettingsObject
+     * @property {bool} single_test - Use the single-page-test
+     * mode. In this mode the Document represents a single
+     * `async_test`. Asserts may be used directly without requiring
+     * `Test.step` or similar wrappers, and any exceptions set the
+     * status of the test rather than the status of the harness.
+     * @property {bool} allow_uncaught_exception - don't treat an
+     * uncaught exception as an error; needed when e.g. testing the
+     * `window.onerror` handler.
+     * @property {boolean} explicit_done - Wait for a call to `done()`
+     * before declaring all tests complete (this is always true for
+     * single-page tests).
+     * @property hide_test_state - hide the test state output while
+     * the test is running; This is helpful when the output of the test state
+     * may interfere the test results.
+     * @property {bool} explicit_timeout - disable file timeout; only
+     * stop waiting for results when the `timeout()` function is
+     * called This should typically only be set for manual tests, or
+     * by a test runner that providees its own timeout mechanism.
+     * @property {number} timeout_multiplier - Multiplier to apply to
+     * per-test timeouts. This should only be set by a test runner.
+     * @property {Document} output_document - The document to which
+     * results should be logged. By default this is the current
+     * document but could be an ancestor document in some cases e.g. a
+     * SVG test loaded in an HTML wrapper
+     *
+     */
+
+    /**
+     * Configure the harness
+     *
+     * @param {Function|SettingsObject} funcOrProperties - Either a
+     * setup function to run, or a set of properties. If this is a
+     * function that function is run synchronously. Any exception in
+     * the function will set the overall harness status to `ERROR`.
+     * @param {SettingsObject} maybeProperties - An object containing
+     * the settings to use, if the first argument is a function.
+     *
+     */
     function setup(func_or_properties, maybe_properties)
     {
         var func = null;
@@ -893,7 +1017,18 @@
         test_environment.on_new_harness_properties(properties);
     }
 
-    function promise_setup(func, maybe_properties)
+    /**
+     * Configure the harness, waiting for a promise to resolve
+     * before running any `promise_test` tests.
+     *
+     * @param {Function} func - Function returning a promise that's
+     * run synchronously. Promise tests are not run until after this
+     * function has resolved.
+     * @param {SettingsObject} [properties] - An object containing
+     * the harness settings to use.
+     *
+     */
+    function promise_setup(func, properties={})
     {
         if (typeof func !== "function") {
             tests.set_status(tests.status.ERROR,
@@ -910,7 +1045,6 @@
         tests.promise_tests = tests.promise_tests
             .then(function()
                   {
-                      var properties = maybe_properties || {};
                       var result;
 
                       tests.setup(null, properties);
@@ -931,6 +1065,17 @@
                    });
     }
 
+    /**
+     * Mark test loading as complete.
+     *
+     * Typically this function is called implicitly on page load; it's
+     * only necessary for users to call this when either the
+     * ``explict_done`` or ``single_page`` properties have been set
+     * via the :js:func:`setup` function.
+     *
+     * For single page tests this marks the test as complete and sets its status.
+     * For other tests, this marks test loading as complete, but doesn't affect ongoing tests.
+     */
     function done() {
         if (tests.tests.length === 0) {
             // `done` is invoked after handling uncaught exceptions, so if the
@@ -952,6 +1097,20 @@
         tests.end_wait();
     }
 
+    /**
+     * @deprecated generate a list of tests from a function and list of arguments
+     *
+     * This is deprecated because it runs all the tests outside of the test functions
+     * and as a result any test throwing an exception will result in no tests being
+     * run. In almost all cases, you should simply call test within the loop you would
+     * use to generate the parameter list array.
+     *
+     * @param {Function} func - The function that will be called for each generated tests.
+     * @param {Any[][]} args - An array of arrays. Each nested array
+     * has the structure `[testName, ...testArgs]`. For each of these nested arrays
+     * array, a test is generated with name `testName` and test function equivalent to
+     * `func(..testArgs)`.
+     */
     function generate_tests(func, args, properties) {
         forEach(args, function(x, i)
                 {
@@ -965,23 +1124,34 @@
                 });
     }
 
-    /*
-     * Register a function as a DOM event listener to the given object for the
-     * event bubbling phase.
+    /**
+     * @deprecated
+     * Register a function as a DOM event listener to the
+     * given object for the event bubbling phase.
      *
-     * This function was deprecated in November of 2019.
+     * @param {EventTarget} object - Event target
+     * @param {string} event - Event name
+     * @param {Function} callback - Event handler.
      */
     function on_event(object, event, callback)
     {
         object.addEventListener(event, callback, false);
     }
 
-    function step_timeout(f, t) {
+    /**
+     * Global version of :js:func:`Test.step_timeout` for use in single page tests.
+     *
+     * @param {Function} func - Function to run after the timeout
+     * @param {number} timeout - Time in ms to wait before running the
+     * test step. The actual wait time is ``timeout`` x
+     * ``timeout_multiplier``.
+     */
+    function step_timeout(func, timeout) {
         var outer_this = this;
         var args = Array.prototype.slice.call(arguments, 2);
         return setTimeout(function() {
-            f.apply(outer_this, args);
-        }, t * tests.timeout_multiplier);
+            func.apply(outer_this, args);
+        }, timeout * tests.timeout_multiplier);
     }
 
     expose(test, 'test');
@@ -1079,8 +1249,30 @@
         "0xffff": "uffff",
     };
 
-    /*
+    /**
      * Convert a value to a nice, human-readable string
+     *
+     * When many JavaScript Object values are coerced to a String, the
+     * resulting value will be ``"[object Object]"``. This obscures
+     * helpful information, making the coerced value unsuitable for
+     * use in assertion messages, test names, and debugging
+     * statements. `format_value` produces more distinctive string
+     * representations of many kinds of objects, including arrays and
+     * the more important DOM Node types. It also translates String
+     * values containing control characters to include human-readable
+     * representations.
+     *
+     * @example
+     * // "Document node with 2 children"
+     * format_value(document);
+     * @example
+     * // "\"foo\\uffffbar\""
+     * format_value("foo\uffffbar");
+     * @example
+     * // "[-0, Infinity]"
+     * format_value([-0, Infinity]);
+     * @param {Any} val - The value to convert to a string.
+     * @returns {string} - A string representation of ``val``, optimised for human readability.
      */
     function format_value(val, seen)
     {
@@ -1202,6 +1394,12 @@
         expose(assert_wrapper, name);
     }
 
+    /**
+     * Assert that ``actual`` is strictly true
+     *
+     * @param {Any} actual - Value that is asserted to be true
+     * @param {string} [description] - Description of the condition being tested
+     */
     function assert_true(actual, description)
     {
         assert(actual === true, "assert_true", description,
@@ -1209,6 +1407,12 @@
     }
     expose_assert(assert_true, "assert_true");
 
+    /**
+     * Assert that ``actual`` is strictly false
+     *
+     * @param {Any} actual - Value that is asserted to be false
+     * @param {string} [description] - Description of the condition being tested
+     */
     function assert_false(actual, description)
     {
         assert(actual === false, "assert_false", description,
@@ -1228,6 +1432,17 @@
         return x === y;
     }
 
+    /**
+     * Assert that ``actual`` is the same value as ``expected``.
+     *
+     * For objects this compares by cobject identity; for primitives
+     * this distinguishes between 0 and -0, and has correct handling
+     * of NaN.
+     *
+     * @param {Any} actual - Test value.
+     * @param {Any} expected - Expected value.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_equals(actual, expected, description)
     {
          /*
@@ -1246,18 +1461,32 @@
     }
     expose_assert(assert_equals, "assert_equals");
 
+    /**
+     * Assert that ``actual`` is not the same value as ``expected``.
+     *
+     * Comparison is as for :js:func:`assert_equals`.
+     *
+     * @param {Any} actual - Test value.
+     * @param {Any} expected - The value ``actual`` is expected to be different to.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_not_equals(actual, expected, description)
     {
-         /*
-          * Test if two primitives are unequal or two objects
-          * are different objects
-          */
         assert(!same_value(actual, expected), "assert_not_equals", description,
                                               "got disallowed value ${actual}",
                                               {actual:actual});
     }
     expose_assert(assert_not_equals, "assert_not_equals");
 
+    /**
+     * Assert that ``expected`` is an array and ``actual`` is one of the members.
+     * This is implemented using ``indexOf``, so doesn't handle NaN or ±0 correctly.
+     *
+     * @param {Any} actual - Test value.
+     * @param {Array} expected - An array that ``actual`` is expected to
+     * be a member of.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_in_array(actual, expected, description)
     {
         assert(expected.indexOf(actual) != -1, "assert_in_array", description,
@@ -1268,6 +1497,16 @@
 
     // This function was deprecated in July of 2015.
     // See https://github.com/web-platform-tests/wpt/issues/2033
+    /**
+     * @deprecated
+     * Recursively compare two objects for equality.
+     *
+     * See https://github.com/web-platform-tests/wpt/issues/2033 for more information.
+     *
+     * @param {Object} actual - Test value.
+     * @param {Object} expected - Expected value.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_object_equals(actual, expected, description)
     {
          assert(typeof actual === "object" && actual !== null, "assert_object_equals", description,
@@ -1304,6 +1543,14 @@
     }
     expose_assert(assert_object_equals, "assert_object_equals");
 
+    /**
+     * Assert that ``actual`` and ``expected`` are both arrays, and that the array properties of
+     * ``actual`` and ``expected`` are all the same value (as for :js:func:`assert_equals`).
+     *
+     * @param {Array} actual - Test array.
+     * @param {Array} expected - Array that is expected to contain the same values as ``actual``.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_array_equals(actual, expected, description)
     {
         const max_array_length = 20;
@@ -1361,6 +1608,16 @@
     }
     expose_assert(assert_array_equals, "assert_array_equals");
 
+    /**
+     * Assert that each array property in ``actual`` is a number within
+     * ± `epsilon` of the corresponding property in `expected`.
+     *
+     * @param {Array} actual - Array of test values.
+     * @param {Array} expected - Array of values expected to be close to the values in ``actual``.
+     * @param {number} epsilon - Magnitude of allowed difference
+     * between each value in ``actual`` and ``expected``.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_array_approx_equals(actual, expected, epsilon, description)
     {
         /*
@@ -1389,6 +1646,14 @@
     }
     expose_assert(assert_array_approx_equals, "assert_array_approx_equals");
 
+    /**
+     * Assert that ``actual`` is within ± ``epsilon`` of ``expected``.
+     *
+     * @param {number} actual - Test value.
+     * @param {number} expected - Value number is expected to be close to.
+     * @param {number} epsilon - Magnitude of allowed difference between ``actual`` and ``expected``.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_approx_equals(actual, expected, epsilon, description)
     {
         /*
@@ -1412,6 +1677,13 @@
     }
     expose_assert(assert_approx_equals, "assert_approx_equals");
 
+    /**
+     * Assert that ``actual`` is a number less than ``expected``.
+     *
+     * @param {number} actual - Test value.
+     * @param {number} expected - Number that ``actual`` must be less than.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_less_than(actual, expected, description)
     {
         /*
@@ -1429,6 +1701,13 @@
     }
     expose_assert(assert_less_than, "assert_less_than");
 
+    /**
+     * Assert that ``actual`` is a number greater than ``expected``.
+     *
+     * @param {number} actual - Test value.
+     * @param {number} expected - Number that ``actual`` must be greater than.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_greater_than(actual, expected, description)
     {
         /*
@@ -1446,6 +1725,15 @@
     }
     expose_assert(assert_greater_than, "assert_greater_than");
 
+    /**
+     * Assert that ``actual`` is a number greater than ``lower`` and less
+     * than ``upper`` but not equal to either.
+     *
+     * @param {number} actual - Test value.
+     * @param {number} lower - Number that ``actual`` must be greater than.
+     * @param {number} upper - Number that ``actual`` must be less than.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_between_exclusive(actual, lower, upper, description)
     {
         /*
@@ -1464,6 +1752,14 @@
     }
     expose_assert(assert_between_exclusive, "assert_between_exclusive");
 
+    /**
+     * Assert that ``actual`` is a number less than or equal to ``expected``.
+     *
+     * @param {number} actual - Test value.
+     * @param {number} expected - Number that ``actual`` must be less
+     * than or equal to.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_less_than_equal(actual, expected, description)
     {
         /*
@@ -1481,6 +1777,14 @@
     }
     expose_assert(assert_less_than_equal, "assert_less_than_equal");
 
+    /**
+     * Assert that ``actual`` is a number greater than or equal to ``expected``.
+     *
+     * @param {number} actual - Test value.
+     * @param {number} expected - Number that ``actual`` must be greater
+     * than or equal to.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_greater_than_equal(actual, expected, description)
     {
         /*
@@ -1498,6 +1802,15 @@
     }
     expose_assert(assert_greater_than_equal, "assert_greater_than_equal");
 
+    /**
+     * Assert that ``actual`` is a number greater than or equal to ``lower`` and less
+     * than or equal to ``upper``.
+     *
+     * @param {number} actual - Test value.
+     * @param {number} lower - Number that ``actual`` must be greater than or equal to.
+     * @param {number} upper - Number that ``actual`` must be less than or eqaul to.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_between_inclusive(actual, lower, upper, description)
     {
         /*
@@ -1516,6 +1829,13 @@
     }
     expose_assert(assert_between_inclusive, "assert_between_inclusive");
 
+    /**
+     * Assert that ``actual`` matches the RegExp ``expected``.
+     *
+     * @param {String} actual - Test string.
+     * @param {RegExp} expected - RegExp ``actual`` must match.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_regexp_match(actual, expected, description) {
         /*
          * Test if a string (actual) matches a regexp (expected)
@@ -1527,6 +1847,14 @@
     }
     expose_assert(assert_regexp_match, "assert_regexp_match");
 
+    /**
+     * Assert that the class string of ``object`` as returned in
+     * ``Object.prototype.toString`` is equal to ``class_name``.
+     *
+     * @param {Object} object - Object to stringify.
+     * @param {string} class_string - Expected class string for ``object``.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_class_string(object, class_string, description) {
         var actual = {}.toString.call(object);
         var expected = "[object " + class_string + "]";
@@ -1536,6 +1864,13 @@
     }
     expose_assert(assert_class_string, "assert_class_string");
 
+    /**
+     * Assert that ``object`` has an own property with name ``property_name``.
+     *
+     * @param {Object} object - Object that should have the given property.
+     * @param {string} property_name - Expected property name.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_own_property(object, property_name, description) {
         assert(object.hasOwnProperty(property_name),
                "assert_own_property", description,
@@ -1543,6 +1878,13 @@
     }
     expose_assert(assert_own_property, "assert_own_property");
 
+    /**
+     * Assert that ``object`` does not have an own property with name ``property_name``.
+     *
+     * @param {Object} object - Object that should not have the given property.
+     * @param {string} property_name - Property name to test.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_not_own_property(object, property_name, description) {
         assert(!object.hasOwnProperty(property_name),
                "assert_not_own_property", description,
@@ -1575,9 +1917,44 @@
                    {p:property_name});
         };
     }
-    expose_assert(_assert_inherits("assert_inherits"), "assert_inherits");
-    expose_assert(_assert_inherits("assert_idl_attribute"), "assert_idl_attribute");
 
+    /**
+     * Assert that ``object`` does not have an own property with name
+     * ``property_name``, but inherits one through the prototype chain.
+     *
+     * @param {Object} object - Object that should have the given property in its prototype chain.
+     * @param {string} property_name - Expected property name.
+     * @param {string} [description] - Description of the condition being tested.
+     */
+    function assert_inherits(object, property_name, description) {
+        return _assert_inherits("assert_inherits")(object, property_name, description);
+    }
+    expose_assert(assert_inherits, "assert_inherits");
+
+    /**
+     * Alias for :js:func:`insert_inherits`.
+     *
+     * @param {Object} object - Object that should have the given property in its prototype chain.
+     * @param {string} property_name - Expected property name.
+     * @param {string} [description] - Description of the condition being tested.
+     */
+    function assert_idl_attribute(object, property_name, description) {
+        return _assert_inherits("assert_idl_attribute")(object, property_name, description);
+    }
+    expose_assert(assert_idl_attribute, "assert_idl_attribute");
+
+
+    /**
+     * Assert that ``object`` has a property named ``property_name`` and that the property is readonly.
+     *
+     * Note: The implementation tries to update the named property, so
+     * any side effects of updating will be triggered. Users are
+     * encouraged to instead inspect the property descriptor of ``property_name`` on ``object``.
+     *
+     * @param {Object} object - Object that should have the given property in its prototype chain.
+     * @param {string} property_name - Expected property name.
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_readonly(object, property_name, description)
     {
          var initial_value = object[property_name];
@@ -1600,7 +1977,7 @@
      *
      * @param {object} constructor The expected exception constructor.
      * @param {Function} func Function which should throw.
-     * @param {string} description Error description for the case that the error is not thrown.
+     * @param {string} [description] Error description for the case that the error is not thrown.
      */
     function assert_throws_js(constructor, func, description)
     {
@@ -1665,20 +2042,13 @@
         }
     }
 
+    // TODO: Figure out how to document the overloads better.
+    // sphinx-js doesn't seem to handle @variation correctly,
+    // and only expects a single JSDoc entry per function.
     /**
      * Assert a DOMException with the expected type is thrown.
      *
-     * @param {number|string} type The expected exception name or code.  See the
-     *        table of names and codes at
-     *        https://webidl.spec.whatwg.org/#dfn-error-names-table
-     *        If a number is passed it should be one of the numeric code values
-     *        in that table (e.g. 3, 4, etc).  If a string is passed it can
-     *        either be an exception name (e.g. "HierarchyRequestError",
-     *        "WrongDocumentError") or the name of the corresponding error code
-     *        (e.g. "HIERARCHY_REQUEST_ERR", "WRONG_DOCUMENT_ERR").
-     *
-     * For the remaining arguments, there are two ways of calling
-     * promise_rejects_dom:
+     * There are two ways of calling promise_rejects_dom:
      *
      * 1) If the DOMException is expected to come from the current global, the
      * second argument should be the function expected to throw and a third,
@@ -1688,6 +2058,22 @@
      * second argument should be the DOMException constructor from that global,
      * the third argument the function expected to throw, and the fourth, optional,
      * argument the assertion description.
+     *
+     * @param {number|string} type - The expected exception name or
+     * code.  See the table of names and codes at
+     * https://webidl.spec.whatwg.org/#dfn-error-names-table If a
+     * number is passed it should be one of the numeric code values in
+     * that table (e.g. 3, 4, etc).  If a string is passed it can
+     * either be an exception name (e.g. "HierarchyRequestError",
+     * "WrongDocumentError") or the name of the corresponding error
+     * code (e.g. "``HIERARCHY_REQUEST_ERR``", "``WRONG_DOCUMENT_ERR``").
+     * @param {Function} descriptionOrFunc - The function expected to
+     * throw (if the exeception comes from another global), or the
+     * optional description of the condition being tested (if the
+     * exception comes from the current global).
+     * @param {string} [description] - Description of the condition
+     * being tested (if the exception comes from another global).
+     *
      */
     function assert_throws_dom(type, funcOrConstructor, descriptionOrFunc, maybeDescription)
     {
@@ -1861,7 +2247,7 @@
      *
      * @param {value} exception The expected exception.
      * @param {Function} func Function which should throw.
-     * @param {string} description Error description for the case that the error is not thrown.
+     * @param {string} [description] Error description for the case that the error is not thrown.
      */
     function assert_throws_exactly(exception, func, description)
     {
@@ -1892,15 +2278,43 @@
         }
     }
 
+    /**
+     * Asserts if called. Used to ensure that a specific codepath is
+     * not taken e.g. that an error event isn't fired..
+     *
+     * @param {string} [description] - Description of the condition being tested.
+     */
     function assert_unreached(description) {
          assert(false, "assert_unreached", description,
                 "Reached unreachable code");
     }
     expose_assert(assert_unreached, "assert_unreached");
 
-    function assert_any(assert_func, actual, expected_array)
+    /**
+     * @callback AssertFunc
+     * @param {Any} actual
+     * @param {Any} expected
+     * @param {Any[]} args
+     */
+
+    /**
+     * Asserts that ``actual`` matches at least one value of ``expected``
+     * according to a comparison defined by ``assert_func``.
+     *
+     * Note that tests with multiple allowed pass conditions are bad
+     * practice unless the spec specifically allows multiple
+     * behaviours. Test authors should not use this method simply to
+     * hide UA bugs.
+     *
+     * @param {AssertFunc} assert_func - Function to compare actual
+     * and expected. It must throw when the comparison fails and
+     * return when the comparison passes.
+     * @param {Any} actual - Test value.
+     * @param {Array} expected_array - Array of possible expected values.
+     * @param {Any[]} args - Additional arguments to pass to ``assert_func``.
+     */
+    function assert_any(assert_func, actual, expected_array, ...args)
     {
-        var args = [].slice.call(arguments, 3);
         var errors = [];
         var passed = false;
         forEach(expected_array,
@@ -1932,7 +2346,7 @@
      *     assert_implements(window.Foo, 'Foo is not supported');
      *
      * @param {object} condition The truthy value to test
-     * @param {string} description Error description for the case that the condition is not truthy.
+     * @param {string} [description] Error description for the case that the condition is not truthy.
      */
     function assert_implements(condition, description) {
         assert(!!condition, "assert_implements", description);
@@ -1950,25 +2364,37 @@
      *                                "webm video playback not supported");
      *
      * @param {object} condition The truthy value to test
-     * @param {string} description Error description for the case that the condition is not truthy.
+     * @param {string} [description] Error description for the case that the condition is not truthy.
      */
     function assert_implements_optional(condition, description) {
         if (!condition) {
             throw new OptionalFeatureUnsupportedError(description);
         }
     }
-    expose_assert(assert_implements_optional, "assert_implements_optional")
+    expose_assert(assert_implements_optional, "assert_implements_optional");
 
+    /**
+     * @class
+     *
+     * A single subtest. A Test is not constructed directly but via the
+     * :js:func:`test`, :js:func:`async_test` or :js:func:`promise_test` functions.
+     *
+     * @param {string} name - This must be unique in a given file and must be
+     * invariant between runs.
+     *
+     */
     function Test(name, properties)
     {
         if (tests.file_is_test && tests.tests.length) {
             throw new Error("Tried to create a test with file_is_test");
         }
+        /** The test name. */
         this.name = name;
 
         this.phase = (tests.is_aborted || tests.phase === tests.phases.COMPLETE) ?
             this.phases.COMPLETE : this.phases.INITIAL;
 
+        /** The test status code.*/
         this.status = this.NOTRUN;
         this.timeout_id = null;
         this.index = null;
@@ -1979,7 +2405,9 @@
             this.timeout_length *= tests.timeout_multiplier;
         }
 
+        /** A message indicating the reason for test failure. */
         this.message = null;
+        /** Stack trace in case of failure. */
         this.stack = null;
 
         this.steps = [];
@@ -1999,6 +2427,16 @@
         tests.push(this);
     }
 
+    /**
+     * Enum of possible test statuses.
+     *
+     * :values:
+     *   - ``PASS``
+     *   - ``FAIL``
+     *   - ``TIMEOUT``
+     *   - ``NOTRUN``
+     *   - ``PRECONDITION_FAILED``
+     */
     Test.statuses = {
         PASS:0,
         FAIL:1,
@@ -2048,6 +2486,15 @@
         return this._structured_clone;
     };
 
+    /**
+     * Run a single step of an ongoing test.
+     *
+     * @param {string} func - Callback function to run as a step. If
+     * this throws an :js:func:`AssertionError`, or any other
+     * exception, the :js:class:`Test` status is set to ``FAIL``.
+     * @param {Object} [this_obj] - The object to use as the this
+     * value when calling ``func``. Defaults to the  :js:class:`Test` object.
+     */
     Test.prototype.step = function(func, this_obj)
     {
         if (this.phase > this.phases.STARTED) {
@@ -2097,6 +2544,22 @@
         }
     };
 
+    /**
+     * Wrap a function so that it runs as a step of the current test.
+     *
+     * This allows creating a callback function that will run as a
+     * test step.
+     *
+     * @example
+     * let t = async_test("Example");
+     * onload = t.step_func(e => {assert_equals(e.name, "load"; t.done())})
+     *
+     * @param {string} func - Function to run as a step. If this
+     * throws an :js:func:`AssertionError`, or any other exception,
+     * the :js:class:`Test` status is set to ``FAIL``.
+     * @param {Object} [this_obj] - The object to use as the this
+     * value when calling ``func``. Defaults to the :js:class:`Test` object.
+     */
     Test.prototype.step_func = function(func, this_obj)
     {
         var test_this = this;
@@ -2112,6 +2575,18 @@
         };
     };
 
+    /**
+     * Wrap a function so that it runs as a step of the current test,
+     * and automatically marks the test as complete if the function
+     * returns without error.
+     *
+     * @param {string} func - Function to run as a step. If this
+     * throws an :js:func:`AssertionError`, or any other exception,
+     * the :js:class:`Test` status is set to ``FAIL``. If it returns
+     * without error the status is set to ``PASS``.
+     * @param {Object} [this_obj] - The object to use as the this
+     * value when calling `func`. Defaults to the :js:class:`Test` object.
+     */
     Test.prototype.step_func_done = function(func, this_obj)
     {
         var test_this = this;
@@ -2130,6 +2605,14 @@
         };
     };
 
+    /**
+     * Return a function that automatically sets the current test to
+     * ``FAIL`` if it's called.
+     *
+     * @param {string} [description] - Error message to add to assert
+     * in case of failure.
+     *
+     */
     Test.prototype.unreached_func = function(description)
     {
         return this.step_func(function() {
@@ -2137,37 +2620,68 @@
         });
     };
 
-    Test.prototype.step_timeout = function(f, timeout) {
+    /**
+     * Run a function as a step of the test after a given timeout.
+     *
+     * This multiplies the timeout by the global timeout multiplier to
+     * account for the expected execution speed of the current test
+     * environment. For example ``test.step_timeout(f, 2000)`` with a
+     * timeout multiplier of 2 will wait for 4000ms before calling ``f``.
+     *
+     * In general it's encouraged to use :js:func:`Test.step_wait` or
+     * :js:func:`step_wait_func` in preference to this function where possible,
+     * as they provide better test performance.
+     *
+     * @param {Function} func - Function to run as a test
+     * step.
+     * @param {number} timeout - Time in ms to wait before running the
+     * test step. The actual wait time is ``timeout`` x
+     * ``timeout_multiplier``.
+     *
+     */
+    Test.prototype.step_timeout = function(func, timeout) {
         var test_this = this;
         var args = Array.prototype.slice.call(arguments, 2);
         return setTimeout(this.step_func(function() {
-            return f.apply(test_this, args);
+            return func.apply(test_this, args);
         }), timeout * tests.timeout_multiplier);
     };
 
+    /**
+     * Poll for a function to return true, and call a callback
+     * function once it does, or assert if a timeout is
+     * reached. This is preferred over a simple step_timeout
+     * whenever possible since it allows the timeout to be longer
+     * to reduce intermittents without compromising test execution
+     * speed when the condition is quickly met.
+     *
+     * @example
+     * async_test(t => {
+     *  const popup = window.open("resources/coop-coep.py?coop=same-origin&coep=&navigate=about:blank");
+     *  t.add_cleanup(() => popup.close());
+     *  assert_equals(window, popup.opener);
+     *
+     *  popup.onload = t.step_func(() => {
+     *    assert_true(popup.location.href.endsWith("&navigate=about:blank"));
+     *    // Use step_wait_func_done as about:blank cannot message back.
+     *    t.step_wait_func_done(() => popup.location.href === "about:blank");
+     *  });
+     * }, "Navigating a popup to about:blank");
+     *
+     * @param {Function} cond A function taking no arguments and
+     *                        returning a boolean. The callback is called
+     *                        when this function returns true.
+     * @param {Function} func A function taking no arguments to call once
+     *                        the condition is met.
+     * @param {string} [description] Error message to add to assert in case of
+     *                               failure.
+     * @param {number} timeout Timeout in ms. This is multiplied by the global
+     *                         timeout_multiplier
+     * @param {number} interval Polling interval in ms
+     *
+     */
     Test.prototype.step_wait_func = function(cond, func, description,
                                              timeout=3000, interval=100) {
-        /**
-         * Poll for a function to return true, and call a callback
-         * function once it does, or assert if a timeout is
-         * reached. This is preferred over a simple step_timeout
-         * whenever possible since it allows the timeout to be longer
-         * to reduce intermittents without compromising test execution
-         * speed when the condition is quickly met.
-         *
-         * @param {Function} cond A function taking no arguments and
-         *                        returning a boolean. The callback is called
-         *                        when this function returns true.
-         * @param {Function} func A function taking no arguments to call once
-         *                        the condition is met.
-         * @param {string} description Error message to add to assert in case of
-         *                             failure.
-         * @param {number} timeout Timeout in ms. This is multiplied by the global
-         *                         timeout_multiplier
-         * @param {number} interval Polling interval in ms
-         *
-         **/
-
         var timeout_full = timeout * tests.timeout_multiplier;
         var remaining = Math.ceil(timeout_full / interval);
         var test_this = this;
@@ -2188,57 +2702,62 @@
         wait_for_inner();
     };
 
+    /**
+     * Poll for a function to return true, and invoke a callback
+     * followed by this.done() once it does, or assert if a timeout
+     * is reached. This is preferred over a simple step_timeout
+     * whenever possible since it allows the timeout to be longer
+     * to reduce intermittents without compromising test execution speed
+     * when the condition is quickly met.
+     *
+     * @param {Function} cond A function taking no arguments and
+     *                        returning a boolean. The callback is called
+     *                        when this function returns true.
+     * @param {Function} func A function taking no arguments to call once
+     *                        the condition is met.
+     * @param {string} [description] Error message to add to assert in case of
+     *                               failure.
+     * @param {number} timeout Timeout in ms. This is multiplied by the global
+     *                         timeout_multiplier
+     * @param {number} interval Polling interval in ms
+     *
+     */
     Test.prototype.step_wait_func_done = function(cond, func, description,
                                                   timeout=3000, interval=100) {
-        /**
-         * Poll for a function to return true, and invoke a callback
-         * followed by this.done() once it does, or assert if a timeout
-         * is reached. This is preferred over a simple step_timeout
-         * whenever possible since it allows the timeout to be longer
-         * to reduce intermittents without compromising test execution speed
-         * when the condition is quickly met.
-         *
-         * @param {Function} cond A function taking no arguments and
-         *                        returning a boolean. The callback is called
-         *                        when this function returns true.
-         * @param {Function} func A function taking no arguments to call once
-         *                        the condition is met.
-         * @param {string} description Error message to add to assert in case of
-         *                             failure.
-         * @param {number} timeout Timeout in ms. This is multiplied by the global
-         *                         timeout_multiplier
-         * @param {number} interval Polling interval in ms
-         *
-         **/
-
          this.step_wait_func(cond, () => {
             if (func) {
                 func();
             }
             this.done();
          }, description, timeout, interval);
-    }
+    };
 
+    /**
+     * Poll for a function to return true, and resolve a promise
+     * once it does, or assert if a timeout is reached. This is
+     * preferred over a simple step_timeout whenever possible
+     * since it allows the timeout to be longer to reduce
+     * intermittents without compromising test execution speed
+     * when the condition is quickly met.
+     *
+     * @example
+     * promise_test(async t => {
+     *  // …
+     * await t.step_wait(() => frame.contentDocument === null, "Frame navigated to a cross-origin document");
+     * // …
+     * }, "");
+     *
+     * @param {Function} cond A function taking no arguments and
+     *                        returning a boolean.
+     * @param {string} [description] Error message to add to assert in case of
+     *                              failure.
+     * @param {number} timeout Timeout in ms. This is multiplied by the global
+     *                         timeout_multiplier
+     * @param {number} interval Polling interval in ms
+     * @returns {Promise} Promise resolved once cond is met.
+     *
+     */
     Test.prototype.step_wait = function(cond, description, timeout=3000, interval=100) {
-        /**
-         * Poll for a function to return true, and resolve a promise
-         * once it does, or assert if a timeout is reached. This is
-         * preferred over a simple step_timeout whenever possible
-         * since it allows the timeout to be longer to reduce
-         * intermittents without compromising test execution speed
-         * when the condition is quickly met.
-         *
-         * @param {Function} cond A function taking no arguments and
-         *                        returning a boolean.
-         * @param {string} description Error message to add to assert in case of
-         *                             failure.
-         * @param {number} timeout Timeout in ms. This is multiplied by the global
-         *                         timeout_multiplier
-         * @param {number} interval Polling interval in ms
-         * @returns {Promise} Promise resolved once cond is met.
-         *
-         **/
-
         return new Promise(resolve => {
             this.step_wait_func(cond, resolve, description, timeout, interval);
         });
@@ -2254,11 +2773,16 @@
         this.cleanup_callbacks.push(callback);
     };
 
-    /*
+    /**
      * Schedule a function to be run after the test result is known, regardless
-     * of passing or failing state. The behavior of this function will not
+     * of passing or failing state.
+     *
+     * The behavior of this function will not
      * influence the result of the test, but if an exception is thrown, the
      * test harness will report an error.
+     *
+     * @param {Function} callback - The cleanup function to run. This
+     * is called with no arguments.
      */
     Test.prototype.add_cleanup = function(callback) {
         this._user_defined_cleanup_count += 1;
@@ -2283,6 +2807,9 @@
         this.stack = stack ? stack : null;
     };
 
+    /**
+     * Manually set the test status to ``TIMEOUT``.
+     */
     Test.prototype.timeout = function()
     {
         this.timeout_id = null;
@@ -2294,8 +2821,14 @@
     Test.prototype.force_timeout = Test.prototype.timeout;
 
     /**
-     * Update the test status, initiate "cleanup" functions, and signal test
-     * completion.
+     * Mark the test as complete.
+     *
+     * This sets the test status to ``PASS`` if no other status was
+     * already recorded. Any subsequent attempts to run additional
+     * test steps will be ignored.
+     *
+     * After setting the test status any test cleanup functions will
+     * be run.
      */
     Test.prototype.done = function()
     {
@@ -2314,7 +2847,7 @@
         if (settings.debug) {
             console.log("TEST DONE",
                         this.status,
-                        this.name,)
+                        this.name);
         }
 
         this.cleanup();
@@ -2389,7 +2922,7 @@
         }
     };
 
-    /**
+    /*
      * Determine if the return value of a cleanup function is valid for a given
      * test. Any test may return the value `undefined`. Tests created with
      * `promise_test` may alternatively return "thenable" object values.
@@ -2440,7 +2973,7 @@
         test._done_callbacks.length = 0;
     }
 
-    /*
+    /**
      * A RemoteTest object mirrors a Test object on a remote worker. The
      * associated RemoteWorker updates the RemoteTest object in response to
      * received events. In turn, the RemoteTest object replicates these events
@@ -2667,17 +3200,29 @@
         complete: RemoteContext.prototype.remote_done
     };
 
-    /*
-     * Harness
+    /**
+     * @class
+     * Status of the overall harness
      */
-
     function TestsStatus()
     {
+        /** The status code */
         this.status = null;
+        /** Message in case of failure */
         this.message = null;
+        /** Stack trace in case of an exception. */
         this.stack = null;
     }
 
+    /**
+     * Enum of possible harness statuses.
+     *
+     * :values:
+     *   - ``OK``
+     *   - ``ERROR``
+     *   - ``TIMEOUT``
+     *   - ``PRECONDITION_FAILED``
+     */
     TestsStatus.statuses = {
         OK:0,
         ERROR:1,
@@ -2692,8 +3237,7 @@
         1: "Error",
         2: "Timeout",
         3: "Optional Feature Unsupported"
-    }
-
+    };
 
     TestsStatus.prototype.structured_clone = function()
     {
@@ -2711,13 +3255,25 @@
 
     TestsStatus.prototype.format_status = function() {
         return this.formats[this.status];
-    }
+    };
 
+    /**
+     * @class
+     * Record of an assert that ran.
+     *
+     * @param {Test} test - The test which ran the assert.
+     * @param {string} assert_name - The function name of the assert.
+     * @param {Any} args - The arguments passed to the assert function.
+     */
     function AssertRecord(test, assert_name, args = []) {
+        /** Name of the assert that ran */
         this.assert_name = assert_name;
+        /** Test that ran the assert */
         this.test = test;
         // Avoid keeping complex objects alive
+        /** Stringification of the arguments that were passed to the assert function */
         this.args = args.map(x => format_value(x).replace(/\n/g, " "));
+        /** Status of the assert */
         this.status = null;
     }
 
@@ -2727,8 +3283,8 @@
             test: this.test ? this.test.structured_clone() : null,
             args: this.args,
             status: this.status,
-        }
-    }
+        };
+    };
 
     function Tests()
     {
@@ -3175,6 +3731,14 @@
         return remoteContext.done;
     };
 
+    /**
+     * Get test results from a worker and include them in the current test.
+     *
+     * @param {Worker|SharedWorker|ServiceWorker|MessagePort} port -
+     * Either a worker object or a port connected to a worker which is
+     * running tests..
+     * @returns {Promise} - A promise that's resolved once all the remote tests are complete.
+     */
     function fetch_tests_from_worker(port) {
         return tests.fetch_tests_from_worker(port);
     }
@@ -3188,11 +3752,29 @@
         this.pending_remotes.push(this.create_remote_window(remote));
     };
 
+    /**
+     * Aggregate tests from separate windows or iframes
+     * into the current document as if they were all part of the same test file.
+     *
+     * The document of the second window (or iframe) should include
+     * ``testharness.js``, but not ``testharnessreport.js``, and use
+     * :js:func:`test`, :js:func:`async_test`, and :js:func:`promise_test` in
+     * the usual manner.
+     *
+     * @param {Window} window - The window to fetch tests from.
+     */
     function fetch_tests_from_window(window) {
         tests.fetch_tests_from_window(window);
     }
     expose(fetch_tests_from_window, 'fetch_tests_from_window');
 
+    /**
+     * Timeout the tests.
+     *
+     * This only has an effect when ``explict_timeout`` has been set
+     * in :js:func:`setup`. In other cases any call is a no-op.
+     *
+     */
     function timeout() {
         if (tests.timeout_length === null) {
             tests.timeout();
@@ -3200,18 +3782,49 @@
     }
     expose(timeout, 'timeout');
 
+    /**
+     * Add a callback that's triggered when the first :js:class:`Test` is created.
+     *
+     * @param {Function} callback - Callback function. This is called
+     * without arguments.
+     */
     function add_start_callback(callback) {
         tests.start_callbacks.push(callback);
     }
 
+    /**
+     * Add a callback that's triggered when a test state changes.
+     *
+     * @param {Function} callback - Callback function, called with the
+     * :js:class:`Test` as the only argument.
+     */
     function add_test_state_callback(callback) {
         tests.test_state_callbacks.push(callback);
     }
 
+    /**
+     * Add a callback that's triggered when a test result is received.
+     *
+     * @param {Function} callback - Callback function, called with the
+     * :js:class:`Test` as the only argument.
+     */
     function add_result_callback(callback) {
         tests.test_done_callbacks.push(callback);
     }
 
+    /**
+     * Add a callback that's triggered when all tests are complete.
+     *
+     * @param {Function} callback - Callback function, called with an
+     * array of :js:class:`Test` objects, a :js:class:`TestsStatus`
+     * object and an array of :js:class:`AssertRecord` objects. If the
+     * debug setting is ``false`` the final argument will be an empty
+     * array.
+     *
+     * For performance reasons asserts are only tracked when the debug
+     * setting is ``true``. In other cases the array of asserts will be
+     * empty.
+     */
     function add_completion_callback(callback) {
         tests.all_done_callbacks.push(callback);
     }
@@ -3766,6 +4379,12 @@
         }
     }
 
+    /**
+     * @class
+     * Exception type that represents a failing assert.
+     *
+     * @param {string} message - Error message.
+     */
     function AssertionError(message)
     {
         if (typeof message == "string") {
@@ -3890,21 +4509,23 @@
      * invocations have signaled completion.
      *
      * If all callbacks complete synchronously (or if no callbacks are
-     * specified), the `done_callback` will be invoked synchronously. It is the
+     * specified), the ``done_callback`` will be invoked synchronously. It is the
      * responsibility of the caller to ensure asynchronicity in cases where
      * that is desired.
      *
      * @param {array} value Zero or more values to use in the invocation of
-     *                      `iter_callback`
-     * @param {function} iter_callback A function that will be invoked once for
-     *                                 each of the provided `values`. Two
-     *                                 arguments will be available in each
-     *                                 invocation: the value from `values` and
-     *                                 a function that must be invoked to
-     *                                 signal completion
+     *                      ``iter_callback``
+     * @param {function} iter_callback A function that will be invoked
+     *                                 once for each of the values min
+     *                                 ``value``. Two arguments will
+     *                                 be available in each
+     *                                 invocation: the value from
+     *                                 ``value`` and a function that
+     *                                 must be invoked to signal
+     *                                 completion
      * @param {function} done_callback A function that will be invoked after
      *                                 all operations initiated by the
-     *                                 `iter_callback` function have signaled
+     *                                 ``iter_callback`` function have signaled
      *                                 completion
      */
     function all_async(values, iter_callback, done_callback)

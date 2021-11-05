@@ -10,7 +10,7 @@ source_revision=$(git rev-parse HEAD)
 # wpt-pr-bot.
 #
 # https://help.github.com/en/articles/generic-jekyll-build-failures
-remote_url=https://${DEPLOY_TOKEN}@github.com/web-platform-tests/wpt.git
+remote_url=https://${DEPLOY_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
 
 function json_property {
   cat ${1} | \

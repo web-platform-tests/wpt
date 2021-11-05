@@ -1187,12 +1187,8 @@
                 status = Test.statuses.PASS;
                 return rv;
             } catch(e) {
-                if (e instanceof AssertionError) {
-                    status = Test.statuses.FAIL;
-                    stack = e.stack;
-                 } else {
-                    status = Test.statuses.ERROR;
-                 }
+                status = Test.statuses.FAIL;
+                stack = e.stack ? e.stack : null;
                 throw e;
             } finally {
                 if (tests.output && !stack) {

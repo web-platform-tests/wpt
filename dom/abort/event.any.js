@@ -3,9 +3,8 @@ test(t => {
         s = c.signal;
   let state = "begin";
 
-  assert_true(s.reason instanceof DOMException, "signal.reason is DOMException");
-  assert_equals(s.reason.name, "AbortError", "signal.reason is AbortError");
-
+  assert_true("reason" in s, "signal has reason property");
+  assert_equals(s.reason, undefined, "signal.reason is initially undefined");
   assert_false(s.aborted);
 
   s.addEventListener("abort",
@@ -18,6 +17,8 @@ test(t => {
 
   assert_equals(state, "aborted");
   assert_true(s.aborted);
+  assert_true(s.reason instanceof DOMException, "signal.reason is DOMException");
+  assert_equals(s.reason.name, "AbortError", "signal.reason is AbortError");
 
   c.abort();
 }, "AbortController abort() should fire event synchronously");
@@ -71,6 +72,9 @@ test(t => {
   const controller = new AbortController();
   const signal = controller.signal;
 
+  assert_true("reason" in signal, "signal has reason property");
+  assert_equals(signal.reason, undefined, "signal.reason is initially undefined");
+
   const reason = Error("hello");
   controller.abort(reason);
 
@@ -82,6 +86,9 @@ test(t => {
   const controller = new AbortController();
   const signal = controller.signal;
 
+  assert_true("reason" in signal, "signal has reason property");
+  assert_equals(signal.reason, undefined, "signal.reason is initially undefined");
+
   controller.abort();
 
   assert_true(signal.aborted, "signal.aborted");
@@ -92,6 +99,9 @@ test(t => {
 test(t => {
   const controller = new AbortController();
   const signal = controller.signal;
+
+  assert_true("reason" in signal, "signal has reason property");
+  assert_equals(signal.reason, undefined, "signal.reason is initially undefined");
 
   controller.abort(undefined);
 

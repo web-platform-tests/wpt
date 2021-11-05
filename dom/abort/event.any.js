@@ -3,9 +3,9 @@ test(t => {
         s = c.signal;
   let state = "begin";
 
+  assert_false(s.aborted);
   assert_true("reason" in s, "signal has reason property");
   assert_equals(s.reason, undefined, "signal.reason is initially undefined");
-  assert_false(s.aborted);
 
   s.addEventListener("abort",
     t.step_func(e => {

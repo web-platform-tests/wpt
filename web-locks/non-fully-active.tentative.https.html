@@ -19,7 +19,7 @@
 
   promise_test(async t => {
     const { navigator, DOMException } = createNonFullyActiveIframe();
-    const p = navigator.locks.request("foo", () => { });
+    const p = navigator.locks.request("foo", t.unreached_func());
     await promise_rejects_dom(t, "InvalidStateError", DOMException, p, "Request should explicitly fail");
   }, "request() on non-fully-active document must fail");
 
@@ -32,7 +32,7 @@
   promise_test(async t => {
     const { navigator, DOMException, postMessage } = createNonFullyActiveIframe();
 
-    const p = navigator.locks.request("-", () => { });
+    const p = navigator.locks.request("-", t.unreached_func());
     await promise_rejects_dom(t, "InvalidStateError", DOMException, p, "Request should explicitly fail");
   }, "request()'s fully-active check happens earlier than name validation");
 
@@ -47,7 +47,7 @@
     assert_not_equals(navigator, iframe.contentWindow.navigator, "Navigator object changes");
     assert_not_equals(navigator.locks, iframe.contentWindow.navigator.locks, "LockManager object changes");
 
-    const p = navigator.locks.request("foo", () => { });
+    const p = navigator.locks.request("foo", t.unreached_func());
     await promise_rejects_dom(t, "InvalidStateError", DOMException, p, "Request on the previous LockManager still must fail");
   }, "Reactivated iframe must not reuse the previous LockManager");
 

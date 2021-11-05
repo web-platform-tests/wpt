@@ -64,6 +64,12 @@ for (const reason of [null, undefined, error1]) {
     return rs.pipeTo(ws, { signal })
         .catch(e => {
           error = e;
+          if (reason === error1) {
+            assert_equals(error, error1, 'error is not undefined');
+          } else {
+            assert_true(error instanceof DOMException, 'error is a DOMException');
+            assert_equals(error.name, 'AbortError', 'error is an AbortError');
+          }
         })
         .then(() => Promise.all([
           rs.getReader().closed,
@@ -77,7 +83,7 @@ for (const reason of [null, undefined, error1]) {
       assert_equals(rs.events[0], 'cancel', 'first event should be cancel');
       assert_equals(rs.events[1], error, 'the readable should be canceled with the same object');
     });
-  }, 'all the error objects should be the same object');
+  }, '(reason: '${reason}') all the error objects should be the same object');
 }
 
 promise_test(t => {
@@ -136,14 +142,22 @@ for (const reason of [null, undefined, error1]) {
       }
     });
     return rs.pipeTo(ws, { signal })
-        .catch(e => { error = e; })
+        .catch(e => {
+          error = e;
+          if (reason === error1) {
+            assert_equals(error, error1, 'error is not undefined');
+          } else {
+            assert_true(error instanceof DOMException, 'error is a DOMException');
+            assert_equals(error.name, 'AbortError', 'error is an AbortError');
+          }
+        })
         .then(() => {
           assert_equals(signal.reason, error, 'signal.reason should be error');
           assert_equals(ws.events.length, 4, 'only chunk "a" should have been written');
           assert_array_equals(ws.events.slice(0, 3), ['write', 'a', 'abort'], 'events should match');
           assert_equals(ws.events[3], error, 'abort reason should be error');
         });
-  }, 'abort should prevent further reads');
+  }, '(reason: '${reason}') abort should prevent further reads');
 }
 
 for (const reason of [null, undefined, error1]) {
@@ -173,14 +187,22 @@ for (const reason of [null, undefined, error1]) {
       abortController.abort(reason);
       readController.close(); // Make sure the test terminates when signal is not implemented.
       resolveWrite();
-      return pipeToPromise.catch(e => { error = e; })
+      return pipeToPromise.catch(e => {
+        error = e;
+        if (reason === error1) {
+          assert_equals(error, error1, 'error is not undefined');
+        } else {
+          assert_true(error instanceof DOMException, 'error is a DOMException');
+          assert_equals(error.name, 'AbortError', 'error is an AbortError');
+        }
+      })
     }).then(() => {
       assert_equals(signal.reason, error, 'signal.reason should be error');
       assert_equals(ws.events.length, 6, 'chunks "a" and "b" should have been written');
       assert_array_equals(ws.events.slice(0, 5), ['write', 'a', 'write', 'b', 'abort'], 'events should match');
       assert_equals(ws.events[5], error, 'abort reason should be error');
     });
-  }, 'all pending writes should complete on abort');
+  }, '(reason: '${reason}') all pending writes should complete on abort');
 }
 
 promise_test(t => {

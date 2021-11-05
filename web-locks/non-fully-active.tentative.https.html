@@ -41,6 +41,9 @@
     document.body.append(iframe);
     t.add_cleanup(() => iframe.remove());
 
+    // Appending should create a new browsing context with a new Navigator object
+    // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:insert-an-element-into-a-document
+    // https://html.spec.whatwg.org/multipage/system-state.html#the-navigator-object:associated-navigator
     assert_not_equals(navigator, iframe.contentWindow.navigator, "Navigator object changes");
     assert_not_equals(navigator.locks, iframe.contentWindow.navigator.locks, "LockManager object changes");
 

@@ -54,35 +54,32 @@ promise_test(t => {
 }, 'an aborted signal should cause the writable stream to reject with an AbortError');
 
 for (const reason of [null, undefined, error1]) {
-  promise_test(() => {
+  promise_test(async () => {
     let error;
     const rs = recordingReadableStream(errorOnPull, hwm0);
     const ws = new WritableStream();
     const abortController = new AbortController();
     const signal = abortController.signal;
     abortController.abort(reason);
-    return rs.pipeTo(ws, { signal })
-        .catch(e => {
-          error = e;
-          if (reason === error1) {
-            assert_equals(error, error1, 'error is not undefined');
-          } else {
-            assert_true(error instanceof DOMException, 'error is a DOMException');
-            assert_equals(error.name, 'AbortError', 'error is an AbortError');
-          }
-        })
-        .then(() => Promise.all([
-          rs.getReader().closed,
-          ws.getWriter().closed.catch(e => {
-            assert_equals(e, error, 'the writable should be errored with the same object');
-          })
-        ]))
-    .then(() => {
-      assert_equals(signal.reason, error, 'signal.reason should be error'),
-      assert_equals(rs.events.length, 2, 'cancel should have been called');
-      assert_equals(rs.events[0], 'cancel', 'first event should be cancel');
-      assert_equals(rs.events[1], error, 'the readable should be canceled with the same object');
+    await rs.pipeTo(ws, { signal }).catch(e => {
+      error = e;
+      if (reason === error1) {
+        assert_equals(error, error1, 'error is not undefined');
+      } else {
+        assert_true(error instanceof DOMException, 'error is a DOMException');
+        assert_equals(error.name, 'AbortError', 'error is an AbortError');
+      }
     });
+    await Promise.all([
+        rs.getReader().closed,
+        ws.getWriter().closed.catch(e => {
+          assert_equals(e, error, 'the writable should be errored with the same object');
+        })
+    ]);
+    assert_equals(signal.reason, error, 'signal.reason should be error'),
+    assert_equals(rs.events.length, 2, 'cancel should have been called');
+    assert_equals(rs.events[0], 'cancel', 'first event should be cancel');
+    assert_equals(rs.events[1], error, 'the readable should be canceled with the same object');
   }, '(reason: '${reason}') all the error objects should be the same object');
 }
 
@@ -125,7 +122,7 @@ promise_test(t => {
 }, 'preventCancel and preventAbort should prevent canceling the readable and aborting the readable');
 
 for (const reason of [null, undefined, error1]) {
-  promise_test(t => {
+  promise_test(async t => {
     let error;
     const rs = new ReadableStream({
       start(controller) {
@@ -141,22 +138,19 @@ for (const reason of [null, undefined, error1]) {
         abortController.abort(reason);
       }
     });
-    return rs.pipeTo(ws, { signal })
-        .catch(e => {
-          error = e;
-          if (reason === error1) {
-            assert_equals(error, error1, 'error is not undefined');
-          } else {
-            assert_true(error instanceof DOMException, 'error is a DOMException');
-            assert_equals(error.name, 'AbortError', 'error is an AbortError');
-          }
-        })
-        .then(() => {
-          assert_equals(signal.reason, error, 'signal.reason should be error');
-          assert_equals(ws.events.length, 4, 'only chunk "a" should have been written');
-          assert_array_equals(ws.events.slice(0, 3), ['write', 'a', 'abort'], 'events should match');
-          assert_equals(ws.events[3], error, 'abort reason should be error');
-        });
+    await rs.pipeTo(ws, { signal }).catch(e => {
+      error = e;
+      if (reason === error1) {
+        assert_equals(error, error1, 'error is not undefined');
+      } else {
+        assert_true(error instanceof DOMException, 'error is a DOMException');
+        assert_equals(error.name, 'AbortError', 'error is an AbortError');
+      }
+    });
+    assert_equals(signal.reason, error, 'signal.reason should be error');
+    assert_equals(ws.events.length, 4, 'only chunk "a" should have been written');
+    assert_array_equals(ws.events.slice(0, 3), ['write', 'a', 'abort'], 'events should match');
+    assert_equals(ws.events[3], error, 'abort reason should be error');
   }, '(reason: '${reason}') abort should prevent further reads');
 }
 

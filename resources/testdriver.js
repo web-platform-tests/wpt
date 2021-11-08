@@ -221,7 +221,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fufilled with the previous {@link
+         * @returns {Promise} fulfilled with the previous {@link
          *                    https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
          *                      value, after the window is minimized.
          */
@@ -241,7 +241,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fufilled after the window is restored to the given rect.
+         * @returns {Promise} fulfilled after the window is restored to the given rect.
          */
         set_window_rect: function(rect, context=null) {
             return window.test_driver_internal.set_window_rect(rect, context);
@@ -267,7 +267,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fufilled after the actions are performed, or rejected in
+         * @returns {Promise} fulfilled after the actions are performed, or rejected in
          *                    the cases the WebDriver command errors
          */
         action_sequence: function(actions, context=null) {

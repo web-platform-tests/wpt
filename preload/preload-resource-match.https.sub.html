@@ -13,7 +13,7 @@ function createEchoURL(text, type) {
 }
 const urls = {
     image: createEchoURL('<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2" />', 'image/svg+xml'),
-    font: '/preload/resources/Ahem.ttf?x',
+    font: '/preload/resources/font.ttf?x',
     text: createEchoURL('hello', 'text/plain'),
     script: createEchoURL('function dummy() { }', 'application/javascript'),
     style: createEchoURL('.cls { }', 'text/css'),
@@ -40,7 +40,7 @@ const configs = {
 function preload(attributes, t) {
     const link = document.createElement('link');
     link.rel = "preload";
-    Object.entries(attributes).forEach(([key, value]) => { 
+    Object.entries(attributes).forEach(([key, value]) => {
         if (value)
             link[key] = value;
     });
@@ -53,7 +53,7 @@ function preload(attributes, t) {
 const loaders = {
     image: (href, attr, t) => {
         const img = document.createElement('img');
-        Object.entries(attr).forEach(([key, value]) => { 
+        Object.entries(attr).forEach(([key, value]) => {
             img[key] = value;
         });
 
@@ -93,7 +93,7 @@ const loaders = {
         t.add_cleanup(() => div.remove());
     },
     fetch: async (href, attr, t) => {
-        const options = {mode: attr.crossOrigin ? 'cors' : 'no-cors', 
+        const options = {mode: attr.crossOrigin ? 'cors' : 'no-cors',
              credentials: !attr.crossOrigin || attr.crossOrigin === 'anonymous' ? 'omit' : 'include'}
 
         const response = await fetch(href, options)

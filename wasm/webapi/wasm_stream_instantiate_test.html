@@ -39,7 +39,7 @@
       await promise_rejects_js(t, TypeError, WebAssembly.instantiateStreaming(result));
   }, "instantiateStreaming raise error if 404 status");
 
-  const getWasmUrl = fileName => { 
+  const getWasmUrl = fileName => {
       const host_info = get_host_info();
       const url = host_info.HTTP_ORIGIN_WITH_DIFFERENT_PORT + '/wasm/webapi/';
       return url + fileName + "?pipe=header(Access-Control-Allow-Origin,*)";

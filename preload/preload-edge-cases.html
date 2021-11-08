@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<title>Test cases for scenarios not defined in the preload spec</title>
+<script src="/resources/testharness.js" a></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+    function uuidv4() {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+    }
+
+    function generateUrl({headers, content, key, status}) {
+        const params = new URLSearchParams(
+            {status: status || 200, key, content, headers: JSON.stringify(Object.entries(headers || {}))})
+        return `resources/inc-requests.py?${params.toString()}`
+    }
+
+    async function get_count(key) {
+        const response = await fetch(`resources/inc-requests.py?key=${key}&count=1`)
+        return +(await response.text())
+    }
+
+    function preload(url, type = "fetch", crossOrigin) {
+        const link = document.createElement('link')
+        link.rel = "preload"
+        link.href = url
+        link.as = type
+        if (crossOrigin)
+            link.setAttribute("crossorigin", "")
+        document.head.appendChild(link)
+        return new Promise(resolve => {
+            link.addEventListener("load", () => resolve(link))
+            link.addEventListener("error", () => resolve(link))
+        })
+    }
+
+    const defaultLoadCount = 2
+
+    async function load_and_count({loadType, contentType, numLoads, content, cache, type, crossOrigin, load, expected}) {
+        numLoads = numLoads || defaultLoadCount
+        const key = uuidv4()
+        const cacheControls = {cache: "Max-Age=1000", "no-cache": "no-store", error: ""}
+        const cacheControl = cacheControls[cache]
+        const headers = {"Cache-Control": cacheControl, "Content-Type": contentType }
+        
+        const url = generateUrl({headers, key, content, status: cache === "error" ? 404 : 200})
+        let link
+        if (loadType === "preload")
+            link = await preload(url, type, crossOrigin)
+        else
+            load(url)
+        const results = []
+        for (let i = 0; i < numLoads; i++)
+            await load(url)
+
+        const count = await get_count(key)
+        if (loadType === "preload")
+            link.remove()
+        assert_equals(count, expected);
+    }
+
+    const fetch_with_force_cache = url => fetch(url, {cache: "force-cache"})
+    const fetch_image = url => {
+        const image = document.createElement('img')
+        image.src = url
+        document.body.appendChild(image)
+        return new Promise(resolve => image.onload = image.onerror = () => {
+            image.remove()
+            resolve()
+        })
+    }
+    const fetch_script = url => {
+        const script = document.createElement('script')
+        script.src = url
+        document.body.appendChild(script)
+        return new Promise(resolve => {
+            script.onload = script.onerror = () => {
+                resolve()
+                script.remove()
+            }
+        })
+    }
+    const fetch_style = url => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        document.head.appendChild(link)
+        return new Promise(resolve => {
+            link.onload = link.onerror = () => {
+                resolve()
+                link.remove()
+            }
+        })
+    }
+
+    const variants = {
+        fetch: {
+            content: '{}',
+            contentType: 'application/json',
+            load: fetch,
+            crossOrigin: true,
+            as: 'fetch'
+        },
+        fetch_force_cache: {
+            content: '{}',
+            contentType: 'application/json',
+            load: fetch_with_force_cache,
+            crossOrigin: true,
+            as: 'fetch'
+        },
+        image: {
+            content: '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2" />',
+            contentType: 'image/svg+xml',
+            load: fetch_image,
+            crossOrigin: false,
+            as: 'image'
+        },
+        invalid_image: {
+            content: '/<!##123\n3131',
+            contentType: 'image/svg+xml',
+            load: fetch_image,
+            crossOrigin: false,
+            as: 'image'
+        },
+        script: {
+            content: '//',
+            contentType: 'text/javascript',
+            load: fetch_script,
+            crossOrigin: false,
+            as: 'script'
+        },
+        style: {
+            content: '.some-class { all: revert }',
+            contentType: 'text/css',
+            load: fetch_style,
+            crossOrigin: false,
+            as: 'style'
+        },
+    }
+
+    function test_preload({cache, status, resourceType, numLoads, loadType}) {
+        const variant = variants[resourceType];
+        numLoads = numLoads || defaultLoadCount
+        const expected = 1
+        promise_test(() => 
+            load_and_count({
+                loadType,
+                cache,
+                contentType: variant.contentType,
+                numLoads: numLoads || defaultLoadCount,
+                expected: 1,
+                content: variant.content,
+                type: variant.as,
+                load: variant.load
+            }), `${numLoads} loads after ${loadType}: (${resourceType}, ${cache})
+                should make ${expected} server requests`)
+    }
+
+    for (const resourceType in variants) {
+        for (const cache of ["cache", "no-cache", "error"]) {
+            for (const loadType of ["load", "preload"])
+                test_preload({cache, resourceType, loadType})
+        }
+    }
+
+</script>
+<img src="1x1.svg" />

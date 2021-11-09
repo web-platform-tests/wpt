@@ -9,7 +9,11 @@
 <style>
 
 .target::after {
-  content: "default";
+  content: none;
+}
+
+.target.initial::after {
+  content: "initial";
 }
 
 @keyframes content-animation {
@@ -23,29 +27,39 @@
 
 </style>
 <body>
-<div class="target"></div>
 <script>
 
-test(function() {
-  const target = document.querySelector(".target");
-  const style = getComputedStyle(target, "::after");
+const contentAnimationTest = (className, expectedInitialValue, title) => {
+    test(() => {
+        const target = document.body.appendChild(document.createElement("div"));
+        target.classList.add("target");
+        if (className)
+            target.classList.add(className);
 
-  assert_equals(style.content, '"default"', "Before the animation is applied.");
+        const style = getComputedStyle(target, "::after");
 
-  target.classList.add("animated");
-  const animation = target.getAnimations({ subtree: true })[0];
+        assert_equals(style.content, expectedInitialValue, "Before the animation is applied.");
 
-  const testContentAtTime = (time, expected) => {
-    animation.currentTime = time;
-    assert_equals(style.content, `"${expected}"`, `Check the animated value at time = ${time}ms`);
-  };
+        target.classList.add("animated");
+        const animation = target.getAnimations({ subtree: true })[0];
 
-  testContentAtTime(0, 'from');
-  testContentAtTime(499, 'from');
-  testContentAtTime(500, 'to');
-  testContentAtTime(999, 'to');
-  testContentAtTime(1000, 'to');
-}, "The content property can be animated with a discrete animation type.");
+        const testContentAtTime = (time, expected) => {
+          animation.currentTime = time;
+          assert_equals(style.content, `"${expected}"`, `Check the animated value at time = ${time}ms`);
+        };
+
+        testContentAtTime(0, 'from');
+        testContentAtTime(499, 'from');
+        testContentAtTime(500, 'to');
+        testContentAtTime(999, 'to');
+        testContentAtTime(1000, 'to');
+
+        target.remove();
+    }, title);
+}
+
+contentAnimationTest('', '', 'The content property can be animated with a discrete animation type when there is no initial content value.');
+contentAnimationTest('initial', '"initial"', 'The content property can be animated with a discrete animation type when there is an initial content value.');
 
 </script>
 </body>

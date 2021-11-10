@@ -123,6 +123,16 @@ class CSSCollidingSupportName(Rule):
     description = "The filename %s is shared by: %s"
 
 
+class InvalidCSSRequirementsFlag(Rule):
+    name = "INVALID-CSS-REQUIREMENT-FLAG"
+    description = "Invalid CSS requirement flag: %s"
+
+
+class DeprecatedCSSRequirementsFlag(Rule):
+    name = "DEPRECATED-CSS-REQUIREMENT-FLAG"
+    description = "CSS requirement flag is deprecated: %s"
+
+
 class SupportWrongDir(Rule):
     name = "SUPPORT-WRONG-DIR"
     description = "Support file not in support directory"

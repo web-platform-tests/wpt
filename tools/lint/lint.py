@@ -13,6 +13,7 @@ import tempfile
 from collections import defaultdict
 from urllib.parse import urlsplit, urljoin
 
+from . import constants
 from . import fnmatch
 from . import rules
 from .. import localpaths
@@ -517,6 +518,18 @@ def check_parsed(repo_root, path, f):
     if source_file.root is None:
         return [rules.ParseFailed.error(path)]
 
+    # check if CSS requirement flags (tokens) are valid.
+    if path.startswith("css/"):
+        for element in source_file.css_flag_nodes:
+            tokens = element.attrib.get("content", "").split()
+            for token in tokens:
+                # check if flag has been deprecated.
+                if token in constants.CSS_REQUIREMENT_FLAGS['deprecated']:
+                    errors.append(rules.DeprecatedCSSRequirementsFlag.error(path, (token, )))
+                # check if flag is not a recognized flag.
+                elif token not in constants.CSS_REQUIREMENT_FLAGS['valid']:
+                    errors.append(rules.InvalidCSSRequirementsFlag.error(path, (token, )))
+    
     if source_file.type == "manual" and not source_file.name_is_manual:
         errors.append(rules.ContentManual.error(path))
 

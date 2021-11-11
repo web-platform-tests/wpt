@@ -529,7 +529,7 @@ def check_parsed(repo_root, path, f):
                 # check if flag is not a recognized flag.
                 elif token not in constants.CSS_REQUIREMENT_FLAGS['valid']:
                     errors.append(rules.InvalidCSSRequirementsFlag.error(path, (token, )))
-    
+
     if source_file.type == "manual" and not source_file.name_is_manual:
         errors.append(rules.ContentManual.error(path))
 

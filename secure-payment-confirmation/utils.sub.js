@@ -41,11 +41,11 @@ async function createCredential(set_payment_extension=true) {
     timeout: 30000,
   };
 
-  if (set_payment_extension) {
-    publicKey.extensions = {
-      payment: { isPayment: true },
-    };
-  }
+  //if (set_payment_extension) {
+  //  publicKey.extensions = {
+  //    payment: { isPayment: true },
+  //  };
+  //}
 
   return navigator.credentials.create({publicKey});
 }

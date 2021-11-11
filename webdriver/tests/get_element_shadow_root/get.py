@@ -53,19 +53,6 @@ def test_get_shadow_root(session, checkbox_dom):
     assert_same_element(session, custom_element, expected)
 
 
-def test_get_shadow_root_serialization(session, checkbox_dom):
-    session.url = checkbox_dom
-    custom_element = session.find.css("custom-checkbox-element", all=False)
-    shadow_root_response = get_shadow_root(session, custom_element.id)
-    expected = assert_success(shadow_root_response)
-    response = session.execute_script(
-        "return document.querySelector('custom-checkbox-element').shadowRoot")
-    value = assert_success(response)
-    assert isinstance(value, dict)
-    assert "shadow-6066-11e4-a52e-4f735466cecf" in value
-    assert value["shadow-6066-11e4-a52e-4f735466cecf"] == expected["shadow-6066-11e4-a52e-4f735466cecf"]
-
-
 def test_no_shadow_root(session, inline):
     session.url = inline("<div><p>no shadow root</p></div>")
     element = session.find.css("div", all=False)

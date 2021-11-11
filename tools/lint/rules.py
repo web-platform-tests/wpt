@@ -126,11 +126,21 @@ class CSSCollidingSupportName(Rule):
 class InvalidCSSRequirementsFlag(Rule):
     name = "INVALID-CSS-REQUIREMENT-FLAG"
     description = "Invalid CSS requirement flag: %s"
+    to_fix = collapse("""
+        Remove any invalid CSS requirement flags.
+        Valid flags can be found
+        [here](http://web-platform-tests.org/writing-tests/css-metadata.html#requirement-flags).
+    """)
 
 
 class DeprecatedCSSRequirementsFlag(Rule):
     name = "DEPRECATED-CSS-REQUIREMENT-FLAG"
     description = "CSS requirement flag is deprecated: %s"
+    to_fix = collapse("""
+        Remove any deprecated CSS requirement flags.
+        Deprecated flags can be found
+        [here](http://web-platform-tests.org/writing-tests/css-metadata.html#requirement-flags).
+    """)
 
 
 class SupportWrongDir(Rule):

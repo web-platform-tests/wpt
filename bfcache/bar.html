@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>1st Page</title>
+</head>
+
+<body>
+  <script>
+    const events = [
+      "pagehide", "pageshow",
+      "load"
+    ];
+
+    const eventLogger = event => {
+      switch (event.type) {
+        case "pagehide":
+        case "pageshow":
+          let isPersisted = event.persisted ? "persisted" : "not persisted";
+          console.log('Event:', event.type, '-', isPersisted);
+          break;
+        default:
+          console.log('Event:', event.type);
+          break;
+      }
+    };
+
+    events.forEach(eventName =>
+      window.addEventListener(eventName, eventLogger)
+    );
+  </script>
+  <p><a href="foo.html">FOO</a></p>
+</body>
+
+</html>

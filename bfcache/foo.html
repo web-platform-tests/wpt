@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>2nd Page</title>
+</head>
+
+<body>
+  <script>
+    const events = [
+      "pagehide", "pageshow",
+      "load"
+    ];
+
+    const eventLogger = event => {
+      switch (event.type) {
+        case "pagehide":
+        case "pageshow":
+          let isPersisted = event.persisted ? "persisted" : "not persisted";
+          console.log('Event:', event.type, '-', isPersisted);
+          break;
+        default:
+          console.log('Event:', event.type);
+          break;
+      }
+    };
+
+    events.forEach(eventName =>
+      window.addEventListener(eventName, eventLogger)
+    );
+    function sleepFor(sleepDuration) {
+      var now = new Date().getTime();
+      while (new Date().getTime() < now + sleepDuration) {
+      }
+    }
+    window.performance.mark('mark_bfcache_start');
+    sleepFor(2000);
+    window.performance.mark('mark_bfcache_end');
+    window.performance.measure('measure_test', 'mark_bfcache_start', 'mark_bfcache_end');
+  </script>
+  <p><a href="bar.html">BAR</a></p>
+</body>
+
+
+</html>

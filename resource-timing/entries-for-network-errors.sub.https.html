@@ -6,7 +6,6 @@
 </title>
 <link rel="author" title="Noam Rosenthal" href="noam@webkit.org">
 <link rel="help" href="https://www.w3.org/TR/resource-timing-2/#sec-performanceresourcetiming"/>
-<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -34,7 +33,6 @@ network_error_entry_test(
 
 network_error_entry_test(`/common/redirect.py?location=${validDataURL}`, null, "non-HTTP redirect");
 network_error_entry_test('//{{hosts[][nonexistent]}}/common/dummy.xml', null, "DNS failure");
-network_error_entry_test('//10.0.0.200/common/dummy.xml', null, "Conection timeout");
 
 network_error_entry_test('/common/dummy.xml', {cache: 'only-if-cached'},
     "only-if-cached resource that was not cached");

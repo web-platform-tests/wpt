@@ -483,6 +483,7 @@ const attribute_test_with_validator = (loader, path, validator, run_test, test_l
 };
 
 const network_error_entry_test = (url, args_or_loader, label) => {
+  url = new URL(url, location.href)
     promise_test(async () => {
         const timeBefore = performance.now();
         loader = (typeof args_or_loader === 'function') ?

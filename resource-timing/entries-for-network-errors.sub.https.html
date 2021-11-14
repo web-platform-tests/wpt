@@ -6,6 +6,7 @@
 </title>
 <link rel="author" title="Noam Rosenthal" href="noam@webkit.org">
 <link rel="help" href="https://www.w3.org/TR/resource-timing-2/#sec-performanceresourcetiming"/>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -31,25 +32,16 @@ function fetchAndAbort(url) {
 network_error_entry_test(
     `${REMOTE_ORIGIN}${validXmlUrl}`, null, "failed cross-origin requests");
 
-network_error_entry_test(`about:config`, null, "failed about:*");
-network_error_entry_test(`about:config`, {method: 'PUT'}, "failed about:* PUT");
-network_error_entry_test(validBlobURL, {method: 'POST'}, "POST to a blob");
-network_error_entry_test(invalidDataURL, null,"invalid data URL");
-network_error_entry_test('file:///etc/passwords.txt', null, "file URL");
-network_error_entry_test('somerandomscheme://whatisthat.com', null, "unrecognized scheme");
+network_error_entry_test(`/common/redirect.py?location=${validDataURL}`, null, "non-HTTP redirect");
+network_error_entry_test('//{{hosts[][nonexistent]}}/common/dummy.xml', null, "DNS failure");
+network_error_entry_test('//10.0.0.200/common/dummy.xml', null, "Conection timeout");
 
 network_error_entry_test('/common/dummy.xml', {cache: 'only-if-cached'},
     "only-if-cached resource that was not cached");
 
-network_error_entry_test(`/common/redirect.py?location=${validDataURL}`, null, "non-HTTP redirect");
 network_error_entry_test(
     `/element-timing/resources/multiple-redirects.py?redirect_count=22&final_resource=${validXmlUrl}`,
     null, "too many redirects");
-
-network_error_entry_test('//{{hosts[][nonexistent]}}/common/dummy.xml', null, "DNS failure");
-network_error_entry_test(validBlobURL, fetchAndAbort, "abort a blob request");
-network_error_entry_test(validXmlUrl, fetchAndAbort, "abort an HTTP request");
-
 </script>
 </body>
 </html>

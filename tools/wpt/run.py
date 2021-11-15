@@ -291,11 +291,12 @@ class FirefoxAndroid(BrowserSetup):
             kwargs["package_name"] = "org.mozilla.geckoview.test_runner"
         app = kwargs["package_name"]
 
-        if kwargs["device_serial"] is None:
-            kwargs["device_serial"] = "emulator-5554"
+        if not kwargs["device_serial"]:
+            kwargs["device_serial"] = ["emulator-5554"]
 
         # We're running on an emulator so ensure that's set up
-        if kwargs["device_serial"].startswith("emulator-"):
+        # Assume only one Android device is attached
+        if kwargs["device_serial"][0].startswith("emulator-"):
             emulator = android.install(logger, reinstall=False, no_prompt=not self.prompt)
             android.start(logger, emulator=emulator, reinstall=False)
 

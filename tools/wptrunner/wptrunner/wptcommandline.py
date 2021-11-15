@@ -198,8 +198,8 @@ scheme host and port.""")
                         help="Android package name to run tests against")
     android_group.add_argument("--keep-app-data-directory", action="store_true",
                         help="Don't delete the app data directory")
-    android_group.add_argument("--device-serial", action="store",
-                              help="Running Android instance to connect to, if not emulator-5554")
+    android_group.add_argument("--device-serial", action="append", default=[],
+                              help="Running Android instances to connect to, if not emulator-5554")
 
     config_group = parser.add_argument_group("Configuration")
     config_group.add_argument("--binary", action="store",
@@ -550,6 +550,9 @@ def check_args(kwargs):
 
     if kwargs["processes"] is None:
         kwargs["processes"] = 1
+
+    if kwargs["device_serial"]:
+        kwargs["processes"] = len(kwargs["device_serial"])
 
     if kwargs["debugger"] is not None:
         import mozdebug

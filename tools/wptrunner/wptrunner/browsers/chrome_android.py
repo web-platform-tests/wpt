@@ -57,9 +57,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     assert kwargs["package_name"], "missing --package-name"
     executor_kwargs["capabilities"]["goog:chromeOptions"]["androidPackage"] = \
         kwargs["package_name"]
-    if kwargs.get("device_serial"):
-        executor_kwargs["capabilities"]["goog:chromeOptions"]["androidDeviceSerial"] = \
-            kwargs["device_serial"]
 
     return executor_kwargs
 
@@ -144,6 +141,10 @@ class ChromeAndroidBrowserBase(Browser):
         if self.remote_queue is not None:
             self.logcat_runner = LogcatRunner(self.logger,
                                           self, self.remote_queue)
+
+    def update_device_serial_for_executor(self, kwargs):
+        kwargs["capabilities"]["goog:chromeOptions"]["androidDeviceSerial"] = \
+            self.device_serial
 
     def setup(self):
         self.setup_adb_reverse()

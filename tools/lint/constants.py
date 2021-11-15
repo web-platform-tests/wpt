@@ -8,7 +8,8 @@ CSS_REQUIREMENT_FLAGS = {
         'nonHTML',
         'paged',
         'scroll',
-        'should'
+        'should',
+        'svg'
     }),
     'deprecated': frozenset({
         'animated',

@@ -91,6 +91,10 @@ to include the corresponding flags (tokens):
   <td>Behavior tested is RECOMMENDED, but not REQUIRED. <a
     href="https://www.ietf.org/rfc/rfc2119.txt">[RFC2119]</a></td>
 </tr>
+<tr>
+  <td>svg</td>
+  <td>Requires support for vector graphics (SVG).</td>
+</tr>
 </table>
 
 The following flags are **deprecated** and should not be declared by new tests.

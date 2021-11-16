@@ -19,11 +19,19 @@
 </dialog>
 
 <script>
-for (const template of document.querySelectorAll(".turn-into-shadow-tree")) {
+function turnIntoShadowTree(template) {
+  for (const subTemplate of template.content.querySelectorAll(".turn-into-shadow-tree")) {
+    turnIntoShadowTree(subTemplate);
+  }
+
   const div = document.createElement("div");
   div.attachShadow({ mode: "open", delegatesFocus: template.classList.contains("delegates-focus") });
   div.shadowRoot.append(template.content);
   template.replaceWith(div);
+}
+
+for (const template of document.querySelectorAll(".turn-into-shadow-tree")) {
+  turnIntoShadowTree(template);
 }
 
 for (const method of ["show", "showModal"]) {

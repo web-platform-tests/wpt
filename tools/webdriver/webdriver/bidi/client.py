@@ -319,12 +319,7 @@ class command:
         async def inner(self: Any, **kwargs: Any) -> Any:
             params = params_fn(self, **kwargs)
 
-            # Convert the classname and the method name to a bidi command name
-            mod_name = owner.__name__.lower()
-            if hasattr(owner, "prefix"):
-                mod_name = f"{owner.prefix}:{mod_name}"
-            cmd_name = f"{mod_name}.{to_camelcase(name)}"
-
+            cmd_name = get_bidi_name(owner, name)
             future = await self.session.send_command(cmd_name, params)
             result = await future
 
@@ -339,6 +334,70 @@ class command:
     def __call__(*args: Any, **kwargs: Any) -> Awaitable[Any]:
         # This isn't really used, but mypy doesn't understand __set_name__
         pass
+
+
+class Event:
+    def __init__(self, owner, impl):
+        self.owner = owner
+        self.impl = impl
+
+        name = impl.__name__
+        self.event_name = get_bidi_name(owner, name)
+
+    def on(self, callback):
+        removers = []
+
+        def inner(_, params):
+            kwargs = self.impl(params)
+            callback(**kwargs)
+            # Remove the event listener
+            for fn in removers:
+                fn()
+
+        removers.append(self.owner.session.add_event_listener(self.event_name, inner))
+
+    async def next(self):
+        future = self.owner.session.transport.loop.create_future()
+
+        def resolve(**kwargs):
+            future.set_result(kwargs)
+
+        self.on(resolve)
+        await future
+
+
+class event:
+    def __init__(self, fn):
+        self._name = ""
+        self.fn = fn
+        self.__doc__ = fn.__doc__
+        self._cache = {}
+
+    def __set_name__(self, owner, name):
+        self._name = name
+
+    def __get__(self, instance, owner=None):
+        if instance is None:
+            return self
+
+        if instance not in self._cache:
+            self._cache[instance] = Event(instance, self.fn)
+
+        return self._cache[instance]
+
+    def __set__(self, instance, owner=None):
+        raise AttributeError(f"Can't set attribute {self._name}")
+
+    def __delete__(self, obj):
+        raise AttributeError(f"Can't delete attribute {self._name}")
+
+
+def get_bidi_name(owner, name):
+    # Convert the classname and the method name to a bidi command name
+    mod_name = owner.__name__.lower()
+    if hasattr(owner, "prefix"):
+        mod_name = f"{owner.prefix}:{mod_name}"
+    return f"{mod_name}.{to_camelcase(name)}"
 
 
 def to_camelcase(name: str) -> str:
@@ -381,6 +440,12 @@ class Session(BidiModule):
         if contexts is not None:
             params["contexts"] = contexts
         return params
+
+
+class Log(BidiModule):
+    @event
+    def entryAdded(self, data: Mapping[str, Any]):
+        return data
 
 
 class Test(BidiModule):

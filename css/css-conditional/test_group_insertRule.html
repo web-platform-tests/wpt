@@ -20,6 +20,7 @@
   var rules = document.getElementById("style").sheet.cssRules;
   var rule_names = ["@media", "@supports"];
   var rule_types = [CSSRule.MEDIA_RULE, CSSRule.SUPPORTS_RULE]
+  var rule_nums  = [4, 12]
 
   for (let i = 0; i < 2; i++) {
     var grouping_rule = rules[i];
@@ -34,6 +35,8 @@
     test(function() {
            assert_equals(grouping_rule.type, rule_types[i],
                          "Rule type of " + rule_name + " rule");
+           assert_equals(grouping_rule.type, rule_nums[i],
+                         "Rule number of " + rule_name + " rule");
          },
          rule_name + " rule type");
 

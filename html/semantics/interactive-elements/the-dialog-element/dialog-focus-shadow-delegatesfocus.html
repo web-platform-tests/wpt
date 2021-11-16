@@ -37,6 +37,7 @@ for (const template of document.querySelectorAll(".turn-into-shadow-tree")) {
 for (const method of ["show", "showModal"]) {
   test(t => {
     const dialog = document.querySelector("dialog");
+    dialog[method]();
     t.add_cleanup(() => dialog.close());
 
     const shadowHostOuter = dialog.querySelector("div");

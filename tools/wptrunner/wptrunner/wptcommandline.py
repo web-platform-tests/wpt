@@ -554,7 +554,7 @@ def check_args(kwargs):
         if kwargs["processes"] is None:
             kwargs["processes"] = len(kwargs["device_serial"])
             print("Set --processes to match with number of devices provided")
-        else if len(kwargs["device_serial"]) != kwargs["processes"]:
+        elif len(kwargs["device_serial"]) != kwargs["processes"]:
             print("--processes does not match number of devices")
             sys.exit(1)
 

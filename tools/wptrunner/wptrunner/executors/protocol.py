@@ -28,6 +28,18 @@ class Protocol(object):
             assert not hasattr(self, name)
             setattr(self, name, cls(self))
 
+    def update(self, target, source):
+        if (type(target) is not dict
+                or type(source) is not dict):
+            return False
+        rv = True
+        for sk in source:
+            if sk not in target:
+                target[sk] = source[sk]
+            else:
+                rv = rv and self.update(target[sk], source[sk])
+        return rv
+
     @property
     def logger(self):
         """:returns: Current logger"""

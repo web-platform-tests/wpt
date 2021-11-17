@@ -490,7 +490,6 @@ class TestRunnerManager(threading.Thread):
         else:
             self.executor_kwargs["group_metadata"] = self.state.group_metadata
             self.executor_kwargs["browser_settings"] = self.browser.browser_settings
-            self.browser.browser.update_device_serial_for_executor(self.executor_kwargs)
             self.start_test_runner()
 
     def start_test_runner(self):

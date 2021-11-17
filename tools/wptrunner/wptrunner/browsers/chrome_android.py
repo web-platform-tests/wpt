@@ -142,10 +142,6 @@ class ChromeAndroidBrowserBase(Browser):
             self.logcat_runner = LogcatRunner(self.logger,
                                           self, self.remote_queue)
 
-    def update_device_serial_for_executor(self, kwargs):
-        kwargs["capabilities"]["goog:chromeOptions"]["androidDeviceSerial"] = \
-            self.device_serial
-
     def setup(self):
         self.setup_adb_reverse()
         if self.remote_queue is not None:
@@ -182,7 +178,14 @@ class ChromeAndroidBrowserBase(Browser):
             self.logcat_runner.stop(force=True)
 
     def executor_browser(self):
-        return ExecutorBrowser, {"webdriver_url": self.server.url}
+        return ExecutorBrowser, {
+            "webdriver_url": self.server.url,
+            "capabilities": {
+                "goog:chromeOptions": {
+                    "androidDeviceSerial": self.device_serial
+                }
+            }
+        }
 
     def clear_log(self):
         self._adb_run(['logcat', '-c'])

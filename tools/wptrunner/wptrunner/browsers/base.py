@@ -98,10 +98,6 @@ class Browser(object):
         self.setup()
         return self
 
-    def update_device_serial_for_executor(self, kwargs):
-        """setup Android device serial for each executor instance."""
-        pass
-
     def __exit__(self, *args, **kwargs):
         self.cleanup()
 

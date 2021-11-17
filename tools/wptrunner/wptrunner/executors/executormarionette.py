@@ -702,6 +702,11 @@ class MarionetteProtocol(Protocol):
         self.marionette = None
         self.marionette_port = browser.marionette_port
         self.capabilities = capabilities
+        if hasattr(browser, "capabilities"):
+            if self.capabilities is None:
+                self.capabilities = browser.capabilities
+            elif not self.update(self.capabilities, browser.capabilities):
+                self.logger.warning("Failed to update instance specific capabilities.")
         self.timeout_multiplier = timeout_multiplier
         self.runner_handle = None
         self.e10s = e10s

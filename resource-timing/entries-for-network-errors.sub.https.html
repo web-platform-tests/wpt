@@ -13,10 +13,6 @@
 </head>
 <body>
 <script>
-const blob = new Blob([1, 2, 3])
-const validBlobURL = URL.createObjectURL(blob)
-const validDataURL = 'data:,Hello%2C%20World%21'
-const invalidDataURL = 'data:12345'
 const {REMOTE_ORIGIN} = get_host_info();
 const validXmlUrl = '/common/dummy.xml';
 

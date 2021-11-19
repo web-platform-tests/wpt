@@ -633,7 +633,9 @@ class Chrome(Browser):
 
     def find_binary(self, venv_path=None, channel=None):
         if channel == "nightly":
-            return self.find_nightly_binary(self._get_dest(venv_path, channel))
+            nightly_binary = self.find_nightly_binary(self._get_dest(venv_path, channel))
+            if nightly_binary is not None:
+                return nightly_binary
 
         if uname[0] == "Linux":
             name = "google-chrome"

@@ -13,7 +13,8 @@
 </head>
 <body>
 <script>
-const {REMOTE_ORIGIN} = get_host_info();
+const validDataURL = 'data:,Hello%2C%20World%21'
+const {REMOTE_ORIGIN, ORIGINAL_HOST, HTTP_PORT} = get_host_info();
 const validXmlUrl = '/common/dummy.xml';
 
 function fetchAndAbort(url) {
@@ -21,7 +22,7 @@ function fetchAndAbort(url) {
   const signal = controller.signal;
   controller.abort();
   const res = fetch(url, { signal });
-  return res
+  return res;
 }
 
 network_error_entry_test(
@@ -29,6 +30,7 @@ network_error_entry_test(
 
 network_error_entry_test(`/common/redirect.py?location=${validDataURL}`, null, "non-HTTP redirect");
 network_error_entry_test('//{{hosts[][nonexistent]}}/common/dummy.xml', null, "DNS failure");
+network_error_entry_test(`http://${ORIGINAL_HOST}:${HTTP_PORT}/commo/dummy.xml`, null, "Mixed content");
 
 network_error_entry_test('/common/dummy.xml', {cache: 'only-if-cached'},
     "only-if-cached resource that was not cached");

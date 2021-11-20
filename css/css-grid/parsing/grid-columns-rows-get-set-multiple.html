@@ -293,8 +293,7 @@ document.fonts.ready.then(() => {
     testGridDefinitionsSetJSValues("16em minmax(16px, 20px)", "minmax(10%, 15%) auto", "160px 20px", "90px 0px");
     testGridDefinitionsSetJSValues("16em 2fr", "14fr auto", "160px 640px", "600px 0px");
     testGridDefinitionsSetJSValues("calc(25px) calc(2em)", "auto calc(10%)", "25px 20px", "0px 60px", "calc(25px) calc(2em)", "auto calc(10%)");
-    // This test failing in Chromium is caused by https://bugs.chromium.org/p/chromium/issues/detail?id=1050968
-    testGridDefinitionsSetJSValues("calc(25px + 40%) minmax(min-content, calc(10% + 12px))", "minmax(calc(75% - 350px), max-content) auto", "345px 92px", "100px 0px", "calc(40% + 25px) minmax(min-content, calc(10% + 12px))", "minmax(calc(75% - 350px), max-content) auto");
+    testGridDefinitionsSetJSValues("calc(40% + 25px) minmax(min-content, calc(10% + 12px))", "minmax(calc(75% - 350px), max-content) auto", "345px 92px", "100px 0px", "calc(40% + 25px) minmax(min-content, calc(10% + 12px))", "minmax(calc(75% - 350px), max-content) auto");
 
     testWrongCSSValue();
 

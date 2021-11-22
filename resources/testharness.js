@@ -2280,7 +2280,7 @@
 
     /**
      * Asserts if called. Used to ensure that a specific codepath is
-     * not taken e.g. that an error event isn't fired..
+     * not taken e.g. that an error event isn't fired.
      *
      * @param {string} [description] - Description of the condition being tested.
      */

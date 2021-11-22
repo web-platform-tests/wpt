@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>inline event handler CSP check timing: cross-document case</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script>
+    var onClick1Evaluated = false;
+    var onClick2Evaluated = false;
+  </script>
+  <a id="a1" onclick="parent.onClick1Evaluated = true;"></a>
+  <iframe></iframe>
+</head>
+<body>
+  <script>
+    const iframeDocument = document.querySelector("iframe").contentDocument;
+    iframeDocument.open();
+    iframeDocument.write(`
+        <meta http-equiv="Content-Security-Policy" content="script-src * 'nonce-abc';">
+        <body>
+          <a id="a2" onclick="parent.onClick2Evaluated = true;"></a>
+        </body>`);
+    iframeDocument.close();
+
+    document.body.appendChild(iframeDocument.querySelector("#a2"));
+    iframeDocument.body.appendChild(document.querySelector("#a1"));
+
+    iframeDocument.querySelector("#a1").click();
+
+    document.querySelector("#a2").click();
+
+    // Inline event handlers
+    // - Should be checked against CSP at the time of setting attributes and
+    //   ignored if the CSP check fails. Spec: Step 5.1 of
+    //   https://html.spec.whatwg.org/C/#event-handler-content-attributes
+    // - Shouldn't be checked against CSP at the time of firing.
+
+    test(
+      () => assert_true(onClick1Evaluated, "onclick evaluated"),
+      "onclick set in Document w/o CSP and clicked in Document w/ CSP should be fired");
+
+    test(
+      () => assert_false(onClick2Evaluated, "onclick evaluated"),
+      "onclick set in Document w CSP and clicked in Document w/o CSP should NOT be fired");
+  </script>
+</body>
+</html>

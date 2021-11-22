@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>inline event handler CSP check timing</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script>
+    const t0 = async_test("onload is set before CSP is set");
+    const t1 = async_test(
+        "onload is set before CSP is set / modified after CSP is set");
+    const t2 = async_test(
+        "onload is set and modified after CSP is set");
+    let onload_fired0 = false;
+    let original_onload_fired1 = false;
+  </script>
+  <script id="target0" nonce="abc" onload="onload_fired0 = true;"></script>
+  <script id="target1" nonce="abc" onload="original_onload_fired1 = true;"></script>
+  <meta http-equiv="Content-Security-Policy"
+        content="script-src * 'nonce-abc';">
+  <script id="target2" nonce="abc"
+      onload="t2.unreached_func('original onload should not be fired')();"></script>
+</head>
+<body>
+  <script nonce="abc">
+    // Inline event handlers
+    // - Should be checked against CSP at the time of setting attributes and
+    //   ignored if the CSP check fails. Spec: Step 5.1 of
+    //   https://html.spec.whatwg.org/C/#event-handler-content-attributes
+    // - Shouldn't be checked against CSP at the time of firing.
+
+    // step_timeout() is used to execute `done()` after <script>'s load events
+    // (if fired).
+
+    const target0 = document.querySelector("#target0");
+    target0.src = "data:text/javascript,t0.step_timeout(() => {" +
+                  "assert_true(onload_fired0, 'onload should be fired');" +
+                  "t0.done();}, 0);";
+
+    const target1 = document.querySelector("#target1");
+    target1.setAttribute("onload",
+        "t1.unreached_func('new onload should not be fired')();");
+    target1.src = "data:text/javascript,t1.step_timeout(() => {" +
+                  "assert_true(original_onload_fired1," +
+                  "            'original onload should be fired');" +
+                  "t1.done();}, 0);";
+
+    const target2 = document.querySelector("#target2");
+    target2.setAttribute(
+        "onload",
+        "t2.unreached_func('new onload should not be fired')();");
+    target2.src = "data:text/javascript,t2.step_timeout(() => t2.done(), 0);";
+  </script>
+</body>
+</html>

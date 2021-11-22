@@ -11,6 +11,7 @@ source_revision=$(git rev-parse HEAD)
 #
 # https://help.github.com/en/articles/generic-jekyll-build-failures
 remote_url=https://${DEPLOY_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+wpt_root=$PWD
 
 function json_property {
   cat ${1} | \
@@ -38,9 +39,11 @@ git checkout FETCH_HEAD
 git rm -rf .
 
 # Build the website
-cd ../..
-npm install ./docs
+unset NODE_ENV
+cd ${wpt_root}/docs
+npm install .
 export PATH="$PWD/node_modules/.bin:$PATH"
+cd ${wpt_root}
 
 ./wpt build-docs
 

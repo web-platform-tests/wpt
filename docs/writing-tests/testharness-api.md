@@ -107,7 +107,7 @@ Create a [`Test`](#Test):
 var t = async_test("DOMContentLoaded")
 ```
 
-Code is run as part of the test by calling the [`step`](#Test-step)
+Code is run as part of the test by calling the [`step`](#Test.step)
 method with a function containing the test
 [assertions](#assert-functions):
 
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-When all the steps are complete, the [`done`](#Test-done) method must
+When all the steps are complete, the [`done`](#Test.done) method must
 be called:
 
 ```js
@@ -153,8 +153,8 @@ document.addEventListener("DOMContentLoaded", t.step_func(function() {
 ```
 
 As a further convenience, the `step_func` that calls
-[`done`](#Test-done) can instead use
-[`step_func_done`](#Test-step_func_done), as follows:
+[`done`](#Test.done) can instead use
+[`step_func_done`](#Test.step_func_done), as follows:
 
 ```js
 document.addEventListener("DOMContentLoaded", t.step_func_done(function() {
@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", t.step_func_done(function() {
 ```
 
 For asynchronous callbacks that should never execute,
-[`unreached_func`](#Test-unreached_func) can be used. For example:
+[`unreached_func`](#Test.unreached_func) can be used. For example:
 
 ```js
 document.documentElement.addEventListener("DOMContentLoaded",
@@ -206,11 +206,11 @@ In the example above, `foo()` returns a Promise that resolves with the string
 a resolve reaction that verifies the returned value.
 
 Note that in the promise chain constructed in `test_function`
-assertions don't need to be wrapped in [`step`](#Test-step) or
-[`step_func`](#Test-step_func) calls.
+assertions don't need to be wrapped in [`step`](#Test.step) or
+[`step_func`](#Test.step_func) calls.
 
 It is possible to mix promise tests with callback functions using
-[`step`](#Test-step). However this tends to produce confusing tests;
+[`step`](#Test.step). However this tends to produce confusing tests;
 it's recommended to convert any asynchronous behaviour into part of
 the promise chain. For example, instead of
 

@@ -2555,7 +2555,11 @@
      *
      * @example
      * let t = async_test("Example");
-     * onload = t.step_func(e => {assert_equals(e.name, "load"; t.done())})
+     * onload = t.step_func(e => {
+     *   assert_equals(e.name, "load");
+     *   // Mark the test as complete.
+     *   t.done();
+     * })
      *
      * @param {string} func - Function to run as a step. If this
      * throws an :js:func:`AssertionError`, or any other exception,

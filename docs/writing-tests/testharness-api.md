@@ -46,7 +46,7 @@ are complete](#determining-when-all-tests-are-complete).
 Execution of tests on a page is subject to a global timeout. By
 default this is 10s, but a test runner may set a timeout multiplier
 which alters the value according to the requirements of the test
-environment (e.g. to give a longer timeout for debug bulds).
+environment (e.g. to give a longer timeout for debug builds).
 
 Long-running tests may opt into a longer timeout by providing a
 `<meta>` element:

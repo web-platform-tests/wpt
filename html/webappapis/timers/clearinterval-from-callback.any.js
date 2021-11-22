@@ -1,10 +1,10 @@
 async_test((t) => {
-  let timesCalled = 0;
+  let wasPreviouslyCalled = false;
 
   const handle = setInterval(
     t.step_func(() => {
-      if (timesCalled === 0) {
-        timesCalled++;
+      if (!wasPreviouslyCalled) {
+        wasPreviouslyCalled = true;
 
         clearInterval(handle);
 

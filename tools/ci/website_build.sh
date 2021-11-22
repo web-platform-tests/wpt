@@ -39,6 +39,9 @@ git rm -rf .
 
 # Build the website
 cd ../..
+npm install ./docs
+export PATH="$PWD/node_modules/.bin:$PATH"
+
 ./wpt build-docs
 
 cd docs/_build

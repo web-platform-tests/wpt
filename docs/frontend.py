@@ -71,7 +71,7 @@ def docker_build(tag="wpt:docs"):
                            "build",
                            "--pull",
                            "--tag", tag,
-                           os.path.join(here, "docker")])
+                           here])
 
 def docker_run(**kwargs):
     cmd = ["docker", "run"]
@@ -116,7 +116,7 @@ def build(_venv, **kwargs):
                       "--ignore", "**/.*",
                       "--ignore", "**/#*",
                       "--ignore", "docs/frontend.py",
-                      "--ignore", "docs/docker/Dockerfile"]
+                      "--ignore", "docs/Dockerfile"]
         else:
             executable = "sphinx-build"
             extras = []

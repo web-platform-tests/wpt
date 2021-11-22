@@ -26,8 +26,6 @@ jobs:
           node-version: '14'
       - name: Set up Virtualenv
         run: pip install virtualenv
-      - name: Set up jsdoc
-        run: npm install -g 'jsdoc@3.6.7'
       - name: Checkout
         uses: actions/checkout@v2
         with:

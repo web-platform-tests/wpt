@@ -408,7 +408,7 @@ Here's an example that uses `window.open`.
 ### Web Workers ###
 
 ```eval_rst
-.. js:autofunction::fetch_tests_from_worker
+.. js:autofunction fetch_tests_from_worker
 ```
 
 The `testharness.js` script can be used from within [dedicated workers, shared
@@ -538,8 +538,8 @@ proceed. [`Test.step_timeout()`](#Test.step_timeout) is preferred in other cases
 Note that timeouts generally need to be a few seconds long in order to
 produce stable results in all test environments.
 
-For [single page tests](#single-page-test),
-[step_timeout](#step-timeout) is also available as a global function.
+For [single page tests](#single-page-tests),
+[step_timeout](#step_timeout) is also available as a global function.
 
 ```eval_rst
 

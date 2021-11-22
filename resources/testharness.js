@@ -2825,6 +2825,13 @@
         this.done();
     };
 
+    /**
+     * @func
+     *
+     * Manually set the test status to ``TIMEOUT``.
+     *
+     * Synonym for `Test.timeout <#Test.timeout>`_.
+     */
     Test.prototype.force_timeout = Test.prototype.timeout;
 
     /**

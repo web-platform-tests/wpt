@@ -97,6 +97,9 @@ exclude_patterns = [
     '**/.DS_Store',
     '**/Thumbs.db',
     '_build',
+    'node_modules',
+    'package.json',
+    'package-lock.json',
 ]
 
 from docs.wpt_lint_rules import WPTLintRules

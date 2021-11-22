@@ -650,8 +650,7 @@
      *
      * Promise tests are tests which are represeted by a promise
      * object. If the promise is fulfilled the test passes, if it's
-     * rejected with an :js:class:`AssertionError` the test fails,
-     * otherwise the test errors.
+     * rejected the test fails, otherwise the test passes.
      *
      * @param {TestFunction} func - Test function. This must return a
      * promise. The test is automatically marked as complete once the
@@ -718,11 +717,12 @@
      *                          realm
      * @returns {Promise}
      *
-     * An arbitrary promise provided by the caller may have originated in
-     * another frame that have since navigated away, rendering the frame's
-     * document inactive. Such a promise cannot be used with `await` or
-     * Promise.resolve(), as microtasks associated with it may be prevented
-     * from being run. See https://github.com/whatwg/html/issues/5319 for a
+     * An arbitrary promise provided by the caller may have originated
+     * in another frame that have since navigated away, rendering the
+     * frame's document inactive. Such a promise cannot be used with
+     * `await` or Promise.resolve(), as microtasks associated with it
+     * may be prevented from being run. See `issue
+     * 5319<https://github.com/whatwg/html/issues/5319>`_ for a
      * particular case.
      *
      * In functions we define here, there is an expectation from the caller
@@ -770,7 +770,8 @@
      * optional, argument the assertion description.
      *
      * @param {Test} test - the `Test` to use for the assertion.
-     * @param {number|string} type -  See documentation for assert_throws_dom.
+     * @param {number|string} type - See documentation for
+     * `assert_throws_dom <#assert_throws_dom>`_.
      * @param {Function} promiseOrConstructor - Either the constructor
      * for the expected exception (if the exception comes from another
      * global), or the promise that's expected to reject (if the
@@ -1501,7 +1502,9 @@
      * @deprecated
      * Recursively compare two objects for equality.
      *
-     * See https://github.com/web-platform-tests/wpt/issues/2033 for more information.
+     * See `Issue 2033
+     * <https://github.com/web-platform-tests/wpt/issues/2033>`_ for
+     * more information.
      *
      * @param {Object} actual - Test value.
      * @param {Object} expected - Expected value.
@@ -2060,8 +2063,8 @@
      * argument the assertion description.
      *
      * @param {number|string} type - The expected exception name or
-     * code.  See the table of names and codes at
-     * https://webidl.spec.whatwg.org/#dfn-error-names-table If a
+     * code.  See the `table of names and codes
+     * <https://webidl.spec.whatwg.org/#dfn-error-names-table>`_. If a
      * number is passed it should be one of the numeric code values in
      * that table (e.g. 3, 4, etc).  If a string is passed it can
      * either be an exception name (e.g. "HierarchyRequestError",

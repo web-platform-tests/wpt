@@ -29,7 +29,8 @@ RUN apt-get -qqy update \
 RUN pip install --upgrade pip \
   && pip install virtualenv
 
-# Pin to the same version that gecko is using, since that's well tested with sphinx-js.
-RUN npm install -g 'jsdoc@3.6.7'
-
 WORKDIR /app/
+
+COPY ./package.json ./
+RUN npm install .
+ENV PATH=/app/node_modules/.bin:$PATH

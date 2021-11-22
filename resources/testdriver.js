@@ -130,7 +130,7 @@
          * viewport, it will be scrolled into view before the click
          * occurs.
          *
-         * If `element` is from a different browsing context, the
+         * If ``element`` is from a different browsing context, the
          * command will be run in that context.
          *
          * Matches the behaviour of the `Element Click
@@ -191,7 +191,7 @@
          * viewport, it will be scrolled into view before the click
          * occurs.
          *
-         * If `element` is from a different browsing context, the
+         * If ``element`` is from a different browsing context, the
          * command will be run in that context.
          *
          * To send special keys, send the respective key's codepoint,

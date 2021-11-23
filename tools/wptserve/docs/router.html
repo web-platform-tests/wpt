@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Router &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Handlers" href="handlers.html" />
@@ -33,7 +32,7 @@
 
           <div class="body" role="main">
             
-  <section id="router">
+  <div class="section" id="router">
 <h1>Router<a class="headerlink" href="#router" title="Permalink to this headline">¶</a></h1>
 <p>The router is used to match incoming requests to request handler
 functions. Typically users don’t interact with the router directly,
@@ -56,7 +55,7 @@ and, in particular, to be easier to use than raw regexp for URL
 matching. There are three possible components of a match expression:</p>
 <ul>
 <li><p>Literals. These match any character. The special characters *, {
-and } must be escaped by prefixing them with a .</p></li>
+and } must be escaped by prefixing them with a \.</p></li>
 <li><p>Match groups. These match any character other than / and save the
 result as a named group. They are delimited by curly braces; for
 example:</p>
@@ -98,11 +97,11 @@ be:</p>
 <p><cite>handler</cite> is a function taking a request and a response object that is
 responsible for constructing the response to the HTTP request. See
 <a class="reference internal" href="handlers.html"><span class="doc">Handlers</span></a> for more details on handler functions.</p>
-<section id="module-wptserve.router">
+<div class="section" id="module-wptserve.router">
 <span id="interface"></span><span id="router-interface"></span><h2><a class="reference internal" href="#module-wptserve.router" title="wptserve.router"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.router" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="wptserve.router.Router">
-<em class="property">class </em><code class="sig-prename descclassname">wptserve.router.</code><code class="sig-name descname">Router</code><span class="sig-paren">(</span><em class="sig-param">doc_root</em>, <em class="sig-param">routes</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">wptserve.router.</span></code><code class="sig-name descname"><span class="pre">Router</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">routes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object for matching handler functions to requests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -115,9 +114,9 @@ as for register()</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="wptserve.router.Router.get_handler">
-<code class="sig-name descname">get_handler</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router.get_handler" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_handler</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router.get_handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a handler for a request or None if there is no handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -129,9 +128,9 @@ as for register()</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="wptserve.router.Router.register">
-<code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">methods</em>, <em class="sig-param">path</em>, <em class="sig-param">handler</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router.register" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methods</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.Router.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register a handler for a set of paths.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -173,14 +172,14 @@ object and the response object.</p></li>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="wptserve.router.compile_path_match">
-<code class="sig-prename descclassname">wptserve.router.</code><code class="sig-name descname">compile_path_match</code><span class="sig-paren">(</span><em class="sig-param">route_pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.compile_path_match" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">wptserve.router.</span></code><code class="sig-name descname"><span class="pre">compile_path_match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route_pattern</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.router.compile_path_match" title="Permalink to this definition">¶</a></dt>
 <dd><p>tokens: / or literal or match or *</p>
 </dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -253,7 +252,7 @@ object and the response object.</p></li>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Review Checklist &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Email Filters" href="email.html" />
@@ -33,7 +32,7 @@
 
           <div class="body" role="main">
             
-  <section id="review-checklist">
+  <div class="section" id="review-checklist">
 <h1>Review Checklist<a class="headerlink" href="#review-checklist" title="Permalink to this headline">¶</a></h1>
 <p>The following checklist is provided as a guideline to assist in reviewing
 tests; in case of any contradiction with requirements stated elsewhere in the
@@ -41,7 +40,7 @@ documentation it should be ignored
 (please <a class="reference external" href="https://github.com/web-platform-tests/wpt/issues/new">file a bug</a>!).</p>
 <p>As noted on the <a class="reference internal" href="index.html"><span class="doc">reviewing tests</span></a> page, nits need not block PRs
 from landing.</p>
-<section id="all-tests">
+<div class="section" id="all-tests">
 <h2>All tests<a class="headerlink" href="#all-tests" title="Permalink to this headline">¶</a></h2>
 <p><label><input type="checkbox">
 The CI jobs on the pull request have passed.
@@ -91,8 +90,8 @@ interaction, it is a manual test.
 <p><label><input type="checkbox">
 <strong>Nit</strong>: The title is descriptive but not too wordy.
 </label></p>
-</section>
-<section id="reftests-only">
+</div>
+<div class="section" id="reftests-only">
 <h2>Reftests Only<a class="headerlink" href="#reftests-only" title="Permalink to this headline">¶</a></h2>
 <p><label><input type="checkbox">
 The reference file is accurate and will render pixel-perfect
@@ -115,8 +114,8 @@ self-explanatory. Someone with no technical knowledge should be able to say
 whether the test passed or failed within a few seconds, and not need to spend
 several minutes thinking or asking questions.
 </label></p>
-</section>
-<section id="script-tests-only">
+</div>
+<div class="section" id="script-tests-only">
 <h2>Script Tests Only<a class="headerlink" href="#script-tests-only" title="Permalink to this headline">¶</a></h2>
 <p><label><input type="checkbox">
 The number of tests in each file and the test names are consistent
@@ -140,8 +139,8 @@ The test uses <code class="docutils literal notranslate"><span class="pre">idlha
 <p><label><input type="checkbox">
 <strong>Nit</strong>: Tests in a single file are separated by one empty line.
 </label></p>
-</section>
-<section id="visual-tests-only">
+</div>
+<div class="section" id="visual-tests-only">
 <h2>Visual Tests Only<a class="headerlink" href="#visual-tests-only" title="Permalink to this headline">¶</a></h2>
 <p><label><input type="checkbox">
 The test has a self-describing statement.
@@ -159,8 +158,8 @@ presence is being tested.
 <p><label><input type="checkbox">
 The test renders to a fixed, static page with no animation.
 </label></p>
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -234,7 +233,7 @@ The test renders to a fixed, static page with no animation.
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

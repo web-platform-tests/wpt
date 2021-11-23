@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reviewing Tests &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Review Checklist" href="checklist.html" />
@@ -33,7 +32,7 @@
 
           <div class="body" role="main">
             
-  <section id="reviewing-tests">
+  <div class="section" id="reviewing-tests">
 <h1>Reviewing Tests<a class="headerlink" href="#reviewing-tests" title="Permalink to this headline">¶</a></h1>
 <p>In order to encourage a high level of quality in the W3C test
 suites, test contributions must be reviewed by a peer.</p>
@@ -45,7 +44,7 @@ suites, test contributions must be reviewed by a peer.</p>
 <li class="toctree-l1"><a class="reference internal" href="reverting.html">Reverting Changes</a></li>
 </ul>
 </div>
-<section id="test-review-policy">
+<div class="section" id="test-review-policy">
 <h2>Test Review Policy<a class="headerlink" href="#test-review-policy" title="Permalink to this headline">¶</a></h2>
 <p>The reviewer can be anyone (other than the original test author) that
 has the required experience with both the spec under test and with
@@ -70,15 +69,15 @@ request through a dedicated user
 interface.</a>
 Every pull request submitted to WPT must be approved by at least one project
 collaborator before it can be merged.</p>
-</section>
-<section id="notifications">
+</div>
+<div class="section" id="notifications">
 <h2>Notifications<a class="headerlink" href="#notifications" title="Permalink to this headline">¶</a></h2>
 <p>META.yml files are used to indicate who should be notified of pull
 requests.  If you are interested in receiving notifications of proposed
 changes to tests in a given directory, feel free to add your GitHub account
 username to the <code class="docutils literal notranslate"><span class="pre">suggested_reviewers</span></code> list in the META.yml file.</p>
-</section>
-<section id="finding-contributions-to-review">
+</div>
+<div class="section" id="finding-contributions-to-review">
 <h2>Finding contributions to review<a class="headerlink" href="#finding-contributions-to-review" title="Permalink to this headline">¶</a></h2>
 <p>Here are a few search filters to find things to review:</p>
 <ul class="simple">
@@ -88,8 +87,8 @@ username to the <code class="docutils literal notranslate"><span class="pre">sug
 <li><p><a class="reference external" href="https://github.com/web-platform-tests/wpt/pulls?utf8=%E2%9C%93&amp;q=is%3Apr+is%3Aopen+label%3Ainfra+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22+-label%3Avendor-imports">Open PRs with label <code class="docutils literal notranslate"><span class="pre">infra</span></code> (excluding vendor exports)</a></p></li>
 <li><p><a class="reference external" href="https://github.com/web-platform-tests/wpt/pulls?utf8=%E2%9C%93&amp;q=is%3Apr+is%3Aopen+label%3Adocs+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22+-label%3Avendor-imports">Open PRs with label <code class="docutils literal notranslate"><span class="pre">docs</span></code> (excluding vendor exports)</a></p></li>
 </ul>
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -161,7 +160,7 @@ username to the <code class="docutils literal notranslate"><span class="pre">sug
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

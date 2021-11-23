@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pywebsocket3: A Standalone WebSocket Server for testing purposes &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="wptserve" href="../tools/wptserve/README.html" />
@@ -33,7 +32,7 @@
 
           <div class="body" role="main">
             
-  <section id="pywebsocket3-a-standalone-websocket-server-for-testing-purposes">
+  <div class="section" id="pywebsocket3-a-standalone-websocket-server-for-testing-purposes">
 <h1>pywebsocket3: A Standalone WebSocket Server for testing purposes<a class="headerlink" href="#pywebsocket3-a-standalone-websocket-server-for-testing-purposes" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -76,13 +75,13 @@
 </li>
 </ul>
 </div>
-<section id="module-mod_pywebsocket">
+<div class="section" id="module-mod_pywebsocket">
 <span id="mod-pywebsocket"></span><h2><a class="toc-backref" href="#id2"><a class="reference internal" href="#module-mod_pywebsocket" title="mod_pywebsocket"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket" title="Permalink to this headline">¶</a></h2>
 <p>A Standalone WebSocket Server for testing purposes</p>
 <p>mod_pywebsocket is an API that provides WebSocket functionalities with
 a standalone WebSocket server. It is intended for testing or
 experimental purposes.</p>
-<section id="installation">
+<div class="section" id="installation">
 <h3><a class="toc-backref" href="#id3">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
 <p>1. Follow standalone server documentation to start running the
 standalone server. It can be read by running the following command:</p>
@@ -93,8 +92,8 @@ standalone server. It can be read by running the following command:</p>
 <a class="reference external" href="http://localhost[:port]/console.html">http://localhost[:port]/console.html</a>. Include the port number when
 specified on launch. If everything is working correctly, you
 will see a simple echo console.</p>
-</section>
-<section id="writing-websocket-handlers">
+</div>
+<div class="section" id="writing-websocket-handlers">
 <h3><a class="toc-backref" href="#id4">Writing WebSocket handlers</a><a class="headerlink" href="#writing-websocket-handlers" title="Permalink to this headline">¶</a></h3>
 <p>When a WebSocket request comes in, the resource name
 specified in the handshake is considered as if it is a file path under
@@ -126,14 +125,14 @@ extra handshake (web_socket_do_extra_handshake):
 - ws_protocol
 - ws_requested_protocols</p>
 <p>The last two are a bit tricky. See the next subsection.</p>
-<section id="subprotocol-negotiation">
+<div class="section" id="subprotocol-negotiation">
 <h4><a class="toc-backref" href="#id5">Subprotocol Negotiation</a><a class="headerlink" href="#subprotocol-negotiation" title="Permalink to this headline">¶</a></h4>
 <p>ws_protocol is always set to None when
 web_socket_do_extra_handshake is called. If ws_requested_protocols is not
 None, you must choose one subprotocol from this list and set it to
 ws_protocol.</p>
-</section>
-<section id="data-transfer">
+</div>
+<div class="section" id="data-transfer">
 <h4><a class="toc-backref" href="#id6">Data Transfer</a><a class="headerlink" href="#data-transfer" title="Permalink to this headline">¶</a></h4>
 <p>web_socket_transfer_data is called after the handshake completed
 successfully. A handler can receive/send messages from/to the client
@@ -152,8 +151,8 @@ will raise some exception.</p>
 <blockquote>
 <div><p>request.ws_stream.send_message(message)</p>
 </div></blockquote>
-</section>
-<section id="closing-connection">
+</div>
+<div class="section" id="closing-connection">
 <h4><a class="toc-backref" href="#id7">Closing Connection</a><a class="headerlink" href="#closing-connection" title="Permalink to this headline">¶</a></h4>
 <p>Executing the following statement or just return-ing from
 web_socket_transfer_data cause connection close.</p>
@@ -170,13 +169,13 @@ from the server. A request object has the following properties that you can
 use in web_socket_passive_closing_handshake.
 - ws_close_code
 - ws_close_reason</p>
-</section>
-<section id="threading">
+</div>
+<div class="section" id="threading">
 <h4><a class="toc-backref" href="#id8">Threading</a><a class="headerlink" href="#threading" title="Permalink to this headline">¶</a></h4>
 <p>A WebSocket handler must be thread-safe. The standalone
 server uses threads by default.</p>
-</section>
-<section id="configuring-websocket-extension-processors">
+</div>
+<div class="section" id="configuring-websocket-extension-processors">
 <h4><a class="toc-backref" href="#id9">Configuring WebSocket Extension Processors</a><a class="headerlink" href="#configuring-websocket-extension-processors" title="Permalink to this headline">¶</a></h4>
 <p>See extensions.py for supported WebSocket extensions. Note that they are
 unstable and their APIs are subject to change substantially.</p>
@@ -198,98 +197,98 @@ processors.</p>
 extension you want to configure from it, and call its methods.</p>
 </li>
 </ul>
-</section>
-</section>
-</section>
-<section id="module-mod_pywebsocket.common">
+</div>
+</div>
+</div>
+<div class="section" id="module-mod_pywebsocket.common">
 <span id="mod-pywebsocket-common"></span><h2><a class="toc-backref" href="#id10"><a class="reference internal" href="#module-mod_pywebsocket.common" title="mod_pywebsocket.common"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.common</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.common" title="Permalink to this headline">¶</a></h2>
 <p>This file must not depend on any module specific to the WebSocket protocol.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.common.ExtensionParameter">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.common.</code><code class="sig-name descname">ExtensionParameter</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.common.</span></code><code class="sig-name descname"><span class="pre">ExtensionParameter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is exchanged on extension negotiation in opening handshake.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.common.ExtensionParameter.add_parameter">
-<code class="sig-name descname">add_parameter</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.add_parameter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_parameter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.add_parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a parameter.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.common.ExtensionParameter.get_parameter_names">
-<code class="sig-name descname">get_parameter_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.get_parameter_names" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_parameter_names</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.get_parameter_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the names of the parameters.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.common.ExtensionParameter.get_parameter_value">
-<code class="sig-name descname">get_parameter_value</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.get_parameter_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_parameter_value</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.get_parameter_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the value of a specific parameter.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.common.ExtensionParameter.get_parameters">
-<code class="sig-name descname">get_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.get_parameters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_parameters</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.get_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the parameters.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.common.ExtensionParameter.has_parameter">
-<code class="sig-name descname">has_parameter</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.has_parameter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">has_parameter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.has_parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test if a parameter exists.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.common.ExtensionParameter.name">
-<code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">name</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParameter.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the extension name.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="mod_pywebsocket.common.ExtensionParsingException">
-<em class="property">exception </em><code class="sig-prename descclassname">mod_pywebsocket.common.</code><code class="sig-name descname">ExtensionParsingException</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParsingException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.common.</span></code><code class="sig-name descname"><span class="pre">ExtensionParsingException</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.ExtensionParsingException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception to handle errors in extension parsing.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.common.format_extension">
-<code class="sig-prename descclassname">mod_pywebsocket.common.</code><code class="sig-name descname">format_extension</code><span class="sig-paren">(</span><em class="sig-param">extension</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.format_extension" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.common.</span></code><code class="sig-name descname"><span class="pre">format_extension</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extension</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.format_extension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format an ExtensionParameter object.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.common.format_extensions">
-<code class="sig-prename descclassname">mod_pywebsocket.common.</code><code class="sig-name descname">format_extensions</code><span class="sig-paren">(</span><em class="sig-param">extension_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.format_extensions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.common.</span></code><code class="sig-name descname"><span class="pre">format_extensions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extension_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.format_extensions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format a list of ExtensionParameter objects.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.common.parse_extensions">
-<code class="sig-prename descclassname">mod_pywebsocket.common.</code><code class="sig-name descname">parse_extensions</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.parse_extensions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.common.</span></code><code class="sig-name descname"><span class="pre">parse_extensions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.common.parse_extensions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse Sec-WebSocket-Extensions header value.</p>
 <p>Returns a list of ExtensionParameter objects.
 Leading LWSes must be trimmed.</p>
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.dispatch">
+</div>
+<div class="section" id="module-mod_pywebsocket.dispatch">
 <span id="mod-pywebsocket-dispatch"></span><h2><a class="toc-backref" href="#id11"><a class="reference internal" href="#module-mod_pywebsocket.dispatch" title="mod_pywebsocket.dispatch"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.dispatch</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.dispatch" title="Permalink to this headline">¶</a></h2>
 <p>Dispatch WebSocket request.</p>
-<dl class="exception">
+<dl class="py exception">
 <dt id="mod_pywebsocket.dispatch.DispatchException">
-<em class="property">exception </em><code class="sig-prename descclassname">mod_pywebsocket.dispatch.</code><code class="sig-name descname">DispatchException</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">status=404</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.DispatchException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.dispatch.</span></code><code class="sig-name descname"><span class="pre">DispatchException</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">404</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.DispatchException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception in dispatching WebSocket request.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.dispatch.Dispatcher">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.dispatch.</code><code class="sig-name descname">Dispatcher</code><span class="sig-paren">(</span><em class="sig-param">root_dir</em>, <em class="sig-param">scan_dir=None</em>, <em class="sig-param">allow_handlers_outside_root_dir=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.dispatch.</span></code><code class="sig-name descname"><span class="pre">Dispatcher</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_handlers_outside_root_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dispatches WebSocket requests.</p>
 <p>This class maintains a map from resource name to handlers.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.dispatch.Dispatcher.add_resource_path_alias">
-<code class="sig-name descname">add_resource_path_alias</code><span class="sig-paren">(</span><em class="sig-param">alias_resource_path</em>, <em class="sig-param">existing_resource_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.add_resource_path_alias" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_resource_path_alias</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias_resource_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_resource_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.add_resource_path_alias" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add resource path alias.</p>
 <p>Once added, request to alias_resource_path would be handled by
 handler registered for existing_resource_path.</p>
@@ -303,9 +302,9 @@ handler registered for existing_resource_path.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.dispatch.Dispatcher.do_extra_handshake">
-<code class="sig-name descname">do_extra_handshake</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.do_extra_handshake" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">do_extra_handshake</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.do_extra_handshake" title="Permalink to this definition">¶</a></dt>
 <dd><p>Do extra checking in WebSocket handshake.</p>
 <p>Select a handler based on request.uri and call its
 web_socket_do_extra_handshake function.</p>
@@ -323,29 +322,29 @@ web_socket_do_extra_handshake function.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.dispatch.Dispatcher.get_handler_suite">
-<code class="sig-name descname">get_handler_suite</code><span class="sig-paren">(</span><em class="sig-param">resource</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.get_handler_suite" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_handler_suite</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.get_handler_suite" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves two handlers (one for extra handshake processing, and one
 for data transfer) for the given request as a HandlerSuite object.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.dispatch.Dispatcher.passive_closing_handshake">
-<code class="sig-name descname">passive_closing_handshake</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.passive_closing_handshake" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">passive_closing_handshake</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.passive_closing_handshake" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare code and reason for responding client initiated closing
 handshake.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.dispatch.Dispatcher.source_warnings">
-<code class="sig-name descname">source_warnings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.source_warnings" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">source_warnings</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.source_warnings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return warnings in sourcing handlers.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.dispatch.Dispatcher.transfer_data">
-<code class="sig-name descname">transfer_data</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.transfer_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">transfer_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.dispatch.Dispatcher.transfer_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Let a handler transfer_data with a WebSocket client.</p>
 <p>Select a handler based on request.ws_resource and call its
 web_socket_transfer_data function.</p>
@@ -364,18 +363,18 @@ web_socket_transfer_data function.</p>
 
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.extensions">
+</div>
+<div class="section" id="module-mod_pywebsocket.extensions">
 <span id="mod-pywebsocket-extensions"></span><h2><a class="toc-backref" href="#id12"><a class="reference internal" href="#module-mod_pywebsocket.extensions" title="mod_pywebsocket.extensions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.extensions</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.extensions" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.extensions.PerMessageDeflateExtensionProcessor">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.extensions.</code><code class="sig-name descname">PerMessageDeflateExtensionProcessor</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.extensions.PerMessageDeflateExtensionProcessor" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.extensions.</span></code><code class="sig-name descname"><span class="pre">PerMessageDeflateExtensionProcessor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.extensions.PerMessageDeflateExtensionProcessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>permessage-deflate extension processor.</p>
 <p>Specification:
 <a class="reference external" href="http://tools.ietf.org/html/draft-ietf-hybi-permessage-compression-08">http://tools.ietf.org/html/draft-ietf-hybi-permessage-compression-08</a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.extensions.PerMessageDeflateExtensionProcessor.set_client_max_window_bits">
-<code class="sig-name descname">set_client_max_window_bits</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.extensions.PerMessageDeflateExtensionProcessor.set_client_max_window_bits" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_client_max_window_bits</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.extensions.PerMessageDeflateExtensionProcessor.set_client_max_window_bits" title="Permalink to this definition">¶</a></dt>
 <dd><p>If this option is specified, this class adds the
 client_max_window_bits extension parameter to the handshake response,
 but doesn’t reduce the LZ77 sliding window size of its inflater.
@@ -391,9 +390,9 @@ accepts the request.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.extensions.PerMessageDeflateExtensionProcessor.set_client_no_context_takeover">
-<code class="sig-name descname">set_client_no_context_takeover</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.extensions.PerMessageDeflateExtensionProcessor.set_client_no_context_takeover" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_client_no_context_takeover</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.extensions.PerMessageDeflateExtensionProcessor.set_client_no_context_takeover" title="Permalink to this definition">¶</a></dt>
 <dd><p>If this option is specified, this class adds the
 client_no_context_takeover extension parameter to the handshake
 response, but doesn’t reset inflater for each message. I.e., you can
@@ -403,23 +402,23 @@ usage of this class.</p>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.extensions.get_extension_processor">
-<code class="sig-prename descclassname">mod_pywebsocket.extensions.</code><code class="sig-name descname">get_extension_processor</code><span class="sig-paren">(</span><em class="sig-param">extension_request</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.extensions.get_extension_processor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.extensions.</span></code><code class="sig-name descname"><span class="pre">get_extension_processor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extension_request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.extensions.get_extension_processor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given an ExtensionParameter representing an extension offer received
 from a client, configures and returns an instance of the corresponding
 extension processor class.</p>
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.handshake">
+</div>
+<div class="section" id="module-mod_pywebsocket.handshake">
 <span id="mod-pywebsocket-handshake"></span><h2><a class="toc-backref" href="#id13"><a class="reference internal" href="#module-mod_pywebsocket.handshake" title="mod_pywebsocket.handshake"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.handshake</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.handshake" title="Permalink to this headline">¶</a></h2>
 <p>WebSocket opening handshake processor. This class try to apply available
 opening handshake processors for each protocol version until a connection is
 successfully established.</p>
-<dl class="exception">
+<dl class="py exception">
 <dt id="mod_pywebsocket.handshake.AbortedByUserException">
-<em class="property">exception </em><code class="sig-prename descclassname">mod_pywebsocket.handshake.</code><code class="sig-name descname">AbortedByUserException</code><a class="headerlink" href="#mod_pywebsocket.handshake.AbortedByUserException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.handshake.</span></code><code class="sig-name descname"><span class="pre">AbortedByUserException</span></code><a class="headerlink" href="#mod_pywebsocket.handshake.AbortedByUserException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception for aborting a connection intentionally.</p>
 <p>If this exception is raised in do_extra_handshake handler, the connection
 will be abandoned. No other WebSocket or HTTP(S) handler will be invoked.</p>
@@ -428,23 +427,23 @@ be closed without closing handshake. No other WebSocket or HTTP(S) handler
 will be invoked.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="mod_pywebsocket.handshake.HandshakeException">
-<em class="property">exception </em><code class="sig-prename descclassname">mod_pywebsocket.handshake.</code><code class="sig-name descname">HandshakeException</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">status=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.handshake.HandshakeException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.handshake.</span></code><code class="sig-name descname"><span class="pre">HandshakeException</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.handshake.HandshakeException" title="Permalink to this definition">¶</a></dt>
 <dd><p>This exception will be raised when an error occurred while processing
 WebSocket initial handshake.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="mod_pywebsocket.handshake.VersionException">
-<em class="property">exception </em><code class="sig-prename descclassname">mod_pywebsocket.handshake.</code><code class="sig-name descname">VersionException</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">supported_versions=''</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.handshake.VersionException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.handshake.</span></code><code class="sig-name descname"><span class="pre">VersionException</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">supported_versions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.handshake.VersionException" title="Permalink to this definition">¶</a></dt>
 <dd><p>This exception will be raised when a version of client request does not
 match with version the server supports.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.handshake.do_handshake">
-<code class="sig-prename descclassname">mod_pywebsocket.handshake.</code><code class="sig-name descname">do_handshake</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">dispatcher</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.handshake.do_handshake" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.handshake.</span></code><code class="sig-name descname"><span class="pre">do_handshake</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispatcher</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.handshake.do_handshake" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs WebSocket handshake.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -458,23 +457,23 @@ match with version the server supports.</p>
 handshake.</p>
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.request_handler">
+</div>
+<div class="section" id="module-mod_pywebsocket.request_handler">
 <span id="mod-pywebsocket-request-handler"></span><h2><a class="toc-backref" href="#id14"><a class="reference internal" href="#module-mod_pywebsocket.request_handler" title="mod_pywebsocket.request_handler"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.request_handler</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.request_handler" title="Permalink to this headline">¶</a></h2>
 <p>Request Handler and Request/Connection classes for standalone server.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.request_handler.WebSocketRequestHandler">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.request_handler.</code><code class="sig-name descname">WebSocketRequestHandler</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">client_address</em>, <em class="sig-param">server</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.request_handler.</span></code><code class="sig-name descname"><span class="pre">WebSocketRequestHandler</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>CGIHTTPRequestHandler specialized for WebSocket.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mod_pywebsocket.request_handler.WebSocketRequestHandler.MessageClass">
-<code class="sig-name descname">MessageClass</code><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.MessageClass" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">MessageClass</span></code><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.MessageClass" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">http.client.HTTPMessage</span></code></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.request_handler.WebSocketRequestHandler.is_cgi">
-<code class="sig-name descname">is_cgi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.is_cgi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">is_cgi</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.is_cgi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test whether self.path corresponds to a CGI script.</p>
 <p>Add extra check that self.path doesn’t contains ..
 Also check if the file is a executable file or not.
@@ -482,30 +481,30 @@ If the file is not executable, it is handled as static file or dir
 rather than a CGI script.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.request_handler.WebSocketRequestHandler.log_error">
-<code class="sig-name descname">log_error</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.log_error" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">log_error</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.log_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override BaseHTTPServer.log_error.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.request_handler.WebSocketRequestHandler.log_request">
-<code class="sig-name descname">log_request</code><span class="sig-paren">(</span><em class="sig-param">code='-'</em>, <em class="sig-param">size='-'</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.log_request" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">log_request</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.log_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override BaseHTTPServer.log_request.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.request_handler.WebSocketRequestHandler.parse_request">
-<code class="sig-name descname">parse_request</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.parse_request" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">parse_request</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.parse_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override BaseHTTPServer.BaseHTTPRequestHandler.parse_request.</p>
 <p>Return True to continue processing for HTTP(S), False otherwise.</p>
 <p>See BaseHTTPRequestHandler.handle_one_request method which calls
 this method to understand how the return value will be handled.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.request_handler.WebSocketRequestHandler.setup">
-<code class="sig-name descname">setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.setup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">setup</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.request_handler.WebSocketRequestHandler.setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override SocketServer.StreamRequestHandler.setup to wrap rfile
 with MemorizingFile.</p>
 <p>This method will be called by BaseRequestHandler’s constructor
@@ -517,56 +516,56 @@ WebSocketRequestHandler.parse_request.</p>
 
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.stream">
+</div>
+<div class="section" id="module-mod_pywebsocket.stream">
 <span id="mod-pywebsocket-stream"></span><h2><a class="toc-backref" href="#id15"><a class="reference internal" href="#module-mod_pywebsocket.stream" title="mod_pywebsocket.stream"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.stream</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.stream" title="Permalink to this headline">¶</a></h2>
 <p>This file provides classes and helper functions for parsing/building frames
 of the WebSocket protocol (RFC 6455).</p>
 <p>Specification:
 <a class="reference external" href="http://tools.ietf.org/html/rfc6455">http://tools.ietf.org/html/rfc6455</a></p>
-<dl class="exception">
+<dl class="py exception">
 <dt id="mod_pywebsocket.stream.BadOperationException">
-<em class="property">exception </em><code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">BadOperationException</code><a class="headerlink" href="#mod_pywebsocket.stream.BadOperationException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">BadOperationException</span></code><a class="headerlink" href="#mod_pywebsocket.stream.BadOperationException" title="Permalink to this definition">¶</a></dt>
 <dd><p>This exception will be raised when send_message() is called on
 server-terminated connection or receive_message() is called on
 client-terminated connection.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="mod_pywebsocket.stream.ConnectionTerminatedException">
-<em class="property">exception </em><code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">ConnectionTerminatedException</code><a class="headerlink" href="#mod_pywebsocket.stream.ConnectionTerminatedException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">ConnectionTerminatedException</span></code><a class="headerlink" href="#mod_pywebsocket.stream.ConnectionTerminatedException" title="Permalink to this definition">¶</a></dt>
 <dd><p>This exception will be raised when a connection is terminated
 unexpectedly.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.stream.FragmentedFrameBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">FragmentedFrameBuilder</code><span class="sig-paren">(</span><em class="sig-param">mask</em>, <em class="sig-param">frame_filters=[]</em>, <em class="sig-param">encode_utf8=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.FragmentedFrameBuilder" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">FragmentedFrameBuilder</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encode_utf8</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.FragmentedFrameBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>A stateful class to send a message as fragments.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="mod_pywebsocket.stream.InvalidFrameException">
-<em class="property">exception </em><code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">InvalidFrameException</code><a class="headerlink" href="#mod_pywebsocket.stream.InvalidFrameException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">InvalidFrameException</span></code><a class="headerlink" href="#mod_pywebsocket.stream.InvalidFrameException" title="Permalink to this definition">¶</a></dt>
 <dd><p>This exception will be raised when we received an invalid frame we
 cannot parse.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="mod_pywebsocket.stream.InvalidUTF8Exception">
-<em class="property">exception </em><code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">InvalidUTF8Exception</code><a class="headerlink" href="#mod_pywebsocket.stream.InvalidUTF8Exception" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">InvalidUTF8Exception</span></code><a class="headerlink" href="#mod_pywebsocket.stream.InvalidUTF8Exception" title="Permalink to this definition">¶</a></dt>
 <dd><p>This exception will be raised when we receive a text frame which
 contains invalid UTF-8 strings.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.stream.Stream">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">Stream</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">options</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">Stream</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class for parsing/building frames of the WebSocket protocol
 (RFC 6455).</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.Stream.close_connection">
-<code class="sig-name descname">close_connection</code><span class="sig-paren">(</span><em class="sig-param">code=1000</em>, <em class="sig-param">reason=''</em>, <em class="sig-param">wait_response=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.close_connection" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">close_connection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.close_connection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Closes a WebSocket connection. Note that this method blocks until
 it receives acknowledgement to the closing handshake.</p>
 <dl class="field-list simple">
@@ -585,17 +584,17 @@ frame with empty body will be sent.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.Stream.get_last_received_opcode">
-<code class="sig-name descname">get_last_received_opcode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.get_last_received_opcode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_last_received_opcode</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.get_last_received_opcode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the opcode of the WebSocket message which the last received
 frame belongs to. The return value is valid iff immediately after
 receive_message call.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.Stream.receive_bytes">
-<code class="sig-name descname">receive_bytes</code><span class="sig-paren">(</span><em class="sig-param">length</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.receive_bytes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">receive_bytes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.receive_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receives multiple bytes. Retries read when we couldn’t receive the
 specified amount. This method returns byte strings.</p>
 <dl class="field-list simple">
@@ -605,9 +604,9 @@ specified amount. This method returns byte strings.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.Stream.receive_filtered_frame">
-<code class="sig-name descname">receive_filtered_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.receive_filtered_frame" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">receive_filtered_frame</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.receive_filtered_frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receives a frame and applies frame filters and message filters.
 The frame to be received must satisfy following conditions:
 - The frame is not fragmented.
@@ -615,9 +614,9 @@ The frame to be received must satisfy following conditions:
 <p>DO NOT USE this method except for testing purpose.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.Stream.receive_message">
-<code class="sig-name descname">receive_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.receive_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">receive_message</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.receive_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receive a WebSocket frame and return its payload as a text in
 unicode or a binary in str.</p>
 <dl class="field-list simple">
@@ -643,9 +642,9 @@ or None iff received closing handshake.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.Stream.send_message">
-<code class="sig-name descname">send_message</code><span class="sig-paren">(</span><em class="sig-param">message</em>, <em class="sig-param">end=True</em>, <em class="sig-param">binary=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.send_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">send_message</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.Stream.send_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -664,29 +663,29 @@ or None iff received closing handshake.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.stream.StreamOptions">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">StreamOptions</code><a class="headerlink" href="#mod_pywebsocket.stream.StreamOptions" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">StreamOptions</span></code><a class="headerlink" href="#mod_pywebsocket.stream.StreamOptions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Holds option values to configure Stream objects.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="mod_pywebsocket.stream.UnsupportedFrameException">
-<em class="property">exception </em><code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">UnsupportedFrameException</code><a class="headerlink" href="#mod_pywebsocket.stream.UnsupportedFrameException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">UnsupportedFrameException</span></code><a class="headerlink" href="#mod_pywebsocket.stream.UnsupportedFrameException" title="Permalink to this definition">¶</a></dt>
 <dd><p>This exception will be raised when we receive a frame with flag, opcode
 we cannot handle. Handlers can just catch and ignore this exception and
 call receive_message() again to continue processing the next frame.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.stream.create_binary_frame">
-<code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">create_binary_frame</code><span class="sig-paren">(</span><em class="sig-param">message</em>, <em class="sig-param">opcode=2</em>, <em class="sig-param">fin=1</em>, <em class="sig-param">mask=False</em>, <em class="sig-param">frame_filters=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.create_binary_frame" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">create_binary_frame</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opcode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.create_binary_frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a simple binary frame with no extension, reserved bit.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.stream.create_header">
-<code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">create_header</code><span class="sig-paren">(</span><em class="sig-param">opcode</em>, <em class="sig-param">payload_length</em>, <em class="sig-param">fin</em>, <em class="sig-param">rsv1</em>, <em class="sig-param">rsv2</em>, <em class="sig-param">rsv3</em>, <em class="sig-param">mask</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.create_header" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">create_header</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opcode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rsv1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rsv2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rsv3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.create_header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a frame header.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
@@ -695,9 +694,9 @@ call receive_message() again to continue processing the next frame.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.stream.create_length_header">
-<code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">create_length_header</code><span class="sig-paren">(</span><em class="sig-param">length</em>, <em class="sig-param">mask</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.create_length_header" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">create_length_header</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.create_length_header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a length header.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -712,111 +711,111 @@ call receive_message() again to continue processing the next frame.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.stream.create_text_frame">
-<code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">create_text_frame</code><span class="sig-paren">(</span><em class="sig-param">message</em>, <em class="sig-param">opcode=1</em>, <em class="sig-param">fin=1</em>, <em class="sig-param">mask=False</em>, <em class="sig-param">frame_filters=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.create_text_frame" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">create_text_frame</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opcode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.create_text_frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a simple text frame with no extension, reserved bit.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.stream.deque">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">deque</code><a class="headerlink" href="#mod_pywebsocket.stream.deque" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">deque</span></code><a class="headerlink" href="#mod_pywebsocket.stream.deque" title="Permalink to this definition">¶</a></dt>
 <dd><p>deque([iterable[, maxlen]]) –&gt; deque object</p>
 <p>A list-like sequence optimized for data accesses near its endpoints.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.append">
-<code class="sig-name descname">append</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.append" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">append</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add an element to the right side of the deque.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.appendleft">
-<code class="sig-name descname">appendleft</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.appendleft" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">appendleft</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.appendleft" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add an element to the left side of the deque.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.clear">
-<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.clear" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove all elements from the deque.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.copy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a shallow copy of a deque.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.count">
-<code class="sig-name descname">count</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span> &#x2192; integer -- return number of occurrences of value<a class="headerlink" href="#mod_pywebsocket.stream.deque.count" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">count</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">integer</span> <span class="pre">–</span> <span class="pre">return</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">occurrences</span> <span class="pre">of</span> <span class="pre">value</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.count" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.extend">
-<code class="sig-name descname">extend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.extend" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">extend</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.extend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extend the right side of the deque with elements from the iterable</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.extendleft">
-<code class="sig-name descname">extendleft</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.extendleft" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">extendleft</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.extendleft" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extend the left side of the deque with elements from the iterable</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.index">
-<code class="sig-name descname">index</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="optional">[</span>, <em class="sig-param">start</em><span class="optional">[</span>, <em class="sig-param">stop</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; integer -- return first index of value.<a class="headerlink" href="#mod_pywebsocket.stream.deque.index" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">index</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">start</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">stop</span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; <span class="pre">integer</span> <span class="pre">–</span> <span class="pre">return</span> <span class="pre">first</span> <span class="pre">index</span> <span class="pre">of</span> <span class="pre">value.</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raises ValueError if the value is not present.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.insert">
-<code class="sig-name descname">insert</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.insert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">insert</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.insert" title="Permalink to this definition">¶</a></dt>
 <dd><p>D.insert(index, object) – insert object before index</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mod_pywebsocket.stream.deque.maxlen">
-<code class="sig-name descname">maxlen</code><a class="headerlink" href="#mod_pywebsocket.stream.deque.maxlen" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">maxlen</span></code><a class="headerlink" href="#mod_pywebsocket.stream.deque.maxlen" title="Permalink to this definition">¶</a></dt>
 <dd><p>maximum size of a deque or None if unbounded</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.pop">
-<code class="sig-name descname">pop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.pop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">pop</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.pop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove and return the rightmost element.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.popleft">
-<code class="sig-name descname">popleft</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.popleft" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">popleft</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.popleft" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove and return the leftmost element.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">remove</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>D.remove(value) – remove first occurrence of value.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.reverse">
-<code class="sig-name descname">reverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.reverse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">reverse</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.reverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>D.reverse() – reverse <em>IN PLACE</em></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.stream.deque.rotate">
-<code class="sig-name descname">rotate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.rotate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">rotate</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.deque.rotate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rotate the deque n steps to the right (default n=1).  If n is negative, rotates left.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.stream.parse_frame">
-<code class="sig-prename descclassname">mod_pywebsocket.stream.</code><code class="sig-name descname">parse_frame</code><span class="sig-paren">(</span><em class="sig-param">receive_bytes</em>, <em class="sig-param">logger=None</em>, <em class="sig-param">ws_version=13</em>, <em class="sig-param">unmask_receive=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.parse_frame" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.stream.</span></code><code class="sig-name descname"><span class="pre">parse_frame</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">receive_bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ws_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">13</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unmask_receive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.stream.parse_frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parses a frame. Returns a tuple containing each header field and
 payload.</p>
 <dl class="field-list simple">
@@ -841,74 +840,74 @@ frame, raises InvalidFrameException.</p></li>
 </dl>
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.http_header_util">
+</div>
+<div class="section" id="module-mod_pywebsocket.http_header_util">
 <span id="mod-pywebsocket-http-header-util"></span><h2><a class="toc-backref" href="#id16"><a class="reference internal" href="#module-mod_pywebsocket.http_header_util" title="mod_pywebsocket.http_header_util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.http_header_util</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.http_header_util" title="Permalink to this headline">¶</a></h2>
 <p>Utilities for parsing and formatting headers that follow the grammar defined
 in HTTP RFC <a class="reference external" href="http://www.ietf.org/rfc/rfc2616.txt">http://www.ietf.org/rfc/rfc2616.txt</a>.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.http_header_util.consume">
-<code class="sig-prename descclassname">mod_pywebsocket.http_header_util.</code><code class="sig-name descname">consume</code><span class="sig-paren">(</span><em class="sig-param">state</em>, <em class="sig-param">amount=1</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.http_header_util.</span></code><code class="sig-name descname"><span class="pre">consume</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Consumes specified amount of bytes from the head and returns the
 consumed bytes. If there’s not enough bytes to consume, returns None.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.http_header_util.consume_lws">
-<code class="sig-prename descclassname">mod_pywebsocket.http_header_util.</code><code class="sig-name descname">consume_lws</code><span class="sig-paren">(</span><em class="sig-param">state</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume_lws" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.http_header_util.</span></code><code class="sig-name descname"><span class="pre">consume_lws</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume_lws" title="Permalink to this definition">¶</a></dt>
 <dd><p>Consumes a LWS from the head. Returns True if any LWS is consumed.
 Otherwise, returns False.</p>
 <p>LWS = [CRLF] 1*( SP | HT )</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.http_header_util.consume_lwses">
-<code class="sig-prename descclassname">mod_pywebsocket.http_header_util.</code><code class="sig-name descname">consume_lwses</code><span class="sig-paren">(</span><em class="sig-param">state</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume_lwses" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.http_header_util.</span></code><code class="sig-name descname"><span class="pre">consume_lwses</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume_lwses" title="Permalink to this definition">¶</a></dt>
 <dd><p>Consumes *LWS from the head.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.http_header_util.consume_string">
-<code class="sig-prename descclassname">mod_pywebsocket.http_header_util.</code><code class="sig-name descname">consume_string</code><span class="sig-paren">(</span><em class="sig-param">state</em>, <em class="sig-param">expected</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume_string" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.http_header_util.</span></code><code class="sig-name descname"><span class="pre">consume_string</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a parsing state and a expected string, consumes the string from
 the head. Returns True if consumed successfully. Otherwise, returns
 False.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.http_header_util.consume_token">
-<code class="sig-prename descclassname">mod_pywebsocket.http_header_util.</code><code class="sig-name descname">consume_token</code><span class="sig-paren">(</span><em class="sig-param">state</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume_token" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.http_header_util.</span></code><code class="sig-name descname"><span class="pre">consume_token</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Consumes a token from the head. Returns the token or None if no token
 was found.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.http_header_util.consume_token_or_quoted_string">
-<code class="sig-prename descclassname">mod_pywebsocket.http_header_util.</code><code class="sig-name descname">consume_token_or_quoted_string</code><span class="sig-paren">(</span><em class="sig-param">state</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume_token_or_quoted_string" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.http_header_util.</span></code><code class="sig-name descname"><span class="pre">consume_token_or_quoted_string</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.consume_token_or_quoted_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Consumes a token or a quoted-string, and returns the token or unquoted
 string. If no token or quoted-string was found, returns None.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.http_header_util.parse_uri">
-<code class="sig-prename descclassname">mod_pywebsocket.http_header_util.</code><code class="sig-name descname">parse_uri</code><span class="sig-paren">(</span><em class="sig-param">uri</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.parse_uri" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.http_header_util.</span></code><code class="sig-name descname"><span class="pre">parse_uri</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.parse_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse absolute URI then return host, port and resource.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.http_header_util.peek">
-<code class="sig-prename descclassname">mod_pywebsocket.http_header_util.</code><code class="sig-name descname">peek</code><span class="sig-paren">(</span><em class="sig-param">state</em>, <em class="sig-param">pos=0</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.peek" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.http_header_util.</span></code><code class="sig-name descname"><span class="pre">peek</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.peek" title="Permalink to this definition">¶</a></dt>
 <dd><p>Peeks the character at pos from the head of data.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.http_header_util.quote_if_necessary">
-<code class="sig-prename descclassname">mod_pywebsocket.http_header_util.</code><code class="sig-name descname">quote_if_necessary</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.quote_if_necessary" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.http_header_util.</span></code><code class="sig-name descname"><span class="pre">quote_if_necessary</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.http_header_util.quote_if_necessary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Quotes arbitrary string into quoted-string.</p>
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.msgutil">
+</div>
+<div class="section" id="module-mod_pywebsocket.msgutil">
 <span id="mod-pywebsocket-msgutil"></span><h2><a class="toc-backref" href="#id17"><a class="reference internal" href="#module-mod_pywebsocket.msgutil" title="mod_pywebsocket.msgutil"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.msgutil</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.msgutil" title="Permalink to this headline">¶</a></h2>
 <p>Message related utilities.</p>
 <p>Note: request.connection.write/read are used in this module, even though
@@ -916,18 +915,18 @@ mod_python document says that they should be used only in connection
 handlers. Unfortunately, we have no other options. For example,
 request.write/read are not suitable because they don’t allow direct raw
 bytes writing/reading.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.msgutil.MessageReceiver">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.msgutil.</code><code class="sig-name descname">MessageReceiver</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">onmessage=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageReceiver" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.msgutil.</span></code><code class="sig-name descname"><span class="pre">MessageReceiver</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onmessage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageReceiver" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class receives messages from the client.</p>
 <p>This class provides three ways to receive messages: blocking,
 non-blocking, and via callback. Callback has the highest precedence.</p>
 <p>Note: This class should not be used with the standalone server for wss
 because pyOpenSSL used by the server raises a fatal error if the socket
 is accessed from multiple threads.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.msgutil.MessageReceiver.receive">
-<code class="sig-name descname">receive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageReceiver.receive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">receive</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageReceiver.receive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receive a message from the channel, blocking.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -936,9 +935,9 @@ is accessed from multiple threads.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.msgutil.MessageReceiver.receive_nowait">
-<code class="sig-name descname">receive_nowait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageReceiver.receive_nowait" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">receive_nowait</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageReceiver.receive_nowait" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receive a message from the channel, non-blocking.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -947,9 +946,9 @@ is accessed from multiple threads.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.msgutil.MessageReceiver.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageReceiver.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageReceiver.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method representing the thread’s activity.</p>
 <p>You may override this method in a subclass. The standard run() method
 invokes the callable object passed to the object’s constructor as the
@@ -957,9 +956,9 @@ target argument, if any, with sequential and keyword arguments taken
 from the args and kwargs arguments, respectively.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.msgutil.MessageReceiver.stop">
-<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageReceiver.stop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">stop</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageReceiver.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request to stop this instance.</p>
 <p>The instance will be stopped after receiving the next message.
 This method may not be very useful, but there is no clean way
@@ -968,18 +967,18 @@ in Python to forcefully stop a running thread.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.msgutil.MessageSender">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.msgutil.</code><code class="sig-name descname">MessageSender</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageSender" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.msgutil.</span></code><code class="sig-name descname"><span class="pre">MessageSender</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageSender" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class sends messages to the client.</p>
 <p>This class provides both synchronous and asynchronous ways to send
 messages.</p>
 <p>Note: This class should not be used with the standalone server for wss
 because pyOpenSSL used by the server raises a fatal error if the socket
 is accessed from multiple threads.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.msgutil.MessageSender.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageSender.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageSender.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method representing the thread’s activity.</p>
 <p>You may override this method in a subclass. The standard run() method
 invokes the callable object passed to the object’s constructor as the
@@ -987,23 +986,23 @@ target argument, if any, with sequential and keyword arguments taken
 from the args and kwargs arguments, respectively.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.msgutil.MessageSender.send">
-<code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param">message</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageSender.send" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">send</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageSender.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a message, blocking.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.msgutil.MessageSender.send_nowait">
-<code class="sig-name descname">send_nowait</code><span class="sig-paren">(</span><em class="sig-param">message</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageSender.send_nowait" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">send_nowait</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.MessageSender.send_nowait" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a message, non-blocking.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.msgutil.close_connection">
-<code class="sig-prename descclassname">mod_pywebsocket.msgutil.</code><code class="sig-name descname">close_connection</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.close_connection" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.msgutil.</span></code><code class="sig-name descname"><span class="pre">close_connection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.close_connection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Close connection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1012,9 +1011,9 @@ from the args and kwargs arguments, respectively.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.msgutil.receive_message">
-<code class="sig-prename descclassname">mod_pywebsocket.msgutil.</code><code class="sig-name descname">receive_message</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.receive_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.msgutil.</span></code><code class="sig-name descname"><span class="pre">receive_message</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.receive_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receive a WebSocket frame and return its payload as a text in
 unicode or a binary in str.</p>
 <dl class="field-list simple">
@@ -1037,9 +1036,9 @@ unicode or a binary in str.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.msgutil.send_message">
-<code class="sig-prename descclassname">mod_pywebsocket.msgutil.</code><code class="sig-name descname">send_message</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">payload_data</em>, <em class="sig-param">end=True</em>, <em class="sig-param">binary=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.send_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.msgutil.</span></code><code class="sig-name descname"><span class="pre">send_message</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.msgutil.send_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a message (or part of a message).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1058,18 +1057,18 @@ terminated by next or later send_message call with end=True.</p></li>
 </dl>
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.util">
+</div>
+<div class="section" id="module-mod_pywebsocket.util">
 <span id="mod-pywebsocket-util"></span><h2><a class="toc-backref" href="#id18"><a class="reference internal" href="#module-mod_pywebsocket.util" title="mod_pywebsocket.util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.util</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.util" title="Permalink to this headline">¶</a></h2>
 <p>WebSocket utilities.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.util.DeflateSocket">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.util.</code><code class="sig-name descname">DeflateSocket</code><span class="sig-paren">(</span><em class="sig-param">socket</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.DeflateSocket" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.util.</span></code><code class="sig-name descname"><span class="pre">DeflateSocket</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socket</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.DeflateSocket" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper class for socket object to intercept send and recv to perform
 deflate compression and decompression transparently.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.util.DeflateSocket.recv">
-<code class="sig-name descname">recv</code><span class="sig-paren">(</span><em class="sig-param">size</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.DeflateSocket.recv" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">recv</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.DeflateSocket.recv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receives data from the socket specified on the construction up
 to the specified size. Once any data is available, returns it even
 if it’s smaller than the specified size.</p>
@@ -1077,45 +1076,45 @@ if it’s smaller than the specified size.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.util.NoopMasker">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.util.</code><code class="sig-name descname">NoopMasker</code><a class="headerlink" href="#mod_pywebsocket.util.NoopMasker" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.util.</span></code><code class="sig-name descname"><span class="pre">NoopMasker</span></code><a class="headerlink" href="#mod_pywebsocket.util.NoopMasker" title="Permalink to this definition">¶</a></dt>
 <dd><p>A NoOp masking object.</p>
 <p>This has the same interface as RepeatedXorMasker but just returns
 the string passed in without making any change.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.util.NoopMasker.mask">
-<code class="sig-name descname">mask</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.NoopMasker.mask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">mask</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.NoopMasker.mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>NoOp.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.util.RepeatedXorMasker">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.util.</code><code class="sig-name descname">RepeatedXorMasker</code><span class="sig-paren">(</span><em class="sig-param">masking_key</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.RepeatedXorMasker" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.util.</span></code><code class="sig-name descname"><span class="pre">RepeatedXorMasker</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masking_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.RepeatedXorMasker" title="Permalink to this definition">¶</a></dt>
 <dd><p>A masking object that applies XOR on the string.</p>
 <p>Applies XOR on the byte string given to mask method with the masking bytes
 given to the constructor repeatedly. This object remembers the position
 in the masking bytes the last mask method call ended and resumes from
 that point on the next mask method call.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.util.RepeatedXorMasker.mask">
-<code class="sig-name descname">mask</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.RepeatedXorMasker.mask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">mask</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.RepeatedXorMasker.mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform the mask via python.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.util.get_class_logger">
-<code class="sig-prename descclassname">mod_pywebsocket.util.</code><code class="sig-name descname">get_class_logger</code><span class="sig-paren">(</span><em class="sig-param">o</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.get_class_logger" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.util.</span></code><code class="sig-name descname"><span class="pre">get_class_logger</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.get_class_logger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the logging class information.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.util.get_script_interp">
-<code class="sig-prename descclassname">mod_pywebsocket.util.</code><code class="sig-name descname">get_script_interp</code><span class="sig-paren">(</span><em class="sig-param">script_path</em>, <em class="sig-param">cygwin_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.get_script_interp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.util.</span></code><code class="sig-name descname"><span class="pre">get_script_interp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cygwin_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.get_script_interp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get #!-interpreter command line from the script.</p>
 <p>It also fixes command path.  When Cygwin Python is used, e.g. in WebKit,
 it could run “/usr/bin/perl -wT hello.pl”.
@@ -1134,39 +1133,39 @@ When Win32 Python is used, e.g. in Chromium, it couldn’t.  So, fix
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.util.pack_byte">
-<code class="sig-prename descclassname">mod_pywebsocket.util.</code><code class="sig-name descname">pack_byte</code><span class="sig-paren">(</span><em class="sig-param">b</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.pack_byte" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.util.</span></code><code class="sig-name descname"><span class="pre">pack_byte</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.pack_byte" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pack an integer to network-ordered byte</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mod_pywebsocket.util.prepend_message_to_exception">
-<code class="sig-prename descclassname">mod_pywebsocket.util.</code><code class="sig-name descname">prepend_message_to_exception</code><span class="sig-paren">(</span><em class="sig-param">message</em>, <em class="sig-param">exc</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.prepend_message_to_exception" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.util.</span></code><code class="sig-name descname"><span class="pre">prepend_message_to_exception</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.util.prepend_message_to_exception" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepend message to the exception.</p>
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.memorizingfile">
+</div>
+<div class="section" id="module-mod_pywebsocket.memorizingfile">
 <span id="mod-pywebsocket-memorizingfile"></span><h2><a class="toc-backref" href="#id19"><a class="reference internal" href="#module-mod_pywebsocket.memorizingfile" title="mod_pywebsocket.memorizingfile"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.memorizingfile</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.memorizingfile" title="Permalink to this headline">¶</a></h2>
 <p>Memorizing file.</p>
 <p>A memorizing file wraps a file and memorizes lines read by readline.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.memorizingfile.MemorizingFile">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.memorizingfile.</code><code class="sig-name descname">MemorizingFile</code><span class="sig-paren">(</span><em class="sig-param">file_</em>, <em class="sig-param">max_memorized_lines=9223372036854775807</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.memorizingfile.MemorizingFile" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.memorizingfile.</span></code><code class="sig-name descname"><span class="pre">MemorizingFile</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_memorized_lines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9223372036854775807</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.memorizingfile.MemorizingFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>MemorizingFile wraps a file and memorizes lines read by readline.</p>
 <p>Note that data read by other methods are not memorized. This behavior
 is good enough for memorizing lines SimpleHTTPServer reads before
 the control reaches WebSocketRequestHandler.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.memorizingfile.MemorizingFile.get_memorized_lines">
-<code class="sig-name descname">get_memorized_lines</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.memorizingfile.MemorizingFile.get_memorized_lines" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_memorized_lines</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.memorizingfile.MemorizingFile.get_memorized_lines" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get lines memorized so far.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.memorizingfile.MemorizingFile.readline">
-<code class="sig-name descname">readline</code><span class="sig-paren">(</span><em class="sig-param">size=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.memorizingfile.MemorizingFile.readline" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">readline</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.memorizingfile.MemorizingFile.readline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override file.readline and memorize the line read.</p>
 <p>Note that even if size is specified and smaller than actual size,
 the whole line will be read out from underlying file object by
@@ -1175,80 +1174,80 @@ subsequent readline calls.</p>
 
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.websocket_server">
+</div>
+<div class="section" id="module-mod_pywebsocket.websocket_server">
 <span id="mod-pywebsocket-websocket-server"></span><h2><a class="toc-backref" href="#id20"><a class="reference internal" href="#module-mod_pywebsocket.websocket_server" title="mod_pywebsocket.websocket_server"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.websocket_server</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.websocket_server" title="Permalink to this headline">¶</a></h2>
 <p>Standalone WebsocketServer</p>
 <p>This file deals with the main module of standalone server. Although it is fine
 to import this file directly to use WebSocketServer, it is strongly recommended
 to use standalone.py, since it is intended to act as a skeleton of this module.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.websocket_server.WebSocketServer">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.websocket_server.</code><code class="sig-name descname">WebSocketServer</code><span class="sig-paren">(</span><em class="sig-param">options</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.websocket_server.</span></code><code class="sig-name descname"><span class="pre">WebSocketServer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer" title="Permalink to this definition">¶</a></dt>
 <dd><p>HTTPServer specialized for WebSocket.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.websocket_server.WebSocketServer.fileno">
-<code class="sig-name descname">fileno</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.fileno" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">fileno</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.fileno" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override SocketServer.TCPServer.fileno.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.websocket_server.WebSocketServer.get_request">
-<code class="sig-name descname">get_request</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.get_request" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_request</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.get_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override TCPServer.get_request.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.websocket_server.WebSocketServer.handle_error">
-<code class="sig-name descname">handle_error</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">client_address</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.handle_error" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">handle_error</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_address</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.handle_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override SocketServer.handle_error.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.websocket_server.WebSocketServer.serve_forever">
-<code class="sig-name descname">serve_forever</code><span class="sig-paren">(</span><em class="sig-param">poll_interval=0.5</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.serve_forever" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">serve_forever</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">poll_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.serve_forever" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override SocketServer.BaseServer.serve_forever.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.websocket_server.WebSocketServer.server_activate">
-<code class="sig-name descname">server_activate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.server_activate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">server_activate</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.server_activate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override SocketServer.TCPServer.server_activate to enable multiple
 sockets listen.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.websocket_server.WebSocketServer.server_bind">
-<code class="sig-name descname">server_bind</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.server_bind" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">server_bind</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.server_bind" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override SocketServer.TCPServer.server_bind to enable multiple
 sockets bind.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.websocket_server.WebSocketServer.server_close">
-<code class="sig-name descname">server_close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.server_close" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">server_close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.server_close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override SocketServer.TCPServer.server_close to enable multiple
 sockets close.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mod_pywebsocket.websocket_server.WebSocketServer.shutdown">
-<code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.shutdown" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">shutdown</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.websocket_server.WebSocketServer.shutdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override SocketServer.BaseServer.shutdown.</p>
 </dd></dl>
 
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.server_util">
+</div>
+<div class="section" id="module-mod_pywebsocket.server_util">
 <span id="mod-pywebsocket-server-util"></span><h2><a class="toc-backref" href="#id21"><a class="reference internal" href="#module-mod_pywebsocket.server_util" title="mod_pywebsocket.server_util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.server_util</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.server_util" title="Permalink to this headline">¶</a></h2>
 <p>Server related utilities.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="mod_pywebsocket.server_util.ThreadMonitor">
-<em class="property">class </em><code class="sig-prename descclassname">mod_pywebsocket.server_util.</code><code class="sig-name descname">ThreadMonitor</code><span class="sig-paren">(</span><em class="sig-param">interval_in_sec</em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.server_util.ThreadMonitor" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mod_pywebsocket.server_util.</span></code><code class="sig-name descname"><span class="pre">ThreadMonitor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval_in_sec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.server_util.ThreadMonitor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="mod_pywebsocket.server_util.ThreadMonitor.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.server_util.ThreadMonitor.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mod_pywebsocket.server_util.ThreadMonitor.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method representing the thread’s activity.</p>
 <p>You may override this method in a subclass. The standard run() method
 invokes the callable object passed to the object’s constructor as the
@@ -1258,12 +1257,12 @@ from the args and kwargs arguments, respectively.</p>
 
 </dd></dl>
 
-</section>
-<section id="module-mod_pywebsocket.standalone">
+</div>
+<div class="section" id="module-mod_pywebsocket.standalone">
 <span id="mod-pywebsocket-standalone"></span><h2><a class="toc-backref" href="#id22"><a class="reference internal" href="#module-mod_pywebsocket.standalone" title="mod_pywebsocket.standalone"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mod_pywebsocket.standalone</span></code></a></a><a class="headerlink" href="#module-mod_pywebsocket.standalone" title="Permalink to this headline">¶</a></h2>
 <p>Standalone WebSocket server.</p>
 <p>Use this file to launch pywebsocket as a standalone server.</p>
-<section id="basic-usage">
+<div class="section" id="basic-usage">
 <h3><a class="toc-backref" href="#id23">BASIC USAGE</a><a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h3>
 <p>Go to the src directory and run</p>
 <blockquote>
@@ -1284,8 +1283,8 @@ run $ pydoc mod_pywebsocket) for how to write WebSocket handlers.</p>
 </div></blockquote>
 <p>or see _build_option_parser method below.</p>
 <p>For trouble shooting, adding “–log_level debug” might help you.</p>
-</section>
-<section id="try-demo">
+</div>
+<div class="section" id="try-demo">
 <h3><a class="toc-backref" href="#id24">TRY DEMO</a><a class="headerlink" href="#try-demo" title="Permalink to this headline">¶</a></h3>
 <p>Go to the src directory and run standalone.py with -d option to set the
 document root to the directory containing example HTMLs and handlers like this:</p>
@@ -1297,8 +1296,8 @@ $ PYTHONPATH=. python mod_pywebsocket/standalone.py -d example</p>
 <a class="reference external" href="http://localhost/console.html">http://localhost/console.html</a>, click the connect button, type something into
 the text box next to the send button and click the send button. If everything
 is working, you’ll see the message you typed echoed by the server.</p>
-</section>
-<section id="using-tls">
+</div>
+<div class="section" id="using-tls">
 <h3><a class="toc-backref" href="#id25">USING TLS</a><a class="headerlink" href="#using-tls" title="Permalink to this headline">¶</a></h3>
 <p>To run the standalone server with TLS support, run it with -t, -k, and -c
 options. When TLS is enabled, the standalone server accepts only TLS connection.</p>
@@ -1308,8 +1307,8 @@ TLS connection silently fails while pyOpenSSL fails on startup.</p>
 <p>$ PYTHONPATH=. python mod_pywebsocket/standalone.py         -d example         -p 10443         -t         -c ../test/cert/cert.pem         -k ../test/cert/key.pem</p>
 <p>Note that when passing a relative path to -c and -k option, it will be resolved
 using the document root directory as the base.</p>
-</section>
-<section id="using-client-authentication">
+</div>
+<div class="section" id="using-client-authentication">
 <h3><a class="toc-backref" href="#id26">USING CLIENT AUTHENTICATION</a><a class="headerlink" href="#using-client-authentication" title="Permalink to this headline">¶</a></h3>
 <p>To run the standalone server with TLS client authentication support, run it with
 –tls-client-auth and –tls-client-ca options in addition to ones required for
@@ -1318,8 +1317,8 @@ TLS support.</p>
 <p>$ PYTHONPATH=. python mod_pywebsocket/standalone.py -d example -p 10443 -t         -c ../test/cert/cert.pem -k ../test/cert/key.pem         –tls-client-auth         –tls-client-ca=../test/cert/cacert.pem</p>
 <p>Note that when passing a relative path to –tls-client-ca option, it will be
 resolved using the document root directory as the base.</p>
-</section>
-<section id="configuration-file">
+</div>
+<div class="section" id="configuration-file">
 <h3><a class="toc-backref" href="#id27">CONFIGURATION FILE</a><a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h3>
 <p>You can also write a configuration file and use it by specifying the path to
 the configuration file by –config option. Please write a configuration file
@@ -1335,20 +1334,20 @@ fake.</p>
 <p>When both a command line argument and a configuration file entry are set for
 the same configuration item, the command line value will override one in the
 configuration file.</p>
-</section>
-<section id="id1">
+</div>
+<div class="section" id="id1">
 <h3><a class="toc-backref" href="#id28">THREADING</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>This server is derived from SocketServer.ThreadingMixIn. Hence a thread is
 used for each request.</p>
-</section>
-<section id="security-warning">
+</div>
+<div class="section" id="security-warning">
 <h3><a class="toc-backref" href="#id29">SECURITY WARNING</a><a class="headerlink" href="#security-warning" title="Permalink to this headline">¶</a></h3>
 <p>This uses CGIHTTPServer and CGIHTTPServer is not secure.
 It may execute arbitrary Python code or external programs. It should not be
 used outside a firewall.</p>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
           </div>
@@ -1419,7 +1418,7 @@ used outside a firewall.</p>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

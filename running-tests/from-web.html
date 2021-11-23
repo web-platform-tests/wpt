@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Running Tests from the Web &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Running Tests from the Local System" href="from-local-system.html" />
@@ -33,7 +32,7 @@
 
           <div class="body" role="main">
             
-  <section id="running-tests-from-the-web">
+  <div class="section" id="running-tests-from-the-web">
 <h1>Running Tests from the Web<a class="headerlink" href="#running-tests-from-the-web" title="Permalink to this headline">¶</a></h1>
 <p>Tests that have been merged on GitHub are mirrored at
 <a class="reference external" href="https://wpt.live">wpt.live</a> and <a class="reference external" href="https://w3c-test.org">w3c-test.org</a>.
@@ -42,7 +41,7 @@ served from the URL <a class="reference external" href="http://web-platform.test
 <p>Not all tests can be executed in-browser, as some tests rely on automation
 (e.g. via <a class="reference internal" href="../writing-tests/testdriver.html"><span class="doc">testdriver.js</span></a>) that is not available
 when running a browser in a normal user session.</p>
-<section id="web-test-runner">
+<div class="section" id="web-test-runner">
 <h2>Web test runner<a class="headerlink" href="#web-test-runner" title="Permalink to this headline">¶</a></h2>
 <p>For running multiple tests inside a browser, there is a test runner
 located at <code class="docutils literal notranslate"><span class="pre">/tools/runner/index.html</span></code>.</p>
@@ -55,8 +54,8 @@ running manual tests.</p>
 more than one reference involved.</p>
 <p>Because it runs entirely in-browser, this runner cannot deal with
 edge-cases like tests that cause the browser to crash or hang.</p>
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -128,7 +127,7 @@ edge-cases like tests that cause the browser to crash or hang.</p>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

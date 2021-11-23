@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>testdriver.js Automation &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Testdriver extension tutorial" href="testdriver-extension-tutorial.html" />
@@ -33,92 +32,164 @@
 
           <div class="body" role="main">
             
-  <section id="testdriver-js-automation">
+  <div class="section" id="testdriver-js-automation">
 <h1>testdriver.js Automation<a class="headerlink" href="#testdriver-js-automation" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#markup" id="id3">Markup</a></p></li>
+<li><p><a class="reference internal" href="#api" id="id4">API</a></p>
+<ul>
+<li><p><a class="reference internal" href="#user-interaction" id="id5">User Interaction</a></p></li>
+<li><p><a class="reference internal" href="#window-state" id="id6">Window State</a></p></li>
+<li><p><a class="reference internal" href="#cookies" id="id7">Cookies</a></p></li>
+<li><p><a class="reference internal" href="#permissions" id="id8">Permissions</a></p></li>
+<li><p><a class="reference internal" href="#authentication" id="id9">Authentication</a></p></li>
+<li><p><a class="reference internal" href="#page-lifecycle" id="id10">Page Lifecycle</a></p></li>
+<li><p><a class="reference internal" href="#reporting-observer" id="id11">Reporting Observer</a></p></li>
+<li><p><a class="reference internal" href="#storage" id="id12">Storage</a></p></li>
+<li><p><a class="reference internal" href="#seure-payment-confirmation" id="id13">Seure Payment Confirmation</a></p></li>
+<li><p><a class="reference internal" href="#using-test-driver-in-other-browsing-contexts" id="id14">Using test_driver in other browsing contexts</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#actions" id="id15">Actions</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id16">Markup</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id17">API</a></p></li>
+<li><p><a class="reference internal" href="#using-in-other-browsing-contexts" id="id18">Using in other browsing contexts</a></p></li>
+<li><p><a class="reference internal" href="#send-keys" id="id19">send_keys</a></p></li>
+<li><p><a class="reference internal" href="#set-permission" id="id20">set_permission</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
 <p>testdriver.js provides a means to automate tests that cannot be
 written purely using web platform APIs. Outside of automation
 contexts, it allows human operators to provide expected input
 manually (for operations which may be described in simple terms).</p>
 <p>It is currently supported only for <a class="reference internal" href="testharness.html"><span class="doc">testharness.js</span></a>
 tests.</p>
-<section id="api">
+<div class="section" id="markup">
+<h2>Markup<a class="headerlink" href="#markup" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">testdriver.js</span></code> and <code class="docutils literal notranslate"><span class="pre">testdriver-vendor.js</span></code> must both be included
+in any document that uses testdriver (and in the top-level test
+document when using testdriver from a different context):</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver-vendor.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="api">
 <h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 <p>testdriver.js exposes its API through the <code class="docutils literal notranslate"><span class="pre">test_driver</span></code> variable in
 the global scope.</p>
-<section id="actions">
-<h3>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h3>
-<p>Usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">actions</span> <span class="o">=</span> <span class="n">new</span> <span class="n">test_driver</span><span class="o">.</span><span class="n">Actions</span><span class="p">()</span>
-   <span class="o">.</span><span class="n">action1</span><span class="p">()</span>
-   <span class="o">.</span><span class="n">action2</span><span class="p">();</span>
-<span class="n">actions</span><span class="o">.</span><span class="n">send</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Test authors are encouraged to use the builder API to generate the
-sequence of actions. The builder API can be accessed via the <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">test_driver.Actions()</span></code> object, and actions are defined in
-<a class="reference external" href="https://github.com/web-platform-tests/wpt/blob/master/resources/testdriver-actions.js">testdriver-actions.js</a></p>
-<p>The <code class="docutils literal notranslate"><span class="pre">actions.send()</span></code> function causes the sequence of actions to be
-sent to the browser. It is based on the <a class="reference external" href="https://w3c.github.io/webdriver/#actions">WebDriver
-API</a>.  The action can be a
-keyboard action, a pointer action or a pause. It returns a promise
-that resolves after the actions have been sent, or rejects if an error
-was thrown.</p>
-<p>Example:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">text_box</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">);</span>
-
-<span class="kd">let</span> <span class="nx">actions</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span>
-    <span class="p">.</span><span class="nx">pointerMove</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="p">{</span><span class="nx">origin</span><span class="o">:</span> <span class="nx">text_box</span><span class="p">})</span>
-    <span class="p">.</span><span class="nx">pointerDown</span><span class="p">()</span>
-    <span class="p">.</span><span class="nx">pointerUp</span><span class="p">()</span>
-    <span class="p">.</span><span class="nx">addTick</span><span class="p">()</span>
-    <span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
-    <span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
-
-<span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
-</pre></div>
-</div>
-<p>Calling into <code class="docutils literal notranslate"><span class="pre">send()</span></code> is going to dispatch the action sequence (via
-<code class="docutils literal notranslate"><span class="pre">test_driver.action_sequence</span></code>) and also returns a promise which should
-be handled however is appropriate in the test. The other functions in
-the <code class="docutils literal notranslate"><span class="pre">Actions()</span></code> object are going to modify the state of the object by
-adding a new action in the sequence and returning the same object. So
-the functions can be easily chained, as shown in the example
-above. Here is a list of helper functions in the <code class="docutils literal notranslate"><span class="pre">Actions</span></code> class:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pointerDown</span><span class="p">:</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">pointerDown</span> <span class="n">event</span> <span class="k">for</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">pointer</span> <span class="n">source</span>
-<span class="n">pointerUp</span><span class="p">:</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">pointerUp</span> <span class="n">event</span> <span class="k">for</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">pointer</span> <span class="n">source</span>
-<span class="n">pointerMove</span><span class="p">:</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">move</span> <span class="n">event</span> <span class="k">for</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">pointer</span> <span class="n">source</span>
-<span class="n">keyDown</span><span class="p">:</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">keyDown</span> <span class="n">event</span> <span class="k">for</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">key</span> <span class="n">source</span>
-<span class="n">keyUp</span><span class="p">:</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">keyUp</span> <span class="n">event</span> <span class="k">for</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">key</span> <span class="n">source</span>
-<span class="n">pause</span><span class="p">:</span> <span class="n">Add</span> <span class="n">a</span> <span class="n">pause</span> <span class="n">to</span> <span class="n">the</span> <span class="n">current</span> <span class="n">tick</span>
-<span class="n">addTick</span><span class="p">:</span> <span class="n">Insert</span> <span class="n">a</span> <span class="n">new</span> <span class="n">actions</span> <span class="n">tick</span>
-<span class="n">setPointer</span><span class="p">:</span> <span class="n">Set</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">pointer</span> <span class="n">source</span> <span class="p">(</span><span class="n">By</span> <span class="n">detault</span> <span class="n">the</span> <span class="n">pointerType</span> <span class="ow">is</span> <span class="n">mouse</span><span class="p">)</span>
-<span class="n">addPointer</span><span class="p">:</span> <span class="n">Add</span> <span class="n">a</span> <span class="n">new</span> <span class="n">pointer</span> <span class="nb">input</span> <span class="n">source</span> <span class="k">with</span> <span class="n">the</span> <span class="n">given</span> <span class="n">name</span>
-<span class="n">setKeyboard</span><span class="p">:</span> <span class="n">Set</span> <span class="n">the</span> <span class="n">current</span> <span class="n">default</span> <span class="n">key</span> <span class="n">source</span>
-<span class="n">addKeyboard</span><span class="p">:</span> <span class="n">Add</span> <span class="n">a</span> <span class="n">new</span> <span class="n">key</span> <span class="nb">input</span> <span class="n">source</span> <span class="k">with</span> <span class="n">the</span> <span class="n">given</span> <span class="n">name</span>
-</pre></div>
-</div>
-<p>This works with elements in other frames/windows as long as they are
-same-origin with the test, and the test does not depend on the
-window.name property remaining unset on the target window.</p>
-</section>
-<section id="bless">
-<h3>bless<a class="headerlink" href="#bless" title="Permalink to this headline">¶</a></h3>
-<p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.bless(intent,</span> <span class="pre">action)</span></code></p>
-<ul class="simple">
-<li><p><em>intent</em>: a string describing the motivation for this invocation</p></li>
-<li><p><em>action</em>: an optional function</p></li>
+<div class="section" id="user-interaction">
+<h3>User Interaction<a class="headerlink" href="#user-interaction" title="Permalink to this headline">¶</a></h3>
+<dl class="js function">
+<dt id="test_driver.click">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">click</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">element</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggers a user-initiated click</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">element</span></code> isn’t inside the
+viewport, it will be scrolled into view before the click
+occurs.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">element</span></code> is from a different browsing context, the
+command will be run in that context.</p>
+<p>Matches the behaviour of the <a class="reference external" href="https://w3c.github.io/webdriver/#element-click">Element Click</a>
+WebDriver command.</p>
+<p><strong>Note:</strong> If the element to be clicked does not have a
+unique ID, the document must not have any DOM mutations
+made between the function being called and the promise
+settling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<em>Element</em>) – element to be clicked</p></li>
 </ul>
-<p>This function simulates <a class="reference external" href="https://html.spec.whatwg.org/multipage/interaction.html#activation">activation</a>, allowing tests to
-perform privileged operations that require user interaction. For
-example, sandboxed iframes with
-<code class="docutils literal notranslate"><span class="pre">allow-top-navigation-by-user-activation</span></code> may only navigate their
-parent’s browsing context under these circumstances. The <em>intent</em>
-string is presented to human operators when the test is not run in
-automation.</p>
-<p>This method returns a promise which is resolved with the result of
-invoking the <em>action</em> function. If no such function is provided, the
-promise is resolved with the value <code class="docutils literal notranslate"><span class="pre">undefined</span></code>.</p>
-<p>Example:</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after click occurs, or rejected in the cases the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="test_driver.send_keys">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">send_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">element</span></em>, <em class="sig-param"><span class="pre">keys</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.send_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send keys to an element.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">element</span></code> isn’t inside the
+viewport, it will be scrolled into view before the click
+occurs.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">element</span></code> is from a different browsing context, the
+command will be run in that context.</p>
+<p>To send special keys, send the respective key’s codepoint,
+as defined by <a class="reference external" href="https://w3c.github.io/webdriver/#keyboard-actions">WebDriver</a>.  For
+example, the “tab” key is represented as “<code class="docutils literal notranslate"><span class="pre">\uE004</span></code>”.</p>
+<p><strong>Note:</strong> these special-key codepoints are not necessarily
+what you would expect. For example, &lt;kbd&gt;Esc&lt;/kbd&gt; is the
+invalid Unicode character <code class="docutils literal notranslate"><span class="pre">\uE00C</span></code>, not the <code class="docutils literal notranslate"><span class="pre">\u001B</span></code> Escape
+character from ASCII.</p>
+<p>This matches the behaviour of the
+<a class="reference external" href="https://w3c.github.io/webdriver/#element-send-keys">Send Keys</a>
+WebDriver command.</p>
+<p><strong>Note:</strong> If the element to be clicked does not have a
+unique ID, the document must not have any DOM mutations
+made between the function being called and the promise
+settling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<em>Element</em>) – element to send keys to</p></li>
+<li><p><strong>keys</strong> (<em>String</em>) – keys to send to the element</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after keys are sent, or rejected in the cases the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="test_driver.action_sequence">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">action_sequence</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">actions</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.action_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a sequence of actions</p>
+<p>This function sends a sequence of actions to perform.</p>
+<p>Matches the behaviour of the <a class="reference external" href="https://w3c.github.io/webdriver/#actions">Actions</a> feature in
+WebDriver.</p>
+<p>Authors are encouraged to use the
+<code class="xref js js-class docutils literal notranslate"><span class="pre">test_driver.Actions()</span></code> builder rather than
+invoking this API directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>actions</strong> (<em>Array</em>) – an array of actions. The format is the same as the actions property of the <a class="reference external" href="https://w3c.github.io/webdriver/#perform-actions">Perform Actions</a> WebDriver command. Each element is an object representing an input source and each input source itself has an actions property detailing the behaviour of that source at each timestep (or tick). Authors are not expected to construct the actions sequence by hand, but to use the builder api provided in testdriver-actions.js</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the actions are performed, or rejected in the cases the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="test_driver.bless">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">bless</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">intent</span></em>, <em class="sig-param"><span class="pre">action</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.bless" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trigger user interaction in order to grant additional privileges to
+a provided function.</p>
+<p>See <a class="reference external" href="https://html.spec.whatwg.org/#triggered-by-user-activation">triggered by user activation</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>intent</strong> (<em>String</em>) – a description of the action which must be triggered by user interaction</p></li>
+<li><p><strong>action</strong> (<em>function</em>) – code requiring escalated privileges</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled following user interaction and execution of the provided <cite>action</cite> function; rejected if interaction fails or the provided function throws an error</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">mediaElement</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;video&#39;</span><span class="p">);</span>
 
 <span class="nx">test_driver</span><span class="p">.</span><span class="nx">bless</span><span class="p">(</span><span class="s1">&#39;initiate media playback&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
@@ -126,36 +197,783 @@ promise is resolved with the value <code class="docutils literal notranslate"><s
 <span class="p">});</span>
 </pre></div>
 </div>
-</section>
-<section id="click">
-<h3>click<a class="headerlink" href="#click" title="Permalink to this headline">¶</a></h3>
-<p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.click(element)</span></code></p>
-<ul class="simple">
-<li><p><em>element</em>: a DOM Element object</p></li>
+</dd></dl>
+
+</div>
+<div class="section" id="window-state">
+<h3>Window State<a class="headerlink" href="#window-state" title="Permalink to this headline">¶</a></h3>
+<dl class="js function">
+<dt id="test_driver.minimize_window">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">minimize_window</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.minimize_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimizes the browser window.</p>
+<p>Matches the the behaviour of the <a class="reference external" href="https://www.w3.org/TR/webdriver/#minimize-window">Minimize</a>
+WebDriver command</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
-<p>This function causes a click to occur on the target element (an
-<code class="docutils literal notranslate"><span class="pre">Element</span></code> object), potentially scrolling the document to make it
-possible to click it. It returns a promise that resolves after the
-click has occurred or rejects if the element cannot be clicked (for
-example, it is obscured by an element on top of it).</p>
-<p>This works with elements in other frames/windows as long as they are
-same-origin with the test, and the test does not depend on the
-window.name property remaining unset on the target window.</p>
-<p>Note that if the element to be clicked does not have a unique ID, the
-document must not have any DOM mutations made between the function
-being called and the promise settling.</p>
-</section>
-</section>
-<section id="delete-all-cookies">
-<h2>delete_all_cookies<a class="headerlink" href="#delete-all-cookies" title="Permalink to this headline">¶</a></h2>
-<p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.delete_all_cookies(context=null)</span></code></p>
-<ul class="simple">
-<li><p><em>context</em>: an optional WindowProxy for the browsing context in which to
-perform the call. Defaults to the current browsing context.</p></li>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled with the previous <a class="reference external" href="mailto:{&#37;&#52;&#48;link">{<span>&#64;</span>link</a> <a class="reference external" href="https://www.w3.org/TR/webdriver/#dfn-windowrect">https://www.w3.org/TR/webdriver/#dfn-windowrect</a>-object|WindowRect} value, after the window is minimized.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="test_driver.set_window_rect">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">set_window_rect</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">rect</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_window_rect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restore the window from minimized/maximized state to a given rect.</p>
+<p>Matches the behaviour of the <a class="reference external" href="https://www.w3.org/TR/webdriver/#set-window-rect">Set Window Rect</a>
+WebDriver command</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rect</strong> (<em>Object</em>) – A <a class="reference external" href="mailto:{&#37;&#52;&#48;link">{<span>&#64;</span>link</a> <a class="reference external" href="https://www.w3.org/TR/webdriver/#dfn-windowrect">https://www.w3.org/TR/webdriver/#dfn-windowrect</a>-object|WindowRect}</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
 </ul>
-<p>This function returns a promise that resolves after all the cookies have
-been deleted from the provided browsing context.</p>
-<section id="send-keys">
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the window is restored to the given rect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="cookies">
+<h3>Cookies<a class="headerlink" href="#cookies" title="Permalink to this headline">¶</a></h3>
+<dl class="js function">
+<dt id="test_driver.delete_all_cookies">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">delete_all_cookies</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.delete_all_cookies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes all cookies.</p>
+<p>Matches the behaviour of the <a class="reference external" href="https://w3c.github.io/webdriver/#delete-all-cookies">Delete All Cookies</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after cookies are deleted, or rejected in the cases the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="permissions">
+<h3>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h3>
+<dl class="js function">
+<dt id="test_driver.set_permission">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">set_permission</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">descriptor</span></em>, <em class="sig-param"><span class="pre">state</span></em>, <em class="sig-param"><span class="pre">one_realm</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_permission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the state of a permission</p>
+<p>This function simulates a user setting a permission into a
+particular state.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/permissions/#set-permission-command">Set Permission</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>descriptor</strong> (<em>Object</em>) – a <a class="reference external" href="https://w3c.github.io/permissions/#dictdef-permissiondescriptor">PermissionDescriptor</a> object</p></li>
+<li><p><strong>state</strong> (<em>String</em>) – the state of the permission</p></li>
+<li><p><strong>one_realm</strong> (<em>boolean</em>) – Optional. Whether the permission applies to only one realm</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the permission is set, or rejected if setting the permission fails</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;background-fetch&quot;</span> <span class="p">},</span> <span class="s2">&quot;denied&quot;</span><span class="p">);</span>
+<span class="k">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;push&quot;</span><span class="p">,</span> <span class="nx">userVisibleOnly</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span> <span class="s2">&quot;granted&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="authentication">
+<h3>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h3>
+<dl class="js function">
+<dt id="test_driver.add_virtual_authenticator">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">add_virtual_authenticator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">config</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.add_virtual_authenticator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a virtual authenticator</p>
+<p>This function creates a virtual authenticator for use with
+the U2F and WebAuthn APIs.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-add-virtual-authenticator">Add Virtual Authenticator</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> (<em>Object</em>) – an <a class="reference external" href="https://w3c.github.io/webauthn/#authenticator-configuration">Authenticator Configuration</a> object</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the authenticator is added, or rejected in the cases the WebDriver command errors. Returns the ID of the authenticator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="test_driver.remove_virtual_authenticator">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">remove_virtual_authenticator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">authenticator_id</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_virtual_authenticator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a virtual authenticator</p>
+<p>This function removes a virtual authenticator that has been
+created by <a class="reference internal" href="#test_driver.add_virtual_authenticator" title="test_driver.add_virtual_authenticator"><code class="xref js js-func docutils literal notranslate"><span class="pre">add_virtual_authenticator()</span></code></a>.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-remove-virtual-authenticator">Remove Virtual Authenticator</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator to be removed.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the authenticator is removed, or rejected in the cases the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="test_driver.add_credential">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">add_credential</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">authenticator_id</span></em>, <em class="sig-param"><span class="pre">credential</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.add_credential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a credential to a virtual authenticator</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-add-credential">Add Credential</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator</p></li>
+<li><p><strong>credential</strong> (<em>Object</em>) – A <a class="reference external" href="https://w3c.github.io/webauthn/#credential-parameters">Credential Parameters</a> object</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the credential is added, or rejected in the cases the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="test_driver.get_credentials">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">get_credentials</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">authenticator_id</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.get_credentials" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all the credentials stored in an authenticator</p>
+<p>This function retrieves all the credentials (added via the U2F API,
+WebAuthn, or the add_credential function) stored in a virtual
+authenticator</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-get-credentials">Get Credentials</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the credentials are returned, or rejected in the cases the WebDriver command errors. Returns an array of <a class="reference external" href="https://w3c.github.io/webauthn/#credential-parameters">Credential Parameters</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="test_driver.remove_credential">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">remove_credential</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">authenticator_id</span></em>, <em class="sig-param"><span class="pre">credential_id</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_credential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a credential stored in an authenticator</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-remove-credential">Remove Credential</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator</p></li>
+<li><p><strong>credential_id</strong> (<em>String</em>) – the ID of the credential</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the credential is removed, or rejected in the cases the WebDriver command errors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="test_driver.remove_all_credentials">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">remove_all_credentials</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">authenticator_id</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.remove_all_credentials" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all the credentials stored in a virtual authenticator</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-remove-all-credentials">Remoce All Credentials</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the credentials are removed, or rejected in the cases the WebDriver command errors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="test_driver.set_user_verified">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">set_user_verified</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">authenticator_id</span></em>, <em class="sig-param"><span class="pre">uv</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_user_verified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the User Verified flag on an authenticator</p>
+<p>Sets whether requests requiring user verification will succeed or
+fail on a given virtual authenticator</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/webauthn/#sctn-automation-set-user-verified">Set User Verified</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>authenticator_id</strong> (<em>String</em>) – the ID of the authenticator</p></li>
+<li><p><strong>uv</strong> (<em>boolean</em>) – the User Verified flag</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="page-lifecycle">
+<h3>Page Lifecycle<a class="headerlink" href="#page-lifecycle" title="Permalink to this headline">¶</a></h3>
+<dl class="js function">
+<dt id="test_driver.freeze">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">freeze</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.freeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Freeze the current page</p>
+<p>The freeze function transitions the page from the HIDDEN state to
+the FROZEN state as described in <a class="reference external" href="https://github.com/WICG/page-lifecycle/blob/master/README.md">Lifecycle API for Web Pages</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the freeze request is sent, or rejected in case the WebDriver command errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="reporting-observer">
+<h3>Reporting Observer<a class="headerlink" href="#reporting-observer" title="Permalink to this headline">¶</a></h3>
+<dl class="js function">
+<dt id="test_driver.generate_test_report">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">generate_test_report</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.generate_test_report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a test report on the current page</p>
+<p>The generate_test_report function generates a report (to be
+observed by ReportingObserver) for testing purposes.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/reporting/#generate-test-report-command">Generate Test Report</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – fulfilled after the report is generated, or rejected if the report generation fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="storage">
+<h3>Storage<a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h3>
+<dl class="js function">
+<dt id="test_driver.set_storage_access">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">set_storage_access</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">origin</span></em>, <em class="sig-param"><span class="pre">embedding_origin</span></em>, <em class="sig-param"><span class="pre">state</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_storage_access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the storage access rule for an origin when embedded
+in a third-party context.</p>
+<p>Matches the <a class="reference external" href="https://privacycg.github.io/storage-access/#set-storage-access-command">Set Storage Access</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origin</strong> (<em>String</em>) – A third-party origin to block or allow. May be “*” to indicate all origins.</p></li>
+<li><p><strong>embedding_origin</strong> (<em>String</em>) – an embedding (first-party) origin on which {origin}’s access should be blocked or allowed. May be “*” to indicate all origins.</p></li>
+<li><p><strong>state</strong> (<em>String</em>) – The storage access setting. Must be either “allowed” or “blocked”.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the storage access rule has been set, or rejected if setting the rule fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="seure-payment-confirmation">
+<h3>Seure Payment Confirmation<a class="headerlink" href="#seure-payment-confirmation" title="Permalink to this headline">¶</a></h3>
+<dl class="js function">
+<dt id="test_driver.set_spc_transaction_mode">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">set_spc_transaction_mode</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">mode</span></em>, <em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_spc_transaction_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the current transaction automation mode for Secure Payment
+Confirmation.</p>
+<p>This function places <a class="reference external" href="https://w3c.github.io/secure-payment-confirmation">Secure Payment
+Confirmation</a> into
+an automated ‘autoaccept’ or ‘autoreject’ mode, to allow testing
+without user interaction with the transaction UX prompt.</p>
+<p>Matches the <a class="reference external" href="https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode">Set SPC Transaction Mode</a>
+WebDriver command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>String</em>) – The <a class="reference external" href="https://w3c.github.io/secure-payment-confirmation/#enumdef-transactionautomationmode">transaction mode</a> to set. Must be one of “<code class="docutils literal notranslate"><span class="pre">none</span></code>”, “<code class="docutils literal notranslate"><span class="pre">autoaccept</span></code>”, or “<code class="docutils literal notranslate"><span class="pre">autoreject</span></code>”.</p></li>
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Browsing context in which to run the call, or null for the current browsing context.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – Fulfilled after the transaction mode has been set, or rejected if setting the mode fails.</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_spc_transaction_mode</span><span class="p">(</span><span class="s2">&quot;autoaccept&quot;</span><span class="p">);</span>
+<span class="nx">test</span><span class="p">.</span><span class="nx">add_cleanup</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_spc_transaction_mode</span><span class="p">(</span><span class="s2">&quot;none&quot;</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// Assumption: `request` is a PaymentRequest with a secure-payment-confirmation</span>
+<span class="c1">// payment method.</span>
+<span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="using-test-driver-in-other-browsing-contexts">
+<h3>Using test_driver in other browsing contexts<a class="headerlink" href="#using-test-driver-in-other-browsing-contexts" title="Permalink to this headline">¶</a></h3>
+<p>Testdriver can be used in browsing contexts (i.e. windows or frames)
+from which it’s possible to get a reference to the top-level test
+context. There are two basic approaches depending on whether the
+context in which testdriver is used is same-origin with the test
+context, or different origin.</p>
+<p>For same-origin contexts, the context can be passed directly into the
+testdriver API calls. For functions that take an element argument this
+is done implicitly using the owner document of the element. For
+functions that don’t take an element, this is done via an explicit
+context argument, which takes a WindowProxy object.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">win</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;example.html&quot;</span><span class="p">)</span>
+<span class="n">win</span><span class="o">.</span><span class="n">onload</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="n">test_driver</span><span class="o">.</span><span class="n">set_permission</span><span class="p">({</span> <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;background-fetch&quot;</span> <span class="p">},</span> <span class="s2">&quot;denied&quot;</span><span class="p">,</span> <span class="n">win</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="js function">
+<dt id="test_driver.set_test_context">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">set_test_context</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.set_test_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the context in which testharness.js is loaded</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – the window containing testharness.js</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="test_driver.message_test">
+<code class="sig-prename descclassname"><span class="pre">test_driver.</span></code><code class="sig-name descname"><span class="pre">message_test</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_driver.message_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>postMessage to the context containing testharness.js</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>Object</em>) – the data to POST</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>For cross-origin cases, passing in the <code class="docutils literal notranslate"><span class="pre">context</span></code> doesn’t work because
+of limitations in the WebDriver protocol used to implement testdriver
+in a cross-browser fashion. Instead one may include the testdriver
+scripts directly in the relevant document, and use the
+<a class="reference external" href="#test_driver.set_test_context"><code class="docutils literal notranslate"><span class="pre">test_driver.set_test_context</span></code></a> API to
+specify the browsing context containing testharness.js. Commands are
+then sent via <code class="docutils literal notranslate"><span class="pre">postMessage</span></code> to the test context. For convenience there
+is also a <a class="reference external" href="#test_driver.message_test"><code class="docutils literal notranslate"><span class="pre">test_driver.message_test</span></code></a>
+function that can be used to send arbitary messages to the test
+window. For example, in an auxillary browsing context:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">testdriver</span><span class="p">.</span><span class="nx">set_test_context</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">opener</span><span class="p">)</span>
+<span class="k">await</span> <span class="nx">testdriver</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">)[</span><span class="mf">0</span><span class="p">])</span>
+<span class="nx">testdriver</span><span class="p">.</span><span class="nx">message_test</span><span class="p">(</span><span class="s2">&quot;click complete&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The requirement to have a handle to the test window does mean it’s
+currently not possible to write tests where such handles can’t be
+obtained e.g. in the case of <code class="docutils literal notranslate"><span class="pre">rel=noopener</span></code>.</p>
+</div>
+</div>
+<div class="section" id="actions">
+<h2>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Markup<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>To use the <a class="reference external" href="#Actions">Actions</a> API <code class="docutils literal notranslate"><span class="pre">testdriver-actions.js</span></code> must be
+included in the document, in addition to <code class="docutils literal notranslate"><span class="pre">testdriver.js</span></code>:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testdriver-actions.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>API<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<dl class="js class">
+<dt id="Actions">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Actions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">defaultTickDuration=16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builder for creating a sequence of actions</p>
+<p>The actions are dispatched once
+<code class="xref js js-func docutils literal notranslate"><span class="pre">test_driver.Actions.send()</span></code> is called. This returns a
+promise which resolves once the actions are complete.</p>
+<p>The other methods on <code class="xref js js-class docutils literal notranslate"><span class="pre">test_driver.Actions()</span></code> object are
+used to build the sequence of actions that will be sent. These
+return the <cite>Actions</cite> object itself, so the actions sequence can
+be constructed by chaining method calls.</p>
+<p>Internally <code class="xref js js-func docutils literal notranslate"><span class="pre">test_driver.Actions.send()</span></code> invokes
+<a class="reference internal" href="#test_driver.action_sequence" title="test_driver.action_sequence"><code class="xref js js-func docutils literal notranslate"><span class="pre">test_driver.action_sequence()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>defaultTickDuration</strong> (<em>number</em>) – The default duration of a tick. Be default this is set ot 16ms, which is one frame time based on 60Hz display.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">text_box</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">);</span>
+
+<span class="kd">let</span> <span class="nx">actions</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span>
+   <span class="p">.</span><span class="nx">pointerMove</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="p">{</span><span class="nx">origin</span><span class="o">:</span> <span class="nx">text_box</span><span class="p">})</span>
+   <span class="p">.</span><span class="nx">pointerDown</span><span class="p">()</span>
+   <span class="p">.</span><span class="nx">pointerUp</span><span class="p">()</span>
+   <span class="p">.</span><span class="nx">addTick</span><span class="p">()</span>
+   <span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
+   <span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
+
+<span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+</pre></div>
+</div>
+<dl class="js function">
+<dt id="Actions.addKeyboard">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">addKeyboard</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name</span></em>, <em class="sig-param"><span class="pre">set</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addKeyboard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new key input source with the given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>String</em>) – Name of the key source</p></li>
+<li><p><strong>set</strong> (<em>Bool</em>) – Set source as the default key source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.addPointer">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">addPointer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span></em>, <em class="sig-param"><span class="pre">pointerType</span></em>, <em class="sig-param"><span class="pre">set</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addPointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new pointer input source with the given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<em>String</em>) – Name of the pointer source</p></li>
+<li><p><strong>pointerType</strong> (<em>String</em>) – Type of pointing device</p></li>
+<li><p><strong>set</strong> (<em>Bool</em>) – Set source as the default pointer source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.addTick">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">addTick</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">duration</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addTick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a new actions tick</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>duration</strong> (<em>Number</em>) – Minimum length of the tick in ms.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.addWheel">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">addWheel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span></em>, <em class="sig-param"><span class="pre">set</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.addWheel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new wheel input source with the given name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<em>String</em>) – Name of the wheel source</p></li>
+<li><p><strong>set</strong> (<em>Bool</em>) – Set source as the default wheel source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.getSource">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">getSource</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span></em>, <em class="sig-param"><span class="pre">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.getSource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the action source with a particular source type and name.
+If no name is passed, a new source with the given type is
+created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<em>String</em>) – Source type (‘none’, ‘key’, ‘pointer’, or ‘wheel’)</p></li>
+<li><p><strong>name</strong> (<em>String</em>) – Name of the source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Source</strong> – Source object for that source.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.keyDown">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">keyDown</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key</span></em>, <em class="sig-param"><span class="pre">sourceName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.keyDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a keyDown event for the current default key source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>String</em>) – Key to press</p></li>
+<li><p><strong>sourceName</strong> (<em>String</em>) – Named key source to use or null for the default key source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.keyUp">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">keyUp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key</span></em>, <em class="sig-param"><span class="pre">sourceName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.keyUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a keyDown event for the current default key source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>String</em>) – Key to release</p></li>
+<li><p><strong>sourceName</strong> (<em>String</em>) – Named key source to use or null for the default key source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.pause">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">pause</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">duration</span></em>, <em class="sig-param"><span class="pre">sourceType</span></em>, <em class="sig-param"><span class="pre">sourceName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a pause to the current tick</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>duration</strong> (<em>Number</em>) – Minimum length of the tick in ms.</p></li>
+<li><p><strong>sourceType</strong> (<em>String</em>) – source type</p></li>
+<li><p><strong>sourceName</strong> (<em>String</em>) – Named key, pointer or wheel source to use or null for the default key, pointer or wheel source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.pointerDown">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">pointerDown</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">button</span></em>, <em class="sig-param"><span class="pre">sourceName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pointerDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a pointerDown event for the current default pointer source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>button</strong> (<em>String</em>) – Button to press</p></li>
+<li><p><strong>sourceName</strong> (<em>String</em>) – Named pointer source to use or null for the default pointer source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.pointerMove">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">pointerMove</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">origin</span></em>, <em class="sig-param"><span class="pre">duration</span></em>, <em class="sig-param"><span class="pre">sourceName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pointerMove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a move event for the current default pointer source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Number</em>) – Destination x coordinate</p></li>
+<li><p><strong>y</strong> (<em>Number</em>) – Destination y coordinate</p></li>
+<li><p><strong>origin</strong> (<em>String|Element</em>) – Origin of the coordinate system. Either “pointer”, “viewport” or an Element</p></li>
+<li><p><strong>duration</strong> (<em>Number</em>) – Time in ms for the move</p></li>
+<li><p><strong>sourceName</strong> (<em>String</em>) – Named pointer source to use or null for the default pointer source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.pointerUp">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">pointerUp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">button</span></em>, <em class="sig-param"><span class="pre">sourceName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.pointerUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a pointerUp event for the current default pointer source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>button</strong> (<em>String</em>) – Button to release</p></li>
+<li><p><strong>sourceName</strong> (<em>String</em>) – Named pointer source to use or null for the default pointer source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.scroll">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">scroll</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">deltaX</span></em>, <em class="sig-param"><span class="pre">deltaY</span></em>, <em class="sig-param"><span class="pre">origin</span></em>, <em class="sig-param"><span class="pre">duration</span></em>, <em class="sig-param"><span class="pre">sourceName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.scroll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a scroll event for the current default wheel source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Number</em>) – mouse cursor x coordinate</p></li>
+<li><p><strong>y</strong> (<em>Number</em>) – mouse cursor y coordinate</p></li>
+<li><p><strong>deltaX</strong> (<em>Number</em>) – scroll delta value along the x-axis in pixels</p></li>
+<li><p><strong>deltaY</strong> (<em>Number</em>) – scroll delta value along the y-axis in pixels</p></li>
+<li><p><strong>origin</strong> (<em>String|Element</em>) – Origin of the coordinate system. Either “viewport” or an Element</p></li>
+<li><p><strong>duration</strong> (<em>Number</em>) – Time in ms for the scroll</p></li>
+<li><p><strong>sourceName</strong> (<em>String</em>) – Named wheel source to use or null for the default wheel source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.send">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">send</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Actions.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate and send the action sequence</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Promise</strong> – fulfilled after the sequence is executed, rejected if any actions fail.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.serialize">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">serialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Actions.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the action sequence suitable for passing to
+test_driver.action_sequence</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Array</strong> – Array of WebDriver-compatible actions sequences</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.setContext">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">setContext</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the context for the actions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>WindowProxy</em>) – Context in which to run the action sequence</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.setKeyboard">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">setKeyboard</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setKeyboard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the current default key source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>String</em>) – Name of the key source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.setPointer">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">setPointer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setPointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the current default pointer source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>String</em>) – Name of the pointer source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Actions.setWheel">
+<code class="sig-prename descclassname"><span class="pre">Actions.</span></code><code class="sig-name descname"><span class="pre">setWheel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Actions.setWheel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the current default wheel source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>String</em>) – Name of the wheel source</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Actions</strong> –</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="using-in-other-browsing-contexts">
+<h3>Using in other browsing contexts<a class="headerlink" href="#using-in-other-browsing-contexts" title="Permalink to this headline">¶</a></h3>
+<p>For the actions API, the context can be set using the <code class="docutils literal notranslate"><span class="pre">setContext</span></code>
+method on the builder:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">actions</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">Actions</span><span class="p">()</span>
+    <span class="p">.</span><span class="nx">setContext</span><span class="p">(</span><span class="nx">frames</span><span class="p">[</span><span class="mf">0</span><span class="p">])</span>
+    <span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
+<span class="nx">actions</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Note that if an action uses an element reference, the context will be
+derived from that element, and must match any explictly set
+context. Using elements in multiple contexts in a single action chain
+is not supported.</p>
+</div>
+<div class="section" id="send-keys">
 <h3>send_keys<a class="headerlink" href="#send-keys" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.send_keys(element,</span> <span class="pre">keys)</span></code></p>
 <ul class="simple">
@@ -176,8 +994,8 @@ between the function being called and the promise settling.</p>
 <p>To send special keys, one must send the respective key’s codepoint. Since this uses the WebDriver protocol, you can find a <a class="reference external" href="https://w3c.github.io/webdriver/#keyboard-actions">list for code points to special keys in the spec</a>.
 For example, to send the tab key you would send “\uE004”.</p>
 <p><em>Note: these special-key codepoints are not necessarily what you would expect. For example, <kbd>Esc</kbd> is the invalid Unicode character <code class="docutils literal notranslate"><span class="pre">\uE00C</span></code>, not the <code class="docutils literal notranslate"><span class="pre">\u001B</span></code> Escape character from ASCII.</em></p>
-</section>
-<section id="set-permission">
+</div>
+<div class="section" id="set-permission">
 <h3>set_permission<a class="headerlink" href="#set-permission" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">test_driver.set_permission(descriptor,</span> <span class="pre">state,</span> <span class="pre">one_realm=false,</span> <span class="pre">context=null)</span></code></p>
 <ul class="simple">
@@ -200,59 +1018,9 @@ been set to be overridden with <em>state</em>.</p>
 <span class="k">await</span> <span class="nx">test_driver</span><span class="p">.</span><span class="nx">set_permission</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;push&quot;</span><span class="p">,</span> <span class="nx">userVisibleOnly</span><span class="o">:</span> <span class="kc">true</span> <span class="p">},</span> <span class="s2">&quot;granted&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 </pre></div>
 </div>
-</section>
-</section>
-<section id="using-testdriver-in-other-browsing-contexts">
-<h2>Using testdriver in Other Browsing Contexts<a class="headerlink" href="#using-testdriver-in-other-browsing-contexts" title="Permalink to this headline">¶</a></h2>
-<p>Testdriver can be used in browsing contexts (i.e. windows or frames)
-from which it’s possible to get a reference to the top-level test
-context. There are two basic approaches depending on whether the
-context in which testdriver is used is same-origin with the test
-context, or different origin.</p>
-<p>For same-origin contexts, the context can be passed directly into the
-testdriver API calls. For functions that take an element argument this
-is done implicitly using the owner document of the element. For
-functions that don’t take an element, this is done via an explicit
-context argument, which takes a WindowProxy object.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">win</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;example.html&quot;</span><span class="p">)</span>
-<span class="n">win</span><span class="o">.</span><span class="n">onload</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-  <span class="k">await</span> <span class="n">test_driver</span><span class="o">.</span><span class="n">set_permission</span><span class="p">({</span> <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;background-fetch&quot;</span> <span class="p">},</span> <span class="s2">&quot;denied&quot;</span><span class="p">,</span> <span class="n">win</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
 </div>
-<p>For the actions API, the context can be set using the <code class="docutils literal notranslate"><span class="pre">setContext</span></code>
-method on the builder:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">actions</span> <span class="o">=</span> <span class="n">new</span> <span class="n">test_driver</span><span class="o">.</span><span class="n">Actions</span><span class="p">()</span>
-    <span class="o">.</span><span class="n">setContext</span><span class="p">(</span><span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="o">.</span><span class="n">keyDown</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">keyUp</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
-<span class="n">actions</span><span class="o">.</span><span class="n">send</span><span class="p">();</span>
-</pre></div>
 </div>
-<p>Note that if an action uses an element reference, the context will be
-derived from that element, and must match any explictly set
-context. Using elements in multiple contexts in a single action chain
-is not supported.</p>
-<p>For cross-origin cases, passing in the context id doesn’t work because
-of limitations in the WebDriver protocol used to implement testdriver
-in a cross-browser fashion. Instead one may include the testdriver
-scripts directly in the relevant document, and use the
-<code class="docutils literal notranslate"><span class="pre">set_test_context</span></code> API to specify the browsing context containing
-testharness.js. Commands are then sent via postMessage to the test
-context. For convenience there is also a <code class="docutils literal notranslate"><span class="pre">message_test</span></code> function that
-can be used to send arbitary messages to the test window. For example,
-in an auxillary browsing context:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">testdriver</span><span class="o">.</span><span class="n">set_test_context</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">opener</span><span class="p">)</span>
-<span class="k">await</span> <span class="n">testdriver</span><span class="o">.</span><span class="n">click</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">testdriver</span><span class="o">.</span><span class="n">message_test</span><span class="p">(</span><span class="s2">&quot;click complete&quot;</span><span class="p">)</span>
-</pre></div>
 </div>
-<p>The requirement to have a handle to the test window does mean it’s
-currently not possible to write tests where such handles can’t be
-obtained e.g. in the case of <code class="docutils literal notranslate"><span class="pre">rel=noopener</span></code>.</p>
-</section>
-</section>
 
 
           </div>
@@ -324,7 +1092,7 @@ obtained e.g. in the case of <code class="docutils literal notranslate"><span cl
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

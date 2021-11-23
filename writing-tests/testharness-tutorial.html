@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>testharness.js tutorial &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Rendering Test Guidelines" href="rendering.html" />
@@ -33,9 +32,14 @@
 
           <div class="body" role="main">
             
-  <section id="testharness-js-tutorial">
+  <div class="section" id="testharness-js-tutorial">
 <h1>testharness.js tutorial<a class="headerlink" href="#testharness-js-tutorial" title="Permalink to this headline">¶</a></h1>
-<!--
+<p>.. contents:: Table of Contents
+:depth: 3
+:local:
+:backlinks: none</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+&lt;!--
 Note to maintainers:
 
 This tutorial is designed to be an authentic depiction of the WPT contribution
@@ -44,30 +48,28 @@ limited in order to demonstrate authoring a complete test without overwhelming
 the reader with features. Because typical WPT usage patterns change over time,
 this should be updated periodically; please weigh extensions against the
 demotivating effect that a lengthy guide can have on new contributors.
---><p>Let’s say you’ve discovered that WPT doesn’t have any tests for how <a class="reference external" href="https://fetch.spec.whatwg.org/">the Fetch
-API</a> sets cookies from an HTTP response. This
+--&gt;
+
+Let&#39;s say you&#39;ve discovered that WPT doesn&#39;t have any tests for how [the Fetch
+API](https://fetch.spec.whatwg.org/) sets cookies from an HTTP response. This
 tutorial will guide you through the process of writing a test for the
 web-platform, verifying it, and submitting it back to WPT. Although it includes
-some very brief instructions on using git, you can find more guidance in <a class="reference internal" href="github-intro.html"><span class="doc">the
-tutorial for git and GitHub</span></a>.</p>
-<p>WPT’s testharness.js is a framework designed to help people write tests for the
-web platform’s JavaScript APIs. <a class="reference internal" href="testharness.html"><span class="doc">The testharness.js reference
-page</span></a> describes the framework in the abstract, but for the
-purposes of this guide, we’ll only consider the features we need to test the
-behavior of <code class="docutils literal notranslate"><span class="pre">fetch</span></code>.</p>
-<div class="contents local topic" id="contents">
-<ul class="simple">
-<li><p><a class="reference internal" href="#setting-up-your-workspace" id="id1">Setting up your workspace</a></p></li>
-<li><p><a class="reference internal" href="#writing-a-subtest" id="id2">Writing a subtest</a></p></li>
-<li><p><a class="reference internal" href="#refining-the-subtest" id="id3">Refining the subtest</a></p></li>
-<li><p><a class="reference internal" href="#writing-a-second-subtest" id="id4">Writing a second subtest</a></p></li>
-<li><p><a class="reference internal" href="#verifying-our-work" id="id5">Verifying our work</a></p></li>
-<li><p><a class="reference internal" href="#submitting-the-test" id="id6">Submitting the test</a></p></li>
-<li><p><a class="reference internal" href="#more-practice" id="id7">More practice</a></p></li>
-</ul>
+some very brief instructions on using git, you can find more guidance in [the
+tutorial for git and GitHub](github-intro).
+
+WPT&#39;s testharness.js is a framework designed to help people write tests for the
+web platform&#39;s JavaScript APIs. [The testharness.js reference
+page](testharness) describes the framework in the abstract, but for the
+purposes of this guide, we&#39;ll only consider the features we need to test the
+behavior of `fetch`.
+
+```eval_rst
+.. contents::
+   :local:
+</pre></div>
 </div>
-<section id="setting-up-your-workspace">
-<h2><a class="toc-backref" href="#id1">Setting up your workspace</a><a class="headerlink" href="#setting-up-your-workspace" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="setting-up-your-workspace">
+<h2>Setting up your workspace<a class="headerlink" href="#setting-up-your-workspace" title="Permalink to this headline">¶</a></h2>
 <p>To make sure you have the latest code, first type the following into a terminal
 located in the root of the WPT git repository:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git fetch git@github.com:web-platform-tests/wpt.git
@@ -83,9 +85,9 @@ just downloaded:</p>
 server, so you’ll also need to <a class="reference internal" href="../running-tests/from-local-system.html"><span class="doc">configure your system to run
 WPT</span></a> before you continue.</p>
 <p>With that out of the way, you’re ready to create your patch.</p>
-</section>
-<section id="writing-a-subtest">
-<h2><a class="toc-backref" href="#id2">Writing a subtest</a><a class="headerlink" href="#writing-a-subtest" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="writing-a-subtest">
+<h2>Writing a subtest<a class="headerlink" href="#writing-a-subtest" title="Permalink to this headline">¶</a></h2>
 <!--
 Goals of this section:
 
@@ -179,9 +181,9 @@ configuration</span></a>, you can access the test at
 <a class="reference external" href="http://web-platform.test:8000/fetch/api/basic/set-cookie.html.">http://web-platform.test:8000/fetch/api/basic/set-cookie.html</a>.
 You should see something like this:</p>
 <p><img alt="../_images/testharness-tutorial-test-screenshot-1.png" src="../_images/testharness-tutorial-test-screenshot-1.png" /></p>
-</section>
-<section id="refining-the-subtest">
-<h2><a class="toc-backref" href="#id3">Refining the subtest</a><a class="headerlink" href="#refining-the-subtest" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="refining-the-subtest">
+<h2>Refining the subtest<a class="headerlink" href="#refining-the-subtest" title="Permalink to this headline">¶</a></h2>
 <!--
 Goals of this section:
 
@@ -239,9 +241,9 @@ subtest, we should give this one a more specific name:</p>
 <span class="gi">+}, &#39;cookie set for successful request&#39;);</span>
 </pre></div>
 </div>
-</section>
-<section id="writing-a-second-subtest">
-<h2><a class="toc-backref" href="#id4">Writing a second subtest</a><a class="headerlink" href="#writing-a-second-subtest" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="writing-a-second-subtest">
+<h2>Writing a second subtest<a class="headerlink" href="#writing-a-second-subtest" title="Permalink to this headline">¶</a></h2>
 <!--
 Goals of this section:
 
@@ -315,9 +317,9 @@ in the previous subtest, right?</p>
 <p>If you run the test in your browser now, you can expect to see both tests
 reported as passing with their distinct names.</p>
 <p><img alt="../_images/testharness-tutorial-test-screenshot-2.png" src="../_images/testharness-tutorial-test-screenshot-2.png" /></p>
-</section>
-<section id="verifying-our-work">
-<h2><a class="toc-backref" href="#id5">Verifying our work</a><a class="headerlink" href="#verifying-our-work" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="verifying-our-work">
+<h2>Verifying our work<a class="headerlink" href="#verifying-our-work" title="Permalink to this headline">¶</a></h2>
 <p>We’re done writing the test, but we should make sure it fits in with the rest
 of WPT before we submit it.</p>
 <p><a class="reference internal" href="lint-tool.html"><span class="doc">The lint tool</span></a> can detect some of the common mistakes people make
@@ -351,9 +353,9 @@ you’ve used the right file names and metadata. Separately, the web browser
 might crash. That’s often a sign of a browser bug, so you should consider
 <a class="reference external" href="https://rachelandrew.co.uk/archives/2017/01/30/reporting-browser-bugs/">reporting it to the browser’s
 maintainers</a>!</p>
-</section>
-<section id="submitting-the-test">
-<h2><a class="toc-backref" href="#id6">Submitting the test</a><a class="headerlink" href="#submitting-the-test" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="submitting-the-test">
+<h2>Submitting the test<a class="headerlink" href="#submitting-the-test" title="Permalink to this headline">¶</a></h2>
 <p>First, let’s stage the new files for committing:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git add fetch/api/basic/set-cookie.asis
 $ git add fetch/api/basic/set-cookie.html
@@ -378,9 +380,9 @@ and you can press the <code class="docutils literal notranslate"><span class="pr
 test we wrote in this tutorial, but if we wanted to submit it for inclusion in
 the repository, we would create a pull request on GitHub. <a class="reference internal" href="github-intro.html"><span class="doc">The guide on git and
 GitHub</span></a> has all the details on how to do that.</p>
-</section>
-<section id="more-practice">
-<h2><a class="toc-backref" href="#id7">More practice</a><a class="headerlink" href="#more-practice" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="more-practice">
+<h2>More practice<a class="headerlink" href="#more-practice" title="Permalink to this headline">¶</a></h2>
 <p>Here are some ways you can keep experimenting with WPT using this test:</p>
 <ul class="simple">
 <li><p>Improve the test’s readability by defining helper functions like
@@ -391,8 +393,8 @@ test</span></a></p></li>
 the fetch operation is aborted by <code class="docutils literal notranslate"><span class="pre">window.stop</span></code>, or the behavior when the
 HTTP response sets multiple cookies)</p></li>
 </ul>
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -462,7 +464,7 @@ HTTP response sets multiple cookies)</p></li>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

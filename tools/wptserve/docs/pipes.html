@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pipes &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="pywebsocket3: A Standalone WebSocket Server for testing purposes" href="../../../admin/pywebsocket3.html" />
@@ -33,22 +32,22 @@
 
           <div class="body" role="main">
             
-  <section id="pipes">
+  <div class="section" id="pipes">
 <h1>Pipes<a class="headerlink" href="#pipes" title="Permalink to this headline">¶</a></h1>
-<section id="module-wptserve.pipes">
+<div class="section" id="module-wptserve.pipes">
 <span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.pipes" title="wptserve.pipes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.pipes" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="wptserve.pipes.gzip">
-<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">gzip</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.gzip" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></code><code class="sig-name descname"><span class="pre">gzip</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.gzip" title="Permalink to this definition">¶</a></dt>
 <dd><p>This pipe gzip-encodes response data.</p>
 <p>It sets (or overwrites) these HTTP headers:
 Content-Encoding is set to gzip
 Content-Length is set to the length of the compressed content</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="wptserve.pipes.header">
-<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">header</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em>, <em class="sig-param">name</em>, <em class="sig-param">value</em>, <em class="sig-param">append=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.header" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></code><code class="sig-name descname"><span class="pre">header</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a HTTP header.</p>
 <p>Replaces any existing HTTP header of the same name unless
 append is set, in which case the header is appended without
@@ -64,9 +63,9 @@ replacement.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="wptserve.pipes.slice">
-<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">slice</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em>, <em class="sig-param">start</em>, <em class="sig-param">end=None</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.slice" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></code><code class="sig-name descname"><span class="pre">slice</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.slice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a byte range of the response body</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -81,9 +80,9 @@ the file.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="wptserve.pipes.status">
-<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">status</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em>, <em class="sig-param">code</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></code><code class="sig-name descname"><span class="pre">status</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alter the status code.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -92,9 +91,9 @@ the file.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="wptserve.pipes.sub">
-<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">sub</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em>, <em class="sig-param">escape_type='html'</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.sub" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></code><code class="sig-name descname"><span class="pre">sub</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">escape_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'html'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.sub" title="Permalink to this definition">¶</a></dt>
 <dd><p>Substitute environment information about the server and request into the script.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -157,9 +156,9 @@ by name e.g.:</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="wptserve.pipes.trickle">
-<code class="sig-prename descclassname">wptserve.pipes.</code><code class="sig-name descname">trickle</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">response</em>, <em class="sig-param">delays</em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.trickle" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">wptserve.pipes.</span></code><code class="sig-name descname"><span class="pre">trickle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delays</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.pipes.trickle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send the response in parts, with time delays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -183,8 +182,8 @@ until the response has been fully sent.</p>
 </dl>
 </dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -257,7 +256,7 @@ until the response has been fully sent.</p>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Android WebView &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Safari" href="safari.html" />
@@ -33,11 +32,11 @@
 
           <div class="body" role="main">
             
-  <section id="android-webview">
+  <div class="section" id="android-webview">
 <h1>Android WebView<a class="headerlink" href="#android-webview" title="Permalink to this headline">¶</a></h1>
 <p>To run WPT on WebView on an Android device, some additional set-up is required.</p>
 <p>Currently, Android WebView support is experimental.</p>
-<section id="prerequisites">
+<div class="section" id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>Please check <a class="reference internal" href="chrome_android.html"><span class="doc">Chrome for Android</span></a> for the common instructions for Android support first.</p>
 <p>Ensure you have a userdebug or eng Android build installed on the device.</p>
@@ -72,8 +71,8 @@ sure that no other ChromeDriver is used.</p></li>
 </pre></div>
 </div>
 <p>Ensure that <code class="docutils literal notranslate"><span class="pre">adb</span></code> can be found on your system’s PATH.</p>
-</section>
-<section id="running-tests">
+</div>
+<div class="section" id="running-tests">
 <h2>Running Tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h2>
 <p>Example command line:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./wpt run --test-type<span class="o">=</span>testharness android_webview &lt;TESTS&gt;
@@ -84,8 +83,8 @@ sure that no other ChromeDriver is used.</p></li>
 will be run against the current WebView version installed on the device.</p></li>
 <li><p>Reftests are not supported at the moment.</p></li>
 </ul>
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -159,7 +158,7 @@ will be run against the current WebView version installed on the device.</p></li
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

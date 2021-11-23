@@ -633,16 +633,7 @@ class Chrome(Browser):
 
     def find_binary(self, venv_path=None, channel=None):
         if channel == "nightly":
-            # If nightly channel is specified, only the virtual env path will be checked for a browser binary.
-            nightly_binary = self.find_nightly_binary(self._get_dest(venv_path, channel))
-            if nightly_binary:
-                return nightly_binary
-            else:
-                raise FileNotFoundError(
-                    "Unable to locate browser binary in virtual environment. "
-                    "Use command \"wpt install chrome browser\" to install the latest browser binary "
-                    "or use --binary to set the binary path."
-                )
+            return self.find_nightly_binary(self._get_dest(venv_path, channel))
 
         if uname[0] == "Linux":
             name = "google-chrome"

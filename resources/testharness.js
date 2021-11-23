@@ -1127,6 +1127,7 @@
 
     /**
      * @deprecated
+     *
      * Register a function as a DOM event listener to the
      * given object for the event bubbling phase.
      *
@@ -2826,13 +2827,13 @@
     };
 
     /**
-     * @func
-     *
      * Manually set the test status to ``TIMEOUT``.
      *
      * Alias for `Test.timeout <#Test.timeout>`_.
      */
-    Test.prototype.force_timeout = Test.prototype.timeout;
+    Test.prototype.force_timeout = function() {
+        return this.timeout();
+    };
 
     /**
      * Mark the test as complete.

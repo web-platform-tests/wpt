@@ -5,6 +5,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <body>
 
+<!--
+  We focus this one between each test, to ensure that for non-modal dialogs,
+  if there is no focus delegate, it stays focused (instead of causing focus to reset to the body).
+-->
+<button tabindex="-1" id="focus-between-tests">Focus between tests</button>
+
 <dialog data-description="No autofocus, no delegatesFocus, no siblings">
   <template class="turn-into-shadow-tree">
     <button disabled>Non-focusable</button>
@@ -206,9 +212,13 @@ for (const template of document.querySelectorAll(".turn-into-shadow-tree")) {
   template.replaceWith(div);
 }
 
+const focusBetweenTests = document.querySelector("#focus-between-tests");
+
 for (const dialog of document.querySelectorAll("dialog")) {
   for (const method of ["show", "showModal"]) {
     test(t => {
+      focusBetweenTests.focus();
+
       dialog[method]();
       t.add_cleanup(() => dialog.close());
 
@@ -222,8 +232,12 @@ for (const dialog of document.querySelectorAll("dialog")) {
           assert_equals(document.activeElement, shadowHost);
           assert_equals(shadowHost.shadowRoot.activeElement, expectedFocusInsideShadowTree);
         } else {
-          // Expected no focus
-          assert_equals(document.activeElement, document.body);
+          // There is no focus delegate. Expected result depends on show() vs. showModal().
+          if (method === "show") {
+            assert_equals(document.activeElement, focusBetweenTests);
+          } else {
+            assert_equals(document.activeElement, document.body);
+          }
         }
       }
     }, `${method}: ${dialog.dataset.description}`);

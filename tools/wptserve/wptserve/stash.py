@@ -148,6 +148,7 @@ class Stash(object):
 
     _proxy = None
     lock = None
+    manager = None
     _initializing = threading.Lock()
 
     def __init__(self, default_path, address=None, authkey=None):
@@ -170,8 +171,8 @@ class Stash(object):
             if Stash.lock:
                 return
 
-            self.manager = StashManager(address, authkey)
-            self.manager.connect()
+            Stash.manager = StashManager(address, authkey)
+            Stash.manager.connect()
             Stash._proxy = self.manager.get_dict()
             Stash.lock = LockWrapper(self.manager.Lock())
 

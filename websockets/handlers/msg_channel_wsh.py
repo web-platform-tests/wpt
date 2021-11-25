@@ -7,13 +7,12 @@ import traceback
 from queue import Empty
 
 from mod_pywebsocket import stream, msgutil
-from wptserve import stash
+from wptserve import stash as stashmod
 
 logger = logging.getLogger()
 
-address, authkey = stash.load_env_config()
-stash = stash.Stash("msg_channel", address=address, authkey=authkey)
-
+address, authkey = stashmod.load_env_config()
+stash = stashmod.Stash("msg_channel", address=address, authkey=authkey)
 
 # Backend for websocket based channels.
 #

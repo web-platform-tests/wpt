@@ -4,9 +4,9 @@ from io import BytesIO
 import json
 import uuid
 
-from hpack.struct import HeaderTuple
+from third_party.hpack.struct import HeaderTuple
 from http.cookies import BaseCookie, Morsel
-from hyperframe.frame import HeadersFrame, DataFrame, ContinuationFrame
+from third_party.hyperframe.frame import HeadersFrame, DataFrame, ContinuationFrame
 
 from .constants import response_codes, h2_headers
 from .logger import get_logger

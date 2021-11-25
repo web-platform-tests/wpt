@@ -1,0 +1,12 @@
+[tool.vendoring]
+destination = "third_party/"
+requirements = "requirements_vendor.txt"
+namespace = "third_party"
+patches-dir = "third_party_patches"
+
+[tool.vendoring.license.fallback-urls]
+funcsigs = "https://github.com/aliles/funcsigs/raw/master/LICENSE"
+hyperframe = "https://github.com/python-hyper/hyperframe/raw/master/LICENSE"
+hpack = "https://github.com/python-hyper/hpack/raw/master/LICENSE"
+h2 = "https://github.com/python-hyper/h2/raw/master/LICENSE"
+webencodings = "https://github.com/gsnedders/python-webencodings/raw/master/LICENSE"

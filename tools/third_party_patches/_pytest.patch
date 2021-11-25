@@ -1,0 +1,479 @@
+diff --git a/tools/third_party/_pytest/assertion/util.py b/tools/third_party/_pytest/assertion/util.py
+index da1ffd15e3..83311dc018 100644
+--- a/tools/third_party/_pytest/assertion/util.py
++++ b/tools/third_party/_pytest/assertion/util.py
+@@ -10,7 +10,7 @@ from typing import Mapping
+ from typing import Optional
+ from typing import Sequence
+ 
+-import _pytest._code
++import _pytest._code as _pytest__code
+ from _pytest import outcomes
+ from _pytest._io.saferepr import _pformat_dispatch
+ from _pytest._io.saferepr import safeformat
+@@ -159,7 +159,7 @@ def assertrepr_compare(config, op: str, left: Any, right: Any) -> Optional[List[
+     except Exception:
+         explanation = [
+             "(pytest_assertion plugin: representation of details failed: {}.".format(
+-                _pytest._code.ExceptionInfo.from_current()._getreprcrash()
++                _pytest__code.ExceptionInfo.from_current()._getreprcrash()
+             ),
+             " Probably an object has a faulty __repr__.)",
+         ]
+diff --git a/tools/third_party/_pytest/config/__init__.py b/tools/third_party/_pytest/config/__init__.py
+index bd9e2883f9..c680be1b2b 100644
+--- a/tools/third_party/_pytest/config/__init__.py
++++ b/tools/third_party/_pytest/config/__init__.py
+@@ -37,9 +37,9 @@ from pluggy import HookimplMarker
+ from pluggy import HookspecMarker
+ from pluggy import PluginManager
+ 
+-import _pytest._code
+-import _pytest.deprecated
+-import _pytest.hookspec
++import _pytest._code as _pytest__code
++import _pytest.deprecated as _pytest_deprecated
++import _pytest.hookspec as _pytest_hookspec
+ from .exceptions import PrintHelp as PrintHelp
+ from .exceptions import UsageError as UsageError
+ from .findpaths import determine_setup
+@@ -117,7 +117,7 @@ class ConftestImportFailure(Exception):
+ 
+ 
+ def filter_traceback_for_conftest_import_failure(
+-    entry: _pytest._code.TracebackEntry,
++    entry: _pytest__code.TracebackEntry,
+ ) -> bool:
+     """Filter tracebacks entries which point to pytest internals or importlib.
+ 
+@@ -335,7 +335,7 @@ class PytestPluginManager(PluginManager):
+     """
+ 
+     def __init__(self) -> None:
+-        import _pytest.assertion
++        import _pytest.assertion as _pytest_assertion
+ 
+         super().__init__("pytest")
+         # The objects are module objects, only used generically.
+@@ -355,7 +355,7 @@ class PytestPluginManager(PluginManager):
+         # just stored here to be used later.
+         self.skipped_plugins: List[Tuple[str, str]] = []
+ 
+-        self.add_hookspecs(_pytest.hookspec)
++        self.add_hookspecs(_pytest_hookspec)
+         self.register(self)
+         if os.environ.get("PYTEST_DEBUG"):
+             err: IO[str] = sys.stderr
+@@ -370,7 +370,7 @@ class PytestPluginManager(PluginManager):
+             self.enable_tracing()
+ 
+         # Config._consider_importhook will set a real object if required.
+-        self.rewrite_hook = _pytest.assertion.DummyRewriteHook()
++        self.rewrite_hook = _pytest_assertion.DummyRewriteHook()
+         # Used to know when we are importing conftests after the pytest_configure stage.
+         self._configured = False
+ 
+@@ -423,7 +423,7 @@ class PytestPluginManager(PluginManager):
+     def register(
+         self, plugin: _PluggyPlugin, name: Optional[str] = None
+     ) -> Optional[str]:
+-        if name in _pytest.deprecated.DEPRECATED_EXTERNAL_PLUGINS:
++        if name in _pytest_deprecated.DEPRECATED_EXTERNAL_PLUGINS:
+             warnings.warn(
+                 PytestConfigWarning(
+                     "{} plugin has been merged into the core, "
+@@ -1104,10 +1104,10 @@ class Config:
+         ns, unknown_args = self._parser.parse_known_and_unknown_args(args)
+         mode = getattr(ns, "assertmode", "plain")
+         if mode == "rewrite":
+-            import _pytest.assertion
++            import _pytest.assertion as _pytest_assertion
+ 
+             try:
+-                hook = _pytest.assertion.install_importhook(self)
++                hook = _pytest_assertion.install_importhook(self)
+             except SystemError:
+                 mode = "plain"
+             else:
+@@ -1181,7 +1181,7 @@ class Config:
+ 
+         if self.known_args_namespace.strict:
+             self.issue_config_time_warning(
+-                _pytest.deprecated.STRICT_OPTION, stacklevel=2
++                _pytest_deprecated.STRICT_OPTION, stacklevel=2
+             )
+ 
+         if self.known_args_namespace.confcutdir is None and self.inipath is not None:
+diff --git a/tools/third_party/_pytest/config/argparsing.py b/tools/third_party/_pytest/config/argparsing.py
+index 9a48196552..b2e8efce94 100644
+--- a/tools/third_party/_pytest/config/argparsing.py
++++ b/tools/third_party/_pytest/config/argparsing.py
+@@ -16,7 +16,7 @@ from typing import Union
+ 
+ import py
+ 
+-import _pytest._io
++import _pytest._io as _pytest__io
+ from _pytest.compat import final
+ from _pytest.config.exceptions import UsageError
+ 
+@@ -468,7 +468,7 @@ class DropShorterLongHelpFormatter(argparse.HelpFormatter):
+     def __init__(self, *args: Any, **kwargs: Any) -> None:
+         # Use more accurate terminal width.
+         if "width" not in kwargs:
+-            kwargs["width"] = _pytest._io.get_terminal_width()
++            kwargs["width"] = _pytest__io.get_terminal_width()
+         super().__init__(*args, **kwargs)
+ 
+     def _format_action_invocation(self, action: argparse.Action) -> str:
+diff --git a/tools/third_party/_pytest/debugging.py b/tools/third_party/_pytest/debugging.py
+index d3a5c6173f..283da954fc 100644
+--- a/tools/third_party/_pytest/debugging.py
++++ b/tools/third_party/_pytest/debugging.py
+@@ -149,7 +149,7 @@ class pytestPDB:
+ 
+     @classmethod
+     def _get_pdb_wrapper_class(cls, pdb_cls, capman: Optional["CaptureManager"]):
+-        import _pytest.config
++        import _pytest.config as _pytest_config
+ 
+         # Type ignored because mypy doesn't support "dynamic"
+         # inheritance like this.
+@@ -167,7 +167,7 @@ class pytestPDB:
+                 ret = super().do_continue(arg)
+                 if cls._recursive_debug == 0:
+                     assert cls._config is not None
+-                    tw = _pytest.config.create_terminal_writer(cls._config)
++                    tw = _pytest_config.create_terminal_writer(cls._config)
+                     tw.line()
+ 
+                     capman = self._pytest_capman
+@@ -237,7 +237,7 @@ class pytestPDB:
+     @classmethod
+     def _init_pdb(cls, method, *args, **kwargs):
+         """Initialize PDB debugging, dropping any IO capturing."""
+-        import _pytest.config
++        import _pytest.config as _pytest_config
+ 
+         if cls._pluginmanager is None:
+             capman: Optional[CaptureManager] = None
+@@ -247,7 +247,7 @@ class pytestPDB:
+             capman.suspend(in_=True)
+ 
+         if cls._config:
+-            tw = _pytest.config.create_terminal_writer(cls._config)
++            tw = _pytest_config.create_terminal_writer(cls._config)
+             tw.line()
+ 
+             if cls._recursive_debug == 0:
+diff --git a/tools/third_party/_pytest/fixtures.py b/tools/third_party/_pytest/fixtures.py
+index 273bcafd39..53f09a9179 100644
+--- a/tools/third_party/_pytest/fixtures.py
++++ b/tools/third_party/_pytest/fixtures.py
+@@ -128,8 +128,6 @@ def get_scope_package(node, fixturedef: "FixtureDef[object]"):
+ def get_scope_node(
+     node: nodes.Node, scope: "_Scope"
+ ) -> Optional[Union[nodes.Item, nodes.Collector]]:
+-    import _pytest.python
+-
+     if scope == "function":
+         return node.getparent(nodes.Item)
+     elif scope == "class":
+diff --git a/tools/third_party/_pytest/main.py b/tools/third_party/_pytest/main.py
+index 41a33d4494..7731a6de74 100644
+--- a/tools/third_party/_pytest/main.py
++++ b/tools/third_party/_pytest/main.py
+@@ -23,7 +23,7 @@ from typing import Union
+ import attr
+ import py
+ 
+-import _pytest._code
++import _pytest._code as _pytest__code
+ from _pytest import nodes
+ from _pytest.compat import final
+ from _pytest.config import Config
+@@ -273,7 +273,7 @@ def wrap_session(
+         except Failed:
+             session.exitstatus = ExitCode.TESTS_FAILED
+         except (KeyboardInterrupt, exit.Exception):
+-            excinfo = _pytest._code.ExceptionInfo.from_current()
++            excinfo = _pytest__code.ExceptionInfo.from_current()
+             exitstatus: Union[int, ExitCode] = ExitCode.INTERRUPTED
+             if isinstance(excinfo.value, exit.Exception):
+                 if excinfo.value.returncode is not None:
+@@ -284,7 +284,7 @@ def wrap_session(
+             session.exitstatus = exitstatus
+         except BaseException:
+             session.exitstatus = ExitCode.INTERNAL_ERROR
+-            excinfo = _pytest._code.ExceptionInfo.from_current()
++            excinfo = _pytest__code.ExceptionInfo.from_current()
+             try:
+                 config.notify_exception(excinfo, config.option)
+             except exit.Exception as exc:
+diff --git a/tools/third_party/_pytest/mark/__init__.py b/tools/third_party/_pytest/mark/__init__.py
+index 329a11c4ae..ff6cc46389 100644
+--- a/tools/third_party/_pytest/mark/__init__.py
++++ b/tools/third_party/_pytest/mark/__init__.py
+@@ -112,11 +112,11 @@ def pytest_addoption(parser: Parser) -> None:
+ 
+ @hookimpl(tryfirst=True)
+ def pytest_cmdline_main(config: Config) -> Optional[Union[int, ExitCode]]:
+-    import _pytest.config
++    import _pytest.config as _pytest_config
+ 
+     if config.option.markers:
+         config._do_configure()
+-        tw = _pytest.config.create_terminal_writer(config)
++        tw = _pytest_config.create_terminal_writer(config)
+         for line in config.getini("markers"):
+             parts = line.split(":", 1)
+             name = parts[0]
+diff --git a/tools/third_party/_pytest/nodes.py b/tools/third_party/_pytest/nodes.py
+index 27434fb6a6..a20388f26f 100644
+--- a/tools/third_party/_pytest/nodes.py
++++ b/tools/third_party/_pytest/nodes.py
+@@ -16,7 +16,7 @@ from typing import Union
+ 
+ import py
+ 
+-import _pytest._code
++import _pytest._code as _pytest__code
+ from _pytest._code import getfslineno
+ from _pytest._code.code import ExceptionInfo
+ from _pytest._code.code import TerminalRepr
+@@ -366,7 +366,7 @@ class Node(metaclass=NodeMeta):
+         if self.config.getoption("fulltrace", False):
+             style = "long"
+         else:
+-            tb = _pytest._code.Traceback([excinfo.traceback[-1]])
++            tb = _pytest__code.Traceback([excinfo.traceback[-1]])
+             self._prunetraceback(excinfo)
+             if len(excinfo.traceback) == 0:
+                 excinfo.traceback = tb
+diff --git a/tools/third_party/_pytest/pytester.py b/tools/third_party/_pytest/pytester.py
+index 31259d1bdc..3e11601a1f 100644
+--- a/tools/third_party/_pytest/pytester.py
++++ b/tools/third_party/_pytest/pytester.py
+@@ -480,7 +480,7 @@ def _sys_snapshot() -> Generator[None, None, None]:
+ 
+ @fixture
+ def _config_for_test() -> Generator[Config, None, None]:
+-    from _pytest.config import get_config
++    from _pytest_config import get_config
+ 
+     config = get_config()
+     yield config
+@@ -1168,12 +1168,12 @@ class Pytester:
+         If :py:attr:`plugins` has been populated they should be plugin modules
+         to be registered with the PluginManager.
+         """
+-        import _pytest.config
++        import _pytest.config as _pytest_config
+ 
+         new_args = self._ensure_basetemp(args)
+         new_args = [str(x) for x in new_args]
+ 
+-        config = _pytest.config._prepareconfig(new_args, self.plugins)  # type: ignore[arg-type]
++        config = _pytest_config._prepareconfig(new_args, self.plugins)  # type: ignore[arg-type]
+         # we don't know what the test will do with this half-setup config
+         # object and thus we make sure it gets unconfigured properly in any
+         # case (otherwise capturing could still be active, for example)
+diff --git a/tools/third_party/_pytest/python.py b/tools/third_party/_pytest/python.py
+index e48e7531c1..7dca1efe08 100644
+--- a/tools/third_party/_pytest/python.py
++++ b/tools/third_party/_pytest/python.py
+@@ -1402,11 +1402,11 @@ def show_fixtures_per_test(config):
+ 
+ 
+ def _show_fixtures_per_test(config: Config, session: Session) -> None:
+-    import _pytest.config
++    import _pytest.config as _pytest_config
+ 
+     session.perform_collect()
+     curdir = py.path.local()
+-    tw = _pytest.config.create_terminal_writer(config)
++    tw = _pytest_config.create_terminal_writer(config)
+     verbose = config.getvalue("verbose")
+ 
+     def get_best_relpath(func):
+@@ -1458,11 +1458,11 @@ def showfixtures(config: Config) -> Union[int, ExitCode]:
+ 
+ 
+ def _showfixtures_main(config: Config, session: Session) -> None:
+-    import _pytest.config
++    import _pytest.config as _pytest_config
+ 
+     session.perform_collect()
+     curdir = py.path.local()
+-    tw = _pytest.config.create_terminal_writer(config)
++    tw = _pytest_config.create_terminal_writer(config)
+     verbose = config.getvalue("verbose")
+ 
+     fm = session._fixturemanager
+diff --git a/tools/third_party/_pytest/python_api.py b/tools/third_party/_pytest/python_api.py
+index 81ce4f8953..86a8d4ad25 100644
+--- a/tools/third_party/_pytest/python_api.py
++++ b/tools/third_party/_pytest/python_api.py
+@@ -23,7 +23,7 @@ if TYPE_CHECKING:
+     from numpy import ndarray
+ 
+ 
+-import _pytest._code
++import _pytest._code as _pytest__code
+ from _pytest.compat import final
+ from _pytest.compat import STRING_TYPES
+ from _pytest.outcomes import fail
+@@ -589,13 +589,13 @@ def raises(
+     func: Callable[..., Any],
+     *args: Any,
+     **kwargs: Any,
+-) -> _pytest._code.ExceptionInfo[_E]:
++) -> _pytest__code.ExceptionInfo[_E]:
+     ...
+ 
+ 
+ def raises(
+     expected_exception: Union[Type[_E], Tuple[Type[_E], ...]], *args: Any, **kwargs: Any
+-) -> Union["RaisesContext[_E]", _pytest._code.ExceptionInfo[_E]]:
++) -> Union["RaisesContext[_E]", _pytest__code.ExceptionInfo[_E]]:
+     r"""Assert that a code block/function call raises ``expected_exception``
+     or raise a failure exception otherwise.
+ 
+@@ -739,7 +739,7 @@ def raises(
+         except expected_exception as e:
+             # We just caught the exception - there is a traceback.
+             assert e.__traceback__ is not None
+-            return _pytest._code.ExceptionInfo.from_exc_info(
++            return _pytest__code.ExceptionInfo.from_exc_info(
+                 (type(e), e, e.__traceback__)
+             )
+     fail(message)
+@@ -760,10 +760,10 @@ class RaisesContext(Generic[_E]):
+         self.expected_exception = expected_exception
+         self.message = message
+         self.match_expr = match_expr
+-        self.excinfo: Optional[_pytest._code.ExceptionInfo[_E]] = None
++        self.excinfo: Optional[_pytest__code.ExceptionInfo[_E]] = None
+ 
+-    def __enter__(self) -> _pytest._code.ExceptionInfo[_E]:
+-        self.excinfo = _pytest._code.ExceptionInfo.for_later()
++    def __enter__(self) -> _pytest__code.ExceptionInfo[_E]:
++        self.excinfo = _pytest__code.ExceptionInfo.for_later()
+         return self.excinfo
+ 
+     def __exit__(
+diff --git a/tools/third_party/_pytest/terminal.py b/tools/third_party/_pytest/terminal.py
+index fbfb09aecf..3f678a6039 100644
+--- a/tools/third_party/_pytest/terminal.py
++++ b/tools/third_party/_pytest/terminal.py
+@@ -30,7 +30,7 @@ import attr
+ import pluggy
+ import py
+ 
+-import _pytest._version
++import _pytest._version as _pytest__version
+ from _pytest import nodes
+ from _pytest import timing
+ from _pytest._code import ExceptionInfo
+@@ -315,7 +315,7 @@ class WarningReport:
+ @final
+ class TerminalReporter:
+     def __init__(self, config: Config, file: Optional[TextIO] = None) -> None:
+-        import _pytest.config
++        import _pytest.config as _pytest_config
+ 
+         self.config = config
+         self._numcollected = 0
+@@ -329,7 +329,7 @@ class TerminalReporter:
+         self.startpath = config.invocation_params.dir
+         if file is None:
+             file = sys.stdout
+-        self._tw = _pytest.config.create_terminal_writer(config, file)
++        self._tw = _pytest_config.create_terminal_writer(config, file)
+         self._screen_width = self._tw.fullwidth
+         self.currentfspath: Union[None, Path, str, int] = None
+         self.reportchars = getreportopt(config)
+@@ -700,7 +700,7 @@ class TerminalReporter:
+                 verinfo = ".".join(map(str, pypy_version_info[:3]))
+                 msg += "[pypy-{}-{}]".format(verinfo, pypy_version_info[3])
+             msg += ", pytest-{}, py-{}, pluggy-{}".format(
+-                _pytest._version.version, py.__version__, pluggy.__version__
++                _pytest__version.version, py.__version__, pluggy.__version__
+             )
+             if (
+                 self.verbosity > 0
+diff --git a/tools/third_party/_pytest/unittest.py b/tools/third_party/_pytest/unittest.py
+index 55f15efe4b..ab65a58095 100644
+--- a/tools/third_party/_pytest/unittest.py
++++ b/tools/third_party/_pytest/unittest.py
+@@ -13,7 +13,7 @@ from typing import Type
+ from typing import TYPE_CHECKING
+ from typing import Union
+ 
+-import _pytest._code
++import _pytest._code as _pytest__code
+ import pytest
+ from _pytest.compat import getimfunc
+ from _pytest.compat import is_async_function
+@@ -184,7 +184,7 @@ def _make_xunit_fixture(
+ 
+ class TestCaseFunction(Function):
+     nofuncargs = True
+-    _excinfo: Optional[List[_pytest._code.ExceptionInfo[BaseException]]] = None
++    _excinfo: Optional[List[_pytest__code.ExceptionInfo[BaseException]]] = None
+     _testcase: Optional["unittest.TestCase"] = None
+ 
+     def setup(self) -> None:
+@@ -210,7 +210,7 @@ class TestCaseFunction(Function):
+         # Unwrap potential exception info (see twisted trial support below).
+         rawexcinfo = getattr(rawexcinfo, "_rawexcinfo", rawexcinfo)
+         try:
+-            excinfo = _pytest._code.ExceptionInfo(rawexcinfo)  # type: ignore[arg-type]
++            excinfo = _pytest__code.ExceptionInfo(rawexcinfo)  # type: ignore[arg-type]
+             # Invoke the attributes to trigger storing the traceback
+             # trial causes some issue there.
+             excinfo.value
+@@ -236,7 +236,7 @@ class TestCaseFunction(Function):
+             except KeyboardInterrupt:
+                 raise
+             except fail.Exception:
+-                excinfo = _pytest._code.ExceptionInfo.from_current()
++                excinfo = _pytest__code.ExceptionInfo.from_current()
+         self.__dict__.setdefault("_excinfo", []).append(excinfo)
+ 
+     def addError(
+@@ -323,7 +323,7 @@ class TestCaseFunction(Function):
+                 delattr(self._testcase, self.name)
+ 
+     def _prunetraceback(
+-        self, excinfo: _pytest._code.ExceptionInfo[BaseException]
++        self, excinfo: _pytest__code.ExceptionInfo[BaseException]
+     ) -> None:
+         Function._prunetraceback(self, excinfo)
+         traceback = excinfo.traceback.filter(
+diff --git a/tools/third_party/_pytest/doctest.py b/tools/third_party/_pytest/doctest.py
+index 64e8f0e0ee..38dccf95ad 100644
+--- a/tools/third_party/_pytest/doctest.py
++++ b/tools/third_party/_pytest/doctest.py
+@@ -21,7 +21,7 @@ from typing import Type
+ from typing import TYPE_CHECKING
+ from typing import Union
+ 
+-import py.path
++import py
+ 
+ import pytest
+ from _pytest import outcomes
+diff --git a/tools/third_party/_pytest/hookspec.py b/tools/third_party/_pytest/hookspec.py
+index e499b742c7..578f9ba928 100644
+--- a/tools/third_party/_pytest/hookspec.py
++++ b/tools/third_party/_pytest/hookspec.py
+@@ -10,7 +10,7 @@ from typing import Tuple
+ from typing import TYPE_CHECKING
+ from typing import Union
+ 
+-import py.path
++import py
+ from pluggy import HookspecMarker
+ 
+ from _pytest.deprecated import WARNING_CAPTURED_HOOK

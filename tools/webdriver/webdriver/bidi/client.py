@@ -7,7 +7,7 @@ from collections import defaultdict
 from typing import Any, Awaitable, Callable, Coroutine, List, Optional, Mapping, MutableMapping
 from urllib.parse import urljoin, urlparse
 
-import websockets
+import third_party.websockets
 
 from .error import from_error_details
 
@@ -225,7 +225,7 @@ class Transport:
                  msg_handler: Callable[[Mapping[str, Any]], Coroutine[Any, Any, None]],
                  loop: Optional[asyncio.AbstractEventLoop] = None):
         self.url = url
-        self.connection: Optional[websockets.WebSocketClientProtocol] = None
+        self.connection: Optional[third_party.websockets.WebSocketClientProtocol] = None
         self.msg_handler = msg_handler
         self.send_buf: List[Mapping[str, Any]] = []
 
@@ -236,7 +236,7 @@ class Transport:
         self.read_message_task: Optional[asyncio.Task[Any]] = None
 
     async def start(self) -> None:
-        self.connection = await websockets.client.connect(self.url)
+        self.connection = await third_party.websockets.client.connect(self.url)
         self.read_message_task = self.loop.create_task(self.read_messages())
 
         for msg in self.send_buf:
@@ -249,7 +249,7 @@ class Transport:
             self.send_buf.append(data)
 
     @staticmethod
-    async def _send(connection: websockets.WebSocketClientProtocol, data: Mapping[str, Any]) -> None:
+    async def _send(connection: third_party.websockets.WebSocketClientProtocol, data: Mapping[str, Any]) -> None:
         msg = json.dumps(data)
         logger.debug("→ %s", msg)
         await connection.send(msg)

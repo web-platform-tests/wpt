@@ -169,8 +169,6 @@ export function getBackgroundTests({ mode = "test" } = {}) {
       .reverse()
       .map((color) => toSolidCSSGradient(color));
 
-    console.log(backgrounds.join(", "));
-
     Object.assign(container.style, {
       backgroundImage: backgrounds.join(", "),
       backgroundBlendMode: backgrounds.map((_, i) =>

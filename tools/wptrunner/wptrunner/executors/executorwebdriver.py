@@ -27,7 +27,8 @@ from .protocol import (BaseProtocolPart,
                        SetPermissionProtocolPart,
                        VirtualAuthenticatorProtocolPart,
                        WindowProtocolPart,
-                       DebugProtocolPart)
+                       DebugProtocolPart,
+                       merge_dicts)
 
 from webdriver.client import Session
 from webdriver import error
@@ -337,7 +338,7 @@ class WebDriverProtocol(Protocol):
         if hasattr(browser, "capabilities"):
             if self.capabilities is None:
                 self.capabilities = browser.capabilities
-            elif not self.update(self.capabilities, browser.capabilities):
+            elif not merge_dicts(self.capabilities, browser.capabilities):
                 self.logger.warning("Can not update instance specific capabilities.")
         self.url = browser.webdriver_url
         self.webdriver = None

@@ -4,6 +4,24 @@ from abc import ABCMeta, abstractmethod
 from typing import ClassVar, List, Type
 
 
+def merge_dicts(target, source):
+    """Merge source dict recursely to target dict. Roll back if merge failed.
+    """
+    if type(target) is not dict or type(source) is not dict:
+        return target == source
+    merged_keys = []
+    for sk in source:
+        if sk not in target:
+            target[sk] = source[sk]
+            merged_keys.append(sk)
+        else:
+            rv = merge_dicts(target[sk], source[sk])
+            if not rv:
+                for key in merged_keys:
+                    del target[key]
+                return False
+    return True
+
 class Protocol(object):
     """Backend for a specific browser-control protocol.
 
@@ -27,18 +45,6 @@ class Protocol(object):
             name = cls.name
             assert not hasattr(self, name)
             setattr(self, name, cls(self))
-
-    def update(self, target, source):
-        if (type(target) is not dict
-                or type(source) is not dict):
-            return False
-        rv = True
-        for sk in source:
-            if sk not in target:
-                target[sk] = source[sk]
-            else:
-                rv = rv and self.update(target[sk], source[sk])
-        return rv
 
     @property
     def logger(self):

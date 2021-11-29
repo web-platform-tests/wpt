@@ -1,0 +1,1 @@
+Currently, we could test Web Neural Network API by [WebNN-polyfill](https://github.com/webmachinelearning/webnn-polyfill) which is a JavaScript implementation of the Web Neural Network API.

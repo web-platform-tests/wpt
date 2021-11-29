@@ -1,6 +1,7 @@
 // META: global=window,dedicatedworker
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: script=https://webmachinelearning.github.io/webnn-polyfill/dist/webnn-polyfill.js
 // META: timeout=long
 
 // https://webmachinelearning.github.io/webnn/

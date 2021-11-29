@@ -139,7 +139,7 @@ def start(logger, emulator=None, reinstall=False, device_serial=None):
     sdk_path = get_sdk_path(None)
 
     if emulator is None:
-        emulator = get_emulator(sdk_path, device_serial=None)
+        emulator = get_emulator(sdk_path, device_serial=device_serial)
 
     if not emulator.check_avd():
         logger.critical("Android AVD not found, please run |mach bootstrap|")

@@ -33,3 +33,35 @@ promise_test(async () => {
   assert_true(ready2Resolved, 'writer.ready should be resolved after releaseBackpressure()');
   assert_equals(writer.desiredSize, 0, 'desiredSize should be 0');
 }, 'releaseBackpressure() resolves ready promise on a stream with HWM 0');
+
+promise_test(async () => {
+  let resolveWrite;
+  const ws = recordingWritableStream({
+    write() {
+      return new Promise(resolve => {
+        resolveWrite = resolve;
+      });
+    }
+  }, { highWaterMark: 0 });
+  const writer = ws.getWriter();
+  writer.write('a');
+  writer.write('b');
+  assert_equals(writer.desiredSize, -2, 'desiredSize should be -2');
+
+  let ready1Resolved = false;
+  const ready1 = writer.ready;
+  ready1.then(() => { ready1Resolved = true });
+  await flushAsyncEvents();
+  assert_false(ready1Resolved, 'writer.ready should be pending');
+
+  ws.controller.releaseBackpressure();
+  resolveWrite();
+  await flushAsyncEvents();
+  assert_equals(writer.desiredSize, -1, 'desiredSize should be -1');
+  assert_false(ready1Resolved, 'writer.ready should still be pending');
+
+  resolveWrite();
+  await ready1;
+  assert_equals(writer.desiredSize, 0, 'desiredSize should be 0');
+  assert_true(ready1Resolved, 'writer.ready should be resolved');
+}, 'releaseBackpressure() does nothing while there are queued chunks');

@@ -5,22 +5,17 @@ from typing import ClassVar, List, Type
 
 
 def merge_dicts(target, source):
-    """Merge source dict recursely to target dict. Roll back if merge failed.
-    """
-    if type(target) is not dict or type(source) is not dict:
-        return target == source
-    merged_keys = []
-    for sk in source:
-        if sk not in target:
-            target[sk] = source[sk]
-            merged_keys.append(sk)
+    if not (isinstance(target, dict) and isinstance(source, dict)):
+        raise TypeError
+    for (key, source_value) in source.items():
+        if key not in target:
+            target[key] = source_value
         else:
-            rv = merge_dicts(target[sk], source[sk])
-            if not rv:
-                for key in merged_keys:
-                    del target[key]
-                return False
-    return True
+            if isinstance(source_value, dict) and isinstance(target[key], dict):
+                merge_dicts(target[key], source_value)
+            else:
+                target[key] = source_value
+    return rv
 
 class Protocol(object):
     """Backend for a specific browser-control protocol.

@@ -1,14 +1,10 @@
 // META: global=window,worker,jsshell
 // META: script=../resources/test-utils.js
+// META: script=../resources/recording-streams.js
 'use strict';
 
 promise_test(async () => {
-  let controller;
-  const ws = new WritableStream({
-    start(c) {
-      controller = c;
-    }
-  }, { highWaterMark: 0 });
+  const ws = recordingWritableStream({}, { highWaterMark: 0 });
   const writer = ws.getWriter();
   assert_equals(writer.desiredSize, 0, 'desiredSize should be 0');
 
@@ -18,7 +14,7 @@ promise_test(async () => {
   await flushAsyncEvents();
   assert_false(ready1Resolved, 'writer.ready should be pending');
 
-  controller.releaseBackpressure();
+  ws.controller.releaseBackpressure();
   await ready1;
   assert_true(ready1Resolved, 'writer.ready should be resolved after releaseBackpressure()');
   assert_equals(writer.desiredSize, 0, 'desiredSize should be 0');
@@ -32,7 +28,7 @@ promise_test(async () => {
   assert_false(ready2Resolved, 'writer.ready should be pending');
   assert_equals(writer.desiredSize, 0, 'desiredSize should be 0');
 
-  controller.releaseBackpressure();
+  ws.controller.releaseBackpressure();
   await ready2;
   assert_true(ready2Resolved, 'writer.ready should be resolved after releaseBackpressure()');
   assert_equals(writer.desiredSize, 0, 'desiredSize should be 0');

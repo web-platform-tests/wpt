@@ -58,9 +58,14 @@ promise_test(async () => {
   resolveWrite();
   await flushAsyncEvents();
   assert_equals(writer.desiredSize, -1, 'desiredSize should be -1');
-  assert_false(ready1Resolved, 'writer.ready should still be pending');
+  assert_false(ready1Resolved, 'writer.ready should be pending');
 
   resolveWrite();
+  await flushAsyncEvents();
+  assert_equals(writer.desiredSize, 0, 'desiredSize should be 0');
+  assert_false(ready1Resolved, 'writer.ready should be pending');
+
+  ws.controller.releaseBackpressure();
   await ready1;
   assert_equals(writer.desiredSize, 0, 'desiredSize should be 0');
   assert_true(ready1Resolved, 'writer.ready should be resolved');

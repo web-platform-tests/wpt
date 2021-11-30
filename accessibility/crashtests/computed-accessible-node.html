@@ -1,0 +1,13 @@
+<html class="test-wait">
+<img id="img1">text
+<script>
+async function trigger1() {
+  var img = document.getElementById('img1');
+  var computed_accessible_node = await self.getComputedAccessibleNode(img);
+  var next_sibling = computed_accessible_node.nextSibling;
+  await next_sibling.ensureUpToDate();
+  document.documentElement.className = '';
+}
+trigger1();
+</script>
+</html>

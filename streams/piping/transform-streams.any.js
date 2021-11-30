@@ -1,7 +1,7 @@
 // META: global=window,worker,jsshell
 'use strict';
 
-promise_test(() => {
+promise_test(async () => {
   const rs = new ReadableStream({
     start(c) {
       c.enqueue('a');
@@ -15,8 +15,8 @@ promise_test(() => {
 
   const ws = new WritableStream();
 
-  return rs.pipeThrough(ts).pipeTo(ws).then(() => {
-    const writer = ws.getWriter();
-    return writer.closed;
-  });
+  await rs.pipeThrough(ts).pipeTo(ws);
+
+  const writer = ws.getWriter();
+  await writer.closed;
 }, 'Piping through an identity transform stream should close the destination when the source closes');

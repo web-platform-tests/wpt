@@ -482,32 +482,24 @@ const attribute_test_with_validator = (loader, path, validator, run_test, test_l
   attribute_test_internal(loader, path, validator, run_test, test_label);
 };
 
-const network_error_entry_test = (originalURL, args_or_loader, label) => {
-  const maxRetries = 16;
-    async_test(t => {
-      const url = new URL(originalURL, location.href);
-      const search = new URLSearchParams(url.search.substr(1));
-      for (let i = 0; i < maxRetries; ++i) {
-        search.set('count', i);
-        url.search = `?${search}`
-        const timeBefore = performance.now();
-        loader = (typeof args_or_loader === 'function') ?
-          (() => args_or_loader(url)) :
-          (() => fetch(url, args_or_loader));
+const network_error_entry_test = (originalURL, args, label) => {
+  const url = new URL(originalURL, location.href);
+  const search = new URLSearchParams(url.search.substr(1));
+  const timeBefore = performance.now();
+  loader = () => new Promise(resolve => 
+    fetch(url, args).catch(resolve));
 
-        loader().catch(t.step_func_done(() => {
-            const timeAfter = performance.now();
-            const entries = performance.getEntriesByName(url);
-            assert_equals(entries.length, 1, 'resource timing entry for network error');
-            const entry = entries[0]
-            assert_equals(entry.startTime, entry.fetchStart, 'startTime and fetchStart should be equal');
-            assert_greater_than_equal(entry.startTime, timeBefore, 'startTime and fetchStart should be greater than the time before fetching');
-            assert_greater_than_equal(timeAfter, entry.responseEnd, 'endTime should be less than the time right after returning from the fetch');
-            invariants.assert_tao_failure_resource(entry);
-        })).then(() => {
-            t.done();
-        });
-      }
-
-    }, `A ResourceTiming entry should be created for network error of type ${label} by the time that error is reported`);
+  attribute_test(
+    loader, url,
+    () => {
+      const timeAfter = performance.now();
+      const names = performance.getEntriesByType('resource').filter(e => e.initiatorType === 'fetch').map(e => e.name);
+      const entries = performance.getEntriesByName(url.toString());
+      assert_equals(entries.length, 1, 'resource timing entry for network error');
+      const entry = entries[0]
+      assert_equals(entry.startTime, entry.fetchStart, 'startTime and fetchStart should be equal');
+      assert_greater_than_equal(entry.startTime, timeBefore, 'startTime and fetchStart should be greater than the time before fetching');
+      assert_greater_than_equal(timeAfter, entry.responseEnd, 'endTime should be less than the time right after returning from the fetch');
+      invariants.assert_tao_failure_resource(entry);
+  }, `A ResourceTiming entry should be created for network error of type ${label}`);
 }

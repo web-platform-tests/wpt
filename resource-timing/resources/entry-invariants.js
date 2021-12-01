@@ -486,8 +486,7 @@ const network_error_entry_test = (originalURL, args, label) => {
   const url = new URL(originalURL, location.href);
   const search = new URLSearchParams(url.search.substr(1));
   const timeBefore = performance.now();
-  loader = () => new Promise(resolve => 
-    fetch(url, args).catch(resolve));
+  loader = () => new Promise(resolve => fetch(url, args).catch(resolve));
 
   attribute_test(
     loader, url,

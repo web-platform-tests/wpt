@@ -482,9 +482,14 @@ const attribute_test_with_validator = (loader, path, validator, run_test, test_l
   attribute_test_internal(loader, path, validator, run_test, test_label);
 };
 
-const network_error_entry_test = (url, args_or_loader, label) => {
-  url = new URL(url, location.href)
+const network_error_entry_test = (originalURL, args_or_loader, label) => {
+  const maxRetries = 16;
     async_test(t => {
+      const url = new URL(originalURL, location.href);
+      const search = new URLSearchParams(url.search.substr(1));
+      for (let i = 0; i < maxRetries; ++i) {
+        search.set('count', i);
+        url.search = `?${search}`
         const timeBefore = performance.now();
         loader = (typeof args_or_loader === 'function') ?
           (() => args_or_loader(url)) :
@@ -502,6 +507,7 @@ const network_error_entry_test = (url, args_or_loader, label) => {
         })).then(() => {
             t.done();
         });
+      }
 
-    }, `Verify resource timing entry for network error: ${label}`);
+    }, `A ResourceTiming entry should be created for network error of type ${label} by the time that error is reported`);
 }

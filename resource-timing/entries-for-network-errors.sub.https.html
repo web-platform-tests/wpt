@@ -17,16 +17,8 @@ const validDataURL = 'data:,Hello%2C%20World%21'
 const {REMOTE_ORIGIN, ORIGINAL_HOST, HTTP_PORT} = get_host_info();
 const validXmlUrl = '/common/dummy.xml';
 
-function fetchAndAbort(url) {
-  const controller = new AbortController();
-  const signal = controller.signal;
-  controller.abort();
-  const res = fetch(url, { signal });
-  return res;
-}
-
 network_error_entry_test(
-    `${REMOTE_ORIGIN}${validXmlUrl}`, null, "failed cross-origin requests");
+    `${REMOTE_ORIGIN}${validXmlUrl}`, null, `failed cross-origin requests`);
 
 network_error_entry_test(`/common/redirect.py?location=${validDataURL}`, null, "non-HTTP redirect");
 network_error_entry_test('//{{hosts[][nonexistent]}}/common/dummy.xml', null, "DNS failure");

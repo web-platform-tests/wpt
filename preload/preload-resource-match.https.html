@@ -2,9 +2,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/preload/resources/preload_helper.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 <script>
 
-const crossOriginHost = 'https://{{host}}:{{ports[https][0]}}'
+const {REMOTE_HOST, HTTPS_PORT} = get_host_info();
 
 function createEchoURL(text, type) {
     return `/preload/resources/echo-with-cors.py?type=${
@@ -30,9 +31,16 @@ const resourceTypes = {
 }
 
 const configs = {
+    // The requested URL is from the same origin
     'same-origin': {crossOrigin: false, attributes: {}},
+
+    // The requested URL is from a remote origin, without CORS
     'no-cors': {crossOrigin: true, attributes: {}},
+
+    // The requested URL is from a remote origin, with CORS (anonymous)
     'anonymous': {crossOrigin: true, attributes: {crossOrigin: 'anonymous'}},
+
+    // The requested URL is from a remote origin, with CORS (including credentials)
     'use-credentials': {crossOrigin: true, attributes: {crossOrigin: 'use-credentials'}},
 }
 
@@ -131,7 +139,7 @@ function preload_reuse_test(type, as, url, preloadConfig, resourceConfig) {
     const expected = (preloadConfig === resourceConfig) ? "reuse" : "discard";
     const key = token();
     const href = getAbsoluteURL(`${
-        (configs[resourceConfig].crossOrigin ? crossOriginHost : '') + url
+        (configs[resourceConfig].crossOrigin ? `https://${REMOTE_HOST}:${HTTPS_PORT}` : '') + url
     }&${token()}`)
     promise_test(async t => {
         await preload({href, as, ...configs[preloadConfig].attributes}, t);
@@ -140,17 +148,20 @@ function preload_reuse_test(type, as, url, preloadConfig, resourceConfig) {
     }, `Loading ${type} (${resourceConfig}) with link (${preloadConfig}) should ${expected} the preloaded response`);
 }
 
-for (const resourceTypeName in resourceTypes) {
-    const resourceInfo = resourceTypes[resourceTypeName];
+for (const [resourceTypeName, resourceInfo] of Object.entries(resourceTypes)) {
     const configNames = resourceInfo.config ? [resourceInfo.config, 'same-origin'] : Object.keys(configs)
     for (const resourceConfigName of configNames) {
         for (const preloadConfigName of Object.keys(configs)) {
-            if (resourceConfigName === 'same-origin' && preloadConfigName !== 'same-origin')
-                continue;
-            if (resourceConfigName !== 'same-origin' && preloadConfigName === 'same-origin')
-                continue;
+            // Same-origin requests ignore their CORS attributes, so no need to match all of them.
+            if ((resourceConfigName === 'same-origin' && preloadConfigName === 'same-origin') ||
+                (resourceConfigName !== 'same-origin' && preloadConfigName !== 'same-origin'))
             preload_reuse_test(resourceTypeName, resourceInfo.as, resourceInfo.url, preloadConfigName, resourceConfigName);
         }
     }
+
+}
+
+for (const resourceTypeName in resourceTypes) {
+    const resourceInfo = resourceTypes[resourceTypeName];
 }
 </script>

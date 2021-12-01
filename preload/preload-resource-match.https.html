@@ -6,7 +6,7 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script>
 
-const {REMOTE_HOST, HTTPS_PORT} = get_host_info();
+const {HTTPS_REMOTE_ORIGIN} = get_host_info();
 
 function createEchoURL(text, type) {
     return `/preload/resources/echo-with-cors.py?type=${
@@ -140,7 +140,7 @@ function preload_reuse_test(type, as, url, preloadConfig, resourceConfig) {
     const expected = (preloadConfig === resourceConfig) ? "reuse" : "discard";
     const key = token();
     const href = getAbsoluteURL(`${
-        (configs[resourceConfig].crossOrigin ? `https://${REMOTE_HOST}:${HTTPS_PORT}` : '') + url
+        (configs[resourceConfig].crossOrigin ? HTTPS_REMOTE_ORIGIN : '') + url
     }&${token()}`)
     promise_test(async t => {
         await preload({href, as, ...configs[preloadConfig].attributes}, t);
@@ -160,9 +160,5 @@ for (const [resourceTypeName, resourceInfo] of Object.entries(resourceTypes)) {
         }
     }
 
-}
-
-for (const resourceTypeName in resourceTypes) {
-    const resourceInfo = resourceTypes[resourceTypeName];
 }
 </script>

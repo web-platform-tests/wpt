@@ -28,6 +28,7 @@ from .protocol import (BaseProtocolPart,
                        VirtualAuthenticatorProtocolPart,
                        WindowProtocolPart,
                        DebugProtocolPart,
+                       SPCTransactionsProtocolPart,
                        merge_dicts)
 
 from webdriver.client import Session
@@ -312,6 +313,15 @@ class WebDriverVirtualAuthenticatorProtocolPart(VirtualAuthenticatorProtocolPart
         return self.webdriver.send_session_command("POST", "webauthn/authenticator/%s/uv" % authenticator_id, uv)
 
 
+class WebDriverSPCTransactionsProtocolPart(SPCTransactionsProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def set_spc_transaction_mode(self, mode):
+        body = {"mode": mode}
+        return self.webdriver.send_session_command("POST", "secure-payment-confirmation/set-mode", body)
+
+
 class WebDriverDebugProtocolPart(DebugProtocolPart):
     def load_devtools(self):
         raise NotImplementedError()
@@ -330,6 +340,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverGenerateTestReportProtocolPart,
                   WebDriverSetPermissionProtocolPart,
                   WebDriverVirtualAuthenticatorProtocolPart,
+                  WebDriverSPCTransactionsProtocolPart,
                   WebDriverDebugProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):

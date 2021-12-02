@@ -45,6 +45,7 @@ function setTransceiverCodecPreference(transceiver, codecPreference) {
  * and an object containing transceivers by kind.
  */
 async function startConnection(t, audio, video, videoCodecPreference) {
+  await setPermission();
   const stream = await navigator.mediaDevices.getUserMedia({audio, video});
   t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
   const pc1 = new RTCPeerConnection();

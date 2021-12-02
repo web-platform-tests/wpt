@@ -637,10 +637,16 @@ function exposure_set(object, default_set) {
     if (exposed && exposed.length) {
         const { rhs } = exposed[0];
         // Could be a list or a string.
-        const set = rhs.type === "identifier-list" ?
+        const set =
+            rhs.type === "*" ?
+            [ "*" ] :
+            rhs.type === "identifier-list" ?
             rhs.value.map(id => id.value) :
             [ rhs.value ];
         result = new Set(set);
+    }
+    if (result && result.has("*")) {
+        return "*";
     }
     if (result && result.has("Worker")) {
         result.delete("Worker");
@@ -652,6 +658,9 @@ function exposure_set(object, default_set) {
 }
 
 function exposed_in(globals) {
+    if (globals === "*") {
+        return true;
+    }
     if ('Window' in self) {
         return globals.has("Window");
     }
@@ -666,6 +675,10 @@ function exposed_in(globals) {
     if ('ServiceWorkerGlobalScope' in self &&
         self instanceof ServiceWorkerGlobalScope) {
         return globals.has("ServiceWorker");
+    }
+    if (Object.getPrototypeOf(self) === Object.prototype) {
+        // ShadowRealm - only exposed with `"*"`.
+        return false;
     }
     throw new IdlHarnessError("Unexpected global object");
 }
@@ -3394,16 +3407,66 @@ function idl_test(srcs, deps, idl_setup_func) {
     }, 'idl_test setup');
 }
 
-/**
- * fetch_spec is a shorthand for a Promise that fetches the spec's content.
- */
-function fetch_spec(spec) {
-    var url = '/interfaces/' + spec + '.idl';
+// TODO: it would be nice to support `idl_array.add_objects`
+function idl_test_shadowrealm(srcs, deps) {
+    const script_urls = [
+        "/resources/testharness.js",
+        "/resources/WebIDLParser.js",
+        "/resources/idlharness.js",
+    ];
+    promise_test(t => {
+        const realm = new ShadowRealm();
+        realm.evaluate("globalThis.self = globalThis; undefined");
+
+        return Promise.all(script_urls.map(url => fetch_text(url).then(s => realm.evaluate(s))))
+        .then(_ => Promise.all(srcs.concat(deps).map(fetch_spec)))
+        .then(specs => {
+            const idls = JSON.stringify(specs.map(i => i.idl));
+            const code = `
+                const idls = JSON.parse(${JSON.stringify(idls)});
+                let results;
+                add_completion_callback(function (tests, harness_status, asserts_run) {
+                  results = tests;
+                });
+
+                // TODO: maybe the indexed iteration as in idl_test is better.
+                const [srcs, deps] = [idls.slice(0, ${srcs.length}), idls.slice(${srcs.length})];
+                test(() => {
+                  var idl_array = new IdlArray();
+                  for (const src of srcs) {
+                    idl_array.add_idls(src);
+                  }
+                  for (const dep of deps) {
+                    idl_array.add_dependency_idls(dep);
+                  }
+                  idl_array.test();
+                }, "inner setup");
+                String(JSON.stringify(results))
+            `;
+
+            const results = JSON.parse(realm.evaluate(code));
+            for (let {name, status, message} of results) {
+                // TODO: make this an API in testharness.js - needs RFC?
+                async_test(t => {t.set_status(status, message); t.phase = t.phases.HAS_RESULT; t.done()}, name);
+            }
+        });
+    }, "outer setup");
+}
+
+function fetch_text(url) {
     return fetch(url).then(function (r) {
         if (!r.ok) {
             throw new IdlHarnessError("Error fetching " + url + ".");
         }
         return r.text();
-    }).then(idl => ({ spec, idl }));
+    });
+}
+
+/**
+ * fetch_spec is a shorthand for a Promise that fetches the spec's content.
+ */
+function fetch_spec(spec) {
+    var url = '/interfaces/' + spec + '.idl';
+    return fetch_text(url).then(idl => ({ spec, idl }));
 }
 // vim: set expandtab shiftwidth=4 tabstop=4 foldmarker=@{,@} foldmethod=marker:

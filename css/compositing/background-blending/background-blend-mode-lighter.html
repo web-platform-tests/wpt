@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<style>
+  .test {
+    width: 100px;
+    height: 100px;
+    background-blend-mode: lighter;
+  }
+</style>
+<script type="module">
+  import { tests, toCSSColor } from '../script/lighter.js';
+
+  // Create a solid color CSS image.
+  const colorImage = (pixel) =>
+    `linear-gradient(to right, ${toCSSColor(pixel)}, ${toCSSColor(pixel)})`;
+
+  const createBackgrounds = (colors) => colors
+    // Backgrounds are top first
+    .slice().reverse()
+    .map((color) => colorImage(color))
+    .join(', ');
+
+  for (const colors of tests) {
+    document.body.insertAdjacentHTML('beforeend', `
+      <div class="test" style="background-image: ${createBackgrounds(colors)}"></div>
+    `);
+  }
+</script>

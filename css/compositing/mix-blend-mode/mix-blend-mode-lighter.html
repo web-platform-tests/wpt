@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<style>
+  .test {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    isolation: isolate;
+  }
+  .layer {
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: lighter;
+  }
+</style>
+<script type="module">
+  import { tests, toCSSColor } from '../script/lighter.js';
+
+  function createLayers(colors) {
+    let html = '';
+
+    for (const color of colors) {
+      html += `<div class="layer" style="background-color: ${toCSSColor(color)}"></div>`;
+    }
+
+    return html;
+  }
+
+  for (const colors of tests) {
+    document.body.insertAdjacentHTML('beforeend', `
+      <div class="test">${createLayers(colors)}</div>
+    `);
+  }
+</script>

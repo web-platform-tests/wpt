@@ -349,8 +349,8 @@ class WebDriverProtocol(Protocol):
         if hasattr(browser, "capabilities"):
             if self.capabilities is None:
                 self.capabilities = browser.capabilities
-            elif not merge_dicts(self.capabilities, browser.capabilities):
-                self.logger.warning("Can not update instance specific capabilities.")
+            else:
+                merge_dicts(self.capabilities, browser.capabilities)
         self.url = browser.webdriver_url
         self.webdriver = None
 

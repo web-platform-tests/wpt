@@ -15,7 +15,6 @@ def merge_dicts(target, source):
                 merge_dicts(target[key], source_value)
             else:
                 target[key] = source_value
-    return rv
 
 class Protocol(object):
     """Backend for a specific browser-control protocol.

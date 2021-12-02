@@ -706,8 +706,8 @@ class MarionetteProtocol(Protocol):
         if hasattr(browser, "capabilities"):
             if self.capabilities is None:
                 self.capabilities = browser.capabilities
-            elif not merge_dicts(self.capabilities, browser.capabilities):
-                self.logger.warning("Failed to update instance specific capabilities.")
+            else:
+                merge_dicts(self.capabilities, browser.capabilities)
         self.timeout_multiplier = timeout_multiplier
         self.runner_handle = None
         self.e10s = e10s

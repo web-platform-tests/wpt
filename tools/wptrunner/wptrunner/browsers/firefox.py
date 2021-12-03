@@ -173,13 +173,18 @@ def run_info_extras(**kwargs):
         pref_value = get_bool_pref_if_exists(pref)
         return pref_value if pref_value is not None else False
 
+    # Default fission to on, unless we get --[no-]enable-fission or
+    # --set-pref fission.autostart=[true|false]
+    enable_fission = [item for item in [kwargs.get("enable_fission"),
+                                        get_bool_pref_if_exists("fission.autostart"),
+                                        True] if item is not None][0]
+
     rv = {"e10s": kwargs["gecko_e10s"],
           "wasm": kwargs.get("wasm", True),
           "verify": kwargs["verify"],
           "headless": kwargs.get("headless", False) or "MOZ_HEADLESS" in os.environ,
-          "fission": kwargs.get("enable_fission") or get_bool_pref("fission.autostart"),
-          "sessionHistoryInParent": (kwargs.get("enable_fission") or
-                                     get_bool_pref("fission.autostart") or
+          "fission": enable_fission,
+          "sessionHistoryInParent": (enable_fission or
                                      get_bool_pref("fission.sessionHistoryInParent")),
           "swgl": get_bool_pref("gfx.webrender.software")}
 
@@ -645,6 +650,8 @@ class ProfileCreator:
 
         if self.enable_fission:
             profile.set_preferences({"fission.autostart": True})
+        else:
+            profile.set_preferences({"fission.autostart": False})
 
         if self.test_type in ("reftest", "print-reftest"):
             profile.set_preferences({"layout.interruptible-reflow.enabled": False})

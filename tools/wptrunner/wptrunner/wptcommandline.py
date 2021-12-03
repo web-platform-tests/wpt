@@ -304,7 +304,8 @@ scheme host and port.""")
     gecko_group.add_argument("--disable-e10s", dest="gecko_e10s", action="store_false", default=True,
                              help="Run tests without electrolysis preferences")
     gecko_group.add_argument("--enable-fission", dest="enable_fission", action="store_true", default=None,
-                             help="Enable fission in Gecko (defaults to disabled).")
+                             help="Enable fission in Gecko (defaults to enabled; "
+                             "this option only exists for backward compatibility).")
     gecko_group.add_argument("--no-enable-fission", dest="enable_fission", action="store_false",
                              help="Disable fission in Gecko.")
     gecko_group.add_argument("--stackfix-dir", dest="stackfix_dir", action="store",

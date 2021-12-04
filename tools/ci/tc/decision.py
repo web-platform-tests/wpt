@@ -77,7 +77,7 @@ def get_run_jobs(event):
     logger.info("path jobs:")
     logger.info(path_jobs)
     logger.info("extra jobs:")
-    logger.inf(get_extra_jobs(event))
+    logger.info(get_extra_jobs(event))
     logger.info("sender: ")
     logger.info(event["sender"]["login"])
     logger.info("all jobs:")

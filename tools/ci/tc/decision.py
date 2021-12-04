@@ -87,7 +87,8 @@ def get_extra_jobs(event):
 
     if not body:
         return jobs
-
+    logger.info("view event")
+    logger.info(event)
     regexp = re.compile(r"\s*tc-jobs:(.*)$")
 
     for line in body.splitlines():

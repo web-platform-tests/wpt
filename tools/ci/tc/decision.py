@@ -74,13 +74,19 @@ def get_run_jobs(event):
     path_jobs = jobs.get_jobs(paths)
     all_jobs = path_jobs | get_extra_jobs(event)
     logger.info("Including jobs:\n * %s" % "\n * ".join(all_jobs))
-    # exclude stability tests for PRs made by 
-    logger.info("sender: ", event["sender"]["login"])
+    logger.info("path jobs:")
+    logger.info(path_jobs)
+    logger.info("extra jobs:")
+    logger.inf(get_extra_jobs(event))
+    logger.info("sender: ")
+    logger.info(event["sender"]["login"])
     logger.info("all jobs:")
     logger.info(all_jobs)
-    if (event["sender"]["login"] == "chromium-wpt-export-bot" or
-        event["sender"]["login"] == "moz-wptsync-bot"):
-        pass
+    # exclude dev stability tests for PRs made by export bots
+    if ((event["sender"]["login"] == "chromium-wpt-export-bot" or
+        event["sender"]["login"] == "moz-wptsync-bot") and
+        "wpt-chrome-dev-stability" in all_jobs):
+        all_jobs.remove("wpt-chrome-dev-stability")
     return all_jobs
 
 

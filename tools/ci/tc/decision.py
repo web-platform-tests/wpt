@@ -80,7 +80,7 @@ def get_run_jobs(event):
         if ((event["sender"]["login"] == "chromium-wpt-export-bot" or
             event["sender"]["login"] == "moz-wptsync-bot") and
             "wpt-chrome-dev-stability" in all_jobs):
-                all_jobs.remove("wpt-chrome-dev-stability")
+            all_jobs.remove("wpt-chrome-dev-stability")
     except KeyError:
         # Just continue if the username cannot be pulled from the event.
         logger.info("Unable to read username from event. Continuing as normal.")

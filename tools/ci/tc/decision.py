@@ -75,15 +75,15 @@ def get_run_jobs(event):
     all_jobs = path_jobs | get_extra_jobs(event)
     logger.info("Including jobs:\n * %s" % "\n * ".join(all_jobs))
 
-    # Exclude dev stability tests for PRs made by export bots.
+    # Exclude browser stability tests for exports from that specific browser.
     try:
-        if ((event["sender"]["login"] == "chromium-wpt-export-bot" or
-            event["sender"]["login"] == "moz-wptsync-bot") and
-            "wpt-chrome-dev-stability" in all_jobs):
-            all_jobs.remove("wpt-chrome-dev-stability")
+        if event["sender"]["login"] == "chromium-wpt-export-bot":
+            all_jobs.discard("wpt-chrome-dev-stability")
+        if event["sender"]["login"] == "moz-wptsync-bot":
+            all_jobs.discard("wpt-firefox-nightly-stability")
     except KeyError:
         # Just continue if the username cannot be pulled from the event.
-        logger.info("Unable to read username from event. Continuing as normal.")
+        logger.info("Unable to read username from event. Continuing.")
 
     return all_jobs
 

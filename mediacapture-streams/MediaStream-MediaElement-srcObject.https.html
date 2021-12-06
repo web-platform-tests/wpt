@@ -27,6 +27,8 @@ function queueTask(f) {
   window.postMessage("hi");
 }
 
+const wait = (t, d=100) => new Promise(res => t.step_timeout(res, d));
+
 promise_test(async t => {
   const stream = await navigator.mediaDevices.getUserMedia({video: true});
   t.add_cleanup(() => {
@@ -83,7 +85,8 @@ promise_test(async t => {
     t.stop();
   }
 
-  await new Promise(r => vid.ondurationchange = r);
+  const watcher = new EventWatcher(t, vid, ['durationchange'], () => wait(t));
+  await watcher.wait_for('durationchange');
   assert_equals(vid.duration, vid.currentTime,
     "After ending playback, duration gets set to currentTime");
 }, "Tests that a MediaStream assigned to a video element has expected duration");
@@ -142,7 +145,7 @@ promise_test(async t => {
     "The playbackRate attribute is set to the value of the defaultPlaybackRate attribute when unsetting srcObject");
 
   // Check that there's no ratechange event
-  await new Promise(r => t.step_timeout(r, 100));
+  await wait(t);
 }, "Tests that a video element with a MediaStream assigned ignores playbackRate attributes (defaultPlaybackRate is identical)");
 
 promise_test(async t => {
@@ -245,7 +248,7 @@ promise_test(async t => {
   });
   vid.srcObject = stream;
 
-  await new Promise(r => t.step_timeout(r, 500));
+  await wait(t, 500);
 
   vid.play();
   await new Promise(r => vid.ontimeupdate = r);
@@ -270,7 +273,7 @@ promise_test(async t => {
   await new Promise(r => vid.onpause = r);
   vid.ontimeupdate = () => assert_unreached("No timeupdate while paused");
 
-  await new Promise(r => t.step_timeout(r, 500));
+  await wait(t, 500);
   assert_equals(vid.currentTime, pauseCurrentTime,
     "currentTime does not change while paused");
 
@@ -291,12 +294,12 @@ promise_test(async t => {
   });
   vid.srcObject = stream;
 
-  vid.ontimeupdate = () =>
-    assert_unreached("No timeupdate until potentially playing");
+  vid.ontimeupdate = t.step_func(() =>
+                                     assert_unreached("No timeupdate until potentially playing"));
 
   vid.play();
 
-  await new Promise(r => t.step_timeout(r, 1000));
+  await wait(t, 1000);
   assert_equals(vid.readyState, vid.HAVE_NOTHING,
     "Video dimensions not known yet");
 
@@ -325,7 +328,10 @@ promise_test(async t => {
   // Unclear how to check for "paused for user interaction" and "paused for
   // in-band content".
 
-  await new Promise(r => vid.ontimeupdate = r);
+  vid.ontimeupdate = null;
+  const watcher = new EventWatcher(t, vid, ['timeupdate'], () => wait(t));
+  await watcher.wait_for('timeupdate');
+
   assert_between_exclusive(vid.currentTime, 0, 1,
     "currentTime advances while potentially playing");
 }, "Tests that a media element with an assigned MediaStream does not start advancing currentTime until potentially playing");
@@ -359,7 +365,9 @@ promise_test(async t => {
   }
   // If loop is ignored, we get "ended",
   // otherwise the media element sets currentTime to 0 without ending.
-  await new Promise(r => vid.onended = r);
+  const watcher = new EventWatcher(t, vid, ['ended'], () => wait(t));
+  await watcher.wait_for('ended');
+
 }, "Tests that the loop attribute has no effect on a media element with an assigned MediaStream");
 
 promise_test(async t => {

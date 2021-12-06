@@ -50,6 +50,12 @@ def get_taskcluster_artifact(index, path):
 class Browser(object):
     __metaclass__ = ABCMeta
 
+    platform = {
+        "linux": "linux",
+        "windows": "win",
+        "darwin": "mac"
+    }.get(uname[0])
+
     def __init__(self, logger):
         self.logger = logger
 
@@ -516,6 +522,15 @@ class FirefoxAndroid(Browser):
         return None
 
 
+class Chromium(Browser):
+    """Chromium-specific interface.
+
+    Includes webdriver installation, and wptrunner setup methods.
+    """
+    product = "chromium"
+    requirements = "requirements_chromium.txt"
+
+
 class Chrome(Browser):
     """Chrome-specific interface.
 
@@ -524,11 +539,6 @@ class Chrome(Browser):
 
     product = "chrome"
     requirements = "requirements_chrome.txt"
-    platforms = {
-        "Linux": "Linux",
-        "Windows": "Win",
-        "Darwin": "Mac",
-    }
 
     def __init__(self, logger):
         super(Chrome, self).__init__(logger)
@@ -587,34 +597,31 @@ class Chrome(Browser):
         return extracted
 
     def _chromedriver_platform_string(self):
-        platform = self.platforms.get(uname[0])
 
-        if platform is None:
+        if self.platform is None:
             raise ValueError("Unable to construct a valid Chrome package name for current platform")
-        platform = platform.lower()
 
-        if platform == "linux":
+        if self.platform == "linux":
             bits = "64" if uname[4] == "x86_64" else "32"
-        elif platform == "mac":
+        elif self.platform == "mac":
             bits = "64"
-        elif platform == "win":
+        elif self.platform == "win":
             bits = "32"
 
-        return "%s%s" % (platform, bits)
+        return "%s%s" % (self.platform, bits)
 
     def _chromium_platform_string(self):
-        platform = self.platforms.get(uname[0])
 
-        if platform is None:
+        if self.platform is None:
             raise ValueError("Unable to construct a valid Chromium package name for current platform")
 
-        if (platform == "Linux" or platform == "Win") and uname[4] == "x86_64":
-            platform += "_x64"
+        if (self.platform == "linux" or self.platform == "win") and uname[4] == "x86_64":
+            return f"{self.platform}_x64"
 
-        return platform
+        return self.platform
 
     def _chromium_package_name(self):
-        return "chrome-%s" % self.platforms.get(uname[0]).lower()
+        return "chrome-%s" % self.platform
 
     def _latest_chromium_snapshot_url(self):
         # Make sure we use the same revision in an invocation.
@@ -851,8 +858,7 @@ class ChromeAndroidBase(Browser):
 
         command = ['adb']
         if self.device_serial:
-            # Assume we have same version of browser on all devices
-            command.extend(['-s', self.device_serial[0]])
+            command.extend(['-s', self.device_serial])
         command.extend(['shell', 'dumpsys', 'package', binary])
         try:
             output = call(*command)

@@ -18,6 +18,8 @@ via the <code>srcObject</code> attribute.</p>
 <div id='log'></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
 <script>
 'use strict';
 const vid = document.getElementById("vid");
@@ -79,7 +81,7 @@ promise_test(async t => {
   assert_equals(vid.duration, Infinity,
     "A loaded MediaStream does not have a pre-defined duration.");
 
-  vid.play();
+  await test_driver.bless('initiate media playback', () => vid.play());
   await new Promise(r => vid.ontimeupdate = r);
   for (const t of stream.getTracks()) {
     t.stop();

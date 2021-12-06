@@ -5,7 +5,6 @@ import os
 import re
 import subprocess
 from collections import OrderedDict
-from typing import Set, Dict
 
 import taskcluster
 
@@ -102,7 +101,7 @@ def get_extra_jobs(event):
     return jobs
 
 
-def filter_jobs(jobs: Set, event: Dict) -> None:
+def filter_jobs(jobs, event):
 
     # Exclude browser stability tests for exports from that specific browser.
     try:

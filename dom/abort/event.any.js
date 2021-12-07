@@ -139,4 +139,22 @@ test(t => {
   assert_equals(signal.reason, reason, "signal.reason");
 }, "static aborting signal with reason should set signal.reason");
 
+test(t => {
+  const reason = new Error('boom');
+  const signal = AbortSignal.abort(reason);
+  assert_true(signal.aborted);
+  try {
+    signal.throwIfAborted();
+    throw new Error("failed to throw when expected");
+  } catch (err) {
+    assert_equals(err, reason);
+  }
+}, "throwIfAborted() should throw abort.reason if signal aborted");
+
+test(t => {
+  const controller = new AbortController();
+  assert_false(controller.signal.aborted);
+  controller.signal.throwIfAborted();
+}, "throwIfAborted() should not throw if signal not aborted");
+
 done();

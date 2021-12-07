@@ -18,6 +18,7 @@ promise_test(async t => {
   const callee = new RTCPeerConnection();
   t.add_cleanup(() => callee.close());
 
+  // Video is used in a later test, so we ask for both permissions
   await setMediaPermission();
   const stream = await navigator.mediaDevices.getUserMedia({audio:true});
   const track = stream.getTracks()[0];

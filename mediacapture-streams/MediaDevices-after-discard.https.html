@@ -23,7 +23,7 @@ setup(() => {
 // return a promise rejected with a DOMException object whose name attribute
 // has the value "InvalidStateError".
 promise_test(async () => {
-  await setMediaPermission();
+  await setMediaPermission("granted", ["microphone"]);
   // `catch()` is used rather than static Promise methods because microtasks
   // for `PromiseResolve()` do not run when Promises in inactive Documents are
   // involved.  Whether microtasks for `catch()` run depends on the realm of

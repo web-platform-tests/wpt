@@ -48,7 +48,7 @@ promise_test(async t => {
     }));
   });
 
-  await setMediaPermission();
+  await setMediaPermission("granted", ["camera"]);
   const stream = await navigator.mediaDevices.getUserMedia({video: {width: 1280, height: 720}});
   t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
   const transceiver = pc1.addTransceiver(stream.getVideoTracks()[0], {

@@ -19,7 +19,7 @@ getUserMedia is handled as optional</p>
 <script src=permission-helper.js></script>
 <script>
 promise_test(async () => {
-  await setMediaPermission();
+  await setMediaPermission("granted", ["camera"]);
   try {
     const stream = await navigator.mediaDevices.getUserMedia({video: {advanced: [{width: {min:1024, max: 800}}]}});
     assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one video track");

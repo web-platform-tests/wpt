@@ -56,6 +56,7 @@
             promise_test(async () =>
             {
                 const aud = document.querySelector("audio");
+                // camera is needed for the next test, asking for both at once
                 await setMediaPermission();
                 let stream;
                 try {

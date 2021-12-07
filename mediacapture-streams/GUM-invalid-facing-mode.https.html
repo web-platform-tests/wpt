@@ -17,7 +17,7 @@
 <script src=permission-helper.js></script>
 <script>
 promise_test(async () => {
-  await setMediaPermission();
+  await setMediaPermission("granted", ["camera"]);
   try {
     await navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: ''}}});
     assert_unreached("The empty string is not a valid facingMode");

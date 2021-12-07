@@ -12,7 +12,7 @@
   // https://w3c.github.io/mediacapture-main/#dom-mediastreamtrack-applyconstraints
 
   promise_test(async t => {
-    await setMediaPermission();
+    await setMediaPermission("granted", ["camera"]);
     return navigator.mediaDevices.getUserMedia({ video: true })
       .then(t.step_func(stream => {
         return stream.getVideoTracks()[0].applyConstraints(

@@ -26,7 +26,7 @@ promise_test(async (test) => {
     const data = await new Promise(resolve => worker.onmessage = (event) => resolve(event.data));
     assert_equals(data, "registered");
 
-    await setMediaPermission();
+    await setMediaPermission("granted", ["camera"]);
     const localStream = await navigator.mediaDevices.getUserMedia({video: true});
 
     let sender, receiver;

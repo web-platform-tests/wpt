@@ -70,6 +70,7 @@ promise_test(async (test) => {
     worker = new Worker('script-transform-worker.js');
     const data = await new Promise(resolve => worker.onmessage = (event) => resolve(event.data));
     assert_equals(data, "registered");
+    // Video is needed in a later test, so we ask for both permissions
     await setMediaPermission();
     const localStream = await navigator.mediaDevices.getUserMedia({audio: true});
 

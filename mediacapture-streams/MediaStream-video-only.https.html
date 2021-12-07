@@ -20,7 +20,7 @@ the success callback in getUserMedia has exactly one video track and no audio.</
 <script src=permission-helper.js></script>
 <script>
 promise_test(async () =>  {
-  await setMediaPermission();
+  await setMediaPermission("granted", ["camera"]);
   const stream = await navigator.mediaDevices.getUserMedia({video: true});
   assert_true(stream instanceof MediaStream, "getUserMedia success callback comes with a MediaStream object");
   assert_equals(stream.getAudioTracks().length, 0, "the media stream has zero audio track");

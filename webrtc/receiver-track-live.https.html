@@ -16,7 +16,7 @@
     let pc1, pc2;
     let localTrack, remoteTrack;
     promise_test(async (test) => {
-        await setMediaPermission();
+        await setMediaPermission("granted", ["microphone"]);
         const localStream = await navigator.mediaDevices.getUserMedia({audio: true});
         localTrack = localStream.getAudioTracks()[0];
 

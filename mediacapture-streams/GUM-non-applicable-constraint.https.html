@@ -53,6 +53,7 @@ let audio_only_invalid_constraints = {
 }
 
 promise_test(async () => {
+  // Both permissions are needed at some point, asking for both at once
   await setMediaPermission();
   let stream = await navigator.mediaDevices.getUserMedia({audio: video_only_valid_constraints})
   assert_equals(stream.getAudioTracks().length, 1, "the media stream has exactly one audio track");

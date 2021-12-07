@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<title>enumerateDevices is returning new MediaDeviceInfo objects every time</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=permission-helper.js></script>
+</head>
+<body>
+  <iframe allow="camera 'src';microphone 'src'" id=same src="/mediacapture-streams/iframe-enumerate.html"></iframe>
+<iframe allow="camera 'src';microphone 'src'" id=cross src="https://{{hosts[][www1]}}:{{ports[https][0]}}/mediacapture-streams/iframe-enumerate.html"></iframe>
+<script>
+  function compareDeviceList(list1, list2, origintype) {
+    assert_equals(list1.length, list2.length, "Same number of devices detected in " + origintype + "-origin");
+    for (let device of list1) {
+      const sameDevice = list2.find(d => d.deviceId === device.deviceId);
+      assert_true(!!list2.find(d => d.label === device.label), "labels stay the same across origins");
+      // TODO: is using "default" compliant with the spec?
+      if (device.deviceId !== "default") {
+        if (origintype === "same") {
+          assert_true(!!sameDevice, "deviceIds stay the same when loaded in same origin");
+          assert_equals(sameDevice.label, device.label, "labels stay the same when loaded in same origin");
+          assert_equals(sameDevice.kind, device.kind, "kind stay the same when loaded in same origin");
+          assert_not_equals(sameDevice.groupId, device.groupId, "groupId is specific to a document");
+          // The group identifier MUST be uniquely generated for each document.
+        } else {
+          assert_false(!!sameDevice, "deviceIds are not shared across origin");
+          assert_false(!!list2.find(d => d.groupId === device.groupId), "groupId is specific to a document");
+        }
+      }
+    }
+  }
+
+  let deviceList;
+
+  promise_test(async t => {
+    await setMediaPermission();
+    await navigator.mediaDevices.getUserMedia({audio : true, video: true});
+    deviceList =  await navigator.mediaDevices.enumerateDevices();
+    const msgWatcher = new EventWatcher(t, window, ['message']);
+    frames[0].postMessage('run', '*')
+    const e = await msgWatcher.wait_for('message');
+    const iframeDevices = e.data.devices;
+    compareDeviceList(deviceList, iframeDevices, "same");
+  }, "enumerateDevices work as expected in a same-origin iframe");
+
+  promise_test(async t => {
+    const msgWatcher = new EventWatcher(t, window, ['message']);
+    frames[1].postMessage('run', '*')
+    const e = await msgWatcher.wait_for('message');
+    const iframeDevices = e.data.devices;
+    compareDeviceList(deviceList, iframeDevices, "cross");
+  }, "enumerateDevices work as expected in a cross-origin iframe");
+</script>
+</body>
+</html>

@@ -18,7 +18,7 @@ in the constraints parameter rejects with a TypeError.</p>
 <script src=permission-helper.js></script>
 <script>
 promise_test(async () => {
-  await setPermission();
+  await setMediaPermission();
   try {
     await navigator.mediaDevices.getUserMedia({doesnotexist:true})
     assert_unreached("This should never be triggered since the constraints parameter only contains an unrecognized constraint");

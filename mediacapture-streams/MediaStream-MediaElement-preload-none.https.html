@@ -56,7 +56,7 @@
             promise_test(async () =>
             {
                 const aud = document.querySelector("audio");
-                await setPermission();
+                await setMediaPermission();
                 let stream;
                 try {
                   stream = await navigator.mediaDevices.getUserMedia({audio:true});

@@ -23,7 +23,7 @@ object returned by the success callback in getUserMedia is correctly initialized
 <script src=permission-helper.js></script>
 <script>
 promise_test(async () => {
-  await setPermission();
+  await setMediaPermission();
   const stream = await navigator.mediaDevices.getUserMedia({video: true});
   const videoTracks = stream.getVideoTracks();
   assert_equals(videoTracks.length, 1, "There is exactly one video track in the media stream");

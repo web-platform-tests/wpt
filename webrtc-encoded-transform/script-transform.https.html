@@ -70,7 +70,7 @@ promise_test(async (test) => {
     worker = new Worker('script-transform-worker.js');
     const data = await new Promise(resolve => worker.onmessage = (event) => resolve(event.data));
     assert_equals(data, "registered");
-    await setPermission();
+    await setMediaPermission();
     const localStream = await navigator.mediaDevices.getUserMedia({audio: true});
 
     const senderChannel = new MessageChannel;

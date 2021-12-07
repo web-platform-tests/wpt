@@ -17,7 +17,7 @@ promise_test(async t => {
   t.add_cleanup(() => caller.close());
   const callee = new RTCPeerConnection();
   t.add_cleanup(() => callee.close());
-  await setPermission();
+  await setMediaPermission();
   const stream = await navigator.mediaDevices.getUserMedia({video:true});
   const videoTrack = stream.getVideoTracks()[0];
   t.add_cleanup(() => videoTrack.stop());

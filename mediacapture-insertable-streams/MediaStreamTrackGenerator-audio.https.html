@@ -59,7 +59,7 @@
     }, "Creating Generator with an invalid kind throws");
 
     promise_test(async t => {
-      await setPermission();
+      await setMediaPermission();
       const capturedStream = await navigator.mediaDevices.getUserMedia({ audio: true });
       assert_equals(capturedStream.getAudioTracks().length, 1);
       const upstreamTrack = capturedStream.getAudioTracks()[0];

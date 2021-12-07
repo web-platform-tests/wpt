@@ -34,7 +34,7 @@ function makeAsyncTest(modifyTrack, message) {
     });
 
     const onError = test.unreached_func('Error creating MediaStream.');
-    setPermission().then(() => navigator.mediaDevices.getUserMedia({video: true}))
+    setMediaPermission().then(() => navigator.mediaDevices.getUserMedia({video: true}))
     .then(gotStream)
     .catch(onError);
 

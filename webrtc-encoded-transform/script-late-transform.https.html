@@ -47,7 +47,7 @@ async function checkVideoIsUpdated(test, shouldBeUpdated, count, referenceData)
 }
 
 promise_test(async (test) => {
-    await setPermission();
+    await setMediaPermission();
     const localStream = await navigator.mediaDevices.getUserMedia({video: true});
     const senderTransform = new SFrameTransform({ compatibilityMode: "H264" });
     const receiverTransform = new SFrameTransform({ compatibilityMode: "H264" });

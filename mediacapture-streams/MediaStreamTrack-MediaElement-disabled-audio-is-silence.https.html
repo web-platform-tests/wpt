@@ -23,7 +23,7 @@ Web Audio API</a>.</p>
 <script>
 const aud = document.getElementById("aud");
 promise_test(async t => {
-  await setPermission();
+  await setMediaPermission();
   const stream = await navigator.mediaDevices.getUserMedia({audio: true});
   var ctx = new AudioContext();
   var streamSource = ctx.createMediaStreamSource(stream);

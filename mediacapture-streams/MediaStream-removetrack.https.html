@@ -21,7 +21,7 @@
 <script>
 
 promise_test(async t => {
-  await setPermission();
+  await setMediaPermission();
   const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
   const tracks = stream.getTracks();
   t.add_cleanup(() => tracks.forEach(track => track.stop()));

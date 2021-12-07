@@ -17,7 +17,7 @@
 <script>
 
 promise_test(async t => {
-  await setPermission();
+  await setMediaPermission();
   const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
   assert_equals(stream.getAudioTracks().length, 1);
   assert_equals(stream.getVideoTracks().length, 1);

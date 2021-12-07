@@ -21,7 +21,7 @@ promise_test(t => promise_rejects_dom(t, "NotFoundError", audio.setSinkId("nonex
 
 promise_test(async t => {
   // Attempt to expose some audiooutput devices.
-  await setPermission();
+  await setMediaPermission();
   await navigator.mediaDevices.getUserMedia({ audio: true });
   const list = await navigator.mediaDevices.enumerateDevices();
   assert_greater_than(list.length, 0,

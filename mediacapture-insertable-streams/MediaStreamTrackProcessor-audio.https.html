@@ -15,7 +15,7 @@
 <script src='../mediacapture-streams/permission-helper.js'></script>
 <script>
 promise_test(async t => {
-  await setPermission();
+  await setMediaPermission();
   const stream = await navigator.mediaDevices.getUserMedia({audio: true});
   const track = stream.getTracks()[0];
   const processor = new MediaStreamTrackProcessor({track: track});

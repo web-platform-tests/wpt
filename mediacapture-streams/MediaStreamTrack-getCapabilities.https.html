@@ -101,7 +101,7 @@ function testCapabilities(capabilities, property, testNamePrefix) {
 {
   audioProperties.forEach((property, i) => {
     promise_test(async t => {
-      if (i === 0) await setPermission();
+      if (i === 0) await setMediaPermission();
       const stream = await navigator.mediaDevices.getUserMedia({audio: true});
       t.add_cleanup(() => stream.getAudioTracks()[0].stop());
       const audioCapabilities = stream.getAudioTracks()[0].getCapabilities();

@@ -37,7 +37,7 @@ promise_test(async () => {
 }, "mediaDevices.enumerateDevices() is present and working - before capture");
 
 promise_test(async () => {
-  await setPermission();
+  await setMediaPermission();
   await navigator.mediaDevices.getUserMedia({ audio : true });
   const deviceList =  await navigator.mediaDevices.enumerateDevices();
   for (const mediaInfo of deviceList) {

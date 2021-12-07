@@ -12,7 +12,7 @@
   async function gUM({audio, video}) {
     let stream;
     if (!page_loaded_in_iframe()) {
-      await setPermission();
+      await setMediaPermission();
     }
     try {
       stream = await navigator.mediaDevices.getUserMedia({audio, video});

@@ -20,7 +20,7 @@ constraint (width &gt;=1G) in getUserMedia works</p>
 <script src=permission-helper.js></script>
 <script>
 promise_test(async () => {
-  await setPermission();
+  await setMediaPermission();
   // Note - integer conversion is weird for +inf and numbers > 2^32, so we
   // use a number less than 2^32 for testing.
   try {

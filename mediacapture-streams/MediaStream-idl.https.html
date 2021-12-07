@@ -24,7 +24,7 @@ follows the algorithm set in the spec.</p>
 <script src=permission-helper.js></script>
 <script>
   promise_test(async () => {
-  await setPermission();
+  await setMediaPermission();
   const stream = await navigator.mediaDevices.getUserMedia({video: true, audio:true})
   let stream1 = new MediaStream();
   assert_not_equals(stream.id, stream1.id, "Two different MediaStreams have different ids");

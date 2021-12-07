@@ -18,7 +18,7 @@ async function testAudioFlow(t, negotiationFunction) {
   const callee = new RTCPeerConnection({encodedInsertableStreams:true});
   t.add_cleanup(() => callee.close());
 
-  await setPermission();
+  await setMediaPermission();
   const stream = await navigator.mediaDevices.getUserMedia({audio:true});
   const audioTrack = stream.getAudioTracks()[0];
   t.add_cleanup(() => audioTrack.stop());

@@ -22,7 +22,7 @@
   }
 
   promise_test(async t => {
-    await setPermission();
+    await setMediaPermission();
     const mediaStream1 = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: false,

@@ -31,7 +31,7 @@ function queueTask(f) {
 }
 
 promise_test(async t => {
-  await setPermission();
+  await setMediaPermission();
   const stream = await navigator.mediaDevices.getUserMedia({video: true});
   t.add_cleanup(() => {
     vid.srcObject = null;

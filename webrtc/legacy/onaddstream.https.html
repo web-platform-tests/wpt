@@ -93,7 +93,7 @@
   promise_test(async t => {
     const pc1 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
-    await setPermission();
+    await setMediaPermission();
     const stream1 = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
     t.add_cleanup(() => stopTracks(stream1));
     const audio1 = stream1.getAudioTracks()[0];

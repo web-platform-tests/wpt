@@ -25,7 +25,7 @@ promise_test(async (test) => {
     worker = new Worker('sframe-transform-worker.js');
     const data = await new Promise(resolve => worker.onmessage = (event) => resolve(event.data));
     assert_equals(data, "registered");
-    await setPermission();
+    await setMediaPermission();
     const localStream = await navigator.mediaDevices.getUserMedia({ video: true });
 
     let sender, receiver;

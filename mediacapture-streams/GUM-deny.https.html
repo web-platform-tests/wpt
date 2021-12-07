@@ -20,7 +20,7 @@
   <script>
 promise_test(async () => {
   try {
-    await setPermission('denied', ['camera']);
+    await setMediaPermission('denied', ['camera']);
     await navigator.mediaDevices.getUserMedia({video: true})
   } catch (error) {
     assert_throws_dom("NotAllowedError", () => { throw error });

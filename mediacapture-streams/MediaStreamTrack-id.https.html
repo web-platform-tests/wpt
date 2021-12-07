@@ -18,7 +18,7 @@
 <script src=permission-helper.js></script>
 <script>
 promise_test(async () => {
-  await setPermission();
+  await setMediaPermission();
   const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true})
   assert_not_equals(stream.getVideoTracks()[0], stream.getAudioTracks()[0].id, "audio and video tracks have distinct ids");
 }, "Tests that distinct mediastream tracks have distinct ids ");

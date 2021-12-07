@@ -1,7 +1,7 @@
 // Set permissions for camera and microphone using Web Driver
 // Status can be one of "granted" or "denied"
 // Scope take values from permission names
-async function setPermission(status="granted", scope=["camera", "microphone"]) {
+async function setMediaPermission(status="granted", scope=["camera", "microphone"]) {
   try {
     for (let s of scope) {
       await test_driver.set_permission({ name: s }, status, true);

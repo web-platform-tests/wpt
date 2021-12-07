@@ -19,7 +19,7 @@ constraint (width &gt;=0) in getUserMedia works</p>
 <script src=permission-helper.js></script>
 <script>
 promise_test(async () => {
-  await setPermission();
+  await setMediaPermission();
   try {
     const stream = await navigator.mediaDevices.getUserMedia({video: {width: {min:0}}})
     assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one video track");

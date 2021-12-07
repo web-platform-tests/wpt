@@ -37,7 +37,7 @@ promise_test(async (test) => {
     key3 = await crypto.subtle.importKey("raw", new Uint8Array([145, 77, 43, 10, 72, 19, 37, 67, 236, 219, 24, 93, 26, 165, 91, 178]), "HKDF", false, ["deriveBits", "deriveKey"]);
     key4 = await crypto.subtle.importKey("raw", new Uint8Array([146, 77, 43, 10, 72, 19, 37, 67, 236, 219, 24, 93, 26, 165, 91, 178]), "HKDF", false, ["deriveBits", "deriveKey"]);
 
-    await setPermission();
+    await setMediaPermission();
     const localStream = await navigator.mediaDevices.getUserMedia({audio: true});
     const stream = await new Promise((resolve, reject) => {
         const connections = createConnections(test, (firstConnection) => {

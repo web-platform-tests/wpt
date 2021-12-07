@@ -21,7 +21,7 @@ MediaStream is allowed.</p>
 <script src=permission-helper.js></script>
 <script>
 promise_test(async () => {
-  await setPermission();
+  await setMediaPermission();
   const audio = await navigator.mediaDevices.getUserMedia({audio:true});
   const video = await navigator.mediaDevices.getUserMedia({video:true});
   audio.getAudioTracks()[0].stop();

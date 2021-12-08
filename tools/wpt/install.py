@@ -6,6 +6,7 @@ latest_channels = {
     'android_webview': 'dev',
     'firefox': 'nightly',
     'chrome': 'nightly',
+    'chromium': 'nightly',
     'chrome_android': 'dev',
     'edgechromium': 'dev',
     'safari': 'preview',
@@ -41,7 +42,7 @@ def get_parser():
     parser = argparse.ArgumentParser(
         parents=[channel_args],
         description="Install a given browser or webdriver frontend.")
-    parser.add_argument('browser', choices=['firefox', 'chrome', 'servo'],
+    parser.add_argument('browser', choices=['firefox', 'chrome', 'chromium', 'servo'],
                         help='name of web browser product')
     parser.add_argument('component', choices=['browser', 'webdriver'],
                         help='name of component')
@@ -92,7 +93,6 @@ def install(name, component, destination, channel="nightly", logger=None, downlo
     if logger is None:
         import logging
         logger = logging.getLogger("install")
-
     prefix = "download" if download_only else "install"
     suffix = "_webdriver" if component == 'webdriver' else ""
 

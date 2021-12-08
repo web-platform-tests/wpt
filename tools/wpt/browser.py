@@ -589,23 +589,6 @@ class ChromeChromiumBase(Browser):
             os.chmod(existing_binary_path, stat.S_IWUSR)
             os.remove(existing_binary_path)
 
-    def download(self, dest=None, channel=None, rename=None):
-        if channel != "nightly":
-            raise NotImplementedError(
-                "We can only download Chrome Nightly (Chromium ToT) for you."
-            )
-        if dest is None:
-            dest = self._get_dest(None, channel)
-
-        filename = self._chromium_package_name() + ".zip"
-        url = self._latest_chromium_snapshot_url() + filename
-        self.logger.info("Downloading Chrome from %s" % url)
-        resp = get(url)
-        installer_path = os.path.join(dest, filename)
-        with open(installer_path, "wb") as f:
-            f.write(resp.content)
-        return installer_path
-
     def find_binary(self, venv_path=None, channel=None):
         if channel == "nightly":
             return self.find_nightly_binary(self._get_dest(venv_path, channel))
@@ -633,41 +616,10 @@ class ChromeChromiumBase(Browser):
         self.logger.warning("Unable to find the browser binary.")
         return None
 
-    def find_nightly_binary(self, dest):
-        if uname[0] == "Darwin":
-            return find_executable(
-                "Chromium",
-                os.path.join(
-                    dest, self._chromium_package_name(),
-                    "Chromium.app",
-                    "Contents",
-                    "MacOS"
-                )
-            )
-        # find_executable will add .exe on Windows automatically.
-        return find_executable(
-            "chrome",
-            os.path.join(
-                dest,
-                self._chromium_package_name()
-            )
-        )
-
     def find_webdriver(self, venv_path=None, channel=None, browser_binary=None):
-        return find_executable("chromedriver")
-
-    def install(self, dest=None, channel=None):
-        if channel != "nightly":
-            raise NotImplementedError(
-                "We can only install Chrome Nightly (Chromium ToT) for you."
-            )
-        dest = self._get_dest(dest, channel)
-
-        installer_path = self.download(dest, channel)
-        with open(installer_path, "rb") as f:
-            unzip(f, dest)
-        os.remove(installer_path)
-        return self.find_nightly_binary(dest)
+        if venv_path:
+            venv_path = os.path.join(venv_path, "bin")
+        return find_executable("chromedriver", path=venv_path)
 
     def install_mojojs(self, dest, channel, browser_binary):
         if channel == "nightly" or channel == "canary":
@@ -701,13 +653,15 @@ class ChromeChromiumBase(Browser):
 
         version = self.version(browser_binary, dest)
         # Remove channel suffixes (e.g. " dev").
-        version = version.split(' ')[0]
+        if version:
+            version = version.split(' ')[0]
 
         if dest is None:
             dest = os.pwd
 
         self._remove_existing_chromedriver_binary(dest)
-
+        print(f"{browser_binary=}")
+        print(f"{version=}")
         url = self._get_webdriver_url(version)
         # url = self._latest_chromedriver_url(version) if version \
         #     else self._chromium_chromedriver_url(None)
@@ -751,7 +705,9 @@ class ChromeChromiumBase(Browser):
         return m.group(1)
 
     def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel):
+        print(f"{browser_binary=}")
         chromedriver_version = self.webdriver_version(webdriver_binary)
+        print(f"{chromedriver_version=}")
         if not chromedriver_version:
             self.logger.warning(
                 "Unable to get version for ChromeDriver %s, rejecting it" %
@@ -759,6 +715,7 @@ class ChromeChromiumBase(Browser):
             return False
 
         browser_version = self.version(browser_binary)
+        print(f"{browser_version=}")
         if not browser_version:
             # If we can't get the browser version, we just have to assume the
             # ChromeDriver is good.
@@ -767,6 +724,7 @@ class ChromeChromiumBase(Browser):
         # Check that the ChromeDriver version matches the Chrome version.
         chromedriver_major = int(chromedriver_version.split('.')[0])
         browser_major = int(browser_version.split('.')[0])
+        print(f"{chromedriver_major=}, {browser_major=}")
         if chromedriver_major != browser_major:
             # There is no official ChromeDriver release for the dev channel -
             # it switches between beta and tip-of-tree, so we accept version+1
@@ -834,6 +792,56 @@ class Chromium(ChromeChromiumBase):
             self._chromedriver_platform_string()
         )
 
+    def download(self, dest=None, channel=None, rename=None):
+        if channel != "nightly":
+            raise NotImplementedError(
+                "We can only download Chrome Nightly (Chromium ToT) for you."
+            )
+        if dest is None:
+            dest = self._get_dest(None, channel)
+
+        filename = self._chromium_package_name() + ".zip"
+        url = self._latest_chromium_snapshot_url() + filename
+        self.logger.info("Downloading Chrome from %s" % url)
+        resp = get(url)
+        installer_path = os.path.join(dest, filename)
+        with open(installer_path, "wb") as f:
+            f.write(resp.content)
+        return installer_path
+
+    def find_nightly_binary(self, dest):
+        if uname[0] == "Darwin":
+            return find_executable(
+                "Chromium",
+                os.path.join(
+                    dest, self._chromium_package_name(),
+                    "Chromium.app",
+                    "Contents",
+                    "MacOS"
+                )
+            )
+        # find_executable will add .exe on Windows automatically.
+        return find_executable(
+            "chrome",
+            os.path.join(
+                dest,
+                self._chromium_package_name()
+            )
+        )
+    
+    def install(self, dest=None, channel=None):
+        if channel != "nightly":
+            raise NotImplementedError(
+                "We can only install Chrome Nightly (Chromium ToT) for you."
+            )
+        dest = self._get_dest(dest, channel)
+
+        installer_path = self.download(dest, channel)
+        with open(installer_path, "rb") as f:
+            unzip(f, dest)
+        os.remove(installer_path)
+        return self.find_nightly_binary(dest)
+
 
 class Chrome(ChromeChromiumBase):
     """Chrome-specific interface.
@@ -856,6 +864,7 @@ class Chrome(ChromeChromiumBase):
     def _get_webdriver_url(self, chrome_version):
         # http://chromedriver.chromium.org/downloads/version-selection
         parts = chrome_version.split(".")
+        print(f"{parts=}")
         assert len(parts) == 4
         latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s.%s.%s" % tuple(parts[:-1])
         try:
@@ -868,6 +877,16 @@ class Chrome(ChromeChromiumBase):
                 return None
         return "https://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (
             latest, self._chromedriver_platform_string())
+    
+    def download(self, dest=None, channel=None, rename=None):
+        raise NotImplementedError(
+            "Downloading of Chrome browser binary not yet implemented."
+        )
+
+    def install(self, dest=None, channel=None):
+        raise NotImplementedError(
+            "Installing of Chrome browser binary not yet implemented."
+        )
 
 
 class ChromeAndroidBase(Browser):

@@ -78,9 +78,7 @@ def parse_args(argv, commands=load_commands()):
     subparsers = parser.add_subparsers(dest="command")
     for command, props in commands.items():
         subparsers.add_parser(command, help=props["help"], add_help=False)
-
     args, extra = parser.parse_known_args(argv)
-
     return args, extra
 
 
@@ -183,7 +181,6 @@ def main(prog=None, argv=None):
     commands = load_commands()
 
     main_args, command_args = parse_args(argv, commands)
-
     command = main_args.command
     props = commands[command]
     venv = None
@@ -209,7 +206,6 @@ def main(prog=None, argv=None):
         args = (venv,) + extras
     else:
         args = extras
-
     if script:
         try:
             rv = script(*args, **kwargs)

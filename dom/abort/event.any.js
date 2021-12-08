@@ -147,6 +147,12 @@ test(t => {
 }, "throwIfAborted() should throw abort.reason if signal aborted");
 
 test(t => {
+  const signal = AbortSignal.abort('hello');
+  assert_true(signal.aborted);
+  assert_throws_exactly('hello', () => signal.throwIfAborted());
+}, "throwIfAborted() should throw primitive abort.reason if signal aborted");
+
+test(t => {
   const controller = new AbortController();
   assert_false(controller.signal.aborted);
   controller.signal.throwIfAborted();

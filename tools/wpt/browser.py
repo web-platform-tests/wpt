@@ -552,8 +552,8 @@ class ChromeChromiumBase(Browser):
 
         if self.platform is None:
             raise ValueError(
-                ("Unable to construct a valid Chromium package "
-                 "name for current platform")
+                "Unable to construct a valid Chromium package "
+                "name for current platform"
             )
 
         if (self.platform == "Linux" or
@@ -588,33 +588,6 @@ class ChromeChromiumBase(Browser):
             )
             os.chmod(existing_binary_path, stat.S_IWUSR)
             os.remove(existing_binary_path)
-
-    def find_binary(self, venv_path=None, channel=None):
-        if channel == "nightly":
-            return self.find_nightly_binary(self._get_dest(venv_path, channel))
-
-        if uname[0] == "Linux":
-            name = "google-chrome"
-            if channel == "stable":
-                name += "-stable"
-            elif channel == "beta":
-                name += "-beta"
-            elif channel == "dev":
-                name += "-unstable"
-            # No Canary on Linux.
-            return find_executable(name)
-        if uname[0] == "Darwin":
-            suffix = ""
-            if channel in ("beta", "dev", "canary"):
-                suffix = " " + channel.capitalize()
-            return "/Applications/Google Chrome%s.app/Contents/MacOS/Google Chrome%s" % (suffix, suffix)
-        if uname[0] == "Windows":
-            path = os.path.expandvars(r"$SYSTEMDRIVE\Program Files (x86)\Google\Chrome\Application\chrome.exe")
-            if not os.path.exists(path):
-                path = os.path.expandvars(r"$SYSTEMDRIVE\Program Files\Google\Chrome\Application\chrome.exe")
-            return path
-        self.logger.warning("Unable to find the browser binary.")
-        return None
 
     def find_webdriver(self, venv_path=None, channel=None, browser_binary=None):
         if venv_path:
@@ -809,7 +782,14 @@ class Chromium(ChromeChromiumBase):
             f.write(resp.content)
         return installer_path
 
-    def find_nightly_binary(self, dest):
+    def find_binary(self, venv_path=None, channel=None):
+        if channel != "nightly":
+            raise NotImplementedError(
+                "Unable to detect Chromium binary for this channel. "
+                "Please supply a valid binary path using --binary"
+            )
+
+        dest = self._get_dest(venv_path, channel)
         if uname[0] == "Darwin":
             return find_executable(
                 "Chromium",
@@ -828,7 +808,7 @@ class Chromium(ChromeChromiumBase):
                 self._chromium_package_name()
             )
         )
-    
+
     def install(self, dest=None, channel=None):
         if channel != "nightly":
             raise NotImplementedError(
@@ -840,7 +820,7 @@ class Chromium(ChromeChromiumBase):
         with open(installer_path, "rb") as f:
             unzip(f, dest)
         os.remove(installer_path)
-        return self.find_nightly_binary(dest)
+        return self.find_binary(dest, channel)
 
 
 class Chrome(ChromeChromiumBase):
@@ -877,11 +857,39 @@ class Chrome(ChromeChromiumBase):
                 return None
         return "https://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (
             latest, self._chromedriver_platform_string())
-    
+
     def download(self, dest=None, channel=None, rename=None):
         raise NotImplementedError(
             "Downloading of Chrome browser binary not yet implemented."
         )
+
+    def find_binary(self, venv_path=None, channel=None):
+        # this implementation will not currently check the venv path for a
+        # Chrome browser binary as downloading via the install is not currently
+        # implemented.
+
+        if uname[0] == "Linux":
+            name = "google-chrome"
+            if channel == "stable":
+                name += "-stable"
+            elif channel == "beta":
+                name += "-beta"
+            elif channel == "dev":
+                name += "-unstable"
+            # No Canary on Linux.
+            return find_executable(name)
+        if uname[0] == "Darwin":
+            suffix = ""
+            if channel in ("beta", "dev", "canary"):
+                suffix = " " + channel.capitalize()
+            return "/Applications/Google Chrome%s.app/Contents/MacOS/Google Chrome%s" % (suffix, suffix)
+        if uname[0] == "Windows":
+            path = os.path.expandvars(r"$SYSTEMDRIVE\Program Files (x86)\Google\Chrome\Application\chrome.exe")
+            if not os.path.exists(path):
+                path = os.path.expandvars(r"$SYSTEMDRIVE\Program Files\Google\Chrome\Application\chrome.exe")
+            return path
+        self.logger.warning("Unable to find the browser binary.")
+        return None
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError(

@@ -13,9 +13,7 @@
 function doTest(callGetUserMedia, testName)
 {
     promise_test(async () => {
-        if (!callGetUserMedia) {
-            await setMediaPermission("denied");
-        } else {
+        if (callGetUserMedia) {
             await setMediaPermission("granted");
             await navigator.mediaDevices.getUserMedia({audio : true, video: true});
         }

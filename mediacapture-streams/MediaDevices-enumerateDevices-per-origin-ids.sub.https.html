@@ -12,24 +12,10 @@
   <iframe allow="camera 'src';microphone 'src'" id=same src="/mediacapture-streams/iframe-enumerate.html"></iframe>
 <iframe allow="camera 'src';microphone 'src'" id=cross src="https://{{hosts[][www1]}}:{{ports[https][0]}}/mediacapture-streams/iframe-enumerate.html"></iframe>
 <script>
-  function compareDeviceList(list1, list2, origintype) {
+  function checkDeviceListsMatch(list1, list2, origintype) {
     assert_equals(list1.length, list2.length, "Same number of devices detected in " + origintype + "-origin");
-    for (let device of list1) {
-      const sameDevice = list2.find(d => d.deviceId === device.deviceId);
+    for (const device of list1) {
       assert_true(!!list2.find(d => d.label === device.label), "labels stay the same across origins");
-      // TODO: is using "default" compliant with the spec?
-      if (device.deviceId !== "default") {
-        if (origintype === "same") {
-          assert_true(!!sameDevice, "deviceIds stay the same when loaded in same origin");
-          assert_equals(sameDevice.label, device.label, "labels stay the same when loaded in same origin");
-          assert_equals(sameDevice.kind, device.kind, "kind stay the same when loaded in same origin");
-          assert_not_equals(sameDevice.groupId, device.groupId, "groupId is specific to a document");
-          // The group identifier MUST be uniquely generated for each document.
-        } else {
-          assert_false(!!sameDevice, "deviceIds are not " + (origintype === "cross" ? "shared across origin" : "kept after clearing site data"));
-          assert_false(!!list2.find(d => d.groupId === device.groupId), "groupId is specific to a document");
-        }
-      }
     }
   }
 
@@ -43,7 +29,15 @@
     frames[0].postMessage('run', '*')
     const e = await msgWatcher.wait_for('message');
     const iframeDevices = e.data.devices;
-    compareDeviceList(deviceList, iframeDevices, "same");
+    checkDeviceListsMatch(deviceList, iframeDevices, "same");
+    for (const device of deviceList) {
+      const sameDevice = iframeDevices.find(d => d.deviceId === device.deviceId);
+      assert_true(!!sameDevice, "deviceIds stay the same when loaded in same origin");
+      assert_equals(sameDevice.label, device.label, "labels matches when deviceId matches");
+      assert_equals(sameDevice.kind, device.kind, "kind matches when deviceId matches");
+      // The group identifier MUST be uniquely generated for each document.
+      assert_not_equals(sameDevice.groupId, device.groupId, "groupId is specific to a document");
+    }
     // setting a cookie as a way to detect if cookie clearing gets done
     document.cookie = "test=true";
     window.localStorage.touched = true;
@@ -54,7 +48,12 @@
     frames[1].postMessage('run', '*')
     const e = await msgWatcher.wait_for('message');
     const iframeDevices = e.data.devices;
-    compareDeviceList(deviceList, iframeDevices, "cross");
+    checkDeviceListsMatch(deviceList, iframeDevices, "cross");
+    for (const device of deviceList) {
+      const sameDevice = iframeDevices.find(d => d.deviceId === device.deviceId);
+      assert_false(!!sameDevice, "deviceIds are not shared across origin");
+      assert_false(!!iframeDevices.find(d => d.groupId === device.groupId), "groupId is specific to a document");
+    }
   }, "enumerateDevices work as expected in a cross-origin iframe");
 
   promise_test(async t => {
@@ -70,7 +69,13 @@
     frames[2].postMessage('run', '*')
     const e = await msgWatcher.wait_for('message');
     const iframeDevices = e.data.devices;
-    compareDeviceList(deviceList, iframeDevices, "cleared");
+    checkDeviceListsMatch(deviceList, iframeDevices, "cleared");
+    for (const device of deviceList) {
+      const sameDevice = iframeDevices.find(d => d.deviceId === device.deviceId);
+      assert_false(!!sameDevice, "deviceIds are not kept after clearing site data");
+      assert_false(!!iframeDevices.find(d => d.groupId === device.groupId), "groupId is specific to a document");
+    }
+
   }, "enumerateDevices work as expected after clearing site data");
 
 </script>

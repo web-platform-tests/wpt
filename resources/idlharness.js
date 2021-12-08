@@ -3407,20 +3407,16 @@ function idl_test(srcs, deps, idl_setup_func) {
     }, 'idl_test setup');
 }
 
-function fetch_text(url) {
-    return fetch(url).then(function (r) {
-        if (!r.ok) {
-            throw new IdlHarnessError("Error fetching " + url + ".");
-        }
-        return r.text();
-    });
-}
-
 /**
  * fetch_spec is a shorthand for a Promise that fetches the spec's content.
  */
 function fetch_spec(spec) {
     var url = '/interfaces/' + spec + '.idl';
-    return fetch_text(url).then(idl => ({ spec, idl }));
+    return fetch(url).then(function (r) {
+        if (!r.ok) {
+            throw new IdlHarnessError("Error fetching " + url + ".");
+        }
+        return r.text();
+    }).then(idl => ({ spec, idl }));
 }
 // vim: set expandtab shiftwidth=4 tabstop=4 foldmarker=@{,@} foldmethod=marker:

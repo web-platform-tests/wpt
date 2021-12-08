@@ -143,12 +143,7 @@ test(t => {
   const reason = new Error('boom');
   const signal = AbortSignal.abort(reason);
   assert_true(signal.aborted);
-  try {
-    signal.throwIfAborted();
-    throw new Error("failed to throw when expected");
-  } catch (err) {
-    assert_equals(err, reason);
-  }
+  assert_throws_exactly(reason, () => signal.throwIfAborted());
 }, "throwIfAborted() should throw abort.reason if signal aborted");
 
 test(t => {

@@ -106,15 +106,15 @@ def filter_excluded_users(tasks, event):
     try:
         submitter = event["pull_request"]["user"]["login"]
         excluded_tasks = []
-        for name, task in tasks.items():
-            for excluded_user in task.get("excluded-users", []):
+        for name, task in list(tasks.items()):
+            for excluded_user in task.get("exclude-users", []):
                 if excluded_user == submitter:
                     excluded_tasks.append(name)
                     tasks.pop(name)
         if excluded_tasks:
             logger.info(
-                f"tasks excluded for user {submitter}:\n * "
-                "\n * ".join(excluded_tasks)
+                f"Tasks excluded for user {submitter}:\n * "
+                + "\n * ".join(excluded_tasks)
             )
     except KeyError:
         # Just continue if the username cannot be pulled from the event.

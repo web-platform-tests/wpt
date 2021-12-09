@@ -41,7 +41,7 @@
     // setting a cookie as a way to detect if cookie clearing gets done
     document.cookie = "test=true";
     window.localStorage.touched = true;
-  }, "enumerateDevices work as expected in a same-origin iframe");
+  }, "enumerateDevices has stable deviceIds across same-origin iframe");
 
   promise_test(async t => {
     const msgWatcher = new EventWatcher(t, window, ['message']);
@@ -54,7 +54,7 @@
       assert_false(!!sameDevice, "deviceIds are not shared across origin");
       assert_false(!!iframeDevices.find(d => d.groupId === device.groupId), "groupId is specific to a document");
     }
-  }, "enumerateDevices work as expected in a cross-origin iframe");
+  }, "enumerateDevices rotates deviceId across different-origin iframe");
 
   promise_test(async t => {
     const iframe = document.createElement("iframe");
@@ -76,7 +76,7 @@
       assert_false(!!iframeDevices.find(d => d.groupId === device.groupId), "groupId is specific to a document");
     }
 
-  }, "enumerateDevices work as expected after clearing site data");
+  }, "enumerateDevices rotates deviceId after clearing site data");
 
 </script>
 </body>

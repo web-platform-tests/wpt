@@ -23,8 +23,9 @@
 
   promise_test(async t => {
     await setMediaPermission();
-    await navigator.mediaDevices.getUserMedia({audio : true, video: true});
-    deviceList =  await navigator.mediaDevices.enumerateDevices();
+    const stream = await navigator.mediaDevices.getUserMedia({audio : true, video: true});
+    stream.getTracks().forEach(t => t.stop()));
+    deviceList = await navigator.mediaDevices.enumerateDevices();
     const msgWatcher = new EventWatcher(t, window, ['message']);
     frames[0].postMessage('run', '*')
     const e = await msgWatcher.wait_for('message');

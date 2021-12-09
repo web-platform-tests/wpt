@@ -37,13 +37,12 @@ def test_verify_taskcluster_yml():
         jsone.render(template, context)
 
 
-@pytest.mark.parametrize("event_path,tasks,expected",
-                         ("pr_event.json",
-                          frozenset(["lint", "wpt-chrome-dev-stability"])),
-                         ("pr_event_tests_affected.json",
-                          frozenset(["lint"])),
-                         [{"lint", "wpt-chrome-dev-stability"}, {"lint"}])
-def test_exclude_users(event_path, tasks, expected):
+@pytest.mark.parametrize("event_path,expected",
+                         [("pr_event.json",
+                           frozenset(["lint", "wpt-chrome-dev-stability"])),
+                          ("pr_event_tests_affected.json", frozenset(["lint"]))]
+                         )
+def test_exclude_users(event_path, expected):
     """Verify that tasks excluded by the PR submitter are properly excluded"""
     tasks = {
         "lint": {

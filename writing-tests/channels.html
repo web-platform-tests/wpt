@@ -1,0 +1,544 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Message Channels &#8212; web-platform-tests  documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="message-channels">
+<h1>Message Channels<a class="headerlink" href="#message-channels" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#markup" id="id1">Markup</a></p>
+<ul>
+<li><p><a class="reference internal" href="#high-level-api" id="id2">High Level API</a></p>
+<ul>
+<li><p><a class="reference internal" href="#remote-objects" id="id3">Remote Objects</a></p></li>
+<li><p><a class="reference internal" href="#example" id="id4">Example</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#low-level-api" id="id5">Low Level API</a></p></li>
+<li><p><a class="reference internal" href="#navigation-and-bfcache" id="id6">Navigation and bfcache</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Message channels provide a mechanism to communicate across globals,
+including in cases where there is no client-side mechanism to
+establish a communication channel (i.e. when the globals are in
+different browsing context groups).</p>
+<div class="section" id="markup">
+<h2>Markup<a class="headerlink" href="#markup" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/channels.sub.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Channels can be used in any global and are not specifically linked to
+<code class="docutils literal notranslate"><span class="pre">testharness.js</span></code>.</p>
+<div class="section" id="high-level-api">
+<h3>High Level API<a class="headerlink" href="#high-level-api" title="Permalink to this headline">¶</a></h3>
+<p>The high level API provides a way to message another global, and to
+execute functions in that global and return the result.</p>
+<p>Globals wanting to recieve messages using the high level API have to
+be loaded with a <code class="docutils literal notranslate"><span class="pre">uuid</span></code> query parameter in their URL, with a value
+that’s a UUID. This will be used to identify the channel dedicated to
+messages sent to that context.</p>
+<p>The context must call either <code class="docutils literal notranslate"><span class="pre">global_channel</span></code> or
+<code class="docutils literal notranslate"><span class="pre">start_global_channel</span></code> when it’s ready to receive messages. This
+returns a <code class="docutils literal notranslate"><span class="pre">RecvChannel</span></code> that can be used to add message handlers.</p>
+<dl class="js function">
+<dt id="global_channel">
+<code class="sig-name descname"><span class="pre">global_channel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#global_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an unconnected channel defined by a <cite>uuid</cite> in
+<code class="docutils literal notranslate"><span class="pre">location.href</span></code> for listening for <a class="reference external" href="#RemoteGlobal">RemoteGlobal</a> messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>RemoteGlobalCommandRecvChannel</strong> – - Disconnected channel</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="start_global_channel">
+<code class="sig-name descname"><span class="pre">start_global_channel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#start_global_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start listening for <a class="reference external" href="#RemoteGlobal">RemoteGlobal</a> messages on
+a channel defined by a <cite>uuid</cite> in <cite>location.href</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>RemoteGlobalCommandRecvChannel</strong> – - Connected channel</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js class">
+<dt id="RemoteGlobalCommandRecvChannel">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">RemoteGlobalCommandRecvChannel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">recvChannel</span></em><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobalCommandRecvChannel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler for <a class="reference external" href="#RemoteGlobal">RemoteGlobal</a> commands.</p>
+<p>This can’t be constructed directly but must be obtained from
+<a class="reference external" href="#global_channel">global_channel()</a> or
+<a class="reference external" href="#start_global_channel">start_global_channel()</a>.</p>
+<dl class="js function">
+<dt id="RemoteGlobalCommandRecvChannel.addMessageHandler">
+<code class="sig-prename descclassname"><span class="pre">RemoteGlobalCommandRecvChannel.</span></code><code class="sig-name descname"><span class="pre">addMessageHandler</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobalCommandRecvChannel.addMessageHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a handler for <code class="docutils literal notranslate"><span class="pre">postMessage</span></code> messages</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fn</strong> (<em>function</em>) – Callback function that receives the message.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="RemoteGlobalCommandRecvChannel.close">
+<code class="sig-prename descclassname"><span class="pre">RemoteGlobalCommandRecvChannel.</span></code><code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobalCommandRecvChannel.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the channel and underlying websocket connection</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="RemoteGlobalCommandRecvChannel.connect">
+<code class="sig-prename descclassname"><span class="pre">RemoteGlobalCommandRecvChannel.</span></code><code class="sig-name descname"><span class="pre">connect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobalCommandRecvChannel.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to the channel and start handling messages.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="RemoteGlobalCommandRecvChannel.nextMessage">
+<code class="sig-prename descclassname"><span class="pre">RemoteGlobalCommandRecvChannel.</span></code><code class="sig-name descname"><span class="pre">nextMessage</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobalCommandRecvChannel.nextMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait for the next <code class="docutils literal notranslate"><span class="pre">postMessage</span></code> message and return it
+(after passing it to existing handlers)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Promise</strong> – - Promise that resolves to the message.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="RemoteGlobalCommandRecvChannel.removeMessageHandler">
+<code class="sig-prename descclassname"><span class="pre">RemoteGlobalCommandRecvChannel.</span></code><code class="sig-name descname"><span class="pre">removeMessageHandler</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobalCommandRecvChannel.removeMessageHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a handler for <code class="docutils literal notranslate"><span class="pre">postMessage</span></code> messages</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fn</strong> (<em>function</em>) – Callback function to remove</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>Contexts wanting to communicate with the remote context do so using a
+<code class="docutils literal notranslate"><span class="pre">RemoteGlobal</span></code> object.</p>
+<dl class="js class">
+<dt id="RemoteGlobal">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">RemoteGlobal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dest</span></em><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object representing a remote global that has a
+<a class="reference external" href="#RemoteGlobalCommandRecvChannel">RemoteGlobalCommandRecvChannel</a></p>
+<p>Create a new RemoteGlobal object.</p>
+<p>This doesn’t actually construct the global itself; that
+must be done elsewhere, with a <code class="docutils literal notranslate"><span class="pre">uuid</span></code> query parameter in
+its URL set to the same as the <code class="docutils literal notranslate"><span class="pre">uuid</span></code> property of this
+object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dest</strong> (<em>SendChannel|string</em>) – Either a SendChannel to the destination, or the UUID of the destination. If ommitted, a new UUID is generated, which can be used when constructing the URL for the global.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="js attribute">
+<dt id="RemoteGlobal.uuid">
+<code class="sig-prename descclassname"><span class="pre">RemoteGlobal.</span></code><code class="sig-name descname"><span class="pre">uuid</span></code><a class="headerlink" href="#RemoteGlobal.uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>UUID for the global</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="RemoteGlobal.call">
+<code class="sig-prename descclassname"><span class="pre">RemoteGlobal.</span></code><code class="sig-name descname"><span class="pre">call</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fn</span></em>, <em class="sig-param"><span class="pre">...args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobal.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the function <code class="docutils literal notranslate"><span class="pre">fn</span></code> in the remote global, passing arguments
+<code class="docutils literal notranslate"><span class="pre">args</span></code>, and return the result after awaiting any returned
+promise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fn</strong> (<em>function</em>) – Function to run in the remote global.</p></li>
+<li><p><strong>args</strong> (<em>Any</em>) – Arguments to pass to the function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Promise</strong> – - Promise resolving to the return value of the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="RemoteGlobal.close">
+<code class="sig-prename descclassname"><span class="pre">RemoteGlobal.</span></code><code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobal.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the channel and underlying websocket connections</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="RemoteGlobal.connect">
+<code class="sig-prename descclassname"><span class="pre">RemoteGlobal.</span></code><code class="sig-name descname"><span class="pre">connect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobal.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to the channel. Automatically called when sending the
+first message</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="RemoteGlobal.disconnectReader">
+<code class="sig-prename descclassname"><span class="pre">RemoteGlobal.</span></code><code class="sig-name descname"><span class="pre">disconnectReader</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobal.disconnectReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnect the associated <a class="reference external" href="#RemoteGlobalCommandRecvChannel">RemoteGlobalCommandRecvChannel</a>, if any, on the server
+side.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Promise</strong> – - Resolved once the channel is disconnected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="RemoteGlobal.postMessage">
+<code class="sig-prename descclassname"><span class="pre">RemoteGlobal.</span></code><code class="sig-name descname"><span class="pre">postMessage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#RemoteGlobal.postMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post a message to the remote</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>Any</em>) – The message to send.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="remote-objects">
+<h4>Remote Objects<a class="headerlink" href="#remote-objects" title="Permalink to this headline">¶</a></h4>
+<p>By default objects (e.g. script arguments) sent to the remote global
+are cloned. In order to support referencing objects owned by the
+originating global, there is a <code class="docutils literal notranslate"><span class="pre">RemoteObject</span></code> type which can pass a
+reference to an object across a channel.</p>
+<dl class="js class">
+<dt id="RemoteObject">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">RemoteObject</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span></em>, <em class="sig-param"><span class="pre">objectId</span></em><span class="sig-paren">)</span><a class="headerlink" href="#RemoteObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Representation of a non-primitive type passed through a channel</p>
+<dl class="js function">
+<dt id="RemoteObject.delete">
+<code class="sig-prename descclassname"><span class="pre">RemoteObject.</span></code><code class="sig-name descname"><span class="pre">delete</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RemoteObject.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the object from the local cache. This means that future
+calls to <code class="docutils literal notranslate"><span class="pre">toLocal</span></code> with the same objectId will always return
+<code class="docutils literal notranslate"><span class="pre">null</span></code>.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="RemoteObject.toLocal">
+<code class="sig-prename descclassname"><span class="pre">RemoteObject.</span></code><code class="sig-name descname"><span class="pre">toLocal</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RemoteObject.toLocal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the local object referenced by the <code class="docutils literal notranslate"><span class="pre">objectId</span></code> of
+this <code class="docutils literal notranslate"><span class="pre">RemoteObject</span></code>, or <code class="docutils literal notranslate"><span class="pre">null</span></code> if there isn’t a such an
+object in this realm.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="RemoteObject.from">
+<code class="sig-prename descclassname"><span class="pre">RemoteObject.</span></code><code class="sig-name descname"><span class="pre">from</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#RemoteObject.from" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a RemoteObject containing a handle to reference obj</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>Any</em>) – The object to reference.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="example">
+<h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
+<p>test.html</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>call example<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/resources/testharness.js&quot;</span><span class="p">&gt;</span>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;/resources/testharnessreport.js&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;/resources/channel.js&quot;</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+<span class="nx">promise_test</span><span class="p">(</span><span class="k">async</span> <span class="nx">t</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">remote</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">RemoteGlobal</span><span class="p">();</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="sb">`child.html?uuid=</span><span class="si">${</span><span class="nx">remote</span><span class="p">.</span><span class="nx">uuid</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span> <span class="s2">&quot;_blank&quot;</span><span class="p">,</span> <span class="s2">&quot;noopener&quot;</span><span class="p">);</span>
+  <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">remote</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">id</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">).</span><span class="nx">textContent</span><span class="p">;</span>
+  <span class="p">},</span> <span class="s2">&quot;test&quot;</span><span class="p">);</span>
+  <span class="nx">assert_equals</span><span class="p">(</span><span class="s2">&quot;result&quot;</span><span class="p">,</span> <span class="s2">&quot;PASS&quot;</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>child.html</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>&lt;script src=&quot;/resources/channel.js&quot;&gt;
+
+&lt;p id=&quot;nottest&quot;&gt;FAIL&lt;/p&gt;
+&lt;p id=&quot;test&quot;&gt;PASS&lt;/p&gt;
+&lt;script&gt;
+start_global_channel();
+&lt;/script&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="low-level-api">
+<h3>Low Level API<a class="headerlink" href="#low-level-api" title="Permalink to this headline">¶</a></h3>
+<p>The high level API is implemented in terms of a channel
+abstraction. Each channel is identified by a UUID, and corresponds to
+a message queue hosted by the server. Channels are multiple producer,
+single consumer, so there’s only only entity responsible for
+processing messages sent to the channel. This is designed to
+discourage race conditions where multiple consumers try to process the
+same message.</p>
+<p>On the client side, the read side of a channel is represented by a
+<code class="docutils literal notranslate"><span class="pre">RecvChannel</span></code> object, and the send side by <code class="docutils literal notranslate"><span class="pre">SendChannel</span></code>. An initial
+channel pair is created with the <code class="docutils literal notranslate"><span class="pre">channel()</span></code> function.</p>
+<dl class="js class">
+<dt id="Channel">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Channel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">uuid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class for objects that allow sending / receiving
+messages over a channel.</p>
+<dl class="js attribute">
+<dt id="Channel.uuid">
+<code class="sig-prename descclassname"><span class="pre">Channel.</span></code><code class="sig-name descname"><span class="pre">uuid</span></code><a class="headerlink" href="#Channel.uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>UUID for the channel</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Channel.addEventListener">
+<code class="sig-prename descclassname"><span class="pre">Channel.</span></code><code class="sig-name descname"><span class="pre">addEventListener</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span></em>, <em class="sig-param"><span class="pre">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Channel.addEventListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an event callback function. Supported message types are
+“connect”, “close”, and “message” (for <code class="docutils literal notranslate"><span class="pre">RecvChannel</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<em>string</em>) – Message type.</p></li>
+<li><p><strong>fn</strong> (<em>function</em>) – Callback function. This is called with an event-like object, with <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">data</span></code> properties.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Channel.close">
+<code class="sig-prename descclassname"><span class="pre">Channel.</span></code><code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Channel.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the channel and underlying websocket connection</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Channel.connect">
+<code class="sig-prename descclassname"><span class="pre">Channel.</span></code><code class="sig-name descname"><span class="pre">connect</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">onmessage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Channel.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to the channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>onmessage</strong> (<em>function</em>) – Event handler function for the underlying websocket message.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="Channel.removeEventListener">
+<code class="sig-prename descclassname"><span class="pre">Channel.</span></code><code class="sig-name descname"><span class="pre">removeEventListener</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span></em>, <em class="sig-param"><span class="pre">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Channel.removeEventListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove an event callback function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<em>string</em>) – Event type.</p></li>
+<li><p><strong>fn</strong> (<em>function</em>) – Callback function to remove.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="js class">
+<dt id="SendChannel">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">SendChannel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SendChannel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send messages over a channel</p>
+<dl class="js function">
+<dt id="SendChannel.connect">
+<code class="sig-prename descclassname"><span class="pre">SendChannel.</span></code><code class="sig-name descname"><span class="pre">connect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SendChannel.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to the channel. Automatically called when sending the
+first message.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="SendChannel.delete">
+<code class="sig-prename descclassname"><span class="pre">SendChannel.</span></code><code class="sig-name descname"><span class="pre">delete</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SendChannel.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnect this channel on the server side.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="SendChannel.disconnectReader">
+<code class="sig-prename descclassname"><span class="pre">SendChannel.</span></code><code class="sig-name descname"><span class="pre">disconnectReader</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SendChannel.disconnectReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnect the associated <a class="reference external" href="#RecvChannel">RecvChannel</a>, if
+any, on the server side.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt id="SendChannel.send">
+<code class="sig-prename descclassname"><span class="pre">SendChannel.</span></code><code class="sig-name descname"><span class="pre">send</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SendChannel.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a message. The message object must be JSON-serializable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>Object</em>) – The message object to send.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="js class">
+<dt id="RecvChannel">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">RecvChannel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">uuid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#RecvChannel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive messages over a channel</p>
+<dl class="js function">
+<dt id="RecvChannel.nextMessage">
+<code class="sig-prename descclassname"><span class="pre">RecvChannel.</span></code><code class="sig-name descname"><span class="pre">nextMessage</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RecvChannel.nextMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait for the next message and return it (after passing it to
+existing handlers)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Promise</strong> – - Promise that resolves to the message data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="navigation-and-bfcache">
+<h3>Navigation and bfcache<a class="headerlink" href="#navigation-and-bfcache" title="Permalink to this headline">¶</a></h3>
+<p>For specific use cases around bfcache, it’s important to be able to
+ensure that no network connections (including websockets) remain open
+at the time of navigation, otherwise the page will be excluded from
+bfcache. This is handled as follows:</p>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">disconnectReader</span></code> method on <code class="docutils literal notranslate"><span class="pre">SendChannel</span></code>. This causes a
+server-initiated disconnect of the corresponding <code class="docutils literal notranslate"><span class="pre">RecvChannel</span></code>
+websocket. The idea is to allow a page to send a command that will
+initiate a navigation, then without knowing when the navigation is
+done, send further commands that will be processed when the
+<code class="docutils literal notranslate"><span class="pre">RecvChannel</span></code> reconnects. If the commands are sent before the
+navigation, but not processed, they can be buffered by the remote
+and then lost during navigation.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">close_all_channel_sockets()</span></code> function. This just closes all the open
+websockets associated with channels in the global in which it’s
+called. Any channel then has to be reconnected to be used
+again. Calling <code class="docutils literal notranslate"><span class="pre">closeAllChannelSockets()</span></code> right before navigating
+will leave you in a state with no open websocket connections (unless
+something happens to reopen one before the navigation starts).</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">web-platform-tests</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../test-suite-design.html">Test Suite Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro-video-transcript.html">“Introduction to WPT” video transcript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-tests/index.html">Running Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Writing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../admin/index.html">Project Administration</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, wpt contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/writing-tests/channels.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

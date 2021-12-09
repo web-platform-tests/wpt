@@ -59,13 +59,8 @@ part of the stash corresponding to its own path.</p>
 <div class="section" id="module-wptserve.stash">
 <span id="interface"></span><h2><a class="reference internal" href="#module-wptserve.stash" title="wptserve.stash"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.stash" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="wptserve.stash.ClientDictManager">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></code><code class="sig-name descname"><span class="pre">ClientDictManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pickle'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.ClientDictManager" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt id="wptserve.stash.ServerDictManager">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></code><code class="sig-name descname"><span class="pre">ServerDictManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pickle'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.ServerDictManager" title="Permalink to this definition">¶</a></dt>
+<dt id="wptserve.stash.QueueProxy">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></code><code class="sig-name descname"><span class="pre">QueueProxy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manager_owned</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.QueueProxy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
@@ -127,6 +122,11 @@ the current request path)</p></li>
 <em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></code><code class="sig-name descname"><span class="pre">StashError</span></code><a class="headerlink" href="#wptserve.stash.StashError" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py class">
+<dt id="wptserve.stash.StashManager">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">wptserve.stash.</span></code><code class="sig-name descname"><span class="pre">StashManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pickle'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.stash.StashManager" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
@@ -151,15 +151,14 @@ the current request path)</p></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../test-suite-design.html">Test Suite Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro-video-transcript.html">“Introduction to WPT” video transcript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../running-tests/index.html">Running Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../writing-tests/index.html">Writing Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reviewing-tests/index.html">Reviewing Tests</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../../admin/index.html">Project Administration</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../../admin/index.html#tooling">Tooling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../admin/index.html#secrets">Secrets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../admin/index.html#third-party-account-owners">Third-party account owners</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../admin/index.html#emergency-playbook">Emergency playbook</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../writing-tests/index.html">Writing Tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../writing-tests/index.html#test-types">Test Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../writing-tests/index.html#submitting-tests">Submitting Tests</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../writing-tests/index.html#table-of-contents">Table of Contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reviewing-tests/index.html">Reviewing Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../admin/index.html">Project Administration</a></li>
 </ul>
 
 <div class="relations">

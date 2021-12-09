@@ -113,8 +113,8 @@ def filter_excluded_users(tasks, event):
                     tasks.pop(name)
         if excluded_tasks:
             logger.info(
-                f"Tasks excluded for user {submitter}:\n * "
-                + "\n * ".join(excluded_tasks)
+                f"Tasks excluded for user {submitter}:\n * " +
+                "\n * ".join(excluded_tasks)
             )
     except KeyError:
         # Just continue if the username cannot be pulled from the event.

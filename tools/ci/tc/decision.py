@@ -100,13 +100,22 @@ def get_extra_jobs(event):
     return jobs
 
 
-def filter_tasks(tasks, event):
-    # Exclude browser stability tests for exports from that specific browser.
+def filter_excluded_users(tasks, event):
+    # Some users' pull requests are excluded from tasks,
+    # such as pull requests from automated exports.
     try:
-        if event["pull_request"]["user"]["login"] == "chromium-wpt-export-bot":
-            tasks.pop("wpt-chrome-dev-stability")
-        if event["pull_request"]["user"]["login"] == "moz-wptsync-bot":
-            tasks.pop("wpt-firefox-nightly-stability")
+        submitter = event["pull_request"]["user"]["login"]
+        excluded_tasks = []
+        for name, task in tasks.items():
+            for excluded_user in task.get("excluded-users", []):
+                if excluded_user == submitter:
+                    excluded_tasks.append(name)
+                    tasks.pop(name)
+        if excluded_tasks:
+            logger.info(
+                f"tasks excluded for user {submitter}:\n * "
+                "\n * ".join(excluded_tasks)
+            )
     except KeyError:
         # Just continue if the username cannot be pulled from the event.
         logger.debug("Unable to read username from event. Continuing.")
@@ -124,7 +133,6 @@ def filter_schedule_if(event, tasks):
                     scheduled[name] = task
         else:
             scheduled[name] = task
-    filter_tasks(scheduled, event)
     logger.info("Scheduling rules match tasks:\n * %s" % "\n * ".join(scheduled.keys()))
     return scheduled
 
@@ -351,6 +359,7 @@ def decide(event):
 
     triggered_tasks = filter_triggers(event, all_tasks)
     scheduled_tasks = filter_schedule_if(event, triggered_tasks)
+    filter_excluded_users(scheduled_tasks, event)
 
     logger.info("UNSCHEDULED TASKS:\n  %s" % "\n  ".join(sorted(set(all_tasks.keys()) -
                                                             set(scheduled_tasks.keys()))))

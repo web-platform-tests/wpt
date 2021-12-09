@@ -109,6 +109,8 @@ def filter_excluded_users(tasks, event):
         submitter = event["pull_request"]["user"]["login"]
         logger.info(f"Checking if excluded tasks for {submitter}")
         excluded_tasks = []
+        logger.info("tasks.items:")
+        logger.info(list(tasks.items()))
         for name, task in list(tasks.items()):
             if "exclude_users" in task:
                 logger.info(f"found exclude users in {name}")

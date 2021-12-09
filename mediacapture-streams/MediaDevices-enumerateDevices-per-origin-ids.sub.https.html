@@ -12,25 +12,19 @@
   <iframe allow="camera 'src';microphone 'src'" id=same src="/mediacapture-streams/iframe-enumerate.html"></iframe>
 <iframe allow="camera 'src';microphone 'src'" id=cross src="https://{{hosts[][www1]}}:{{ports[https][0]}}/mediacapture-streams/iframe-enumerate.html"></iframe>
 <script>
-  function checkDeviceListsMatch(list1, list2, origintype) {
-    assert_equals(list1.length, list2.length, "Same number of devices detected in " + origintype + "-origin");
-    for (const device of list1) {
-      assert_true(!!list2.find(d => d.label === device.label), "labels stay the same across origins");
-    }
-  }
 
   let deviceList;
 
   promise_test(async t => {
     await setMediaPermission();
     const stream = await navigator.mediaDevices.getUserMedia({audio : true, video: true});
-    stream.getTracks().forEach(t => t.stop()));
+    stream.getTracks().forEach(t => t.stop());
     deviceList = await navigator.mediaDevices.enumerateDevices();
     const msgWatcher = new EventWatcher(t, window, ['message']);
     frames[0].postMessage('run', '*')
     const e = await msgWatcher.wait_for('message');
     const iframeDevices = e.data.devices;
-    checkDeviceListsMatch(deviceList, iframeDevices, "same");
+    assert_equals(deviceList.length, iframeDevices.length, "Same number of devices detected same-origin");
     for (const device of deviceList) {
       const sameDevice = iframeDevices.find(d => d.deviceId === device.deviceId);
       assert_true(!!sameDevice, "deviceIds stay the same when loaded in same origin");
@@ -49,7 +43,7 @@
     frames[1].postMessage('run', '*')
     const e = await msgWatcher.wait_for('message');
     const iframeDevices = e.data.devices;
-    checkDeviceListsMatch(deviceList, iframeDevices, "cross");
+    assert_equals(deviceList.length, iframeDevices.length, "Same number of devices detected cross-origin");
     for (const device of deviceList) {
       const sameDevice = iframeDevices.find(d => d.deviceId === device.deviceId);
       assert_false(!!sameDevice, "deviceIds are not shared across origin");
@@ -70,7 +64,7 @@
     frames[2].postMessage('run', '*')
     const e = await msgWatcher.wait_for('message');
     const iframeDevices = e.data.devices;
-    checkDeviceListsMatch(deviceList, iframeDevices, "cleared");
+    assert_equals(deviceList.length, iframeDevices.length, "Same number of devices detected after clearing cookies");
     for (const device of deviceList) {
       const sameDevice = iframeDevices.find(d => d.deviceId === device.deviceId);
       assert_false(!!sameDevice, "deviceIds are not kept after clearing site data");

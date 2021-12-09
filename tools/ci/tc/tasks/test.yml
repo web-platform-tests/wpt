@@ -393,6 +393,8 @@ tasks:
       description: >-
         Lint for wpt-specific requirements
       command: "./wpt lint --all --github-checks-text-file=/home/test/artifacts/checkrun.md"
+      exclude-users:
+        - DanielRyanSmith
 
   - update-built:
       use:
@@ -557,3 +559,5 @@ tasks:
         - trigger-pr
       command: "./wpt tc-sink-task --github-checks-text-file=/home/test/artifacts/checkrun.md"
       requires: all-resolved
+      exclude-users:
+        - this-is-a-test-of-course

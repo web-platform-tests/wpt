@@ -45,8 +45,14 @@
     const iframeDevices = e.data.devices;
     assert_equals(deviceList.length, iframeDevices.length, "Same number of devices detected cross-origin");
     for (const device of deviceList) {
-      const sameDevice = iframeDevices.find(d => d.deviceId === device.deviceId);
-      assert_false(!!sameDevice, "deviceIds are not shared across origin");
+      // An identifier can be reused across origins as long as
+      // it is not tied to the user and can be guessed by other means
+      // In practice, "default" is what is used today, so we hardcode it
+      // to be able to detect the general case of non-shared deviceIds
+      if (device.deviceId !== "default") {
+        const sameDevice = iframeDevices.find(d => d.deviceId === device.deviceId);
+        assert_false(!!sameDevice, "deviceIds are not shared across origin");
+      }
       assert_false(!!iframeDevices.find(d => d.groupId === device.groupId), "groupId is specific to a document");
     }
   }, "enumerateDevices rotates deviceId across different-origin iframe");

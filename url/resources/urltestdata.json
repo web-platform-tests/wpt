@@ -7303,6 +7303,7 @@
     "input": "blob:https://example.com:443/",
     "base": "about:blank",
     "href": "blob:https://example.com:443/",
+    "origin": "https://example.com",
     "protocol": "blob:",
     "username": "",
     "password": "",
@@ -7317,6 +7318,7 @@
     "input": "blob:d3958f5c-0777-0845-9dcf-2cb28783acaf",
     "base": "about:blank",
     "href": "blob:d3958f5c-0777-0845-9dcf-2cb28783acaf",
+    "origin": "null",
     "protocol": "blob:",
     "username": "",
     "password": "",
@@ -7324,6 +7326,21 @@
     "hostname": "",
     "port": "",
     "pathname": "d3958f5c-0777-0845-9dcf-2cb28783acaf",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "blob:",
+    "base": "about:blank",
+    "href": "blob:",
+    "origin": "null",
+    "protocol": "blob:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "",
     "search": "",
     "hash": ""
   },
@@ -8171,6 +8188,40 @@
   },
   {
     "input": "http://foo.0x4.",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "http://foo.09..",
+    "base": "about:blank",
+    "hash": "",
+    "host": "foo.09..",
+    "hostname": "foo.09..",
+    "href":"http://foo.09../",
+    "password": "",
+    "pathname": "/",
+    "port":"",
+    "protocol": "http:",
+    "search": "",
+    "username": ""
+  },
+  {
+    "input": "http://0999999999999999999/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "http://foo.0x",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "http://foo.0XFfFfFfFfFfFfFfFfFfAcE123",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "http://💩.123/",
     "base": "about:blank",
     "failure": true
   }

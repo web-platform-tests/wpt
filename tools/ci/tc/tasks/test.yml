@@ -302,7 +302,7 @@ tasks:
             browser: chrome
             channel: dev
             exclude-users:
-              - chromium-wpt-export-bot
+              - DanielRyanSmith
       do:
         - wpt-${vars.browser}-${vars.channel}-stability:
             use:

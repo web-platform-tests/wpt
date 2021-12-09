@@ -103,8 +103,11 @@ def get_extra_jobs(event):
 def filter_excluded_users(tasks, event):
     # Some users' pull requests are excluded from tasks,
     # such as pull requests from automated exports.
+    logger.info("tasks:")
+    logger.info(tasks)
     try:
         submitter = event["pull_request"]["user"]["login"]
+        logger.info(f"Checking if excluded tasks for {submitter}")
         excluded_tasks = []
         for name, task in tasks.items():
             for excluded_user in task.get("excluded-users", []):

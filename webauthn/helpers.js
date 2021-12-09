@@ -514,7 +514,6 @@ function validatePublicKeyCredential(cred) {
     // rawId
     assert_idl_attribute(cred, "rawId", "should return PublicKeyCredential with rawId attribute");
     assert_readonly(cred, "rawId", "should return PublicKeyCredential with readonly rawId attribute");
-    rawId = cred.rawId;
     assert_equals(cred.id, base64urlEncode(new Uint8Array(cred.rawId)), "should return PublicKeyCredential with id attribute set to base64 encoding of rawId attribute");
 
     // type

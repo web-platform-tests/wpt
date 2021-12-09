@@ -110,7 +110,7 @@ def filter_excluded_users(tasks, event):
         logger.info(f"Checking if excluded tasks for {submitter}")
         excluded_tasks = []
         for name, task in tasks.items():
-            for excluded_user in task.get("excluded-users", []):
+            for excluded_user in task.get("exclude-users", []):
                 if excluded_user == submitter:
                     excluded_tasks.append(name)
                     tasks.pop(name)

@@ -37,26 +37,27 @@ def test_verify_taskcluster_yml():
         jsone.render(template, context)
 
 
-@pytest.mark.parametrize("event_paths,tasks,expected_results",
-                         ["pr_event.json", "pr_event_tests_affected.json"],
-                         {
-                             "lint": {
-                                 "commands": "wpt example"
-                             },
-                             "wpt-chrome-dev-stability": {
-                                 "commands": "wpt example",
-                                 "exclude-users": ["chromium-wpt-export-bot"]
-                             }
-                         },
+@pytest.mark.parametrize("event_path,tasks,expected",
+                         ("pr_event.json",
+                          frozenset(["lint", "wpt-chrome-dev-stability"])),
+                         ("pr_event_tests_affected.json",
+                          frozenset(["lint"])),
                          [{"lint", "wpt-chrome-dev-stability"}, {"lint"}])
-def test_exclude_users(event_paths, tasks, expected_results):
+def test_exclude_users(event_path, tasks, expected):
     """Verify that tasks excluded by the PR submitter are properly excluded"""
-    for event_path, expected in zip(event_paths, expected_results):
-        with open(data_path(event_path), encoding="utf8") as f:
-            event = json.load(f)
-            test_tasks = tasks.copy()
-            decision.filter_excluded_users(test_tasks, event)
-            assert set(test_tasks.keys()) == expected
+    tasks = {
+        "lint": {
+            "commands": "wpt example"
+        },
+        "wpt-chrome-dev-stability": {
+            "commands": "wpt example",
+            "exclude-users": ["chromium-wpt-export-bot"]
+        }
+    }
+    with open(data_path(event_path), encoding="utf8") as f:
+        event = json.load(f)
+        decision.filter_excluded_users(tasks, event)
+        assert set(tasks) == expected
 
 
 def test_verify_payload():

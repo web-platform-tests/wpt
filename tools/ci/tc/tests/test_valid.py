@@ -167,7 +167,6 @@ def test_verify_payload():
       'wpt-firefox-nightly-stability',
       'wpt-firefox-nightly-results',
       'wpt-firefox-nightly-results-without-changes',
-      'wpt-chrome-dev-stability',
       'wpt-chrome-dev-results',
       'wpt-chrome-dev-results-without-changes',
       'lint',

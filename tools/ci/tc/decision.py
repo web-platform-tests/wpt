@@ -105,20 +105,23 @@ def filter_excluded_users(tasks, event):
     # such as pull requests from automated exports.
     try:
         submitter = event["pull_request"]["user"]["login"]
-        excluded_tasks = []
-        for name, task in list(tasks.items()):
-            for excluded_user in task.get("exclude-users", []):
-                if excluded_user == submitter:
-                    excluded_tasks.append(name)
-                    tasks.pop(name)
-        if excluded_tasks:
-            logger.info(
-                f"Tasks excluded for user {submitter}:\n * " +
-                "\n * ".join(excluded_tasks)
-            )
     except KeyError:
-        # Just continue if the username cannot be pulled from the event.
+        # Just ignore excluded users if the
+        # username cannot be pulled from the event.
         logger.debug("Unable to read username from event. Continuing.")
+        return
+
+    excluded_tasks = []
+    for name, task in list(tasks.items()):
+        for excluded_user in task.get("exclude-users", []):
+            if excluded_user == submitter:
+                excluded_tasks.append(name)
+                tasks.pop(name)
+    if excluded_tasks:
+        logger.info(
+            f"Tasks excluded for user {submitter}:\n * " +
+            "\n * ".join(excluded_tasks)
+        )
 
 
 def filter_schedule_if(event, tasks):

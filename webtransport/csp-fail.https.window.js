@@ -17,15 +17,11 @@ promise_test(async t => {
 
   // Sadly we cannot use promise_rejects_dom as the error constructor is
   // WebTransportError rather than DOMException.
-  for (const name of ["ready", "closed"]) {
-    try {
-      await wt[name];
-      test.unreached_func(`${name}: should have rejected promise`);
-    } catch (e) {
-      assert_true(e instanceof WebTransportError);
-      assert_equals(e.name, 'WebTransportError', `${name}: WebTransportError`);
-      assert_equals(e.source, 'session', `${name}: source`);
-      assert_equals(e.streamErrorCode, null, `${name}: streamErrorCode`);
-    }
-  }
+  const e = await wt.ready.catch(e => e);
+  await promise_rejects_exactly(t, e, wt.ready, 'ready promise should be rejected');
+  await promise_rejects_exactly(t, e, wt.closed, 'closed promise should be rejected');
+  assert_true(e instanceof WebTransportError);
+  assert_equals(e.name, 'WebTransportError', 'WebTransportError');
+  assert_equals(e.source, 'session', 'source');
+  assert_equals(e.streamErrorCode, null, 'streamErrorCode');
 }, 'WebTransport connection should fail when CSP connect-src is set to none and reject the promises');

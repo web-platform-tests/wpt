@@ -112,11 +112,13 @@ def filter_excluded_users(tasks, event):
         return
 
     excluded_tasks = []
+    # A separate list of items for tasks is needed to iterate over
+    # because removing an item during iteration will raise an error.
     for name, task in list(tasks.items()):
         for excluded_user in task.get("exclude-users", []):
             if excluded_user == submitter:
                 excluded_tasks.append(name)
-                tasks.pop(name)
+                tasks.pop(name)  # removing excluded task
     if excluded_tasks:
         logger.info(
             f"Tasks excluded for user {submitter}:\n * " +

@@ -1,4 +1,13 @@
 // TODO: it would be nice to support `idl_array.add_objects`
+function fetch_text(url) {
+    return fetch(url).then(function (r) {
+        if (!r.ok) {
+            throw new Error("Error fetching " + url + ".");
+        }
+        return r.text();
+    });
+}
+
 /**
  * idl_test_shadowrealm is a promise_test wrapper that handles the fetching of the IDL, and
  * running the code in a `ShadowRealm`, avoiding repetitive boilerplate.
@@ -17,16 +26,19 @@ function idl_test_shadowrealm(srcs, deps) {
         "/resources/WebIDLParser.js",
         "/resources/idlharness.js",
     ];
-    promise_test(async t => {
+    promise_setup(async t => {
         const realm = new ShadowRealm();
+        // https://github.com/web-platform-tests/wpt/issues/31996
         realm.evaluate("globalThis.self = globalThis; undefined");
 
         const ss = await Promise.all(script_urls.map(url => fetch_text(url)));
         for (const s of ss) {
             realm.evaluate(s);
         }
-        const specs = await Promise.all(srcs.concat(deps).map(fetch_spec));
-        const idls = JSON.stringify(specs.map(i => i.idl));
+        const specs = await Promise.all(srcs.concat(deps).map(spec => {
+            return fetch_text("/interfaces/" + spec + ".idl");
+        }));
+        const idls = JSON.stringify(specs);
         const code = `
             const idls = ${idls};
             let results;
@@ -45,7 +57,7 @@ function idl_test_shadowrealm(srcs, deps) {
                     idl_array.add_dependency_idls(idls[i]);
                 }
                 idl_array.test();
-            }, "inner setup");
+            }, "setup");
             String(JSON.stringify(results))
         `;
 
@@ -54,25 +66,8 @@ function idl_test_shadowrealm(srcs, deps) {
         const results = JSON.parse(realm.evaluate(code));
         for (const {name, status, message} of results) {
             // TODO: make this an API in testharness.js - needs RFC?
-            async_test(t => {t.set_status(status, message); t.phase = t.phases.HAS_RESULT; t.done()}, name);
+            promise_test(t => {t.set_status(status, message); t.phase = t.phases.HAS_RESULT; t.done()}, name);
         }
     }, "outer setup");
-}
-
-function fetch_text(url) {
-    return fetch(url).then(function (r) {
-        if (!r.ok) {
-            throw new IdlHarnessError("Error fetching " + url + ".");
-        }
-        return r.text();
-    });
-}
-
-/**
- * fetch_spec is a shorthand for a Promise that fetches the spec's content.
- */
-function fetch_spec(spec) {
-    var url = '/interfaces/' + spec + '.idl';
-    return fetch_text(url).then(idl => ({ spec, idl }));
 }
 // vim: set expandtab shiftwidth=4 tabstop=4 foldmarker=@{,@} foldmethod=marker:

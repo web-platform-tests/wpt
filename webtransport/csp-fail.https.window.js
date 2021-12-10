@@ -20,8 +20,8 @@ promise_test(async t => {
   const e = await wt.ready.catch(e => e);
   await promise_rejects_exactly(t, e, wt.ready, 'ready promise should be rejected');
   await promise_rejects_exactly(t, e, wt.closed, 'closed promise should be rejected');
-  assert_true(e instanceof WebTransportError);
   assert_equals(e.name, 'WebTransportError', 'WebTransportError');
+  assert_true(e instanceof WebTransportError);
   assert_equals(e.source, 'session', 'source');
   assert_equals(e.streamErrorCode, null, 'streamErrorCode');
 }, 'WebTransport connection should fail when CSP connect-src is set to none and reject the promises');

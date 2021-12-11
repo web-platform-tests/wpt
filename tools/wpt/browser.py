@@ -622,7 +622,7 @@ class ChromeChromiumBase(Browser):
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         if browser_binary is None:
-            browser_binary = self.find_binary(channel)
+            browser_binary = self.find_binary(channel=channel)
 
         version = self.version(browser_binary, dest)
         # Remove channel suffixes (e.g. " dev").
@@ -633,11 +633,7 @@ class ChromeChromiumBase(Browser):
             dest = os.pwd
 
         self._remove_existing_chromedriver_binary(dest)
-        print(f"{browser_binary=}")
-        print(f"{version=}")
         url = self._get_webdriver_url(version)
-        # url = self._latest_chromedriver_url(version) if version \
-        #     else self._chromium_chromedriver_url(None)
         self.logger.info("Downloading ChromeDriver from %s" % url)
         unzip(get(url).raw, dest)
 
@@ -678,9 +674,7 @@ class ChromeChromiumBase(Browser):
         return m.group(1)
 
     def webdriver_supports_browser(self, webdriver_binary, browser_binary, browser_channel):
-        print(f"{browser_binary=}")
         chromedriver_version = self.webdriver_version(webdriver_binary)
-        print(f"{chromedriver_version=}")
         if not chromedriver_version:
             self.logger.warning(
                 "Unable to get version for ChromeDriver %s, rejecting it" %
@@ -688,7 +682,6 @@ class ChromeChromiumBase(Browser):
             return False
 
         browser_version = self.version(browser_binary)
-        print(f"{browser_version=}")
         if not browser_version:
             # If we can't get the browser version, we just have to assume the
             # ChromeDriver is good.
@@ -697,7 +690,6 @@ class ChromeChromiumBase(Browser):
         # Check that the ChromeDriver version matches the Chrome version.
         chromedriver_major = int(chromedriver_version.split('.')[0])
         browser_major = int(browser_version.split('.')[0])
-        print(f"{chromedriver_major=}, {browser_major=}")
         if chromedriver_major != browser_major:
             # There is no official ChromeDriver release for the dev channel -
             # it switches between beta and tip-of-tree, so we accept version+1
@@ -743,10 +735,9 @@ class Chromium(ChromeChromiumBase):
         self._last_change = None
 
     def _get_webdriver_url(self, chrome_version):
-        # TODO: test if this method can work.
-        # Might have issues with the chrome_version var
-        # or the url below.
         if chrome_version:
+            # TODO: Are these version-specific urls for
+            # chromium chromedriver still functional?
             try:
                 # Try to find the Chromium build with the same revision.
                 omaha = get("https://omahaproxy.appspot.com/deps.json?version="
@@ -783,12 +774,6 @@ class Chromium(ChromeChromiumBase):
         return installer_path
 
     def find_binary(self, venv_path=None, channel=None):
-        if channel != "nightly":
-            raise NotImplementedError(
-                "Unable to detect Chromium binary for this channel. "
-                "Please supply a valid binary path using --binary"
-            )
-
         dest = self._get_dest(venv_path, channel)
         if uname[0] == "Darwin":
             return find_executable(
@@ -842,9 +827,11 @@ class Chrome(ChromeChromiumBase):
         self._last_change = None
 
     def _get_webdriver_url(self, chrome_version):
+        # TODO: This used to fall back to ToT downloading the Chromium webdriver
+        # if these attempts to download did not work. Still worth doing??
+
         # http://chromedriver.chromium.org/downloads/version-selection
         parts = chrome_version.split(".")
-        print(f"{parts=}")
         assert len(parts) == 4
         latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s.%s.%s" % tuple(parts[:-1])
         try:
@@ -865,8 +852,13 @@ class Chrome(ChromeChromiumBase):
 
     def find_binary(self, venv_path=None, channel=None):
         # this implementation will not currently check the venv path for a
-        # Chrome browser binary as downloading via the install is not currently
-        # implemented.
+        # Chrome browser binary as installing the binary from the 
+        # ./wpt install command is not currently implemented.
+        if channel != "nightly":
+            raise NotImplementedError(
+                "Unable to detect Chrome binary for nightly channel. "
+                "Please supply a valid binary path using --binary"
+            )
 
         if uname[0] == "Linux":
             name = "google-chrome"
@@ -1217,11 +1209,9 @@ class EdgeChromium(Browser):
         if os.path.isfile(edgedriver_path):
             # remove read-only attribute
             os.chmod(edgedriver_path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
-            print(f"Delete {edgedriver_path} file")
             os.remove(edgedriver_path)
         driver_notes_path = os.path.join(dest, "Driver_notes")
         if os.path.isdir(driver_notes_path):
-            print(f"Delete {driver_notes_path} folder")
             rmtree(driver_notes_path)
 
         self.logger.info(f"Downloading MSEdgeDriver from {url}")

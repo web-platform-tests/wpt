@@ -358,10 +358,8 @@ class Chromium(BrowserSetup):
 
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = None
-            print("install webdriver? ", kwargs["install_webdriver"])
             if not kwargs["install_webdriver"]:
                 webdriver_binary = self.browser.find_webdriver(venv_path=self.venv.path)
-                print(f"{webdriver_binary=}")
                 if webdriver_binary and not self.browser.webdriver_supports_browser(
                         webdriver_binary, kwargs["binary"], browser_channel):
                     webdriver_binary = None
@@ -429,10 +427,8 @@ class Chrome(BrowserSetup):
 
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = None
-            print("install webdriver? ", kwargs["install_webdriver"])
             if not kwargs["install_webdriver"]:
                 webdriver_binary = self.browser.find_webdriver(venv_path=self.venv.path)
-                print(f"{webdriver_binary=}")
                 if webdriver_binary and not self.browser.webdriver_supports_browser(
                         webdriver_binary, kwargs["binary"], browser_channel):
                     webdriver_binary = None
@@ -500,10 +496,8 @@ class Chromium(BrowserSetup):
 
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = None
-            print("install webdriver? ", kwargs["install_webdriver"])
             if not kwargs["install_webdriver"]:
                 webdriver_binary = self.browser.find_webdriver(venv_path=self.venv.path)
-                print(f"{webdriver_binary=}")
                 if webdriver_binary and not self.browser.webdriver_supports_browser(
                         webdriver_binary, kwargs["binary"], browser_channel):
                     webdriver_binary = None

@@ -800,12 +800,17 @@ class Chromium(ChromeChromiumBase):
                 "We can only install Chrome Nightly (Chromium ToT) for you."
             )
         dest = self._get_dest(dest, channel)
-
         installer_path = self.download(dest, channel)
         with open(installer_path, "rb") as f:
             unzip(f, dest)
         os.remove(installer_path)
-        return self.find_binary(dest, channel)
+        return find_executable(
+            "chrome",
+            os.path.join(
+                dest,
+                self._chromium_package_name()
+            )
+        )
 
 
 class Chrome(ChromeChromiumBase):

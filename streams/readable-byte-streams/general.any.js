@@ -2427,7 +2427,7 @@ promise_test(async t => {
   const read2 = reader2.read(new Uint8Array([4, 5, 6]));
   assert_not_equals(controller.byobRequest, null, 'byobRequest should not be invalidated after releaseLock()');
   assert_equals(controller.byobRequest, byobRequest1, 'byobRequest should be unchanged');
-  assert_array_equals([...new Uint8Array(byobRequest1.view.buffer)], [1, 2, 3], 'byobRequest.buffer should be unchanged');
+  assert_array_equals([...new Uint8Array(byobRequest1.view.buffer)], [1, 2, 3], 'byobRequest.view.buffer should be unchanged');
   await promise_rejects_js(t, TypeError, read1, 'pending read must reject after releaseLock()');
 
   // respond() should fulfill the *second* read() request
@@ -2464,7 +2464,7 @@ promise_test(async t => {
   const read2 = reader2.read(new Uint16Array(1));
   assert_not_equals(controller.byobRequest, null, 'byobRequest should not be invalidated after releaseLock()');
   assert_equals(controller.byobRequest, byobRequest1, 'byobRequest should be unchanged');
-  assert_array_equals([...new Uint8Array(byobRequest1.view.buffer)], [1, 2, 3], 'byobRequest.buffer should be unchanged');
+  assert_array_equals([...new Uint8Array(byobRequest1.view.buffer)], [1, 2, 3], 'byobRequest.view.buffer should be unchanged');
   await promise_rejects_js(t, TypeError, read1, 'pending read must reject after releaseLock()');
 
   // respond(1) should partially fill the second read(), but not yet fulfill it
@@ -2512,7 +2512,7 @@ promise_test(async t => {
   const read2 = reader2.read(new Uint8Array([4, 5]));
   assert_not_equals(controller.byobRequest, null, 'byobRequest should not be invalidated after releaseLock()');
   assert_equals(controller.byobRequest, byobRequest1, 'byobRequest should be unchanged');
-  assert_array_equals([...new Uint8Array(byobRequest1.view.buffer)], [1, 2, 3], 'byobRequest.buffer should be unchanged');
+  assert_array_equals([...new Uint8Array(byobRequest1.view.buffer)], [1, 2, 3], 'byobRequest.view.buffer should be unchanged');
   await promise_rejects_js(t, TypeError, read1, 'pending read must reject after releaseLock()');
 
   // respond(3) should fulfill the second read(), and put 1 remaining byte in the queue

@@ -11,9 +11,9 @@ from ..executors.executorchrome import (ChromeDriverWdspecExecutor,  # noqa: F40
                                         ChromeDriverPrintRefTestExecutor)  # noqa: F401
 
 
-__wptrunner__ = {"product": "chrome",
+__wptrunner__ = {"product": "chromium",
                  "check_args": "check_args",
-                 "browser": {None: "ChromeBrowser",
+                 "browser": {None: "ChromiumBrowser",
                              "wdspec": "NullBrowser"},
                  "executor": {"testharness": "WebDriverTestharnessExecutor",
                               "reftest": "WebDriverRefTestExecutor",
@@ -142,7 +142,7 @@ def env_options():
 def update_properties():
     return (["debug", "os", "processor"], {"os": ["version"], "processor": ["bits"]})
 
-class ChromeBrowser(Browser):
+class ChromiumBrowser(Browser):
     """Chrome is backed by chromedriver, which is supplied through
     ``wptrunner.webdriver.ChromeDriverServer``.
     """

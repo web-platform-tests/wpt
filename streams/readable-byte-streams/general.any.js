@@ -2604,3 +2604,145 @@ promise_test(async t => {
   assert_typed_array_equals(result2.value, new Uint8Array([11, 12, 6]).subarray(0, 2), 'second result.value');
 
 }, 'ReadableStream with byte source: releaseLock() with pending read(view), read(view) on second reader, enqueue()');
+
+promise_test(async t => {
+  let controller;
+  const rs = new ReadableStream({
+    type: 'bytes',
+    autoAllocateChunkSize: 4,
+    start: t.step_func((c) => {
+      controller = c;
+    })
+  });
+  await flushAsyncEvents();
+
+  const reader1 = rs.getReader();
+  const read1 = reader1.read();
+  const byobRequest1 = controller.byobRequest;
+  assert_not_equals(byobRequest1, null, 'first byobRequest should exist');
+  assert_typed_array_equals(byobRequest1.view, new Uint8Array(4), 'first byobRequest.view');
+
+  // releaseLock() should reject the pending read, but *not* invalidate the BYOB request
+  reader1.releaseLock();
+  const reader2 = rs.getReader();
+  const read2 = reader2.read();
+  assert_not_equals(controller.byobRequest, null, 'byobRequest should not be invalidated after releaseLock()');
+  await promise_rejects_js(t, TypeError, read1, 'pending read must reject after releaseLock()');
+
+  // respond() should fulfill the *second* read() request
+  byobRequest1.view[0] = 11;
+  byobRequest1.respond(1);
+  const byobRequest2 = controller.byobRequest;
+  assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
+
+  const result2 = await read2;
+  assert_equals(result2.done, false, 'second result.done');
+  assert_typed_array_equals(result2.value, new Uint8Array([11, 0, 0, 0]).subarray(0, 1), 'second result.value');
+
+}, 'ReadableStream with byte source: autoAllocateChunkSize, releaseLock() with pending read(), read() on second reader, respond()');
+
+promise_test(async t => {
+  let controller;
+  const rs = new ReadableStream({
+    type: 'bytes',
+    autoAllocateChunkSize: 4,
+    start: t.step_func((c) => {
+      controller = c;
+    })
+  });
+  await flushAsyncEvents();
+
+  const reader1 = rs.getReader();
+  const read1 = reader1.read();
+  const byobRequest1 = controller.byobRequest;
+  assert_not_equals(byobRequest1, null, 'first byobRequest should exist');
+  assert_typed_array_equals(byobRequest1.view, new Uint8Array(4), 'first byobRequest.view');
+
+  // releaseLock() should reject the pending read, but *not* invalidate the BYOB request
+  reader1.releaseLock();
+  const reader2 = rs.getReader();
+  const read2 = reader2.read();
+  assert_not_equals(controller.byobRequest, null, 'byobRequest should not be invalidated after releaseLock()');
+  await promise_rejects_js(t, TypeError, read1, 'pending read must reject after releaseLock()');
+
+  // enqueue() should fulfill the *second* read() request
+  controller.enqueue(new Uint8Array([11]));
+  const byobRequest2 = controller.byobRequest;
+  assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
+
+  const result2 = await read2;
+  assert_equals(result2.done, false, 'second result.done');
+  assert_typed_array_equals(result2.value, new Uint8Array([11]), 'second result.value');
+
+}, 'ReadableStream with byte source: autoAllocateChunkSize, releaseLock() with pending read(), read() on second reader, enqueue()');
+
+promise_test(async t => {
+  let controller;
+  const rs = new ReadableStream({
+    type: 'bytes',
+    autoAllocateChunkSize: 4,
+    start: t.step_func((c) => {
+      controller = c;
+    })
+  });
+  await flushAsyncEvents();
+
+  const reader1 = rs.getReader();
+  const read1 = reader1.read();
+  const byobRequest1 = controller.byobRequest;
+  assert_not_equals(byobRequest1, null, 'first byobRequest should exist');
+  assert_typed_array_equals(byobRequest1.view, new Uint8Array(4), 'first byobRequest.view');
+
+  // releaseLock() should reject the pending read, but *not* invalidate the BYOB request
+  reader1.releaseLock();
+  const reader2 = rs.getReader({ mode: 'byob' });
+  const read2 = reader2.read(new Uint8Array([4, 5, 6]));
+  assert_not_equals(controller.byobRequest, null, 'byobRequest should not be invalidated after releaseLock()');
+  await promise_rejects_js(t, TypeError, read1, 'pending read must reject after releaseLock()');
+
+  // respond() should fulfill the *second* read() request
+  byobRequest1.view[0] = 11;
+  byobRequest1.respond(1);
+  const byobRequest2 = controller.byobRequest;
+  assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
+
+  const result2 = await read2;
+  assert_equals(result2.done, false, 'second result.done');
+  assert_typed_array_equals(result2.value, new Uint8Array([11, 5, 6]).subarray(0, 1), 'second result.value');
+
+}, 'ReadableStream with byte source: autoAllocateChunkSize, releaseLock() with pending read(), read(view) on second reader, respond()');
+
+promise_test(async t => {
+  let controller;
+  const rs = new ReadableStream({
+    type: 'bytes',
+    autoAllocateChunkSize: 4,
+    start: t.step_func((c) => {
+      controller = c;
+    })
+  });
+  await flushAsyncEvents();
+
+  const reader1 = rs.getReader();
+  const read1 = reader1.read();
+  const byobRequest1 = controller.byobRequest;
+  assert_not_equals(byobRequest1, null, 'first byobRequest should exist');
+  assert_typed_array_equals(byobRequest1.view, new Uint8Array(4), 'first byobRequest.view');
+
+  // releaseLock() should reject the pending read, but *not* invalidate the BYOB request
+  reader1.releaseLock();
+  const reader2 = rs.getReader({ mode: 'byob' });
+  const read2 = reader2.read(new Uint8Array([4, 5, 6]));
+  assert_not_equals(controller.byobRequest, null, 'byobRequest should not be invalidated after releaseLock()');
+  await promise_rejects_js(t, TypeError, read1, 'pending read must reject after releaseLock()');
+
+  // enqueue() should fulfill the *second* read() request
+  controller.enqueue(new Uint8Array([11]));
+  const byobRequest2 = controller.byobRequest;
+  assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
+
+  const result2 = await read2;
+  assert_equals(result2.done, false, 'second result.done');
+  assert_typed_array_equals(result2.value, new Uint8Array([11, 5, 6]).subarray(0, 1), 'second result.value');
+
+}, 'ReadableStream with byte source: autoAllocateChunkSize, releaseLock() with pending read(), read(view) on second reader, enqueue()');

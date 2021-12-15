@@ -247,6 +247,17 @@ promise_test(async t => {
   await promise_rejects_js(t, TypeError, read, 'pending read must reject');
 }, 'ReadableStream with byte source: releaseLock() on ReadableStreamDefaultReader must reject pending read()');
 
+promise_test(async t => {
+  const stream = new ReadableStream({
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+  const read = reader.read(new Uint8Array(1));
+  reader.releaseLock();
+  await promise_rejects_js(t, TypeError, read, 'pending read must reject');
+}, 'ReadableStream with byte source: releaseLock() on ReadableStreamBYOBReader must reject pending read()');
+
 promise_test(() => {
   let pullCount = 0;
 

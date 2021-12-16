@@ -143,3 +143,34 @@ function createFrame(url) {
       document.body.appendChild(frame);
     });
 }
+
+async function prerenderScript(script, t) {
+  const channelName = `prerender-channel-${token()}`;
+  const scriptElement = document.createElement('script');
+  const wrapper = async (channelName, action) => {
+    const bc = new BroadcastChannel(channelName);
+    const result = await action();
+    bc.postMessage({prerendering: document.prerendering, result});
+    bc.close();
+  }
+
+  scriptElement.innerHTML = `(${wrapper.toString()})(
+    ${JSON.stringify(channelName)},
+    ${script.toString()}
+  )`;
+  const content = `<!DOCTYPE html>
+  ${scriptElement.outerHTML}`;
+  const channel = new BroadcastChannel(channelName);
+  t.add_cleanup(() => channel.close());
+  const url = `/common/echo.py?content=${encodeURIComponent(content)}`
+  const rulesElement = document.createElement('script');
+  rulesElement.type = 'speculationrules';
+  rulesElement.text = JSON.stringify({prerender: [{source: "list", urls: [url] }]});
+  document.head.appendChild(rulesElement);
+  t.add_cleanup(() => rulesElement.remove());
+  const {prerendering, result} = await new Promise(resolve =>
+    channel.addEventListener('message', ({data}) => resolve(data)));
+
+  assert_true(prerendering);
+  return result;
+}

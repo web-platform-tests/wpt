@@ -1,0 +1,19 @@
+<!doctype html>
+<title>API availability following history traversal</title>
+<meta charset=utf-8>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#generate-implied-end-tags">
+<link rel="help" href="https://crbug.com/1277227">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
+<p style="font-weight:bold">Start of paragraph
+<dialog open></p><p style="color:green">I am a dialog</dialog>
+End of paragraph</p>
+<div style="height:100px;width:20px"></div>
+<script>
+  test(() => {
+    assert_equals(document.querySelectorAll("p").length, 4, "<dialog> closes open <p>");
+    assert_equals(document.querySelectorAll("body > p").length, 2, "</dialog> closes open <p>");
+    assert_equals(document.querySelectorAll("dialog > p").length, 2, "<dialog> closes open <p>");
+  }, "<dialog> generates implied end tags.");
+</script>

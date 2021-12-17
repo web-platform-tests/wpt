@@ -1269,6 +1269,7 @@ class MarionettePrintRefTestExecutor(MarionetteRefTestExecutor):
 class MarionetteWdspecExecutor(WdspecExecutor):
     def __init__(self, logger, browser, *args, **kwargs):
         super().__init__(logger, browser, *args, **kwargs)
+
         args = self.capabilities["moz:firefoxOptions"].setdefault("args", [])
         args.extend(["--profile", self.browser.profile])
 

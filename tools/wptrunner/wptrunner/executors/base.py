@@ -600,7 +600,7 @@ class WdspecExecutor(TestExecutor):
 
     def __init__(self, logger, browser, server_config, webdriver_binary,
                  webdriver_args, timeout_multiplier=1, capabilities=None,
-                 debug_info=None, environ=None, **kwargs):
+                 debug_info=None, **kwargs):
         super().__init__(logger, browser, server_config,
                          timeout_multiplier=timeout_multiplier,
                          debug_info=debug_info)
@@ -608,8 +608,6 @@ class WdspecExecutor(TestExecutor):
         self.webdriver_args = webdriver_args
         self.timeout_multiplier = timeout_multiplier
         self.capabilities = capabilities
-        self.environ = environ if environ is not None else {}
-
 
     def setup(self, runner):
         self.protocol = self.protocol_cls(self, self.browser)

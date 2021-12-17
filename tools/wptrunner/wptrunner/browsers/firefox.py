@@ -1,12 +1,9 @@
-import base64
-import io
 import json
 import os
 import platform
 import signal
 import subprocess
 import tempfile
-import zipfile
 from abc import ABCMeta, abstractmethod
 
 import mozinfo
@@ -112,17 +109,6 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
             "specialpowers_path": kwargs["specialpowers_path"]}
 
 
-class WdSpecProfile(object):
-    def __init__(self, profile):
-        self.profile = profile
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        self.profile.cleanup()
-
-
 def executor_kwargs(logger, test_type, test_environment, run_info_data,
                     **kwargs):
     executor_kwargs = base_executor_kwargs(test_type, test_environment, run_info_data,
@@ -148,55 +134,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         if not kwargs["binary"] and kwargs["headless"] and "--headless" not in options["args"]:
             options["args"].append("--headless")
 
-        # For wdspec we need to create the profile here so that we can pass the path down
-        # in the capabilities
-        profile_creator = ProfileCreator(logger,
-                                         kwargs["prefs_root"],
-                                         test_environment.config,
-                                         test_type,
-                                         kwargs["extra_prefs"],
-                                         kwargs["gecko_e10s"],
-                                         kwargs["enable_fission"],
-                                         kwargs["browser_channel"],
-                                         kwargs["binary"],
-                                         kwargs["certutil_binary"],
-                                         test_environment.config.ssl_config["ca_cert_path"])
-
-        if kwargs["processes"] > 1:
-            # With multiple processes, we would need a profile directory per process, but we
-            # don't have an easy way to do that, so include the profile in the capabilties
-            # directly instead. This means recreating it per session, which is slow
-            options["profile"] = profile_creator.create_base64()
-            profile = None
-        else:
-            profile = profile_creator.create()
-            options["args"].extend(["--profile", profile.profile])
-            test_environment.env_extras_cms.append(WdSpecProfile(profile))
-
         capabilities["moz:firefoxOptions"] = options
-
-        # This gets reused for firefox_android, but the environment setup
-        # isn't required in that case
-        if kwargs["binary"]:
-            environ = get_environ(logger,
-                                  kwargs["binary"],
-                                  kwargs["debug_info"],
-                                  kwargs["stylo_threads"],
-                                  kwargs["headless"],
-                                  kwargs["enable_webrender"],
-                                  kwargs["chaos_mode_flags"])
-            leak_report_file = setup_leak_report(kwargs["leak_check"], profile, environ)
-            executor_kwargs["environ"] = environ
-        else:
-            if kwargs["headless"] and "--headless" not in options["args"]:
-                options["args"].append("--headless")
-            leak_report_file = None
-
-        executor_kwargs["stackfix_dir"] = kwargs["stackfix_dir"],
-        executor_kwargs["leak_report_file"] = leak_report_file
-        executor_kwargs["asan"] = run_info_data.get("asan")
-
-        executor_kwargs["profile"] = profile
 
     if kwargs["certutil_binary"] is None:
         capabilities["acceptInsecureCerts"] = True
@@ -644,21 +582,6 @@ class ProfileCreator:
 
         return profile
 
-    def create_base64(self, **kwargs):
-        profile = self.create(**kwargs)
-        try:
-            with io.BytesIO() as buf:
-                with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED) as zipf:
-                    for dirpath, _, filenames in os.walk(profile.profile):
-                        for filename in filenames:
-                            src_path = os.path.join(dirpath, filename)
-                            dest_path = os.path.relpath(src_path, profile.profile)
-                            with open(src_path, "rb") as f:
-                                zipf.writestr(dest_path, f.read())
-                return base64.b64encode(buf.getvalue()).decode("ascii").strip()
-        finally:
-            profile.cleanup()
-
     def _load_prefs(self):
         prefs = Preferences()
 
@@ -887,16 +810,16 @@ class FirefoxBrowser(Browser):
 
 
 class FirefoxWdSpecBrowser(WebDriverBrowser):
-    def __init__(self, logger, binary, webdriver_binary, webdriver_args, debug_info=None,
-                 symbols_path=None, stackwalk_binary=None, stackfix_dir=None,
-                 leak_check=False, asan=False, profile=None,
-                 stylo_threads=1, headless=False, enable_webrender=False, chaos_mode_flags=None,
-                 **kwargs):
+    def __init__(self, logger, binary, prefs_root, webdriver_binary, webdriver_args,
+                 extra_prefs=None, debug_info=None, symbols_path=None, stackwalk_binary=None,
+                 certutil_binary=None, ca_certificate_path=None, e10s=False,
+                 enable_webrender=False, enable_fission=False, stackfix_dir=None, leak_check=False,
+                 asan=False, stylo_threads=1,chaos_mode_flags=None, config=None,
+                 browser_channel="nightly", headless=None, **kwargs):
 
         super().__init__(logger, binary, webdriver_binary, webdriver_args)
         self.binary = binary
         self.webdriver_binary = webdriver_binary
-        self.profile = profile
 
         self.stackfix_dir = stackfix_dir
         self.symbols_path = symbols_path
@@ -920,6 +843,20 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
         # guarantee zero network access
         del self.env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"]
 
+        profile_creator = ProfileCreator(logger,
+                                         prefs_root,
+                                         config,
+                                         "wdspec",
+                                         extra_prefs,
+                                         e10s,
+                                         enable_fission,
+                                         browser_channel,
+                                         binary,
+                                         certutil_binary,
+                                         ca_certificate_path)
+
+        self.profile = profile_creator.create()
+
     def create_output_handler(self, cmd):
         return FirefoxOutputHandler(self.logger,
                                     cmd,
@@ -931,6 +868,10 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
     def start(self, group_metadata, **kwargs):
         self.leak_report_file = setup_leak_report(self.leak_check, self.profile, self.env)
         super().start(group_metadata, **kwargs)
+
+    def cleanup(self):
+        super().cleanup()
+        self.profile.cleanup()
 
     def settings(self, test):
         return {"check_leaks": self.leak_check and not test.leaks,

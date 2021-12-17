@@ -90,9 +90,19 @@ class RunInfo(Dict[str, Any]):
                  verify=None,
                  extras=None,
                  enable_webrender=False):
-        import mozinfo
-        self._update_mozinfo(metadata_root)
-        self.update(mozinfo.info)
+        version_compat = os.environ.pop("SYSTEM_VERSION_COMPAT", None)
+        if version_compat and version_compat.strip() == "1":
+            import mozinfo
+            import importlib
+            mozinfo = importlib.reload(mozinfo)
+            self._update_mozinfo(metadata_root)
+            self.update(mozinfo.info)
+            os.environ["SYSTEM_VERSION_COMPAT"] = version_compat
+            mozinfo = importlib.reload(mozinfo)
+        else:
+            import mozinfo
+            self._update_mozinfo(metadata_root)
+            self.update(mozinfo.info)
 
         from .update.tree import GitTree
         try:

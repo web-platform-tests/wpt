@@ -14,10 +14,12 @@ promise_test(async t => {
   const initialValue = "initial_set";
   window.localStorage.setItem('initial', initialValue);
 
-  const result = await prerenderScript(async () => {
+  const {result, activate} = await prerenderScript(async () => {
     window.localStorage.setItem('prerender', 'prerender_set');
     return window.localStorage.getItem('initial');
   }, t);
+
+  await activate();
 
   assert_equals(
     result, initialValue,

@@ -145,32 +145,63 @@ function createFrame(url) {
 }
 
 async function prerenderScript(script, t) {
-  const channelName = `prerender-channel-${token()}`;
+  const id = token();
+  const channelName = `prerender-channel-${id}`;
   const scriptElement = document.createElement('script');
   const wrapper = async (channelName, action) => {
-    const bc = new BroadcastChannel(channelName);
-    const result = await action();
-    bc.postMessage({prerendering: document.prerendering, result});
-    bc.close();
+    const channel = new BroadcastChannel(channelName);
+    const log = (...args) => channel.postMessage({log: args});
+    if (document.prerendering) {
+      const result = await action({log});
+      channel.postMessage({state: 'prerender', result});
+      channel.addEventListener('message', ({data}) => {
+        if (data.close)
+          window.close();
+      })
+      document.addEventListener('prerenderingchange', async e => {
+        channel.postMessage({state: 'reused'});
+      })
+    } else {
+      channel.postMessage({state: 'discarded'});
+    }
   }
 
-  scriptElement.innerHTML = `(${wrapper.toString()})(
+  scriptElement.text = `(${wrapper.toString()})(
     ${JSON.stringify(channelName)},
-    ${script.toString()}
-  )`;
-  const content = `<!DOCTYPE html>
+    ${script.toString()})`;
+  const content = `<!DOCTYPE html><body></body>
   ${scriptElement.outerHTML}`;
   const channel = new BroadcastChannel(channelName);
-  t.add_cleanup(() => channel.close());
   const url = `/common/echo.py?content=${encodeURIComponent(content)}`
   const rulesElement = document.createElement('script');
   rulesElement.type = 'speculationrules';
-  rulesElement.text = JSON.stringify({prerender: [{source: "list", urls: [url] }]});
-  document.head.appendChild(rulesElement);
-  t.add_cleanup(() => rulesElement.remove());
-  const {prerendering, result} = await new Promise(resolve =>
-    channel.addEventListener('message', ({data}) => resolve(data)));
+  rulesElement.text = JSON.stringify({prerender: [{source: "list", urls: [url]}]});
+  const loaderContent = `<!DOCTYPE html>
+  <head>
+    ${rulesElement.outerHTML}
+    <script>
+      const channel = new BroadcastChannel('${channelName}');
+      channel.addEventListener('message' , ({data}) => {
+        if (data.next)
+          location.href = data.next;
+      });
+    </script>
+  </head>`;
+  const popup = window.open(`/common/echo.py?content=${encodeURIComponent(loaderContent)}`, '_blank', 'noopener');
+  let resolve = null;
+  channel.addEventListener('message', ({data}) => {
+    console.log(data)
+    if (Reflect.has(data, 'log'))
+      console.log(...Array.from(data.log));
+    else if (Reflect.has(data, 'state'))
+      resolve(data);
+  });
+  const {state, result} = await new Promise(r => { resolve = r });
 
-  assert_true(prerendering);
-  return result;
+  assert_equals(state, 'prerender');
+  const activate = async () => {
+    channel.postMessage({next: url});
+    const {result} = await new Promise(r => { resolve = r });
+  }
+  return {result, activate};
 }

@@ -148,21 +148,33 @@ async function prerenderScript(script, t) {
   const id = token();
   const channelName = `prerender-channel-${id}`;
   const scriptElement = document.createElement('script');
-  const wrapper = async (channelName, action) => {
+  const wrapper = async (channelName) => {
     const channel = new BroadcastChannel(channelName);
-    const log = (...args) => channel.postMessage({log: args});
+    const log = (...args) => channel.postMessage({action: 'log', args});
+    const didEval = result => channel.postMessage('didEval', result);
     if (document.prerendering) {
-      const result = await action({log});
-      channel.postMessage({state: 'prerender', result});
-      channel.addEventListener('message', ({data}) => {
-        if (data.close)
-          window.close();
+      window.onerror = e => log(e);
+      window.onunload = e =>log('unload');
+      channel.postMessage({action: 'didChangeState', args: 'prerender'});
+      channel.addEventListener('message', ({data: {action, args}}) => {
+        log({action, args})
+        switch (action) {
+          case 'eval':
+            eval(`(${args})()`).then(result => channel.postMessage({action: 'didEval', args: result}));
+            break;
+
+          case 'close':
+            window.close();
+            channel.close();
+            break;
+        }
       })
+
       document.addEventListener('prerenderingchange', async e => {
-        channel.postMessage({state: 'reused'});
+        channel.postMessage({action: 'didChangeState', args: 'activated'});
       })
     } else {
-      channel.postMessage({state: 'discarded'});
+        channel.postMessage({action: 'didChangeState', args: 'discarded'});
     }
   }
 
@@ -176,31 +188,37 @@ async function prerenderScript(script, t) {
   const rulesElement = document.createElement('script');
   rulesElement.type = 'speculationrules';
   rulesElement.text = JSON.stringify({prerender: [{source: "list", urls: [url]}]});
-  const loaderContent = `<!DOCTYPE html>
-  <head>
-    ${rulesElement.outerHTML}
-    <script>
-      const channel = new BroadcastChannel('${channelName}');
-      channel.addEventListener('message' , ({data}) => {
-        if (data.next)
-          location.href = data.next;
-      });
-    </script>
-  </head>`;
-  const popup = window.open(`/common/echo.py?content=${encodeURIComponent(loaderContent)}`, '_blank', 'noopener');
-  let resolve = null;
-  channel.addEventListener('message', ({data}) => {
-    console.log(data)
-    if (Reflect.has(data, 'log'))
-      console.log(...Array.from(data.log));
-    else if (Reflect.has(data, 'state'))
-      resolve(data);
-  });
-  const {state, result} = await new Promise(r => { resolve = r });
+  document.head.appendChild(rulesElement);
+  t.add_cleanup(() => rulesElement.remove());
+  let didEval = null;
+  let didChangeState = null;
+  channel.addEventListener('message', ({data: {action, args}}) => {
+    console.log({action, args}, didChangeState);
+    switch (action) {
+      case 'log':
+        console.log(...args);
+        break;
 
+      case 'didChangeState':
+        didChangeState && didChangeState(args);
+        break;
+
+      case 'didEval':
+        didEval && didEval(args);
+        break;
+    }
+  });
+  const state = await new Promise(r => { didChangeState = r });
   assert_equals(state, 'prerender');
-  const activate = async () => {
-    channel.postMessage({next: url});
+  channel.postMessage({action: 'eval', args: script.toString()});
+  const result = await new Promise(r => { didEval = r })
+
+  const activate = async (script) => {
+    window.open(url, '_blank', 'noopener');
+    const state = await new Promise(resolve => {didChangeState = resolve});
+    t.add_cleanup(() => channel.postMessage({action: 'close'}));
+    assert_equals(state, 'reused');
+    channel.postMessage({action: 'eval', args: script.toString()});
     const {result} = await new Promise(r => { resolve = r });
   }
   return {result, activate};

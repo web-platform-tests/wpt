@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>Same-origin prerendering can trigger autoplay</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+<body>
+<script>
+prerender_activation_test([
+  async ({log}) => {
+    const video = document.createElement('video');
+    video.src = '/media/A4.mp4';
+    if (document.prerendering) {
+      video.autoplay = true;
+      video.muted = true;
+  
+    }
+    document.body.appendChild(video);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return {
+      readyState: video.readyState,
+      paused: video.paused,
+      currentTime: video.currentTime
+    }
+  },
+
+  ({readyState, paused, currentTime}) => {
+    console.log({readyState, paused, currentTime})
+    assert_not_equals(readyState, 0);
+    assert_equals(currentTime, 0);
+    assert_equals(paused, false);
+  },
+], "media autoplay should defer playaback");
+</script>
+</body>

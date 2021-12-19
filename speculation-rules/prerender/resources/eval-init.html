@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<body>
+    <p>
+        This is a prerender initiator.
+    </p>
+    <p>
+        <a href="#" id="link">Open target page</a>.
+    </p>
+    <script>
+        const channelName = new URLSearchParams(location.search).get('channel');
+        const channel = new BroadcastChannel(channelName);
+        const url = new URL(`eval-channel.html?channel=${channelName}`, location.href).toString();
+        document.querySelector('#link').href = url;
+        const rules = document.createElement('script');
+        rules.type = "speculationrules";
+        rules.text = JSON.stringify({prerender: [{source: 'list', urls: [url]}]});
+        document.head.appendChild(rules);
+        channel.addEventListener("message", ({data: {action}}) => {
+            switch (action) {
+                case 'activate':
+                    location.href = url;
+                    break;
+                case 'close':
+                    window.close();
+                    break;
+            }            
+        });
+        channel.postMessage({action: 'ready'});
+    </script>
+</body>

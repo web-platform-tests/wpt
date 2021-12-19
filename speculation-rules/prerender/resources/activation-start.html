@@ -19,24 +19,13 @@ function getActivationStart() {
   return entry.activationStart;
 }
 
-function log(s) {
-  const output = document.createElement('output')
-  output.innerText = s;
-  output.style.display = 'block';
-  document.body.appendChild(output);
-}
-
 (async () => {
-  log('running function')
   const testChannel = new BroadcastChannel('test-channel');
   const params = new URLSearchParams(location.search);
   const isPrerenderingMainFrame = params.has('prerendering') &&
                                   !params.has('iframe');
   const isIframe = params.has('iframe');
   const isInitiator = !isPrerenderingMainFrame && !isIframe;
-
-  if (document.prerendering)
-    log('prerendering');
 
   const ACTIVATION_DELAY = 10;
 
@@ -63,7 +52,6 @@ function log(s) {
       const initial_value = getActivationStart();
       const activation_start_promise = new Promise(resolve => {
         document.addEventListener('prerenderingchange', () => {
-          log('prerender change')
           resolve(getActivationStart());
         });
       });
@@ -96,7 +84,6 @@ function log(s) {
       const initial_value = getActivationStart();
       const activation_start_promise = new Promise(resolve => {
         document.addEventListener('prerenderingchange', () => {
-          log('prerender change')
           resolve(getActivationStart());
         });
       });

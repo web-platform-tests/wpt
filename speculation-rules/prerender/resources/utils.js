@@ -145,81 +145,55 @@ function createFrame(url) {
 }
 
 async function prerenderScript(script, t) {
-  const id = token();
-  const channelName = `prerender-channel-${id}`;
-  const scriptElement = document.createElement('script');
-  const wrapper = async (channelName) => {
-    const channel = new BroadcastChannel(channelName);
-    const log = (...args) => channel.postMessage({action: 'log', args});
-    const didEval = result => channel.postMessage('didEval', result);
-    if (document.prerendering) {
-      window.onerror = e => log(e);
-      window.onunload = e =>log('unload');
-      channel.postMessage({action: 'didChangeState', args: 'prerender'});
-      channel.addEventListener('message', ({data: {action, args}}) => {
-        log({action, args})
-        switch (action) {
-          case 'eval':
-            eval(`(${args})()`).then(result => channel.postMessage({action: 'didEval', args: result}));
-            break;
-
-          case 'close':
-            window.close();
-            channel.close();
-            break;
-        }
-      })
-
-      document.addEventListener('prerenderingchange', async e => {
-        channel.postMessage({action: 'didChangeState', args: 'activated'});
-      })
-    } else {
-        channel.postMessage({action: 'didChangeState', args: 'discarded'});
-    }
-  }
-
-  scriptElement.text = `(${wrapper.toString()})(
-    ${JSON.stringify(channelName)},
-    ${script.toString()})`;
-  const content = `<!DOCTYPE html><body></body>
-  ${scriptElement.outerHTML}`;
+  const uid = token();
+  const channelName =  `prerender-channel-${uid}`;
   const channel = new BroadcastChannel(channelName);
-  const url = `/common/echo.py?content=${encodeURIComponent(content)}`
-  const rulesElement = document.createElement('script');
-  rulesElement.type = 'speculationrules';
-  rulesElement.text = JSON.stringify({prerender: [{source: "list", urls: [url]}]});
-  document.head.appendChild(rulesElement);
-  t.add_cleanup(() => rulesElement.remove());
-  let didEval = null;
-  let didChangeState = null;
+
   channel.addEventListener('message', ({data: {action, args}}) => {
-    console.log({action, args}, didChangeState);
-    switch (action) {
-      case 'log':
-        console.log(...args);
-        break;
-
-      case 'didChangeState':
-        didChangeState && didChangeState(args);
-        break;
-
-      case 'didEval':
-        didEval && didEval(args);
-        break;
-    }
+    if (action === 'log')
+      console.log(args);
   });
-  const state = await new Promise(r => { didChangeState = r });
-  assert_equals(state, 'prerender');
-  channel.postMessage({action: 'eval', args: script.toString()});
-  const result = await new Promise(r => { didEval = r })
 
-  const activate = async (script) => {
-    window.open(url, '_blank', 'noopener');
-    const state = await new Promise(resolve => {didChangeState = resolve});
-    t.add_cleanup(() => channel.postMessage({action: 'close'}));
-    assert_equals(state, 'reused');
+  const waitForEvent = name => new Promise((resolve, reject) => {
+    const listener = ({data: {action, args}}) => {
+      if (action === 'error')
+        reject(args);
+      else if (action === name)
+        resolve(args);
+      else
+        return;
+
+      channel.removeEventListener('message', listener);
+    }
+
+    channel.addEventListener('message', listener);
+  });
+
+  window.open(`/speculation-rules/prerender/resources/eval-init.html?channel=${channelName}`, '_blank', 'noopener');
+  await waitForEvent('ready');
+  const state = await waitForEvent('didChangeState');
+  assert_equals(state, 'prerender');
+  console.log(script.toString());
+  channel.postMessage({action: 'eval', args: script.toString()});
+  const result = await waitForEvent('didEval');
+
+  t.add_cleanup(() => channel.postMessage({action: 'close'}));
+  return {result, activate: async (script = (() => null)) => {
+    channel.postMessage({action: 'activate'});
+    const state = await waitForEvent('didChangeState');
+    assert_equals(state, 'activated');
     channel.postMessage({action: 'eval', args: script.toString()});
-    const {result} = await new Promise(r => { resolve = r });
-  }
-  return {result, activate};
+    return await waitForEvent('didEval');
+  }};
+}
+
+async function prerender_activation_test([prerender, onPrerender, activateScript, onActivate], label) {
+  setup(() => assertSpeculationRulesIsSupported());
+  
+  promise_test(async t => {
+    const {result, activate} = await prerenderScript(prerender, t);
+    onPrerender(result);
+    const result2 = await activate(activateScript);
+    onActivate?.(result2);
+  }, label);
 }

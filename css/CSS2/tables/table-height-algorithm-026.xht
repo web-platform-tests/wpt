@@ -4,6 +4,7 @@
         <title>CSS Test: Finding the baseline of a cell when no in-flow lines or rows</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#height-layout" />
+        <link rel="match" href="table-height-algorithm-026-ref.xht" />
         <meta name="flags" content="" />
         <meta name="assert" content="The baseline of a cell is determined by the bottom content edge of a cell when in-flow line boxes and table rows are not present." />
         <style type="text/css">
@@ -25,10 +26,6 @@
                 font: 64px serif;
                 padding: 0;
                 margin: 0;
-            }
-            div
-            {
-                margin-left: -10px;
             }
         </style>
     </head>

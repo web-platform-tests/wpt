@@ -527,6 +527,8 @@ class ChromeChromiumBase(Browser):
     Chromium base class for shared functionality between Chrome and Chromium
     """
 
+    product = "chrome"
+    requirements = None
     platform = {
         "Linux": "Linux",
         "Windows": "Win",
@@ -954,7 +956,7 @@ class ChromeAndroid(ChromeAndroidBase):
     """
 
     product = "chrome_android"
-    requirements = "requirements_chrome_android.txt"
+    requirements = None
 
     def find_binary(self, venv_path=None, channel=None):
         if channel in ("beta", "dev", "canary"):
@@ -970,7 +972,7 @@ class AndroidWeblayer(ChromeAndroidBase):
 
     product = "android_weblayer"
     # TODO(aluo): replace this with weblayer version after tests are working.
-    requirements = "requirements_android_webview.txt"
+    requirements = None
 
     def find_binary(self, venv_path=None, channel=None):
         return "org.chromium.weblayer.shell"
@@ -984,7 +986,7 @@ class AndroidWebview(ChromeAndroidBase):
     """
 
     product = "android_webview"
-    requirements = "requirements_android_webview.txt"
+    requirements = None
 
     def find_binary(self, venv_path=None, channel=None):
         # Just get the current package name of the WebView provider.
@@ -1014,7 +1016,7 @@ class ChromeiOS(Browser):
     """
 
     product = "chrome_ios"
-    requirements = "requirements_chrome_ios.txt"
+    requirements = None
 
     def download(self, dest=None, channel=None, rename=None):
         raise NotImplementedError
@@ -1122,7 +1124,7 @@ class EdgeChromium(Browser):
     }.get(uname[0])
     product = "edgechromium"
     edgedriver_name = "msedgedriver"
-    requirements = "requirements_edge_chromium.txt"
+    requirements = None
 
     def download(self, dest=None, channel=None, rename=None):
         raise NotImplementedError
@@ -1397,7 +1399,7 @@ class Servo(Browser):
     """Servo-specific interface."""
 
     product = "servo"
-    requirements = "requirements_servo.txt"
+    requirements = None
 
     def platform_components(self):
         platform = {
@@ -1503,7 +1505,7 @@ class WebKit(Browser):
     """WebKit-specific interface."""
 
     product = "webkit"
-    requirements = "requirements_webkit.txt"
+    requirements = None
 
     def download(self, dest=None, channel=None, rename=None):
         raise NotImplementedError
@@ -1658,7 +1660,7 @@ class Epiphany(Browser):
     """Epiphany-specific interface."""
 
     product = "epiphany"
-    requirements = "requirements_epiphany.txt"
+    requirements = None
 
     def download(self, dest=None, channel=None, rename=None):
         raise NotImplementedError

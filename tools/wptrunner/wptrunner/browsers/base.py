@@ -1,9 +1,14 @@
 import enum
+import errno
 import os
 import platform
 import socket
+import traceback
 from abc import ABCMeta, abstractmethod
 
+import mozprocess
+
+from ..environment import wait_for_service
 from ..wptcommandline import require_arg  # noqa: F401
 
 here = os.path.dirname(__file__)
@@ -275,3 +280,117 @@ class OutputHandler:
         self.logger.process_output(self.pid,
                                    line.decode("utf8", "replace"),
                                    command=" ".join(self.command) if self.command else "")
+
+
+class WebDriverBrowser(Browser):
+    __metaclass__ = ABCMeta
+
+    default_base_path = "/"
+
+    def __init__(self, logger, binary, webdriver_binary, webdriver_args=None,
+                 host="127.0.0.1", port=None, base_path="", env=None, **kwargs):
+        super().__init__(logger)
+
+        if webdriver_binary is None:
+            raise ValueError("WebDriver server binary must be given "
+                             "to --webdriver-binary argument")
+
+        self.logger = logger
+        self.binary = binary
+        self.webdriver_binary = webdriver_binary
+
+        self.host = host
+        self._port = port
+
+        if base_path == "":
+            self.base_path = self.default_base_path
+        else:
+            self.base_path = base_path
+        self.env = os.environ.copy() if env is None else env
+        self._args = webdriver_args if webdriver_args is not None else []
+
+        self.url = "http://%s:%s%s" % (self.host, self.port, self.base_path)
+
+        self._output_handler = None
+        self._cmd = None
+        self._proc = None
+
+    def make_command(self):
+        """Returns the full command for starting the server process as a list."""
+        return [self.webdriver_binary] + self._args
+
+    def start(self, group_metadata, **kwargs):
+        try:
+            self._run_server(group_metadata, **kwargs)
+        except KeyboardInterrupt:
+            self.stop()
+
+    def create_output_handler(self, cmd):
+        return OutputHandler(self.logger, cmd)
+
+    def _run_server(self, group_metadata, **kwargs):
+        cmd = self.make_command()
+        self._output_handler = self.create_output_handler(cmd)
+
+        self._proc = mozprocess.ProcessHandler(
+            cmd,
+            processOutputLine=self._output_handler,
+            env=self.env,
+            storeOutput=False)
+
+        self.logger.debug("Starting WebDriver: %s" % ' '.join(cmd))
+        try:
+            self._proc.run()
+        except OSError as e:
+            if e.errno == errno.ENOENT:
+                raise IOError(
+                    "WebDriver executable not found: %s" % self.webdriver_binary)
+            raise
+        self._output_handler.after_process_start(self._proc.pid)
+
+        try:
+            wait_for_service((self.host, self.port))
+        except Exception:
+            self.logger.error(
+                "WebDriver was not accessible "
+                "within the timeout:\n%s" % traceback.format_exc())
+            raise
+        self._output_handler.start(group_metadata=group_metadata, **kwargs)
+        self.logger.debug("_run complete")
+
+    def stop(self, force=False):
+        self.logger.debug("Stopping WebDriver")
+        clean = True
+        if self.is_alive():
+            kill_result = self._proc.kill()
+            if force and kill_result != 0:
+                clean = False
+                self._proc.kill(9)
+        success = not self.is_alive()
+        if success and self._output_handler is not None:
+            # Only try to do output post-processing if we managed to shut down
+            self._output_handler.after_process_stop(clean)
+            self._output_handler = None
+        return success
+
+    def is_alive(self):
+        return hasattr(self._proc, "proc") and self._proc.poll() is None
+
+    @property
+    def pid(self):
+        if self._proc is not None:
+            return self._proc.pid
+
+    @property
+    def port(self):
+        if self._port is None:
+            self._port = get_free_port()
+        return self._port
+
+    def cleanup(self):
+        self.stop()
+
+    def executor_browser(self):
+        return ExecutorBrowser, {"webdriver_url": self.url,
+                                 "host": self.host,
+                                 "port": self.port}

@@ -8,15 +8,13 @@ import traceback
 import socket
 import sys
 from abc import ABCMeta, abstractmethod
-from http.client import HTTPConnection
-from typing import Any, Callable, ClassVar, Optional, Tuple, Type, TYPE_CHECKING
+from typing import Any, Callable, ClassVar, Tuple, Type
 from urllib.parse import urljoin, urlsplit, urlunsplit
 
+from . import pytestrunner
 from .actions import actions
-from .protocol import Protocol, BaseProtocolPart
+from .protocol import Protocol, WdspecProtocol
 
-if TYPE_CHECKING:
-    from ..webdriver_server import WebDriverServer
 
 here = os.path.dirname(__file__)
 
@@ -598,22 +596,20 @@ class RefTestImplementation(object):
 
 class WdspecExecutor(TestExecutor):
     convert_result = pytest_result_converter
-    protocol_cls = None  # type: ClassVar[Type[Protocol]]
+    protocol_cls = WdspecProtocol  # type: ClassVar[Type[Protocol]]
 
     def __init__(self, logger, browser, server_config, webdriver_binary,
                  webdriver_args, timeout_multiplier=1, capabilities=None,
                  debug_info=None, environ=None, **kwargs):
-        self.do_delayed_imports()
-        TestExecutor.__init__(self, logger, browser, server_config,
-                              timeout_multiplier=timeout_multiplier,
-                              debug_info=debug_info)
+        super().__init__(logger, browser, server_config,
+                         timeout_multiplier=timeout_multiplier,
+                         debug_info=debug_info)
         self.webdriver_binary = webdriver_binary
         self.webdriver_args = webdriver_args
         self.timeout_multiplier = timeout_multiplier
         self.capabilities = capabilities
         self.environ = environ if environ is not None else {}
-        self.output_handler_kwargs = None
-        self.output_handler_start_kwargs = None
+
 
     def setup(self, runner):
         self.protocol = self.protocol_cls(self, self.browser)
@@ -629,7 +625,6 @@ class WdspecExecutor(TestExecutor):
         timeout = test.timeout * self.timeout_multiplier + self.extra_timeout
 
         success, data = WdspecRun(self.do_wdspec,
-                                  self.protocol.session_config,
                                   test.abs_path,
                                   timeout).run()
 
@@ -638,22 +633,21 @@ class WdspecExecutor(TestExecutor):
 
         return (test.result_cls(*data), [])
 
-    def do_wdspec(self, session_config, path, timeout):
+    def do_wdspec(self, path, timeout):
+        session_config = {"host": self.browser.host,
+                          "port": self.browser.port,
+                          "capabilities": self.capabilities}
+
         return pytestrunner.run(path,
                                 self.server_config,
                                 session_config,
                                 timeout=timeout)
 
-    def do_delayed_imports(self):
-        global pytestrunner
-        from . import pytestrunner
-
 
 class WdspecRun(object):
-    def __init__(self, func, session, path, timeout):
+    def __init__(self, func, path, timeout):
         self.func = func
         self.result = (None, None)
-        self.session = session
         self.path = path
         self.timeout = timeout
         self.result_flag = threading.Event()
@@ -676,7 +670,7 @@ class WdspecRun(object):
 
     def _run(self):
         try:
-            self.result = True, self.func(self.session, self.path, self.timeout)
+            self.result = True, self.func(self.path, self.timeout)
         except (socket.timeout, IOError):
             self.result = False, ("CRASH", None)
         except Exception as e:

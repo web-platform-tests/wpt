@@ -78,4 +78,4 @@ class WebKitBrowser(WebDriverBrowser):
     """Generic WebKit browser is backed by WebKit's WebDriver implementation"""
 
     def make_command(self):
-        return [self.webdriver_binary, "--port=%s" % str(self.port)] + self._args
+        return [self.webdriver_binary, f"--port={self.port}"] + self._webdriver_args

@@ -528,7 +528,7 @@ class ChromeChromiumBase(Browser):
     """
 
     product = "chrome"
-    requirements = None
+    requirements = "requirements_chromium.txt"
     platform = {
         "Linux": "Linux",
         "Windows": "Win",
@@ -956,7 +956,7 @@ class ChromeAndroid(ChromeAndroidBase):
     """
 
     product = "chrome_android"
-    requirements = None
+    requirements = "requirements_chromium.txt"
 
     def find_binary(self, venv_path=None, channel=None):
         if channel in ("beta", "dev", "canary"):
@@ -972,7 +972,7 @@ class AndroidWeblayer(ChromeAndroidBase):
 
     product = "android_weblayer"
     # TODO(aluo): replace this with weblayer version after tests are working.
-    requirements = None
+    requirements = "requirements_chromium.txt"
 
     def find_binary(self, venv_path=None, channel=None):
         return "org.chromium.weblayer.shell"
@@ -986,7 +986,7 @@ class AndroidWebview(ChromeAndroidBase):
     """
 
     product = "android_webview"
-    requirements = None
+    requirements = "requirements_chromium.txt"
 
     def find_binary(self, venv_path=None, channel=None):
         # Just get the current package name of the WebView provider.
@@ -1124,7 +1124,7 @@ class EdgeChromium(Browser):
     }.get(uname[0])
     product = "edgechromium"
     edgedriver_name = "msedgedriver"
-    requirements = None
+    requirements = "requirements_chromium.txt"
 
     def download(self, dest=None, channel=None, rename=None):
         raise NotImplementedError

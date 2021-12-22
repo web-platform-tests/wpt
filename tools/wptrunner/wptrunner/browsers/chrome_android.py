@@ -158,7 +158,7 @@ class ChromeAndroidBrowserBase(WebDriverBrowser):
         return [self.webdriver_binary,
                 cmd_arg("port", str(self.port)),
                 cmd_arg("url-base", self.base_path) if self.base_path else "",
-                cmd_arg("enable-chrome-logs")] + self._args
+                cmd_arg("enable-chrome-logs")] + self._webdriver_args
 
     def cleanup(self):
         super().cleanup()
@@ -168,14 +168,14 @@ class ChromeAndroidBrowserBase(WebDriverBrowser):
             self.logcat_runner.stop(force=True)
 
     def executor_browser(self):
-        return ExecutorBrowser, {
-            "webdriver_url": self.server.url,
-            "capabilities": {
+        cls, kwargs = super().executor_browser()
+        kwargs["capabilities"] = {
                 "goog:chromeOptions": {
                     "androidDeviceSerial": self.device_serial
                 }
             }
         }
+        return cls, kwargs
 
     def clear_log(self):
         self._adb_run(['logcat', '-c'])

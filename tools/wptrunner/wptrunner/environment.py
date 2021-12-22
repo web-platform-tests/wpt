@@ -297,11 +297,12 @@ class TestEnvironment(object):
         return failed, pending
 
 
-def wait_for_service(addr, timeout=60):
+def wait_for_service(logger, host, port, timeout=60):
     """Waits until network service given as a tuple of (host, port) becomes
     available or the `timeout` duration is reached, at which point
     ``socket.error`` is raised."""
-    print("Trying to connect to %s" % (addr,))
+    addr = (host, port)
+    logger.debug(f"Trying to connect to {host}:{port}")
     end = time.time() + timeout
     while end > time.time():
         so = socket.socket()
@@ -313,7 +314,7 @@ def wait_for_service(addr, timeout=60):
             if e.errno != errno.ECONNREFUSED:
                 raise
         else:
-            print("Connected to %s" % (addr,))
+            logger.debug(f"Connected to {host}:{port}")
             return True
         finally:
             so.close()

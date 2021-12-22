@@ -88,4 +88,4 @@ class EdgeChromiumBrowser(WebDriverBrowser):
     def make_command(self):
         return [self.webdriver_binary,
                 cmd_arg("port", str(self.port)),
-                cmd_arg("url-base", self.base_path) if self.base_path else ""] + self._args
+                cmd_arg("url-base", self.base_path) if self.base_path else ""] + self._webdriver_args

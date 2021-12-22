@@ -140,7 +140,7 @@ def get_webkit_info(safari_bundle_path):
     return (None, None)
 
 
-class SafariBrowser(Browser):
+class SafariBrowser(WebDriverBrowser):
     """Safari is backed by safaridriver, which is supplied through
     ``wptrunner.webdriver.SafariDriverServer``.
     """
@@ -182,8 +182,7 @@ class SafariBrowser(Browser):
         return exe_path
 
     def make_command(self):
-        return [self.binary,
-                "--port=%s" % str(self.port)] + self._args
+        return [self.binary, f"--port={self.port}"] + self._webdriver_args
 
     def stop(self, force=False):
         super().stop(force)

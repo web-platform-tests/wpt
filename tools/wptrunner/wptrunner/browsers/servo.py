@@ -94,7 +94,7 @@ class ServoWdspecBrowser(WebDriverBrowser):
     def __init__(self, logger, binary="servo", webdriver_args=None,
                  binary_args=None, host="127.0.0.1", env=None, port=None):
 
-        env = env if env is not None else os.environ.copy()
+        env = os.environ.copy() if env is None else env
         env["RUST_BACKTRACE"] = "1"
 
         super().__init__(logger,
@@ -108,9 +108,9 @@ class ServoWdspecBrowser(WebDriverBrowser):
 
     def make_command(self):
         command = [self.binary,
-                   "--webdriver=%s" % self.port,
+                   f"--webdriver={self.port}",
                    "--hard-fail",
-                   "--headless"] + self._args
+                   "--headless"] + self._webdriver_args
         if self.binary_args:
             command += self.binary_args
         return command

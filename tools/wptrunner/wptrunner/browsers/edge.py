@@ -89,8 +89,7 @@ class EdgeBrowser(WebDriverBrowser):
             subprocess.call(['taskkill.exe', '/f', '/im', 'microsoftedge*'])
 
     def make_command(self):
-        return [self.webdriver_binary,
-                "--port=%s" % str(self.port)] + self._args
+        return [self.webdriver_binary, f"--port={self.port}"] + self._webdriver_args
 
 
 def run_info_extras(**kwargs):

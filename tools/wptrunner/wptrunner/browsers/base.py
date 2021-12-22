@@ -307,7 +307,7 @@ class WebDriverBrowser(Browser):
         else:
             self.base_path = base_path
         self.env = os.environ.copy() if env is None else env
-        self._args = webdriver_args if webdriver_args is not None else []
+        self._webdriver_args = webdriver_args if webdriver_args is not None else []
 
         self.url = "http://%s:%s%s" % (self.host, self.port, self.base_path)
 
@@ -317,7 +317,7 @@ class WebDriverBrowser(Browser):
 
     def make_command(self):
         """Returns the full command for starting the server process as a list."""
-        return [self.webdriver_binary] + self._args
+        return [self.webdriver_binary] + self._webdriver_args
 
     def start(self, group_metadata, **kwargs):
         try:
@@ -326,6 +326,10 @@ class WebDriverBrowser(Browser):
             self.stop()
 
     def create_output_handler(self, cmd):
+        """Return an instance of the class used to handle application output.
+
+        This can be overridden by subclasses which have particular requirements
+        for parsing, or otherwise using, the output."""
         return OutputHandler(self.logger, cmd)
 
     def _run_server(self, group_metadata, **kwargs):
@@ -349,7 +353,7 @@ class WebDriverBrowser(Browser):
         self._output_handler.after_process_start(self._proc.pid)
 
         try:
-            wait_for_service((self.host, self.port))
+            wait_for_service(self.logger, self.host, self.port)
         except Exception:
             self.logger.error(
                 "WebDriver was not accessible "
@@ -383,6 +387,8 @@ class WebDriverBrowser(Browser):
 
     @property
     def port(self):
+        # If no port is supplied, we'll get a free port right before we use it.
+        # Nothing guarantees an absence of race conditions here.
         if self._port is None:
             self._port = get_free_port()
         return self._port

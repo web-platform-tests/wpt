@@ -15,13 +15,13 @@
 </selectmenu>
 
 <selectmenu id="selectMenu1">
-  <div slot="button" part="button" id="selectMenu1-button">
+  <div slot="button" behavior="button" id="selectMenu1-button">
     Custom button
   </div>
-  <popup slot="listbox" part="listbox">
+  <popup slot="listbox" behavior="listbox">
     <option>one</option>
     <option id="selectMenu1-child2">two</option>
-    <div part="option" id="selectMenu1-child3">three</div>
+    <option id="selectMenu1-child3">three</option>
   </popup>
 </selectmenu>
 
@@ -32,7 +32,7 @@
 
 <selectmenu id="selectMenu3">
   <div slot="listbox">
-    <popup part="listbox" id="selectMenu3-listbox">
+    <popup behavior="listbox" id="selectMenu3-listbox">
       <option>one</option>
     </popup>
   </div>
@@ -90,7 +90,6 @@
     const selectMenu2 = document.getElementById("selectMenu2");
     await clickOn(selectMenu2);
     assert_equals(selectMenu2.value, "");
-    // TODO(crbug.com/1234899) Fails because listbox pointer isn't cleared when default listbox is swapped out due to initial <slot> replacement
     assert_equals(selectMenu2.open, false);
   }, "Clicking a popup with no listbox part does nothing");
 

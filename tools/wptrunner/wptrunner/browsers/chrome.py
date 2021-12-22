@@ -75,12 +75,15 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     # Allow audio autoplay without a user gesture.
     chrome_options["args"].append("--autoplay-policy=no-user-gesture-required")
     # Allow WebRTC tests to call getUserMedia.
-    chrome_options["args"].append("--use-fake-ui-for-media-stream")
     chrome_options["args"].append("--use-fake-device-for-media-stream")
     # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
     chrome_options["args"].append("--short-reporting-delay")
     # Point all .test domains to localhost for Chrome
     chrome_options["args"].append("--host-resolver-rules=MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1")
+    # Enable Secure Payment Confirmation for Chrome. This is normally disabled
+    # on Linux as it hasn't shipped there yet, but in WPT we enable virtual
+    # authenticator devices anyway for testing and so SPC works.
+    chrome_options["args"].append("--enable-features=SecurePaymentConfirmationBrowser")
 
     # Classify `http-private`, `http-public` and https variants in the
     # appropriate IP address spaces.
@@ -116,6 +119,12 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     if ((kwargs["headless"] or test_type == "print-reftest") and
         "--headless" not in chrome_options["args"]):
         chrome_options["args"].append("--headless")
+
+    # For WebTransport tests.
+    webtranport_h3_port = test_environment.config.ports.get('webtransport-h3')
+    if webtranport_h3_port is not None:
+        chrome_options["args"].append(
+            "--origin-to-force-quic-on=web-platform.test:{}".format(webtranport_h3_port[0]))
 
     executor_kwargs["capabilities"] = capabilities
 

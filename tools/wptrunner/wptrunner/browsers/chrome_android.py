@@ -55,9 +55,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     assert kwargs["package_name"], "missing --package-name"
     executor_kwargs["capabilities"]["goog:chromeOptions"]["androidPackage"] = \
         kwargs["package_name"]
-    if kwargs.get("device_serial"):
-        executor_kwargs["capabilities"]["goog:chromeOptions"]["androidDeviceSerial"] = \
-            kwargs["device_serial"]
 
     return executor_kwargs
 
@@ -169,6 +166,16 @@ class ChromeAndroidBrowserBase(WebDriverBrowser):
         self._adb_run(['reverse', '--remove-all'])
         if self.remote_queue is not None:
             self.logcat_runner.stop(force=True)
+
+    def executor_browser(self):
+        return ExecutorBrowser, {
+            "webdriver_url": self.server.url,
+            "capabilities": {
+                "goog:chromeOptions": {
+                    "androidDeviceSerial": self.device_serial
+                }
+            }
+        }
 
     def clear_log(self):
         self._adb_run(['logcat', '-c'])

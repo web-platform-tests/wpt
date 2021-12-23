@@ -1,4 +1,5 @@
 import threading
+import time
 import traceback
 from queue import Empty
 from collections import namedtuple
@@ -575,8 +576,8 @@ class TestRunnerManager(threading.Thread):
             # which in turn is based on having several layers of timeout inside the executor
             wait_timeout = (self.state.test.timeout * self.executor_kwargs['timeout_multiplier'] +
                             3 * self.executor_cls.extra_timeout)
+            print(f"the external timeout is {wait_timeout}")
             self.timer = threading.Timer(wait_timeout, self._timeout)
-
         self.send_message("run_test", self.state.test)
         if self.timer:
             self.timer.start()
@@ -600,6 +601,7 @@ class TestRunnerManager(threading.Thread):
         harness to the logs.
         """
         print("Daniel - end of test. Maybe get the test time ehre?")
+        print(f"thread time {time.thread_time()}")
         if ((not isinstance(self.state, RunnerManagerState.running)) or
             (test != self.state.test)):
             # Due to inherent race conditions in EXTERNAL-TIMEOUT, we might
@@ -608,6 +610,8 @@ class TestRunnerManager(threading.Thread):
             self.logger.error("Received unexpected test_ended for %s" % test)
             return
         if self.timer is not None:
+            print("Daniel - let's see the timer fam")
+            print(f"{self.timer=}")
             self.timer.cancel()
 
         # Write the result of each subtest

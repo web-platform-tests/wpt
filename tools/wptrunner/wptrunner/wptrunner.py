@@ -194,6 +194,9 @@ def run_tests(config, test_paths, product, **kwargs):
                                            test_groups=test_groups,
                                            **kwargs)
 
+        logger.info("Daniel - run_info and test_loader")
+        logger.info(f"{run_info=}")
+        logger.info(f"{test_loader=}")
         logger.info("Using %i client processes" % kwargs["processes"])
 
         skipped_tests = 0
@@ -260,6 +263,8 @@ def run_tests(config, test_paths, product, **kwargs):
                 for test_type in test_loader.test_types:
                     tests.extend(test_loader.tests[test_type])
 
+                logger.info("Daniel - list of tests")
+                logger.info(f"{tests=}")
                 try:
                     test_groups = test_source_cls.tests_by_group(tests, **test_source_kwargs)
                 except Exception:

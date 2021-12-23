@@ -3,7 +3,7 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_browsing_context_navigate_wait_none(bidi_session, wait_for_event,
-      context_id, ):
+      context_id):
     await bidi_session.session.subscribe(
         events=["browsingContext.domContentLoaded", "browsingContext.load"])
 

@@ -344,6 +344,7 @@ def run_tests(config, test_paths, product, **kwargs):
                             logger.critical("Main thread got signal")
                             manager_group.stop()
                             raise
+                        logger.info(f"Daniel - finished running {test_type}")
                         test_count += manager_group.test_count()
                         unexpected_count += manager_group.unexpected_count()
                         unexpected_pass_count += manager_group.unexpected_pass_count()

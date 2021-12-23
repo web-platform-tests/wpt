@@ -4,7 +4,9 @@ import platform
 import signal
 import subprocess
 import tempfile
+import time
 from abc import ABCMeta, abstractmethod
+from http.client import HTTPConnection
 
 import mozinfo
 import mozleak
@@ -856,6 +858,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
                                          ca_certificate_path)
 
         self.profile = profile_creator.create()
+        self.marionette_port = None
 
     def create_output_handler(self, cmd):
         return FirefoxOutputHandler(self.logger,
@@ -868,6 +871,42 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
     def start(self, group_metadata, **kwargs):
         self.leak_report_file = setup_leak_report(self.leak_check, self.profile, self.env)
         super().start(group_metadata, **kwargs)
+
+    def stop(self, force=False):
+        # Initially wait for any WebDriver session to cleanly shutdown
+        # When this is called the executor is usually sending a end session
+        # command to the browser. We don't have a synchronisation mechanism
+        # that allows us to know that process is ongoing, so poll the status
+        # endpoint until there isn't a session, before killing the driver.
+        if self.is_alive():
+            end_time = time.time() + BrowserInstance.shutdown_timeout
+            while time.time() < end_time:
+                self.logger.debug("Waiting for WebDriver session to end")
+                try:
+                    conn = HTTPConnection(self.host, self.port)
+                    conn.request("GET", "/status")
+                    res = conn.getresponse()
+                except Exception:
+                    self.logger.debug(
+                        f"Connecting to http://{self.host}:{self.port}/status failed")
+                    break
+                if res.status != 200:
+                    self.logger.debug(f"Connecting to http://{self.host}:{self.port}/status "
+                                      f"gave status {res.status}")
+                    break
+                data = res.read()
+                try:
+                    msg = json.loads(data)
+                except ValueError:
+                    self.logger.debug("/status response was not valid JSON")
+                    break
+                if msg.get("value", {}).get("ready") is True:
+                    self.logger.debug("Got ready status")
+                    break
+                time.sleep(1)
+            else:
+                self.logger.debug("WebDriver session didn't end")
+        super().stop(force=force)
 
     def cleanup(self):
         super().cleanup()

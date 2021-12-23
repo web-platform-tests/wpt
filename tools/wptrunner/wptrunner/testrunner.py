@@ -78,6 +78,7 @@ class TestRunner(object):
     def run(self):
         """Main loop accepting commands over the pipe and triggering
         the associated methods"""
+        print("Daniel - TestRunner run loop")
         try:
             self.setup()
         except Exception:
@@ -523,7 +524,7 @@ class TestRunnerManager(threading.Thread):
 
     def init_succeeded(self):
         assert isinstance(self.state, RunnerManagerState.initializing)
-        print("Daniel - init succeeded")
+        print("Daniel - TestRunnerManager init succeeded")
         self.browser.after_init()
         return RunnerManagerState.running(self.state.test,
                                           self.state.test_group,
@@ -540,6 +541,7 @@ class TestRunnerManager(threading.Thread):
                                                self.state.failure_count + 1)
 
     def get_next_test(self, test_group=None):
+        print("Daniel - get next test")
         test = None
         while test is None:
             while test_group is None or len(test_group) == 0:
@@ -597,6 +599,7 @@ class TestRunnerManager(threading.Thread):
         Output the result of each subtest, and the result of the overall
         harness to the logs.
         """
+        print("Daniel - end of test. Maybe get the test time ehre?")
         if ((not isinstance(self.state, RunnerManagerState.running)) or
             (test != self.state.test)):
             # Due to inherent race conditions in EXTERNAL-TIMEOUT, we might

@@ -890,6 +890,7 @@ class ManagerGroup(object):
 
     def run(self, test_type, tests):
         """Start all managers in the group"""
+        self.logger.info("Daniel - running individual test?")
         self.logger.debug("Using %i processes" % self.size)
         type_tests = tests[test_type]
         if not type_tests:
@@ -916,10 +917,14 @@ class ManagerGroup(object):
                                         recording=self.recording)
             manager.start()
             self.pool.add(manager)
+        self.logger.info("Daniel - pool?")
+        self.logger.info(f"{self.pool=}")
         self.wait()
 
     def wait(self):
         """Wait for all the managers in the group to finish"""
+        self.logger.info("Daniel - pool size")
+        self.logger.info(f"{len(self.pool)=}")
         for manager in self.pool:
             manager.join()
 

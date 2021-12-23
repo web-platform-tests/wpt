@@ -275,6 +275,10 @@ def run_tests(config, test_paths, product, **kwargs):
                                    name='web-platform-test',
                                    run_info=run_info,
                                    extra={"run_by_dir": kwargs["run_by_dir"]})
+                logger.info("Daniel - test groups")
+                logger.info(f"{test_groups=}")
+                logger.info("Daniel - test types")
+                logger.info(f"{kwargs['test_types']=}")
                 for test_type in kwargs["test_types"]:
                     logger.info("Running %s tests" % test_type)
 
@@ -307,6 +311,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     if test_type == "testharness":
                         run_tests = {"testharness": []}
                         for test in test_loader.tests["testharness"]:
+                            logger.info(f"Daniel - running testharness test {test}")
                             if ((test.testdriver and not executor_cls.supports_testdriver) or
                                 (test.jsshell and not executor_cls.supports_jsshell)):
                                 logger.test_start(test.id)

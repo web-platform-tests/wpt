@@ -263,6 +263,8 @@ def write_results(log, results, iterations, pr_number=None, use_details=False):
 
 def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwargs):
     from . import wptrunner
+    logger.info("Daniel - Run step runnin'")
+    logger.info(kwargs)
     kwargs = copy.deepcopy(kwargs)
 
     if restart_after_iteration:

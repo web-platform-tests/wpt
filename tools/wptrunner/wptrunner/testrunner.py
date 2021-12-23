@@ -148,6 +148,7 @@ def start_runner(runner_command_queue, runner_result_queue,
             executor = executor_cls(logger, browser, **executor_kwargs)
             with TestRunner(logger, runner_command_queue, runner_result_queue, executor) as runner:
                 try:
+                    
                     runner.run()
                 except KeyboardInterrupt:
                     stop_flag.set()
@@ -339,6 +340,7 @@ class TestRunnerManager(threading.Thread):
         self.capture_stdio = capture_stdio
 
     def run(self):
+        print("Daniel - main loop TestRunnerManager.run")
         """Main loop for the TestRunnerManager.
 
         TestRunnerManagers generally receive commands from their
@@ -521,6 +523,7 @@ class TestRunnerManager(threading.Thread):
 
     def init_succeeded(self):
         assert isinstance(self.state, RunnerManagerState.initializing)
+        print("Daniel - init succeeded")
         self.browser.after_init()
         return RunnerManagerState.running(self.state.test,
                                           self.state.test_group,

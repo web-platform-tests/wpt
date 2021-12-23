@@ -602,6 +602,7 @@ class TestRunnerManager(threading.Thread):
         """
         print("Daniel - end of test. Maybe get the test time ehre?")
         print(f"thread time {time.thread_time()}")
+        print("thread time should be above this.")
         if ((not isinstance(self.state, RunnerManagerState.running)) or
             (test != self.state.test)):
             # Due to inherent race conditions in EXTERNAL-TIMEOUT, we might

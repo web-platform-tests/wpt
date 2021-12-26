@@ -346,6 +346,10 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
     start_time = datetime.now()
     step_results = []
 
+    logger.info("DANIEL - max time")
+    logger.info(f"{max_time=}")
+    logger.info(f"{type(max_time)=}")
+
     github_checks_outputter = get_gh_checks_outputter(kwargs["github_checks_text_file"])
 
     for desc, step_func in steps:

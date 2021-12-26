@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-import time
+from datetime import datetime, timedelta
 
 import wptserve
 from wptserve import sslutils
@@ -201,7 +201,6 @@ def run_tests(config, test_paths, product, **kwargs):
         test_total = 0
         unexpected_total = 0
         unexpected_pass_total = 0
-
         if len(test_loader.test_ids) == 0 and kwargs["test_list"]:
             logger.critical("Unable to find any tests at the path(s):")
             for path in kwargs["test_list"]:
@@ -236,6 +235,7 @@ def run_tests(config, test_paths, product, **kwargs):
             recording.set(["startup", "ensure_environment"])
             try:
                 test_environment.ensure_started()
+                start_time = datetime.now()
             except env.TestEnvironmentError as e:
                 logger.critical("Error starting test environment: %s" % e)
                 raise
@@ -246,7 +246,7 @@ def run_tests(config, test_paths, product, **kwargs):
             repeat_count = 0
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
 
-            longest_iteration_time = 0
+            longest_iteration_time = timedelta()
             max_time = kwargs['verify_max_time']
             print("DANIEL - max time")
             print(f"{max_time=}")
@@ -254,12 +254,12 @@ def run_tests(config, test_paths, product, **kwargs):
             while repeat_count < repeat or repeat_until_unexpected:
                 # if the next repeat run could cause the TC timeout to be reached,
                 # stop now and use the test results we have.
-                if time.time() + longest_iteration_time >= start_time + max_time:
+                if datetime.now() + longest_iteration_time >= start_time + max_time:
                     logger.info("Repeat runs are in danger of reaching timeout! Quitting early.")
                     if not repeat_until_unexpected:
                         logger.info(f"Ran {repeat_count} out of {repeat} iterations.")
                     break
-                iteration_start = time.time()
+                iteration_start = datetime.now()
                 repeat_count += 1
                 if repeat_until_unexpected:
                     logger.info("Repetition %i" % (repeat_count))
@@ -353,8 +353,8 @@ def run_tests(config, test_paths, product, **kwargs):
                         unexpected_pass_count += manager_group.unexpected_pass_count()
                 logger.info("Test suite iteration finished.")
                 logger.info(f"{longest_iteration_time=}")
-                logger.info(f"{(time.time - iteration_start)=}")
-                longest_iteration_time = max(longest_iteration_time, time.time() - iteration_start)
+                logger.info(f"{(datetime.now() - iteration_start)=}")
+                longest_iteration_time = max(longest_iteration_time, datetime.now() - iteration_start)
                 recording.set(["after-end"])
                 test_total += test_count
                 unexpected_total += unexpected_count

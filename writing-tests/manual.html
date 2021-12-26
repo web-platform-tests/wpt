@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Manual Tests &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -32,11 +33,11 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="manual-tests">
+  <section id="manual-tests">
 <h1>Manual Tests<a class="headerlink" href="#manual-tests" title="Permalink to this headline">¶</a></h1>
 <p>Some testing scenarios are intrinsically difficult to automate and
 require a human to run the test and check the pass condition.</p>
-<div class="section" id="when-to-write-manual-tests">
+<section id="when-to-write-manual-tests">
 <h2>When to Write Manual Tests<a class="headerlink" href="#when-to-write-manual-tests" title="Permalink to this headline">¶</a></h2>
 <p>Whenever possible it’s best to write a fully automated test. For a
 browser vendor it’s possible to run an automated test hundreds of
@@ -59,8 +60,8 @@ disabled), and</p></li>
 tests that the vibration API causes the device to vibrate or that
 various sensor APIs respond in the expected way).</p></li>
 </ul>
-</div>
-<div class="section" id="requirements-for-a-manual-test">
+</section>
+<section id="requirements-for-a-manual-test">
 <h2>Requirements for a Manual Test<a class="headerlink" href="#requirements-for-a-manual-test" title="Permalink to this headline">¶</a></h2>
 <p>Manual tests are distinguished by their filename; all manual tests
 have filenames of the form <code class="docutils literal notranslate"><span class="pre">name-manual.ext</span></code> (i.e., a <code class="docutils literal notranslate"><span class="pre">-manual</span></code> suffix
@@ -80,8 +81,8 @@ otherwise determine the outcome.</p>
 <p>Any information other than this (e.g., quotes from the spec) should be
 avoided (though, as always, can be provided in
 HTML/CSS/JS/etc. comments).</p>
-</div>
-<div class="section" id="using-testharness-js-for-manual-tests">
+</section>
+<section id="using-testharness-js-for-manual-tests">
 <h2>Using testharness.js for Manual Tests<a class="headerlink" href="#using-testharness-js-for-manual-tests" title="Permalink to this headline">¶</a></h2>
 <p>A convenient way to present the results of a test that can have the
 result determined by script after some manual setup steps is to use
@@ -100,8 +101,8 @@ passes, otherwise it fails<span class="p">&lt;/</span><span class="nt">p</span><
 <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onclick</span><span class="o">=</span><span class="s">&quot;done()&quot;</span><span class="p">&gt;</span>Click Here<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -149,7 +150,7 @@ passes, otherwise it fails<span class="p">&lt;/</span><span class="nt">p</span><
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -171,7 +172,7 @@ passes, otherwise it fails<span class="p">&lt;/</span><span class="nt">p</span><
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>testharness.js tutorial &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="testharness-js-tutorial">
+  <section id="testharness-js-tutorial">
 <h1>testharness.js tutorial<a class="headerlink" href="#testharness-js-tutorial" title="Permalink to this headline">¶</a></h1>
 <p>.. contents:: Table of Contents
 :depth: 3
@@ -68,7 +69,7 @@ behavior of `fetch`.
    :local:
 </pre></div>
 </div>
-<div class="section" id="setting-up-your-workspace">
+<section id="setting-up-your-workspace">
 <h2>Setting up your workspace<a class="headerlink" href="#setting-up-your-workspace" title="Permalink to this headline">¶</a></h2>
 <p>To make sure you have the latest code, first type the following into a terminal
 located in the root of the WPT git repository:</p>
@@ -85,8 +86,8 @@ just downloaded:</p>
 server, so you’ll also need to <a class="reference internal" href="../running-tests/from-local-system.html"><span class="doc">configure your system to run
 WPT</span></a> before you continue.</p>
 <p>With that out of the way, you’re ready to create your patch.</p>
-</div>
-<div class="section" id="writing-a-subtest">
+</section>
+<section id="writing-a-subtest">
 <h2>Writing a subtest<a class="headerlink" href="#writing-a-subtest" title="Permalink to this headline">¶</a></h2>
 <!--
 Goals of this section:
@@ -181,8 +182,8 @@ configuration</span></a>, you can access the test at
 <a class="reference external" href="http://web-platform.test:8000/fetch/api/basic/set-cookie.html.">http://web-platform.test:8000/fetch/api/basic/set-cookie.html</a>.
 You should see something like this:</p>
 <p><img alt="../_images/testharness-tutorial-test-screenshot-1.png" src="../_images/testharness-tutorial-test-screenshot-1.png" /></p>
-</div>
-<div class="section" id="refining-the-subtest">
+</section>
+<section id="refining-the-subtest">
 <h2>Refining the subtest<a class="headerlink" href="#refining-the-subtest" title="Permalink to this headline">¶</a></h2>
 <!--
 Goals of this section:
@@ -241,8 +242,8 @@ subtest, we should give this one a more specific name:</p>
 <span class="gi">+}, &#39;cookie set for successful request&#39;);</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="writing-a-second-subtest">
+</section>
+<section id="writing-a-second-subtest">
 <h2>Writing a second subtest<a class="headerlink" href="#writing-a-second-subtest" title="Permalink to this headline">¶</a></h2>
 <!--
 Goals of this section:
@@ -317,8 +318,8 @@ in the previous subtest, right?</p>
 <p>If you run the test in your browser now, you can expect to see both tests
 reported as passing with their distinct names.</p>
 <p><img alt="../_images/testharness-tutorial-test-screenshot-2.png" src="../_images/testharness-tutorial-test-screenshot-2.png" /></p>
-</div>
-<div class="section" id="verifying-our-work">
+</section>
+<section id="verifying-our-work">
 <h2>Verifying our work<a class="headerlink" href="#verifying-our-work" title="Permalink to this headline">¶</a></h2>
 <p>We’re done writing the test, but we should make sure it fits in with the rest
 of WPT before we submit it.</p>
@@ -353,8 +354,8 @@ you’ve used the right file names and metadata. Separately, the web browser
 might crash. That’s often a sign of a browser bug, so you should consider
 <a class="reference external" href="https://rachelandrew.co.uk/archives/2017/01/30/reporting-browser-bugs/">reporting it to the browser’s
 maintainers</a>!</p>
-</div>
-<div class="section" id="submitting-the-test">
+</section>
+<section id="submitting-the-test">
 <h2>Submitting the test<a class="headerlink" href="#submitting-the-test" title="Permalink to this headline">¶</a></h2>
 <p>First, let’s stage the new files for committing:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git add fetch/api/basic/set-cookie.asis
@@ -380,8 +381,8 @@ and you can press the <code class="docutils literal notranslate"><span class="pr
 test we wrote in this tutorial, but if we wanted to submit it for inclusion in
 the repository, we would create a pull request on GitHub. <a class="reference internal" href="github-intro.html"><span class="doc">The guide on git and
 GitHub</span></a> has all the details on how to do that.</p>
-</div>
-<div class="section" id="more-practice">
+</section>
+<section id="more-practice">
 <h2>More practice<a class="headerlink" href="#more-practice" title="Permalink to this headline">¶</a></h2>
 <p>Here are some ways you can keep experimenting with WPT using this test:</p>
 <ul class="simple">
@@ -393,8 +394,8 @@ test</span></a></p></li>
 the fetch operation is aborted by <code class="docutils literal notranslate"><span class="pre">window.stop</span></code>, or the behavior when the
 HTTP response sets multiple cookies)</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -442,7 +443,7 @@ HTTP response sets multiple cookies)</p></li>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -464,7 +465,7 @@ HTTP response sets multiple cookies)</p></li>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

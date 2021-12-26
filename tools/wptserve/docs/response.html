@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Response &#8212; web-platform-tests  documentation</title>
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="response">
+  <section id="response">
 <h1>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h1>
 <p>Response object. This object is used to control the response that will
 be sent to the HTTP client. A handler function will take the response
@@ -64,28 +65,28 @@ necessary to either set the Content-Length header or set
 <cite>response.close_connection = True</cite>. Without one of these, the client
 will not be able to determine where the response body ends and will
 continue to load indefinitely.</p>
-<div class="section" id="module-wptserve.response">
+<section id="module-wptserve.response">
 <span id="interface"></span><span id="response-interface"></span><h2><a class="reference internal" href="#module-wptserve.response" title="wptserve.response"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Interface</span></code></a><a class="headerlink" href="#module-wptserve.response" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="wptserve.response.H2Response">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">wptserve.response.</span></code><code class="sig-name descname"><span class="pre">H2Response</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.H2Response" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.H2Response">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.response.</span></span><span class="sig-name descname"><span class="pre">H2Response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.H2Response" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
-<dt id="wptserve.response.H2Response.write_content">
-<code class="sig-name descname"><span class="pre">write_content</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.H2Response.write_content" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.H2Response.write_content">
+<span class="sig-name descname"><span class="pre">write_content</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.H2Response.write_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out the response content</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.H2Response.write_status_headers">
-<code class="sig-name descname"><span class="pre">write_status_headers</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.H2Response.write_status_headers" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.H2Response.write_status_headers">
+<span class="sig-name descname"><span class="pre">write_status_headers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.H2Response.write_status_headers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out the status line and headers for the response</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="wptserve.response.Response">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">wptserve.response.</span></code><code class="sig-name descname"><span class="pre">Response</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_writer_cls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.response.</span></span><span class="sig-name descname"><span class="pre">Response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_writer_cls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object representing the response to a HTTP request</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -96,70 +97,70 @@ continue to load indefinitely.</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt id="wptserve.response.Response.request">
-<code class="sig-name descname"><span class="pre">request</span></code><a class="headerlink" href="#wptserve.response.Response.request" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.request">
+<span class="sig-name descname"><span class="pre">request</span></span><a class="headerlink" href="#wptserve.response.Response.request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request associated with this Response.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="wptserve.response.Response.encoding">
-<code class="sig-name descname"><span class="pre">encoding</span></code><a class="headerlink" href="#wptserve.response.Response.encoding" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#wptserve.response.Response.encoding" title="Permalink to this definition">¶</a></dt>
 <dd><p>The encoding to use when converting unicode to strings for output.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="wptserve.response.Response.add_required_headers">
-<code class="sig-name descname"><span class="pre">add_required_headers</span></code><a class="headerlink" href="#wptserve.response.Response.add_required_headers" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.add_required_headers">
+<span class="sig-name descname"><span class="pre">add_required_headers</span></span><a class="headerlink" href="#wptserve.response.Response.add_required_headers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean indicating whether mandatory headers should be added to the
 response.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="wptserve.response.Response.send_body_for_head_request">
-<code class="sig-name descname"><span class="pre">send_body_for_head_request</span></code><a class="headerlink" href="#wptserve.response.Response.send_body_for_head_request" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.send_body_for_head_request">
+<span class="sig-name descname"><span class="pre">send_body_for_head_request</span></span><a class="headerlink" href="#wptserve.response.Response.send_body_for_head_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean, default False, indicating whether the body content should be
 sent when the request method is HEAD.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="wptserve.response.Response.writer">
-<code class="sig-name descname"><span class="pre">writer</span></code><a class="headerlink" href="#wptserve.response.Response.writer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.writer">
+<span class="sig-name descname"><span class="pre">writer</span></span><a class="headerlink" href="#wptserve.response.Response.writer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ResponseWriter for this response</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="wptserve.response.Response.status">
-<code class="sig-name descname"><span class="pre">status</span></code><a class="headerlink" href="#wptserve.response.Response.status" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.status">
+<span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#wptserve.response.Response.status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Status tuple (code, message). Can be set to an integer in which case the
 message part is filled in automatically, or a tuple (code, message) in
 which case code is an int and message is a text or binary string.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="wptserve.response.Response.headers">
-<code class="sig-name descname"><span class="pre">headers</span></code><a class="headerlink" href="#wptserve.response.Response.headers" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.headers">
+<span class="sig-name descname"><span class="pre">headers</span></span><a class="headerlink" href="#wptserve.response.Response.headers" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of HTTP headers to send with the response. Each item in the list is a
 tuple of (name, value).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="wptserve.response.Response.content">
-<code class="sig-name descname"><span class="pre">content</span></code><a class="headerlink" href="#wptserve.response.Response.content" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.content">
+<span class="sig-name descname"><span class="pre">content</span></span><a class="headerlink" href="#wptserve.response.Response.content" title="Permalink to this definition">¶</a></dt>
 <dd><p>The body of the response. This can either be a string or a iterable of response
 parts. If it is an iterable, any item may be a string or a function of zero
 parameters which, when called, returns a string.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.Response.delete_cookie">
-<code class="sig-name descname"><span class="pre">delete_cookie</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.delete_cookie" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.delete_cookie">
+<span class="sig-name descname"><span class="pre">delete_cookie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.delete_cookie" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a cookie on the client by setting it to the empty string
 and to expire in the past</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.Response.iter_content">
-<code class="sig-name descname"><span class="pre">iter_content</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.iter_content" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.iter_content">
+<span class="sig-name descname"><span class="pre">iter_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.iter_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterator returning chunks of response body content.</p>
 <p>If any part of the content is a function, this will be called
 and the resulting value (if any) returned.</p>
@@ -177,8 +178,8 @@ template substitution.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.Response.set_cookie">
-<code class="sig-name descname"><span class="pre">set_cookie</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">httponly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.set_cookie" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.set_cookie">
+<span class="sig-name descname"><span class="pre">set_cookie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">httponly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.set_cookie" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a cookie to be sent with a Set-Cookie header in the
 response</p>
 <dl class="field-list simple">
@@ -202,46 +203,46 @@ time or interval from now when the cookie expires</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.Response.set_error">
-<code class="sig-name descname"><span class="pre">set_error</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.set_error" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.set_error">
+<span class="sig-name descname"><span class="pre">set_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.set_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the response status headers and return a JSON error object:</p>
 <p>{“error”: {“code”: code, “message”: message}}
 code is an int (HTTP status code), and message is a text string.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.Response.unset_cookie">
-<code class="sig-name descname"><span class="pre">unset_cookie</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.unset_cookie" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.unset_cookie">
+<span class="sig-name descname"><span class="pre">unset_cookie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.unset_cookie" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a cookie from those that are being sent with the response</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.Response.write">
-<code class="sig-name descname"><span class="pre">write</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.write" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the whole response</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.Response.write_content">
-<code class="sig-name descname"><span class="pre">write_content</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.write_content" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.write_content">
+<span class="sig-name descname"><span class="pre">write_content</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.write_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out the response content</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.Response.write_status_headers">
-<code class="sig-name descname"><span class="pre">write_status_headers</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.write_status_headers" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.Response.write_status_headers">
+<span class="sig-name descname"><span class="pre">write_status_headers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.Response.write_status_headers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out the status line and headers for the response</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="wptserve.response.ResponseHeaders">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">wptserve.response.</span></code><code class="sig-name descname"><span class="pre">ResponseHeaders</span></code><a class="headerlink" href="#wptserve.response.ResponseHeaders" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseHeaders">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.response.</span></span><span class="sig-name descname"><span class="pre">ResponseHeaders</span></span><a class="headerlink" href="#wptserve.response.ResponseHeaders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dictionary-like object holding the headers for the response</p>
 <dl class="py method">
-<dt id="wptserve.response.ResponseHeaders.append">
-<code class="sig-name descname"><span class="pre">append</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseHeaders.append" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseHeaders.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseHeaders.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new header with a given name, not overwriting any existing
 headers with the same name</p>
 <dl class="field-list simple">
@@ -255,14 +256,14 @@ headers with the same name</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.ResponseHeaders.get">
-<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key</span></em>, <em class="sig-param"><span class="pre">default=&lt;object</span> <span class="pre">object&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseHeaders.get" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseHeaders.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default=&lt;object</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseHeaders.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the set values for a particular header.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.ResponseHeaders.set">
-<code class="sig-name descname"><span class="pre">set</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseHeaders.set" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseHeaders.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseHeaders.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a header to a specific value, overwriting any previous header
 with the same name</p>
 <dl class="field-list simple">
@@ -278,8 +279,8 @@ with the same name</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="wptserve.response.ResponseWriter">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">wptserve.response.</span></code><code class="sig-name descname"><span class="pre">ResponseWriter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseWriter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wptserve.response.</span></span><span class="sig-name descname"><span class="pre">ResponseWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object providing an API to write out a HTTP response.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -290,14 +291,14 @@ with the same name</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="wptserve.response.ResponseWriter.encode">
-<code class="sig-name descname"><span class="pre">encode</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.encode" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseWriter.encode">
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.encode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert unicode to bytes according to response.encoding.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.ResponseWriter.end_headers">
-<code class="sig-name descname"><span class="pre">end_headers</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.end_headers" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseWriter.end_headers">
+<span class="sig-name descname"><span class="pre">end_headers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.end_headers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finish writing headers and write the separator.</p>
 <p>Unless add_required_headers on the response is False,
 this will also add HTTP-mandated headers that have not yet been supplied
@@ -306,16 +307,16 @@ to the response headers.
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.ResponseWriter.write">
-<code class="sig-name descname"><span class="pre">write</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseWriter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write directly to the response, converting unicode to bytes
 according to response.encoding.
 :return: A boolean indicating whether the write succeeds</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.ResponseWriter.write_content">
-<code class="sig-name descname"><span class="pre">write_content</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_content" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseWriter.write_content">
+<span class="sig-name descname"><span class="pre">write_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the body of the response.</p>
 <p>HTTP-mandated headers will be automatically added with status default to 200 if they have
 not been explicitly set.
@@ -323,14 +324,14 @@ not been explicitly set.
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.ResponseWriter.write_content_file">
-<code class="sig-name descname"><span class="pre">write_content_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_content_file" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseWriter.write_content_file">
+<span class="sig-name descname"><span class="pre">write_content_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_content_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write a file-like object directly to the response in chunks.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.ResponseWriter.write_header">
-<code class="sig-name descname"><span class="pre">write_header</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_header" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseWriter.write_header">
+<span class="sig-name descname"><span class="pre">write_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out a single header for the response.</p>
 <p>If a status has not been written, a default status will be written (currently 200)</p>
 <dl class="field-list simple">
@@ -347,14 +348,14 @@ not been explicitly set.
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.ResponseWriter.write_raw_content">
-<code class="sig-name descname"><span class="pre">write_raw_content</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_raw_content" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseWriter.write_raw_content">
+<span class="sig-name descname"><span class="pre">write_raw_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_raw_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the data ‘as is’</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="wptserve.response.ResponseWriter.write_status">
-<code class="sig-name descname"><span class="pre">write_status</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_status" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wptserve.response.ResponseWriter.write_status">
+<span class="sig-name descname"><span class="pre">write_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wptserve.response.ResponseWriter.write_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out the status line of a response.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -369,8 +370,8 @@ with the status code.</p></li>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -423,7 +424,7 @@ with the status code.</p></li>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -445,7 +446,7 @@ with the status code.</p></li>
       &copy;2019, wpt contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import time
 
 import wptserve
 from wptserve import sslutils
@@ -245,7 +246,20 @@ def run_tests(config, test_paths, product, **kwargs):
             repeat_count = 0
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
 
+            longest_iteration_time = 0
+            max_time = kwargs['verify_max_time']
+            print("DANIEL - max time")
+            print(f"{max_time=}")
+            print(f"{type(max_time)=}")
             while repeat_count < repeat or repeat_until_unexpected:
+                # if the next repeat run could cause the TC timeout to be reached,
+                # stop now and use the test results we have.
+                if time.time() + longest_iteration_time >= start_time + max_time:
+                    logger.info("Repeat runs are in danger of reaching timeout! Quitting early.")
+                    if not repeat_until_unexpected:
+                        logger.info(f"Ran {repeat_count} out of {repeat} iterations.")
+                    break
+                iteration_start = time.time()
                 repeat_count += 1
                 if repeat_until_unexpected:
                     logger.info("Repetition %i" % (repeat_count))
@@ -337,6 +351,10 @@ def run_tests(config, test_paths, product, **kwargs):
                         test_count += manager_group.test_count()
                         unexpected_count += manager_group.unexpected_count()
                         unexpected_pass_count += manager_group.unexpected_pass_count()
+                logger.info("Test suite iteration finished.")
+                logger.info(f"{longest_iteration_time=}")
+                logger.info(f"{(time.time - iteration_start)=}")
+                longest_iteration_time = max(longest_iteration_time, time.time() - iteration_start)
                 recording.set(["after-end"])
                 test_total += test_count
                 unexpected_total += unexpected_count

@@ -247,7 +247,7 @@ def run_tests(config, test_paths, product, **kwargs):
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
 
             longest_iteration_time = timedelta()
-            max_time = kwargs['verify_max_time']
+            max_time = timedelta(minutes=kwargs['verify_max_time'])
             print("DANIEL - max time")
             print(f"{max_time=}")
             print(f"{type(max_time)=}")

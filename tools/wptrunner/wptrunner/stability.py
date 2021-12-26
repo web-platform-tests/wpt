@@ -4,7 +4,7 @@ import imp
 import io
 import os
 from collections import OrderedDict, defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from mozlog import reader
 from mozlog.formatters import JSONFormatter
@@ -353,7 +353,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
     github_checks_outputter = get_gh_checks_outputter(kwargs["github_checks_text_file"])
 
     for desc, step_func in steps:
-        if max_time and datetime.now() - start_time > max_time:
+        if max_time and datetime.now() - start_time > timedelta(minutes=max_time):
             logger.info("::: Test verification is taking too long: Giving up!")
             logger.info("::: So far, all checks passed, but not all checks were run.")
             write_summary(logger, step_results, "TIMEOUT")

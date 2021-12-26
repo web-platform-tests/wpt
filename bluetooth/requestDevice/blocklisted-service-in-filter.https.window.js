@@ -13,7 +13,7 @@ const expected = new DOMException(
     'SecurityError');
 
 bluetooth_test(async () => {
-  assert_promise_rejects_with_message(
+  await assert_promise_rejects_with_message(
       setUpPreconnectedFakeDevice({
         fakeDeviceOptions: {knownServiceUUIDs: ['human_interface_device']},
         requestDeviceOptions:

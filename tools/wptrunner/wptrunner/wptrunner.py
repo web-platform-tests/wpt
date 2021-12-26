@@ -351,7 +351,7 @@ def run_tests(config, test_paths, product, **kwargs):
                         test_count += manager_group.test_count()
                         unexpected_count += manager_group.unexpected_count()
                         unexpected_pass_count += manager_group.unexpected_pass_count()
-                logger.info("Test suite iteration finished.")
+                logger.info(f"Test suite iteration {repeat_count} finished.")
                 logger.info(f"{longest_iteration_time=}")
                 logger.info(f"{(datetime.now() - iteration_start)=}")
                 longest_iteration_time = max(longest_iteration_time, datetime.now() - iteration_start)
@@ -362,6 +362,9 @@ def run_tests(config, test_paths, product, **kwargs):
                 logger.info("Got %i unexpected results, with %i unexpected passes" %
                             (unexpected_count, unexpected_pass_count))
                 logger.suite_end()
+                if repeat_count == 8:
+                    logger.info("ran 8 iterations. What will happen quitting early?")
+                    break
                 if repeat_until_unexpected and unexpected_total > 0:
                     break
                 if repeat_count == 1 and len(test_loader.test_ids) == skipped_tests:

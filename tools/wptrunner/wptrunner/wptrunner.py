@@ -251,11 +251,11 @@ def run_tests(config, test_paths, product, **kwargs):
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
 
             print("DANIEL - logger")
-            print(f"{repeat=}")
-            print(logger)
-            print(dir(logger))
-
-            while repeat_count < repeat or repeat_until_unexpected:
+            print(f"{kwargs=}")
+            print(dir(kwargs))
+            # longest_run_time = 0
+            while (repeat_count < repeat or repeat_until_unexpected):
+                # and time.time() + longest_run_time < start_time + max_time
                 repeat_count += 1
                 if repeat_until_unexpected:
                     logger.info("Repetition %i" % (repeat_count))

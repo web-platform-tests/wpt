@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import time
 
 import wptserve
 from wptserve import sslutils
@@ -238,6 +239,7 @@ def run_tests(config, test_paths, product, **kwargs):
             recording.set(["startup", "ensure_environment"])
             try:
                 test_environment.ensure_started()
+                start_time = time.time()
             except env.TestEnvironmentError as e:
                 logger.critical("Error starting test environment: %s" % e)
                 raise
@@ -275,6 +277,11 @@ def run_tests(config, test_paths, product, **kwargs):
                                    name='web-platform-test',
                                    run_info=run_info,
                                    extra={"run_by_dir": kwargs["run_by_dir"]})
+                logger.info("DANIEL - Logger type:")
+                from pprint import PrettyPrinter
+                pp = PrettyPrinter()
+                pp.pprint(logger)
+                pp.pprint(dir(logger))
                 logger.info("Daniel - test groups")
                 logger.info(f"{test_groups=}")
                 logger.info("Daniel - test types")

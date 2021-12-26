@@ -113,7 +113,7 @@ scheme host and port.""")
                                   dest="verify_chaos_mode",
                                   help="Enable chaos mode when running on Firefox")
     mode_group.add_argument("--verify-max-time", action="store",
-                            default=None,
+                            default=100,
                             help="The maximum number of minutes for the job to run",
                             type=int)
     output_results_group = mode_group.add_mutually_exclusive_group()

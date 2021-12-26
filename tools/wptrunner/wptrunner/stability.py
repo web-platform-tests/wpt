@@ -287,9 +287,7 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     # Setup logging for wptrunner that keeps process output and
     # warning+ level logs only
     logger.add_handler(StreamHandler(log, JSONFormatter()))
-    print("DANIEL - run_tests kwargs")
-    print(f"{kwargs=}")
-    print(f"{kwargs_extras=}")
+
     wptrunner.run_tests(**kwargs)
 
     logger._state.handlers = initial_handlers

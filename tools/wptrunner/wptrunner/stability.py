@@ -141,6 +141,8 @@ def process_results(log, iterations):
     handler = LogHandler()
     reader.handle_log(reader.read(log), handler)
     results = handler.results
+    print("Daniel - process_results")
+    print(f"{results=}")
     for test_name, test in results.items():
         if is_inconsistent(test["status"], iterations):
             inconsistent.append((test_name, None, test["status"], []))
@@ -296,6 +298,10 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
 
     log.seek(0)
     results, inconsistent, slow = process_results(log, iterations)
+    print("Daniel - results")
+    print(f"{results=}")
+    print(f"{inconsistent=}")
+    print(f"{slow=}")
     return results, inconsistent, slow, iterations
 
 

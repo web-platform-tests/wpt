@@ -250,6 +250,11 @@ def run_tests(config, test_paths, product, **kwargs):
             repeat_count = 0
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
 
+            print("DANIEL - logger")
+            print(f"{repeat=}")
+            print(logger)
+            print(dir(logger))
+
             while repeat_count < repeat or repeat_until_unexpected:
                 repeat_count += 1
                 if repeat_until_unexpected:
@@ -277,11 +282,6 @@ def run_tests(config, test_paths, product, **kwargs):
                                    name='web-platform-test',
                                    run_info=run_info,
                                    extra={"run_by_dir": kwargs["run_by_dir"]})
-                logger.info("DANIEL - Logger type:")
-                from pprint import PrettyPrinter
-                pp = PrettyPrinter()
-                pp.pprint(logger)
-                pp.pprint(dir(logger))
                 logger.info("Daniel - test groups")
                 logger.info(f"{test_groups=}")
                 logger.info("Daniel - test types")

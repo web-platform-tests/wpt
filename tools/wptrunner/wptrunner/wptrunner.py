@@ -295,6 +295,7 @@ def evaluate_runs(counts, avoided_timeout, kwargs):
     # the number of iterations that were run need to be returned
     # so that the test results can be processed appropriately.
     if avoided_timeout:
+        print("Daniel - we did avoid")
         kwargs["avoided_timeout"]["did_avoid"] = True
         kwargs["avoided_timeout"]["iterations_run"] = counts["repeat"]
     return counts["unexpected"] == 0

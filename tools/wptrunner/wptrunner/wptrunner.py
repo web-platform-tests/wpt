@@ -359,12 +359,15 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
             repeat_count = 0
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
             longest_iteration_time = timedelta()
+            # keep track if we break the loop to avoid timeout.
+            quit_early = False
 
             while repeat_count < repeat or repeat_until_unexpected:
                 # if the next repeat run could cause the TC timeout to be reached,
                 # stop now and use the test results we have.
                 if not repeat_until_unexpected and max_time and \
                         datetime.now() + longest_iteration_time >= start_time + max_time:
+                    quit_early = True
                     logger.info(
                         "Repeat runs are in danger of reaching timeout! Quitting early.")
                     logger.info(
@@ -376,11 +379,6 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                     logger.info("Repetition %i" % (repeat_count))
                 elif repeat > 1:
                     logger.info("Repetition %i / %i" % (repeat_count, repeat))
-
-                longest_iteration_time = max(
-                    longest_iteration_time,
-                    datetime.now() - iteration_start)
-                recording.set(["after-end"])
 
                 fail_msg, test_count, unexpected_count, unexpected_pass_count, skips = run_test_iteration(
                     test_loader,
@@ -395,6 +393,7 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                 if fail_msg:
                     logger.critical(fail_msg)
                     return False
+                recording.set(["after-end"])
                 test_total += test_count
                 unexpected_total += unexpected_count
                 unexpected_pass_total += unexpected_pass_count
@@ -402,7 +401,11 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                 logger.info("Got %i unexpected results, with %i unexpected passes" %
                             (unexpected_count, unexpected_pass_count))
                 logger.suite_end()
+                longest_iteration_time = max(
+                    longest_iteration_time,
+                    datetime.now() - iteration_start)
                 if repeat_count == 8:
+                    quit_early = True
                     logger.info(
                         "ran 8 iterations. What will happen quitting early?")
                     break
@@ -433,7 +436,9 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                     unexpected_pass_total)
         return True
 
-    return unexpected_total == 0, repeat_count
+    if quit_early:
+        return unexpected_total == 0, repeat_count
+    return unexpected_total == 0
 
 
 def check_stability(**kwargs):

@@ -268,9 +268,6 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
     else:
         recorder = instruments.Instrument(kwargs["instrument_to_file"])
 
-    if kwargs["max_time"]:
-        max_time = kwargs["max_time"]
-
     with recorder as recording, capture.CaptureIO(logger,
                                                   not kwargs["no_capture_stdio"],
                                                   mp_context=mp):

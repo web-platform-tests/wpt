@@ -272,6 +272,7 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
         kwargs["rerun"] = iterations
 
     kwargs["pause_after_test"] = False
+    kwargs["max_time"] = kwargs["verify_max_time"]
     kwargs.update(kwargs_extras)
 
     def wrap_handler(x):

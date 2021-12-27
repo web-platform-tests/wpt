@@ -1,3 +1,4 @@
+from collections import defaultdict
 import json
 import os
 import sys
@@ -158,20 +159,9 @@ def get_pause_after_test(test_loader, **kwargs):
     return kwargs["pause_after_test"]
 
 
-def run_test_iteration(
-        test_loader,
-        test_source_kwargs,
-        test_source_cls,
-        run_info,
-        recording,
-        test_environment,
-        product,
-        kwargs):
-    test_count = 0
-    unexpected_count = 0
-    unexpected_pass_count = 0
-    skipped_tests = 0
-
+def run_test_iteration(counts, test_loader, test_source_kwargs,
+                       test_source_cls, run_info, recording,
+                       test_environment, product, kwargs):
     tests = []
     for test_type in test_loader.test_types:
         tests.extend(test_loader.tests[test_type])
@@ -180,8 +170,8 @@ def run_test_iteration(
         test_groups = test_source_cls.tests_by_group(
             tests, **test_source_kwargs)
     except Exception:
-
-        return "Loading tests failed"
+        logger.critical("Loading tests failed")
+        return False
 
     logger.suite_start(test_groups,
                        name='web-platform-test',
@@ -192,13 +182,14 @@ def run_test_iteration(
 
         browser_cls = product.get_browser_cls(test_type)
 
-        browser_kwargs = product.get_browser_kwargs(logger,
-                                                    test_type,
-                                                    run_info,
-                                                    config=test_environment.config,
-                                                    num_test_groups=len(
-                                                        test_groups),
-                                                    **kwargs)
+        browser_kwargs = \
+            product.get_browser_kwargs(logger,
+                                       test_type,
+                                       run_info,
+                                       config=test_environment.config,
+                                       num_test_groups=len(
+                                           test_groups),
+                                       **kwargs)
 
         executor_cls = product.executor_classes.get(test_type)
         executor_kwargs = product.get_executor_kwargs(logger,
@@ -215,16 +206,17 @@ def run_test_iteration(
         for test in test_loader.disabled_tests[test_type]:
             logger.test_start(test.id)
             logger.test_end(test.id, status="SKIP")
-            skipped_tests += 1
+            counts["skipped"] += 1
 
         if test_type == "testharness":
             run_tests = {"testharness": []}
             for test in test_loader.tests["testharness"]:
-                if ((test.testdriver and not executor_cls.supports_testdriver) or
+                if ((test.testdriver
+                    and not executor_cls.supports_testdriver) or
                         (test.jsshell and not executor_cls.supports_jsshell)):
                     logger.test_start(test.id)
                     logger.test_end(test.id, status="SKIP")
-                    skipped_tests += 1
+                    counts["skipped"] += 1
                 else:
                     run_tests["testharness"].append(test)
         else:
@@ -252,11 +244,44 @@ def run_test_iteration(
                 logger.critical("Main thread got signal")
                 manager_group.stop()
                 raise
-            test_count += manager_group.test_count()
-            unexpected_count += manager_group.unexpected_count()
-            unexpected_pass_count += manager_group.unexpected_pass_count()
+            counts["total_tests"] += manager_group.test_count()
+            counts["unexpected"] += manager_group.unexpected_count()
+            counts["unexpected_pass"] += manager_group.unexpected_pass_count()
 
-    return None, test_count, unexpected_count, unexpected_pass_count, skipped_tests
+    return True
+
+
+def evaluate_runs(counts, avoided_timeout, repeat_count, kwargs):
+    """Evaluates the test counts after the
+    given number of repeat runs has finished"""
+    if counts["total_tests"]:
+        if counts["skipped"] > 0:
+            logger.warning("All requested tests were skipped")
+        else:
+            if kwargs["default_exclude"]:
+                logger.info("No tests ran")
+                return True
+            else:
+                logger.critical("No tests ran")
+                return False
+
+    if counts["unexpected"] and not kwargs["fail_on_unexpected"]:
+        logger.info("Tolerating %s unexpected results" % counts["unexpected"])
+        return True
+
+    all_unexpected_passed = (counts["unexpected"] and
+                             counts["unexpected"] == counts["unexpected_pass"])
+    if all_unexpected_passed and not kwargs["fail_on_unexpected_pass"]:
+        logger.info("Tolerating %i unexpected results because they all PASS" %
+                    counts["unexpected_pass"])
+        return True
+
+    # If the runs were stopped early to avoid a TC timeout,
+    # the number of iterations that were run need to be returned
+    # so that the test results can be processed appropriately.
+    if avoided_timeout:
+        return counts["unexpected"] == 0, repeat_count
+    return counts["unexpected"] == 0
 
 
 def run_tests(config, test_paths, product, max_time=None, **kwargs):
@@ -268,9 +293,10 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
     else:
         recorder = instruments.Instrument(kwargs["instrument_to_file"])
 
-    with recorder as recording, capture.CaptureIO(logger,
-                                                  not kwargs["no_capture_stdio"],
-                                                  mp_context=mp):
+    with recorder as recording, \
+        capture.CaptureIO(logger,
+                          not kwargs["no_capture_stdio"],
+                          mp_context=mp):
         recording.set(["startup"])
         env.do_delayed_imports(logger, test_paths)
 
@@ -290,47 +316,49 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
 
         recording.set(["startup", "load_tests"])
 
-        test_groups = (testloader.TestGroupsFile(logger, kwargs["test_groups_file"])
-                       if kwargs["test_groups_file"] else None)
+        test_groups = \
+            (testloader.TestGroupsFile(logger, kwargs["test_groups_file"])
+             if kwargs["test_groups_file"] else None)
 
         (test_source_cls,
          test_source_kwargs,
          chunker_kwargs) = testloader.get_test_src(logger=logger,
                                                    test_groups=test_groups,
                                                    **kwargs)
-        run_info, test_loader = get_loader(test_paths,
-                                           product.name,
-                                           run_info_extras=product.run_info_extras(
-                                               **kwargs),
-                                           chunker_kwargs=chunker_kwargs,
-                                           test_groups=test_groups,
-                                           **kwargs)
+        run_info, test_loader = \
+            get_loader(test_paths, product.name,
+                       run_info_extras=product.run_info_extras(
+                           **kwargs),
+                       chunker_kwargs=chunker_kwargs,
+                       test_groups=test_groups,
+                       **kwargs)
 
         logger.info("Using %i client processes" % kwargs["processes"])
 
-        skipped_tests = 0
-        test_total = 0
-        unexpected_total = 0
-        unexpected_pass_total = 0
+        counts = defaultdict(int)
         if len(test_loader.test_ids) == 0 and kwargs["test_list"]:
             logger.critical("Unable to find any tests at the path(s):")
             for path in kwargs["test_list"]:
                 logger.critical("  %s" % path)
             logger.critical(
-                "Please check spelling and make sure there are tests in the specified path(s).")
+                "Please check spelling and make sure"
+                " there are tests in the specified path(s).")
             return False
         kwargs["pause_after_test"] = get_pause_after_test(
             test_loader, **kwargs)
 
-        ssl_config = {"type": kwargs["ssl_type"],
-                      "openssl": {"openssl_binary": kwargs["openssl_binary"]},
-                      "pregenerated": {"host_key_path": kwargs["host_key_path"],
-                                       "host_cert_path": kwargs["host_cert_path"],
-                                       "ca_cert_path": kwargs["ca_cert_path"]}}
+        ssl_config = {
+            "type": kwargs["ssl_type"],
+            "openssl": {"openssl_binary": kwargs["openssl_binary"]},
+            "pregenerated": {"host_key_path": kwargs["host_key_path"],
+                             "host_cert_path": kwargs["host_cert_path"],
+                             "ca_cert_path": kwargs["ca_cert_path"]}
+        }
 
-        testharness_timeout_multipler = product.get_timeout_multiplier("testharness",
-                                                                       run_info,
-                                                                       **kwargs)
+        testharness_timeout_multipler = \
+            product.get_timeout_multiplier("testharness",
+                                           run_info,
+                                           **kwargs)
 
         mojojs_path = kwargs["mojojs_path"] if kwargs["enable_mojojs"] else None
 
@@ -358,18 +386,24 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
             repeat = kwargs["repeat"]
             repeat_count = 0
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
+
+            # keep track of longest time taken to complete a
+            # test suiteiteration so that the runs can be stopped
+            # to avoid a possible TC timeout.
             longest_iteration_time = timedelta()
             # keep track if we break the loop to avoid timeout.
-            quit_early = False
+            avoided_timeout = False
 
             while repeat_count < repeat or repeat_until_unexpected:
-                # if the next repeat run could cause the TC timeout to be reached,
-                # stop now and use the test results we have.
-                if not repeat_until_unexpected and max_time and \
-                        datetime.now() + longest_iteration_time >= start_time + max_time:
-                    quit_early = True
+                # if the next repeat run could cause the TC timeout to be
+                # reached, stop now and use the test results we have.
+                estimate = datetime.now() + longest_iteration_time
+                if not repeat_until_unexpected and max_time \
+                        and estimate >= start_time + max_time:
+                    avoided_timeout = True
                     logger.info(
-                        "Repeat runs are in danger of reaching timeout! Quitting early.")
+                        "Repeat runs are in danger of reaching timeout!"
+                        " Quitting early.")
                     logger.info(
                         "Ran %s of %s iterations." % (repeat_count, repeat))
                     break
@@ -380,65 +414,30 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                 elif repeat > 1:
                     logger.info("Repetition %i / %i" % (repeat_count, repeat))
 
-                fail_msg, test_count, unexpected_count, unexpected_pass_count, skips = run_test_iteration(
-                    test_loader,
-                    test_source_kwargs,
-                    test_source_cls,
-                    run_info,
-                    recording,
-                    test_environment,
-                    product,
-                    kwargs
-                )
-                if fail_msg:
-                    logger.critical(fail_msg)
+                iter_success = run_test_iteration(counts, test_loader,
+                                                  test_source_kwargs,
+                                                  test_source_cls, run_info,
+                                                  recording, test_environment,
+                                                  product, kwargs)
+                # if there were issues with the suite run
+                # (tests not loaded, etc.) return
+                if not iter_success:
                     return False
                 recording.set(["after-end"])
-                test_total += test_count
-                unexpected_total += unexpected_count
-                unexpected_pass_total += unexpected_pass_count
-                skipped_tests += skips
-                logger.info("Got %i unexpected results, with %i unexpected passes" %
-                            (unexpected_count, unexpected_pass_count))
+                logger.info(
+                    "Got %i unexpected results, with %i unexpected passes" %
+                    (counts["unexpected"], counts["unexpected_pass"]))
                 logger.suite_end()
                 longest_iteration_time = max(
                     longest_iteration_time,
                     datetime.now() - iteration_start)
-                if repeat_count == 8:
-                    quit_early = True
-                    logger.info(
-                        "ran 8 iterations. What will happen quitting early?")
+                if repeat_until_unexpected and counts["unexpected"] > 0:
                     break
-                if repeat_until_unexpected and unexpected_total > 0:
-                    break
-                if repeat_count == 1 and len(test_loader.test_ids) == skipped_tests:
+                if repeat_count == 1 \
+                        and len(test_loader.test_ids) == counts["skipped"]:
                     break
 
-    if test_total == 0:
-        if skipped_tests > 0:
-            logger.warning("All requested tests were skipped")
-        else:
-            if kwargs["default_exclude"]:
-                logger.info("No tests ran")
-                return True
-            else:
-                logger.critical("No tests ran")
-                return False
-
-    if unexpected_total and not kwargs["fail_on_unexpected"]:
-        logger.info("Tolerating %s unexpected results" % unexpected_total)
-        return True
-
-    all_unexpected_passed = (unexpected_total and
-                             unexpected_total == unexpected_pass_total)
-    if all_unexpected_passed and not kwargs["fail_on_unexpected_pass"]:
-        logger.info("Tolerating %i unexpected results because they all PASS" %
-                    unexpected_pass_total)
-        return True
-
-    if quit_early:
-        return unexpected_total == 0, repeat_count
-    return unexpected_total == 0
+    return evaluate_runs(counts, avoided_timeout, repeat_count, kwargs)
 
 
 def check_stability(**kwargs):
@@ -452,13 +451,14 @@ def check_stability(**kwargs):
         kwargs['verify_repeat_restart'] = 10 if kwargs['repeat'] == 1 else kwargs['repeat']
         kwargs['verify_output_results'] = True
 
-    return stability.check_stability(logger,
-                                     max_time=kwargs['verify_max_time'],
-                                     chaos_mode=kwargs['verify_chaos_mode'],
-                                     repeat_loop=kwargs['verify_repeat_loop'],
-                                     repeat_restart=kwargs['verify_repeat_restart'],
-                                     output_results=kwargs['verify_output_results'],
-                                     **kwargs)
+    return stability.check_stability(
+        logger,
+        max_time=kwargs['verify_max_time'],
+        chaos_mode=kwargs['verify_chaos_mode'],
+        repeat_loop=kwargs['verify_repeat_loop'],
+        repeat_restart=kwargs['verify_repeat_restart'],
+        output_results=kwargs['verify_output_results'],
+        **kwargs)
 
 
 def start(**kwargs):

@@ -302,11 +302,16 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     print(f"{results=}")
     print(f"{inconsistent=}")
     print(f"{slow=}")
+    print(f"{iterations=}")
     return results, inconsistent, slow, iterations
 
 
 def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
     steps = []
+    print("DANIEL - kwargs extras")
+    print(f"{kwargs_extras=}")
+    print(f"{repeat_loop=}")
+    print(f"{repeat_restart}")
     for kwargs_extra in kwargs_extras:
         if kwargs_extra:
             flags_string = " with flags %s" % " ".join(
@@ -369,6 +374,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
         logger.info('::: Running test verification step "%s"...' % desc)
         logger.info(':::')
         results, inconsistent, slow, iterations = step_func(**kwargs)
+        print("finished step func in check_stability")
         if output_results:
             write_results(logger.info, results, iterations)
 
@@ -390,4 +396,5 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
 
         step_results.append((desc, "PASS"))
 
+    print(f"{step_results=}")
     write_summary(logger, step_results, "PASS")

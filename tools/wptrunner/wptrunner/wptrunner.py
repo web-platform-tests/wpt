@@ -374,16 +374,11 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
             recording.set(["startup", "ensure_environment"])
             try:
                 test_environment.ensure_started()
-                start_time = datetime.now()
             except env.TestEnvironmentError as e:
                 logger.critical("Error starting test environment: %s" % e)
                 raise
 
-            recording.set(["startup"])
-
-            repeat = kwargs["repeat"]
-            repeat_until_unexpected = kwargs["repeat_until_unexpected"]
-
+            start_time = datetime.now()
             # keep track of longest time taken to complete a
             # test suite iteration so that the runs can be stopped
             # to avoid a possible TC timeout.
@@ -391,12 +386,20 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
             # keep track if we break the loop to avoid timeout.
             avoided_timeout = False
 
+            recording.set(["startup"])
+
+            repeat = kwargs["repeat"]
+            repeat_until_unexpected = kwargs["repeat_until_unexpected"]
+
             while counts["repeat"] < repeat or repeat_until_unexpected:
                 # if the next repeat run could cause the TC timeout to be
                 # reached, stop now and use the test results we have.
                 estimate = datetime.now() + longest_iteration_time
+                print("DANIEL - checking if %s is more than %s" %
+                      (estimate, start_time + max_time))
                 if not repeat_until_unexpected and max_time \
-                        and estimate >= start_time + max_time:
+                        and estimate > start_time + max_time:
+                    print("DANIEL - it's. We're stopping.")
                     avoided_timeout = True
                     logger.info(
                         "Repeat runs are in danger of reaching timeout!"
@@ -405,6 +408,8 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                         "Ran %s of %s iterations." %
                         (counts["repeat"], repeat))
                     break
+                else:
+                    print("DANIEL - it's not. We're going to keep running.")
 
                 # begin tracking runtime of the test suite
                 iteration_start = datetime.now()
@@ -430,10 +435,14 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                     (counts["unexpected"], counts["unexpected_pass"]))
                 logger.suite_end()
 
+                print("DANIEL - longest iteration time was %s" %
+                      longest_iteration_time)
                 # determine the longest test suite runtime seen
                 longest_iteration_time = max(
                     longest_iteration_time,
                     datetime.now() - iteration_start)
+                print("DANIEL - now longest iteration time is %s" %
+                      longest_iteration_time)
 
                 if repeat_until_unexpected and counts["unexpected"] > 0:
                     break

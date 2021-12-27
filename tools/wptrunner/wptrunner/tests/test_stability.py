@@ -45,6 +45,9 @@ def test_get_steps():
     flag_value = 'y'
     steps = stability.get_steps(logger, repeat_loop, 0, [
                                 {flag_name: flag_value}])
+    print("DANIEL - steps")
+    print(steps)
+
     assert len(steps) == 1
     assert steps[0][0] == "Running tests in a loop %d times with flags %s=%s" % (
         repeat_loop, flag_name, flag_value)
@@ -55,6 +58,9 @@ def test_get_steps():
     flag_value = 'n'
     steps = stability.get_steps(logger, repeat_loop, repeat_restart, [
                                 {flag_name: flag_value}])
+    print("DANIEL - steps")
+    print(steps)
+
     assert len(steps) == 1
     assert steps[0][0] == "Running tests in a loop with restarts %d times with flags %s=%s" % (
         repeat_restart, flag_name, flag_value)
@@ -62,6 +68,8 @@ def test_get_steps():
     repeat_loop = 10
     repeat_restart = 5
     steps = stability.get_steps(logger, repeat_loop, repeat_restart, [{}])
+    print("DANIEL - steps")
+    print(steps)
     assert len(steps) == 2
     assert steps[0][0] == "Running tests in a loop %d times" % repeat_loop
     assert steps[1][0] == (

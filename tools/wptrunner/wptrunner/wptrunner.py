@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import wptserve
 from wptserve import sslutils
@@ -358,6 +358,7 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
             repeat = kwargs["repeat"]
             repeat_count = 0
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
+            longest_iteration_time = timedelta()
 
             while repeat_count < repeat or repeat_until_unexpected:
                 # if the next repeat run could cause the TC timeout to be reached,

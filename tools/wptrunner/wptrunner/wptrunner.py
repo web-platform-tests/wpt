@@ -75,11 +75,12 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
         include = testloader.update_include_for_groups(test_groups, include)
 
     if include or kwargs["exclude"] or kwargs["include_manifest"] or kwargs["default_exclude"]:
-        manifest_filters.append(testloader.TestFilter(include=include,
-                                                      exclude=kwargs["exclude"],
-                                                      manifest_path=kwargs["include_manifest"],
-                                                      test_manifests=test_manifests,
-                                                      explicit=kwargs["default_exclude"]))
+        manifest_filters.append(
+            testloader.TestFilter(include=include,
+                                  exclude=kwargs["exclude"],
+                                  manifest_path=kwargs["include_manifest"],
+                                  test_manifests=test_manifests,
+                                  explicit=kwargs["default_exclude"]))
 
     ssl_enabled = sslutils.get_cls(kwargs["ssl_type"]).ssl_enabled
     h2_enabled = wptserve.utils.http2_compatible()
@@ -106,7 +107,8 @@ def list_test_groups(test_paths, product, **kwargs):
         kwargs["config"], product).run_info_extras(**kwargs)
 
     run_info, test_loader = get_loader(test_paths, product,
-                                       run_info_extras=run_info_extras, **kwargs)
+                                       run_info_extras=run_info_extras,
+                                       **kwargs)
 
     for item in sorted(test_loader.groups(kwargs["test_types"])):
         print(item)
@@ -121,7 +123,8 @@ def list_disabled(test_paths, product, **kwargs):
         kwargs["config"], product).run_info_extras(**kwargs)
 
     run_info, test_loader = get_loader(test_paths, product,
-                                       run_info_extras=run_info_extras, **kwargs)
+                                       run_info_extras=run_info_extras,
+                                       **kwargs)
 
     for test_type, tests in test_loader.disabled_tests.items():
         for test in tests:
@@ -136,7 +139,8 @@ def list_tests(test_paths, product, **kwargs):
         kwargs["config"], product).run_info_extras(**kwargs)
 
     run_info, test_loader = get_loader(test_paths, product,
-                                       run_info_extras=run_info_extras, **kwargs)
+                                       run_info_extras=run_info_extras,
+                                       **kwargs)
 
     for test in test_loader.test_ids:
         print(test)
@@ -151,9 +155,11 @@ def get_pause_after_test(test_loader, **kwargs):
         if kwargs["debug_test"]:
             return True
         tests = test_loader.tests
-        is_single_testharness = (sum(len(item) for item in tests.values()) == 1 and
-                                 len(tests.get("testharness", [])) == 1)
-        if kwargs["repeat"] == 1 and kwargs["rerun"] == 1 and is_single_testharness:
+        is_single_testharness = (
+            sum(len(item) for item in tests.values()) == 1 and
+            len(tests.get("testharness", [])) == 1)
+        if kwargs["repeat"] == 1 and kwargs["rerun"] == 1 \
+                and is_single_testharness:
             return True
         return False
     return kwargs["pause_after_test"]
@@ -463,7 +469,8 @@ def check_stability(**kwargs):
         kwargs['verify_max_time'] = None
         kwargs['verify_chaos_mode'] = False
         kwargs['verify_repeat_loop'] = 0
-        kwargs['verify_repeat_restart'] = 10 if kwargs['repeat'] == 1 else kwargs['repeat']
+        kwargs['verify_repeat_restart'] = 10 \
+            if kwargs['repeat'] == 1 else kwargs['repeat']
         kwargs['verify_output_results'] = True
 
     return stability.check_stability(

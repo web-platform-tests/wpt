@@ -137,7 +137,8 @@ def find_slow_status(test):
 
 
 def process_results(log, iterations):
-    """Process test log and return overall results and list of inconsistent tests."""
+    """Process test log and return overall results
+    and list of inconsistent tests."""
     inconsistent = []
     slow = []
     handler = LogHandler()
@@ -150,7 +151,8 @@ def process_results(log, iterations):
         for subtest_name, subtest in test["subtests"].items():
             if is_inconsistent(subtest["status"], iterations):
                 inconsistent.append(
-                    (test_name, subtest_name, subtest["status"], subtest["messages"]))
+                    (test_name, subtest_name, subtest["status"],
+                     subtest["messages"]))
 
         slow_status = find_slow_status(test)
         if slow_status is not None:
@@ -173,7 +175,8 @@ def err_string(results_dict, iterations):
     else:
         for key, value in sorted(results_dict.items()):
             rv.append("%s%s" %
-                      (key, ": %s/%s" % (value, iterations) if value != iterations else ""))
+                      (key, ": %s/%s" % (value, iterations)
+                       if value != iterations else ""))
     if total_results < iterations:
         rv.append("MISSING: %s/%s" % (iterations - total_results, iterations))
     rv = ", ".join(rv)
@@ -187,8 +190,8 @@ def write_github_checks_summary_inconsistent(log, inconsistent, iterations):
     log("Some affected tests had inconsistent (flaky) results:\n")
     write_inconsistent(log, inconsistent, iterations)
     log("\n")
-    log("These may be pre-existing or new flakes. Please try to reproduce (see "
-        "the above WPT command, though some flags may not be needed when "
+    log("These may be pre-existing or new flakes. Please try to reproduce (see"
+        " the above WPT command, though some flags may not be needed when "
         "running locally) and determine if your change introduced the flake. "
         "If you are unable to reproduce the problem, please tag "
         "`@web-platform-tests/wpt-core-team` in a comment for help.\n")
@@ -213,7 +216,8 @@ def write_inconsistent(log, inconsistent, iterations):
         "`%s`" % markdown_adjust(test),
         ("`%s`" % markdown_adjust(subtest)) if subtest else "",
         err_string(results, iterations),
-        ("`%s`" % markdown_adjust(";".join(messages))) if len(messages) else "")
+        ("`%s`" % markdown_adjust(";".join(messages)))
+        if len(messages) else "")
         for test, subtest, results, messages in inconsistent]
     table(["Test", "Subtest", "Results", "Messages"], strings, log)
 
@@ -227,7 +231,8 @@ def write_slow_tests(log, slow):
         "`%.0f`" % duration,
         "`%.0f`" % timeout)
         for test, status, duration, timeout in slow]
-    table(["Test", "Result", "Longest duration (ms)", "Timeout (ms)"], strings, log)
+    table(["Test", "Result", "Longest duration (ms)", "Timeout (ms)"],
+          strings, log)
 
 
 def write_results(log, results, iterations, pr_number=None, use_details=False):
@@ -256,7 +261,8 @@ def write_results(log, results, iterations, pr_number=None, use_details=False):
         strings.extend(((
             ("`%s`" % markdown_adjust(subtest_name)) if subtest else "",
             err_string(subtest["status"], iterations),
-            ("`%s`" % markdown_adjust(';'.join(subtest["messages"]))) if len(subtest["messages"]) else "")
+            ("`%s`" % markdown_adjust(';'.join(subtest["messages"])))
+            if len(subtest["messages"]) else "")
             for subtest_name, subtest in test["subtests"].items()))
         table(["Subtest", "Results", "Messages"], strings, log)
         if use_details:
@@ -266,7 +272,8 @@ def write_results(log, results, iterations, pr_number=None, use_details=False):
         log("</details>\n")
 
 
-def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwargs):
+def run_step(logger, iterations, restart_after_iteration,
+             kwargs_extras, **kwargs):
     from . import wptrunner
     kwargs = copy.deepcopy(kwargs)
 
@@ -329,8 +336,8 @@ def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
                 run_step, logger, repeat_loop, False, kwargs_extra)))
 
         if repeat_restart:
-            desc = "Running tests in a loop with restarts %s times%s" % (repeat_restart,
-                                                                         flags_string)
+            desc = "Running tests in a loop with restarts %s times%s" % (
+                repeat_restart, flags_string)
             steps.append((desc, functools.partial(
                 run_step, logger, repeat_restart, True, kwargs_extra)))
 
@@ -352,8 +359,8 @@ def write_summary(logger, step_results, final_result):
     logger.info(':::')
 
 
-def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, max_time=None,
-                    output_results=True, **kwargs):
+def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True,
+                    max_time=None, output_results=True, **kwargs):
     kwargs_extras = [{}]
     if chaos_mode and kwargs["product"] == "firefox":
         kwargs_extras.append({"chaos_mode_flags": "0xfb"})
@@ -367,7 +374,8 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
         kwargs["github_checks_text_file"])
 
     for desc, step_func in steps:
-        if max_time and datetime.now() - start_time > timedelta(minutes=max_time):
+        if max_time and \
+                datetime.now() - start_time > timedelta(minutes=max_time):
             logger.info("::: Test verification is taking too long: Giving up!")
             logger.info(
                 "::: So far, all checks passed, but not all checks were run.")

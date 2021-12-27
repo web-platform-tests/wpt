@@ -269,7 +269,7 @@ def run_test_iteration(counts, test_loader, test_source_kwargs,
 def evaluate_runs(counts, avoided_timeout, kwargs):
     """Evaluates the test counts after the
     given number of repeat runs has finished"""
-    if counts["total_tests"]:
+    if counts["total_tests"] == 0:
         if counts["skipped"] > 0:
             logger.warning("All requested tests were skipped")
         else:

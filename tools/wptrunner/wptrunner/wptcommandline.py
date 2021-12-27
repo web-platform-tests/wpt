@@ -3,7 +3,6 @@ import os
 import sys
 from collections import OrderedDict
 from distutils.spawn import find_executable
-from datetime import timedelta
 
 from . import config
 from . import wpttest

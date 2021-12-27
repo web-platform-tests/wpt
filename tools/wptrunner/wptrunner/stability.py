@@ -142,13 +142,6 @@ def process_results(log, iterations):
     reader.handle_log(reader.read(log), handler)
     results = handler.results
 
-    print("Daniel - process_results")
-    print(results)
-    print(dir(handler))
-    print(type(handler))
-    print(type(log))
-    print(log)
-
     for test_name, test in results.items():
         if is_inconsistent(test["status"], iterations):
             inconsistent.append((test_name, None, test["status"], []))
@@ -307,23 +300,11 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
 
     log.seek(0)
     results, inconsistent, slow = process_results(log, iterations)
-    # print("Daniel - results")
-    # print(f"{results=}")
-    # print(f"{inconsistent=}")
-    # print(f"{slow=}")
-    # print(f"{iterations=}")
     return results, inconsistent, slow, iterations
 
 
 def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
     steps = []
-    print("DANIEL - kwargs extras")
-    print("kwargs_extras")
-    print(kwargs_extras)
-    print("repeat_loop")
-    print(repeat_loop)
-    print("repeat_restart")
-    print(repeat_restart)
 
     for kwargs_extra in kwargs_extras:
         if kwargs_extra:
@@ -370,10 +351,6 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
     start_time = datetime.now()
     step_results = []
 
-    # logger.info("DANIEL - max time")
-    # logger.info(f"{max_time=}")
-    # logger.info(f"{type(max_time)=}")
-
     github_checks_outputter = get_gh_checks_outputter(kwargs["github_checks_text_file"])
 
     for desc, step_func in steps:
@@ -387,7 +364,6 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
         logger.info('::: Running test verification step "%s"...' % desc)
         logger.info(':::')
         results, inconsistent, slow, iterations = step_func(**kwargs)
-        print("finished step func in check_stability")
         if output_results:
             write_results(logger.info, results, iterations)
 
@@ -409,6 +385,4 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
 
         step_results.append((desc, "PASS"))
 
-    print("step_results")
-    print(step_results)
     write_summary(logger, step_results, "PASS")

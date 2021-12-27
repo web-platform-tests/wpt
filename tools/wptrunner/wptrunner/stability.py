@@ -142,8 +142,8 @@ def process_results(log, iterations):
     reader.handle_log(reader.read(log), handler)
     results = handler.results
     print("Daniel - process_results")
-    print(f"{results=}")
-    print(f"{dir(handler)}")
+    # print(f"{results=}")
+    print(f"{dir(handler)=}")
     print(f"{type(log)=}")
     print(f"{log=}")
     for test_name, test in results.items():

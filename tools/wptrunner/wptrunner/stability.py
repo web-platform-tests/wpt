@@ -315,9 +315,13 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
 def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
     steps = []
     print("DANIEL - kwargs extras")
-    print(f"{kwargs_extras=}")
-    print(f"{repeat_loop=}")
-    print(f"{repeat_restart}")
+    print("kwargs_extras")
+    print(kwargs_extras)
+    print("repeat_loop")
+    print(repeat_loop)
+    print("repeat_restart")
+    print(repeat_restart)
+
     for kwargs_extra in kwargs_extras:
         if kwargs_extra:
             flags_string = " with flags %s" % " ".join(
@@ -363,9 +367,9 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
     start_time = datetime.now()
     step_results = []
 
-    logger.info("DANIEL - max time")
-    logger.info(f"{max_time=}")
-    logger.info(f"{type(max_time)=}")
+    # logger.info("DANIEL - max time")
+    # logger.info(f"{max_time=}")
+    # logger.info(f"{type(max_time)=}")
 
     github_checks_outputter = get_gh_checks_outputter(kwargs["github_checks_text_file"])
 
@@ -402,5 +406,6 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
 
         step_results.append((desc, "PASS"))
 
-    print(f"{step_results=}")
+    print("step_results")
+    print(step_results)
     write_summary(logger, step_results, "PASS")

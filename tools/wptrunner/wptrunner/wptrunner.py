@@ -1,6 +1,8 @@
 import json
 import os
 import sys
+from datetime import datetime, timedelta
+from collections import defaultdict
 
 import wptserve
 from wptserve import sslutils
@@ -36,6 +38,7 @@ The upstream repository has the facility for creating a test manifest in JSON
 format. This manifest is used directly to determine which tests exist. Local
 metadata files are used to store the expected test results.
 """
+
 
 def setup_logging(*args, **kwargs):
     global logger
@@ -150,7 +153,135 @@ def get_pause_after_test(test_loader, **kwargs):
     return kwargs["pause_after_test"]
 
 
-def run_tests(config, test_paths, product, **kwargs):
+def run_test_iteration(counts, test_loader, test_source_kwargs,
+                       test_source_cls, run_info, recording,
+                       test_environment, product, kwargs):
+    """Runs the entire test suite.
+    This is called for each repeat run requested."""
+    tests = []
+    for test_type in test_loader.test_types:
+        tests.extend(test_loader.tests[test_type])
+
+    try:
+        test_groups = test_source_cls.tests_by_group(
+            tests, **test_source_kwargs)
+    except Exception:
+        logger.critical("Loading tests failed")
+        return False
+
+    logger.suite_start(test_groups,
+                       name='web-platform-test',
+                       run_info=run_info,
+                       extra={"run_by_dir": kwargs["run_by_dir"]})
+    for test_type in kwargs["test_types"]:
+        logger.info("Running %s tests" % test_type)
+
+        browser_cls = product.get_browser_cls(test_type)
+
+        browser_kwargs = \
+            product.get_browser_kwargs(logger,
+                                       test_type,
+                                       run_info,
+                                       config=test_environment.config,
+                                       num_test_groups=len(
+                                           test_groups),
+                                       **kwargs)
+
+        executor_cls = product.executor_classes.get(test_type)
+        executor_kwargs = product.get_executor_kwargs(logger,
+                                                      test_type,
+                                                      test_environment,
+                                                      run_info,
+                                                      **kwargs)
+
+        if executor_cls is None:
+            logger.error("Unsupported test type %s for product %s" %
+                         (test_type, product.name))
+            continue
+
+        for test in test_loader.disabled_tests[test_type]:
+            logger.test_start(test.id)
+            logger.test_end(test.id, status="SKIP")
+            counts["skipped"] += 1
+
+        if test_type == "testharness":
+            run_tests = {"testharness": []}
+            for test in test_loader.tests["testharness"]:
+                if ((test.testdriver
+                    and not executor_cls.supports_testdriver) or
+                        (test.jsshell and not executor_cls.supports_jsshell)):
+                    logger.test_start(test.id)
+                    logger.test_end(test.id, status="SKIP")
+                    counts["skipped"] += 1
+                else:
+                    run_tests["testharness"].append(test)
+        else:
+            run_tests = test_loader.tests
+
+        recording.pause()
+        with ManagerGroup("web-platform-tests",
+                          kwargs["processes"],
+                          test_source_cls,
+                          test_source_kwargs,
+                          browser_cls,
+                          browser_kwargs,
+                          executor_cls,
+                          executor_kwargs,
+                          kwargs["rerun"],
+                          kwargs["pause_after_test"],
+                          kwargs["pause_on_unexpected"],
+                          kwargs["restart_on_unexpected"],
+                          kwargs["debug_info"],
+                          not kwargs["no_capture_stdio"],
+                          recording=recording) as manager_group:
+            try:
+                manager_group.run(test_type, run_tests)
+            except KeyboardInterrupt:
+                logger.critical("Main thread got signal")
+                manager_group.stop()
+                raise
+            counts["total_tests"] += manager_group.test_count()
+            counts["unexpected"] += manager_group.unexpected_count()
+            counts["unexpected_pass"] += manager_group.unexpected_pass_count()
+
+    return True
+
+
+def evaluate_runs(counts, avoided_timeout, kwargs):
+    """Evaluates the test counts after the
+    given number of repeat runs has finished"""
+    if counts["total_tests"] == 0:
+        if counts["skipped"] > 0:
+            logger.warning("All requested tests were skipped")
+        else:
+            if kwargs["default_exclude"]:
+                logger.info("No tests ran")
+                return True
+            else:
+                logger.critical("No tests ran")
+                return False
+
+    if counts["unexpected"] and not kwargs["fail_on_unexpected"]:
+        logger.info("Tolerating %s unexpected results" % counts["unexpected"])
+        return True
+
+    all_unexpected_passed = (counts["unexpected"] and
+                             counts["unexpected"] == counts["unexpected_pass"])
+    if all_unexpected_passed and not kwargs["fail_on_unexpected_pass"]:
+        logger.info("Tolerating %i unexpected results because they all PASS" %
+                    counts["unexpected_pass"])
+        return True
+
+    # If the runs were stopped early to avoid a TC timeout,
+    # the number of iterations that were run need to be returned
+    # so that the test results can be processed appropriately.
+    if avoided_timeout:
+        kwargs["avoided_timeout"]["did_avoid"] = True
+        kwargs["avoided_timeout"]["iterations_run"] = counts["repeat"]
+    return counts["unexpected"] == 0
+
+
+def run_tests(config, test_paths, product, max_time=None, **kwargs):
     """Set up the test environment, load the list of tests to be executed, and
     invoke the remainder of the code to execute tests"""
     mp = mpcontext.get_context()
@@ -158,9 +289,11 @@ def run_tests(config, test_paths, product, **kwargs):
         recorder = instruments.NullInstrument()
     else:
         recorder = instruments.Instrument(kwargs["instrument_to_file"])
-    with recorder as recording, capture.CaptureIO(logger,
-                                                  not kwargs["no_capture_stdio"],
-                                                  mp_context=mp):
+
+    with recorder as recording, \
+        capture.CaptureIO(logger,
+                          not kwargs["no_capture_stdio"],
+                          mp_context=mp):
         recording.set(["startup"])
         env.do_delayed_imports(logger, test_paths)
 
@@ -174,52 +307,59 @@ def run_tests(config, test_paths, product, **kwargs):
             env_extras.append(FontInstaller(
                 logger,
                 font_dir=kwargs["font_dir"],
-                ahem=os.path.join(test_paths["/"]["tests_path"], "fonts/Ahem.ttf")
+                ahem=os.path.join(
+                    test_paths["/"]["tests_path"], "fonts/Ahem.ttf")
             ))
 
         recording.set(["startup", "load_tests"])
 
-        test_groups = (testloader.TestGroupsFile(logger, kwargs["test_groups_file"])
-                       if kwargs["test_groups_file"] else None)
+        test_groups = \
+            (testloader.TestGroupsFile(logger, kwargs["test_groups_file"])
+             if kwargs["test_groups_file"] else None)
 
         (test_source_cls,
          test_source_kwargs,
          chunker_kwargs) = testloader.get_test_src(logger=logger,
                                                    test_groups=test_groups,
                                                    **kwargs)
-        run_info, test_loader = get_loader(test_paths,
-                                           product.name,
-                                           run_info_extras=product.run_info_extras(**kwargs),
-                                           chunker_kwargs=chunker_kwargs,
-                                           test_groups=test_groups,
-                                           **kwargs)
+        run_info, test_loader = \
+            get_loader(test_paths, product.name,
+                       run_info_extras=product.run_info_extras(
+                           **kwargs),
+                       chunker_kwargs=chunker_kwargs,
+                       test_groups=test_groups,
+                       **kwargs)
 
         logger.info("Using %i client processes" % kwargs["processes"])
 
-        skipped_tests = 0
-        test_total = 0
-        unexpected_total = 0
-        unexpected_pass_total = 0
-
+        counts = defaultdict(int)
         if len(test_loader.test_ids) == 0 and kwargs["test_list"]:
             logger.critical("Unable to find any tests at the path(s):")
             for path in kwargs["test_list"]:
                 logger.critical("  %s" % path)
-            logger.critical("Please check spelling and make sure there are tests in the specified path(s).")
+            logger.critical(
+                "Please check spelling and make sure"
+                " there are tests in the specified path(s).")
             return False
-        kwargs["pause_after_test"] = get_pause_after_test(test_loader, **kwargs)
+        kwargs["pause_after_test"] = get_pause_after_test(
+            test_loader, **kwargs)
 
-        ssl_config = {"type": kwargs["ssl_type"],
-                      "openssl": {"openssl_binary": kwargs["openssl_binary"]},
-                      "pregenerated": {"host_key_path": kwargs["host_key_path"],
-                                       "host_cert_path": kwargs["host_cert_path"],
-                                       "ca_cert_path": kwargs["ca_cert_path"]}}
+        ssl_config = {
+            "type": kwargs["ssl_type"],
+            "openssl": {"openssl_binary": kwargs["openssl_binary"]},
+            "pregenerated": {"host_key_path": kwargs["host_key_path"],
+                             "host_cert_path": kwargs["host_cert_path"],
+                             "ca_cert_path": kwargs["ca_cert_path"]}
+        }
 
-        testharness_timeout_multipler = product.get_timeout_multiplier("testharness",
-                                                                       run_info,
-                                                                       **kwargs)
+        testharness_timeout_multipler = \
+            product.get_timeout_multiplier("testharness",
+                                           run_info,
+                                           **kwargs)
 
-        mojojs_path = kwargs["mojojs_path"] if kwargs["enable_mojojs"] else None
+        mojojs_path = None
+        if kwargs["enable_mojojs"]:
+            mojojs_path = kwargs["mojojs_path"]
 
         recording.set(["startup", "start_environment"])
         with env.TestEnvironment(test_paths,
@@ -235,6 +375,7 @@ def run_tests(config, test_paths, product, **kwargs):
             recording.set(["startup", "ensure_environment"])
             try:
                 test_environment.ensure_started()
+                start_time = datetime.now()
             except env.TestEnvironmentError as e:
                 logger.critical("Error starting test environment: %s" % e)
                 raise
@@ -242,136 +383,66 @@ def run_tests(config, test_paths, product, **kwargs):
             recording.set(["startup"])
 
             repeat = kwargs["repeat"]
-            repeat_count = 0
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
 
-            while repeat_count < repeat or repeat_until_unexpected:
-                repeat_count += 1
+            # keep track of longest time taken to complete a
+            # test suite iteration so that the runs can be stopped
+            # to avoid a possible TC timeout.
+            longest_iteration_time = timedelta()
+            # keep track if we break the loop to avoid timeout.
+            avoided_timeout = False
+
+            while counts["repeat"] < repeat or repeat_until_unexpected:
+                # if the next repeat run could cause the TC timeout to be
+                # reached, stop now and use the test results we have.
+                estimate = datetime.now() + longest_iteration_time
+                if not repeat_until_unexpected and max_time \
+                        and estimate >= start_time + max_time:
+                    avoided_timeout = True
+                    logger.info(
+                        "Repeat runs are in danger of reaching timeout!"
+                        " Quitting early.")
+                    logger.info(
+                        "Ran %s of %s iterations." %
+                        (counts["repeat"], repeat))
+                    break
+
+                # begin tracking runtime of the test suite
+                iteration_start = datetime.now()
+                counts["repeat"] += 1
                 if repeat_until_unexpected:
-                    logger.info("Repetition %i" % (repeat_count))
+                    logger.info("Repetition %i" % (counts["repeat"]))
                 elif repeat > 1:
-                    logger.info("Repetition %i / %i" % (repeat_count, repeat))
+                    logger.info(
+                        "Repetition %i / %i" % (counts["repeat"], repeat))
 
-                test_count = 0
-                unexpected_count = 0
-                unexpected_pass_count = 0
-
-                tests = []
-                for test_type in test_loader.test_types:
-                    tests.extend(test_loader.tests[test_type])
-
-                try:
-                    test_groups = test_source_cls.tests_by_group(tests, **test_source_kwargs)
-                except Exception:
-                    logger.critical("Loading tests failed")
+                iter_success = run_test_iteration(counts, test_loader,
+                                                  test_source_kwargs,
+                                                  test_source_cls, run_info,
+                                                  recording, test_environment,
+                                                  product, kwargs)
+                # if there were issues with the suite run
+                # (tests not loaded, etc.) return
+                if not iter_success:
                     return False
-
-                logger.suite_start(test_groups,
-                                   name='web-platform-test',
-                                   run_info=run_info,
-                                   extra={"run_by_dir": kwargs["run_by_dir"]})
-                for test_type in kwargs["test_types"]:
-                    logger.info("Running %s tests" % test_type)
-
-                    browser_cls = product.get_browser_cls(test_type)
-
-                    browser_kwargs = product.get_browser_kwargs(logger,
-                                                                test_type,
-                                                                run_info,
-                                                                config=test_environment.config,
-                                                                num_test_groups=len(test_groups),
-                                                                **kwargs)
-
-                    executor_cls = product.executor_classes.get(test_type)
-                    executor_kwargs = product.get_executor_kwargs(logger,
-                                                                  test_type,
-                                                                  test_environment,
-                                                                  run_info,
-                                                                  **kwargs)
-
-                    if executor_cls is None:
-                        logger.error("Unsupported test type %s for product %s" %
-                                     (test_type, product.name))
-                        continue
-
-                    for test in test_loader.disabled_tests[test_type]:
-                        logger.test_start(test.id)
-                        logger.test_end(test.id, status="SKIP")
-                        skipped_tests += 1
-
-                    if test_type == "testharness":
-                        run_tests = {"testharness": []}
-                        for test in test_loader.tests["testharness"]:
-                            if ((test.testdriver and not executor_cls.supports_testdriver) or
-                                (test.jsshell and not executor_cls.supports_jsshell)):
-                                logger.test_start(test.id)
-                                logger.test_end(test.id, status="SKIP")
-                                skipped_tests += 1
-                            else:
-                                run_tests["testharness"].append(test)
-                    else:
-                        run_tests = test_loader.tests
-
-                    recording.pause()
-                    with ManagerGroup("web-platform-tests",
-                                      kwargs["processes"],
-                                      test_source_cls,
-                                      test_source_kwargs,
-                                      browser_cls,
-                                      browser_kwargs,
-                                      executor_cls,
-                                      executor_kwargs,
-                                      kwargs["rerun"],
-                                      kwargs["pause_after_test"],
-                                      kwargs["pause_on_unexpected"],
-                                      kwargs["restart_on_unexpected"],
-                                      kwargs["debug_info"],
-                                      not kwargs["no_capture_stdio"],
-                                      recording=recording) as manager_group:
-                        try:
-                            manager_group.run(test_type, run_tests)
-                        except KeyboardInterrupt:
-                            logger.critical("Main thread got signal")
-                            manager_group.stop()
-                            raise
-                        test_count += manager_group.test_count()
-                        unexpected_count += manager_group.unexpected_count()
-                        unexpected_pass_count += manager_group.unexpected_pass_count()
                 recording.set(["after-end"])
-                test_total += test_count
-                unexpected_total += unexpected_count
-                unexpected_pass_total += unexpected_pass_count
-                logger.info("Got %i unexpected results, with %i unexpected passes" %
-                            (unexpected_count, unexpected_pass_count))
+                logger.info(
+                    "Got %i unexpected results, with %i unexpected passes" %
+                    (counts["unexpected"], counts["unexpected_pass"]))
                 logger.suite_end()
-                if repeat_until_unexpected and unexpected_total > 0:
+
+                # determine the longest test suite runtime seen
+                longest_iteration_time = max(
+                    longest_iteration_time,
+                    datetime.now() - iteration_start)
+
+                if repeat_until_unexpected and counts["unexpected"] > 0:
                     break
-                if repeat_count == 1 and len(test_loader.test_ids) == skipped_tests:
+                if counts["repeat"] == 1 \
+                        and len(test_loader.test_ids) == counts["skipped"]:
                     break
 
-    if test_total == 0:
-        if skipped_tests > 0:
-            logger.warning("All requested tests were skipped")
-        else:
-            if kwargs["default_exclude"]:
-                logger.info("No tests ran")
-                return True
-            else:
-                logger.critical("No tests ran")
-                return False
-
-    if unexpected_total and not kwargs["fail_on_unexpected"]:
-        logger.info("Tolerating %s unexpected results" % unexpected_total)
-        return True
-
-    all_unexpected_passed = (unexpected_total and
-                             unexpected_total == unexpected_pass_total)
-    if all_unexpected_passed and not kwargs["fail_on_unexpected_pass"]:
-        logger.info("Tolerating %i unexpected results because they all PASS" %
-                    unexpected_pass_total)
-        return True
-
-    return unexpected_total == 0
+    return evaluate_runs(counts, avoided_timeout, kwargs)
 
 
 def check_stability(**kwargs):

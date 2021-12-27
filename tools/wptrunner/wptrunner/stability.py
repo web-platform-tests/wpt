@@ -4,7 +4,7 @@ import imp
 import io
 import os
 from collections import OrderedDict, defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from mozlog import reader
 from mozlog.formatters import JSONFormatter
@@ -261,7 +261,8 @@ def write_results(log, results, iterations, pr_number=None, use_details=False):
         log("</details>\n")
 
 
-def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwargs):
+def run_step(logger, iterations, restart_after_iteration,
+             kwargs_extras, **kwargs):
     from . import wptrunner
     kwargs = copy.deepcopy(kwargs)
 
@@ -269,6 +270,10 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
         kwargs["repeat"] = iterations
     else:
         kwargs["rerun"] = iterations
+    kwargs["avoided_timeout"] = {"did_avoid": False,
+                                 "iterations_run": iterations}
+    if "max_time" in kwargs:
+        kwargs["max_time"] = timedelta(minutes=kwargs["verify_max_time"])
 
     kwargs["pause_after_test"] = False
     kwargs.update(kwargs_extras)
@@ -289,6 +294,12 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     logger.add_handler(StreamHandler(log, JSONFormatter()))
 
     wptrunner.run_tests(**kwargs)
+
+    # use the number of repeated test suites that were run
+    # to process the results if the runs were stopped to
+    # avoid hitting a TC timeout.
+    if kwargs["avoided_timeout"]["did_avoid"]:
+        iterations = kwargs["avoided_timeout"]["iterations_run"]
 
     logger._state.handlers = initial_handlers
     logger._state.running_tests = set()
@@ -335,8 +346,9 @@ def write_summary(logger, step_results, final_result):
 
     logger.info(':::')
 
-def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, max_time=None,
-                    output_results=True, **kwargs):
+
+def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True,
+                    max_time=None, output_results=True, **kwargs):
     kwargs_extras = [{}]
     if chaos_mode and kwargs["product"] == "firefox":
         kwargs_extras.append({"chaos_mode_flags": "0xfb"})
@@ -346,12 +358,15 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
     start_time = datetime.now()
     step_results = []
 
-    github_checks_outputter = get_gh_checks_outputter(kwargs["github_checks_text_file"])
+    github_checks_outputter = get_gh_checks_outputter(
+        kwargs["github_checks_text_file"])
 
     for desc, step_func in steps:
-        if max_time and datetime.now() - start_time > max_time:
+        if max_time and \
+                datetime.now() - start_time > timedelta(minutes=max_time):
             logger.info("::: Test verification is taking too long: Giving up!")
-            logger.info("::: So far, all checks passed, but not all checks were run.")
+            logger.info(
+                "::: So far, all checks passed, but not all checks were run.")
             write_summary(logger, step_results, "TIMEOUT")
             return 2
 
@@ -365,7 +380,8 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
         if inconsistent:
             step_results.append((desc, "FAIL"))
             if github_checks_outputter:
-                write_github_checks_summary_inconsistent(github_checks_outputter.output, inconsistent, iterations)
+                write_github_checks_summary_inconsistent(
+                    github_checks_outputter.output, inconsistent, iterations)
             write_inconsistent(logger.info, inconsistent, iterations)
             write_summary(logger, step_results, "FAIL")
             return 1
@@ -373,7 +389,8 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
         if slow:
             step_results.append((desc, "FAIL"))
             if github_checks_outputter:
-                write_github_checks_summary_slow_tests(github_checks_outputter.output, slow)
+                write_github_checks_summary_slow_tests(
+                    github_checks_outputter.output, slow)
             write_slow_tests(logger.info, slow)
             write_summary(logger, step_results, "FAIL")
             return 1

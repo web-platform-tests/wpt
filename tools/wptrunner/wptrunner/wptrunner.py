@@ -46,23 +46,26 @@ def setup_logging(*args, **kwargs):
     return logger
 
 
-def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kwargs=None,
-               test_groups=None, **kwargs):
+def get_loader(test_paths, product, debug=None, run_info_extras=None,
+               chunker_kwargs=None, test_groups=None, **kwargs):
     if run_info_extras is None:
         run_info_extras = {}
 
-    run_info = wpttest.get_run_info(kwargs["run_info"], product,
-                                    browser_version=kwargs.get(
-                                        "browser_version"),
-                                    browser_channel=kwargs.get(
-                                        "browser_channel"),
-                                    verify=kwargs.get("verify"),
-                                    debug=debug,
-                                    extras=run_info_extras,
-                                    enable_webrender=kwargs.get("enable_webrender"))
+    run_info = \
+        wpttest.get_run_info(kwargs["run_info"], product,
+                             browser_version=kwargs.get("browser_version"),
+                             browser_channel=kwargs.get("browser_channel"),
+                             verify=kwargs.get("verify"),
+                             debug=debug,
+                             extras=run_info_extras,
+                             enable_webrender=kwargs.get("enable_webrender"))
 
-    test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=kwargs["manifest_update"],
-                                               manifest_download=kwargs["manifest_download"]).load()
+    test_manifests = \
+        testloader.ManifestLoader(test_paths,
+                                  force_manifest_update=kwargs[
+                                      "manifest_update"],
+                                  manifest_download=kwargs[
+                                      "manifest_download"]).load()
 
     manifest_filters = []
 
@@ -74,7 +77,8 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
     if test_groups:
         include = testloader.update_include_for_groups(test_groups, include)
 
-    if include or kwargs["exclude"] or kwargs["include_manifest"] or kwargs["default_exclude"]:
+    if include or kwargs["exclude"] \
+            or kwargs["include_manifest"] or kwargs["default_exclude"]:
         manifest_filters.append(
             testloader.TestFilter(include=include,
                                   exclude=kwargs["exclude"],
@@ -84,19 +88,22 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
 
     ssl_enabled = sslutils.get_cls(kwargs["ssl_type"]).ssl_enabled
     h2_enabled = wptserve.utils.http2_compatible()
-    test_loader = testloader.TestLoader(test_manifests,
-                                        kwargs["test_types"],
-                                        run_info,
-                                        manifest_filters=manifest_filters,
-                                        chunk_type=kwargs["chunk_type"],
-                                        total_chunks=kwargs["total_chunks"],
-                                        chunk_number=kwargs["this_chunk"],
-                                        include_https=ssl_enabled,
-                                        include_h2=h2_enabled,
-                                        include_webtransport_h3=kwargs["enable_webtransport_h3"],
-                                        skip_timeout=kwargs["skip_timeout"],
-                                        skip_implementation_status=kwargs["skip_implementation_status"],
-                                        chunker_kwargs=chunker_kwargs)
+    test_loader = \
+        testloader.TestLoader(test_manifests,
+                              kwargs["test_types"],
+                              run_info,
+                              manifest_filters=manifest_filters,
+                              chunk_type=kwargs["chunk_type"],
+                              total_chunks=kwargs["total_chunks"],
+                              chunk_number=kwargs["this_chunk"],
+                              include_https=ssl_enabled,
+                              include_h2=h2_enabled,
+                              include_webtransport_h3=kwargs[
+                                  "enable_webtransport_h3"],
+                              skip_timeout=kwargs["skip_timeout"],
+                              skip_implementation_status=kwargs[
+                                  "skip_implementation_status"],
+                              chunker_kwargs=chunker_kwargs)
     return run_info, test_loader
 
 

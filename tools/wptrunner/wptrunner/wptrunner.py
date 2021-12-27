@@ -207,8 +207,7 @@ def run_test_iteration(counts, test_loader, test_source_kwargs,
         if test_type == "testharness":
             run_tests = {"testharness": []}
             for test in test_loader.tests["testharness"]:
-                if ((test.testdriver
-                    and not executor_cls.supports_testdriver) or
+                if ((test.testdriver and not executor_cls.supports_testdriver) or
                         (test.jsshell and not executor_cls.supports_jsshell)):
                     logger.test_start(test.id)
                     logger.test_end(test.id, status="SKIP")

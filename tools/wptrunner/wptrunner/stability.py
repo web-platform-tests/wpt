@@ -301,11 +301,11 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
 
     log.seek(0)
     results, inconsistent, slow = process_results(log, iterations)
-    print("Daniel - results")
-    print(f"{results=}")
-    print(f"{inconsistent=}")
-    print(f"{slow=}")
-    print(f"{iterations=}")
+    # print("Daniel - results")
+    # print(f"{results=}")
+    # print(f"{inconsistent=}")
+    # print(f"{slow=}")
+    # print(f"{iterations=}")
     return results, inconsistent, slow, iterations
 
 

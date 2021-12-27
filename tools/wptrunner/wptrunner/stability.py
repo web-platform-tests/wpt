@@ -296,7 +296,10 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     # warning+ level logs only
     logger.add_handler(StreamHandler(log, JSONFormatter()))
 
-    wptrunner.run_tests(**kwargs)
+    _, quit_early_iterations = wptrunner.run_tests(**kwargs)
+
+    if quit_early_iterations:
+        iterations = quit_early_iterations
 
     logger._state.handlers = initial_handlers
     logger._state.running_tests = set()

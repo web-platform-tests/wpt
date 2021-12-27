@@ -392,7 +392,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     unexpected_pass_total)
         return True
 
-    return unexpected_total == 0
+    return unexpected_total == 0, repeat_count
 
 
 def check_stability(**kwargs):

@@ -162,6 +162,8 @@ def get_pause_after_test(test_loader, **kwargs):
 def run_test_iteration(counts, test_loader, test_source_kwargs,
                        test_source_cls, run_info, recording,
                        test_environment, product, kwargs):
+    """Runs the entire test suite.
+    This is called for each repeat run requested."""
     tests = []
     for test_type in test_loader.test_types:
         tests.extend(test_loader.tests[test_type])
@@ -251,7 +253,7 @@ def run_test_iteration(counts, test_loader, test_source_kwargs,
     return True
 
 
-def evaluate_runs(counts, avoided_timeout, repeat_count, kwargs):
+def evaluate_runs(counts, avoided_timeout, kwargs):
     """Evaluates the test counts after the
     given number of repeat runs has finished"""
     if counts["total_tests"]:
@@ -280,7 +282,8 @@ def evaluate_runs(counts, avoided_timeout, repeat_count, kwargs):
     # the number of iterations that were run need to be returned
     # so that the test results can be processed appropriately.
     if avoided_timeout:
-        return counts["unexpected"] == 0, repeat_count
+        kwargs["avoided_timeout"]["did_avoid"] = True
+        kwargs["avoided_timeout"]["iterations_run"] = counts["repeat"]
     return counts["unexpected"] == 0
 
 
@@ -360,7 +363,9 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                                            run_info,
                                            **kwargs)
 
-        mojojs_path = kwargs["mojojs_path"] if kwargs["enable_mojojs"] else None
+        mojojs_path = None
+        if kwargs["enable_mojojs"]:
+            mojojs_path = kwargs["mojojs_path"]
 
         recording.set(["startup", "start_environment"])
         with env.TestEnvironment(test_paths,
@@ -384,7 +389,6 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
             recording.set(["startup"])
 
             repeat = kwargs["repeat"]
-            repeat_count = 0
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
 
             # keep track of longest time taken to complete a
@@ -394,7 +398,7 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
             # keep track if we break the loop to avoid timeout.
             avoided_timeout = False
 
-            while repeat_count < repeat or repeat_until_unexpected:
+            while counts["repeat"] < repeat or repeat_until_unexpected:
                 # if the next repeat run could cause the TC timeout to be
                 # reached, stop now and use the test results we have.
                 estimate = datetime.now() + longest_iteration_time
@@ -405,14 +409,18 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                         "Repeat runs are in danger of reaching timeout!"
                         " Quitting early.")
                     logger.info(
-                        "Ran %s of %s iterations." % (repeat_count, repeat))
+                        "Ran %s of %s iterations." %
+                        (counts["repeat"], repeat))
                     break
+
+                # begin tracking runtime of the test suite
                 iteration_start = datetime.now()
-                repeat_count += 1
+                counts["repeat"] += 1
                 if repeat_until_unexpected:
-                    logger.info("Repetition %i" % (repeat_count))
+                    logger.info("Repetition %i" % (counts["repeat"]))
                 elif repeat > 1:
-                    logger.info("Repetition %i / %i" % (repeat_count, repeat))
+                    logger.info(
+                        "Repetition %i / %i" % (counts["repeat"], repeat))
 
                 iter_success = run_test_iteration(counts, test_loader,
                                                   test_source_kwargs,
@@ -428,16 +436,23 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                     "Got %i unexpected results, with %i unexpected passes" %
                     (counts["unexpected"], counts["unexpected_pass"]))
                 logger.suite_end()
+
+                # determine the longest test suite runtime seen
                 longest_iteration_time = max(
                     longest_iteration_time,
                     datetime.now() - iteration_start)
+                if counts["repeat"] == 8:
+                    avoided_timeout = True
+                    logger.info(
+                        "ran 8 iterations. What will happen quitting early?")
+                    break
                 if repeat_until_unexpected and counts["unexpected"] > 0:
                     break
-                if repeat_count == 1 \
+                if counts["repeat"] == 1 \
                         and len(test_loader.test_ids) == counts["skipped"]:
                     break
 
-    return evaluate_runs(counts, avoided_timeout, repeat_count, kwargs)
+    return evaluate_runs(counts, avoided_timeout, kwargs)
 
 
 def check_stability(**kwargs):

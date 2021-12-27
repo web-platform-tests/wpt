@@ -180,8 +180,8 @@ def run_test_iteration(
         test_groups = test_source_cls.tests_by_group(
             tests, **test_source_kwargs)
     except Exception:
-        logger.critical("Loading tests failed")
-        return False
+
+        return "Loading tests failed"
 
     logger.suite_start(test_groups,
                        name='web-platform-test',
@@ -256,7 +256,7 @@ def run_test_iteration(
             unexpected_count += manager_group.unexpected_count()
             unexpected_pass_count += manager_group.unexpected_pass_count()
 
-    return test_count, unexpected_count, unexpected_pass_count, skipped_tests
+    return None, test_count, unexpected_count, unexpected_pass_count, skipped_tests
 
 
 def run_tests(config, test_paths, product, max_time=None, **kwargs):
@@ -382,7 +382,7 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                     datetime.now() - iteration_start)
                 recording.set(["after-end"])
 
-                test_count, unexpected_count, unexpected_pass_count, skips = run_test_iteration(
+                fail_msg, test_count, unexpected_count, unexpected_pass_count, skips = run_test_iteration(
                     test_loader,
                     test_source_kwargs,
                     test_source_cls,
@@ -392,6 +392,9 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                     product,
                     kwargs
                 )
+                if fail_msg:
+                    logger.critical(fail_msg)
+                    return False
                 test_total += test_count
                 unexpected_total += unexpected_count
                 unexpected_pass_total += unexpected_pass_count

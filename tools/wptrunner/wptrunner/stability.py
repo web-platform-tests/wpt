@@ -305,8 +305,10 @@ def run_step(logger, iterations, restart_after_iteration,
     logger.add_handler(StreamHandler(log, JSONFormatter()))
 
     wptrunner.run_tests(**kwargs)
-    print("Daniel - avoided timeout")
-    print(kwargs["avoided_timeout"])
+
+    # use the number of repeated test suites that were run
+    # to process the results if the runs were stopped to
+    # avoid hitting a TC timeout.
     if kwargs["avoided_timeout"]["did_avoid"]:
         iterations = kwargs["avoided_timeout"]["iterations_run"]
 

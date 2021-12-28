@@ -155,7 +155,7 @@ def get_pause_after_test(test_loader, **kwargs):
 
 def run_test_iteration(counts, test_loader, test_source_kwargs,
                        test_source_cls, run_info, recording,
-                       test_environment, product, kwargs):
+                       test_environment, product, **kwargs):
     """Runs the entire test suite.
     This is called for each repeat run requested."""
     tests = []
@@ -280,7 +280,7 @@ def evaluate_runs(counts, avoided_timeout, kwargs):
     return counts["unexpected"] == 0
 
 
-def run_tests(config, test_paths, product, max_time=None, **kwargs):
+def run_tests(config, test_paths, product, **kwargs):
     """Set up the test environment, load the list of tests to be executed, and
     invoke the remainder of the code to execute tests"""
     mp = mpcontext.get_context()
@@ -381,6 +381,10 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
 
             recording.set(["startup"])
 
+            max_time = None
+            if "repeat_max_time" in kwargs:
+                max_time = kwargs["repeat_max_time"]
+
             repeat = kwargs["repeat"]
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
 
@@ -449,6 +453,7 @@ def check_stability(**kwargs):
     if kwargs["stability"]:
         logger.warning("--stability is deprecated; please use --verify instead!")
         kwargs['verify_max_time'] = None
+        kwargs['repeat_max_time'] = 100
         kwargs['verify_chaos_mode'] = False
         kwargs['verify_repeat_loop'] = 0
         kwargs['verify_repeat_restart'] = 10 if kwargs['repeat'] == 1 else kwargs['repeat']
@@ -456,6 +461,7 @@ def check_stability(**kwargs):
 
     return stability.check_stability(logger,
                                      max_time=kwargs['verify_max_time'],
+                                     repeat_max_time=kwargs['repeat_max_time'],
                                      chaos_mode=kwargs['verify_chaos_mode'],
                                      repeat_loop=kwargs['verify_repeat_loop'],
                                      repeat_restart=kwargs['verify_repeat_restart'],

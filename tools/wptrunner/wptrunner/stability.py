@@ -278,10 +278,6 @@ def run_step(logger, iterations, restart_after_iteration,
     kwargs["avoided_timeout"] = {"did_avoid": False,
                                  "iterations_run": iterations}
 
-    # Ensure the max time all iterations should run is passed
-    # to the wptrunner.run_tests to be used correctly.
-    kwargs["max_time"] = timedelta(minutes=kwargs["verify_max_time"])
-
     kwargs["pause_after_test"] = False
     kwargs.update(kwargs_extras)
 

@@ -272,8 +272,8 @@ def run_step(logger, iterations, restart_after_iteration,
         kwargs["rerun"] = iterations
     kwargs["avoided_timeout"] = {"did_avoid": False,
                                  "iterations_run": iterations}
-    if "max_time" in kwargs:
-        kwargs["max_time"] = timedelta(minutes=kwargs["verify_max_time"])
+
+    kwargs["max_time"] = timedelta(minutes=kwargs["verify_max_time"])
 
     kwargs["pause_after_test"] = False
     kwargs.update(kwargs_extras)

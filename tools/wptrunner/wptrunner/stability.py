@@ -278,10 +278,6 @@ def run_step(logger, iterations, restart_after_iteration,
     kwargs["avoided_timeout"] = {"did_avoid": False,
                                  "iterations_run": iterations}
 
-    # Ensure the max time all iterations should run is passed
-    # to the wptrunner.run_tests to be used correctly.
-    kwargs["max_time"] = timedelta(minutes=kwargs["verify_max_time"])
-
     kwargs["pause_after_test"] = False
     kwargs.update(kwargs_extras)
 
@@ -329,12 +325,24 @@ def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
         if repeat_loop:
             desc = "Running tests in a loop %d times%s" % (repeat_loop,
                                                            flags_string)
-            steps.append((desc, functools.partial(run_step, logger, repeat_loop, False, kwargs_extra)))
+            steps.append((desc,
+                          functools.partial(run_step,
+                                            logger,
+                                            repeat_loop,
+                                            False,
+                                            kwargs_extra),
+                          repeat_loop))
 
         if repeat_restart:
             desc = "Running tests in a loop with restarts %s times%s" % (repeat_restart,
                                                                          flags_string)
-            steps.append((desc, functools.partial(run_step, logger, repeat_restart, True, kwargs_extra)))
+            steps.append((desc,
+                          functools.partial(run_step,
+                                            logger,
+                                            repeat_restart,
+                                            True,
+                                            kwargs_extra),
+                          repeat_restart))
 
     return steps
 
@@ -354,7 +362,7 @@ def write_summary(logger, step_results, final_result):
     logger.info(':::')
 
 
-def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True,
+def check_stability(logger, repeat_loop=10, repeat_restart=10, chaos_mode=True,
                     max_time=None, output_results=True, **kwargs):
     kwargs_extras = [{}]
     if chaos_mode and kwargs["product"] == "firefox":
@@ -368,7 +376,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True,
     github_checks_outputter = get_gh_checks_outputter(
         kwargs["github_checks_text_file"])
 
-    for desc, step_func in steps:
+    for desc, step_func, expected_iterations in steps:
         if max_time and \
                 datetime.now() - start_time > timedelta(minutes=max_time):
             logger.info("::: Test verification is taking too long: Giving up!")
@@ -402,6 +410,14 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True,
             write_summary(logger, step_results, "FAIL")
             return 1
 
-        step_results.append((desc, "PASS"))
+        # If the tests passed but the number of iterations didn't match
+        # the number expected to run, it is likely that the runs were
+        # stopped early to avoid a timeout.
+        if iterations != expected_iterations:
+            result = "PASS *  %i/%i repeats completed" % (
+                iterations, expected_iterations)
+            step_results.append((desc, result))
+        else:
+            step_results.append((desc, "PASS"))
 
     write_summary(logger, step_results, "PASS")

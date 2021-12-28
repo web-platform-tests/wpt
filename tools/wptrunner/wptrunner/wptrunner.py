@@ -155,7 +155,7 @@ def get_pause_after_test(test_loader, **kwargs):
 
 def run_test_iteration(counts, test_loader, test_source_kwargs,
                        test_source_cls, run_info, recording,
-                       test_environment, product, kwargs):
+                       test_environment, product, run_test_kwargs):
     """Runs the entire test suite.
     This is called for each repeat run requested."""
     tests = []
@@ -172,8 +172,8 @@ def run_test_iteration(counts, test_loader, test_source_kwargs,
     logger.suite_start(test_groups,
                        name='web-platform-test',
                        run_info=run_info,
-                       extra={"run_by_dir": kwargs["run_by_dir"]})
-    for test_type in kwargs["test_types"]:
+                       extra={"run_by_dir": run_test_kwargs["run_by_dir"]})
+    for test_type in run_test_kwargs["test_types"]:
         logger.info("Running %s tests" % test_type)
 
         browser_cls = product.get_browser_cls(test_type)
@@ -185,14 +185,14 @@ def run_test_iteration(counts, test_loader, test_source_kwargs,
                                        config=test_environment.config,
                                        num_test_groups=len(
                                            test_groups),
-                                       **kwargs)
+                                       **run_test_kwargs)
 
         executor_cls = product.executor_classes.get(test_type)
         executor_kwargs = product.get_executor_kwargs(logger,
                                                       test_type,
                                                       test_environment,
                                                       run_info,
-                                                      **kwargs)
+                                                      **run_test_kwargs)
 
         if executor_cls is None:
             logger.error("Unsupported test type %s for product %s" %
@@ -219,19 +219,19 @@ def run_test_iteration(counts, test_loader, test_source_kwargs,
 
         recording.pause()
         with ManagerGroup("web-platform-tests",
-                          kwargs["processes"],
+                          run_test_kwargs["processes"],
                           test_source_cls,
                           test_source_kwargs,
                           browser_cls,
                           browser_kwargs,
                           executor_cls,
                           executor_kwargs,
-                          kwargs["rerun"],
-                          kwargs["pause_after_test"],
-                          kwargs["pause_on_unexpected"],
-                          kwargs["restart_on_unexpected"],
-                          kwargs["debug_info"],
-                          not kwargs["no_capture_stdio"],
+                          run_test_kwargs["rerun"],
+                          run_test_kwargs["pause_after_test"],
+                          run_test_kwargs["pause_on_unexpected"],
+                          run_test_kwargs["restart_on_unexpected"],
+                          run_test_kwargs["debug_info"],
+                          not run_test_kwargs["no_capture_stdio"],
                           recording=recording) as manager_group:
             try:
                 manager_group.run(test_type, run_tests)
@@ -246,27 +246,27 @@ def run_test_iteration(counts, test_loader, test_source_kwargs,
     return True
 
 
-def evaluate_runs(counts, avoided_timeout, kwargs):
+def evaluate_runs(counts, avoided_timeout, run_test_kwargs):
     """Evaluates the test counts after the
     given number of repeat runs has finished"""
     if counts["total_tests"] == 0:
         if counts["skipped"] > 0:
             logger.warning("All requested tests were skipped")
         else:
-            if kwargs["default_exclude"]:
+            if run_test_kwargs["default_exclude"]:
                 logger.info("No tests ran")
                 return True
             else:
                 logger.critical("No tests ran")
                 return False
 
-    if counts["unexpected"] and not kwargs["fail_on_unexpected"]:
+    if counts["unexpected"] and not run_test_kwargs["fail_on_unexpected"]:
         logger.info("Tolerating %s unexpected results" % counts["unexpected"])
         return True
 
     all_unexpected_passed = (counts["unexpected"] and
                              counts["unexpected"] == counts["unexpected_pass"])
-    if all_unexpected_passed and not kwargs["fail_on_unexpected_pass"]:
+    if all_unexpected_passed and not run_test_kwargs["fail_on_unexpected_pass"]:
         logger.info("Tolerating %i unexpected results because they all PASS" %
                     counts["unexpected_pass"])
         return True
@@ -275,12 +275,12 @@ def evaluate_runs(counts, avoided_timeout, kwargs):
     # the number of iterations that were run need to be returned
     # so that the test results can be processed appropriately.
     if avoided_timeout:
-        kwargs["avoided_timeout"]["did_avoid"] = True
-        kwargs["avoided_timeout"]["iterations_run"] = counts["repeat"]
+        run_test_kwargs["avoided_timeout"]["did_avoid"] = True
+        run_test_kwargs["avoided_timeout"]["iterations_run"] = counts["repeat"]
     return counts["unexpected"] == 0
 
 
-def run_tests(config, test_paths, product, max_time=None, **kwargs):
+def run_tests(config, test_paths, product, **kwargs):
     """Set up the test environment, load the list of tests to be executed, and
     invoke the remainder of the code to execute tests"""
     mp = mpcontext.get_context()
@@ -379,6 +379,15 @@ def run_tests(config, test_paths, product, max_time=None, **kwargs):
                 raise
 
             start_time = datetime.now()
+            recording.set(["startup"])
+
+            max_time = None
+            if "repeat_max_time" in kwargs:
+                max_time = timedelta(minutes=kwargs["repeat_max_time"])
+
+            repeat = kwargs["repeat"]
+            repeat_until_unexpected = kwargs["repeat_until_unexpected"]
+
             # keep track of longest time taken to complete a
             # test suite iteration so that the runs can be stopped
             # to avoid a possible TC timeout.

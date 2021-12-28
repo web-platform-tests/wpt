@@ -453,7 +453,6 @@ def check_stability(**kwargs):
     if kwargs["stability"]:
         logger.warning("--stability is deprecated; please use --verify instead!")
         kwargs['verify_max_time'] = None
-        kwargs['repeat_max_time'] = 100
         kwargs['verify_chaos_mode'] = False
         kwargs['verify_repeat_loop'] = 0
         kwargs['verify_repeat_restart'] = 10 if kwargs['repeat'] == 1 else kwargs['repeat']
@@ -461,7 +460,6 @@ def check_stability(**kwargs):
 
     return stability.check_stability(logger,
                                      max_time=kwargs['verify_max_time'],
-                                     repeat_max_time=kwargs['repeat_max_time'],
                                      chaos_mode=kwargs['verify_chaos_mode'],
                                      repeat_loop=kwargs['verify_repeat_loop'],
                                      repeat_restart=kwargs['verify_repeat_restart'],

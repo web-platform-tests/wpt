@@ -383,7 +383,7 @@ def run_tests(config, test_paths, product, **kwargs):
 
             max_time = None
             if "repeat_max_time" in kwargs:
-                max_time = kwargs["repeat_max_time"]
+                max_time = timedelta(minutes=kwargs["repeat_max_time"])
 
             repeat = kwargs["repeat"]
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]

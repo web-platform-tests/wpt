@@ -423,7 +423,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                                   test_source_kwargs,
                                                   test_source_cls, run_info,
                                                   recording, test_environment,
-                                                  product, kwargs)
+                                                  product, **kwargs)
                 # if there were issues with the suite run
                 # (tests not loaded, etc.) return
                 if not iter_success:

@@ -270,10 +270,17 @@ def run_step(logger, iterations, restart_after_iteration,
         kwargs["repeat"] = iterations
     else:
         kwargs["rerun"] = iterations
+
+    # Keep track if the runs were stopped early to avoid
+    # hitting the timeout. If so, the actual number of iterations run
+    # should be used to process the results. The number here will
+    # be set to the actual value for later reference if it changes.
     kwargs["avoided_timeout"] = {"did_avoid": False,
                                  "iterations_run": iterations}
-    if "max_time" in kwargs:
-        kwargs["max_time"] = timedelta(minutes=kwargs["verify_max_time"])
+
+    # Ensure the max time all iterations should run is passed
+    # to the wptrunner.run_tests to be used correctly.
+    kwargs["max_time"] = timedelta(minutes=kwargs["verify_max_time"])
 
     kwargs["pause_after_test"] = False
     kwargs.update(kwargs_extras)
@@ -295,9 +302,9 @@ def run_step(logger, iterations, restart_after_iteration,
 
     wptrunner.run_tests(**kwargs)
 
-    # use the number of repeated test suites that were run
+    # Use the number of repeated test suites that were run
     # to process the results if the runs were stopped to
-    # avoid hitting a TC timeout.
+    # avoid hitting the maximum run time.
     if kwargs["avoided_timeout"]["did_avoid"]:
         iterations = kwargs["avoided_timeout"]["iterations_run"]
 

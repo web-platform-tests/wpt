@@ -389,6 +389,16 @@ def check_stability(logger, repeat_loop=10, repeat_restart=10, chaos_mode=True,
         logger.info('::: Running test verification step "%s"...' % desc)
         logger.info(':::')
         results, inconsistent, slow, iterations = step_func(**kwargs)
+
+        if iterations <= 1:
+            step_results.append((desc, "FAIL"))
+            logger.info("::: Reached iteration timeout before finishing "
+                        "2 or more repeat runs.")
+            logger.info("::: At least 2 successful repeat runs are required "
+                        "to validate stability.")
+            write_summary(logger, step_results, "TIMEOUT")
+            return 1
+
         if output_results:
             write_results(logger.info, results, iterations)
 

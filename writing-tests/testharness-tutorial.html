@@ -196,50 +196,50 @@ there are some improvements we can make to what we’ve written so far.</p>
 ensures a consistent state for any additional subtests we may add and also for
 any tests that follow. We’ll use the <code class="docutils literal notranslate"><span class="pre">add_cleanup</span></code> method to ensure that the
 cookie is deleted even if the test fails.</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">-promise_test(function() {</span>
-<span class="gi">+promise_test(function(t) {</span>
-<span class="gi">+  t.add_cleanup(function() {</span>
-<span class="gi">+    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;</span>
-<span class="gi">+  });</span>
-<span class="gi">+</span>
-   return fetch(&#39;thing.asis&#39;)
-     .then(function() {
-         assert_equals(document.cookie, &#39;test1=t1&#39;);
-       });
- });
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">-promise_test(function() {</span><span class="w"></span>
+<span class="gi">+promise_test(function(t) {</span><span class="w"></span>
+<span class="gi">+  t.add_cleanup(function() {</span><span class="w"></span>
+<span class="gi">+    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;</span><span class="w"></span>
+<span class="gi">+  });</span><span class="w"></span>
+<span class="gi">+</span><span class="w"></span>
+<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)<span class="w"></span>
+<span class="w"> </span>    .then(function() {<span class="w"></span>
+<span class="w"> </span>        assert_equals(document.cookie, &#39;test1=t1&#39;);<span class="w"></span>
+<span class="w"> </span>      });<span class="w"></span>
+<span class="w"> </span>});<span class="w"></span>
 </pre></div>
 </div>
 <p>Although we’d prefer it if there were no other cookies defined during our test,
 we shouldn’t take that for granted. As written, the test will fail if the
 <code class="docutils literal notranslate"><span class="pre">document.cookie</span></code> includes additional cookies. We’ll use slightly more
 complicated logic to test for the presence of the expected cookie.</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span> promise_test(function(t) {
-   t.add_cleanup(function() {
-     document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;
-   });
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>promise_test(function(t) {<span class="w"></span>
+<span class="w"> </span>  t.add_cleanup(function() {<span class="w"></span>
+<span class="w"> </span>    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;<span class="w"></span>
+<span class="w"> </span>  });<span class="w"></span>
 
-   return fetch(&#39;thing.asis&#39;)
-     .then(function() {
-<span class="gd">-        assert_equals(document.cookie, &#39;test1=t1&#39;);</span>
-<span class="gi">+        assert_true(/(^|; )test1=t1($|;)/.test(document.cookie);</span>
-       });
- });
+<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)<span class="w"></span>
+<span class="w"> </span>    .then(function() {<span class="w"></span>
+<span class="gd">-        assert_equals(document.cookie, &#39;test1=t1&#39;);</span><span class="w"></span>
+<span class="gi">+        assert_true(/(^|; )test1=t1($|;)/.test(document.cookie);</span><span class="w"></span>
+<span class="w"> </span>      });<span class="w"></span>
+<span class="w"> </span>});<span class="w"></span>
 </pre></div>
 </div>
 <p>In the screen shot above, the subtest’s result was reported using the
 document’s title, “fetch: setting cookies”. Since we expect to add another
 subtest, we should give this one a more specific name:</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span> promise_test(function(t) {
-   t.add_cleanup(function() {
-     document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;
-   });
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>promise_test(function(t) {<span class="w"></span>
+<span class="w"> </span>  t.add_cleanup(function() {<span class="w"></span>
+<span class="w"> </span>    document.cookie = &#39;test1=;expires=Thu, 01 Jan 1970 00:00:01 GMT;&#39;;<span class="w"></span>
+<span class="w"> </span>  });<span class="w"></span>
 
-   return fetch(&#39;thing.asis&#39;)
-     .then(function() {
-         assert_true(/(^|; )test1=t1($|;)/.test(document.cookie));
-       });
-<span class="gd">-});</span>
-<span class="gi">+}, &#39;cookie set for successful request&#39;);</span>
+<span class="w"> </span>  return fetch(&#39;thing.asis&#39;)<span class="w"></span>
+<span class="w"> </span>    .then(function() {<span class="w"></span>
+<span class="w"> </span>        assert_true(/(^|; )test1=t1($|;)/.test(document.cookie));<span class="w"></span>
+<span class="w"> </span>      });<span class="w"></span>
+<span class="gd">-});</span><span class="w"></span>
+<span class="gi">+}, &#39;cookie set for successful request&#39;);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -255,12 +255,12 @@ Goals of this section:
 For instance, it should <em>not</em> set a cookie if the request fails due to
 cross-origin security restrictions. Let’s write a subtest which verifies that.</p>
 <p>We’ll add another <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag for a JavaScript support file:</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span> &lt;!DOCTYPE html&gt;
- &lt;meta charset=&quot;utf-8&quot;&gt;
- &lt;title&gt;fetch: setting cookies&lt;/title&gt;
- &lt;script src=&quot;/resources/testharness.js&quot;&gt;&lt;/script&gt;
- &lt;script src=&quot;/resources/testharnessreport.js&quot;&gt;&lt;/script&gt;
-<span class="gi">+&lt;script src=&quot;/common/get-host-info.sub.js&quot;&gt;&lt;/script&gt;</span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>&lt;!DOCTYPE html&gt;<span class="w"></span>
+<span class="w"> </span>&lt;meta charset=&quot;utf-8&quot;&gt;<span class="w"></span>
+<span class="w"> </span>&lt;title&gt;fetch: setting cookies&lt;/title&gt;<span class="w"></span>
+<span class="w"> </span>&lt;script src=&quot;/resources/testharness.js&quot;&gt;&lt;/script&gt;<span class="w"></span>
+<span class="w"> </span>&lt;script src=&quot;/resources/testharnessreport.js&quot;&gt;&lt;/script&gt;<span class="w"></span>
+<span class="gi">+&lt;script src=&quot;/common/get-host-info.sub.js&quot;&gt;&lt;/script&gt;</span><span class="w"></span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">get-host-info.sub.js</span></code> is a general-purpose script provided by WPT. It’s

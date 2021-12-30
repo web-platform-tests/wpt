@@ -200,7 +200,7 @@ be rather low-level but applicable to many situations.</p>
 <p>Code is run as part of the test by calling the <a class="reference external" href="#Test.step"><code class="docutils literal notranslate"><span class="pre">step</span></code></a>
 method with a function containing the test
 <a class="reference external" href="#assert-functions">assertions</a>:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">t</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span> <span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
   <span class="p">});</span>
@@ -216,7 +216,7 @@ be called:</p>
 function is called with the test object as both its <code class="docutils literal notranslate"><span class="pre">this</span></code> object and
 first argument. The above example can be rewritten as:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">async_test</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">t</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
       <span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span> <span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
     <span class="p">});</span>
@@ -228,7 +228,7 @@ first argument. The above example can be rewritten as:</p>
 <p>In many cases it is convenient to run a step in response to an event or a
 callback. A convenient method of doing this is through the <code class="docutils literal notranslate"><span class="pre">step_func</span></code> method
 which returns a function that, when called runs a test step. For example:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_func</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span> <span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
   <span class="nx">t</span><span class="p">.</span><span class="nx">done</span><span class="p">();</span>
 <span class="p">}));</span>
@@ -237,7 +237,7 @@ which returns a function that, when called runs a test step. For example:</p>
 <p>As a further convenience, the <code class="docutils literal notranslate"><span class="pre">step_func</span></code> that calls
 <a class="reference external" href="#Test.done"><code class="docutils literal notranslate"><span class="pre">done</span></code></a> can instead use
 <a class="reference external" href="#Test.step_func_done"><code class="docutils literal notranslate"><span class="pre">step_func_done</span></code></a>, as follows:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_func_done</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">step_func_done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">assert_true</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bubbles</span><span class="p">,</span> <span class="s2">&quot;bubbles should be true&quot;</span><span class="p">);</span>
 <span class="p">}));</span>
 </pre></div>

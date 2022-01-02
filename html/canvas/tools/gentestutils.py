@@ -120,12 +120,12 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         doctest.testmod()
         sys.exit()
 
-    templates = yaml.load(open(TEMPLATEFILE, "r").read())
-    name_mapping = yaml.load(open(NAME2DIRFILE, "r").read())
+    templates = yaml.safe_load(open(TEMPLATEFILE, "r").read())
+    name_mapping = yaml.safe_load(open(NAME2DIRFILE, "r").read())
 
     SPECFILE = 'spec.yaml'
     spec_assertions = []
-    for s in yaml.load(open(SPECFILE, "r").read())['assertions']:
+    for s in yaml.safe_load(open(SPECFILE, "r").read())['assertions']:
         if 'meta' in s:
             eval(compile(s['meta'], '<meta spec assertion>', 'exec'), {}, {'assertions':spec_assertions})
         else:
@@ -138,7 +138,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
     TESTSFILES = [
         os.path.join(test_yaml_directory, f) for f in os.listdir(test_yaml_directory)
         if f.endswith(".yaml")]
-    for t in sum([ yaml.load(open(f, "r").read()) for f in TESTSFILES], []):
+    for t in sum([ yaml.safe_load(open(f, "r").read()) for f in TESTSFILES], []):
         if 'DISABLED' in t:
             continue
         if 'meta' in t:
@@ -404,13 +404,15 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                 'fallback':fallback, 'attributes':attributes,
                 'context_args': context_args
             }
-
-            f = codecs.open('%s/%s%s.html' % (TESTOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
-            f.write(templates['w3c'] % template_params)
             if ISOFFSCREENCANVAS:
+                f = codecs.open('%s/%s%s.html' % (TESTOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
+                f.write(templates['w3coffscreencanvas'] % template_params)
                 timeout = '// META: timeout=%s\n' % test['timeout'] if 'timeout' in test else ''
                 template_params['timeout'] = timeout
                 f = codecs.open('%s/%s%s.worker.js' % (TESTOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
                 f.write(templates['w3cworker'] % template_params)
+            else:
+                f = codecs.open('%s/%s%s.html' % (TESTOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
+                f.write(templates['w3ccanvas'] % template_params)
 
     print()

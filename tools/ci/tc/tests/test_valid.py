@@ -37,6 +37,28 @@ def test_verify_taskcluster_yml():
         jsone.render(template, context)
 
 
+@pytest.mark.parametrize("event_path,expected",
+                         [("pr_event.json",
+                           frozenset(["lint", "wpt-chrome-dev-stability"])),
+                          ("pr_event_tests_affected.json", frozenset(["lint"]))]
+                         )
+def test_exclude_users(event_path, expected):
+    """Verify that tasks excluded by the PR submitter are properly excluded"""
+    tasks = {
+        "lint": {
+            "commands": "wpt example"
+        },
+        "wpt-chrome-dev-stability": {
+            "commands": "wpt example",
+            "exclude-users": ["chromium-wpt-export-bot"]
+        }
+    }
+    with open(data_path(event_path), encoding="utf8") as f:
+        event = json.load(f)
+        decision.filter_excluded_users(tasks, event)
+        assert set(tasks) == expected
+
+
 def test_verify_payload():
     """Verify that the decision task produces tasks with a valid payload"""
     from tools.ci.tc.decision import decide
@@ -92,7 +114,6 @@ def test_verify_payload():
       'wpt-firefox-nightly-testharness-14',
       'wpt-firefox-nightly-testharness-15',
       'wpt-firefox-nightly-testharness-16',
-      'wpt-firefox-nightly-testharness-17',
       'wpt-chrome-dev-testharness-1',
       'wpt-chrome-dev-testharness-2',
       'wpt-chrome-dev-testharness-3',
@@ -109,7 +130,6 @@ def test_verify_payload():
       'wpt-chrome-dev-testharness-14',
       'wpt-chrome-dev-testharness-15',
       'wpt-chrome-dev-testharness-16',
-      'wpt-chrome-dev-testharness-17',
       'wpt-firefox-nightly-reftest-1',
       'wpt-firefox-nightly-reftest-2',
       'wpt-firefox-nightly-reftest-3',
@@ -147,7 +167,6 @@ def test_verify_payload():
       'wpt-firefox-nightly-stability',
       'wpt-firefox-nightly-results',
       'wpt-firefox-nightly-results-without-changes',
-      'wpt-chrome-dev-stability',
       'wpt-chrome-dev-results',
       'wpt-chrome-dev-results-without-changes',
       'lint',
@@ -170,7 +189,6 @@ def test_verify_payload():
       'wpt-firefox-stable-testharness-14',
       'wpt-firefox-stable-testharness-15',
       'wpt-firefox-stable-testharness-16',
-      'wpt-firefox-stable-testharness-17',
       'wpt-chrome-nightly-testharness-1',
       'wpt-chrome-nightly-testharness-2',
       'wpt-chrome-nightly-testharness-3',
@@ -187,7 +205,6 @@ def test_verify_payload():
       'wpt-chrome-nightly-testharness-14',
       'wpt-chrome-nightly-testharness-15',
       'wpt-chrome-nightly-testharness-16',
-      'wpt-chrome-nightly-testharness-17',
       'wpt-chrome-stable-testharness-1',
       'wpt-chrome-stable-testharness-2',
       'wpt-chrome-stable-testharness-3',
@@ -204,7 +221,6 @@ def test_verify_payload():
       'wpt-chrome-stable-testharness-14',
       'wpt-chrome-stable-testharness-15',
       'wpt-chrome-stable-testharness-16',
-      'wpt-chrome-stable-testharness-17',
       'wpt-webkitgtk_minibrowser-nightly-testharness-1',
       'wpt-webkitgtk_minibrowser-nightly-testharness-2',
       'wpt-webkitgtk_minibrowser-nightly-testharness-3',
@@ -221,7 +237,6 @@ def test_verify_payload():
       'wpt-webkitgtk_minibrowser-nightly-testharness-14',
       'wpt-webkitgtk_minibrowser-nightly-testharness-15',
       'wpt-webkitgtk_minibrowser-nightly-testharness-16',
-      'wpt-webkitgtk_minibrowser-nightly-testharness-17',
       'wpt-servo-nightly-testharness-1',
       'wpt-servo-nightly-testharness-2',
       'wpt-servo-nightly-testharness-3',
@@ -238,7 +253,6 @@ def test_verify_payload():
       'wpt-servo-nightly-testharness-14',
       'wpt-servo-nightly-testharness-15',
       'wpt-servo-nightly-testharness-16',
-      'wpt-servo-nightly-testharness-17',
       'wpt-firefox-stable-reftest-1',
       'wpt-firefox-stable-reftest-2',
       'wpt-firefox-stable-reftest-3',

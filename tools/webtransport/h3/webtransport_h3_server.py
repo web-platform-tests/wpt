@@ -42,6 +42,8 @@ class H3ConnectionWithDatagram04(H3Connection):
     HTTP Datagram protocol.
     """
     H3_DATAGRAM_04 = 0xffd277
+    # https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-h3-websockets-00#section-5
+    ENABLE_CONNECT_PROTOCOL = 0x08
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -58,6 +60,7 @@ class H3ConnectionWithDatagram04(H3Connection):
         H3_DATAGRAM_04 = H3ConnectionWithDatagram04.H3_DATAGRAM_04
         settings = super()._get_local_settings()
         settings[H3_DATAGRAM_04] = 1
+        settings[H3ConnectionWithDatagram04.ENABLE_CONNECT_PROTOCOL] = 1
         return settings
 
     @property
@@ -167,9 +170,9 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
             elif capsule.type == CapsuleType.CLOSE_WEBTRANSPORT_SESSION:
                 buffer = Buffer(data=capsule.data)
                 code = buffer.pull_uint32()
-                # TODO(yutakahirano): Make sure `reason` is a
-                # UTF-8 text.
-                reason = buffer.data
+                # 4 bytes for the uint32.
+                reason = buffer.pull_bytes(len(capsule.data) - 4)
+                # TODO(yutakahirano): Make sure `reason` is a UTF-8 text.
                 self._close_info = (code, reason)
                 if fin:
                     self._call_session_closed(self._close_info, abruptly=False)
@@ -203,6 +206,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
 
         response_headers = [
             (b"server", SERVER_NAME.encode()),
+            (b"sec-webtransport-http3-draft", b"draft02"),
         ]
         self._handler.connect_received(response_headers=response_headers)
 
@@ -291,10 +295,9 @@ class WebTransportSession:
             buffer.push_bytes(reason)
             capsule =\
                 H3Capsule(CapsuleType.CLOSE_WEBTRANSPORT_SESSION, buffer.data)
-            self.send_stream_data(session_stream_id, capsule.encode())
+            self._http.send_data(session_stream_id, capsule.encode(), end_stream=False)
 
-        self.send_stream_data(session_stream_id, b'', end_stream=True)
-        self._protocol.transmit()
+        self._http.send_data(session_stream_id, b'', end_stream=True)
         # TODO(yutakahirano): Reset all other streams.
         # TODO(yutakahirano): Reject future stream open requests
         # We need to wait for the stream data to arrive at the client, and then

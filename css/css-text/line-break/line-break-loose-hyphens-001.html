@@ -7,7 +7,12 @@
 <link rel=match href="reference/line-break-loose-hyphens-001-ref.html">
 <meta name=assert content="breaks before U+2010 or U+2013 when line-break is loose are allowed if the preceding character has class ID.">
 <style>
+@font-face {
+  font-family: "mplus-1p-regular";
+  src: url("/fonts/mplus-1p-regular.woff") format("woff");
+}
 div {
+  font-family: "mplus-1p-regular";
   width: 2em;
   line-break: loose;
   border: solid cyan;

@@ -39,7 +39,6 @@ format. This manifest is used directly to determine which tests exist. Local
 metadata files are used to store the expected test results.
 """
 
-
 def setup_logging(*args, **kwargs):
     global logger
     logger = wptlogging.setup(*args, **kwargs)
@@ -246,7 +245,7 @@ def run_test_iteration(counts, test_loader, test_source_kwargs,
     return True
 
 
-def evaluate_runs(counts, avoided_timeout, run_test_kwargs):
+def evaluate_runs(counts, iteration_timeout, run_test_kwargs):
     """Evaluates the test counts after the
     given number of repeat runs has finished"""
     if counts["total_tests"] == 0:
@@ -274,9 +273,9 @@ def evaluate_runs(counts, avoided_timeout, run_test_kwargs):
     # If the runs were stopped early to avoid a TC timeout,
     # the number of iterations that were run need to be returned
     # so that the test results can be processed appropriately.
-    if avoided_timeout:
-        run_test_kwargs["avoided_timeout"]["did_avoid"] = True
-        run_test_kwargs["avoided_timeout"]["iterations_run"] = counts["repeat"]
+    if iteration_timeout:
+        run_test_kwargs["timeout"]["triggered"] = True
+        run_test_kwargs["timeout"]["iterations_run"] = counts["repeat"]
     return counts["unexpected"] == 0
 
 
@@ -289,10 +288,9 @@ def run_tests(config, test_paths, product, **kwargs):
     else:
         recorder = instruments.Instrument(kwargs["instrument_to_file"])
 
-    with recorder as recording, \
-        capture.CaptureIO(logger,
-                          not kwargs["no_capture_stdio"],
-                          mp_context=mp):
+    with recorder as recording, capture.CaptureIO(logger,
+                                                  not kwargs["no_capture_stdio"],
+                                                  mp_context=mp):
         recording.set(["startup"])
         env.do_delayed_imports(logger, test_paths)
 
@@ -306,28 +304,25 @@ def run_tests(config, test_paths, product, **kwargs):
             env_extras.append(FontInstaller(
                 logger,
                 font_dir=kwargs["font_dir"],
-                ahem=os.path.join(
-                    test_paths["/"]["tests_path"], "fonts/Ahem.ttf")
+                ahem=os.path.join(test_paths["/"]["tests_path"], "fonts/Ahem.ttf")
             ))
 
         recording.set(["startup", "load_tests"])
 
-        test_groups = \
-            (testloader.TestGroupsFile(logger, kwargs["test_groups_file"])
-             if kwargs["test_groups_file"] else None)
+        test_groups = (testloader.TestGroupsFile(logger, kwargs["test_groups_file"])
+                       if kwargs["test_groups_file"] else None)
 
         (test_source_cls,
          test_source_kwargs,
          chunker_kwargs) = testloader.get_test_src(logger=logger,
                                                    test_groups=test_groups,
                                                    **kwargs)
-        run_info, test_loader = \
-            get_loader(test_paths, product.name,
-                       run_info_extras=product.run_info_extras(
-                           **kwargs),
-                       chunker_kwargs=chunker_kwargs,
-                       test_groups=test_groups,
-                       **kwargs)
+        run_info, test_loader = get_loader(test_paths,
+                                           product.name,
+                                           run_info_extras=product.run_info_extras(**kwargs),
+                                           chunker_kwargs=chunker_kwargs,
+                                           test_groups=test_groups,
+                                           **kwargs)
 
         logger.info("Using %i client processes" % kwargs["processes"])
 
@@ -336,29 +331,21 @@ def run_tests(config, test_paths, product, **kwargs):
             logger.critical("Unable to find any tests at the path(s):")
             for path in kwargs["test_list"]:
                 logger.critical("  %s" % path)
-            logger.critical(
-                "Please check spelling and make sure"
-                " there are tests in the specified path(s).")
+            logger.critical("Please check spelling and make sure there are tests in the specified path(s).")
             return False
-        kwargs["pause_after_test"] = get_pause_after_test(
-            test_loader, **kwargs)
+        kwargs["pause_after_test"] = get_pause_after_test(test_loader, **kwargs)
 
-        ssl_config = {
-            "type": kwargs["ssl_type"],
-            "openssl": {"openssl_binary": kwargs["openssl_binary"]},
-            "pregenerated": {"host_key_path": kwargs["host_key_path"],
-                             "host_cert_path": kwargs["host_cert_path"],
-                             "ca_cert_path": kwargs["ca_cert_path"]}
-        }
+        ssl_config = {"type": kwargs["ssl_type"],
+                      "openssl": {"openssl_binary": kwargs["openssl_binary"]},
+                      "pregenerated": {"host_key_path": kwargs["host_key_path"],
+                                       "host_cert_path": kwargs["host_cert_path"],
+                                       "ca_cert_path": kwargs["ca_cert_path"]}}
 
-        testharness_timeout_multipler = \
-            product.get_timeout_multiplier("testharness",
-                                           run_info,
-                                           **kwargs)
+        testharness_timeout_multipler = product.get_timeout_multiplier("testharness",
+                                                                       run_info,
+                                                                       **kwargs)
 
-        mojojs_path = None
-        if kwargs["enable_mojojs"]:
-            mojojs_path = kwargs["mojojs_path"]
+        mojojs_path = kwargs["mojojs_path"] if kwargs["enable_mojojs"] else None
 
         recording.set(["startup", "start_environment"])
         with env.TestEnvironment(test_paths,
@@ -393,7 +380,7 @@ def run_tests(config, test_paths, product, **kwargs):
             # to avoid a possible TC timeout.
             longest_iteration_time = timedelta()
             # keep track if we break the loop to avoid timeout.
-            avoided_timeout = False
+            iteration_timeout = False
 
             while counts["repeat"] < repeat or repeat_until_unexpected:
                 # if the next repeat run could cause the TC timeout to be
@@ -401,7 +388,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 estimate = datetime.now() + longest_iteration_time
                 if not repeat_until_unexpected and max_time \
                         and estimate >= start_time + max_time:
-                    avoided_timeout = True
+                    iteration_timeout = True
                     logger.info(
                         "Repeat runs are in danger of reaching timeout!"
                         " Quitting early.")
@@ -434,10 +421,15 @@ def run_tests(config, test_paths, product, **kwargs):
                     (counts["unexpected"], counts["unexpected_pass"]))
                 logger.suite_end()
 
-                # determine the longest test suite runtime seen
-                longest_iteration_time = max(
-                    longest_iteration_time,
-                    datetime.now() - iteration_start)
+                # Note this iteration's runtime and pad the total time
+                # by 10% to ensure ample time for the next iteration(s).
+                iteration_runtime = datetime.now() - iteration_start
+                iteration_runtime = timedelta(
+                    seconds=(iteration_runtime.total_seconds() * 1.1))
+
+                # determine the longest test suite runtime seen.
+                longest_iteration_time = max(longest_iteration_time,
+                                             iteration_runtime)
 
                 if repeat_until_unexpected and counts["unexpected"] > 0:
                     break
@@ -445,7 +437,7 @@ def run_tests(config, test_paths, product, **kwargs):
                         and len(test_loader.test_ids) == counts["skipped"]:
                     break
 
-    return evaluate_runs(counts, avoided_timeout, kwargs)
+    return evaluate_runs(counts, iteration_timeout, kwargs)
 
 
 def check_stability(**kwargs):

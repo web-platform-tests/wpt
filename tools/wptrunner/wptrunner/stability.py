@@ -4,7 +4,7 @@ import imp
 import io
 import os
 from collections import OrderedDict, defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from mozlog import reader
 from mozlog.formatters import JSONFormatter
@@ -261,8 +261,7 @@ def write_results(log, results, iterations, pr_number=None, use_details=False):
         log("</details>\n")
 
 
-def run_step(logger, iterations, restart_after_iteration,
-             kwargs_extras, **kwargs):
+def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwargs):
     from . import wptrunner
     kwargs = copy.deepcopy(kwargs)
 
@@ -275,8 +274,8 @@ def run_step(logger, iterations, restart_after_iteration,
     # hitting the timeout. If so, the actual number of iterations run
     # should be used to process the results. The number here will
     # be set to the actual value for later reference if it changes.
-    kwargs["avoided_timeout"] = {"did_avoid": False,
-                                 "iterations_run": iterations}
+    kwargs["timeout"] = {"triggered": False,
+                         "iterations_run": iterations}
 
     kwargs["pause_after_test"] = False
     kwargs.update(kwargs_extras)
@@ -301,8 +300,8 @@ def run_step(logger, iterations, restart_after_iteration,
     # Use the number of repeated test suites that were run
     # to process the results if the runs were stopped to
     # avoid hitting the maximum run time.
-    if kwargs["avoided_timeout"]["did_avoid"]:
-        iterations = kwargs["avoided_timeout"]["iterations_run"]
+    if kwargs["timeout"]["triggered"]:
+        iterations = kwargs["timeout"]["iterations_run"]
 
     logger._state.handlers = initial_handlers
     logger._state.running_tests = set()
@@ -325,12 +324,7 @@ def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
         if repeat_loop:
             desc = "Running tests in a loop %d times%s" % (repeat_loop,
                                                            flags_string)
-            steps.append((desc,
-                          functools.partial(run_step,
-                                            logger,
-                                            repeat_loop,
-                                            False,
-                                            kwargs_extra),
+            steps.append((desc, functools.partial(run_step, logger, repeat_loop, False, kwargs_extra),
                           repeat_loop))
 
         if repeat_restart:
@@ -362,7 +356,7 @@ def write_summary(logger, step_results, final_result):
     logger.info(':::')
 
 
-def check_stability(logger, repeat_loop=10, repeat_restart=10, chaos_mode=True,
+def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True,
                     max_time=None, output_results=True, **kwargs):
     kwargs_extras = [{}]
     if chaos_mode and kwargs["product"] == "firefox":
@@ -377,11 +371,9 @@ def check_stability(logger, repeat_loop=10, repeat_restart=10, chaos_mode=True,
         kwargs["github_checks_text_file"])
 
     for desc, step_func, expected_iterations in steps:
-        if max_time and \
-                datetime.now() - start_time > timedelta(minutes=max_time):
+        if max_time and datetime.now() - start_time > max_time:
             logger.info("::: Test verification is taking too long: Giving up!")
-            logger.info(
-                "::: So far, all checks passed, but not all checks were run.")
+            logger.info("::: So far, all checks passed, but not all checks were run.")
             write_summary(logger, step_results, "TIMEOUT")
             return 2
 
@@ -390,7 +382,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=10, chaos_mode=True,
         logger.info(':::')
         results, inconsistent, slow, iterations = step_func(**kwargs)
 
-        if iterations <= 1:
+        if iterations <= 1 and expected_iterations > 1:
             step_results.append((desc, "FAIL"))
             logger.info("::: Reached iteration timeout before finishing "
                         "2 or more repeat runs.")
@@ -405,8 +397,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=10, chaos_mode=True,
         if inconsistent:
             step_results.append((desc, "FAIL"))
             if github_checks_outputter:
-                write_github_checks_summary_inconsistent(
-                    github_checks_outputter.output, inconsistent, iterations)
+                write_github_checks_summary_inconsistent(github_checks_outputter.output, inconsistent, iterations)
             write_inconsistent(logger.info, inconsistent, iterations)
             write_summary(logger, step_results, "FAIL")
             return 1
@@ -414,8 +405,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=10, chaos_mode=True,
         if slow:
             step_results.append((desc, "FAIL"))
             if github_checks_outputter:
-                write_github_checks_summary_slow_tests(
-                    github_checks_outputter.output, slow)
+                write_github_checks_summary_slow_tests(github_checks_outputter.output, slow)
             write_slow_tests(logger.info, slow)
             write_summary(logger, step_results, "FAIL")
             return 1

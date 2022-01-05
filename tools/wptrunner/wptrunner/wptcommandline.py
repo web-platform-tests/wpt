@@ -3,6 +3,7 @@ import os
 import sys
 from collections import OrderedDict
 from distutils.spawn import find_executable
+from datetime import timedelta
 
 from . import config
 from . import wpttest
@@ -114,7 +115,7 @@ scheme host and port.""")
     mode_group.add_argument("--verify-max-time", action="store",
                             default=None,
                             help="The maximum number of minutes for the job to run",
-                            type=int)
+                            type=lambda x: timedelta(minutes=float(x))))
     mode_group.add_argument("--repeat-max-time", action="store",
                             default=100,
                             help="The maximum number of minutes for the test suite to attempt repeat runs",

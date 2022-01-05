@@ -324,7 +324,12 @@ def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
         if repeat_loop:
             desc = "Running tests in a loop %d times%s" % (repeat_loop,
                                                            flags_string)
-            steps.append((desc, functools.partial(run_step, logger, repeat_loop, False, kwargs_extra),
+            steps.append((desc,
+                          functools.partial(run_step,
+                                            logger,
+                                            repeat_loop,
+                                            False,
+                                            kwargs_extra),
                           repeat_loop))
 
         if repeat_restart:
@@ -356,8 +361,8 @@ def write_summary(logger, step_results, final_result):
     logger.info(':::')
 
 
-def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True,
-                    max_time=None, output_results=True, **kwargs):
+def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, max_time=None,
+                    output_results=True, **kwargs):
     kwargs_extras = [{}]
     if chaos_mode and kwargs["product"] == "firefox":
         kwargs_extras.append({"chaos_mode_flags": "0xfb"})
@@ -367,8 +372,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True,
     start_time = datetime.now()
     step_results = []
 
-    github_checks_outputter = get_gh_checks_outputter(
-        kwargs["github_checks_text_file"])
+    github_checks_outputter = get_gh_checks_outputter(kwargs["github_checks_text_file"])
 
     for desc, step_func, expected_iterations in steps:
         if max_time and datetime.now() - start_time > max_time:

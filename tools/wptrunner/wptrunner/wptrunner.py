@@ -287,7 +287,6 @@ def run_tests(config, test_paths, product, **kwargs):
         recorder = instruments.NullInstrument()
     else:
         recorder = instruments.Instrument(kwargs["instrument_to_file"])
-
     with recorder as recording, capture.CaptureIO(logger,
                                                   not kwargs["no_capture_stdio"],
                                                   mp_context=mp):

@@ -115,7 +115,7 @@ scheme host and port.""")
     mode_group.add_argument("--verify-max-time", action="store",
                             default=None,
                             help="The maximum number of minutes for the job to run",
-                            type=lambda x: timedelta(minutes=float(x))))
+                            type=lambda x: timedelta(minutes=float(x)))
     mode_group.add_argument("--repeat-max-time", action="store",
                             default=100,
                             help="The maximum number of minutes for the test suite to attempt repeat runs",

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script type="module">
+  import { tests, plusLighter } from '../../script/plus-lighter.js';
+  import { toCSSColor } from '../../script/utils.js';
+
+  for (const colors of tests) {
+    document.body.insertAdjacentHTML('beforeend', `
+      <svg width="100" height="100" style="background-color: ${toCSSColor(plusLighter(colors))}"></svg>
+    `);
+  }
+</script>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<style>
+  .test {
+    width: 100px;
+    height: 100px;
+  }
+</style>
+<script type="module">
+  import { tests, plusLighter } from '../../script/plus-lighter.js';
+  import { toCSSColor } from '../../script/utils.js';
+
+  for (const colors of tests) {
+    document.body.insertAdjacentHTML('beforeend', `
+      <div class="test" style="background-color: ${toCSSColor(plusLighter(colors))}"></div>
+    `);
+  }
+</script>

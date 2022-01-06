@@ -3,11 +3,12 @@
   .test {
     width: 100px;
     height: 100px;
-    background-blend-mode: lighter;
+    background-blend-mode: plus-lighter;
   }
 </style>
 <script type="module">
-  import { tests, toCSSColor } from '../script/lighter.js';
+  import { tests } from '../script/plus-lighter.js';
+  import { toCSSColor } from '../script/utils.js';
 
   // Create a solid color CSS image.
   const colorImage = (pixel) =>

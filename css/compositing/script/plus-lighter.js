@@ -1,30 +1,6 @@
-function multiplyAlpha(pixel) {
-  return pixel.map((channel, i) => {
-    // Pass the alpha channel through unchanged
-    if (i === 3) return channel;
-    // Otherwise, multiply by alpha
-    return channel * pixel[3];
-  });
-}
+import { clamp01, multiplyAlpha, unmultiplyAlpha } from "./utils.js";
 
-function unmultiplyAlpha(pixel) {
-  return pixel.map((channel, i) => {
-    // Pass the alpha channel through unchanged
-    if (i === 3) return channel;
-    // Avoid divide-by-zero
-    if (pixel[3] === 0) return channel;
-    // Divide by alpha
-    return channel / pixel[3];
-  });
-}
-
-function clamp01(value) {
-  if (value < 0) return 0;
-  if (value > 1) return 1;
-  return value;
-}
-
-export function lighter(pixels) {
+export function plusLighter(pixels) {
   return pixels.reduce((destination, source) => {
     const premultipliedSource = multiplyAlpha(source);
     const premultipliedDestination = multiplyAlpha(destination);
@@ -34,12 +10,6 @@ export function lighter(pixels) {
     return unmultiplyAlpha(premultipliedResult);
   });
 }
-
-const toPercent = (num) => `${num * 100}%`;
-export const toCSSColor = (pixel) =>
-  `rgb(${toPercent(pixel[0])} ${toPercent(pixel[1])} ${toPercent(pixel[2])} / ${
-    pixel[3]
-  })`;
 
 export const tests = [
   // Each test is a list of colors to composite.

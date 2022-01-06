@@ -9,23 +9,16 @@
 <link rel="stylesheet" href="/html/canvas/resources/canvas-tests.css">
 <body>
 <script>
-function testCanvasDisplayingPattern(canvas, width, height, options)
+function testCanvasDisplayingPattern(canvas, width, height)
 {
     var tolerance = 10; // high tolerance for differing colour management results
     const check = (x, y, r, g, b, a) =>
         _assertPixelApprox(canvas, x,y, r,g,b,a, `${x},${y}`, `${r},${g},${b},${a}`, tolerance);
 
-    if (options.colorSpaceConversion == 'none') {
-        check(1 * width / 4, 1 * height / 4, 124,0,27,255);
-        check(3 * width / 4, 1 * height / 4, 0,124,46,255);
-        check(1 * width / 4, 3 * height / 4, 60,0,123,255);
-        check(3 * width / 4, 3 * height / 4, 0,0,0,255);
-    } else {
-        check(1 * width / 4, 1 * height / 4, 255,0,0,255);
-        check(3 * width / 4, 1 * height / 4, 0,249,0,255);
-        check(1 * width / 4, 3 * height / 4, 30,0,239,255);
-        check(3 * width / 4, 3 * height / 4, 0,0,0,255);
-    }
+    check(1 * width / 4, 1 * height / 4, 124,0,27,255);
+    check(3 * width / 4, 1 * height / 4, 0,124,46,255);
+    check(1 * width / 4, 3 * height / 4, 60,0,123,255);
+    check(3 * width / 4, 3 * height / 4, 0,0,0,255);
 }
 
 function testDrawImageBitmap(source, options)
@@ -36,25 +29,19 @@ function testDrawImageBitmap(source, options)
     var ctx = canvas.getContext("2d");
     return createImageBitmap(source, options).then(imageBitmap => {
         ctx.drawImage(imageBitmap, 0, 0);
-        testCanvasDisplayingPattern(canvas, 20, 20, options);
+        testCanvasDisplayingPattern(canvas, 20, 20);
     });
 }
 
 var wideGamutImageSourceTypes = [
-    { name: 'a bitmap HTMLImageElement', factory: makeMakeHTMLImage("/images/wide-gamut-pattern.png") },
-    { name: 'a Blob',                    factory: makeBlob("/images/wide-gamut-pattern.png") },
+    {name: 'a bitmap HTMLImageElement', factory: makeMakeHTMLImage("/images/wide-gamut-pattern.png")},
+    {name: 'a Blob',                    factory: makeBlob("/images/wide-gamut-pattern.png")},
 ];
 
 for (let { name, factory } of wideGamutImageSourceTypes) {
     promise_test(function() {
         return factory().then(function(img) {
-            return testDrawImageBitmap(img, { colorSpaceConversion: "default"} );
-        });
-    }, `createImageBitmap from ${name}, and drawImage on the created ImageBitmap with colorSpaceConversion: default`);
-
-    promise_test(function() {
-        return factory().then(function(img) {
-            return testDrawImageBitmap(img, { colorSpaceConversion: "none"} );
+            return testDrawImageBitmap(img, {colorSpaceConversion: "none"});
         });
     }, `createImageBitmap from ${name}, and drawImage on the created ImageBitmap with colorSpaceConversion: none`);
 }

@@ -898,6 +898,9 @@ class ManagerGroup(object):
 
         test_queue = make_test_queue(type_tests, self.test_source_cls, **self.test_source_kwargs)
 
+        # Ensure TestRunnerManager index is always in 1 ... self.size inclusively.
+        global manager_count
+        manager_count = 0
         for _ in range(self.size):
             manager = TestRunnerManager(self.suite_name,
                                         test_queue,

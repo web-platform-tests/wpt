@@ -1,3 +1,4 @@
+import time
 import threading
 import traceback
 from queue import Empty
@@ -323,6 +324,7 @@ class TestRunnerManager(threading.Thread):
         # This is started in the actual new thread
         self.logger = None
 
+        self.run_time = 0
         self.test_count = 0
         self.unexpected_count = 0
         self.unexpected_pass_count = 0
@@ -346,6 +348,7 @@ class TestRunnerManager(threading.Thread):
         may also have a stop flag set by the main thread indicating
         that the manager should shut down the next time the event loop
         spins."""
+        start_time = time.time()
         self.recording.set(["testrunner", "startup"])
         self.logger = structuredlog.StructuredLogger(self.suite_name)
         with self.browser_cls(self.logger, remote_queue=self.command_queue,
@@ -396,6 +399,7 @@ class TestRunnerManager(threading.Thread):
                 clean = isinstance(self.state, RunnerManagerState.stop)
                 self.stop_runner(force=not clean)
                 self.teardown()
+        self.run_time = time.time() - start_time
         self.logger.debug("TestRunnerManager main loop terminated")
 
     def wait_event(self):
@@ -890,6 +894,7 @@ class ManagerGroup(object):
 
     def run(self, test_type, tests):
         """Start all managers in the group"""
+        start_time = time.time()
         self.logger.debug("Using %i processes" % self.size)
         type_tests = tests[test_type]
         if not type_tests:
@@ -917,6 +922,16 @@ class ManagerGroup(object):
             manager.start()
             self.pool.add(manager)
         self.wait()
+
+        self.logger.info("Test timing for %s tests:" % test_type)
+        self.logger.info("  %.2f total testing time" % (time.time() - start_time))
+        self.logger.info("Thread timing:")
+        for manager in self.pool:
+            self.logger.info("      worker/%2d:   %4d tests, %.2f secs" % (manager.manager_number,
+                                                                           manager.test_count,
+                                                                           manager.run_time))
+        cumulative = sum([manager.run_time for manager in self.pool])
+        self.logger.info("    %.2f cumulative, %.2f optimal" % (cumulative, cumulative/self.size))
 
     def wait(self):
         """Wait for all the managers in the group to finish"""

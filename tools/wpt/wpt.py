@@ -97,10 +97,6 @@ def import_command(prog, command, props):
     mod = __import__(mod_name)
     for part in parts[1:]:
         mod = getattr(mod, part)
-    
-    print(f"{mod=}")
-    print(f"{type(mod)=}")
-    print(f"{dir(mod)=}")
 
     script = getattr(mod, props["script"])
     if props["parser"] is not None:
@@ -215,11 +211,8 @@ def main(prog=None, argv=None):
         args = extras
 
     if script:
-        print(f"{script=}")
         try:
             rv = script(*args, **kwargs)
-            print("DANIEL - ")
-            print(f"{rv=} {type(rv)=}")
             if rv is not None:
                 sys.exit(int(rv))
         except Exception:

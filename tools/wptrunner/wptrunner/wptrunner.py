@@ -414,7 +414,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     break
 
     # Return the evaluation of the runs and the number of repeated iterations that were run.
-    return evaluate_runs(counts, kwargs), counts["repeat"]
+    return evaluate_runs(counts, kwargs), counts
 
 
 def check_stability(**kwargs):

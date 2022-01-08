@@ -211,8 +211,11 @@ def main(prog=None, argv=None):
         args = extras
 
     if script:
+        print(f"{script=}")
         try:
             rv = script(*args, **kwargs)
+            print("DANIEL - ")
+            print(f"{rv=} {type(rv)=}")
             if rv is not None:
                 sys.exit(int(rv))
         except Exception:

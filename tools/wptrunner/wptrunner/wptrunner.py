@@ -177,14 +177,12 @@ def run_test_iteration(counts, test_loader, test_source_kwargs,
 
         browser_cls = product.get_browser_cls(test_type)
 
-        browser_kwargs = \
-            product.get_browser_kwargs(logger,
-                                       test_type,
-                                       run_info,
-                                       config=test_environment.config,
-                                       num_test_groups=len(
-                                           test_groups),
-                                       **run_test_kwargs)
+        browser_kwargs = product.get_browser_kwargs(logger,
+                                                    test_type,
+                                                    run_info,
+                                                    config=test_environment.config,
+                                                    num_test_groups=len(test_groups),
+                                                    **run_test_kwargs)
 
         executor_cls = product.executor_classes.get(test_type)
         executor_kwargs = product.get_executor_kwargs(logger,
@@ -246,8 +244,7 @@ def run_test_iteration(counts, test_loader, test_source_kwargs,
 
 
 def evaluate_runs(counts, iteration_timeout, run_test_kwargs):
-    """Evaluates the test counts after the
-    given number of repeat runs has finished"""
+    """Evaluates the test counts after the given number of repeat runs has finished"""
     if counts["total_tests"] == 0:
         if counts["skipped"] > 0:
             logger.warning("All requested tests were skipped")
@@ -385,15 +382,10 @@ def run_tests(config, test_paths, product, **kwargs):
                 # if the next repeat run could cause the TC timeout to be
                 # reached, stop now and use the test results we have.
                 estimate = datetime.now() + longest_iteration_time
-                if not repeat_until_unexpected and max_time \
-                        and estimate >= start_time + max_time:
+                if (not repeat_until_unexpected and max_time
+                        and estimate >= start_time + max_time):
                     iteration_timeout = True
-                    logger.info(
-                        "Repeat runs are in danger of reaching timeout!"
-                        " Quitting early.")
-                    logger.info(
-                        "Ran %s of %s iterations." %
-                        (counts["repeat"], repeat))
+                    logger.info(f"Ran {counts['repeat']} of {repeat} iterations.")
                     break
 
                 # begin tracking runtime of the test suite
@@ -402,8 +394,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 if repeat_until_unexpected:
                     logger.info("Repetition %i" % (counts["repeat"]))
                 elif repeat > 1:
-                    logger.info(
-                        "Repetition %i / %i" % (counts["repeat"], repeat))
+                    logger.info(f"Repetition {counts['repeat']} / {repeat}")
 
                 iter_success = run_test_iteration(counts, test_loader,
                                                   test_source_kwargs,
@@ -415,16 +406,14 @@ def run_tests(config, test_paths, product, **kwargs):
                 if not iter_success:
                     return False
                 recording.set(["after-end"])
-                logger.info(
-                    "Got %i unexpected results, with %i unexpected passes" %
-                    (counts["unexpected"], counts["unexpected_pass"]))
+                logger.info(f"Got {counts['unexpected']} unexpected results, "
+                    f"with {counts['unexpected_pass']} unexpected passes")
                 logger.suite_end()
 
                 # Note this iteration's runtime and pad the total time
                 # by 10% to ensure ample time for the next iteration(s).
                 iteration_runtime = datetime.now() - iteration_start
-                iteration_runtime = timedelta(
-                    seconds=(iteration_runtime.total_seconds() * 1.1))
+                iteration_runtime = timedelta(seconds=(iteration_runtime.total_seconds() * 1.1))
 
                 # determine the longest test suite runtime seen.
                 longest_iteration_time = max(longest_iteration_time,
@@ -432,8 +421,8 @@ def run_tests(config, test_paths, product, **kwargs):
 
                 if repeat_until_unexpected and counts["unexpected"] > 0:
                     break
-                if counts["repeat"] == 1 \
-                        and len(test_loader.test_ids) == counts["skipped"]:
+                if (counts["repeat"] == 1
+                        and len(test_loader.test_ids) == counts["skipped"]):
                     break
 
     return evaluate_runs(counts, iteration_timeout, kwargs)

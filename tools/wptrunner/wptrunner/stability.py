@@ -270,13 +270,6 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     else:
         kwargs["rerun"] = iterations
 
-    # Keep track if the runs were stopped early to avoid
-    # hitting the timeout. If so, the actual number of iterations run
-    # should be used to process the results. The number here will
-    # be set to the actual value for later reference if it changes.
-    kwargs["timeout"] = {"triggered": False,
-                         "iterations_run": iterations}
-
     kwargs["pause_after_test"] = False
     kwargs.update(kwargs_extras)
 
@@ -295,13 +288,9 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     # warning+ level logs only
     logger.add_handler(StreamHandler(log, JSONFormatter()))
 
-    wptrunner.run_tests(**kwargs)
-
-    # Use the number of repeated test suites that were run
-    # to process the results if the runs were stopped to
-    # avoid hitting the maximum run time.
-    if kwargs["timeout"]["triggered"]:
-        iterations = kwargs["timeout"]["iterations_run"]
+    # Use the number of iterations of the test suite that were run to process the results.
+    # if the runs were stopped to avoid hitting the maximum run time.
+    _, iterations = wptrunner.run_tests(**kwargs)
 
     logger._state.handlers = initial_handlers
     logger._state.running_tests = set()

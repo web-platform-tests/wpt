@@ -97,8 +97,11 @@ def import_command(prog, command, props):
     mod = __import__(mod_name)
     for part in parts[1:]:
         mod = getattr(mod, part)
-
+    
+    print(f"{mod=}")
+    print(f"{type(mod)=}")
     script = getattr(mod, props["script"])
+    print(f"{dir(mod)=}")
     if props["parser"] is not None:
         parser = getattr(mod, props["parser"])()
         parser.prog = "%s %s" % (os.path.basename(prog), command)

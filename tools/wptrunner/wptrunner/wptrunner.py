@@ -257,6 +257,7 @@ def evaluate_runs(counts, run_test_kwargs):
                 return False
 
     if counts["unexpected"] and not run_test_kwargs["fail_on_unexpected"]:
+
         logger.info("Tolerating %s unexpected results" % counts["unexpected"])
         return True
 

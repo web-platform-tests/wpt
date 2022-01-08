@@ -376,8 +376,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 # Pad the total time by 10% to ensure ample time for the next iteration(s).
                 estimate = (datetime.now() +
                             timedelta(seconds=(longest_iteration_time.total_seconds() * 1.1)))
-                if (not repeat_until_unexpected and max_time
-                        and estimate >= start_time + max_time):
+                if not repeat_until_unexpected and max_time and estimate >= start_time + max_time:
                     logger.info(f"Ran {counts['repeat']} of {repeat} iterations.")
                     break
 
@@ -411,8 +410,7 @@ def run_tests(config, test_paths, product, **kwargs):
 
                 if repeat_until_unexpected and counts["unexpected"] > 0:
                     break
-                if (counts["repeat"] == 1
-                        and len(test_loader.test_ids) == counts["skipped"]):
+                if counts["repeat"] == 1 and len(test_loader.test_ids) == counts["skipped"]:
                     break
 
     # Return the evaluation of the runs and the number of repeated iterations that were run.

@@ -290,8 +290,7 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
 
     # Use the number of iterations of the test suite that were run to process the results.
     # if the runs were stopped to avoid hitting the maximum run time.
-    _, counts = wptrunner.run_tests(**kwargs)
-    iterations = counts["repeat"]
+    _, iterations = wptrunner.run_tests(**kwargs)
 
     logger._state.handlers = initial_handlers
     logger._state.running_tests = set()

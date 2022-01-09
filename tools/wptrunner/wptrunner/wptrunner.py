@@ -414,7 +414,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     break
 
     # Return the evaluation of the runs and the number of repeated iterations that were run.
-    return evaluate_runs(counts, kwargs), counts
+    return evaluate_runs(counts, kwargs), counts["repeat"]
 
 
 def check_stability(**kwargs):
@@ -454,7 +454,7 @@ def start(**kwargs):
         elif kwargs["verify"] or kwargs["stability"]:
             rv = check_stability(**kwargs) or logged_critical.has_log
         else:
-            rv = not run_tests(**kwargs) or logged_critical.has_log
+            rv = not run_tests(**kwargs)[0] or logged_critical.has_log
     finally:
         logger.remove_handler(handler)
     return rv

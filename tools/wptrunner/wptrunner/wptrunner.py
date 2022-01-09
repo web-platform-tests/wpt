@@ -322,7 +322,7 @@ def run_tests(config, test_paths, product, **kwargs):
             for path in kwargs["test_list"]:
                 logger.critical("  %s" % path)
             logger.critical("Please check spelling and make sure there are tests in the specified path(s).")
-            return False
+            return False, 0
         kwargs["pause_after_test"] = get_pause_after_test(test_loader, **kwargs)
 
         ssl_config = {"type": kwargs["ssl_type"],
@@ -396,7 +396,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 # if there were issues with the suite run
                 # (tests not loaded, etc.) return
                 if not iter_success:
-                    return False
+                    return False, counts["repeat"]
                 recording.set(["after-end"])
                 logger.info(f"Got {counts['unexpected']} unexpected results, "
                     f"with {counts['unexpected_pass']} unexpected passes")

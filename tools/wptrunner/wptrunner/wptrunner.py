@@ -271,7 +271,7 @@ def evaluate_runs(counts, run_test_kwargs):
 
 
 class TestStatus:
-    """Class that stores information on the results of test runs for reference"""
+    """Class that stores information on the results of test runs for later reference"""
     def __init__(self, counts):
         self.total_tests = counts["total_tests"]
         self.skipped = counts["skipped"]

@@ -270,6 +270,17 @@ def evaluate_runs(counts, run_test_kwargs):
     return counts["unexpected"] == 0
 
 
+class TestStatus:
+    """Class that stores information on the results of test runs for reference"""
+    def __init__(self, counts):
+        self.total_tests = counts["total_tests"]
+        self.skipped = counts["skipped"]
+        self.unexpected = counts["unexpected"]
+        self.unexpected_pass = counts["unexpected_pass"]
+        self.repeated_runs = counts["repeat"]
+        self.expected_repeated_runs = counts["expected_repeat"]
+
+
 def run_tests(config, test_paths, product, **kwargs):
     """Set up the test environment, load the list of tests to be executed, and
     invoke the remainder of the code to execute tests"""
@@ -317,12 +328,15 @@ def run_tests(config, test_paths, product, **kwargs):
         logger.info("Using %i client processes" % kwargs["processes"])
 
         counts = defaultdict(int)
+        repeat = kwargs["repeat"]
+        counts["expected_repeat"] = repeat
+
         if len(test_loader.test_ids) == 0 and kwargs["test_list"]:
             logger.critical("Unable to find any tests at the path(s):")
             for path in kwargs["test_list"]:
                 logger.critical("  %s" % path)
             logger.critical("Please check spelling and make sure there are tests in the specified path(s).")
-            return False, 0
+            return False, TestStatus(counts)
         kwargs["pause_after_test"] = get_pause_after_test(test_loader, **kwargs)
 
         ssl_config = {"type": kwargs["ssl_type"],
@@ -362,17 +376,15 @@ def run_tests(config, test_paths, product, **kwargs):
             if "repeat_max_time" in kwargs:
                 max_time = timedelta(minutes=kwargs["repeat_max_time"])
 
-            repeat = kwargs["repeat"]
             repeat_until_unexpected = kwargs["repeat_until_unexpected"]
 
-            # keep track of longest time taken to complete a
-            # test suite iteration so that the runs can be stopped
-            # to avoid a possible TC timeout.
+            # keep track of longest time taken to complete a test suite iteration
+            # so that the runs can be stopped to avoid a possible TC timeout.
             longest_iteration_time = timedelta()
 
             while counts["repeat"] < repeat or repeat_until_unexpected:
-                # if the next repeat run could cause the TC timeout to be
-                # reached, stop now and use the test results we have.
+                # if the next repeat run could cause the TC timeout to be reached,
+                # stop now and use the test results we have.
                 # Pad the total time by 10% to ensure ample time for the next iteration(s).
                 estimate = (datetime.now() +
                             timedelta(seconds=(longest_iteration_time.total_seconds() * 1.1)))
@@ -396,7 +408,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 # if there were issues with the suite run
                 # (tests not loaded, etc.) return
                 if not iter_success:
-                    return False, counts["repeat"]
+                    return False, TestStatus(counts)
                 recording.set(["after-end"])
                 logger.info(f"Got {counts['unexpected']} unexpected results, "
                     f"with {counts['unexpected_pass']} unexpected passes")
@@ -414,7 +426,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     break
 
     # Return the evaluation of the runs and the number of repeated iterations that were run.
-    return evaluate_runs(counts, kwargs), counts["repeat"]
+    return evaluate_runs(counts, kwargs), TestStatus(counts)
 
 
 def check_stability(**kwargs):

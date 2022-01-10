@@ -525,7 +525,7 @@ test(t => {
   const div = addDiv(t);
   div.style.textShadow = '1px 1px 2px rgb(0, 0, 0), ' +
                          '0 0 16px rgb(0, 0, 255), ' +
-                         '0 0 3.2px rgb(0, 0, 255)';
+                         '0 0 3.5px rgb(0, 0, 255)';
   div.style.animation = 'anim-text-shadow 100s';
 
   const frames = getKeyframes(div);
@@ -534,7 +534,7 @@ test(t => {
     { offset: 0, computedOffset: 0, easing: "ease", composite: "auto",
       textShadow: "rgb(0, 0, 0) 1px 1px 2px,"
                   + " rgb(0, 0, 255) 0px 0px 16px,"
-                  + " rgb(0, 0, 255) 0px 0px 3.2px" },
+                  + " rgb(0, 0, 255) 0px 0px 3.5px" },
     { offset: 1, computedOffset: 1, easing: "ease", composite: "auto",
       textShadow: "none" },
   ];

@@ -378,10 +378,8 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
 
         if iterations <= 1 and expected_iterations > 1:
             step_results.append((desc, "FAIL"))
-            logger.info("::: Reached iteration timeout before finishing "
-                        "2 or more repeat runs.")
-            logger.info("::: At least 2 successful repeat runs are required "
-                        "to validate stability.")
+            logger.info("::: Reached iteration timeout before finishing 2 or more repeat runs.")
+            logger.info("::: At least 2 successful repeat runs are required to validate stability.")
             write_summary(logger, step_results, "TIMEOUT")
             return 1
 
@@ -404,9 +402,8 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
             write_summary(logger, step_results, "FAIL")
             return 1
 
-        # If the tests passed but the number of iterations didn't match
-        # the number expected to run, it is likely that the runs were
-        # stopped early to avoid a timeout.
+        # If the tests passed but the number of iterations didn't match the number expected to run,
+        # it is likely that the runs were stopped early to avoid a timeout.
         if iterations != expected_iterations:
             result = "PASS *  %i/%i repeats completed" % (
                 iterations, expected_iterations)

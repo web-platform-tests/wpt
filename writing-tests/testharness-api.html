@@ -1112,7 +1112,7 @@ than or equal to <code class="docutils literal notranslate"><span class="pre">up
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>actual</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Test value.</p></li>
 <li><p><strong>lower</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be greater than or equal to.</p></li>
-<li><p><strong>upper</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than or eqaul to.</p></li>
+<li><p><strong>upper</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number()</span></code></span>) – Number that <code class="docutils literal notranslate"><span class="pre">actual</span></code> must be less than or equal to.</p></li>
 <li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested.</p></li>
 </ul>
 </dd>
@@ -1245,7 +1245,7 @@ argument the assertion description.</p>
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>type</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">number|string()</span></code></span>) – The expected exception name or code.  See the <a class="reference external" href="https://webidl.spec.whatwg.org/#dfn-error-names-table">table of names and codes</a>. If a number is passed it should be one of the numeric code values in that table (e.g. 3, 4, etc).  If a string is passed it can either be an exception name (e.g. “HierarchyRequestError”, “WrongDocumentError”) or the name of the corresponding error code (e.g. “<code class="docutils literal notranslate"><span class="pre">HIERARCHY_REQUEST_ERR</span></code>”, “<code class="docutils literal notranslate"><span class="pre">WRONG_DOCUMENT_ERR</span></code>”).</p></li>
-<li><p><strong>descriptionOrFunc</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – The function expected to throw (if the exeception comes from another global), or the optional description of the condition being tested (if the exception comes from the current global).</p></li>
+<li><p><strong>descriptionOrFunc</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">function()</span></code></span>) – The function expected to throw (if the exception comes from another global), or the optional description of the condition being tested (if the exception comes from the current global).</p></li>
 <li><p><strong>description</strong> (<span><code class="xref js js-func docutils literal notranslate"><span class="pre">string()</span></code></span>) – Description of the condition being tested (if the exception comes from another global).</p></li>
 </ul>
 </dd>

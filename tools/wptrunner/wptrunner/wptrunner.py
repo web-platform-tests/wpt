@@ -171,7 +171,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                        run_info=run_info,
                        extra={"run_by_dir": run_test_kwargs["run_by_dir"]})
     for test_type in run_test_kwargs["test_types"]:
-        logger.info("Running %s tests" % test_type)
+        logger.info(f"Running {test_type} tests")
 
         browser_cls = product.get_browser_cls(test_type)
 
@@ -190,8 +190,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                                                       **run_test_kwargs)
 
         if executor_cls is None:
-            logger.error("Unsupported test type %s for product %s" %
-                         (test_type, product.name))
+            logger.error(f"Unsupported test type {test_type} for product {product.name}")
             continue
 
         for test in test_loader.disabled_tests[test_type]:
@@ -394,7 +393,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 iteration_start = datetime.now()
                 test_status.repeated_runs += 1
                 if repeat_until_unexpected:
-                    logger.info("Repetition %i" % (test_status.repeated_runs))
+                    logger.info(f"Repetition {test_status.repeated_runs}")
                 elif repeat > 1:
                     logger.info(f"Repetition {test_status.repeated_runs} / {repeat}")
 

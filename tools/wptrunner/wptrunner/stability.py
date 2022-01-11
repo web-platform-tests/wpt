@@ -405,8 +405,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
         # If the tests passed but the number of iterations didn't match the number expected to run,
         # it is likely that the runs were stopped early to avoid a timeout.
         if iterations != expected_iterations:
-            result = "PASS *  %i/%i repeats completed" % (
-                iterations, expected_iterations)
+            result = f"PASS *  {iterations}/{expected_iterations} repeats completed"
             step_results.append((desc, result))
         else:
             step_results.append((desc, "PASS"))

@@ -279,6 +279,7 @@ class TestRunnerManager(threading.Thread):
         self.test_source = test_source_cls(test_queue)
 
         self.manager_number = index
+        self.test_type = test_type
         self.browser_cls = browser_cls
         self.browser_kwargs = browser_kwargs.copy()
         if self.browser_kwargs.get("device_serial"):
@@ -505,7 +506,8 @@ class TestRunnerManager(threading.Thread):
         mp = mpcontext.get_context()
         self.test_runner_proc = mp.Process(target=start_runner,
                                            args=args,
-                                           name="TestRunner-%i" % self.manager_number)
+                                           name="TestRunner-%s-%i" % (
+                                               self.test_type, self.manager_number))
         self.test_runner_proc.start()
         self.logger.debug("Test runner started")
         # Now we wait for either an init_succeeded event or an init_failed event

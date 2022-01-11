@@ -1812,7 +1812,7 @@
      *
      * @param {number} actual - Test value.
      * @param {number} lower - Number that ``actual`` must be greater than or equal to.
-     * @param {number} upper - Number that ``actual`` must be less than or eqaul to.
+     * @param {number} upper - Number that ``actual`` must be less than or equal to.
      * @param {string} [description] - Description of the condition being tested.
      */
     function assert_between_inclusive(actual, lower, upper, description)
@@ -2052,7 +2052,7 @@
     /**
      * Assert a DOMException with the expected type is thrown.
      *
-     * There are two ways of calling promise_rejects_dom:
+     * There are two ways of calling assert_throws_dom:
      *
      * 1) If the DOMException is expected to come from the current global, the
      * second argument should be the function expected to throw and a third,
@@ -2072,7 +2072,7 @@
      * "WrongDocumentError") or the name of the corresponding error
      * code (e.g. "``HIERARCHY_REQUEST_ERR``", "``WRONG_DOCUMENT_ERR``").
      * @param {Function} descriptionOrFunc - The function expected to
-     * throw (if the exeception comes from another global), or the
+     * throw (if the exception comes from another global), or the
      * optional description of the condition being tested (if the
      * exception comes from the current global).
      * @param {string} [description] - Description of the condition
@@ -2884,10 +2884,10 @@
      * be cancelled.
      */
     Test.prototype.cleanup = function() {
-        var error_count = 0;
+        var errors = [];
         var bad_value_count = 0;
-        function on_error() {
-            error_count += 1;
+        function on_error(e) {
+            errors.push(e);
             // Abort tests immediately so that tests declared within subsequent
             // cleanup functions are not run.
             tests.abort();
@@ -2904,7 +2904,7 @@
                     try {
                         result = cleanup_callback();
                     } catch (e) {
-                        on_error();
+                        on_error(e);
                         return;
                     }
 
@@ -2919,7 +2919,7 @@
                 });
 
         if (!this._is_promise_test) {
-            cleanup_done(this_obj, error_count, bad_value_count);
+            cleanup_done(this_obj, errors, bad_value_count);
         } else {
             all_async(results,
                       function(result, done) {
@@ -2932,7 +2932,7 @@
                           }
                       },
                       function() {
-                          cleanup_done(this_obj, error_count, bad_value_count);
+                          cleanup_done(this_obj, errors, bad_value_count);
                       });
         }
     };
@@ -2954,17 +2954,21 @@
         return false;
     }
 
-    function cleanup_done(test, error_count, bad_value_count) {
-        if (error_count || bad_value_count) {
+    function cleanup_done(test, errors, bad_value_count) {
+        if (errors.length || bad_value_count) {
             var total = test._user_defined_cleanup_count;
 
             tests.status.status = tests.status.ERROR;
+            tests.status.stack = null;
             tests.status.message = "Test named '" + test.name +
                 "' specified " + total +
                 " 'cleanup' function" + (total > 1 ? "s" : "");
 
-            if (error_count) {
-                tests.status.message += ", and " + error_count + " failed";
+            if (errors.length) {
+                tests.status.message += ", and " + errors.length + " failed";
+                tests.status.stack = ((typeof errors[0] === "object" &&
+                                       errors[0].hasOwnProperty("stack")) ?
+                                      errors[0].stack : null);
             }
 
             if (bad_value_count) {
@@ -2975,8 +2979,6 @@
             }
 
             tests.status.message += ".";
-
-            tests.status.stack = null;
         }
 
         test.phase = test.phases.COMPLETE;

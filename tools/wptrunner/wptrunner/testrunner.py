@@ -157,15 +157,6 @@ def start_runner(runner_command_queue, runner_result_queue,
             handle_error(e)
 
 
-manager_count = 0
-
-
-def next_manager_number():
-    global manager_count
-    local = manager_count = manager_count + 1
-    return local
-
-
 class BrowserManager(object):
     def __init__(self, logger, browser, command_queue, no_timeout=False):
         self.logger = logger
@@ -264,7 +255,7 @@ RunnerManagerState = _RunnerManagerState()
 
 
 class TestRunnerManager(threading.Thread):
-    def __init__(self, suite_name, test_queue, test_source_cls, browser_cls, browser_kwargs,
+    def __init__(self, suite_name, index, test_queue, test_source_cls, browser_cls, browser_kwargs,
                  executor_cls, executor_kwargs, stop_flag, rerun=1, pause_after_test=False,
                  pause_on_unexpected=False, restart_on_unexpected=True, debug_info=None,
                  capture_stdio=True, recording=None):
@@ -287,13 +278,13 @@ class TestRunnerManager(threading.Thread):
 
         self.test_source = test_source_cls(test_queue)
 
-        self.manager_number = next_manager_number()
+        self.manager_number = index + 1
         self.browser_cls = browser_cls
         self.browser_kwargs = browser_kwargs.copy()
         if self.browser_kwargs.get("device_serial"):
-            # Assign Android device to runner according to manager_number
+            # Assign Android device to runner according to current manager index
             self.browser_kwargs["device_serial"] = (
-                self.browser_kwargs["device_serial"][self.manager_number - 1])
+                self.browser_kwargs["device_serial"][index])
 
         self.executor_cls = executor_cls
         self.executor_kwargs = executor_kwargs
@@ -899,10 +890,9 @@ class ManagerGroup(object):
         test_queue = make_test_queue(type_tests, self.test_source_cls, **self.test_source_kwargs)
 
         # Ensure TestRunnerManager index is always in 1 ... self.size inclusively.
-        global manager_count
-        manager_count = 0
-        for _ in range(self.size):
+        for idx in range(self.size):
             manager = TestRunnerManager(self.suite_name,
+                                        idx,
                                         test_queue,
                                         self.test_source_cls,
                                         self.browser_cls,

@@ -1,6 +1,8 @@
 import { clamp01, multiplyAlpha, unmultiplyAlpha } from "./utils.js";
 
 export function plusLighter(pixels) {
+  if (pixels.length === 1) return pixels[0];
+
   return pixels.reduce((destination, source) => {
     const premultipliedSource = multiplyAlpha(source);
     const premultipliedDestination = multiplyAlpha(destination);
@@ -37,5 +39,9 @@ export const tests = [
     [0.25, 0.25, 0, 0.25],
     [0.25, 0, 0.1, 0.25],
     [0, 0, 0.1, 0.25],
+  ],
+  // Test a single element
+  [
+    [0.5, 0, 0, 0.25],
   ],
 ];

@@ -255,10 +255,10 @@ RunnerManagerState = _RunnerManagerState()
 
 
 class TestRunnerManager(threading.Thread):
-    def __init__(self, suite_name, index, test_queue, test_source_cls, browser_cls, browser_kwargs,
-                 executor_cls, executor_kwargs, stop_flag, rerun=1, pause_after_test=False,
-                 pause_on_unexpected=False, restart_on_unexpected=True, debug_info=None,
-                 capture_stdio=True, recording=None):
+    def __init__(self, suite_name, index, test_type, test_queue, test_source_cls, browser_cls,
+                 browser_kwargs, executor_cls, executor_kwargs, stop_flag, rerun=1,
+                 pause_after_test=False, pause_on_unexpected=False, restart_on_unexpected=True,
+                 debug_info=None, capture_stdio=True, recording=None):
         """Thread that owns a single TestRunner process and any processes required
         by the TestRunner (e.g. the Firefox binary).
 
@@ -278,7 +278,7 @@ class TestRunnerManager(threading.Thread):
 
         self.test_source = test_source_cls(test_queue)
 
-        self.manager_number = index + 1
+        self.manager_number = index
         self.browser_cls = browser_cls
         self.browser_kwargs = browser_kwargs.copy()
         if self.browser_kwargs.get("device_serial"):
@@ -310,7 +310,7 @@ class TestRunnerManager(threading.Thread):
 
         self.test_runner_proc = None
 
-        threading.Thread.__init__(self, name="TestRunnerManager-%i" % self.manager_number)
+        threading.Thread.__init__(self, name="TestRunnerManager-%s-%i" % (test_type, index))
         # This is started in the actual new thread
         self.logger = None
 
@@ -889,10 +889,10 @@ class ManagerGroup(object):
 
         test_queue = make_test_queue(type_tests, self.test_source_cls, **self.test_source_kwargs)
 
-        # Ensure TestRunnerManager index is always in 1 ... self.size inclusively.
         for idx in range(self.size):
             manager = TestRunnerManager(self.suite_name,
                                         idx,
+                                        test_type,
                                         test_queue,
                                         self.test_source_cls,
                                         self.browser_cls,

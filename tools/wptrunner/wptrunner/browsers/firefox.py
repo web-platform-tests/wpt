@@ -815,8 +815,8 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
     def __init__(self, logger, binary, prefs_root, webdriver_binary, webdriver_args,
                  extra_prefs=None, debug_info=None, symbols_path=None, stackwalk_binary=None,
                  certutil_binary=None, ca_certificate_path=None, e10s=False,
-                 enable_webrender=False, enable_fission=False, stackfix_dir=None, leak_check=False,
-                 asan=False, stylo_threads=1,chaos_mode_flags=None, config=None,
+                 enable_fission=False, stackfix_dir=None, leak_check=False,
+                 asan=False, stylo_threads=1, chaos_mode_flags=None, config=None,
                  browser_channel="nightly", headless=None, **kwargs):
 
         super().__init__(logger, binary, webdriver_binary, webdriver_args)
@@ -831,19 +831,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
         self.leak_check = leak_check
         self.leak_report_file = None
 
-        self.env = get_environ(self.logger,
-                               binary,
-                               debug_info,
-                               stylo_threads,
-                               headless,
-                               enable_webrender,
-                               chaos_mode_flags)
-        self.env["RUST_BACKTRACE"] = "1"
-        # This doesn't work with wdspec tests
-        # In particular tests can create a session without passing in the capabilites
-        # and in those cases we get the default geckodriver profile which doesn't
-        # guarantee zero network access
-        del self.env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"]
+        self.env = self.get_env(binary, debug_info, stylo_threads, headless, chaos_mode_flags)
 
         profile_creator = ProfileCreator(logger,
                                          prefs_root,
@@ -859,6 +847,21 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
 
         self.profile = profile_creator.create()
         self.marionette_port = None
+
+    def get_env(self, binary, debug_info, stylo_threads, headless, chaos_mode_flags):
+        env = get_environ(self.logger,
+                          binary,
+                          debug_info,
+                          stylo_threads,
+                          headless,
+                          chaos_mode_flags)
+        env["RUST_BACKTRACE"] = "1"
+        # This doesn't work with wdspec tests
+        # In particular tests can create a session without passing in the capabilites
+        # and in those cases we get the default geckodriver profile which doesn't
+        # guarantee zero network access
+        del env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"]
+        return env
 
     def create_output_handler(self, cmd):
         return FirefoxOutputHandler(self.logger,
@@ -883,9 +886,11 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
             while time.time() < end_time:
                 self.logger.debug("Waiting for WebDriver session to end")
                 try:
+                    self.logger.debug(f"Connecting to http://{self.host}:{self.port}/status")
                     conn = HTTPConnection(self.host, self.port)
                     conn.request("GET", "/status")
                     res = conn.getresponse()
+                    self.logger.debug(f"Got response from http://{self.host}:{self.port}/status")
                 except Exception:
                     self.logger.debug(
                         f"Connecting to http://{self.host}:{self.port}/status failed")
@@ -903,6 +908,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
                 if msg.get("value", {}).get("ready") is True:
                     self.logger.debug("Got ready status")
                     break
+                self.logger.debug(f"Got status response {data}")
                 time.sleep(1)
             else:
                 self.logger.debug("WebDriver session didn't end")

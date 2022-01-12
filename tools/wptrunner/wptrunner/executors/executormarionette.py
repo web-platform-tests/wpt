@@ -1273,6 +1273,6 @@ class MarionetteWdspecExecutor(WdspecExecutor):
         args = self.capabilities["moz:firefoxOptions"].setdefault("args", [])
         args.extend(["--profile", self.browser.profile])
 
-        for option in ["env"]:
+        for option in ["androidPackage", "androidDeviceSerial", "env"]:
             if hasattr(browser, option):
                 self.capabilities["moz:firefoxOptions"][option] = getattr(browser, option)

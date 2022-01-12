@@ -2563,7 +2563,7 @@ promise_test(async t => {
   byobRequest1.view[1] = 12;
   byobRequest1.respondWithNewView(byobRequest1.view.subarray(0, 2));
   const byobRequest2 = controller.byobRequest;
-  assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
+  assert_equals(byobRequest2, null, 'byobRequest should be null after respondWithNewView()');
 
   const result2 = await read2;
   assert_false(result2.done, 'second result.done');
@@ -2668,7 +2668,7 @@ promise_test(async t => {
   byobRequest1.view[0] = 11;
   byobRequest1.respond(1);
   const byobRequest2 = controller.byobRequest;
-  assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
+  assert_equals(byobRequest2, null, 'byobRequest should be null after respond()');
 
   const result2 = await read2;
   assert_false(result2.done, 'second result.done');
@@ -2739,7 +2739,7 @@ promise_test(async t => {
   byobRequest1.view[0] = 11;
   byobRequest1.respond(1);
   const byobRequest2 = controller.byobRequest;
-  assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
+  assert_equals(byobRequest2, null, 'byobRequest should be null after respond()');
 
   const result2 = await read2;
   assert_false(result2.done, 'second result.done');

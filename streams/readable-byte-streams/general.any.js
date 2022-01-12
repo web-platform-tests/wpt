@@ -2374,7 +2374,7 @@ promise_test(async t => {
   assert_equals(byobRequest1.view, null, 'first byobRequest must be invalidated after enqueue()');
 
   const result1 = await read1;
-  assert_equals(result1.done, false, 'first result.done');
+  assert_false(result1.done, 'first result.done');
   const view1 = result1.value;
   assert_equals(view1.byteOffset, 0, 'first result.value.byteOffset');
   assert_equals(view1.byteLength, 3, 'first result.value.byteLength');
@@ -2395,7 +2395,7 @@ promise_test(async t => {
   assert_equals(byobRequest2.view, null, 'second byobRequest must be invalidated after respond()');
 
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   const view2 = result2.value;
   assert_equals(view2.byteOffset, 0, 'second result.value.byteOffset');
   assert_equals(view2.byteLength, 3, 'second result.value.byteLength');
@@ -2437,7 +2437,7 @@ promise_test(async t => {
   assert_equals(byobRequest2, null, 'byobRequest should be null after respond()');
 
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   assert_typed_array_equals(result2.value, new Uint8Array([11, 5, 6]).subarray(0, 1), 'second result.value');
 
 }, 'ReadableStream with byte source: releaseLock() with pending read(view), read(view) on second reader, respond()');
@@ -2480,7 +2480,7 @@ promise_test(async t => {
   byobRequest2.view[0] = 0x22;
   byobRequest2.respond(1);
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   const view2 = result2.value;
   assert_equals(view2.byteOffset, 0, 'second result.value.byteOffset');
   assert_equals(view2.byteLength, 2, 'second result.value.byteLength');
@@ -2524,12 +2524,12 @@ promise_test(async t => {
   assert_equals(byobRequest2, null, 'byobRequest should be null after respond()');
 
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   assert_typed_array_equals(result2.value, new Uint8Array([6, 7]), 'second result.value');
 
   // third read() should fulfill with the remaining byte
   const result3 = await reader2.read(new Uint8Array([0, 0, 0]));
-  assert_equals(result3.done, false, 'third result.done');
+  assert_false(result3.done, 'third result.done');
   assert_typed_array_equals(result3.value, new Uint8Array([8, 0, 0]).subarray(0, 1), 'third result.value');
 
 }, 'ReadableStream with byte source: releaseLock() with pending read(view), read(view) on second reader with ' +
@@ -2566,7 +2566,7 @@ promise_test(async t => {
   assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
 
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   assert_typed_array_equals(result2.value, new Uint8Array([11, 12, 6]).subarray(0, 2), 'second result.value');
 
 }, 'ReadableStream with byte source: releaseLock() with pending read(view), read(view) on second reader, respondWithNewView()');
@@ -2600,7 +2600,7 @@ promise_test(async t => {
   assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
 
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   assert_typed_array_equals(result2.value, new Uint8Array([11, 12, 6]).subarray(0, 2), 'second result.value');
 
 }, 'ReadableStream with byte source: releaseLock() with pending read(view), read(view) on second reader, enqueue()');
@@ -2635,7 +2635,7 @@ promise_test(async t => {
   assert_equals(byobRequest2, null, 'byobRequest should be null after respond()');
 
   const result2 = await read2;
-  assert_equals(result2.done, true, 'second result.done');
+  assert_true(result2.done, 'second result.done');
   assert_typed_array_equals(result2.value, new Uint8Array([4, 5, 6]).subarray(0, 0), 'second result.value');
 }, 'ReadableStream with byte source: releaseLock() with pending read(view), read(view) on second reader, ' +
    'close(), respond(0)');
@@ -2671,7 +2671,7 @@ promise_test(async t => {
   assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
 
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   assert_typed_array_equals(result2.value, new Uint8Array([11, 0, 0, 0]).subarray(0, 1), 'second result.value');
 
 }, 'ReadableStream with byte source: autoAllocateChunkSize, releaseLock() with pending read(), read() on second reader, respond()');
@@ -2706,7 +2706,7 @@ promise_test(async t => {
   assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
 
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   assert_typed_array_equals(result2.value, new Uint8Array([11]), 'second result.value');
 
 }, 'ReadableStream with byte source: autoAllocateChunkSize, releaseLock() with pending read(), read() on second reader, enqueue()');
@@ -2742,7 +2742,7 @@ promise_test(async t => {
   assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
 
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   assert_typed_array_equals(result2.value, new Uint8Array([11, 5, 6]).subarray(0, 1), 'second result.value');
 
 }, 'ReadableStream with byte source: autoAllocateChunkSize, releaseLock() with pending read(), read(view) on second reader, respond()');
@@ -2777,7 +2777,7 @@ promise_test(async t => {
   assert_equals(byobRequest2, null, 'byobRequest should be null after enqueue()');
 
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   assert_typed_array_equals(result2.value, new Uint8Array([11, 5, 6]).subarray(0, 1), 'second result.value');
 
 }, 'ReadableStream with byte source: autoAllocateChunkSize, releaseLock() with pending read(), read(view) on second reader, enqueue()');
@@ -2820,7 +2820,7 @@ promise_test(async t => {
   assert_equals(controller.byobRequest, null, 'byobRequest should be invalidated after second respond()');
 
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   const view2 = result2.value;
   assert_equals(view2.byteOffset, 0, 'second result.value.byteOffset');
   assert_equals(view2.byteLength, 2, 'second result.value.byteLength');
@@ -2867,11 +2867,11 @@ promise_test(async t => {
   assert_equals(controller.byobRequest, null, 'byobRequest should be invalidated after second respond()');
 
   const result2 = await read2;
-  assert_equals(result2.done, false, 'second result.done');
+  assert_false(result2.done, 'second result.done');
   assert_typed_array_equals(result2.value, new Uint8Array([0x11]), 'second result.value');
 
   const result3 = await reader2.read();
-  assert_equals(result3.done, false, 'third result.done');
+  assert_false(result3.done, 'third result.done');
   assert_typed_array_equals(result3.value, new Uint8Array([0x22]), 'third result.value');
 
 }, 'ReadableStream with byte source: read(view) with 1 element Uint16Array, respond(1), releaseLock(), read() on ' +

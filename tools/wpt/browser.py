@@ -858,14 +858,6 @@ class Chrome(ChromeChromiumBase):
         )
 
     def find_binary(self, venv_path=None, channel=None):
-        # this implementation will not currently check the venv path for a
-        # Chrome browser binary as installing the binary from the 
-        # ./wpt install command is not currently implemented.
-        if channel != "nightly":
-            raise NotImplementedError(
-                "Unable to detect Chrome binary for nightly channel. "
-                "Please supply a valid binary path using --binary"
-            )
 
         if uname[0] == "Linux":
             name = "google-chrome"

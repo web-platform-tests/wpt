@@ -25,8 +25,8 @@ def test_install_chromium():
     assert excinfo.value.code == 0
     assert os.path.exists(chromium_path)
 
-    chrome = browser.Chrome(logging.getLogger("Chrome"))
-    binary = chrome.find_nightly_binary(dest)
+    chromium = browser.Chromium(logging.getLogger("Chromium"))
+    binary = chromium.find_binary(dest)
     assert binary is not None and os.path.exists(binary)
 
     utils.rmtree(chromium_path)
@@ -46,7 +46,7 @@ def test_install_chromedriver_official():
     if os.path.exists(chromedriver_path):
         os.unlink(chromedriver_path)
     # This is a stable version.
-    binary_path = chrome.install_webdriver_by_version("84.0.4147.89", dest=dest)
+    binary_path = chrome.install_webdriver("84.0.4147.89", dest=dest)
     assert binary_path == chromedriver_path
     assert os.path.exists(chromedriver_path)
     os.unlink(chromedriver_path)

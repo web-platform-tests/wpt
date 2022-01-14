@@ -778,23 +778,13 @@ class Chromium(ChromeChromiumBase):
     def find_binary(self, venv_path=None, channel=None):
         dest = self._get_dest(venv_path, channel)
         if uname[0] == "Darwin":
-            return find_executable(
-                "Chromium",
-                os.path.join(
-                    dest, self._chromium_package_name(),
-                    "Chromium.app",
-                    "Contents",
-                    "MacOS"
-                )
-            )
+            return find_executable("Chromium", os.path.join(dest,
+                                                            self._chromium_package_name(),
+                                                            "Chromium.app",
+                                                            "Contents",
+                                                            "MacOS"))
         # find_executable will add .exe on Windows automatically.
-        return find_executable(
-            "chrome",
-            os.path.join(
-                dest,
-                self._chromium_package_name()
-            )
-        )
+        return find_executable("chrome", os.path.join(dest, self._chromium_package_name()))
 
     def install(self, dest=None, channel=None):
         if channel != "nightly":

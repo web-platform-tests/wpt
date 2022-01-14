@@ -29,12 +29,5 @@ idl_test(
       });
     } catch(e) {}
     idl_array.add_objects({ BlobEvent: [blob] });
-
-    try {
-      error = new MediaRecorderErrorEvent("type", {
-        error: new DOMException,
-      });
-    } catch(e) {}
-    idl_array.add_objects({ MediaRecorderErrorEvent: [error] });
   }
 );

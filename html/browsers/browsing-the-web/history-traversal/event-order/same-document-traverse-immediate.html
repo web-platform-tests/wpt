@@ -17,15 +17,22 @@ window.onload = () => window.eventOrder.push("load");
 async_test(t => {
   assert_array_equals(window.eventOrder, []);
 
-  // 0 timeout is necessary because if we do pushState before load is finished firing it counts as a replacement.
+  // 0 timeout is necessary because if we do location.hash assignment before load is finished firing it counts as a replacement.
   window.addEventListener("load", () => t.step_timeout(() => {
     assert_array_equals(window.eventOrder, ["load"]);
 
-    t.step_timeout(t.step_func_done(() => {
-      assert_array_equals(window.eventOrder, ["load"]);
-    }), 100);
+    window.addEventListener("hashchange", t.step_func(() => {
+      assert_array_equals(window.eventOrder, ["load", "popstate", "hashchange"]);
 
-    history.pushState({ state: "new state" }, "");
+      window.addEventListener("hashchange", t.step_func_done(() => {
+        assert_array_equals(window.eventOrder, ["load", "popstate", "hashchange", "popstate", "hashchange"]);
+      }));
+    }), { once: true });
+
+    location.hash = "#1";
+    assert_array_equals(window.eventOrder, ["load", "popstate"]);
+    history.back();
+    assert_array_equals(window.eventOrder, ["load", "popstate"]);
   }, 0));
-}, "when pushing state, after the load event");
+}, "when traversing back, before hashchange");
 </script>

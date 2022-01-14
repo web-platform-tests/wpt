@@ -62,7 +62,7 @@ def test_install_chromedriver_nightly():
     if os.path.exists(chromedriver_path):
         os.unlink(chromedriver_path)
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["install", "chrome", "webdriver"])
+        wpt.main(argv=["install", "chromium", "webdriver"])
     assert excinfo.value.code == 0
     assert os.path.exists(chromedriver_path)
     # FIXME: On Windows, this may sometimes fail (access denied), possibly

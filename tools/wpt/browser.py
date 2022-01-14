@@ -776,7 +776,10 @@ class Chromium(ChromeChromiumBase):
         return installer_path
 
     def find_binary(self, venv_path=None, channel=None):
-        dest = self._get_dest(venv_path, channel)
+        dest = venv_path
+        if channel is not None:
+            dest = self._get_dest(venv_path, channel)
+
         if uname[0] == "Darwin":
             return find_executable("Chromium", os.path.join(dest,
                                                             self._chromium_package_name(),

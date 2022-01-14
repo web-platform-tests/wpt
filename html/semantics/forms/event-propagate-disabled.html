@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<title>Event propagation on disabled form elements</title>
+<meta charset=utf8>
+<meta name=timeout content=long>
+<meta name=variant content="">
+<meta name=variant content="?variant=pointer">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+<div id=cases>
+<input> <!-- Santity check with non-disabled control -->
+<select disabled="disabled"></select>
+<fieldset disabled="">Text</fieldset>
+<fieldset disabled=""><span>Span</span></fieldset>
+<button disabled="disabled">Text</button>
+<button disabled="disabled"><span>Span</span></button>
+<textarea disabled="disabled"></textarea>
+<input disabled="disabled" type="button">
+<input disabled="disabled" type="checkbox">
+<input disabled="disabled" type="color" value="#000000">
+<input disabled="disabled" type="date">
+<input disabled="disabled" type="datetime-local">
+<input disabled="disabled" type="email">
+<input disabled="disabled" type="image">
+<input disabled="disabled" type="month">
+<input disabled="disabled" type="number">
+<input disabled="disabled" type="password">
+<input disabled="disabled" type="radio">
+<input disabled="disabled" type="range" value="50">
+<input disabled="disabled" type="reset">
+<input disabled="disabled" type="search">
+<input disabled="disabled" type="submit">
+<input disabled="disabled" type="tel">
+<input disabled="disabled" type="text">
+<input disabled="disabled" type="time">
+<input disabled="disabled" type="url">
+<input disabled="disabled" type="week">
+
+<!-- Cases WebDriver can't click on
+<select disabled="disabled" data-expected=""><option selected="selected">foo</option></select>
+<input disabled="disabled" type="file">
+<input disabled="disabled" type="hidden"> -->
+</div>
+
+<script>
+
+const urlParams = new URLSearchParams(location.search);
+const variant = urlParams.get("variant");
+let expectedMove;
+let expectedButton;
+if (variant === "pointer") {
+  expectedMove = ["pointermove", "mousemove"];
+  expectedButton = ["pointerdown", "mousedown", "pointerup", "mouseup"];
+} else {
+  expectedMove = ["mousemove"]
+  expectedButton = ["mousedown", "mouseup"];
+}
+
+function setupTest(t, element, {expectMoveEvent}) {
+  let events = ["mousemove", "mousedown", "mouseup", "click"];
+  if (variant === "pointer") {
+    events.push("pointermove", "pointerdown", "pointerup");
+  }
+
+  const setupListener = (target) => {
+    const gotEvents = [];
+    const listenerFn = t.step_func(event => {
+      gotEvents.push(event.type);
+    });
+    events.forEach(event => target.addEventListener(event, listenerFn, {once: true}));
+    t.add_cleanup(async () => events.every(event => target.removeEventListener(event, listenerFn)));
+    return gotEvents;
+  };
+
+  const gotElementEvents = setupListener(element);
+  const gotBodyEvents = setupListener(document.body);
+
+  let target = element;
+  while (target.children.length) {
+    target = target.children[0];
+  }
+
+  // Non-disabled controls should also propagate click
+  let expectedElement = [];
+  if (expectMoveEvent) {
+      expectedElement.push(...expectedMove);
+  }
+  expectedElement.push(...expectedButton);
+  if (!element.disabled) {
+      expectedElement.push("click")
+  }
+  return {target, gotElementEvents, gotBodyEvents, expectedElement};
+}
+
+const elements = document.getElementById("cases").children;
+for (let element of elements) {
+  promise_test(async t => {
+    const {target, gotElementEvents, gotBodyEvents, expectedElement} = setupTest(t, element, {expectMoveEvent: true});
+
+    await test_driver.click(target);
+    await new Promise(resolve => t.step_timeout(resolve, 0));
+
+    assert_array_equals(gotElementEvents, expectedElement, "Events on the form element");
+    assert_array_equals(gotBodyEvents, expectedElement, "Events propagated to <body>");
+
+  }, `Trusted click on ${element.outerHTML}`);
+
+  if (variant !== "pointer") {
+    promise_test(async t => {
+      const {target, gotElementEvents, gotBodyEvents, expectedElement} = setupTest(t, element, {expectMoveEvent: false});
+      let events = ["mousedown", "mouseup", "click"]
+
+      for (let event of events) {
+        target.dispatchEvent(new MouseEvent(event, {bubbles: true}));
+      }
+      await new Promise(resolve => t.step_timeout(resolve, 0));
+
+      assert_array_equals(gotElementEvents, expectedElement, "Events on the form element");
+      assert_array_equals(gotBodyEvents, expectedElement, "Events propagated to <body>");
+
+    }, `Dispatch new MouseEvent() on ${element.outerHTML}`);
+
+    promise_test(async t => {
+      const {target, gotElementEvents, gotBodyEvents, expectedElement} = setupTest(t, element, {expectMoveEvent: false});
+
+      const expectedClick = expectedElement.filter(x => x === "click");
+
+      target.click();
+      await new Promise(resolve => t.step_timeout(resolve, 0));
+
+      assert_array_equals(gotElementEvents, expectedClick, "Events on the form element");
+      assert_array_equals(gotBodyEvents, expectedClick, "Events propagated to <body>");
+
+    }, `click() on ${element.outerHTML}`);
+
+  }
+}
+</script>

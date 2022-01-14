@@ -822,7 +822,7 @@ class Chrome(ChromeChromiumBase):
     """
 
     product = "chrome"
-    requirements = "requirements_chrome.txt"
+    requirements = "requirements_chromium.txt"
     platform = {
         "Linux": "Linux",
         "Windows": "Win",

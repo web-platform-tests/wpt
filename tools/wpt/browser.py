@@ -622,14 +622,16 @@ class ChromeChromiumBase(Browser):
             f.write(url)
         return extracted
 
-    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None, version=None):
         if browser_binary is None:
             browser_binary = self.find_binary(channel=channel)
 
-        version = self.version(browser_binary, dest)
+        if version is None:
+            version = self.version(browser_binary, dest)
+            if version is None:
+                raise ValueError("Error detecting webdriver version to install.")
         # Remove channel suffixes (e.g. " dev").
-        if version:
-            version = version.split(' ')[0]
+        version = version.split(' ')[0]
 
         if dest is None:
             dest = os.pwd
@@ -669,9 +671,7 @@ class ChromeChromiumBase(Browser):
             return None
         m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string)
         if not m:
-            self.logger.warning(
-                "Failed to extract version from: %s" % version_string
-            )
+            self.logger.warning("Failed to extract version from: %s" % version_string)
             return None
         return m.group(1)
 
@@ -733,7 +733,7 @@ class Chromium(ChromeChromiumBase):
     requirements = "requirements_chromium.txt"
 
     def __init__(self, logger):
-        super(Chromium, self).__init__(logger)
+        super().__init__(logger)
         self._last_change = None
 
     def _get_webdriver_url(self, chrome_version):
@@ -788,21 +788,13 @@ class Chromium(ChromeChromiumBase):
 
     def install(self, dest=None, channel=None):
         if channel != "nightly":
-            raise NotImplementedError(
-                "We can only install Chrome Nightly (Chromium ToT) for you."
-            )
+            raise NotImplementedError("We can only install Chrome Nightly (Chromium ToT) for you.")
         dest = self._get_dest(dest, channel)
         installer_path = self.download(dest, channel)
         with open(installer_path, "rb") as f:
             unzip(f, dest)
         os.remove(installer_path)
-        return find_executable(
-            "chrome",
-            os.path.join(
-                dest,
-                self._chromium_package_name()
-            )
-        )
+        return find_executable("chrome", os.path.join(dest, self._chromium_package_name()))
 
 
 class Chrome(ChromeChromiumBase):
@@ -865,9 +857,7 @@ class Chrome(ChromeChromiumBase):
             latest, self._chromedriver_platform_string())
 
     def download(self, dest=None, channel=None, rename=None):
-        raise NotImplementedError(
-            "Downloading of Chrome browser binary not yet implemented."
-        )
+        raise NotImplementedError("Downloading of Chrome browser binary not yet implemented.")
 
     def find_binary(self, venv_path=None, channel=None):
         if uname[0] == "Linux":
@@ -894,9 +884,7 @@ class Chrome(ChromeChromiumBase):
         return None
 
     def install(self, dest=None, channel=None):
-        raise NotImplementedError(
-            "Installing of Chrome browser binary not yet implemented."
-        )
+        raise NotImplementedError("Installing of Chrome browser binary not yet implemented.")
 
 
 class ChromeAndroidBase(Browser):

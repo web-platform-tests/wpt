@@ -21,7 +21,7 @@ def test_install_chromium():
     if os.path.exists(chromium_path):
         utils.rmtree(chromium_path)
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["install", "chrome", "browser", "--channel=nightly"])
+        wpt.main(argv=["install", "chromium", "browser", "--channel=nightly"])
     assert excinfo.value.code == 0
     assert os.path.exists(chromium_path)
 
@@ -46,7 +46,7 @@ def test_install_chromedriver_official():
     if os.path.exists(chromedriver_path):
         os.unlink(chromedriver_path)
     # This is a stable version.
-    binary_path = chrome.install_webdriver("84.0.4147.89", dest=dest)
+    binary_path = chrome.install_webdriver(dest=dest, version="84.0.4147.89")
     assert binary_path == chromedriver_path
     assert os.path.exists(chromedriver_path)
     os.unlink(chromedriver_path)

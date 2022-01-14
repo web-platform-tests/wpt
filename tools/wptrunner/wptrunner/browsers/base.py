@@ -285,10 +285,8 @@ class OutputHandler:
 class WebDriverBrowser(Browser):
     __metaclass__ = ABCMeta
 
-    default_base_path = "/"
-
     def __init__(self, logger, binary, webdriver_binary, webdriver_args=None,
-                 host="127.0.0.1", port=None, base_path="", env=None, **kwargs):
+                 host="127.0.0.1", port=None, base_path="/", env=None, **kwargs):
         super().__init__(logger)
 
         if webdriver_binary is None:
@@ -302,14 +300,11 @@ class WebDriverBrowser(Browser):
         self.host = host
         self._port = port
 
-        if base_path == "":
-            self.base_path = self.default_base_path
-        else:
-            self.base_path = base_path
+        self.base_path = base_path
         self.env = os.environ.copy() if env is None else env
-        self._webdriver_args = webdriver_args if webdriver_args is not None else []
+        self.webdriver_args = webdriver_args if webdriver_args is not None else []
 
-        self.url = "http://%s:%s%s" % (self.host, self.port, self.base_path)
+        self.url = f"http://{self.host}:{self.port}{self.base_path}"
 
         self._output_handler = None
         self._cmd = None
@@ -317,7 +312,7 @@ class WebDriverBrowser(Browser):
 
     def make_command(self):
         """Returns the full command for starting the server process as a list."""
-        return [self.webdriver_binary] + self._webdriver_args
+        return [self.webdriver_binary] + self.webdriver_args
 
     def start(self, group_metadata, **kwargs):
         try:
@@ -357,7 +352,7 @@ class WebDriverBrowser(Browser):
         except Exception:
             self.logger.error(
                 "WebDriver was not accessible "
-                "within the timeout:\n%s" % traceback.format_exc())
+                f"within the timeout:\n{traceback.format_exc()}")
             raise
         self._output_handler.start(group_metadata=group_metadata, **kwargs)
         self.logger.debug("_run complete")

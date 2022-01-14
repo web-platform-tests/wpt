@@ -66,8 +66,9 @@ class EdgeBrowser(WebDriverBrowser):
     init_timeout = 60
 
     def __init__(self, logger, binary, webdriver_binary, webdriver_args=None,
-                 host="localhost", port=None, base_path="", env=None, **kwargs):
-        super().__init__(logger, binary, )
+                 host="localhost", port=None, base_path="/", env=None, **kwargs):
+        super().__init__(logger, binary, webdriver_binary, webdriver_args=webdriver_args,
+                         host=host, port=port, base_path=base_path, env=env, **kwargs)
         self.host = "localhost"
 
     def stop(self, force=False):
@@ -89,7 +90,7 @@ class EdgeBrowser(WebDriverBrowser):
             subprocess.call(['taskkill.exe', '/f', '/im', 'microsoftedge*'])
 
     def make_command(self):
-        return [self.webdriver_binary, f"--port={self.port}"] + self._webdriver_args
+        return [self.webdriver_binary, f"--port={self.port}"] + self.webdriver_args
 
 
 def run_info_extras(**kwargs):

@@ -182,7 +182,7 @@ class SafariBrowser(WebDriverBrowser):
         return exe_path
 
     def make_command(self):
-        return [self.binary, f"--port={self.port}"] + self._webdriver_args
+        return [self.binary, f"--port={self.port}"] + self.webdriver_args
 
     def stop(self, force=False):
         super().stop(force)

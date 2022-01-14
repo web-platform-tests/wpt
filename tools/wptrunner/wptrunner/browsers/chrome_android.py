@@ -53,8 +53,11 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     del executor_kwargs["capabilities"]["goog:chromeOptions"]["prefs"]
 
     assert kwargs["package_name"], "missing --package-name"
-    executor_kwargs["capabilities"]["goog:chromeOptions"]["androidPackage"] = \
+    capabilities = executor_kwargs["capabilities"]
+    capabilities["goog:chromeOptions"]["androidPackage"] = \
         kwargs["package_name"]
+    capabilities["goog:chromeOptions"]["androidKeepAppDataDir"] = \
+        kwargs.get("keep_app_data_directory")
 
     return executor_kwargs
 
@@ -157,8 +160,8 @@ class ChromeAndroidBrowserBase(WebDriverBrowser):
     def make_command(self):
         return [self.webdriver_binary,
                 cmd_arg("port", str(self.port)),
-                cmd_arg("url-base", self.base_path) if self.base_path else "",
-                cmd_arg("enable-chrome-logs")] + self._webdriver_args
+                cmd_arg("url-base", self.base_path),
+                cmd_arg("enable-chrome-logs")] + self.webdriver_args
 
     def cleanup(self):
         super().cleanup()
@@ -170,9 +173,8 @@ class ChromeAndroidBrowserBase(WebDriverBrowser):
     def executor_browser(self):
         cls, kwargs = super().executor_browser()
         kwargs["capabilities"] = {
-                "goog:chromeOptions": {
-                    "androidDeviceSerial": self.device_serial
-                }
+            "goog:chromeOptions": {
+                "androidDeviceSerial": self.device_serial
             }
         }
         return cls, kwargs

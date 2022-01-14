@@ -45,4 +45,4 @@ def env_options():
 
 class InternetExplorerBrowser(WebDriverBrowser):
     def make_command(self):
-        return [self.binary, f"--port={self.port}"] + self._webdriver_args
+        return [self.binary, f"--port={self.port}"] + self.webdriver_args

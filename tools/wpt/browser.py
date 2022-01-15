@@ -628,10 +628,6 @@ class ChromeChromiumBase(Browser):
 
         if version is None:
             version = self.version(browser_binary, dest)
-            if version is None:
-                raise ValueError("Error detecting webdriver version to install.")
-        # Remove channel suffixes (e.g. " dev").
-        version = version.split(' ')[0]
 
         if dest is None:
             dest = os.pwd
@@ -738,6 +734,9 @@ class Chromium(ChromeChromiumBase):
 
     def _get_webdriver_url(self, chrome_version):
         if chrome_version:
+            # Remove channel suffixes (e.g. " dev").
+            chrome_version = chrome_version.split(' ')[0]
+
             # TODO: Are these version-specific urls for
             # chromium chromedriver still functional?
             try:
@@ -841,6 +840,9 @@ class Chrome(ChromeChromiumBase):
     def _get_webdriver_url(self, chrome_version):
         # TODO: This used to fall back to ToT downloading the Chromium webdriver
         # if these attempts to download did not work. Still worth doing??
+
+        # Remove channel suffixes (e.g. " dev").
+        chrome_version = chrome_version.split(' ')[0]
 
         # http://chromedriver.chromium.org/downloads/version-selection
         parts = chrome_version.split(".")

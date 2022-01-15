@@ -567,6 +567,28 @@ class ChromeChromiumBase(Browser):
     def _chromium_package_name(self):
         return "chrome-%s" % self.platform.lower()
 
+    def _get_chromium_webdriver_url(self, chrome_version):
+        if chrome_version:
+            # Remove channel suffixes (e.g. " dev").
+            chrome_version = chrome_version.split(' ')[0]
+
+            # TODO: Are these version-specific urls for
+            # chromium chromedriver still functional?
+            try:
+                # Try to find the Chromium build with the same revision.
+                omaha = get(f"https://omahaproxy.appspot.com/deps.json?version={chrome_version}").json()
+                revision = omaha['chromium_base_position']
+                url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/chromedriver_%s.zip" % (
+                    self._chromium_platform_string(), revision, self._chromedriver_platform_string())
+                # Check the status without downloading the content (this is a streaming request).
+                get(url)
+                return url
+            except requests.RequestException:
+                pass
+        # Fall back to the tip-of-tree Chromium build.
+        return "%schromedriver_%s.zip" % (self._latest_chromium_snapshot_url(),
+                                          self._chromedriver_platform_string())
+
     def _get_webdriver_url(self):
         raise NotImplementedError
 
@@ -584,10 +606,7 @@ class ChromeChromiumBase(Browser):
         # avoids tricky issues like unzipping over a read-only file.
         existing_binary_path = find_executable("chromedriver", dest)
         if existing_binary_path:
-            self.logger.info(
-                "Removing existing ChromeDriver binary: "
-                + existing_binary_path
-            )
+            self.logger.info(f"Removing existing ChromeDriver binary: {existing_binary_path}")
             os.chmod(existing_binary_path, stat.S_IWUSR)
             os.remove(existing_binary_path)
 
@@ -733,29 +752,7 @@ class Chromium(ChromeChromiumBase):
         self._last_change = None
 
     def _get_webdriver_url(self, chrome_version):
-        if chrome_version:
-            # Remove channel suffixes (e.g. " dev").
-            chrome_version = chrome_version.split(' ')[0]
-
-            # TODO: Are these version-specific urls for
-            # chromium chromedriver still functional?
-            try:
-                # Try to find the Chromium build with the same revision.
-                omaha = get("https://omahaproxy.appspot.com/deps.json?version="
-                            + chrome_version).json()
-                revision = omaha['chromium_base_position']
-                url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/chromedriver_%s.zip" % (
-                    self._chromium_platform_string(), revision, self._chromedriver_platform_string())
-                # Check the status without downloading the content (this is a streaming request).
-                get(url)
-                return url
-            except requests.RequestException:
-                pass
-        # Fall back to the tip-of-tree Chromium build.
-        return "%schromedriver_%s.zip" % (
-            self._latest_chromium_snapshot_url(),
-            self._chromedriver_platform_string()
-        )
+        return self._get_chromium_webdriver_url(chrome_version)
 
     def download(self, dest=None, channel=None, rename=None):
         if channel != "nightly":
@@ -814,28 +811,6 @@ class Chrome(ChromeChromiumBase):
     def __init__(self, logger):
         super(Chrome, self).__init__(logger)
         self._last_change = None
-
-    def _get_chromium_webdriver_url(self, chrome_version):
-        if chrome_version:
-            # TODO: Are these version-specific urls for
-            # chromium chromedriver still functional?
-            try:
-                # Try to find the Chromium build with the same revision.
-                omaha = get("https://omahaproxy.appspot.com/deps.json?version="
-                            + chrome_version).json()
-                revision = omaha['chromium_base_position']
-                url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/chromedriver_%s.zip" % (
-                    self._chromium_platform_string(), revision, self._chromedriver_platform_string())
-                # Check the status without downloading the content (this is a streaming request).
-                get(url)
-                return url
-            except requests.RequestException:
-                pass
-        # Fall back to the tip-of-tree Chromium build.
-        return "%schromedriver_%s.zip" % (
-            self._latest_chromium_snapshot_url(),
-            self._chromedriver_platform_string()
-        )
 
     def _get_webdriver_url(self, chrome_version):
         # TODO: This used to fall back to ToT downloading the Chromium webdriver

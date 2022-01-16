@@ -288,11 +288,7 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     # warning+ level logs only
     logger.add_handler(StreamHandler(log, JSONFormatter()))
 
-    # Use the number of iterations of the test suite that were run to process the results.
-    # if the runs were stopped to avoid hitting the maximum run time.
     _, test_status = wptrunner.run_tests(**kwargs)
-    iterations = test_status.repeated_runs
-    all_skipped = test_status.all_skipped
 
     logger._state.handlers = initial_handlers
     logger._state.running_tests = set()
@@ -300,7 +296,7 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
 
     log.seek(0)
     results, inconsistent, slow = process_results(log, iterations)
-    return results, inconsistent, slow, iterations, all_skipped
+    return test_status, results, inconsistent, slow
 
 
 def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
@@ -375,7 +371,12 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
         logger.info(':::')
         logger.info('::: Running test verification step "%s"...' % desc)
         logger.info(':::')
-        results, inconsistent, slow, iterations, all_skipped = step_func(**kwargs)
+        test_status, results, inconsistent, slow = step_func(**kwargs)
+
+        # Use the number of iterations of the test suite that were run to process the results.
+        # if the runs were stopped to avoid hitting the maximum run time.
+        iterations = test_status.repeated_runs
+        all_skipped = test_status.all_skipped
 
         if iterations <= 1 and expected_iterations > 1 and not all_skipped:
             step_results.append((desc, "FAIL"))

@@ -295,7 +295,7 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     logger._state.suite_started = False
 
     log.seek(0)
-    results, inconsistent, slow = process_results(log, iterations)
+    results, inconsistent, slow = process_results(log, test_status.repeated_runs)
     return test_status, results, inconsistent, slow
 
 

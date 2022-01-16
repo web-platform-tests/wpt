@@ -402,12 +402,13 @@ promise_test(async t => {
     resolveWriteCalled = resolve;
   });
   let resolveWrite;
+  const writePromise = new Promise(resolve => {
+    resolveWrite = resolve;
+  });
   const ws = recordingWritableStream({
     write: t.step_func(() => {
       resolveWriteCalled();
-      return new Promise(resolve => {
-        resolveWrite = resolve;
-      });
+      return writePromise;
     }),
   }, { highWaterMark: Infinity });
 
@@ -438,6 +439,7 @@ promise_test(async t => {
   assert_array_equals(rs.events, ['pull'], 'pull() must have been called once');
   assert_array_equals(ws.events, ['write', 'a', 'abort', error1], 'write() and abort() must have been called');
 
+  rs.controller.close();
   const reader = rs.getReader();
   const result = await reader.read();
   assert_object_equals(result, { value: 'b', done: false }, 'first read after pipeTo() should be correct');
@@ -459,12 +461,13 @@ promise_test(async t => {
     resolveWriteCalled = resolve;
   });
   let resolveWrite;
+  const writePromise = new Promise(resolve => {
+    resolveWrite = resolve;
+  });
   const ws = recordingWritableStream({
     write: t.step_func(() => {
       resolveWriteCalled();
-      return new Promise(resolve => {
-        resolveWrite = resolve;
-      });
+      return writePromise;
     }),
   }, { highWaterMark: Infinity });
 
@@ -495,6 +498,7 @@ promise_test(async t => {
   assert_array_equals(rs.events, ['pull'], 'pull() must have been called once');
   assert_array_equals(ws.events, ['write', 'a'], 'write() must have been called once');
 
+  rs.controller.close();
   const reader = rs.getReader();
   const result = await reader.read();
   assert_object_equals(result, { value: 'b', done: false }, 'first read after pipeTo() should be correct');

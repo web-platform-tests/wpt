@@ -9,7 +9,7 @@
     "connect": "^3.4.0",
     "ejs": "^2.3.1",
     "gulp": "^3.8.11",
-    "gulp-ejs": "^1.1.0",
+    "gulp-ejs": "^5.1.0",
     "gulp-rename": "^1.2.2",
     "minimist": "^1.1.1",
     "serve-index": "^1.7.2",

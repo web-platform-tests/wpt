@@ -681,36 +681,6 @@ class WdspecRun(object):
             self.result_flag.set()
 
 
-class ConnectionlessBaseProtocolPart(BaseProtocolPart):
-    def load(self, url):
-        pass
-
-    def execute_script(self, script, asynchronous=False):
-        pass
-
-    def set_timeout(self, timeout):
-        pass
-
-    def wait(self):
-        return False
-
-    def set_window(self, handle):
-        pass
-
-    def window_handles(self):
-        return []
-
-
-class ConnectionlessProtocol(Protocol):
-    implements = [ConnectionlessBaseProtocolPart]
-
-    def connect(self):
-        pass
-
-    def after_connect(self):
-        pass
-
-
 class CallbackHandler(object):
     """Handle callbacks from testdriver-using tests.
 

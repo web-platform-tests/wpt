@@ -711,69 +711,6 @@ class ConnectionlessProtocol(Protocol):
         pass
 
 
-class WdspecProtocol(Protocol):
-    server_cls = None  # type: ClassVar[Optional[Type[WebDriverServer]]]
-
-    implements = [ConnectionlessBaseProtocolPart]
-
-    def __init__(self, executor, browser):
-        Protocol.__init__(self, executor, browser)
-        self.webdriver_binary = executor.webdriver_binary
-        self.webdriver_args = executor.webdriver_args
-        self.capabilities = self.executor.capabilities
-        self.session_config = None
-        self.server = None
-        self.environ = os.environ.copy()
-        self.environ.update(executor.environ)
-        self.output_handler_kwargs = executor.output_handler_kwargs
-        self.output_handler_start_kwargs = executor.output_handler_start_kwargs
-
-    def connect(self):
-        """Connect to browser via the HTTP server."""
-        self.server = self.server_cls(
-            self.logger,
-            binary=self.webdriver_binary,
-            args=self.webdriver_args,
-            env=self.environ)
-        self.server.start(block=False,
-                          output_handler_kwargs=self.output_handler_kwargs,
-                          output_handler_start_kwargs=self.output_handler_start_kwargs)
-        self.logger.info(
-            "WebDriver HTTP server listening at %s" % self.server.url)
-        self.session_config = {
-            "webdriver": {
-                "binary": self.webdriver_binary,
-                "args": self.webdriver_args
-            },
-            "host": self.server.host,
-            "port": self.server.port,
-            "capabilities": self.capabilities
-        }
-
-    def after_connect(self):
-        pass
-
-    def teardown(self):
-        if self.server is not None and self.server.is_alive():
-            self.server.stop()
-
-    def is_alive(self):
-        """Test that the connection is still alive.
-
-        Because the remote communication happens over HTTP we need to
-        make an explicit request to the remote.  It is allowed for
-        WebDriver spec tests to not have a WebDriver session, since this
-        may be what is tested.
-
-        An HTTP request to an invalid path that results in a 404 is
-        proof enough to us that the server is alive and kicking.
-        """
-        conn = HTTPConnection(self.server.host, self.server.port)
-        conn.request("HEAD", self.server.base_path + "invalid")
-        res = conn.getresponse()
-        return res.status == 404
-
-
 class CallbackHandler(object):
     """Handle callbacks from testdriver-using tests.
 

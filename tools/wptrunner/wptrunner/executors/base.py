@@ -681,7 +681,6 @@ class WdspecRun(object):
             self.result_flag.set()
 
 
-
 class ConnectionlessBaseProtocolPart(BaseProtocolPart):
     def load(self, url):
         pass
